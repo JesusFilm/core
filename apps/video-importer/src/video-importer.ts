@@ -8,6 +8,7 @@ import {
   SUBTITLE_FILENAME_REGEX,
   VIDEO_FILENAME_REGEX
 } from './importerFilenamePatterns'
+import { getPackagedAppDir } from './runtime'
 import { checkStartupEnvironment } from './startupPreflight'
 import {
   type ProcessingSummary,
@@ -21,7 +22,7 @@ const program = new Command()
 program
   .option(
     '-f, --folder <path>',
-    "Folder containing video files. Defaults to the executable's directory."
+    "Folder containing video files. Defaults to process.cwd() in source runs and the executable's directory in packaged SEA runs."
   )
   .option('--dry-run', 'Print actions without uploading', false)
   .option('--no-slack', 'Do not post a Slack summary after the run')
@@ -32,13 +33,11 @@ const options = program.opts()
 // Regex patterns are imported from the respective importers
 
 function getDefaultFolderPath(): string {
-  const runningAsStandaloneExecutable =
-    typeof Bun !== 'undefined' && Bun.embeddedFiles.length > 0
+  const packagedAppDir = getPackagedAppDir()
 
-  if (!runningAsStandaloneExecutable) return process.cwd()
+  if (packagedAppDir != null) return path.resolve(packagedAppDir)
 
-  // In Bun standalone executable mode, `process.execPath` is the path to the compiled binary.
-  return path.dirname(process.execPath)
+  return process.cwd()
 }
 
 async function main() {

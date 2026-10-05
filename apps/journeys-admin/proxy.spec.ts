@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { authMiddleware } from 'next-firebase-auth-edge'
 
 import proxy, { COOKIE_FINGERPRINT } from './proxy'
 
@@ -152,6 +153,72 @@ describe('proxy', () => {
       expect(result?.headers.get('set-cookie')).toBe(
         `NEXT_LOCALE=${COOKIE_FINGERPRINT}---zh-Hans-CN; Path=/`
       )
+    })
+  })
+
+  describe('auth error', () => {
+    // The module-level mock delegates to handleInvalidToken; these tests need
+    // the handleError branch instead. Typed loosely so the stub only has to
+    // describe the one option it calls.
+    const mockAuthMiddleware = authMiddleware as unknown as {
+      mockImplementationOnce: (
+        fn: (
+          req: NextRequest,
+          options: { handleError: (error: unknown) => Promise<Response> }
+        ) => Promise<Response>
+      ) => void
+    }
+
+    function mockHandleError(): void {
+      mockAuthMiddleware.mockImplementationOnce(
+        async (_req, options) =>
+          await options.handleError(new Error('Invalid credentials'))
+      )
+    }
+
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    })
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('should return 503 on /api/login so the client does not reload without a cookie', async () => {
+      mockHandleError()
+      const req = new NextRequest(
+        new Request('http://localhost:4200/api/login'),
+        requestInit
+      )
+
+      const result = await proxy(req)
+
+      expect(result?.status).toBe(503)
+      expect(result?.headers.get('set-cookie')).toBeNull()
+    })
+
+    it('should return 503 on /api/refresh-token', async () => {
+      mockHandleError()
+      const req = new NextRequest(
+        new Request('http://localhost:4200/api/refresh-token'),
+        requestInit
+      )
+
+      expect((await proxy(req))?.status).toBe(503)
+    })
+
+    it('should still serve normal pages when the auth exchange fails', async () => {
+      mockHandleError()
+      const req = new NextRequest(
+        new Request('http://localhost:4200/templates', {
+          headers: new Headers({
+            cookie: `NEXT_LOCALE=${COOKIE_FINGERPRINT}---en`
+          })
+        }),
+        requestInit
+      )
+
+      expect((await proxy(req))?.status).toBe(200)
     })
   })
 })

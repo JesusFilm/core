@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useQuery, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useQuery, useSuspenseQuery } from '@apollo/client/react'
 import FormControl from '@mui/material/FormControl'
 import FormHelperText from '@mui/material/FormHelperText'
 import InputLabel from '@mui/material/InputLabel'
@@ -363,7 +362,11 @@ export default function AddVideoVariantDownloadDialog({
           loading={isLoading || isSubmitting}
         >
           <Form>
-            <Stack gap={2}>
+            <Stack
+              sx={{
+                gap: 2
+              }}
+            >
               <FormControl
                 fullWidth
                 margin="normal"
@@ -418,7 +421,12 @@ export default function AddVideoVariantDownloadDialog({
               ) : (
                 <>
                   {values.quality === 'auto' && (
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: 'text.secondary'
+                      }}
+                    >
                       This will generate high (720p), SD (360p) and low (270p)
                       quality downloads from Mux.
                     </Typography>

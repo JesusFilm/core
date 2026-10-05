@@ -25,7 +25,7 @@ const Toolbar = styled(MuiToolbar)({
   justifyContent: 'center',
   gap: '12px',
   flexShrink: 0,
-  [`& ${tabsClasses.flexContainer}`]: {
+  [`& ${tabsClasses.list}`]: {
     gap: '8px',
     p: '8px',
     pb: 0
@@ -79,7 +79,7 @@ export function AppNavbar(): ReactElement {
               Nexus
             </Typography>
           </Stack>
-          <Stack direction="row" spacing={1}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
             <ToggleColorMode />
             <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
               <MenuRoundedIcon />

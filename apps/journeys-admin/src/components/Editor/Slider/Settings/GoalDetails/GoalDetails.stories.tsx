@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
@@ -24,7 +24,7 @@ const Template: StoryObj<ComponentProps<typeof GoalDetails> & { url: string }> =
     render: (args) => (
       <MockedProvider>
         <EditorProvider initialState={{ selectedGoalUrl: args.url }}>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <Box sx={{ backgroundColor: 'background.paper' }}>
               <GoalDetails />
             </Box>

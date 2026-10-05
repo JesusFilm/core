@@ -14,7 +14,7 @@ import { ChatOverlay } from '../ChatOverlay'
 
 export function AiChatButton(): ReactElement | null {
   const { t } = useTranslation('libs-journeys-ui')
-  const { variant } = useJourney()
+  const { renderMode } = useJourney()
   const { open, setOpen } = useChatOverlay()
   const theme = useTheme()
   // sm+ opens the full-screen ChatOverlay; on xs the same `open` state
@@ -31,36 +31,42 @@ export function AiChatButton(): ReactElement | null {
     setOpen(false)
   }, [setOpen])
 
-  if (variant === 'admin' || variant === 'embed') {
+  if (renderMode === 'admin' || renderMode === 'embed') {
     return null
   }
 
   return (
     <>
-      <IconButton
-        onClick={handleClick}
-        aria-label={t('Open AI chat')}
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault()
-            handleClick()
-          }
-        }}
-        sx={{
-          backgroundColor: 'primary.main',
-          color: 'primary.contrastText',
-          // 44×44 matches the MessagePlatform buttons in ChatButtons so
-          // the footer chat group reads as one evenly-sized row.
-          width: 44,
-          height: 44,
-          '&:hover': {
-            backgroundColor: 'primary.dark'
-          }
-        }}
-      >
-        <MessageChatStarsIcon sx={{ fontSize: 40 }} />
-      </IconButton>
+      {/* Hide the floating trigger while the chat is open: the desktop
+          overlay panel (and the mobile drawer) cover the footer, so the
+          button would otherwise float over the open chat. The ChatOverlay
+          itself stays mounted so its open/close transition still runs. */}
+      {!open && (
+        <IconButton
+          onClick={handleClick}
+          aria-label={t('Open AI chat')}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              handleClick()
+            }
+          }}
+          sx={{
+            backgroundColor: 'primary.main',
+            color: 'primary.contrastText',
+            // 44×44 matches the MessagePlatform buttons in ChatButtons so
+            // the footer chat group reads as one evenly-sized row.
+            width: 44,
+            height: 44,
+            '&:hover': {
+              backgroundColor: 'primary.dark'
+            }
+          }}
+        >
+          <MessageChatStarsIcon sx={{ fontSize: 40 }} />
+        </IconButton>
+      )}
       {showOverlaySurface && <ChatOverlay open={open} onClose={handleClose} />}
     </>
   )

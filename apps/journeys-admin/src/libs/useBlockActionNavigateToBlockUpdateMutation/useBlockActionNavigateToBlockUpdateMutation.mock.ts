@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   BlockActionNavigateToBlockUpdate,
@@ -7,7 +7,7 @@ import {
 
 import { BLOCK_ACTION_NAVIGATE_TO_BLOCK_UPDATE } from './useBlockActionNavigateToBlockUpdateMutation'
 
-export const blockActionNavigateToBlockUpdateMock: MockedResponse<
+export const blockActionNavigateToBlockUpdateMock: MockLink.MockedResponse<
   BlockActionNavigateToBlockUpdate,
   BlockActionNavigateToBlockUpdateVariables
 > = {

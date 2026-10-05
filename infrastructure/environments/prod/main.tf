@@ -68,7 +68,7 @@ module "api-analytics" {
 }
 
 module "api-journeys-modern" {
-  source        = "../../../apis/api-journeys-modern/infrastructure"
+  source        = "../../../apis/api-journeys/infrastructure"
   ecs_config    = local.internal_ecs_config
   doppler_token = data.aws_ssm_parameter.doppler_api_journeys_prod_token.value
   alb = {
@@ -188,5 +188,24 @@ module "eks" {
   subnet_ids_2a      = ["subnet-0b7c1e14af0ffb3ea", "subnet-036663ddfdb3b94b0"]
   subnet_ids_2b      = ["subnet-05c389158df4b940a", "subnet-01aa708571a3e499c"]
   subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
+}
+
+# Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 7 daily
+# plus 4 weekly snapshots, replacing the former SnapScheduler schedule,
+# whose EBS snapshots were never deleted (the VolumeSnapshotClass uses
+# deletionPolicy: Retain).
+module "plausible_clickhouse_snapshots" {
+  source       = "../../modules/aws/ebs-snapshot-policy"
+  env          = "prod"
+  name         = "plausible-clickhouse"
+  cluster_name = module.eks.cluster_name
+  pvc_names = [
+    "plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0",
+    "plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0"
+  ]
+  schedules = [
+    { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 7 },
+    { name = "weekly", cron_expression = "cron(0 2 ? * SUN *)", retain_count = 4 }
+  ]
 }
 

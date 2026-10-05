@@ -1,4 +1,4 @@
-import { useSuspenseQuery as apolloClientModule_useSuspenseQuery } from '@apollo/client'
+import { useSuspenseQuery as apolloClientModule_useSuspenseQuery } from '@apollo/client/react'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { type Mock } from 'vitest'
@@ -8,8 +8,8 @@ import { ImageAspectRatio } from '../../../constants'
 import { HdImage } from './HdImage'
 
 // Mock Apollo Client
-vi.mock('@apollo/client', async () => {
-  const originalModule = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const originalModule = await vi.importActual('@apollo/client/react')
   return {
     ...originalModule,
     useSuspenseQuery: vi.fn()

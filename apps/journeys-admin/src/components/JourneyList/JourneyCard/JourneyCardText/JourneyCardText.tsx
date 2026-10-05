@@ -41,9 +41,11 @@ export function JourneyCardText({
       </Typography>
       <Stack
         direction="row"
-        alignItems="center"
         spacing={1.5}
-        sx={{ width: '100%' }}
+        sx={{
+          alignItems: 'center',
+          width: '100%'
+        }}
       >
         <TranslateIcon
           data-testid="TranslateIcon"

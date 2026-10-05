@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
 import Divider from '@mui/material/Divider'
@@ -179,14 +180,21 @@ export function TermsAndConditions(): ReactElement {
               checked={accepted}
               tabIndex={-1}
               disableRipple
-              inputProps={{ 'aria-labelledby': 'i-agree-label' }}
               sx={{ p: 0, ml: 0 }}
+              slotProps={{
+                input: { 'aria-labelledby': 'i-agree-label' }
+              }}
             />
           </ListItemIcon>
           <ListItemText
             id="i-agree-label"
             primary={
-              <Typography variant="body1" color="secondary.dark">
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'secondary.dark'
+                }}
+              >
                 {t('I agree with listed above conditions and requirements')}
               </Typography>
             }

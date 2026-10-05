@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Collapse from '@mui/material/Collapse'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -51,13 +52,12 @@ export function ChatAssistant(): ReactElement | null {
     CardBlockChatAssistantUpdateVariables
   >(CARD_BLOCK_CHAT_ASSISTANT_UPDATE)
 
-  const cardBlock = (
+  const cardBlock =
     selectedBlock?.__typename === 'CardBlock'
       ? selectedBlock
       : selectedBlock?.children.find(
           (child) => child.__typename === 'CardBlock'
         )
-  ) as TreeBlock<CardBlock> | undefined
 
   if (cardBlock == null) return null
 

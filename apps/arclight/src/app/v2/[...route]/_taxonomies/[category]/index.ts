@@ -97,12 +97,11 @@ taxonomiesWithCategory.openapi(getTaxonomyByCategoryRoute, async (c) => {
   ])
 
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_TAXONOMY>
-    >({
+    const { data } = await getApolloClient().query({
       query: GET_TAXONOMY,
+      errorPolicy: 'none',
       variables: {
-        category,
+        category: category ?? '',
         languageCodes: metadataLanguageTags
       }
     })

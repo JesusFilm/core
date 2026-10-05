@@ -100,24 +100,28 @@ export function MultipleLanguageAutocomplete({
           hiddenLabel
           placeholder="Search Language"
           variant="filled"
-          InputProps={{
-            ...params.InputProps,
-            sx: { paddingBottom: 2 },
-            onKeyDown: (e) => {
-              if (e.key === 'Enter') {
-                e.stopPropagation()
-                e.preventDefault()
-                setOpenPopper(false)
-              }
-            },
-            endAdornment: (
-              <>
-                {loading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : null}
-                {params.InputProps.endAdornment}
-              </>
-            )
+          slotProps={{
+            ...params.slotProps,
+
+            input: {
+              ...params.slotProps.input,
+              sx: { paddingBottom: 2 },
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  setOpenPopper(false)
+                }
+              },
+              endAdornment: (
+                <>
+                  {loading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : null}
+                  {params.slotProps.input.endAdornment}
+                </>
+              )
+            }
           }}
         />
       )}
@@ -135,7 +139,12 @@ export function MultipleLanguageAutocomplete({
             <Stack>
               <Typography>{localName ?? nativeName}</Typography>
               {localName != null && nativeName != null && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'text.secondary'
+                  }}
+                >
                   {nativeName}
                 </Typography>
               )}

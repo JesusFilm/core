@@ -19,23 +19,23 @@ export function Large({
 }: LargeProps): ReactElement {
   return (
     <Box
-      overflow="hidden"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      position="relative"
-      borderRadius={2}
-      width="100%"
-      height={194}
-      mb={6}
-      bgcolor="#EFEFEF"
+      data-testid="image-edit"
+      onClick={onClick}
       sx={{
+        overflow: 'hidden',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+        borderRadius: 2,
+        width: '100%',
+        height: 194,
+        mb: 6,
+        bgcolor: '#EFEFEF',
         cursor: 'pointer',
         '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.1)' },
         '&:active:hover': { bgcolor: 'rgba(0, 0, 0, 0.2)' }
       }}
-      data-testid="image-edit"
-      onClick={onClick}
     >
       {loading === true ? (
         <Skeleton

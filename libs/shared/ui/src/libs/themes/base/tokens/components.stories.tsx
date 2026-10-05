@@ -64,7 +64,12 @@ const languages: Language[] = [
 const Template: StoryObj<typeof LanguageAutocomplete> = {
   render: (args) => {
     return (
-      <Stack spacing={8} alignItems="flex-start">
+      <Stack
+        spacing={8}
+        sx={{
+          alignItems: 'flex-start'
+        }}
+      >
         {/* LANGUAGE AUTOCOMPLETE */}
         <LanguageAutocomplete
           onChange={noop}

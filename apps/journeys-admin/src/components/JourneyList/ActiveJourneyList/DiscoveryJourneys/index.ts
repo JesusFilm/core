@@ -1,1 +1,0 @@
-export { DiscoveryJourneys } from './DiscoveryJourneys'

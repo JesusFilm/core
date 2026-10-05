@@ -16,7 +16,7 @@ describe('CollectionUngroupDialog', () => {
       />
     )
     expect(
-      screen.queryByText('Remove this collection?')
+      screen.queryByText('Remove this Collection?')
     ).not.toBeInTheDocument()
   })
 
@@ -29,15 +29,15 @@ describe('CollectionUngroupDialog', () => {
         onConfirm={vi.fn()}
       />
     )
-    expect(screen.getByText('Remove this collection?')).toBeInTheDocument()
+    expect(screen.getByText('Remove this Collection?')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Removing this collection returns its templates to the flat list.'
+        'Removing this Collection returns its Templates to the flat list.'
       )
     ).toBeInTheDocument()
     // Without wasPublished, the 404 warning is hidden.
     expect(
-      screen.queryByText(/Any public URL for this collection will return 404/)
+      screen.queryByText(/Any public URL for this Collection will return 404/)
     ).not.toBeInTheDocument()
   })
 
@@ -51,7 +51,7 @@ describe('CollectionUngroupDialog', () => {
       />
     )
     expect(
-      screen.getByText('Any public URL for this collection will return 404.')
+      screen.getByText('Any public URL for this Collection will return 404.')
     ).toBeInTheDocument()
   })
 

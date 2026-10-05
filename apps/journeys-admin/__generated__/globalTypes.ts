@@ -280,6 +280,16 @@ export enum Service {
   apiTags = "apiTags",
   apiUsers = "apiUsers",
   apiVideos = "apiVideos",
+  youtube = "youtube",
+}
+
+/**
+ * Active selector for the media attached to a TemplateGalleryPage: which payload renders. Both payload slots may stay populated regardless of this value, so switching never discards a payload.
+ */
+export enum TemplateGalleryPageMediaType {
+  link = "link",
+  mux = "mux",
+  none = "none",
 }
 
 /**
@@ -958,6 +968,16 @@ export interface TemplateGalleryPageCreateInput {
   creatorImageAlt?: string | null;
   mediaUrl?: string | null;
   journeyIds?: string[] | null;
+  media?: TemplateGalleryPageMediaInput | null;
+}
+
+/**
+ * Input for attaching media to a TemplateGalleryPage. `type` (`link`/`mux`/`none`) selects what renders; both payload slots may stay populated at once. For `url` and `muxVideoId`: omit to leave the stored value, pass `null` to clear that slot, or pass a value to set/replace it.
+ */
+export interface TemplateGalleryPageMediaInput {
+  type: TemplateGalleryPageMediaType;
+  url?: string | null;
+  muxVideoId?: string | null;
 }
 
 /**
@@ -972,6 +992,7 @@ export interface TemplateGalleryPageUpdateInput {
   creatorImageAlt?: string | null;
   mediaUrl?: string | null;
   journeyIds?: string[] | null;
+  media?: TemplateGalleryPageMediaInput | null;
 }
 
 export interface TextResponseBlockCreateInput {

@@ -38,7 +38,12 @@ function AboutChatPage(): ReactElement {
       <NextSeo title={title} nofollow noindex />
       <ThemeProvider themeName={ThemeName.base} themeMode={ThemeMode.light}>
         <Container maxWidth="sm" dir={dir} data-testid="AboutChatPage">
-          <Stack spacing={5} py={{ xs: 5, sm: 7 }}>
+          <Stack
+            spacing={5}
+            sx={{
+              py: { xs: 5, sm: 7 }
+            }}
+          >
             <Image
               src={logo}
               alt="Next Steps"
@@ -86,7 +91,12 @@ function AboutChatPage(): ReactElement {
                   )}
                 </Typography>
               </Stack>
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 {t('Last updated: June 2026')}
               </Typography>
             </Stack>

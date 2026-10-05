@@ -83,14 +83,16 @@ export function VideoCard({
     <Link
       component={NextLink}
       href={href}
-      display="block"
       underline="none"
       color="inherit"
-      sx={{ pointerEvents: video != null ? 'auto' : 'none' }}
       aria-label="VideoCard"
       data-testid={video != null ? `VideoCard-${video.id}` : 'VideoCard'}
       onClick={handleClick?.(video?.id)}
       locale={false}
+      sx={{
+        display: 'block',
+        pointerEvents: video != null ? 'auto' : 'none'
+      }}
     >
       <Stack spacing={3}>
         <ImageButton
@@ -180,12 +182,13 @@ export function VideoCard({
               <Typography
                 variant="h6"
                 component="h3"
-                color="primary.contrastText"
-                fontWeight="bold"
-                fontSize={21}
-                lineHeight={27 / 21}
                 sx={{
+                  color: 'primary.contrastText',
+                  fontWeight: 'bold',
+                  fontSize: 21,
+                  lineHeight: 27 / 21,
                   textAlign: 'left',
+
                   textShadow:
                     '0px 4px 4px rgba(0, 0, 0, 0.25), 0px 2px 3px rgba(0, 0, 0, 0.45)'
                 }}
@@ -199,15 +202,17 @@ export function VideoCard({
             )}
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="flex-end"
-              sx={{ minWidth: 0 }}
               spacing={2}
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'flex-end',
+                minWidth: 0
+              }}
             >
               <Typography
                 variant="overline2"
-                color={color}
                 sx={{
+                  color: color,
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
@@ -224,15 +229,17 @@ export function VideoCard({
 
               <Stack
                 direction="row"
-                alignItems="center"
                 spacing={1}
                 sx={{
+                  alignItems: 'center',
                   p: 2,
                   borderRadius: 2,
                   height: 29,
                   color: 'primary.contrastText',
+
                   backgroundColor:
                     active === true ? 'primary.main' : 'rgba(0, 0, 0, 0.5)',
+
                   flexShrink: 0
                 }}
               >
@@ -293,9 +300,11 @@ export function VideoCard({
               color="textPrimary"
               variant="h6"
               component="h3"
-              fontWeight="bold"
-              fontSize={21}
-              lineHeight={27 / 21}
+              sx={{
+                fontWeight: 'bold',
+                fontSize: 21,
+                lineHeight: 27 / 21
+              }}
             >
               {video?.title != null ? (
                 last(video?.title)?.value

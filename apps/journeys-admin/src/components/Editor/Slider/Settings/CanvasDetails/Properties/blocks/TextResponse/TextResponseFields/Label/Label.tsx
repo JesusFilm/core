@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -203,7 +204,12 @@ export function Label(): ReactElement {
 
   return (
     <Stack direction="column" sx={{ p: 4, pt: 0 }} data-testid="Label">
-      <Stack direction="row" alignItems={'center'}>
+      <Stack
+        direction="row"
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <TextField
           id="label"
           name="label"

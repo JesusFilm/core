@@ -52,9 +52,18 @@ export function SubtitleFileUpload({
   }
 
   return (
-    <Stack gap={2}>
+    <Stack
+      sx={{
+        gap: 2
+      }}
+    >
       <Typography variant="subtitle2">Subtitle Files</Typography>
-      <Typography variant="body2" color="text.secondary">
+      <Typography
+        variant="body2"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         You can upload both VTT and SRT files for the same subtitle. Drop files
         together or one at a time.
       </Typography>

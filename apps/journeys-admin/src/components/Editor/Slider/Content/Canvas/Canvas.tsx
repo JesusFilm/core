@@ -22,6 +22,7 @@ import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
 import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
 import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
+import { useEditorLayout } from '../../../EditorLayoutContext'
 import { Hotkeys } from '../../../Hotkeys'
 
 import { CanvasFooter } from './CanvasFooter'
@@ -35,6 +36,7 @@ import { SelectableWrapper } from './SelectableWrapper'
 import {
   CARD_HEIGHT,
   CARD_WIDTH,
+  calculateLayeredScale,
   calculateScale,
   calculateScaledMargin
 } from './utils/calculateDimensions'
@@ -68,20 +70,29 @@ export function Canvas(): ReactElement {
   const { journey } = useJourney()
   const { rtl, locale } = getJourneyRTL(journey)
   const router = useRouter()
+  const { isLayered } = useEditorLayout()
 
   const showSlugEdit =
-    journey?.website === true && activeSlide === ActiveSlide.Content
+    journey?.website === true &&
+    (isLayered || activeSlide === ActiveSlide.Content)
 
   const initialScale =
     typeof window !== 'undefined' && window.innerWidth <= 600 ? 0 : 1
   const [scale, setScale] = useState(initialScale)
 
   useEffect(() => {
-    const handleResize = (): void => setScale(calculateScale(containerRef))
+    const handleResize = (): void =>
+      setScale(
+        isLayered
+          ? calculateLayeredScale(containerRef)
+          : calculateScale(containerRef)
+      )
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+    // recalculate when the slide changes as the canvas container resizes
+    // without a window resize (e.g. the layered view drawer opening)
+  }, [activeSlide, isLayered])
 
   function handleJourneyAppearanceClick(): void {
     dispatch({
@@ -90,7 +101,7 @@ export function Canvas(): ReactElement {
     })
     dispatch({
       type: 'SetActiveSlideAction',
-      activeSlide: ActiveSlide.Content
+      activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
     })
     dispatch({
       type: 'SetSelectedAttributeIdAction',
@@ -133,6 +144,14 @@ export function Canvas(): ReactElement {
       type: 'SetSelectedBlockAction',
       selectedBlock: selectedStep
     })
+    if (isLayered) {
+      // in the layered desktop view, selecting the card reveals the settings
+      // panel rather than navigating to the content slide
+      dispatch({
+        type: 'SetActiveSlideAction',
+        activeSlide: ActiveSlide.Drawer
+      })
+    }
     dispatch({
       type: 'SetSelectedAttributeIdAction',
       selectedAttributeId: `${selectedStep?.id ?? ''}-next-block`
@@ -171,13 +190,17 @@ export function Canvas(): ReactElement {
       }}
       data-testid="EditorCanvas"
       direction="row"
-      alignItems="flex-end"
       sx={{
         height: '100%',
         alignItems: 'center',
         alignSelf: 'center',
         justifyContent: 'center',
-        flexGrow: { xs: 1, md: activeSlide === ActiveSlide.Content ? 1 : 0 },
+
+        flexGrow: {
+          xs: 1,
+          md: isLayered || activeSlide === ActiveSlide.Content ? 1 : 0
+        },
+
         transition: (theme) =>
           theme.transitions.create('flex-grow', { duration: 300 })
       }}
@@ -186,29 +209,42 @@ export function Canvas(): ReactElement {
         <Stack
           direction="column"
           className="CanvasStack"
-          alignItems={{ xs: 'center', md: 'flex-end' }}
-          gap={{ xs: 0, sm: 1.5 }}
           sx={{
+            alignItems: { xs: 'center', md: 'flex-end' },
+            gap: { xs: 0, sm: 1.5 },
             flexGrow: { xs: 1, md: 0 },
             height: { xs: '100%', md: 'auto' },
             pb: { xs: 5, md: 0 },
             px: { xs: 3, md: 5 },
-            justifyContent: 'center'
+            justifyContent: 'center',
+
+            // in the layered view the drawer paper is pointer-events: none so
+            // empty areas around the card close the drawer; the card column
+            // itself stays interactive
+            pointerEvents: isLayered ? 'auto' : undefined
           }}
         >
           <CardSlugEdit visible={showSlugEdit} />
           <Box
             data-testId="CanvasContainer"
             sx={{
+              // the layered view's card starts entering immediately (no
+              // pre-delay) and completes its motion in ~500ms; the slider
+              // keeps its slower staggered entrance
               animation: (theme) =>
-                `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
+                isLayered
+                  ? `${fadeIn} 500ms ${theme.transitions.easing.easeInOut} 0s backwards`
+                  : `${fadeIn} ${theme.transitions.duration.standard}ms ${theme.transitions.easing.easeInOut} 0.5s backwards`,
               position: 'relative',
               maxHeight: CARD_HEIGHT,
               width: CARD_WIDTH,
               transform: `scale(${scale})`,
               transformOrigin: {
                 xs: 'center',
-                md: activeSlide === ActiveSlide.JourneyFlow ? 'right' : 'center'
+                md:
+                  !isLayered && activeSlide === ActiveSlide.JourneyFlow
+                    ? 'right'
+                    : 'center'
               },
               my: `${calculateScaledMargin(CARD_HEIGHT, scale)}`,
               mx: `${calculateScaledMargin(CARD_WIDTH, scale)}`,
@@ -280,17 +316,18 @@ export function Canvas(): ReactElement {
                     >
                       <Stack
                         ref={nodeRef}
-                        justifyContent="center"
+                        data-testid={`step-${selectedStep.id}`}
                         sx={{
+                          justifyContent: 'center',
                           position: 'absolute',
                           top: 0,
                           right: 0,
                           bottom: 0,
                           left: 0,
+
                           transition: (theme) =>
                             theme.transitions.create('opacity')
                         }}
-                        data-testid={`step-${selectedStep.id}`}
                       >
                         <ThemeProvider
                           themeName={ThemeName.journeyUi}
@@ -330,7 +367,7 @@ export function Canvas(): ReactElement {
                                 ButtonWrapper: InlineEditWrapper,
                                 RadioQuestionWrapper: InlineEditWrapper,
                                 RadioOptionWrapper: InlineEditWrapper,
-                                MultiselectQuestionWrapper: InlineEditWrapper,
+                                MultiselectWrapper: InlineEditWrapper,
                                 MultiselectOptionWrapper: InlineEditWrapper,
                                 TextResponseWrapper: InlineEditWrapper,
                                 SignUpWrapper: InlineEditWrapper,

@@ -1,4 +1,6 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
+import { useMutation } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -88,17 +90,15 @@ export function TeamUpdateDialog({
         }
       )
     } catch (error) {
-      if (error instanceof ApolloError) {
-        if (error.networkError != null) {
-          enqueueSnackbar(
-            t('Failed to update the team. Reload the page or try again.'),
-            {
-              variant: 'error',
-              preventDuplicate: true
-            }
-          )
-          return
-        }
+      if (LinkError.is(error)) {
+        enqueueSnackbar(
+          t('Failed to update the team. Reload the page or try again.'),
+          {
+            variant: 'error',
+            preventDuplicate: true
+          }
+        )
+        return
       }
       if (error instanceof Error) {
         enqueueSnackbar(error.message, {
@@ -178,14 +178,22 @@ export function TeamUpdateDialog({
                 placeholder={values.title}
               />
 
-              <Stack direction="row" spacing={3} color="text.secondary">
+              <Stack
+                direction="row"
+                spacing={3}
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 <InformationCircleContainedIcon
                   sx={{ color: 'secondary.light' }}
                 />
                 <Typography
                   variant="caption"
-                  color="secondary.light"
                   gutterBottom
+                  sx={{
+                    color: 'secondary.light'
+                  }}
                 >
                   {t(
                     'When visitors click the info icon, they will see text from the Legal Name box. This text can be a mission name, website title, or other public information.'

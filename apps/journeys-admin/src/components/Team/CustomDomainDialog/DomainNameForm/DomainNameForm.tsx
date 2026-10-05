@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { CombinedGraphQLErrors, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
@@ -79,7 +80,7 @@ export function DomainNameForm({
         .required(t('Domain name is a required field'))
         .matches(
           // pulled from isDomainValid function
-          // apis/api-journeys-modern/src/schema/customDomain/service.ts
+          // apis/api-journeys/src/schema/customDomain/service.ts
           /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z]$/,
           t('Must be a valid URL')
         )
@@ -119,7 +120,9 @@ export function DomainNameForm({
         if (createCustomDomain?.customDomainCreate != null)
           cache.modify({
             fields: {
-              customDomains(existingCustomDomains = []) {
+              customDomains(existingCustomDomains = [] as const) {
+                if (!Array.isArray(existingCustomDomains))
+                  return existingCustomDomains
                 const newCustomDomainRef = cache.writeFragment({
                   data: createCustomDomain.customDomainCreate,
                   fragment: gql`
@@ -167,7 +170,10 @@ export function DomainNameForm({
             'This domain is already connected to another NextSteps Team'
           )
         }
-        if (e.graphQLErrors?.[0]?.extensions?.code === 'FORBIDDEN') {
+        if (
+          CombinedGraphQLErrors.is(e) &&
+          e.errors[0]?.extensions?.code === 'FORBIDDEN'
+        ) {
           errorMessage = t(
             'You do not have the required permissions to set a custom domain, please contact your team manager'
           )

@@ -132,8 +132,8 @@ function CardsPreviewItem({
               }}
             >
               <StepHeader
-                steps={steps as unknown as Array<TreeBlock<StepFields>>}
-                selectedStep={step as unknown as TreeBlock<StepFields>}
+                steps={steps}
+                selectedStep={step}
                 sx={{ mt: 2, px: 3 }}
               />
               <ThemeProvider
@@ -151,9 +151,7 @@ function CardsPreviewItem({
                   }}
                 />
               </ThemeProvider>
-              <StepFooter
-                selectedStep={step as unknown as TreeBlock<StepFields>}
-              />
+              <StepFooter selectedStep={step} />
             </Box>
           </ThemeProvider>
         </FramePortal>
@@ -236,10 +234,10 @@ export function CardsPreview({
           }}
         >
           <Stack
-            alignItems="center"
-            justifyContent="center"
-            gap={2}
             sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
               width: CONTAINER_WIDTH,
               height: CONTAINER_HEIGHT,
               borderRadius: 2,
@@ -249,8 +247,10 @@ export function CardsPreview({
           >
             <Typography
               variant="overline2"
-              color="background.paper"
-              textAlign="center"
+              sx={{
+                color: 'background.paper',
+                textAlign: 'center'
+              }}
             >
               {t('{{count}} more cards', {
                 count: steps.length - slidesToRender.length

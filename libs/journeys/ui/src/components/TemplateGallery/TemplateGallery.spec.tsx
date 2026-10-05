@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
@@ -17,8 +17,8 @@ import {
 
 import { TemplateGallery } from '.'
 
-vi.mock('@core/journeys/ui/useNavigationState', () => ({
-  useNavigationState: vi.fn(() => false)
+vi.mock('@core/journeys/ui/useRouteChangeState', () => ({
+  useRouteChangeState: vi.fn(() => false)
 }))
 
 vi.mock('@mui/material/useMediaQuery', () => ({

@@ -97,7 +97,7 @@ export async function deleteUserData(
   // Create audit log FIRST — before any irreversible action so there is
   // always a durable record of the deletion attempt even if a subsequent
   // step fails.
-  let auditLog: { id: string } | null = null
+  let auditLog: { id: string } | null
   try {
     auditLog = await prisma.userDeleteAuditLog.create({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

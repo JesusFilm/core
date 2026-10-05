@@ -4,9 +4,8 @@ import {
   GoogleAuthProvider,
   UserCredential,
   browserPopupRedirectResolver,
-  getAuth,
   inMemoryPersistence,
-  setPersistence,
+  initializeAuth,
   signInWithPopup,
   useDeviceLanguage
 } from 'firebase/auth'
@@ -19,14 +18,28 @@ function getFirebaseApp(): FirebaseApp {
   return initializeApp(clientConfig)
 }
 
+let auth: Auth | undefined
+
 export function getFirebaseAuth(): Auth {
-  const auth = getAuth(getFirebaseApp())
+  if (auth != null) return auth
 
   // App relies only on server token. We make sure Firebase does not store
   // credentials in the browser.
   // See: https://github.com/awinogrodzki/next-firebase-auth-edge/issues/143
-  void setPersistence(auth, inMemoryPersistence)
-
+  //
+  // initializeAuth instead of getAuth() + setPersistence: getAuth() still
+  // instantiates its IndexedDB persistence, whose visibilitychange handler in
+  // @firebase/auth 1.13.4 closes the database while the sign-in popup has
+  // focus and fails sign-in with "Database is closing/hidden".
+  // See: https://github.com/firebase/firebase-js-sdk/issues/10264
+  // On the server browserPopupRedirectResolver is a non-class stub and
+  // initializeAuth rejects it ("Expected a class definition").
+  auth = initializeAuth(getFirebaseApp(), {
+    persistence: inMemoryPersistence,
+    ...(typeof window === 'undefined'
+      ? {}
+      : { popupRedirectResolver: browserPopupRedirectResolver })
+  })
   return auth
 }
 

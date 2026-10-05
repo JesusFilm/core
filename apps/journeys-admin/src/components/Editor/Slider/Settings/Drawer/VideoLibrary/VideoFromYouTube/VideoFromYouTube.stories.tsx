@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { SWRConfig } from 'swr'
 
-import { InstantSearchTestWrapper } from '@core/journeys/ui/algolia/InstantSearchTestWrapper'
+import { InstantSearchTestWrapper } from '@core/journeys/ui/test/InstantSearchTestWrapper'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import {

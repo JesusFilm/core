@@ -5,8 +5,11 @@ import { type MockedFunction } from 'vitest'
 import { PasswordResetPage } from './PasswordResetPage'
 
 vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(),
   sendPasswordResetEmail: vi.fn()
+}))
+
+vi.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({ currentUser: null }))
 }))
 
 describe('PasswordResetPage', () => {

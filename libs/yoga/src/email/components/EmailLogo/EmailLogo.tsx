@@ -1,5 +1,5 @@
-import { Img } from '@react-email/components'
 import { ReactElement } from 'react'
+import { Img } from 'react-email'
 
 export interface EmailLogoProps {
   logo?: 'JesusFilmOne' | 'NextSteps'

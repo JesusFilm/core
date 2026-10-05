@@ -44,7 +44,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx tsc -b apps/video-importer-e2e/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/video-importer-e2e/tsconfig.ts7.json"
       }
     },
     "lint": {

@@ -112,7 +112,12 @@ export function EmbedJourneyDialog({
             </AccordionDetails>
           </Accordion>
         )}
-        <Stack direction="column" justifyContent="start">
+        <Stack
+          direction="column"
+          sx={{
+            justifyContent: 'start'
+          }}
+        >
           <TextField
             id="embed-url"
             multiline
@@ -120,14 +125,21 @@ export function EmbedJourneyDialog({
             defaultValue={iframeLink}
             sx={{ backgroundColor: 'rgba(239, 239, 239, 0.4)' }}
           />
-          <Typography variant="caption" mt="16px">
+          <Typography
+            variant="caption"
+            sx={{
+              mt: '16px'
+            }}
+          >
             {t('By embedding a Journey to your site, you agree to the ')}
             <Link
               href="https://www.cru.org/us/en/about/terms-of-use.html"
               underline="none"
               target="_blank"
               rel="noopener"
-              color="primary.main"
+              sx={{
+                color: 'primary.main'
+              }}
             >
               {t('Terms of agreement')}
             </Link>

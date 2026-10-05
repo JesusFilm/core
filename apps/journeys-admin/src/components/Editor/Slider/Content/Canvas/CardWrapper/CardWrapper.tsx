@@ -73,16 +73,16 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
           />
           {blocks.length === 0 && !lgUp && (
             <Stack
+              spacing={5}
               sx={{
+                alignItems: 'center',
+                justifyContent: 'center',
                 position: 'absolute',
                 top: 60,
                 bottom: 130,
                 right: 20,
                 left: 20
               }}
-              alignItems="center"
-              justifyContent="center"
-              spacing={5}
             >
               <Typography>{t('Fill this card with content')}</Typography>
               <Trans t={t}>
@@ -96,10 +96,12 @@ export function CardWrapper({ block, children }: WrapperProps): ReactElement {
                 </Button>
                 <Typography
                   variant="body2"
-                  display="flex"
                   flex-direction="column"
-                  justifyContent="top"
-                  height="24px"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'top',
+                    height: '24px'
+                  }}
                 >
                   or add blocks using the
                   <Plus2Icon

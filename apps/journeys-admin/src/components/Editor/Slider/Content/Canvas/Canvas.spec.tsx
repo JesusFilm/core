@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -24,6 +24,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { TestEditorState } from '../../../../../libs/TestEditorState'
 import { ThemeProvider } from '../../../../ThemeProvider'
+import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 
 import { Canvas } from '.'
 
@@ -90,7 +91,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -125,7 +126,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -142,6 +143,48 @@ describe('Canvas', () => {
     expect(
       getByText('selectedAttributeId: step0.id-next-block')
     ).toBeInTheDocument()
+  })
+
+  it('should open the settings drawer on card click in the layered layout', () => {
+    const { getByTestId, getByText, container } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <ThemeProvider>
+            <JourneyProvider
+              value={{
+                journey: {
+                  id: 'journeyId',
+                  themeMode: ThemeMode.dark,
+                  themeName: ThemeName.base,
+                  language: {
+                    __typename: 'Language',
+                    id: '529',
+                    bcp47: 'en',
+                    iso3: 'eng'
+                  }
+                } as unknown as Journey,
+                renderMode: 'admin'
+              }}
+            >
+              <EditorProvider initialState={initialState}>
+                <EditorLayoutProvider value="layered">
+                  <TestEditorState />
+                  <Canvas />
+                </EditorLayoutProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    // the card column re-enables pointer events so it stays interactive while
+    // the drawer paper is pointer-events: none (empty areas close the drawer)
+    expect(container.querySelector('.CanvasStack')).toHaveStyle(
+      'pointer-events: auto'
+    )
+    fireEvent.click(getByTestId('CanvasContainer'))
+    expect(getByText('selectedBlock: step0.id')).toBeInTheDocument()
+    expect(getByText('activeSlide: 2')).toBeInTheDocument()
   })
 
   it('should not select step if mouse down target element is not the card', async () => {
@@ -162,7 +205,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -212,7 +255,7 @@ describe('Canvas', () => {
                   },
                   chatButtons: []
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
@@ -253,7 +296,7 @@ describe('Canvas', () => {
                   iso3: 'eng'
                 }
               } as unknown as Journey,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <EditorProvider initialState={initialState}>
@@ -306,7 +349,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -331,7 +374,7 @@ describe('Canvas', () => {
       slug: null,
       children: [
         {
-          id: 'multiselectQuestion1.id',
+          id: 'multiselect1.id',
           __typename: 'MultiselectBlock',
           parentBlockId: 'cardMulti.id',
           parentOrder: 0,
@@ -341,7 +384,7 @@ describe('Canvas', () => {
             {
               id: 'multiselectOption1.id',
               __typename: 'MultiselectOptionBlock',
-              parentBlockId: 'multiselectQuestion1.id',
+              parentBlockId: 'multiselect1.id',
               parentOrder: 0,
               label: 'Option 1',
               children: []
@@ -349,7 +392,7 @@ describe('Canvas', () => {
             {
               id: 'multiselectOption2.id',
               __typename: 'MultiselectOptionBlock',
-              parentBlockId: 'multiselectQuestion1.id',
+              parentBlockId: 'multiselect1.id',
               parentOrder: 1,
               label: 'Option 2',
               children: []
@@ -376,7 +419,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider
@@ -396,7 +439,7 @@ describe('Canvas', () => {
     const iframe = baseElement.getElementsByTagName('iframe')[0]
     await waitFor(() => {
       const el = iframe?.contentDocument?.querySelector(
-        '[data-testid="JourneysMultiselectQuestionList-multiselectQuestion1.id"]'
+        '[data-testid="JourneysMultiselectList-multiselect1.id"]'
       )
       expect(el).toBeTruthy()
     })
@@ -432,7 +475,7 @@ describe('Canvas', () => {
                     iso3: 'eng'
                   }
                 } as unknown as Journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider

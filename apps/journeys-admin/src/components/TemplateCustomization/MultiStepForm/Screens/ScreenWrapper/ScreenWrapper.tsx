@@ -32,30 +32,39 @@ export function ScreenWrapper({
 }: ScreenWrapperProps): ReactElement {
   return (
     <Stack
-      alignItems="center"
       data-testid="ScreenWrapper"
       sx={{
+        alignItems: 'center',
         px: { xs: 6, sm: 20 },
         overflow: 'visible'
       }}
     >
-      <Stack alignItems="center" sx={{ pb: { xs: 5, sm: 8 } }}>
+      <Stack
+        sx={{
+          alignItems: 'center',
+          pb: { xs: 5, sm: 8 }
+        }}
+      >
         <Box aria-label="title">
           <Typography
             variant="h3"
-            display={{ xs: 'none', sm: 'block' }}
             align="center"
             gutterBottom
-            sx={{ mb: { xs: 0, sm: 2 } }}
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              mb: { xs: 0, sm: 2 }
+            }}
           >
             {title}
           </Typography>
           <Typography
             variant="h5"
-            display={{ xs: 'block', sm: 'none' }}
             align="center"
             gutterBottom
-            sx={{ mb: { xs: 0, sm: 2 } }}
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              mb: { xs: 0, sm: 2 }
+            }}
           >
             {mobileTitle ?? title}
           </Typography>
@@ -63,17 +72,21 @@ export function ScreenWrapper({
         <Box aria-label="subtitle">
           <Typography
             variant="body1"
-            display={{ xs: 'none', sm: 'block' }}
-            color="text.secondary"
             align="center"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              color: 'text.secondary'
+            }}
           >
             {subtitle}
           </Typography>
           <Typography
             variant="body2"
-            display={{ xs: 'block', sm: 'none' }}
-            color="text.secondary"
             align="center"
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              color: 'text.secondary'
+            }}
           >
             {mobileSubtitle ?? subtitle}
           </Typography>

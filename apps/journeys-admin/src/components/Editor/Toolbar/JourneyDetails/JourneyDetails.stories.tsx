@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 import Box from '@mui/material/Box'
 import { Meta, StoryFn, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement } from 'react'
@@ -25,7 +25,10 @@ const JourneyDetailsStory: Meta<typeof JourneyDetails> = {
   }
 }
 
-const getLanguagesMock: MockedResponse<GetLanguages, GetLanguagesVariables> = {
+const getLanguagesMock: MockLink.MockedResponse<
+  GetLanguages,
+  GetLanguagesVariables
+> = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -70,7 +73,7 @@ const JourneyDetailsComponent = ({
             'Some extra long description where it will cause ellipsis to appear I hope this is long enough',
           template
         },
-        variant: 'admin'
+        renderMode: 'admin'
       }}
     >
       <Box
@@ -114,7 +117,13 @@ export const Ellipsis = {
   },
   decorators: [
     (Story: StoryFn<typeof JourneyDetails>, context) => (
-      <Box width={400}>{Story(context.args, context)}</Box>
+      <Box
+        sx={{
+          width: 400
+        }}
+      >
+        {Story(context.args, context)}
+      </Box>
     )
   ]
 }

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent } from 'storybook/test'
 
@@ -39,7 +39,7 @@ const Template: StoryObj<typeof HostAvatarsButton> = {
         <JourneyProvider
           value={{
             journey: { ...journey, host: { ...defaultHost, ...args } },
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <HostAvatarsButton />

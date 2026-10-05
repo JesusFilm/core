@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { screen, userEvent } from 'storybook/test'
 
@@ -85,7 +85,7 @@ const Template: StoryObj<typeof Action> = {
   render: ({ ...args }) => {
     return (
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <EditorProvider
             initialState={{
               ...args

@@ -1,6 +1,10 @@
 import omit from 'lodash/omit'
 
-import { Country, CountryLanguage } from '@core/prisma/languages/client'
+import {
+  Country,
+  CountryLanguage,
+  LanguageRole
+} from '@core/prisma/languages/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
@@ -52,6 +56,18 @@ const COUNTRIES_QUERY = graphql(`
       population
       languageCount
       languageHavingMediaCount
+    }
+  }
+`)
+
+const ADMIN_COUNTRIES_QUERY = graphql(`
+  query AdminCountries($languageId: ID, $primary: Boolean, $term: String) {
+    adminCountries(term: $term) {
+      id
+      name(languageId: $languageId, primary: $primary) {
+        value
+        primary
+      }
     }
   }
 `)
@@ -327,5 +343,81 @@ describe('countries', () => {
         languageHavingMediaCount: 1
       }
     ])
+  })
+})
+
+describe('adminCountries', () => {
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    }
+  })
+
+  beforeEach(() => {
+    prismaMock.userLanguageRole.findUnique.mockResolvedValue({
+      id: 'roleId',
+      userId: 'id',
+      roles: [LanguageRole.publisher]
+    })
+  })
+
+  afterEach(async () => {
+    await cache.invalidate([{ typename: 'Language' }, { typename: 'Country' }])
+  })
+
+  it('should search admin countries by country name or id prefix', async () => {
+    prismaMock.country.findMany.mockResolvedValue([result])
+
+    await authClient({
+      document: ADMIN_COUNTRIES_QUERY,
+      variables: {
+        languageId: '529',
+        primary: true,
+        term: 'AD'
+      }
+    })
+
+    expect(prismaMock.country.findMany).toHaveBeenCalledWith({
+      include: {
+        name: {
+          include: {
+            language: true
+          },
+          where: {
+            OR: [{ languageId: '529' }, { primary: true }]
+          },
+          orderBy: {
+            primary: 'desc'
+          }
+        }
+      },
+      where: {
+        OR: [
+          { id: { startsWith: 'AD' } },
+          {
+            name: {
+              some: {
+                value: {
+                  contains: 'AD',
+                  mode: 'insensitive'
+                }
+              }
+            }
+          }
+        ]
+      }
+    })
+  })
+
+  it('should reject unauthenticated admin country search', async () => {
+    const client = getClient()
+    const data = (await client({
+      document: ADMIN_COUNTRIES_QUERY
+    })) as { data: null; errors?: Array<{ message: string }> }
+
+    expect(data).toHaveProperty('data', null)
+    expect(data.errors?.[0].message).toBe(
+      'Not authorized to resolve Query.adminCountries'
+    )
   })
 })

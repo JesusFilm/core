@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -8,7 +8,9 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { ArchiveActiveJourneys } from '../../../../__generated__/ArchiveActiveJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { TrashActiveJourneys } from '../../../../__generated__/TrashActiveJourneys'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -45,17 +47,20 @@ export function ActiveTemplateList({
   })
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  const [archive] = useMutation(ARCHIVE_ACTIVE_JOURNEYS, {
-    update(_cache, { data }) {
-      if (data?.journeysArchive != null) {
-        enqueueSnackbar(t('Templates Archived'), {
-          variant: 'success'
-        })
-        void refetch()
+  const [archive] = useMutation<ArchiveActiveJourneys>(
+    ARCHIVE_ACTIVE_JOURNEYS,
+    {
+      update(_cache, { data }) {
+        if (data?.journeysArchive != null) {
+          enqueueSnackbar(t('Templates Archived'), {
+            variant: 'success'
+          })
+          void refetch()
+        }
       }
     }
-  })
-  const [trash] = useMutation(TRASH_ACTIVE_JOURNEYS, {
+  )
+  const [trash] = useMutation<TrashActiveJourneys>(TRASH_ACTIVE_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Templates Trashed'), {
@@ -165,7 +170,7 @@ export function ActiveTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('No templates to display.')}
+                {t('No Templates to display.')}
               </Typography>
             </Box>
           )}
@@ -173,7 +178,11 @@ export function ActiveTemplateList({
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
@@ -181,7 +190,7 @@ export function ActiveTemplateList({
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
           {t(
-            'You can archive a template to to delist it from the Template Library.'
+            'You can archive a Template to delist it from the Template Library.'
           )}
         </Typography>
       </Stack>
@@ -201,7 +210,7 @@ export function ActiveTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to archive all active templates immediately?'
+              'Are you sure you would like to archive all active Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -222,7 +231,7 @@ export function ActiveTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to trash all active templates immediately?'
+              'Are you sure you would like to trash all active Templates immediately?'
             )}
           </Typography>
         </Dialog>

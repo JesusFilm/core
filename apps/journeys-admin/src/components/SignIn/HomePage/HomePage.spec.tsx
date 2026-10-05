@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { fetchSignInMethodsForEmail } from 'firebase/auth'
 import { type MockedFunction } from 'vitest'
@@ -6,8 +6,13 @@ import { type MockedFunction } from 'vitest'
 import { HomePage } from './HomePage'
 
 vi.mock('firebase/auth', () => ({
-  getAuth: vi.fn(),
   fetchSignInMethodsForEmail: vi.fn()
+}))
+
+vi.mock('../../../libs/auth', () => ({
+  getFirebaseAuth: vi.fn(() => ({ currentUser: null })),
+  login: vi.fn(),
+  loginWithCredential: vi.fn()
 }))
 
 describe('Home', () => {
@@ -22,7 +27,7 @@ describe('Home', () => {
     )
   })
 
-  it('should render google and facebook login buttons', () => {
+  it('should render google and okta login buttons', () => {
     const { getByRole } = render(
       <MockedProvider>
         <HomePage />
@@ -32,7 +37,7 @@ describe('Home', () => {
       getByRole('button', { name: 'Continue with Google' })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: 'Continue with Facebook' })
+      getByRole('button', { name: 'Continue with Okta' })
     ).toBeInTheDocument()
   })
 

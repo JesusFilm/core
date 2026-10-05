@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
@@ -95,7 +96,7 @@ const renderEditableText = (
                     parent.querySelectorAll('[contenteditable="true"]')
                   )
                 : []
-            const index = editables.indexOf(e.currentTarget as HTMLElement)
+            const index = editables.indexOf(e.currentTarget)
             const nextIndex = e.shiftKey ? index - 1 : index + 1
             const nextEl = editables[nextIndex]
             if (nextEl != null) {

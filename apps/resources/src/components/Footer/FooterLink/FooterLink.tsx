@@ -37,9 +37,13 @@ export function FooterLink({
       underline={underline}
       target={target}
       rel={noFollow ? 'nofollow noopener' : 'noopener'}
-      color="text.primary"
       data-testid="FooterLink"
-      sx={src != null ? sx : undefined}
+      sx={[
+        {
+          color: 'text.primary'
+        },
+        ...(src != null && sx != null ? (Array.isArray(sx) ? sx : [sx]) : [])
+      ]}
     >
       {src == null ? (
         <Typography variant={variant} sx={sx}>

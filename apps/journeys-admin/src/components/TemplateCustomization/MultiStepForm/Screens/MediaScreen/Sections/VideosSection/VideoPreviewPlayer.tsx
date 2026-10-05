@@ -118,7 +118,11 @@ export function VideoPreviewPlayer({
   // No playable source: show video skeleton placeholder with icon and helper text
   if (videoSource == null) {
     return (
-      <Stack gap={1}>
+      <Stack
+        sx={{
+          gap: 1
+        }}
+      >
         <Box
           role="region"
           aria-label="Video preview placeholder"
@@ -158,7 +162,12 @@ export function VideoPreviewPlayer({
             />
           </Box>
         </Box>
-        <Typography variant="caption" color="text.secondary">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {t('Upload a video to see a preview here')}
         </Typography>
       </Stack>

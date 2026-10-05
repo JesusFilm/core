@@ -69,8 +69,11 @@ export function EmailAction({ ref }: EmailActionProps): ReactElement {
     <>
       <Typography
         variant="caption"
-        color="secondary.main"
-        sx={{ mt: 1, mb: 3 }}
+        sx={{
+          color: 'secondary.main',
+          mt: 1,
+          mb: 3
+        }}
       >
         {t('Open client with the provided email in the to field.')}
       </Typography>

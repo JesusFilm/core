@@ -97,15 +97,52 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { term, ids, where }) => {
       const filter: Prisma.CountryWhereInput = {}
-      if (term != null) {
+      const searchTerm = term?.trim()
+      if (searchTerm != null && searchTerm.length > 0) {
         filter.name = {
           some: {
             value: {
-              contains: parseFullTextSearch(term),
+              contains: parseFullTextSearch(searchTerm),
               mode: 'insensitive'
             }
           }
         }
+      }
+      if (ids != null) {
+        filter.id = { in: ids }
+      }
+      filter.updatedAt = toPrismaDateTimeFilter(where?.updatedAt)
+      return await prisma.country.findMany({
+        ...query,
+        where: filter
+      })
+    }
+  }),
+  adminCountries: t.withAuth({ isPublisher: true }).prismaField({
+    type: ['Country'],
+    nullable: false,
+    args: {
+      term: t.arg.string({ required: false }),
+      ids: t.arg.idList({ required: false }),
+      where: t.arg({ type: CountriesFilter, required: false })
+    },
+    resolve: async (query, _parent, { term, ids, where }) => {
+      const filter: Prisma.CountryWhereInput = {}
+      const searchTerm = term?.trim()
+      if (searchTerm != null && searchTerm.length > 0) {
+        filter.OR = [
+          { id: { startsWith: searchTerm } },
+          {
+            name: {
+              some: {
+                value: {
+                  contains: searchTerm,
+                  mode: 'insensitive'
+                }
+              }
+            }
+          }
+        ]
       }
       if (ids != null) {
         filter.id = { in: ids }

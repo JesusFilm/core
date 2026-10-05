@@ -1,6 +1,5 @@
 'use client'
-
-import { useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Link from 'next/link'
@@ -71,6 +70,12 @@ export function VideoTabView({
       value: 'editions',
       count: data?.adminVideo.videoEditions.length,
       href: `/videos/${videoId}/editions`
+    },
+    {
+      label: 'Restrictions',
+      value: 'restrictions',
+      count: null,
+      href: `/videos/${videoId}/restrictions`
     },
     {
       label: 'Troubleshooting',

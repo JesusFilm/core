@@ -26,7 +26,7 @@ describe('JourneyDetails', () => {
   const noDescriptionJourney: JourneyFields = {
     ...mockJourney,
     description: ''
-  } as unknown as JourneyFields
+  }
 
   it('should display title, globe, dot, language and description', () => {
     render(
@@ -64,7 +64,7 @@ describe('JourneyDetails', () => {
     const templateJourney: JourneyFields = {
       ...mockJourney,
       template: true
-    } as unknown as JourneyFields
+    }
 
     render(
       <JourneyProvider value={{ journey: templateJourney }}>

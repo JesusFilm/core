@@ -93,6 +93,11 @@ export interface PublicGalleryPageItem {
   title: string
   description?: string | null
   slug: string
+  /**
+   * When true, the "Use" action opens the template customization flow
+   * instead of the admin "Copy to team" deep link.
+   */
+  customizable?: boolean | null
   /** ISO timestamp; used to derive the "Month Year" meta label. */
   createdAt?: string | null
   /** Language name entries (primary + local) used for the meta label. */
@@ -100,14 +105,25 @@ export interface PublicGalleryPageItem {
   image?: { src: string | null; alt: string } | null
 }
 
+/**
+ * Embedded media shown in the page's media section. Tagged union mirroring
+ * the API's TemplateGalleryPageMedia: `mux` renders an HLS player from the
+ * denormalized playback ID; `link` renders the server-normalized embed URL
+ * in a host-aware iframe (see `EmbedIframe`). Each app maps its generated
+ * GraphQL media type into this neutral shape.
+ */
+export type PublicGalleryPageMedia =
+  | { type: 'mux'; muxPlaybackId: string }
+  | { type: 'link'; embedUrl: string }
+
 export interface PublicGalleryPageData {
   title: string
   description: string
   creatorName: string
   creatorImageSrc?: string | null
   creatorImageAlt?: string | null
-  /** Optional hero/cover media (a Strategy embed slug/url). */
-  mediaUrl?: string | null
+  /** Optional embedded media; null/omitted hides the media section. */
+  media?: PublicGalleryPageMedia | null
   items: ReadonlyArray<PublicGalleryPageItem>
 }
 

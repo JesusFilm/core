@@ -14,9 +14,11 @@ describe('TextFieldForm', () => {
         label="Navigate to..."
         initialValue="Default Value"
         placeholder="Placeholder Value"
-        inputProps={{
-          'data-testid': 'TextField form',
-          'aria-label': 'Search'
+        slotProps={{
+          htmlInput: {
+            'data-testid': 'TextField form',
+            'aria-label': 'Search'
+          }
         }}
         onSubmit={vi.fn()}
         endIcon={<Search1Icon />}

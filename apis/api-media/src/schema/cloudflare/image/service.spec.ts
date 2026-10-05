@@ -1,7 +1,6 @@
 import Cloudflare from 'cloudflare'
 import { APIPromise } from 'cloudflare/core'
 import clone from 'lodash/clone'
-import { Response } from 'node-fetch'
 import { vi } from 'vitest'
 import { mockDeep } from 'vitest-mock-extended'
 
@@ -17,7 +16,9 @@ const mockCloudflare = mockDeep<Cloudflare>()
 
 vi.mock('cloudflare', () => ({
   __esModule: true,
-  default: vi.fn(() => mockCloudflare)
+  default: vi.fn(function () {
+    return mockCloudflare
+  })
 }))
 
 describe('ImageService', () => {

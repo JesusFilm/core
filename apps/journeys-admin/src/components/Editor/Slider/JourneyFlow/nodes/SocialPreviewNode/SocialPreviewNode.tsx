@@ -20,6 +20,7 @@ import { isIOSTouchScreen } from '@core/shared/ui/deviceUtils'
 
 import { Tooltip } from '../../../../../Tooltip'
 import { getReactflowTooltipOffset } from '../../../../../Tooltip/utils/getReactflowTooltipOffset'
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 import { useUpdateEdge } from '../../libs/useUpdateEdge'
 import { BaseNode, HandleVariant } from '../BaseNode'
 
@@ -36,6 +37,7 @@ export function SocialPreviewNode(): ReactElement {
     dispatch,
     state: { activeContent, activeSlide, showAnalytics }
   } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   useEffect(() => {
     const timeout = showTooltip
@@ -56,7 +58,7 @@ export function SocialPreviewNode(): ReactElement {
       dispatch({ type: 'SetSelectedStepAction', selectedStep: undefined })
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.JourneyFlow
+        activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.JourneyFlow
       })
       dispatch({
         type: 'SetActiveContentAction',
@@ -65,7 +67,7 @@ export function SocialPreviewNode(): ReactElement {
     } else {
       dispatch({
         type: 'SetActiveSlideAction',
-        activeSlide: ActiveSlide.Content
+        activeSlide: isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
       })
     }
   }
@@ -134,28 +136,36 @@ export function SocialPreviewNode(): ReactElement {
           >
             <Stack
               direction="row"
-              height="30px"
-              justifyContent="space-between"
-              alignItems="center"
               spacing={1}
+              sx={{
+                height: '30px',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
               <Box
-                width={13}
-                height={13}
-                borderRadius={3.25}
                 sx={{
+                  width: 13,
+                  height: 13,
+                  borderRadius: 3.25,
+
                   bgcolor: ({ palette }) =>
                     showAnalytics === true
                       ? alpha(palette.secondary.dark, 0.1)
                       : 'background.default'
                 }}
               />
-              <Box flexGrow={1}>
+              <Box
+                sx={{
+                  flexGrow: 1
+                }}
+              >
                 <Box
-                  width={45}
-                  height={9}
-                  borderRadius={2}
                   sx={{
+                    width: 45,
+                    height: 9,
+                    borderRadius: 2,
+
                     bgcolor: ({ palette }) =>
                       showAnalytics === true
                         ? alpha(palette.secondary.dark, 0.1)
@@ -164,10 +174,11 @@ export function SocialPreviewNode(): ReactElement {
                 />
               </Box>
               <Box
-                width={9}
-                height={9}
-                borderRadius={2}
                 sx={{
+                  width: 9,
+                  height: 9,
+                  borderRadius: 2,
+
                   bgcolor: ({ palette }) =>
                     showAnalytics === true
                       ? alpha(palette.secondary.dark, 0.1)
@@ -186,11 +197,12 @@ export function SocialPreviewNode(): ReactElement {
               {journey?.primaryImageBlock?.src == null ? (
                 <Box
                   data-testid="SocialPreviewPostEmpty"
-                  display="block"
-                  width={118.5}
-                  height={90}
-                  borderRadius={1}
                   sx={{
+                    display: 'block',
+                    width: 118.5,
+                    height: 90,
+                    borderRadius: 1,
+
                     bgcolor: ({ palette }) =>
                       showAnalytics === true
                         ? alpha(palette.secondary.dark, 0.1)
@@ -198,7 +210,13 @@ export function SocialPreviewNode(): ReactElement {
                   }}
                 />
               ) : (
-                <Box width={118.5} height={90} sx={{ position: 'relative' }}>
+                <Box
+                  sx={{
+                    width: 118.5,
+                    height: 90,
+                    position: 'relative'
+                  }}
+                >
                   <Image
                     src={journey.primaryImageBlock.src}
                     alt={journey.primaryImageBlock.alt ?? ''}
@@ -218,15 +236,21 @@ export function SocialPreviewNode(): ReactElement {
                 display: 'flex'
               }}
             >
-              <Stack gap={0.75} sx={{ mt: 1 }}>
+              <Stack
+                sx={{
+                  gap: 0.75,
+                  mt: 1
+                }}
+              >
                 {journey?.seoTitle == null ||
                 isEmpty(journey?.seoTitle?.trim()) ? (
                   <Box
                     data-testid="SocialPreviewTitleEmpty"
-                    width={118.5}
-                    height={9}
-                    borderRadius={0.75}
                     sx={{
+                      width: 118.5,
+                      height: 9,
+                      borderRadius: 0.75,
+
                       bgcolor: ({ palette }) =>
                         showAnalytics === true
                           ? alpha(palette.secondary.dark, 0.1)
@@ -236,10 +260,12 @@ export function SocialPreviewNode(): ReactElement {
                 ) : (
                   <Typography
                     variant="subtitle1"
-                    fontSize={7}
-                    lineHeight="9px"
-                    color="secondary.dark"
                     noWrap
+                    sx={{
+                      fontSize: 7,
+                      lineHeight: '9px',
+                      color: 'secondary.dark'
+                    }}
                   >
                     {journey.seoTitle}
                   </Typography>
@@ -248,10 +274,11 @@ export function SocialPreviewNode(): ReactElement {
                 isEmpty(journey?.seoDescription?.trim()) ? (
                   <Box
                     data-testid="SocialPreviewDescriptionEmpty"
-                    width={118.5}
-                    height={9}
-                    borderRadius={0.75}
                     sx={{
+                      width: 118.5,
+                      height: 9,
+                      borderRadius: 0.75,
+
                       bgcolor: ({ palette }) =>
                         showAnalytics === true
                           ? alpha(palette.secondary.dark, 0.1)
@@ -261,28 +288,33 @@ export function SocialPreviewNode(): ReactElement {
                 ) : (
                   <Typography
                     variant="body2"
-                    fontSize={4.5}
-                    lineHeight="9px"
-                    color="secondary.light"
                     noWrap
+                    sx={{
+                      fontSize: 4.5,
+                      lineHeight: '9px',
+                      color: 'secondary.light'
+                    }}
                   >
                     {journey.seoDescription}
                   </Typography>
                 )}
               </Stack>
               <Stack
-                flexDirection="row"
-                justifyContent="space-around"
-                color="background.default"
-                p={1.75}
+                sx={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  color: 'background.default',
+                  p: 1.75
+                }}
               >
                 {[0, 1, 2].map((i) => (
                   <Box
                     key={i}
-                    width={9}
-                    height={9}
-                    borderRadius="4.5px"
                     sx={{
+                      width: 9,
+                      height: 9,
+                      borderRadius: '4.5px',
+
                       bgcolor: ({ palette }) =>
                         showAnalytics === true
                           ? alpha(palette.secondary.dark, 0.1)

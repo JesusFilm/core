@@ -2,12 +2,17 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import { styled } from '@mui/material/styles'
 import { ReactElement } from 'react'
 
-import { getPollOptionBorderStyles } from '../../RadioQuestion/utils/getPollOptionBorderStyles'
+import { hoverOnly } from '@core/shared/ui/hoverOnly'
+
+import {
+  getPollOptionBorderColors,
+  getPollOptionBorderStyles
+} from '../../RadioQuestion/utils/getPollOptionBorderStyles'
 
 export const StyledListRadioOption = styled(Button)<ButtonProps>(({
   theme
 }) => {
-  const borderStyles = getPollOptionBorderStyles(theme, { important: true })
+  const borderColors = getPollOptionBorderColors(theme, { important: true })
 
   return {
     fontFamily: theme.typography.button.fontFamily,
@@ -32,7 +37,7 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
     ),
     wordBreak: 'break-word',
     color: 'text.primary',
-    ...borderStyles,
+    ...getPollOptionBorderStyles(theme, { important: true }),
 
     // Default state
     opacity: theme.palette.mode === 'dark' ? 1 : 0.7,
@@ -41,9 +46,10 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
         ? 'rgba(255, 255, 255, 0.6)'
         : 'rgba(0, 0, 0, 0.6)',
 
-    // Hover state
-    '&:hover': {
-      ...borderStyles['&:hover'],
+    // Hover state - pointer devices only, so a hover left over from a tap on
+    // the previous card cannot read as an already-selected option
+    ...hoverOnly({
+      borderColor: borderColors.hover,
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.8)'
@@ -53,11 +59,11 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
         theme.palette.mode === 'dark'
           ? '0 4px 12px rgba(0, 0, 0, 0.4)'
           : '0 4px 12px rgba(0, 0, 0, 0.15)'
-    },
+    }),
 
-    // Selected state
+    // Pressed state
     '&:active': {
-      ...borderStyles['&:active'],
+      borderColor: borderColors.active,
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.9)'
@@ -74,7 +80,7 @@ export const StyledListRadioOption = styled(Button)<ButtonProps>(({
 
     // Disabled state
     '&.Mui-disabled': {
-      ...borderStyles['&.disabled'],
+      borderColor: borderColors.disabled,
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255, 255, 255, 0.4)'

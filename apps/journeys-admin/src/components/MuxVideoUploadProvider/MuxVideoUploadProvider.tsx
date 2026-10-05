@@ -1,4 +1,9 @@
-import { gql, useApolloClient, useLazyQuery, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import {
+  useApolloClient,
+  useLazyQuery,
+  useMutation
+} from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -14,9 +19,13 @@ import {
 
 import { TreeBlock } from '@core/journeys/ui/block'
 
-import { CreateMuxVideoUploadByFileMutation } from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
+import {
+  CreateMuxVideoUploadByFileMutation,
+  CreateMuxVideoUploadByFileMutationVariables
+} from '../../../__generated__/CreateMuxVideoUploadByFileMutation'
 import { GetMyMuxVideoQuery } from '../../../__generated__/GetMyMuxVideoQuery'
 import { prependMuxVideo } from '../../libs/apolloClient/prependMuxVideo'
+import { useAuth } from '../../libs/auth'
 
 import { addUploadToQueue as addUploadTaskUtil } from './utils/addUploadToQueue'
 import { cancelUploadForBlock as cancelUploadForBlockUtil } from './utils/cancelUploadForBlock'
@@ -35,6 +44,8 @@ export const GET_MY_MUX_VIDEO_QUERY = gql`
       assetId
       playbackId
       readyToStream
+      name
+      duration
     }
   }
 `
@@ -43,10 +54,12 @@ export const CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION = gql`
   mutation CreateMuxVideoUploadByFileMutation(
     $name: String!
     $generateSubtitlesInput: GenerateSubtitlesInput
+    $journeyId: ID
   ) {
     createMuxVideoUploadByFile(
       name: $name
       generateSubtitlesInput: $generateSubtitlesInput
+      journeyId: $journeyId
     ) {
       uploadUrl
       id
@@ -61,9 +74,10 @@ interface MuxVideoUploadContextType {
     file: File,
     languageCode?: string,
     languageName?: string,
-    onComplete?: (videoId: string) => void
+    onComplete?: (videoId: string) => void,
+    journeyId?: string
   ) => void
-  cancelUploadForBlock: (block: TreeBlock) => void
+  cancelUploadForBlock: (block: Pick<TreeBlock, 'id'>) => void
 }
 
 const MuxVideoUploadContext = createContext<
@@ -82,6 +96,7 @@ export function MuxVideoUploadProvider({
     new Map()
   )
   const { t } = useTranslation('apps-journeys-admin')
+  const { user } = useAuth()
   const { enqueueSnackbar, closeSnackbar } = useSnackbar()
   const [getMyMuxVideo] = useLazyQuery<GetMyMuxVideoQuery>(
     GET_MY_MUX_VIDEO_QUERY,
@@ -97,10 +112,10 @@ export function MuxVideoUploadProvider({
     new Map()
   )
 
-  const [createMuxVideoUploadByFile] =
-    useMutation<CreateMuxVideoUploadByFileMutation>(
-      CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION
-    )
+  const [createMuxVideoUploadByFile] = useMutation<
+    CreateMuxVideoUploadByFileMutation,
+    CreateMuxVideoUploadByFileMutationVariables
+  >(CREATE_MUX_VIDEO_UPLOAD_BY_FILE_MUTATION)
 
   const showSnackbar = useCallback(
     createShowSnackbar(enqueueSnackbar, closeSnackbar),
@@ -121,13 +136,20 @@ export function MuxVideoUploadProvider({
       // Surgical cache prepend — mirrors prependCloudflareImage in the image
       // picker. Avoids the offsetLimitPagination refetch-stomp where an
       // offset:0 refetch would overwrite accumulated later pages.
-      prependMuxVideo(apolloClient.cache, {
-        id: videoId,
-        playbackId,
-        readyToStream: true
-      })
+      //
+      // Only prepend optimistically when the uploader is known. Writing a
+      // placeholder userId would later compare unequal to the resolved user
+      // id and mislabel the caller's own upload as a teammate's "Team" tile.
+      if (user?.id != null) {
+        prependMuxVideo(apolloClient.cache, {
+          id: videoId,
+          playbackId,
+          readyToStream: true,
+          userId: user.id
+        })
+      }
     },
-    [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient]
+    [showSnackbar, t, pollingTasks, pollingIntervalsRef, apolloClient, user]
   )
 
   const handlePollingErrorCallback = useCallback(
@@ -186,7 +208,8 @@ export function MuxVideoUploadProvider({
       file: File,
       languageCode?: string,
       languageName?: string,
-      onComplete?: (videoId: string) => void
+      onComplete?: (videoId: string) => void,
+      journeyId?: string
     ) => {
       addUploadTaskUtil(
         videoBlockId,
@@ -194,6 +217,7 @@ export function MuxVideoUploadProvider({
         languageCode,
         languageName,
         onComplete,
+        journeyId,
         {
           setUploadTasks
         }
@@ -203,7 +227,7 @@ export function MuxVideoUploadProvider({
   )
 
   const cancelUploadForBlock = useCallback(
-    (block: TreeBlock) => {
+    (block: Pick<TreeBlock, 'id'>) => {
       cancelUploadForBlockUtil(block, {
         uploadTasks,
         setUploadTasks,

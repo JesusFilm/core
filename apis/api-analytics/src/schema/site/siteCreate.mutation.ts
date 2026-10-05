@@ -96,7 +96,7 @@ builder.mutationType({
               site?.site_memberships.length > 0
             )
               return site
-            throw new Error('domain already exists')
+            throw new Error('domain already exists', { cause: error })
           }
 
           throw error

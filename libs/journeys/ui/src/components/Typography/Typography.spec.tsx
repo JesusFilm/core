@@ -1,3 +1,4 @@
+import { createTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
 import {
@@ -11,6 +12,8 @@ import { JourneyFields as Journey } from '../../libs/JourneyProvider/__generated
 
 import { TypographyFields } from './__generated__/TypographyFields'
 import { Typography } from './Typography'
+
+const theme = createTheme()
 
 const block: TreeBlock<TypographyFields> = {
   __typename: 'TypographyBlock',
@@ -50,6 +53,42 @@ describe('Typography', () => {
     expect(getByText('Hello World!').tagName).toBe('P')
   })
 
+  it('should apply a hex color from settings', () => {
+    render(
+      <Typography
+        {...block}
+        settings={{ __typename: 'TypographyBlockSettings', color: '#EBB109' }}
+      />
+    )
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: '#EBB109'
+    })
+  })
+
+  it('should fall back to the palette color when settings has no color', () => {
+    render(<Typography {...block} color={TypographyColor.error} />)
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: theme.palette.error.main
+    })
+  })
+
+  it('should use the disabled text color when content is empty', () => {
+    render(
+      <Typography
+        {...block}
+        content=""
+        placeholderText="Add your text here..."
+        settings={{ __typename: 'TypographyBlockSettings', color: '#EBB109' }}
+      />
+    )
+
+    expect(screen.getByTestId('JourneysTypography')).toHaveStyle({
+      color: theme.palette.text.disabled
+    })
+  })
+
   it('should render placholder text if content is empty', () => {
     const emptyContentMock = {
       ...block,
@@ -80,7 +119,7 @@ describe('Typography', () => {
     ).toHaveTextContent('hello')
   })
 
-  it('resolves content using journey customization fields on default variant', () => {
+  it('resolves content using journey customization fields in default render mode', () => {
     const journey = {
       journeyCustomizationFields: [
         {
@@ -97,7 +136,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ name }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -107,7 +146,7 @@ describe('Typography', () => {
     ).toBeInTheDocument()
   })
 
-  it('does not resolve content on admin variant for template journeys', () => {
+  it('does not resolve content in admin render mode for template journeys', () => {
     const journey = {
       template: true,
       journeyCustomizationFields: [
@@ -125,7 +164,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ name }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -152,7 +191,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: 'Hello {{ name }}!' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )
@@ -179,7 +218,7 @@ describe('Typography', () => {
     const blockWithTemplate = { ...block, content: '{{ title }}' }
 
     render(
-      <JourneyProvider value={{ journey, variant: 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: 'default' }}>
         <Typography {...blockWithTemplate} />
       </JourneyProvider>
     )

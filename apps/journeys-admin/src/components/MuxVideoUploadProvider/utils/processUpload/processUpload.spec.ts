@@ -111,6 +111,36 @@ describe('processUpload', () => {
     })
   })
 
+  it('should forward journeyId to the upload mutation when present', async () => {
+    const file = new File(['test'], 'my-video.mp4', { type: 'video/mp4' })
+    const task: UploadTask = {
+      videoBlockId: 'block-1',
+      file,
+      status: 'waiting',
+      progress: 0,
+      journeyId: 'journey-1'
+    }
+
+    mockDependencies.createMuxVideoUploadByFile.mockResolvedValue({
+      data: {
+        createMuxVideoUploadByFile: {
+          uploadUrl: 'https://upload.url',
+          id: 'video-1'
+        }
+      }
+    })
+
+    await processUpload('block-1', task, mockDependencies)
+
+    expect(mockDependencies.createMuxVideoUploadByFile).toHaveBeenCalledWith({
+      variables: {
+        name: 'my-video',
+        generateSubtitlesInput: undefined,
+        journeyId: 'journey-1'
+      }
+    })
+  })
+
   it('should not include generateSubtitlesInput when language is not provided', async () => {
     const file = new File(['test'], 'my-video.mp4', { type: 'video/mp4' })
     const task: UploadTask = {

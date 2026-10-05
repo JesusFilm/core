@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import fetch, { Response } from 'node-fetch'
 import { SnackbarProvider } from 'notistack'
@@ -84,7 +84,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -114,7 +114,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: { ...publishedJourney, primaryImageBlock: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -158,7 +158,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -248,7 +248,7 @@ describe('SocialScreenSocialImage', () => {
                 id: 'journeyId',
                 primaryImageBlock: null
               },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -279,6 +279,56 @@ describe('SocialScreenSocialImage', () => {
     })
   })
 
+  it('should forward the active journey id to the upload mutation', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => await Promise.resolve(cfResponse)
+    } as unknown as Response)
+
+    const uploadResult = vi.fn(() => ({
+      data: {
+        createCloudflareUploadByFile: {
+          __typename: 'CloudflareImage' as const,
+          uploadUrl: 'https://upload.imagedelivery.net/upload-url',
+          id: 'cloudflare-image-id'
+        }
+      }
+    }))
+    const strictUploadMock = {
+      ...cloudflareUploadMutationMock,
+      request: {
+        ...cloudflareUploadMutationMock.request,
+        // Tightened from the shared catch-all matcher to prove journeyId
+        // threads through to the mutation variables.
+        variables: (variables: { journeyId?: string }) =>
+          variables.journeyId === 'journeyId'
+      },
+      result: uploadResult as typeof cloudflareUploadMutationMock.result
+    }
+
+    render(
+      <MockedProvider mocks={[strictUploadMock, journeyImageBlockUpdateMock]}>
+        <SnackbarProvider>
+          <JourneyProvider
+            value={{
+              journey: mockJourney,
+              renderMode: 'admin'
+            }}
+          >
+            <SocialScreenSocialImage />
+          </JourneyProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    const fileInput = screen.getByTestId('SocialScreenSocialImageInput')
+    const file = new File(['file'], 'testFile.png', { type: 'image/png' })
+
+    fireEvent.change(fileInput, { target: { files: [file] } })
+
+    await waitFor(() => expect(uploadResult).toHaveBeenCalled())
+  })
+
   it('should handle upload error gracefully', async () => {
     mockFetch.mockRejectedValueOnce(new Error('Upload failed'))
 
@@ -288,7 +338,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -318,7 +368,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />
@@ -359,7 +409,7 @@ describe('SocialScreenSocialImage', () => {
           <JourneyProvider
             value={{
               journey: mockJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SocialScreenSocialImage />

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
@@ -115,12 +116,14 @@ export function Hint(): ReactElement {
         variant="filled"
         label={t('Hint')}
         fullWidth
-        inputProps={{ maxLength: 250 }}
         value={useGetValueFromJourneyCustomizationString(value)}
         onFocus={resetCommandInput}
         onChange={(e) => {
           setValue(e.target.value)
           handleSubmit(e.target.value)
+        }}
+        slotProps={{
+          htmlInput: { maxLength: 250 }
         }}
       />
     </Box>

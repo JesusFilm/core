@@ -105,11 +105,12 @@ export function ImageBlockEditor({
   }
 
   return (
-    <>
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Box
         sx={{
           width: '100%',
-          height: 183
+          height: 183,
+          flexShrink: 0
         }}
       >
         <Box
@@ -165,10 +166,8 @@ export function ImageBlockEditor({
       <Box
         sx={{
           width: '100%',
-          height: {
-            xs: 'calc(100vh - 405px)',
-            sm: 'calc(100vh - 375px)'
-          },
+          flex: 1,
+          minHeight: 0,
           overflowY: 'auto'
         }}
       >
@@ -214,6 +213,6 @@ export function ImageBlockEditor({
           />
         </TabPanel>
       </Box>
-    </>
+    </Box>
   )
 }

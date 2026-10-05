@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -60,7 +61,7 @@ describe('HostList', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={vi.fn()}
@@ -92,7 +93,7 @@ describe('HostList', () => {
     const { getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={handleSelection}
@@ -110,7 +111,7 @@ describe('HostList', () => {
     const { getByRole } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={handleSelection}
@@ -126,7 +127,7 @@ describe('HostList', () => {
   it('should update journey host on list item click, navigate to host selection', async () => {
     const handleSelection = vi.fn()
 
-    const updateJourneyHostMock: MockedResponse<
+    const updateJourneyHostMock: MockLink.MockedResponse<
       UpdateJourneyHost,
       UpdateJourneyHostVariables
     > = {
@@ -150,7 +151,7 @@ describe('HostList', () => {
             }
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         UpdateJourneyHost,
         UpdateJourneyHostVariables
       >['result']
@@ -158,7 +159,7 @@ describe('HostList', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[updateJourneyHostMock]}>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostList
               teamHosts={{ hosts: [defaultHost, host2] }}
               handleSelection={handleSelection}

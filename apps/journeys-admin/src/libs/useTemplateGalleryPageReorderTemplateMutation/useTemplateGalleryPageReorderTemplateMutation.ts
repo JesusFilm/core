@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   TemplateGalleryPageReorderTemplate,
@@ -33,7 +29,15 @@ export const TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE = gql`
       creatorName
       creatorImageSrc
       creatorImageAlt
-      mediaUrl
+      media {
+        id
+        type
+        muxVideoId
+        embedUrl
+        muxPlaybackId
+        muxName
+        muxDuration
+      }
       publishedAt
       createdAt
       updatedAt
@@ -51,11 +55,11 @@ export const TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE = gql`
 `
 
 export function useTemplateGalleryPageReorderTemplateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     TemplateGalleryPageReorderTemplate,
     TemplateGalleryPageReorderTemplateVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   TemplateGalleryPageReorderTemplate,
   TemplateGalleryPageReorderTemplateVariables
 > {

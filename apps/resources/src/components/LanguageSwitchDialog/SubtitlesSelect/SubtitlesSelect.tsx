@@ -130,7 +130,12 @@ export function SubtitlesSelect({
                   <Typography variant="body1">{option.displayName}</Typography>
                   {option.nativeName &&
                     option.nativeName.value !== option.displayName && (
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: 'text.secondary'
+                        }}
+                      >
                         {option.nativeName.value}
                       </Typography>
                     )}

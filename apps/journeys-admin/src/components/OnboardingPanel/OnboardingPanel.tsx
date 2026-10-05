@@ -21,7 +21,12 @@ export function OnboardingPanel(): ReactElement {
     <>
       <CreateJourneyButton />
       <SidePanelContainer border={false}>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: 'space-between'
+          }}
+        >
           <Typography variant="subtitle1">{t('Use Template')}</Typography>
           <Link
             component={NextLink}
@@ -30,7 +35,7 @@ export function OnboardingPanel(): ReactElement {
             variant="subtitle2"
             sx={{ display: 'flex', alignItems: 'center' }}
           >
-            {t('See all')}
+            {t('See All')}
             <ChevronRightIcon />
           </Link>
         </Stack>
@@ -47,7 +52,7 @@ export function OnboardingPanel(): ReactElement {
           startIcon={<Grid1Icon />}
           sx={{ width: 'max-content', alignSelf: 'center' }}
         >
-          {t('See all templates')}
+          {t('See All Templates')}
         </Button>
       </SidePanelContainer>
     </>

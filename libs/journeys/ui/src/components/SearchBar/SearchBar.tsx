@@ -117,11 +117,24 @@ export function SearchBar({
     setOpen(!open)
   }
 
-  const [isPreparingDropdown, setIsPreparingDropdown] = useState(false)
+  // A ref, not state: the dropdown is prepared from several handlers that can
+  // fire in the same tick (click + focus), and a state flag would still read
+  // `false` in the second one. Apollo Client 4 aborts the first in-flight
+  // execution when a second starts, so the duplicate is not harmless.
+  const isPreparingDropdown = useRef(false)
   const [getLanguages] = useLanguagesContinentsLazyQuery()
 
   async function getLanguageContinents(): Promise<void> {
-    const result = await getLanguages()
+    let result
+    try {
+      result = await getLanguages()
+    } catch (error) {
+      // Apollo Client 4 aborts an in-flight lazy query when the component
+      // unmounts or a new execution starts, rejecting this promise. There is
+      // nothing left to dispatch in that case.
+      if (error instanceof Error && error.name === 'AbortError') return
+      throw error
+    }
     const languages = sortLanguageContinents({
       languages: result.data?.languages ?? []
     })
@@ -132,10 +145,9 @@ export function SearchBar({
   }
 
   async function prepareDropdown(): Promise<void> {
-    if (!isPreparingDropdown) {
-      setIsPreparingDropdown(true)
-      await getLanguageContinents()
-    }
+    if (isPreparingDropdown.current) return
+    isPreparingDropdown.current = true
+    await getLanguageContinents()
   }
 
   const findUserCountry = useCallback(async () => {
@@ -195,27 +207,29 @@ export function SearchBar({
                   onMouseEnter={prepareDropdown}
                   onTouchStart={prepareDropdown}
                   showLanguageButton={showLanguageButton}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search1Icon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: showLanguageButton ? (
-                      <InputAdornment
-                        position="end"
-                        sx={{
-                          [theme.breakpoints.down('lg')]: { display: 'none' }
-                        }}
-                      >
-                        <LanguageButtons
-                          onClick={handleLanguageClick}
-                          refinements={refinements}
-                        />
-                      </InputAdornment>
-                    ) : (
-                      <></>
-                    )
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search1Icon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: showLanguageButton ? (
+                        <InputAdornment
+                          position="end"
+                          sx={{
+                            [theme.breakpoints.down('lg')]: { display: 'none' }
+                          }}
+                        >
+                          <LanguageButtons
+                            onClick={handleLanguageClick}
+                            refinements={refinements}
+                          />
+                        </InputAdornment>
+                      ) : (
+                        <></>
+                      )
+                    }
                   }}
                   {...props}
                 />

@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MuiMenu from '@mui/material/Menu'
@@ -80,12 +81,14 @@ export function Menu({ user }: MenuProps): ReactElement {
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
         keepMounted
-        MenuListProps={{
-          'aria-labelledby': 'edit-journey-actions'
-        }}
         sx={{
           '& .MuiList-root': {
             py: 2
+          }
+        }}
+        slotProps={{
+          list: {
+            'aria-labelledby': 'edit-journey-actions'
           }
         }}
       >

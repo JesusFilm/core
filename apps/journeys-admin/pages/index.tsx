@@ -1,3 +1,4 @@
+import { NormalizedCacheObject } from '@apollo/client'
 import Stack from '@mui/material/Stack'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
@@ -58,12 +59,19 @@ export default function IndexPage(): ReactElement {
         mainHeaderChildren={
           <Stack
             direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            width="100%"
+            sx={{
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%'
+            }}
           >
             <TeamSelect onboarding={showOnboardingPopover} />
-            <Stack direction="row" alignItems="center">
+            <Stack
+              direction="row"
+              sx={{
+                alignItems: 'center'
+              }}
+            >
               <TeamMenu />
             </Stack>
           </Stack>
@@ -99,7 +107,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return {
     props: {
       userSerialized: JSON.stringify(user),
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...translations,
       flags
     }

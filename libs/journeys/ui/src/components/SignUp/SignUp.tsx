@@ -1,4 +1,5 @@
-import { ApolloError, gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import { SxProps } from '@mui/system/styleFunctionSx'
@@ -13,12 +14,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { object, string } from 'yup'
 
 import { SignUpSubmissionEventCreateInput } from '../../../__generated__/globalTypes'
-import { handleAction } from '../../libs/action'
-import { useBlocks } from '../../libs/block'
+import { getNextStepSlug, handleAction } from '../../libs/action'
+import { getStepHeading, useBlocks } from '../../libs/block'
 import type { TreeBlock } from '../../libs/block'
 import { useEditor } from '../../libs/EditorProvider'
-import { getNextStepSlug } from '../../libs/getNextStepSlug'
-import { getStepHeading } from '../../libs/getStepHeading'
 import { useJourney } from '../../libs/JourneyProvider'
 import {
   JourneyPlausibleEvents,
@@ -75,7 +74,7 @@ export const SignUp = ({
     | undefined
 
   const plausible = usePlausible<JourneyPlausibleEvents>()
-  const { variant, journey } = useJourney()
+  const { renderMode, journey } = useJourney()
   const { enqueueSnackbar } = useSnackbar()
   const { blockHistory, treeBlocks } = useBlocks()
   const activeBlock = blockHistory[blockHistory.length - 1]
@@ -103,7 +102,7 @@ export const SignUp = ({
   })
 
   const onSubmitHandler = async (values: SignUpFormValues): Promise<void> => {
-    if (variant === 'default' || variant === 'embed') {
+    if (renderMode === 'default' || renderMode === 'embed') {
       const id = uuid()
       const input: SignUpSubmissionEventCreateInput = {
         id,
@@ -151,7 +150,7 @@ export const SignUp = ({
           stepName: heading
         })
       } catch (e) {
-        if (e instanceof ApolloError) {
+        if (e instanceof Error) {
           enqueueSnackbar(e.message, {
             variant: 'error',
             preventDuplicate: true
@@ -198,10 +197,12 @@ export const SignUp = ({
               onClick={(e) => e.stopPropagation()}
               onChange={handleChange}
               onBlur={handleBlur}
-              InputProps={{
-                readOnly: selectedBlock !== undefined,
-                sx: {
-                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+              slotProps={{
+                input: {
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
                 }
               }}
             />
@@ -213,10 +214,12 @@ export const SignUp = ({
               name="email"
               label={t('Email')}
               onClick={(e) => e.stopPropagation()}
-              InputProps={{
-                readOnly: selectedBlock !== undefined,
-                sx: {
-                  pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+              slotProps={{
+                input: {
+                  readOnly: selectedBlock !== undefined,
+                  sx: {
+                    pointerEvents: selectedBlock !== undefined ? 'none' : 'auto'
+                  }
                 }
               }}
             />

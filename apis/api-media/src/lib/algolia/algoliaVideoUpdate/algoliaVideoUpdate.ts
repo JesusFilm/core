@@ -95,7 +95,16 @@ export async function updateVideoInAlgolia(
     })
 
     if (video == null) {
-      logger?.warn(`video ${videoId} not found`)
+      logger?.warn(`video ${videoId} not found, removing from algolia`)
+      // deleteObjects(waitForTasks) rather than deleteObject, so the job only
+      // completes once Algolia has actually applied the removal — a
+      // fire-and-forget accept would let a failed delete look like success and
+      // skip the retry. Matches the waitForTasks writes above.
+      await client.deleteObjects({
+        indexName: algoliaConfig.videosIndex,
+        objectIDs: [videoId],
+        waitForTasks: true
+      })
       return
     }
 
@@ -222,6 +231,7 @@ export async function updateVideoInAlgolia(
     )
   } catch (error) {
     logger?.error(error, `failed to update video ${videoId} in algolia`)
+    throw error
   }
 }
 
@@ -267,5 +277,6 @@ export async function updateVideoPublishedStatus(
       error,
       `failed to update video published status for video ${videoId}`
     )
+    throw error
   }
 }

@@ -159,11 +159,13 @@ export function JourneyViewNav({
           <Stack
             direction="row"
             spacing={0}
-            justifyContent="center"
             sx={{
+              justifyContent: 'center',
+
               // The bar is slim; hide the scrollbar that horizontal overflow
               // would otherwise add when the labels don't all fit.
               overflowX: 'auto',
+
               msOverflowStyle: 'none',
               scrollbarWidth: 'none',
               '&::-webkit-scrollbar': { display: 'none' }
@@ -284,9 +286,12 @@ export function JourneyViewNav({
       >
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="flex-end"
-          sx={{ px: 1, py: 1 }}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            px: 1,
+            py: 1
+          }}
         >
           <IconButton aria-label={t('Close')} onClick={handleCloseDrawer}>
             <CloseRoundedIcon />

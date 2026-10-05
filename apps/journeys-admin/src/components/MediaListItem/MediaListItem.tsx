@@ -85,7 +85,13 @@ export function MediaListItem({
       }}
       data-testid="JourneysAdminMediaListItem"
     >
-      <Stack direction="row" spacing={4} alignItems="center">
+      <Stack
+        direction="row"
+        spacing={4}
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Box
           sx={{
             width: 79,
@@ -119,13 +125,21 @@ export function MediaListItem({
             </Box>
           )}
         </Box>
-        <Stack flexGrow={1} sx={{ overflow: 'hidden' }}>
+        <Stack
+          sx={{
+            flexGrow: 1,
+            overflow: 'hidden'
+          }}
+        >
           {(overline != null || loading === true) && (
             <Typography
               variant="overline"
-              color="secondary.light"
               className="overflow-text"
-              sx={{ ...fadeOverflowText('overline'), mt: 2 }}
+              sx={{
+                color: 'secondary.light',
+                ...fadeOverflowText('overline'),
+                mt: 2
+              }}
             >
               {loading === true ? <Skeleton width={82} /> : overline}
             </Typography>
@@ -145,9 +159,9 @@ export function MediaListItem({
               (description != null || loading === true) && (
                 <Typography
                   variant="caption"
-                  color="secondary.light"
                   className="overflow-text"
                   sx={{
+                    color: 'secondary.light',
                     ...fadeOverflowText('caption'),
                     display: 'block'
                   }}

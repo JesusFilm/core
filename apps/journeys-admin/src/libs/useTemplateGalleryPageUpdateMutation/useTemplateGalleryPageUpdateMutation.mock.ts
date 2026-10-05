@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import {
@@ -19,7 +19,7 @@ const defaultUpdated: Updated = {
   creatorName: 'Creator',
   creatorImageSrc: null,
   creatorImageAlt: null,
-  mediaUrl: null,
+  media: null,
   publishedAt: null,
   createdAt: '2026-05-06T00:00:00Z',
   updatedAt: '2026-05-06T00:00:00Z',
@@ -29,7 +29,7 @@ const defaultUpdated: Updated = {
 export const getTemplateGalleryPageUpdateMock = (
   variables: TemplateGalleryPageUpdateVariables,
   overrides: Partial<Updated> = {}
-): MockedResponse<
+): MockLink.MockedResponse<
   TemplateGalleryPageUpdate,
   TemplateGalleryPageUpdateVariables
 > => ({

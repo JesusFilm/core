@@ -44,12 +44,14 @@ export function LanguageModal({
       fullScreen
       open={open}
       onClose={handleClose}
-      TransitionComponent={Transition}
       aria-labelledby="language-modal-title"
       sx={{
         '& .MuiDialog-paper': {
           backgroundColor: 'transparent'
         }
+      }}
+      slots={{
+        transition: Transition
       }}
     >
       <div className="flex h-[100vh] w-full items-center justify-center overflow-hidden bg-black/80 px-1 backdrop-blur-lg sm:px-2">

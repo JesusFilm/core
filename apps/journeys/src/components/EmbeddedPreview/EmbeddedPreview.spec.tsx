@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { v4 as uuidv4 } from 'uuid'
@@ -120,7 +121,7 @@ global.fetch = vi.fn(
     })
 ) as Mock
 
-const mocks: MockedResponse[] = [
+const mocks: MockLink.MockedResponse[] = [
   {
     request: {
       query: JOURNEY_VISITOR_UPDATE,
@@ -197,7 +198,7 @@ describe('EmbeddedPreview', () => {
     render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'embed' }}>
+          <JourneyProvider value={{ journey, renderMode: 'embed' }}>
             <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
@@ -210,7 +211,7 @@ describe('EmbeddedPreview', () => {
     const { getByTestId } = render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'embed' }}>
+          <JourneyProvider value={{ journey, renderMode: 'embed' }}>
             <EmbeddedPreview />
           </JourneyProvider>
         </SnackbarProvider>
@@ -232,7 +233,7 @@ describe('EmbeddedPreview', () => {
     const { queryByTestId } = render(
       <MockedProvider mocks={mocks}>
         <SnackbarProvider>
-          <JourneyProvider value={{ journey, variant: 'embed' }}>
+          <JourneyProvider value={{ journey, renderMode: 'embed' }}>
             <EmbeddedPreview disableFullscreen />
           </JourneyProvider>
         </SnackbarProvider>

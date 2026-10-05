@@ -1,5 +1,6 @@
 'use client'
 
+import { buttonGroupClasses } from '@mui/material/ButtonGroup'
 import { ThemeOptions } from '@mui/material/styles'
 
 import { FontFamilies } from '../..'
@@ -32,10 +33,14 @@ export const createBaseComponents = (
       MuiButtonGroup: {
         styleOverrides: {
           root: {
-            borderRadius: 8
-          },
-          groupedContainedVertical: {
-            margin: 0
+            borderRadius: 8,
+            // Plain nested selectors (not the `variants` array) so that the
+            // per-palette ButtonGroup rules in `colors.ts` survive the
+            // `deepmerge` in `theme.ts` — deepmerge replaces arrays.
+            [`&.${buttonGroupClasses.contained}.${buttonGroupClasses.vertical} .${buttonGroupClasses.grouped}`]:
+              {
+                margin: 0
+              }
           }
         }
       },

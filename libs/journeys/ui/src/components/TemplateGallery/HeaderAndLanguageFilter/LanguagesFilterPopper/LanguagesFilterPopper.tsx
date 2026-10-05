@@ -128,8 +128,8 @@ export function LanguagesFilterPopper({
                             )}
                           />
                           <Stack
-                            alignItems="flex-start"
                             sx={{
+                              alignItems: 'flex-start',
                               width: 200,
                               pr: 1,
                               flexGrow: 1
@@ -149,13 +149,13 @@ export function LanguagesFilterPopper({
 
                             {localName != null && nativeName != null && (
                               <Typography
+                                variant="body2"
                                 sx={{
+                                  color: 'text.secondary',
                                   textOverflow: 'ellipsis',
                                   whiteSpace: 'nowrap',
                                   overflow: 'hidden'
                                 }}
-                                variant="body2"
-                                color="text.secondary"
                               >
                                 {nativeName}
                               </Typography>

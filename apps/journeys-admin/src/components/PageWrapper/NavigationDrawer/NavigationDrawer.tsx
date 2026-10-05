@@ -155,7 +155,9 @@ export function NavigationDrawer({
             </ListItemIcon>
             <ListItemText
               primary={t('Projects')}
-              primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+              slotProps={{
+                primary: { style: { whiteSpace: 'nowrap' } }
+              }}
             />
           </ListItemButton>
         </Tooltip>
@@ -170,7 +172,9 @@ export function NavigationDrawer({
           </ListItemIcon>
           <ListItemText
             primary={t('Templates')}
-            primaryTypographyProps={{ style: { whiteSpace: 'nowrap' } }}
+            slotProps={{
+              primary: { style: { whiteSpace: 'nowrap' } }
+            }}
           />
         </ListItemButton>
         {user?.id != null && !isAnon && (

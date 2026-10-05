@@ -26,7 +26,7 @@ builder
           return (
             (
               await prisma.userLanguageRole.findUnique({
-                where: { userId: data.id }
+                where: { id: data.id }
               })
             )?.roles ?? []
           )

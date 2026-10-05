@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box'
 import type { ReactElement } from 'react'
 
-import { CardCta } from './Templates/CardCta'
-import { CardForm } from './Templates/CardForm'
-import { CardIntro } from './Templates/CardIntro'
-import { CardPoll } from './Templates/CardPoll'
-import { CardQuote } from './Templates/CardQuote'
-import { CardVideo } from './Templates/CardVideo'
+import { CardCta } from './Layouts/CardCta'
+import { CardForm } from './Layouts/CardForm'
+import { CardIntro } from './Layouts/CardIntro'
+import { CardPoll } from './Layouts/CardPoll'
+import { CardQuote } from './Layouts/CardQuote'
+import { CardVideo } from './Layouts/CardVideo'
 
 export function CardTemplates(): ReactElement {
   return (

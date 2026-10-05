@@ -50,15 +50,32 @@ export function AccessDeniedCard({
             justifyContent: 'center'
           }}
         >
-          <Typography variant="h1" color="secondary.light" align="center">
+          <Typography
+            variant="h1"
+            align="center"
+            sx={{
+              color: 'secondary.light'
+            }}
+          >
             {stepNumber}
           </Typography>
         </Stack>
         <Stack>
-          <Typography variant="h6" color="secondary.dark">
+          <Typography
+            variant="h6"
+            sx={{
+              color: 'secondary.dark'
+            }}
+          >
             {heading}
           </Typography>
-          <Typography variant="body2" color="secondary.light" sx={{ mt: 1.5 }}>
+          <Typography
+            variant="body2"
+            sx={{
+              color: 'secondary.light',
+              mt: 1.5
+            }}
+          >
             {description}
           </Typography>
         </Stack>

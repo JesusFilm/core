@@ -115,7 +115,11 @@ export function VideoContentPage(): ReactElement {
               {((container?.childrenCount ?? 0) > 0 || childrenCount > 0) &&
                 (children.length === children.length ||
                   children.length > 0) && (
-                  <Box pb={4}>
+                  <Box
+                    sx={{
+                      pb: 4
+                    }}
+                  >
                     <VideoCarousel
                       loading={loading}
                       videos={children}
@@ -142,7 +146,13 @@ export function VideoContentPage(): ReactElement {
           >
             <VideoContent />
             <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Stack spacing={5} mb={8} direction={{ md: 'column', lg: 'row' }}>
+              <Stack
+                spacing={5}
+                direction={{ md: 'column', lg: 'row' }}
+                sx={{
+                  mb: 8
+                }}
+              >
                 {variant != null && variant.downloads.length > 0 && (
                   <DownloadButton
                     variant="button"

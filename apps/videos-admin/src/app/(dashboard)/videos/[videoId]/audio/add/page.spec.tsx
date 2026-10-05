@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
@@ -12,8 +12,8 @@ import { useUploadVideoVariant } from '../../../../../_UploadVideoVariantProvide
 import AddAudioLanguageDialog from './page'
 
 // Mock useSuspenseQuery
-vi.mock('@apollo/client', async () => {
-  const originalModule = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const originalModule = await vi.importActual('@apollo/client/react')
   return {
     ...originalModule,
     useSuspenseQuery: vi.fn((_query) => {
@@ -407,7 +407,7 @@ describe('AddAudioLanguageDialog', () => {
     )
   })
 
-  it('should prevent dialog close during upload or processing', async () => {
+  it('should prevent dialog close during active browser upload', async () => {
     const mockRouterPush = vi.fn()
     vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
       push: mockRouterPush
@@ -415,7 +415,7 @@ describe('AddAudioLanguageDialog', () => {
     ;(useUploadVideoVariant as Mock).mockReturnValue({
       uploadState: {
         isUploading: true,
-        isProcessing: true,
+        isProcessing: false,
         uploadProgress: 50,
         error: null
       },
@@ -436,5 +436,37 @@ describe('AddAudioLanguageDialog', () => {
 
     // Should not redirect
     expect(mockRouterPush).not.toHaveBeenCalled()
+  })
+
+  it('should allow dialog close during background processing', async () => {
+    const mockRouterPush = vi.fn()
+    vi.mocked(useRouter as unknown as Mock).mockImplementation(() => ({
+      push: mockRouterPush
+    }))
+    ;(useUploadVideoVariant as Mock).mockReturnValue({
+      uploadState: {
+        isUploading: false,
+        isProcessing: true,
+        uploadProgress: 100,
+        error: null
+      },
+      startUpload: vi.fn(),
+      clearUploadState: vi.fn()
+    })
+
+    render(
+      <SnackbarProvider>
+        <MockedProvider>
+          <AddAudioLanguageDialog />
+        </MockedProvider>
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByTestId('close-button'))
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/videos/${mockVideoId}/audio`,
+      { scroll: false }
+    )
   })
 })

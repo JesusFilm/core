@@ -12,10 +12,10 @@ vi.mock('../../importer')
 vi.mock('../videoTitles/videoTitles')
 
 const testTranslation: ProcessedTranslation = {
+  stringId: 1,
   identifier: 'VIDEO123',
   text: 'Test video description',
-  languageId: '529',
-  context: ''
+  languageId: '529'
 }
 
 describe('importVideoDescriptions', () => {

@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
 import TextField from '@mui/material/TextField'
@@ -116,26 +117,28 @@ export function EmailInviteForm({
                 ? (errors.email as string)
                 : t('New users get access instantly.')
             }
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    type="submit"
-                    aria-label="add user"
-                    color="primary"
-                    disabled={values.email === ''}
-                  >
-                    <AddSquare4Icon
-                      sx={{
-                        color:
-                          values.email !== '' && errors.email == null
-                            ? 'primary.main'
-                            : 'secondary.light'
-                      }}
-                    />
-                  </IconButton>
-                </InputAdornment>
-              )
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      type="submit"
+                      aria-label="add user"
+                      color="primary"
+                      disabled={values.email === ''}
+                    >
+                      <AddSquare4Icon
+                        sx={{
+                          color:
+                            values.email !== '' && errors.email == null
+                              ? 'primary.main'
+                              : 'secondary.light'
+                        }}
+                      />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }
             }}
           />
         </Form>

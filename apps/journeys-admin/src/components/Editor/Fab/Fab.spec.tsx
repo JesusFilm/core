@@ -15,6 +15,7 @@ import {
 
 import type { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../__generated__/GetJourney'
 import { TestEditorState } from '../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../EditorLayoutContext'
 
 import { Fab } from '.'
 
@@ -181,6 +182,31 @@ describe('Fab', () => {
         </EditorProvider>
       )
       expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
+    })
+  })
+
+  describe('layered layout', () => {
+    beforeEach(() => (useMediaQuery as Mock).mockImplementation(() => true))
+
+    it('should open the settings drawer on add', () => {
+      const selectedStep = {
+        id: 'step1.id',
+        __typename: 'StepBlock',
+        children: []
+      } as unknown as TreeBlock<StepBlock>
+      render(
+        <EditorProvider initialState={{ ...state, selectedStep }}>
+          <EditorLayoutProvider value="layered">
+            <TestEditorState />
+            <Fab variant="canvas" />
+          </EditorLayoutProvider>
+        </EditorProvider>
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Add Block' }))
+      expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
+      expect(
+        screen.getByText('activeCanvasDetailsDrawer: 2')
+      ).toBeInTheDocument()
     })
   })
 

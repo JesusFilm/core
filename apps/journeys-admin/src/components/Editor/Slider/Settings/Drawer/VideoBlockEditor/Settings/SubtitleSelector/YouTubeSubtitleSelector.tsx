@@ -79,17 +79,17 @@ export function YouTubeSubtitleSelector({
         displayEmpty
         aria-label={t('Subtitle language selector')}
         sx={{
+          // MUI already truncates the selected value with an ellipsis, but
+          // only while this element is a block box — making it a flex
+          // container silently disables text-overflow. Long subtitle language
+          // names must truncate, so it stays block-level.
+          //
+          // The right padding is explicit because MUI reserves 32px for the
+          // dropdown arrow, and a `padding: '16px 12px'` shorthand would reset
+          // that gutter and let the text run underneath the arrow.
           '& .MuiSelect-select': {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            padding: '16px 12px',
+            padding: '16px 32px 16px 12px',
             lineHeight: '1.1875em'
-          },
-          '& .MuiFilledInput-input': {
-            padding: '16px 12px',
-            display: 'flex',
-            alignItems: 'center'
           },
           '& .MuiFilledInput-root': {
             alignItems: 'stretch'
@@ -108,9 +108,11 @@ export function YouTubeSubtitleSelector({
         }}
         MenuProps={{
           autoFocus: false,
-          PaperProps: {
-            sx: {
-              maxHeight: 400
+          slotProps: {
+            paper: {
+              sx: {
+                maxHeight: 400
+              }
             }
           }
         }}
@@ -154,7 +156,12 @@ export function YouTubeSubtitleSelector({
         })}
       </Select>
       {hasNoSubtitles && (
-        <Typography variant="caption" color="primary.main">
+        <Typography
+          variant="caption"
+          sx={{
+            color: 'primary.main'
+          }}
+        >
           {t('This video does not have any subtitles')}
         </Typography>
       )}

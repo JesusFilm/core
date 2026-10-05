@@ -10,7 +10,7 @@ const NEW_CLOUDFLARE_IMAGE_FRAGMENT = gql`
 `
 
 export function prependCloudflareImage(
-  cache: ApolloCache<unknown>,
+  cache: ApolloCache,
   image: { id: string; url: string; blurhash: string | null; userId: string },
   isAi: boolean
 ): void {

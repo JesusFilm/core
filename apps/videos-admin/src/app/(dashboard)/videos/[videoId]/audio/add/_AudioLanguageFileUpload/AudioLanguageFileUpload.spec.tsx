@@ -61,9 +61,7 @@ describe('AudioLanguageFileUpload', () => {
       )
 
       expect(screen.getByText('Upload Failed!')).toBeInTheDocument()
-      expect(
-        screen.getByText('Something went wrong, try again')
-      ).toBeInTheDocument()
+      expect(screen.getByText('Something went wrong')).toBeInTheDocument()
     })
   })
 

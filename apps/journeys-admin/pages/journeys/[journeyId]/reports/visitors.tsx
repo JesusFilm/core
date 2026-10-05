@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { GetServerSidePropsContext } from 'next'
@@ -32,8 +33,8 @@ import {
   FilterDrawer,
   GET_JOURNEY_BLOCK_TYPENAMES
 } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/FilterDrawer'
-import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog'
 import { GoogleSheetsSyncButton } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncButton'
+import { GoogleSheetsSyncDialog } from '../../../../src/components/JourneyVisitorsList/GoogleSheetsSyncDialog'
 import { VisitorToolbar } from '../../../../src/components/JourneyVisitorsList/VisitorToolbar/VisitorToolbar'
 import { PageWrapper } from '../../../../src/components/PageWrapper'
 import { ReportsNavigation } from '../../../../src/components/ReportsNavigation'
@@ -180,30 +181,34 @@ function JourneyVisitorsPage({
   const waitingForBlockTypes = withSubmittedText && !blockTypesLoaded
 
   const { data: userRoleData } = useUserRoleQuery()
-  const { fetchMore, loading: queryLoading } = useQuery<GetJourneyVisitors>(
-    GET_JOURNEY_VISITORS,
-    {
-      skip: waitingForBlockTypes,
-      variables: {
-        filter: {
-          journeyId,
-          hasChatStarted: chatStarted,
-          hasPollAnswers: withPollAnswers,
-          hasMultiselectSubmission: withMultiselectAnswers,
-          hasTextResponse: withSubmittedText,
-          hasIcon: withIcon,
-          hideInactive: hideInteractive
-        },
-        first: 100,
-        sort: sortSetting
+  const {
+    data: visitorsData,
+    fetchMore,
+    loading: queryLoading
+  } = useQuery<GetJourneyVisitors>(GET_JOURNEY_VISITORS, {
+    skip: waitingForBlockTypes,
+    variables: {
+      filter: {
+        journeyId,
+        hasChatStarted: chatStarted,
+        hasPollAnswers: withPollAnswers,
+        hasMultiselectSubmission: withMultiselectAnswers,
+        hasTextResponse: withSubmittedText,
+        hasIcon: withIcon,
+        hideInactive: hideInteractive
       },
-      onCompleted: (data) => {
-        setVisitorEdges(data.visitors.edges)
-        setHasNextPage(data.visitors.pageInfo.hasNextPage)
-        setEndCursor(data.visitors.pageInfo.endCursor)
-      }
+      first: 100,
+      sort: sortSetting
     }
-  )
+  })
+
+  // Apollo Client 4 removed `useQuery`'s `onCompleted` option.
+  useEffect(() => {
+    if (visitorsData == null) return
+    setVisitorEdges(visitorsData.visitors.edges)
+    setHasNextPage(visitorsData.visitors.pageInfo.hasNextPage)
+    setEndCursor(visitorsData.visitors.pageInfo.endCursor)
+  }, [visitorsData])
   const loading = queryLoading || waitingForBlockTypes
 
   const { data: userTeamsData } = useUserTeamsAndInvitesQuery(
@@ -315,9 +320,11 @@ function JourneyVisitorsPage({
         mainHeaderChildren={
           <Stack
             direction="row"
-            flexGrow={1}
-            alignItems="center"
-            justifyContent="space-between"
+            sx={{
+              flexGrow: 1,
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}
           >
             {/* Hide visitors count */}
             {/* {data?.journeyVisitorCount != null && (
@@ -405,7 +412,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   if (redirect != null) return { redirect }
 
-  let journey: Journey | null = null
+  let journey: Journey | null
 
   try {
     const { data } = await apolloClient.query<GetAdminJourney>({
@@ -415,7 +422,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       }
     })
 
-    journey = data?.journey
+    journey = data?.journey ?? null
   } catch (_) {
     return {
       redirect: {

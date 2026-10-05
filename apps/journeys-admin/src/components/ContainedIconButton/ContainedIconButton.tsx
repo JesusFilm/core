@@ -46,10 +46,11 @@ export function ContainedIconButton({
       <CardActionArea onClick={onClick} disabled={disabled || loading}>
         <Stack
           direction="row"
-          alignItems="center"
           spacing={3}
           sx={{
+            alignItems: 'center',
             p: 2,
+
             '& svg': {
               display: 'flex'
             }
@@ -67,7 +68,12 @@ export function ContainedIconButton({
               />
             )}
           </Box>
-          <Box flexGrow={1} minWidth={0}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              minWidth: 0
+            }}
+          >
             <Typography variant="subtitle2">{label}</Typography>
             {description != null && (
               <Typography variant="caption">{description}</Typography>

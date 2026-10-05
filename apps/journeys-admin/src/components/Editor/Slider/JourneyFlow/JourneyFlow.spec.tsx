@@ -1,5 +1,6 @@
-import { MutationResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import type { useMutation } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/compat/router'
@@ -25,11 +26,14 @@ import {
   GetStepBlocksWithPosition,
   GetStepBlocksWithPositionVariables
 } from '../../../../../__generated__/GetStepBlocksWithPosition'
+import { JourneySettingsUpdate } from '../../../../../__generated__/JourneySettingsUpdate'
+import { StepBlockPositionUpdate } from '../../../../../__generated__/StepBlockPositionUpdate'
 import { StepFields as StepBlock } from '../../../../../__generated__/StepFields'
 import { mockReactFlow } from '../../../../../test/mockReactFlow'
 import { useJourneyUpdateMutation } from '../../../../libs/useJourneyUpdateMutation'
 import { useStepBlockPositionUpdateMutation } from '../../../../libs/useStepBlockPositionUpdateMutation'
 import { MuxVideoUploadProvider } from '../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../EditorLayoutContext'
 import { CommandRedoItem } from '../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
@@ -95,7 +99,7 @@ describe('JourneyFlow', () => {
     } as unknown as NextRouter)
   })
 
-  const mockGetStepBlocksWithPosition: MockedResponse<
+  const mockGetStepBlocksWithPosition: MockLink.MockedResponse<
     GetStepBlocksWithPosition,
     GetStepBlocksWithPositionVariables
   > = {
@@ -159,8 +163,38 @@ describe('JourneyFlow', () => {
       expect(screen.getAllByTestId('StepBlockNodeCard')).toHaveLength(7)
     )
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+      screen.getByRole('switch', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
+  })
+
+  it('should keep flow controls visible in the layered layout when the drawer is open', async () => {
+    const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
+
+    render(
+      <MockedProvider mocks={[{ ...mockGetStepBlocksWithPosition, result }]}>
+        <SnackbarProvider>
+          <FlagsProvider flags={{}}>
+            <JourneyProvider value={{ journey: defaultJourney }}>
+              <EditorProvider
+                initialState={{ steps, activeSlide: ActiveSlide.Drawer }}
+              >
+                <MuxVideoUploadProvider>
+                  <EditorLayoutProvider value="layered">
+                    <Box sx={{ width: '100vw', height: '100vh' }}>
+                      <JourneyFlow />
+                    </Box>
+                  </EditorLayoutProvider>
+                </MuxVideoUploadProvider>
+              </EditorProvider>
+            </JourneyProvider>
+          </FlagsProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+
+    expect(screen.getByRole('button', { name: 'Add Step' })).toBeInTheDocument()
   })
 
   it('should update step positions if any step does not have a position', async () => {
@@ -171,7 +205,8 @@ describe('JourneyFlow', () => {
     }))
     const result = vi.fn().mockReturnValue({ data: { blocks } })
     const mockUpdate = vi.fn()
-    const mockResult = vi.fn() as unknown as MutationResult
+    const mockResult =
+      vi.fn() as unknown as useMutation.Result<StepBlockPositionUpdate>
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
@@ -236,7 +271,8 @@ describe('JourneyFlow', () => {
   it('should reorganize graph', async () => {
     const result = vi.fn().mockReturnValue(mockGetStepBlocksWithPosition.result)
     const mockUpdate = vi.fn()
-    const mockResult = vi.fn() as unknown as MutationResult
+    const mockResult =
+      vi.fn() as unknown as useMutation.Result<StepBlockPositionUpdate>
     mockUseStepBlockPositionUpdateMutation.mockReturnValue([
       mockUpdate,
       mockResult
@@ -334,7 +370,8 @@ describe('JourneyFlow', () => {
 
     // Mock for journey update
     const mockJourneyUpdate = vi.fn()
-    const mockJourneyResult = vi.fn() as unknown as MutationResult
+    const mockJourneyResult =
+      vi.fn() as unknown as useMutation.Result<JourneySettingsUpdate>
     mockUseJourneyUpdateMutation.mockReturnValue([
       mockJourneyUpdate,
       mockJourneyResult
@@ -598,7 +635,7 @@ describe('JourneyFlow', () => {
     await waitFor(() => expect(result).toHaveBeenCalled())
 
     expect(
-      screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+      screen.getByRole('switch', { name: 'Analytics Overlay' })
     ).toBeInTheDocument()
   })
 
@@ -752,7 +789,7 @@ describe('JourneyFlow', () => {
       ).not.toBeInTheDocument()
       // The analytics switch still renders for non-template journeys.
       expect(
-        screen.getByRole('checkbox', { name: 'Analytics Overlay' })
+        screen.getByRole('switch', { name: 'Analytics Overlay' })
       ).toBeInTheDocument()
     })
   })

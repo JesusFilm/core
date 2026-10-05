@@ -38,9 +38,11 @@ export function JourneyDetails(): ReactElement {
             // title instead of getting squeezed against it. Desktop
             // toolbar (md+) keeps the original side-by-side layout.
             direction={{ xs: 'column', md: 'row' }}
-            alignItems={{ xs: 'flex-start', md: 'center' }}
-            gap={1}
-            sx={{ minWidth: 0 }}
+            sx={{
+              alignItems: { xs: 'flex-start', md: 'center' },
+              gap: 1,
+              minWidth: 0
+            }}
           >
             <Typography
               sx={{

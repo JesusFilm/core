@@ -1,6 +1,5 @@
 'use client'
-
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
@@ -114,7 +113,11 @@ export default function EditEditionPage({ params }: EditEditionPageProps) {
       >
         {({ values, errors, handleChange, isValid, isSubmitting, dirty }) => (
           <Form data-testId="EditionForm" style={{ marginBottom: 16 }}>
-            <Stack gap={2}>
+            <Stack
+              sx={{
+                gap: 2
+              }}
+            >
               <TextField
                 id="name"
                 name="name"
@@ -128,7 +131,12 @@ export default function EditEditionPage({ params }: EditEditionPageProps) {
                 sx={{ flexGrow: 1, mt: 1 }}
                 disabled={values.name === 'base'}
               />
-              <Stack direction="row" justifyContent="end">
+              <Stack
+                direction="row"
+                sx={{
+                  justifyContent: 'end'
+                }}
+              >
                 <SaveButton
                   disabled={!isValid || isSubmitting || !dirty || !values.name}
                 />
@@ -226,8 +234,11 @@ export default function EditEditionPage({ params }: EditEditionPageProps) {
                       {shouldShowSecondaryName && (
                         <Typography
                           variant="body2"
-                          color="text.secondary"
-                          sx={{ fontWeight: 300, fontSize: '0.875rem' }}
+                          sx={{
+                            color: 'text.secondary',
+                            fontWeight: 300,
+                            fontSize: '0.875rem'
+                          }}
                         >
                           {primaryName}
                         </Typography>
@@ -252,7 +263,13 @@ export default function EditEditionPage({ params }: EditEditionPageProps) {
                       }}
                     />
                   </Stack>
-                  <Stack direction="row" alignItems="center" gap={1}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      alignItems: 'center',
+                      gap: 1
+                    }}
+                  >
                     {subtitle.primary && (
                       <Chip label="Primary" color="success" variant="filled" />
                     )}

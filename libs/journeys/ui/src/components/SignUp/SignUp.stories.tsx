@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { SnackbarProvider } from 'notistack'
 import { ComponentProps, ReactElement } from 'react'
@@ -7,9 +8,9 @@ import { screen, userEvent } from 'storybook/test'
 import { IconName, TypographyVariant } from '../../../__generated__/globalTypes'
 import { ApolloLoadingProvider } from '../../../test/ApolloLoadingProvider'
 import { JourneyProvider } from '../../libs/JourneyProvider'
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 import { Typography } from '../Typography'
 
 import { SIGN_UP_SUBMISSION_EVENT_CREATE, SignUp } from './SignUp'
@@ -62,7 +63,7 @@ const signUpProps: ComponentProps<typeof SignUp> = {
   children: []
 }
 
-const submitEventMock: MockedResponse = {
+const submitEventMock: MockLink.MockedResponse = {
   request: {
     query: SIGN_UP_SUBMISSION_EVENT_CREATE,
     variables: {

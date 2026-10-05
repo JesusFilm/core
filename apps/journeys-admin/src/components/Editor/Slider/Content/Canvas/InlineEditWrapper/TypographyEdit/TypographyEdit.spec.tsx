@@ -1,8 +1,8 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 import { ComponentProps } from 'react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -10,6 +10,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { GetJourney_journey as Journey } from '../../../../../../../../__generated__/GetJourney'
 import { TypographyVariant } from '../../../../../../../../__generated__/globalTypes'
+import { DebounceLink } from '../../../../../../../libs/apolloClient/DebounceLink'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 
@@ -138,7 +139,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -164,7 +165,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: { id: 'journeyId' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <h1>Other content</h1>
@@ -254,7 +255,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -279,7 +280,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: mockJourneyWithCustomization,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>
@@ -304,7 +305,7 @@ describe('TypographyEdit', () => {
         <JourneyProvider
           value={{
             journey: mockTemplateJourney,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider>

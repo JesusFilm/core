@@ -14,7 +14,13 @@ export function FooterButtonList(): ReactElement {
   const showDislikeButton = journey?.showDislikeButton ?? true
 
   return (
-    <Stack direction="row" gap={2.5} data-testid="StepFooterButtonList">
+    <Stack
+      direction="row"
+      data-testid="StepFooterButtonList"
+      sx={{
+        gap: 2.5
+      }}
+    >
       {showShareButton && <ShareButton />}
       {showLikeButton && <ReactionButton variant="thumbsup" />}
       {showDislikeButton && <ReactionButton variant="thumbsdown" />}

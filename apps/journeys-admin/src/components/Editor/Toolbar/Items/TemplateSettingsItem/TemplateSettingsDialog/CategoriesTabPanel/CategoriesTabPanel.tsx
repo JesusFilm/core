@@ -73,10 +73,12 @@ export function CategoriesTabPanel(): ReactElement {
           if (tagId != null) {
             return (
               <Stack
-                gap={2}
                 key={`${tags[tagId].label}-tag-autocomplete`}
                 direction="row"
-                alignItems="center"
+                sx={{
+                  gap: 2,
+                  alignItems: 'center'
+                }}
               >
                 <ParentTagIcon
                   name={orderedTagLabels[index]}

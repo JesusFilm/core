@@ -54,7 +54,13 @@ export function Button({
     >
       <StyledTooltip
         title={
-          <Typography variant="caption" lineHeight="12px" sx={{ my: 1.25 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              lineHeight: '12px',
+              my: 1.25
+            }}
+          >
             {disabled && value === 'Video'
               ? t(
                   'Video Block cannot be placed on top of Blocks or Background Video/Image'
@@ -114,10 +120,12 @@ export function Button({
               >
                 <Stack
                   direction="row"
-                  gap={4}
-                  ml={3}
-                  mr={3}
-                  alignItems="center"
+                  sx={{
+                    gap: 4,
+                    ml: 3,
+                    mr: 3,
+                    alignItems: 'center'
+                  }}
                 >
                   {icon}
                   <Typography>{t(value)}</Typography>

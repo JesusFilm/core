@@ -1,1 +1,0 @@
-export { ContentMetadata } from './ContentMetadata'

@@ -19,7 +19,12 @@ export const OrderedItemIcons = memo(function OrderedItemIcons({
   iconButtons
 }: OrderedItemIconsProps): ReactElement {
   return (
-    <Stack direction="row" gap={0.75}>
+    <Stack
+      direction="row"
+      sx={{
+        gap: 0.75
+      }}
+    >
       {iconButtons.map(({ Icon, events, name, slotProps }) => (
         <IconButton
           size="small"

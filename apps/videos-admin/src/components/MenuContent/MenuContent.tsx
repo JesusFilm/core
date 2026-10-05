@@ -1,5 +1,9 @@
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import BugReportRoundedIcon from '@mui/icons-material/BugReportRounded'
+import FactCheckRoundedIcon from '@mui/icons-material/FactCheckRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
+import TranslateRoundedIcon from '@mui/icons-material/TranslateRounded'
 import VideoLibraryRoundedIcon from '@mui/icons-material/VideoLibraryRounded'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
@@ -11,38 +15,113 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ReactElement, ReactNode } from 'react'
 
+export const GET_NAVIGATION_ROLES = gql`
+  query GetNavigationRoles {
+    me {
+      id
+      __typename
+      ... on AuthenticatedUser {
+        mediaUserRoles
+        languageUserRoles
+      }
+    }
+  }
+`
+
+export interface NavigationRolesData {
+  me?: {
+    __typename?: string
+    mediaUserRoles?: string[]
+    languageUserRoles?: string[]
+  } | null
+}
+
 interface Item {
   text: string
   icon: ReactNode
   href: string
   startsWith?: boolean
+  excludedStartsWith?: string[]
+}
+
+function isItemSelected(item: Item, pathname: string | null): boolean {
+  if (pathname == null) return false
+
+  if (
+    item.href === '/videos' &&
+    pathname.startsWith('/videos/status-pipeline')
+  ) {
+    return false
+  }
+
+  if (
+    item.excludedStartsWith?.some((excludedPath) =>
+      pathname.startsWith(excludedPath)
+    ) === true
+  ) {
+    return false
+  }
+
+  return (
+    pathname === item.href ||
+    (item.startsWith === true && pathname.startsWith(item.href))
+  )
 }
 
 export function MenuContent(): ReactElement {
   const pathname = usePathname()
+  const { data } = useQuery<NavigationRolesData>(GET_NAVIGATION_ROLES)
+  const mediaUserRoles = data?.me?.mediaUserRoles ?? []
+  const languageUserRoles = data?.me?.languageUserRoles ?? []
+  const hasMediaAccess = mediaUserRoles.includes('publisher')
+  const hasLanguageAccess = languageUserRoles.includes('publisher')
 
   const mainListItems: Item[] = [
-    {
-      text: 'Home',
-      icon: <HomeRoundedIcon />,
-      href: '/'
-    },
-    {
-      text: 'Video Library',
-      icon: <VideoLibraryRoundedIcon />,
-      href: '/videos',
-      startsWith: true
-    }
+    ...(hasMediaAccess
+      ? [
+          {
+            text: 'Video Library',
+            icon: <VideoLibraryRoundedIcon />,
+            href: '/videos',
+            startsWith: true,
+            excludedStartsWith: ['/videos/algolia-debugging']
+          },
+          {
+            text: 'Algolia Debugging',
+            icon: <BugReportRoundedIcon />,
+            href: '/videos/algolia-debugging',
+            startsWith: true
+          },
+          {
+            text: 'Video Status Pipeline',
+            icon: <FactCheckRoundedIcon />,
+            href: '/videos/status-pipeline',
+            startsWith: true
+          }
+        ]
+      : []),
+    ...(hasLanguageAccess
+      ? [
+          {
+            text: 'Language Admin',
+            icon: <TranslateRoundedIcon />,
+            href: '/languages',
+            startsWith: true
+          }
+        ]
+      : [])
   ]
 
-  const secondaryListItems: Item[] = [
-    {
-      text: 'Settings',
-      icon: <SettingsRoundedIcon />,
-      href: '/settings',
-      startsWith: true
-    }
-  ]
+  const secondaryListItems: Item[] = hasMediaAccess
+    ? [
+        {
+          text: 'Settings',
+          icon: <SettingsRoundedIcon />,
+          href: '/settings',
+          startsWith: true
+        }
+      ]
+    : []
 
   return (
     <Stack
@@ -58,10 +137,7 @@ export function MenuContent(): ReactElement {
             <ListItemButton
               LinkComponent={Link}
               href={item.href}
-              selected={
-                pathname === item.href ||
-                (item.startsWith === true && pathname?.startsWith(item.href))
-              }
+              selected={isItemSelected(item, pathname)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
@@ -76,10 +152,7 @@ export function MenuContent(): ReactElement {
             <ListItemButton
               LinkComponent={Link}
               href={item.href}
-              selected={
-                pathname === item.href ||
-                (item.startsWith === true && pathname?.startsWith(item.href))
-              }
+              selected={isItemSelected(item, pathname)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

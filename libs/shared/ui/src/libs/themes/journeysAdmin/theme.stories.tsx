@@ -275,8 +275,10 @@ const ButtonVariants = (): ReactElement => {
               key={color}
               direction="row"
               spacing={2}
-              alignItems="center"
-              flexWrap="wrap"
+              sx={{
+                alignItems: 'center',
+                flexWrap: 'wrap'
+              }}
             >
               <Button variant={variant} color={color}>
                 {color}

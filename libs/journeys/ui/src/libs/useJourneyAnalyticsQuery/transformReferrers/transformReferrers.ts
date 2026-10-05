@@ -56,7 +56,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]): {
       nodes.push({
         id: referrer.property,
         type: 'Referrer',
-        data: { ...referrer } as Record<string, unknown>,
+        data: { ...referrer },
         position: { x: -600, y: THREE_NODE_Y_POSITIONS[idx] },
         draggable: false
       })
@@ -79,7 +79,7 @@ export function transformReferrers(referrers?: JourneyReferrer[]): {
       nodes.push({
         id: referrer.property,
         type: 'Referrer',
-        data: { ...referrer } as Record<string, unknown>,
+        data: { ...referrer },
         position: { x: -600, y: yPos },
         draggable: false
       })

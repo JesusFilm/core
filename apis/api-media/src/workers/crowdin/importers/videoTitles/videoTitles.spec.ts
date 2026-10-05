@@ -28,16 +28,17 @@ const testVideo: Video = {
   originId: null,
   restrictDownloadPlatforms: [],
   restrictViewPlatforms: [],
+  restrictTranslations: false,
   publishedAt: null,
   createdAt: new Date(),
   updatedAt: new Date()
 }
 
 const testTranslation: ProcessedTranslation = {
+  stringId: 1,
   identifier: 'VIDEO123',
   text: 'Test video title',
-  languageId: '529',
-  context: ''
+  languageId: '529'
 }
 
 describe('importVideoTitles', () => {

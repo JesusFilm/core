@@ -125,13 +125,10 @@ export function keyify({
   target,
   journeyId
 }: KeyifyProps): string {
-  let targetId = ''
-
-  if (typeof target === 'string' || target == null) {
-    targetId = target ?? ''
-  } else {
-    targetId = generateActionTargetKey(target)
-  }
+  const targetId =
+    typeof target === 'string' || target == null
+      ? (target ?? '')
+      : generateActionTargetKey(target)
 
   return JSON.stringify({
     stepId,
@@ -176,13 +173,10 @@ export function templateKeyify({
   target,
   journeyId
 }: TemplateKeyifyProps): string {
-  let targetId = ''
-
-  if (typeof target === 'string' || target == null) {
-    targetId = target ?? ''
-  } else {
-    targetId = generateActionTargetKey(target)
-  }
+  const targetId =
+    typeof target === 'string' || target == null
+      ? (target ?? '')
+      : generateActionTargetKey(target)
 
   return JSON.stringify({
     event,
@@ -195,7 +189,7 @@ export function templateKeyify({
 // Uses Record (not Partial) so TypeScript requires an explicit entry for every BlockEventLabel.
 // Adding a new BlockEventLabel without updating this map is a compile error.
 // Server-side counterpart: EVENT_TO_CAPTURE_MAP in
-// apis/api-journeys-modern/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts
+// apis/api-journeys/src/schema/plausible/templateFamilyStatsBreakdown/utils/transformBreakdownResults.ts
 // Both maps must stay in sync.
 export const BLOCK_EVENT_LABEL_TO_PLAUSIBLE_EVENT: Record<
   BlockEventLabel,
@@ -256,7 +250,7 @@ export function fireCaptureEvent<TInput extends object>(
         target: templateTarget,
         journeyId
       })
-    } as Props
+    }
   })
 }
 

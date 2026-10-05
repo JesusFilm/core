@@ -59,9 +59,9 @@ export async function processFile(
             if (!sourceString) return null
 
             return {
+              stringId: translation.stringId,
               identifier: sourceString.identifier,
               text: translation.text,
-              context: sourceString.context,
               languageId
             }
           })

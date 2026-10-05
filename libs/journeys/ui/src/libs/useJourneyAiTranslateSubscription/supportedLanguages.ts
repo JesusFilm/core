@@ -46,6 +46,7 @@ export const SUPPORTED_LANGUAGE_IDS = [
   '18259', // Mongolian, Halh
   '1254', // Myanmar (Burmese)
   '10393', // Norwegian
+  '374', // Pashto, Northern (Yusufzai)
   '5546', // Romanian
   '13172', // Sinhala
   '5545', // Slovak

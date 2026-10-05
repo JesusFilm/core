@@ -1,9 +1,5 @@
-import {
-  LazyQueryResultTuple,
-  gql,
-  useApolloClient,
-  useLazyQuery
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useApolloClient, useLazyQuery } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import {
@@ -11,6 +7,7 @@ import {
   GetTemplateFamilyStatsAggregateVariables
 } from '../../../__generated__/GetTemplateFamilyStatsAggregate'
 import { IdType } from '../../../__generated__/globalTypes'
+import { buildAllTimeStatsFilter } from '../buildAllTimeStatsFilter'
 
 export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
   query GetTemplateFamilyStatsAggregate(
@@ -34,7 +31,7 @@ export const GET_TEMPLATE_FAMILY_STATS_AGGREGATE = gql`
  *   - refetchTemplateStats: Function to refetch stats for multiple templates
  */
 export function useTemplateFamilyStatsAggregateLazyQuery(): {
-  query: LazyQueryResultTuple<
+  query: useLazyQuery.ResultTuple<
     GetTemplateFamilyStatsAggregate,
     GetTemplateFamilyStatsAggregateVariables
   >
@@ -63,7 +60,7 @@ export function useTemplateFamilyStatsAggregateLazyQuery(): {
             variables: {
               id: templateId,
               idType: IdType.databaseId,
-              where: {}
+              where: buildAllTimeStatsFilter()
             },
             fetchPolicy: 'network-only'
           })

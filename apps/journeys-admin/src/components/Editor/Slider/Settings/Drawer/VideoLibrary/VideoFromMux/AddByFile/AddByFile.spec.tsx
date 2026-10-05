@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -49,6 +49,10 @@ vi.mock('@mux/upchunk', async () => ({
 
 vi.mock('../../../../../../../../libs/validateMuxLanguage', async () => ({
   validateMuxLanguage: vi.fn().mockReturnValue(true)
+}))
+
+vi.mock('./utils/getVideoDuration/getVideoDuration', async () => ({
+  getVideoDuration: vi.fn().mockResolvedValue(10)
 }))
 
 const mockJourney: Journey = {
@@ -429,6 +433,28 @@ describe('AddByFile', () => {
     )
 
     expect(screen.getByTestId('AddByFile')).toBeInTheDocument()
+  })
+
+  it('should forward the active journey id to addUploadTask on drop', async () => {
+    const addUploadTask = vi.fn()
+    mockUseMuxVideoUpload.mockReturnValue({
+      getUploadStatus: () => null,
+      addUploadTask,
+      cancelUploadForBlock: vi.fn()
+    })
+
+    render(
+      <TestWrapper journey={mockJourney}>
+        <AddByFile onChange={vi.fn()} />
+      </TestWrapper>
+    )
+
+    await dropTestVideo()
+
+    await waitFor(() => expect(addUploadTask).toHaveBeenCalled())
+    // journeyId is the 6th positional argument to addUploadTask
+    expect(addUploadTask.mock.calls[0][0]).toBe('videoBlockId')
+    expect(addUploadTask.mock.calls[0][5]).toBe('journeyId')
   })
 
   it('should handle journey without language', () => {

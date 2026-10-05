@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { AdminView } from './AdminView'
 import { PublicGalleryPageData } from './galleryTokens'
@@ -27,12 +27,20 @@ interface PublicGalleryPageProps {
    * - `admin` — the compact recreation in the admin collection dialog
    */
   variant?: PublicGalleryPageVariant
+  /**
+   * Admin-only: custom renderer for the media section (the dialog previews
+   * in-progress form state the public renderer can't). Ignored by the
+   * journey variant, which renders `data.media` itself.
+   */
+  mediaSlot?: ReactNode
 }
 
 export function PublicGalleryPage({
   data,
-  variant = 'journey'
+  variant = 'journey',
+  mediaSlot
 }: PublicGalleryPageProps): ReactElement {
-  if (variant === 'admin') return <AdminView data={data} />
+  if (variant === 'admin')
+    return <AdminView data={data} mediaSlot={mediaSlot} />
   return <JourneyView data={data} />
 }

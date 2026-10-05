@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useRouter } from 'next/navigation'
@@ -10,7 +10,7 @@ import { resolvedParams } from '../../../../../../../test/utils/resolvedParams'
 import StudyQuestionDeletePage from './page'
 
 // Mock the Apollo Client hooks
-vi.mock('@apollo/client', () => {
+vi.mock('@apollo/client/react', () => {
   const mockMutation = vi.fn(() =>
     Promise.resolve({
       data: { videoStudyQuestionDelete: { id: 'study-question-123' } }

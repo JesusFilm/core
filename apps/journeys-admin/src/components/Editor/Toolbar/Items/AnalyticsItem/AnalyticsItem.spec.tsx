@@ -1,4 +1,6 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import MenuList from '@mui/material/MenuList'
 import { render, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
@@ -23,7 +25,7 @@ vi.mock('date-fns', async () => {
 
 const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
 
-const getJourneyPlausibleVisitorsMock: MockedResponse<
+const getJourneyPlausibleVisitorsMock: MockLink.MockedResponse<
   GetJourneyPlausibleVisitors,
   GetJourneyPlausibleVisitorsVariables
 > = {
@@ -64,7 +66,8 @@ describe('AnalyticsItem', () => {
             <AnalyticsItem variant="menu-item" journeyId={defaultJourney.id} />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(
       getByRole('menuitem', { name: 'Analytics 0 visitors' })
@@ -82,7 +85,8 @@ describe('AnalyticsItem', () => {
             <AnalyticsItem variant="button" journeyId={defaultJourney.id} />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(getByRole('link', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('link', { name: 'Analytics' })).toHaveAttribute(
@@ -103,7 +107,8 @@ describe('AnalyticsItem', () => {
             />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     expect(getByRole('link', { name: 'Analytics' })).toBeInTheDocument()
     expect(getByRole('link', { name: 'Analytics' })).toHaveAttribute(
@@ -129,7 +134,8 @@ describe('AnalyticsItem', () => {
             />
           </TeamProvider>
         </MockedProvider>
-      </SnackbarProvider>
+      </SnackbarProvider>,
+      { wrapper: MenuList }
     )
     await waitFor(() => expect(result).toHaveBeenCalled())
     expect(getByRole('link')).toHaveTextContent('10')

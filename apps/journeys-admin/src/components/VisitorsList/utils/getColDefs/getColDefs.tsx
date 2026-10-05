@@ -13,9 +13,6 @@ const CellTextField = ({ value }: CellTextFieldProps): ReactElement => (
     maxRows={3}
     fullWidth
     disabled
-    InputProps={{
-      disableUnderline: true
-    }}
     sx={{
       p: 0,
       '& .MuiInputBase-input.Mui-disabled': {
@@ -24,6 +21,11 @@ const CellTextField = ({ value }: CellTextFieldProps): ReactElement => (
         '&:hover': {
           cursor: 'pointer'
         }
+      }
+    }}
+    slotProps={{
+      input: {
+        disableUnderline: true
       }
     }}
   />

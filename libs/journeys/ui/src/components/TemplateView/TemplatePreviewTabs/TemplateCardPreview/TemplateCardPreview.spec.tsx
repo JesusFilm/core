@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
@@ -557,7 +557,7 @@ describe('TemplateCardPreview', () => {
       render(
         <MockedProvider>
           <ThemeProvider theme={createTheme()}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TemplateCardPreview steps={steps} variant="guestPreview" />
             </JourneyProvider>
           </ThemeProvider>
@@ -608,7 +608,7 @@ describe('TemplateCardPreview', () => {
       render(
         <MockedProvider>
           <ThemeProvider theme={createTheme()}>
-            <JourneyProvider value={{ journey, variant: 'admin' }}>
+            <JourneyProvider value={{ journey, renderMode: 'admin' }}>
               <TemplateCardPreview
                 steps={steps}
                 variant="guestPreview"

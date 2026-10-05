@@ -1,0 +1,13 @@
+# Kubernetes
+
+- Use Helm charts to manage application deployments.
+- Cluster state is managed declaratively (GitOps) — change manifests/charts, don't patch clusters by hand.
+- Use workload identities for pod-to-service authentication; never mount long-lived credentials.
+- Use HPA for scaling; use StatefulSets only for workloads needing persistent storage or stable identity.
+- Restrict traffic between services with network policies.
+
+## Bash Scripts
+
+- POSIX-compliant syntax; lint with `shellcheck`.
+- Validate inputs; no hardcoded values — use environment variables or parameters.
+- Use `trap` for cleanup of temporary files on error.

@@ -62,22 +62,31 @@ export function MobileControls({
       {/* Time Label and Fullscreen Button */}
       <Stack
         direction="row"
-        gap={5}
-        justifyContent="space-between"
-        alignItems="center"
+        sx={{
+          gap: 5,
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
       >
         {showTime && (
           <Typography
             variant="caption"
-            color="secondary.main"
             noWrap
-            overflow="unset"
-            sx={{ p: 2 }}
+            sx={{
+              color: 'secondary.main',
+              overflow: 'unset',
+              p: 2
+            }}
           >
             {displayTime} / {duration}
           </Typography>
         )}
-        <Stack direction="row" alignItems="center">
+        <Stack
+          direction="row"
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <SubtitleButton
             player={player}
             source={source}

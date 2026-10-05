@@ -26,7 +26,14 @@ export function Integrations(): ReactElement {
         }}
       >
         <BreadcrumbNavigation />
-        <Stack direction="row" gap={4} sx={{ flexWrap: 'wrap', mt: 10 }}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 4,
+            flexWrap: 'wrap',
+            mt: 10
+          }}
+        >
           {teamIntegrations === true && (
             <IntegrationsButton
               url={`/teams/${

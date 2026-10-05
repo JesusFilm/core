@@ -89,7 +89,7 @@ describe('GuestPreviewScreen', () => {
 
   it('renders desktop subtitle', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
@@ -102,7 +102,7 @@ describe('GuestPreviewScreen', () => {
 
   it('renders mobile subtitle', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
@@ -111,7 +111,7 @@ describe('GuestPreviewScreen', () => {
 
   it('displays quoted journey title when journey has title', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
@@ -120,7 +120,7 @@ describe('GuestPreviewScreen', () => {
 
   it('renders CardsPreview', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
@@ -129,7 +129,7 @@ describe('GuestPreviewScreen', () => {
 
   it('calls router.push with sign-in path and redirect when Continue with account is clicked', () => {
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
@@ -149,9 +149,7 @@ describe('GuestPreviewScreen', () => {
 
   it('includes journey customize URL for next screen in redirect', () => {
     render(
-      <JourneyProvider
-        value={{ journey: { ...journey, id: 'journey-123' } as never }}
-      >
+      <JourneyProvider value={{ journey: { ...journey, id: 'journey-123' } }}>
         <GuestPreviewScreen screens={defaultScreens} />
       </JourneyProvider>
     )
@@ -170,7 +168,7 @@ describe('GuestPreviewScreen', () => {
   describe('dialog', () => {
     it('opens dialog with correct initialStepId when a card is clicked', () => {
       render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <GuestPreviewScreen screens={defaultScreens} />
         </JourneyProvider>
       )
@@ -186,7 +184,7 @@ describe('GuestPreviewScreen', () => {
 
     it('closes dialog when onClose is called', () => {
       render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <GuestPreviewScreen screens={defaultScreens} />
         </JourneyProvider>
       )
@@ -212,7 +210,7 @@ describe('GuestPreviewScreen', () => {
     ]
 
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <GuestPreviewScreen screens={screensEndingAtPreview} />
       </JourneyProvider>
     )

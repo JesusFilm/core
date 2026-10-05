@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -48,7 +48,7 @@ export const NavigateToBlock: StoryObj<typeof NavigateToBlockAction> = {
             <JourneyProvider
               value={{
                 journey: journeyTheme,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={{ steps }}>
@@ -64,7 +64,7 @@ export const NavigateToBlock: StoryObj<typeof NavigateToBlockAction> = {
             <JourneyProvider
               value={{
                 journey: journeyTheme,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={{ selectedBlock, steps }}>

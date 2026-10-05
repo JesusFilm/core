@@ -1,4 +1,5 @@
-import { useQuery } from '@apollo/client'
+import { NormalizedCacheObject } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
@@ -153,7 +154,7 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   return {
     props: {
       ...translations,
-      initialApolloState: apolloClient.cache.extract()
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject
     },
     revalidate: 60
   }

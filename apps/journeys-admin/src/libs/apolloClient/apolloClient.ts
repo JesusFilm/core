@@ -1,35 +1,29 @@
-import MutationQueueLink from '@adobe/apollo-link-mutation-queue'
 import {
   ApolloClient,
   ApolloLink,
-  FetchResult,
+  CombinedGraphQLErrors,
   HttpLink,
-  NextLink,
-  NormalizedCacheObject,
-  Operation,
-  from,
-  split
+  NormalizedCacheObject
 } from '@apollo/client'
 import { EntityStore, StoreObject } from '@apollo/client/cache'
-import { setContext } from '@apollo/client/link/context'
-import { onError } from '@apollo/client/link/error'
+import { SetContextLink } from '@apollo/client/link/context'
+import { ErrorLink } from '@apollo/client/link/error'
 import { getMainDefinition } from '@apollo/client/utilities'
-import DebounceLink from 'apollo-link-debounce'
-import { getApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
 import { print } from 'graphql'
 import { createClient } from 'graphql-sse'
 import { useMemo } from 'react'
-import { Observable } from 'zen-observable-ts'
+import { Observable } from 'rxjs'
 
 import { isDevHost } from '@core/shared/dev-hosts'
 
-import { logout } from '../auth/firebase'
+import { getFirebaseAuth, logout } from '../auth/firebase'
 
 import { cache } from './cache'
+import { DebounceLink } from './DebounceLink'
+import { MutationQueueLink } from './MutationQueueLink'
 
 const ssrMode = typeof window === 'undefined'
-let apolloClient: ApolloClient<NormalizedCacheObject>
+let apolloClient: ApolloClient
 
 const DEFAULT_DEBOUNCE_TIMEOUT = 500
 
@@ -93,9 +87,9 @@ export class SSELink extends ApolloLink {
   }
 
   public request(
-    operation: Operation,
-    _forward?: NextLink
-  ): Observable<FetchResult> | null {
+    operation: ApolloLink.Operation,
+    _forward: ApolloLink.ForwardFunction
+  ): Observable<ApolloLink.Result> {
     const headers = operation.getContext().headers ?? {}
     const client = createClient({
       url: this.url,
@@ -106,7 +100,7 @@ export class SSELink extends ApolloLink {
       })
     })
 
-    return new Observable<FetchResult>((observer) => {
+    return new Observable<ApolloLink.Result>((observer) => {
       const unsubscribe = client.subscribe(
         {
           query: print(operation.query),
@@ -115,7 +109,7 @@ export class SSELink extends ApolloLink {
         },
         {
           next: (data) => {
-            observer.next(data as FetchResult)
+            observer.next(data as ApolloLink.Result)
           },
           error: (error) => {
             observer.error(
@@ -139,11 +133,11 @@ export class SSELink extends ApolloLink {
 // Creates the error link that handles UNAUTHENTICATED errors by logging the
 // user out and propagating a settled error observable.
 export function createErrorLink(): ApolloLink {
-  return onError(({ graphQLErrors }) => {
+  return new ErrorLink(({ error }) => {
     if (
       !ssrMode &&
-      graphQLErrors?.some((e) => e.extensions?.code === 'UNAUTHENTICATED') ===
-        true
+      CombinedGraphQLErrors.is(error) &&
+      error.errors.some((e) => e.extensions?.code === 'UNAUTHENTICATED')
     ) {
       void logout()
       // Propagate a settled error so any awaiting promise rejects cleanly
@@ -155,9 +149,7 @@ export function createErrorLink(): ApolloLink {
   })
 }
 
-export function createApolloClient(
-  token?: string
-): ApolloClient<NormalizedCacheObject> {
+export function createApolloClient(token?: string): ApolloClient {
   const gatewayUrl = resolveGatewayUrl()
 
   // Create HTTP link for queries and mutations
@@ -168,10 +160,10 @@ export function createApolloClient(
   // Create SSE link for subscriptions using graphql-sse
   const sseLink = new SSELink(gatewayUrl)
 
-  const authLink = setContext(async (_, { headers }) => {
+  const authLink = new SetContextLink(async ({ headers }) => {
     const firebaseToken = ssrMode
       ? token
-      : ((await getAuth(getApp()).currentUser?.getIdToken()) ?? token)
+      : ((await getFirebaseAuth().currentUser?.getIdToken()) ?? token)
 
     return {
       headers: {
@@ -191,7 +183,7 @@ export function createApolloClient(
   const debounceLink = new DebounceLink(DEFAULT_DEBOUNCE_TIMEOUT)
 
   // Split link: use SSE for subscriptions, HTTP for queries/mutations
-  const splitLink = split(
+  const splitLink = ApolloLink.split(
     ({ query }) => {
       const definition = getMainDefinition(query)
       return (
@@ -203,7 +195,7 @@ export function createApolloClient(
     httpLink
   )
 
-  const link = from([
+  const link = ApolloLink.from([
     errorLink,
     debounceLink,
     mutationQueueLink,
@@ -215,7 +207,10 @@ export function createApolloClient(
     ssrMode,
     link,
     cache: cache(),
-    connectToDevTools: true
+
+    devtools: {
+      enabled: true
+    }
   })
 }
 
@@ -227,7 +222,7 @@ interface InitializeApolloOptions {
 export function initializeApollo({
   token,
   initialState
-}: InitializeApolloOptions): ApolloClient<NormalizedCacheObject> {
+}: InitializeApolloOptions): ApolloClient {
   const _apolloClient = apolloClient ?? createApolloClient(token)
 
   // If your page has Next.js data fetching methods that use Apollo Client,
@@ -253,7 +248,7 @@ export function initializeApollo({
 export function useApollo({
   token,
   initialState
-}: InitializeApolloOptions): ApolloClient<NormalizedCacheObject> {
+}: InitializeApolloOptions): ApolloClient {
   const store = useMemo(
     () => initializeApollo({ token, initialState }),
     [token, initialState]

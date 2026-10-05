@@ -33,8 +33,9 @@ export function OnboardingDrawer(): ReactElement {
 
   return (
     <Stack
-      alignItems="center"
+      data-testid="JourneysAdminOnboardingDrawer"
       sx={{
+        alignItems: 'center',
         mt: { xs: 4, sm: 10, md: 4 },
         my: { md: 10 },
         mx: { md: 20 },
@@ -42,7 +43,6 @@ export function OnboardingDrawer(): ReactElement {
         mb: { xs: templateId == null ? 0 : 3 },
         overflowY: { xs: 'none', md: 'auto' }
       }}
-      data-testid="JourneysAdminOnboardingDrawer"
     >
       <Stack
         sx={{
@@ -64,8 +64,8 @@ export function OnboardingDrawer(): ReactElement {
       </Stack>
       {templateId != null ? (
         <Stack
-          justifyContent="center"
           sx={{
+            justifyContent: 'center',
             pt: { xs: 4, md: 15 },
             width: { xs: '100%', md: 244 }
           }}
@@ -80,9 +80,9 @@ export function OnboardingDrawer(): ReactElement {
 
             {templateId != null && (
               <Stack
-                flexDirection="column"
-                justifyContent="center"
                 sx={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
                   px: { xs: 6, md: 0 },
                   py: { xs: 2, md: 0 },
                   height: { xs: 78, md: 352 },

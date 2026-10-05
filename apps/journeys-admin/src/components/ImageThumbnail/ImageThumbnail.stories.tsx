@@ -56,7 +56,11 @@ const image: ImageBlock = {
 
 const Template: StoryObj<typeof ImageThumbnail> = {
   render: ({ ...args }) => (
-    <Box bgcolor="white">
+    <Box
+      sx={{
+        bgcolor: 'white'
+      }}
+    >
       <ImageThumbnail
         imageSrc={args.imageSrc}
         imageAlt={args.imageAlt}

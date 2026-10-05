@@ -1,3 +1,4 @@
+import { ReactElement, ReactNode } from 'react'
 import {
   Body,
   Column,
@@ -7,10 +8,9 @@ import {
   Preview,
   Row,
   Section,
+  Tailwind,
   Text
-} from '@react-email/components'
-import { Tailwind } from '@react-email/tailwind'
-import { ReactElement, ReactNode } from 'react'
+} from 'react-email'
 
 import {
   ActionButton,
@@ -127,7 +127,7 @@ const withHTML = ({ children }: WrapperProps): ReactElement => {
 
 const withBody = ({ children }: WrapperProps): ReactElement => {
   return (
-    <Body className="mx-[0px] my-[0px] h-full w-full font-sans">
+    <Body className="mx-[0px] my-[0px] h-full w-full bg-[#EFEFEF] font-sans">
       {children}
     </Body>
   )

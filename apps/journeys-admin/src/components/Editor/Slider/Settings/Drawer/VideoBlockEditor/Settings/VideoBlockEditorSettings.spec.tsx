@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { SnackbarProvider } from 'notistack'
@@ -43,7 +44,7 @@ const { validateMuxLanguage } = (await vi.importMock(
   '../../../../../../../libs/validateMuxLanguage'
 )) as { validateMuxLanguage: Mock }
 
-const mockSubtitleTrackReady: MockedResponse = {
+const mockSubtitleTrackReady: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -171,8 +172,8 @@ describe('VideoBlockEditorSettings', () => {
         </MockedProvider>
       </ThemeProvider>
     )
-    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeDisabled()
-    expect(getByRole('checkbox', { name: 'Muted' })).toBeDisabled()
+    expect(getByRole('switch', { name: 'Autoplay' })).toBeDisabled()
+    expect(getByRole('switch', { name: 'Muted' })).toBeDisabled()
     expect(getByRole('textbox', { name: 'Starts At' })).toBeDisabled()
     expect(getByRole('textbox', { name: 'Ends At' })).toBeDisabled()
   })
@@ -191,8 +192,8 @@ describe('VideoBlockEditorSettings', () => {
         </MockedProvider>
       </ThemeProvider>
     )
-    expect(getByRole('checkbox', { name: 'Autoplay' })).toBeDisabled()
-    expect(getByRole('checkbox', { name: 'Muted' })).toBeDisabled()
+    expect(getByRole('switch', { name: 'Autoplay' })).toBeDisabled()
+    expect(getByRole('switch', { name: 'Muted' })).toBeDisabled()
     expect(getByRole('textbox', { name: 'Starts At' })).not.toBeDisabled()
     expect(getByRole('textbox', { name: 'Ends At' })).not.toBeDisabled()
   })
@@ -212,7 +213,7 @@ describe('VideoBlockEditorSettings', () => {
         </MockedProvider>
       </ThemeProvider>
     )
-    fireEvent.click(getByRole('checkbox', { name: 'Autoplay' }))
+    fireEvent.click(getByRole('switch', { name: 'Autoplay' }))
     await waitFor(() =>
       expect(onChange).toHaveBeenCalledWith(
         {
@@ -250,7 +251,7 @@ describe('VideoBlockEditorSettings', () => {
       )
     ).not.toBeInTheDocument()
 
-    fireEvent.click(getByRole('checkbox', { name: 'Muted' }))
+    fireEvent.click(getByRole('switch', { name: 'Muted' }))
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledWith(
         {

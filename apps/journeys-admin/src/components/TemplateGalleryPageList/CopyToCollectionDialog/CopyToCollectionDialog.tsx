@@ -139,7 +139,12 @@ export function CopyToCollectionDialog({
           data-testid="CopyToCollectionDialogStatus"
           sx={{ py: 2 }}
         >
-          <Typography variant="body1" color="text.primary">
+          <Typography
+            variant="body1"
+            sx={{
+              color: 'text.primary'
+            }}
+          >
             {errorMessage}
           </Typography>
         </Box>
@@ -323,7 +328,12 @@ export function CopyToCollectionDialog({
                   })()}
                 </TextField>
               </FormControl>
-              <Stack direction="row" alignItems="center">
+              <Stack
+                direction="row"
+                sx={{
+                  alignItems: 'center'
+                }}
+              >
                 <FormControlLabel
                   control={
                     <Switch
@@ -331,15 +341,22 @@ export function CopyToCollectionDialog({
                       onChange={(e): void => {
                         void setFieldValue('showTranslation', e.target.checked)
                       }}
-                      inputProps={{
-                        'aria-label': t(
-                          'Translate the copy to another language'
-                        )
+                      slotProps={{
+                        input: {
+                          'aria-label': t(
+                            'Translate the copy to another language'
+                          )
+                        }
                       }}
                     />
                   }
                   label={
-                    <Typography variant="subtitle2" color="text.primary">
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        color: 'text.primary'
+                      }}
+                    >
                       {t('Translate the copy to another language')}
                     </Typography>
                   }

@@ -149,7 +149,12 @@ export function MultiStepForm(): ReactElement {
           overflow: 'hidden'
         }}
       >
-        <Stack gap={{ xs: 8, sm: 17 }} data-testid="MultiStepForm">
+        <Stack
+          data-testid="MultiStepForm"
+          sx={{
+            gap: { xs: 8, sm: 17 }
+          }}
+        >
           {!STEPPER_HIDDEN_SCREENS.has(activeScreen) &&
             (hasEditableText ||
               hasCustomizableLinks ||

@@ -25,16 +25,17 @@ describe('user', () => {
   `)
 
   it('should return language roles', async () => {
-    prismaMock.userLanguageRole.findUnique.mockResolvedValue({
+    const role = {
       id: 'id',
       userId: 'userId',
       roles: [LanguageRole.publisher]
-    })
+    }
+    prismaMock.userLanguageRole.findUnique.mockResolvedValue(role)
     const data = await authClient({
       document: VIDEO_ROLES
     })
     expect(prismaMock.userLanguageRole.findUnique).toHaveBeenCalledWith({
-      where: { userId: 'id' }
+      where: { id: 'id' }
     })
     expect(data).toHaveProperty('data._entities[0].languageUserRoles', [
       LanguageRole.publisher

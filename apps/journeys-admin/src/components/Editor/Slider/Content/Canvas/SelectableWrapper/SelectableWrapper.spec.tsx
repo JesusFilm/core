@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -8,7 +8,7 @@ import type { TreeBlock } from '@core/journeys/ui/block'
 import { Button } from '@core/journeys/ui/Button'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 import { Image } from '@core/journeys/ui/Image'
-import { MultiselectQuestion } from '@core/journeys/ui/MultiselectQuestion'
+import { Multiselect } from '@core/journeys/ui/Multiselect'
 import { RadioQuestion } from '@core/journeys/ui/RadioQuestion'
 import { SignUp } from '@core/journeys/ui/SignUp'
 import { Typography } from '@core/journeys/ui/Typography'
@@ -16,14 +16,16 @@ import { Typography } from '@core/journeys/ui/Typography'
 import { ButtonFields } from '../../../../../../../__generated__/ButtonFields'
 import { TypographyVariant } from '../../../../../../../__generated__/globalTypes'
 import { ImageFields } from '../../../../../../../__generated__/ImageFields'
+import { MultiselectFields } from '../../../../../../../__generated__/MultiselectFields'
 import { MultiselectOptionFields } from '../../../../../../../__generated__/MultiselectOptionFields'
-import { MultiselectQuestionFields } from '../../../../../../../__generated__/MultiselectQuestionFields'
 import { RadioOptionFields } from '../../../../../../../__generated__/RadioOptionFields'
 import { RadioQuestionFields } from '../../../../../../../__generated__/RadioQuestionFields'
 import { SignUpFields } from '../../../../../../../__generated__/SignUpFields'
 import { StepFields } from '../../../../../../../__generated__/StepFields'
 import { TypographyFields } from '../../../../../../../__generated__/TypographyFields'
+import { TestEditorState } from '../../../../../../libs/TestEditorState'
 import { MuxVideoUploadProvider } from '../../../../../MuxVideoUploadProvider'
+import { EditorLayoutProvider } from '../../../../EditorLayoutContext'
 
 import { SelectableWrapper } from '.'
 
@@ -150,14 +152,14 @@ describe('SelectableWrapper', () => {
     __typename: 'MultiselectOptionBlock',
     id: 'MultiselectOption1',
     label: 'Option 1',
-    parentBlockId: 'MultiselectQuestion1',
+    parentBlockId: 'Multiselect1',
     parentOrder: 0,
     children: []
   }
 
-  const multiselectQuestionBlock: TreeBlock<MultiselectQuestionFields> = {
+  const multiselectBlock: TreeBlock<MultiselectFields> = {
     __typename: 'MultiselectBlock',
-    id: 'MultiselectQuestion1',
+    id: 'Multiselect1',
     parentBlockId: 'parent.id',
     parentOrder: 0,
     min: null,
@@ -168,7 +170,7 @@ describe('SelectableWrapper', () => {
         __typename: 'MultiselectOptionBlock',
         id: 'MultiselectOption2',
         label: 'Option 2',
-        parentBlockId: 'MultiselectQuestion1',
+        parentBlockId: 'Multiselect1',
         parentOrder: 1,
         children: []
       } as unknown as TreeBlock<MultiselectOptionFields>
@@ -260,6 +262,35 @@ describe('SelectableWrapper', () => {
     expect(push).not.toHaveBeenCalled()
   })
 
+  it('should open the settings drawer on block click in the layered layout', async () => {
+    const { getByText } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              steps: [step([typographyBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={typographyBlock}>
+                  <Typography {...typographyBlock} />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(getByText('typography content'))
+    expect(getByText('activeSlide: 2')).toBeInTheDocument()
+    expect(
+      getByText(`selectedBlock: ${typographyBlock.id}`)
+    ).toBeInTheDocument()
+  })
+
   it('should select radio question on radio option click', async () => {
     const { getByTestId, getByRole } = render(
       <MockedProvider>
@@ -298,13 +329,13 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              steps: [step([multiselectQuestionBlock])]
+              steps: [step([multiselectBlock])]
             }}
           >
             <MuxVideoUploadProvider>
-              <SelectableWrapper block={multiselectQuestionBlock}>
-                <MultiselectQuestion
-                  {...multiselectQuestionBlock}
+              <SelectableWrapper block={multiselectBlock}>
+                <Multiselect
+                  {...multiselectBlock}
                   wrappers={{ Wrapper: SelectableWrapper }}
                 />
               </SelectableWrapper>
@@ -315,13 +346,13 @@ describe('SelectableWrapper', () => {
     )
 
     fireEvent.click(getByTestId(`SelectableWrapper-${multiselectOption1.id}`))
-    expect(
-      getByTestId(`SelectableWrapper-${multiselectQuestionBlock.id}`)
-    ).toHaveStyle({
-      outline: '2px solid',
-      zIndex: '1',
-      outlineColor: '#C52D3A'
-    })
+    expect(getByTestId(`SelectableWrapper-${multiselectBlock.id}`)).toHaveStyle(
+      {
+        outline: '2px solid',
+        zIndex: '1',
+        outlineColor: '#C52D3A'
+      }
+    )
   })
 
   it('should select multiselect option on click when multiselect question selected', async () => {
@@ -330,15 +361,15 @@ describe('SelectableWrapper', () => {
         <SnackbarProvider>
           <EditorProvider
             initialState={{
-              selectedBlock: multiselectQuestionBlock,
-              selectedBlockId: multiselectQuestionBlock.id,
-              steps: [step([multiselectQuestionBlock])]
+              selectedBlock: multiselectBlock,
+              selectedBlockId: multiselectBlock.id,
+              steps: [step([multiselectBlock])]
             }}
           >
             <MuxVideoUploadProvider>
-              <SelectableWrapper block={multiselectQuestionBlock}>
-                <MultiselectQuestion
-                  {...multiselectQuestionBlock}
+              <SelectableWrapper block={multiselectBlock}>
+                <Multiselect
+                  {...multiselectBlock}
                   wrappers={{ Wrapper: SelectableWrapper }}
                 />
               </SelectableWrapper>
@@ -367,13 +398,13 @@ describe('SelectableWrapper', () => {
             initialState={{
               selectedBlock: multiselectOption1,
               selectedBlockId: multiselectOption1.id,
-              steps: [step([multiselectQuestionBlock])]
+              steps: [step([multiselectBlock])]
             }}
           >
             <MuxVideoUploadProvider>
-              <SelectableWrapper block={multiselectQuestionBlock}>
-                <MultiselectQuestion
-                  {...multiselectQuestionBlock}
+              <SelectableWrapper block={multiselectBlock}>
+                <Multiselect
+                  {...multiselectBlock}
                   wrappers={{ Wrapper: SelectableWrapper }}
                 />
               </SelectableWrapper>
@@ -461,6 +492,46 @@ describe('SelectableWrapper', () => {
       zIndex: '1',
       outlineColor: '#C52D3A'
     })
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  // NES-1745: re-clicking an already-selected option in the layered layout
+  // dispatches SetSelectedBlockOnlyAction. selectedBlockId must follow
+  // selectedBlock to the option (and not stay on the parent question selected
+  // during event capture), otherwise the next steps refresh re-derives the
+  // selection back to the question and unmounts the inline editor.
+  it('keeps selectedBlockId on the option when re-clicking it in the layered layout', async () => {
+    const { getByText, getByRole } = render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider
+            initialState={{
+              selectedBlock: radioOption1,
+              selectedBlockId: radioOption1.id,
+              steps: [step([radioQuestionBlock])]
+            }}
+          >
+            <MuxVideoUploadProvider>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <SelectableWrapper block={radioQuestionBlock}>
+                  <RadioQuestion
+                    {...radioQuestionBlock}
+                    wrappers={{ Wrapper: SelectableWrapper }}
+                  />
+                </SelectableWrapper>
+              </EditorLayoutProvider>
+            </MuxVideoUploadProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    await waitFor(() =>
+      fireEvent.click(getByRole('button', { name: 'Option 1' }))
+    )
+    expect(getByText(`selectedBlock: ${radioOption1.id}`)).toBeInTheDocument()
+    expect(getByText(`selectedBlockId: ${radioOption1.id}`)).toBeInTheDocument()
     expect(push).not.toHaveBeenCalled()
   })
 })

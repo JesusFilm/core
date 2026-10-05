@@ -19,18 +19,23 @@
         "production": {
           "commands": [
             "cp -r libs/locales apps/arclight/public",
-            "CI=true nx _build arclight --prod",
+            "CI=true nx _build arclight --configuration=production",
             "cp apps/arclight/next-logger.config.js dist/apps/arclight/next-logger.config.js"
           ]
         }
       }
     },
     "_build": {
-      "executor": "@nx/next:build",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/arclight"],
       "options": {
-        "outputPath": "dist/apps/arclight",
-        "webpack": true
+        "commands": [
+          "cd apps/arclight && NX_NEXT_OUTPUT_PATH=dist/apps/arclight pnpm exec next build --webpack",
+          "node tools/scripts/create-arclight-dist-package-json.js",
+          "rm -rf dist/apps/arclight/public && cp -rL apps/arclight/public dist/apps/arclight/public",
+          "cp apps/arclight/next.config.dist.js dist/apps/arclight/next.config.js"
+        ],
+        "parallel": false
       },
       "configurations": {
         "production": {}
@@ -80,28 +85,18 @@
       }
     },
     "serve": {
-      "executor": "@nx/next:server",
+      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "arclight:_build",
-        "dev": true,
-        "port": 4600
+        "command": "pnpm exec next dev --webpack -p 4600",
+        "cwd": "apps/arclight"
       },
       "configurations": {
-        "development": {
-          "buildTarget": "arclight:_build:development",
-          "dev": true
-        },
+        "development": {},
         "production": {
-          "buildTarget": "arclight:_build:production",
-          "dev": false
+          "command": "pnpm exec next start -p 4600",
+          "cwd": "dist/apps/arclight"
         }
-      }
-    },
-    "export": {
-      "executor": "@nx/next:export",
-      "options": {
-        "buildTarget": "arclight:build:production"
       }
     },
     "test": {
@@ -123,7 +118,7 @@
     "type-check": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec tsc -b apps/arclight/tsconfig.json"
+        "command": "pnpm tsc7 -p apps/arclight/tsconfig.ts7.json"
       }
     },
     "fetch-secrets": {

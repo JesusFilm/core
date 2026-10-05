@@ -168,11 +168,18 @@ export function OrderedItem({
         {subtitle != null && (
           <Typography
             variant="caption"
-            color="text.secondary"
+            sx={{
+              color: 'text.secondary'
+            }}
           >{`${subtitle}`}</Typography>
         )}
       </Box>
-      <Stack sx={{ ml: 'auto' }} flexDirection="row">
+      <Stack
+        sx={{
+          flexDirection: 'row',
+          ml: 'auto'
+        }}
+      >
         {iconMemoButtons != null && iconMemoButtons.length > 0 && (
           <OrderedItemIcons iconButtons={iconMemoButtons} />
         )}

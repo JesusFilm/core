@@ -1,10 +1,17 @@
-import { ActiveContent, useEditor } from '@core/journeys/ui/EditorProvider'
+import {
+  ActiveContent,
+  ActiveSlide,
+  useEditor
+} from '@core/journeys/ui/EditorProvider'
+
+import { useEditorLayout } from '../../../../EditorLayoutContext'
 
 export function useStepAndBlockSelection(): (stepId: string) => void {
   const {
     state: { steps, showAnalytics, selectedStep, activeContent },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   return function handleStepSelection(stepId: string): void {
     const currentStep = steps?.find((innerStep) => innerStep.id === stepId)
@@ -27,6 +34,14 @@ export function useStepAndBlockSelection(): (stepId: string) => void {
       }
     } else {
       dispatch({ type: 'SetSelectedStepAction', selectedStep: currentStep })
+      if (isLayered && showAnalytics !== true) {
+        // in the layered desktop view, selecting a step opens the drawer to
+        // show its card (SetSelectedStepAction does not change activeSlide)
+        dispatch({
+          type: 'SetActiveSlideAction',
+          activeSlide: ActiveSlide.Content
+        })
+      }
     }
   }
 }

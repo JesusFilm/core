@@ -21,7 +21,11 @@ function JourneysPage(): ReactElement {
         data-testid="JourneysPage"
       >
         <Container maxWidth="xxl">
-          <Stack gap={10}>
+          <Stack
+            sx={{
+              gap: 10
+            }}
+          >
             <ThemeProvider
               themeName={ThemeName.journeysAdmin}
               themeMode={ThemeMode.light}

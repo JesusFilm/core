@@ -4,6 +4,7 @@ import { ActiveSlide, useEditor } from '@core/journeys/ui/EditorProvider'
 import { BlockFields } from '../../../../../__generated__/BlockFields'
 import { useBlockDeleteMutation } from '../../../../libs/useBlockDeleteMutation'
 import { useBlockRestoreMutation } from '../../../../libs/useBlockRestoreMutation'
+import { useEditorLayout } from '../../EditorLayoutContext'
 
 interface AddBlockParameters {
   execute: () => void
@@ -20,6 +21,8 @@ export function useBlockCreateCommand(): {
     state: { selectedStep, selectedBlock },
     dispatch
   } = useEditor()
+  const { isLayered } = useEditorLayout()
+  const focusSlide = isLayered ? ActiveSlide.Drawer : ActiveSlide.Content
 
   function addBlock({ block, execute }: AddBlockParameters): void {
     add({
@@ -36,7 +39,7 @@ export function useBlockCreateCommand(): {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedBlockId: block?.id,
-          activeSlide: ActiveSlide.Content
+          activeSlide: focusSlide
         })
         void execute()
       },
@@ -45,7 +48,7 @@ export function useBlockCreateCommand(): {
           type: 'SetEditorFocusAction',
           selectedStep,
           selectedBlockId: previousBlock?.id,
-          activeSlide: ActiveSlide.Content
+          activeSlide: focusSlide
         })
         void blockDelete(block, {
           optimisticResponse: { blockDelete: [] }
@@ -56,7 +59,7 @@ export function useBlockCreateCommand(): {
           type: 'SetEditorFocusAction',
           selectedStep,
           selectedBlockId: block?.id,
-          activeSlide: ActiveSlide.Content
+          activeSlide: focusSlide
         })
         void blockRestore({
           variables: {

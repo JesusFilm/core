@@ -1,4 +1,9 @@
-import { gql, useMutation } from '@apollo/client'
+import {
+  CombinedGraphQLErrors,
+  NormalizedCacheObject,
+  gql
+} from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { GetServerSidePropsContext } from 'next'
@@ -94,7 +99,12 @@ function DiagnosticFallback(): ReactElement {
       }}
     >
       <Typography variant="h5">{t('Something went wrong')}</Typography>
-      <Typography variant="body1" color="text.secondary">
+      <Typography
+        variant="body1"
+        sx={{
+          color: 'text.secondary'
+        }}
+      >
         {t(
           'Please try refreshing the page. If the problem persists, contact support.'
         )}
@@ -123,14 +133,13 @@ function CustomizePage() {
     console.error('[NES-1460-diag] client-side useJourneyQuery error', {
       journeyId: router.query.journeyId,
       errorMessage: error.message,
-      networkError:
-        error.networkError != null
-          ? {
-              name: error.networkError.name,
-              message: error.networkError.message
-            }
-          : undefined,
-      graphQLErrors: error.graphQLErrors?.map((e) => e.message)
+      errorName: error.name,
+      // Apollo Client 4 replaced `networkError`/`graphQLErrors` with a single
+      // `error`: GraphQL errors arrive as `CombinedGraphQLErrors`, anything
+      // else (transport, parse) is the underlying error itself.
+      graphQLErrors: CombinedGraphQLErrors.is(error)
+        ? error.errors.map((e) => e.message)
+        : undefined
     })
   }, [error, router])
 
@@ -169,7 +178,7 @@ function CustomizePage() {
         <JourneyProvider
           value={{
             journey: data?.journey,
-            variant: 'customize'
+            renderMode: 'customize'
           }}
         >
           <DiagnosticErrorBoundary key={router.query.journeyId as string}>
@@ -284,7 +293,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       userSerialized: user != null ? JSON.stringify(user) : null,
       ...translations,
       flags,
-      initialApolloState: apolloClient.cache.extract()
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject
     }
   }
 }

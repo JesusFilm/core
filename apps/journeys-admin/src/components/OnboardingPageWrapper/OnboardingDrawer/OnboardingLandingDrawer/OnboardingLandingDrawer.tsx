@@ -19,20 +19,22 @@ export function OnboardingLandingDrawer({
 }: OnboardingLandingDrawerProps): ReactElement {
   return (
     <Stack
-      flexDirection="row"
-      justifyContent="center"
       sx={{
+        flexDirection: 'row',
+        justifyContent: 'center',
+
         pt: {
           xs: templateId == null ? 4 : 4,
           md: 10
         },
+
         width: { xs: '100%' }
       }}
     >
       <Stack
         data-testid="JourneysAdminOnboardingLandingDrawer"
-        alignItems="center"
         sx={{
+          alignItems: 'center',
           maxWidth: { md: newAccountQuery === true ? 367 : 414 },
           width: 'inherit'
         }}

@@ -6,6 +6,7 @@ import { styled } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { ReactElement, useState } from 'react'
 
+import { hoverOnly } from '@core/shared/ui/hoverOnly'
 import LogoGrayscale from '@core/shared/ui/icons/LogoGrayscale'
 import { NextImage } from '@core/shared/ui/NextImage'
 
@@ -101,13 +102,14 @@ export const StyledGridRadioOption = styled(Card)<CardProps>(({ theme }) => ({
   borderColor: pollCustomTheme.default[theme.palette.mode].borderColor,
   boxShadow: pollCustomTheme.default[theme.palette.mode].boxShadow,
 
-  // Hover
-  '&:hover': {
+  // Hover - pointer devices only, so a hover left over from a tap on the
+  // previous card cannot read as an already-selected option
+  ...hoverOnly({
     backgroundColor: pollCustomTheme.hover[theme.palette.mode].backgroundColor,
     borderColor: pollCustomTheme.hover[theme.palette.mode].borderColor,
     boxShadow: pollCustomTheme.hover[theme.palette.mode].boxShadow,
     transform: 'translateY(-2px)'
-  },
+  }),
 
   // Selected
   '&.selected': {
@@ -161,7 +163,11 @@ export function GridVariant({
       className={classNames}
       data-testid="JourneysRadioOptionGrid"
     >
-      <Stack gap={2}>
+      <Stack
+        sx={{
+          gap: 2
+        }}
+      >
         <Box
           sx={{
             width: '100%',

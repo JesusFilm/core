@@ -109,7 +109,7 @@ v1 is currently merged but not yet generally available. Before going live we gat
   1. Wrap the three grid mount points in `mediaLibrary && (...)`.
   2. Verify with the flag off: existing pickers unchanged.
   3. Verify with the flag on for a test user: grids appear, picking applies via `onChange`, refetch-on-upload works.
-  4. Roll out to internal users → wider beta → 100%.
+  4. Roll the flag to 100% in production and monitor errors/latency for 48 hours (NES-1632). The originally-planned staged cohorts (internal smoke, beta) were dropped as redundant — the feature is low-risk behind the flag and a single 100% rollout with a kill-switch is sufficient.
 - **Tests:** add a flag-off render test for each gated component to lock in the "feature absent" branch and prevent accidental ungated regression.
 
 ### v1.1 — team-shared visibility (replaces the ACTIVE_TEAM material in original Backend / Architecture / Implementation Phases sections)

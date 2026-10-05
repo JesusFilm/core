@@ -1,3 +1,4 @@
+import { NormalizedCacheObject } from '@apollo/client'
 import { GetServerSidePropsContext } from 'next'
 import { useTranslation } from 'next-i18next/pages'
 import { NextSeo } from 'next-seo'
@@ -51,7 +52,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return {
     props: {
       userSerialized: JSON.stringify(user),
-      initialApolloState: apolloClient.cache.extract(),
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject,
       ...translations
     }
   }

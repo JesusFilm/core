@@ -13,6 +13,8 @@ import {
 } from '@core/journeys/ui/EditorProvider/EditorProvider'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
 
+import { useEditorLayout } from '../../../../EditorLayoutContext'
+
 import goal from './assets/goal.svg'
 
 interface ListItemProps {
@@ -21,11 +23,27 @@ interface ListItemProps {
 
 function ListItem({ children }: ListItemProps): ReactElement {
   return (
-    <Stack direction="row" gap={1} alignItems="center">
-      <Typography variant="subtitle2" color="secondary.light">
+    <Stack
+      direction="row"
+      sx={{
+        gap: 1,
+        alignItems: 'center'
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{
+          color: 'secondary.light'
+        }}
+      >
         &#x2022;
       </Typography>
-      <Typography variant="subtitle2" color="secondary.light">
+      <Typography
+        variant="subtitle2"
+        sx={{
+          color: 'secondary.light'
+        }}
+      >
         {children}
       </Typography>
     </Stack>
@@ -36,6 +54,7 @@ export function GoalsBanner(): ReactElement {
   const theme = useTheme()
   const { t } = useTranslation('apps-journeys-admin')
   const { dispatch } = useEditor()
+  const { isLayered } = useEditorLayout()
 
   function handleClick(): void {
     dispatch({ type: 'SetActiveSlideAction', activeSlide: ActiveSlide.Drawer })
@@ -50,30 +69,47 @@ export function GoalsBanner(): ReactElement {
       }}
       data-testid="ActionsBanner"
     >
-      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+      <Box sx={{ display: { xs: 'none', md: isLayered ? 'flex' : 'block' } }}>
         <Image
           src={goal}
           alt="goal"
           height={504}
           width={464}
-          style={{
-            maxWidth: '100%',
-            height: 'auto'
-          }}
+          style={
+            isLayered
+              ? { maxWidth: '100%' }
+              : { maxWidth: '100%', height: 'auto' }
+          }
         />
       </Box>
-      <Stack gap={3} justifyContent="center">
+      <Stack
+        sx={{
+          gap: 3,
+          justifyContent: 'center'
+        }}
+      >
         <Stack
           direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          pb={3}
+          sx={{
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            pb: 3
+          }}
         >
-          <Typography variant="overline" color="secondary.light">
+          <Typography
+            variant="overline"
+            sx={{
+              color: 'secondary.light'
+            }}
+          >
             {t('Goals')}
           </Typography>
         </Stack>
-        <Box pb={6}>
+        <Box
+          sx={{
+            pb: 6
+          }}
+        >
           <Typography variant="h1" gutterBottom>
             {t('Every Journey has a goal')}
           </Typography>

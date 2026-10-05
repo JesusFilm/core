@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { enqueueSnackbar } from 'notistack'
@@ -10,8 +10,8 @@ import { resolvedParams } from '../../../../../../../../../test/utils/resolvedPa
 import ConfirmDeleteDialog from './page'
 
 // Mock Apollo client
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useMutation: vi.fn(() => [vi.fn(), { loading: false, error: null }])

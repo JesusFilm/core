@@ -16,8 +16,18 @@ export function SourceEmpty(): ReactElement {
       <Box sx={{ ml: 2, mr: 4 }}>
         <ImageBlockThumbnail Icon={VideoOnIcon} />
       </Box>
-      <Box flexGrow={1} minWidth={0}>
-        <Typography variant="subtitle2" color="text.secondary">
+      <Box
+        sx={{
+          flexGrow: 1,
+          minWidth: 0
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: 'text.secondary'
+          }}
+        >
           {t('Select Video')}
         </Typography>
       </Box>

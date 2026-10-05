@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Collapse from '@mui/material/Collapse'
@@ -23,6 +22,7 @@ import MoreIcon from '@core/shared/ui/icons/More'
 
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
 import { TemplateGalleryPageStatus } from '../../../../__generated__/globalTypes'
+import { sendCollectionPreviewClickEvent } from '../../../libs/sendCollectionEvent'
 import { LabelChip } from '../../LabelChip'
 import {
   COLLECTION_CARD_BORDER_WIDTH,
@@ -34,22 +34,19 @@ import { CollectionUngroupDialog } from './CollectionUngroupDialog'
 export interface CollectionCardProps {
   collection: TemplateGalleryPage
   onEdit?: (collection: TemplateGalleryPage) => void
-  onPublish?: (collection: TemplateGalleryPage) => void
   onUngroup?: (collection: TemplateGalleryPage) => void
   busy?: boolean
   /**
    * False when the active team has a `routeAllTeamJourneys` custom
    * domain — gallery pages can't be hosted on custom domains, so
-   * Publish + Preview are disabled with a tooltip.
+   * Preview is disabled with a tooltip.
    * Defaults to true to keep behaviour unchanged for non-custom-domain
    * teams.
    */
   canPublish?: boolean
   /**
-   * Tooltip copy shown on the disabled Publish / Preview menu items
-   * when `canPublish` is false. Null falls back to the default
-   * disabled-because-empty copy on Publish (Preview only renders this
-   * tooltip when canPublish is false).
+   * Tooltip copy shown on the disabled Preview menu item when
+   * `canPublish` is false.
    */
   publishBlockedReason?: string | null
   /**
@@ -72,7 +69,6 @@ export interface CollectionCardProps {
 function CollectionCardImpl({
   collection,
   onEdit,
-  onPublish,
   onUngroup,
   busy,
   canPublish = true,
@@ -102,15 +98,6 @@ function CollectionCardImpl({
       ? t('Publish the collection to preview it.')
       : ''
 
-  // The Publish menu item is the user's single entry point into the
-  // dialog for a draft, so we only disable it for the harder
-  // constraint — custom-domain teams that can't publish at all.
-  // Empty collections still open the dialog (the user may want to
-  // fill in metadata before adding templates); the dialog's own
-  // Publish button is what gates emptiness.
-  const publishDisabled = !canPublish
-  const publishTooltip = !canPublish ? (publishBlockedReason ?? '') : ''
-
   function handleMenuOpen(event: MouseEvent<HTMLButtonElement>): void {
     setAnchorEl(event.currentTarget)
   }
@@ -121,13 +108,14 @@ function CollectionCardImpl({
     handleMenuClose()
     onEdit?.(collection)
   }
-  function handlePublish(): void {
-    handleMenuClose()
-    onPublish?.(collection)
-  }
   function handlePreview(): void {
     handleMenuClose()
     if (previewDisabled) return
+    sendCollectionPreviewClickEvent({
+      location: 'card_menu',
+      collectionSlug: collection.slug,
+      collectionId: collection.id
+    })
     window.open(previewHref, '_blank', 'noopener,noreferrer')
   }
   function handleOpenUngroup(): void {
@@ -185,9 +173,11 @@ function CollectionCardImpl({
     >
       <Stack
         direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: collapsed ? 0 : 1 }}
+        sx={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: collapsed ? 0 : 1
+        }}
       >
         {/* The whole header (chevron + title + chips) is the toggle, so it's
             an easy touch target. It's a div with role="button" — not a real
@@ -196,7 +186,6 @@ function CollectionCardImpl({
         <Stack
           direction="row"
           spacing={2}
-          alignItems="center"
           role="button"
           tabIndex={0}
           aria-expanded={!collapsed}
@@ -217,6 +206,7 @@ function CollectionCardImpl({
           onKeyDown={handleToggleKeyDown}
           data-testid={`CollectionCardToggle-${collection.id}`}
           sx={{
+            alignItems: 'center',
             flex: 1,
             minWidth: 0,
             cursor: busy === true ? 'default' : 'pointer',
@@ -265,28 +255,11 @@ function CollectionCardImpl({
           open={anchorEl != null}
           onClose={handleMenuClose}
         >
-          {/* Single state-aware entry point into CollectionDialog.
-              Draft collections expose "Publish" so the user has a
-              discoverable path to publishing; the dialog itself
-              renders a Save Draft secondary button so draft edits
-              don't require a publish. Published collections expose
-              "Edit" — Publish is no longer applicable. */}
-          {isPublished ? (
-            <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
-          ) : (
-            <Tooltip
-              title={publishTooltip}
-              placement="left"
-              disableHoverListener={!publishDisabled}
-              disableFocusListener={!publishDisabled}
-            >
-              <span>
-                <MenuItem onClick={handlePublish} disabled={publishDisabled}>
-                  {t('Publish')}
-                </MenuItem>
-              </span>
-            </Tooltip>
-          )}
+          {/* Single entry point into CollectionDialog, regardless of
+              status — the dialog's footer is what's contextual (a
+              draft shows Publish, a published collection shows
+              Unpublish, Save is always present). */}
+          <MenuItem onClick={handleEdit}>{t('Edit')}</MenuItem>
           <Tooltip
             title={previewTooltip}
             placement="left"
@@ -314,8 +287,8 @@ function CollectionCardImpl({
         {collection.description != null && collection.description !== '' && (
           <Typography
             variant="body2"
-            color="text.secondary"
             sx={{
+              color: 'text.secondary',
               mb: 1,
               display: '-webkit-box',
               WebkitLineClamp: 2,
@@ -334,21 +307,7 @@ function CollectionCardImpl({
             minHeight: 100
           }}
         >
-          {isEmpty ? (
-            <Box
-              sx={{
-                p: 2,
-                textAlign: 'center',
-                color: 'text.disabled'
-              }}
-            >
-              <Typography variant="caption">
-                {t('Drag templates here to add them to this collection.')}
-              </Typography>
-            </Box>
-          ) : (
-            children
-          )}
+          {children}
         </CardContent>
       </Collapse>
 

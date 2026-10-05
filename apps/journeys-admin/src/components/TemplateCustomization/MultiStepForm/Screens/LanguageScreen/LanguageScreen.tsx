@@ -5,8 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
-import { getApp } from 'firebase/app'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { signInAnonymously } from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
@@ -31,7 +30,7 @@ import Translate from '@core/shared/ui/icons/Translate'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 
 import { LOCALE_LANGUAGES } from '../../../../../../proxy'
-import { useAuth } from '../../../../../libs/auth'
+import { getFirebaseAuth, useAuth } from '../../../../../libs/auth'
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useTeamCreateMutation } from '../../../../../libs/useTeamCreateMutation'
 import { usePageWrapperStyles } from '../../../../PageWrapper/utils/usePageWrapperStyles'
@@ -134,7 +133,7 @@ export function LanguageScreen({
     const isAnonymous = user?.isAnonymous ?? false
     if (!isAnonymous) {
       try {
-        await signInAnonymously(getAuth(getApp()))
+        await signInAnonymously(getFirebaseAuth())
       } catch {
         throw new Error('Could not create firebase user')
       }
@@ -462,10 +461,12 @@ export function LanguageScreen({
           >
             <Typography
               variant="subtitle2"
-              color="text.secondary"
               align="center"
               gutterBottom
-              sx={{ mb: { xs: 0, sm: 2 } }}
+              sx={{
+                color: 'text.secondary',
+                mb: { xs: 0, sm: 2 }
+              }}
             >
               {`'${journey?.title ?? ''}'`}
             </Typography>
@@ -477,7 +478,12 @@ export function LanguageScreen({
                   alignSelf: 'center'
                 }}
               >
-                <Stack gap={2} sx={{ px: { xs: 0 } }}>
+                <Stack
+                  sx={{
+                    gap: 2,
+                    px: { xs: 0 }
+                  }}
+                >
                   <LanguageAutocomplete
                     value={values.languageSelect}
                     languages={languagesData?.languages}
@@ -490,14 +496,17 @@ export function LanguageScreen({
                         hiddenLabel
                         placeholder={t('Search Language')}
                         variant="filled"
-                        InputProps={{
-                          ...params.InputProps,
-                          sx: { paddingBottom: 2 },
-                          startAdornment: (
-                            <InputAdornment position="start">
-                              <Translate />
-                            </InputAdornment>
-                          )
+                        slotProps={{
+                          ...params.slotProps,
+                          input: {
+                            ...params.slotProps.input,
+                            sx: { paddingBottom: 2 },
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <Translate />
+                              </InputAdornment>
+                            )
+                          }
                         }}
                       />
                     )}

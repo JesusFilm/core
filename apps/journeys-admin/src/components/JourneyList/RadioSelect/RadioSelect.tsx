@@ -120,7 +120,16 @@ export function RadioSelect<T extends string>({
                   backgroundColor: 'rgba(0, 0, 0, 0.1)'
                 },
                 '& .MuiFormControlLabel-label': {
-                  typography: 'body2'
+                  // Montserrat, to match the trigger and the JourneyListMenu
+                  // items beside it, at Medium so the options stay lighter
+                  // than the trigger (NES-1217).
+                  //
+                  // Keep fontWeight below typography: `typography` expands to
+                  // all of subtitle3, fontWeight 600 included, and sx merges
+                  // keys in insertion order — swapping these two silently
+                  // restores SemiBold.
+                  typography: 'subtitle3',
+                  fontWeight: 500
                 }
               }}
             />

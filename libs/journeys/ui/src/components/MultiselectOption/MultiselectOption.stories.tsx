@@ -1,15 +1,15 @@
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { StoryCard } from '../StoryCard'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { MultiselectOption } from '.'
 
 const Demo: Meta<typeof MultiselectOption> = {
   ...simpleComponentConfig,
   component: MultiselectOption,
-  title: 'Journeys-Ui/MultiselectQuestion/MultiselectOption'
+  title: 'Journeys-Ui/Multiselect/MultiselectOption'
 }
 
 type Story = StoryObj<ComponentProps<typeof MultiselectOption>>

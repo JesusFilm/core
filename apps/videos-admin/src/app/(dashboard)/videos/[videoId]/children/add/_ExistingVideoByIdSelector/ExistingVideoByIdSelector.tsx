@@ -1,6 +1,5 @@
 'use client'
-
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -36,11 +35,7 @@ export function ExistingVideoByIdSelector({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const [fetchVideo, { loading, data }] = useLazyQuery(GET_VIDEO_BY_ID, {
-    onError: () => {
-      setError('Video not found. Please check the ID and try again.')
-    }
-  })
+  const [fetchVideo, { loading, data }] = useLazyQuery(GET_VIDEO_BY_ID)
 
   const handleSubmit = async (): Promise<void> => {
     if (!videoId.trim()) {
@@ -57,8 +52,10 @@ export function ExistingVideoByIdSelector({
       if (result.data?.adminVideo) {
         void onSelect(videoId.trim())
       }
-    } catch (err) {
-      // Error is handled in the onError callback of the query
+    } catch {
+      // Apollo Client 4 removed `useLazyQuery`'s `onError` option; the execute
+      // promise rejects instead.
+      setError('Video not found. Please check the ID and try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -91,7 +88,12 @@ export function ExistingVideoByIdSelector({
         <Box sx={{ mt: 2, p: 2, bgcolor: 'background.paper', borderRadius: 1 }}>
           <Typography variant="subtitle1">Video found:</Typography>
           <Typography variant="body1">{videoTitle || 'Untitled'}</Typography>
-          <Typography variant="caption" color="text.secondary">
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary'
+            }}
+          >
             ID: {data.adminVideo.id}
           </Typography>
         </Box>

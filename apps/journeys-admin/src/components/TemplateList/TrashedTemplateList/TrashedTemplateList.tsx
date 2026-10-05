@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -8,7 +8,9 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { DeleteTrashedJourneys } from '../../../../__generated__/DeleteTrashedJourneys'
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { RestoreTrashedJourneys } from '../../../../__generated__/RestoreTrashedJourneys'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -45,31 +47,39 @@ export function TrashedTemplateList({
   })
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  const [restoreTrashed] = useMutation(RESTORE_TRASHED_JOURNEYS, {
-    update(_cache, { data }) {
-      if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
-          variant: 'success'
-        })
-        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
-        if (templateIds.length > 0) {
-          void refetchTemplateStats(templateIds)
-        }
+  const [restoreTrashed] = useMutation<RestoreTrashedJourneys>(
+    RESTORE_TRASHED_JOURNEYS,
+    {
+      update(_cache, { data }) {
+        if (data?.journeysRestore != null) {
+          enqueueSnackbar(t('Templates Restored'), {
+            variant: 'success'
+          })
+          const templateIds = extractTemplateIdsFromJourneys(
+            data.journeysRestore
+          )
+          if (templateIds.length > 0) {
+            void refetchTemplateStats(templateIds)
+          }
 
-        void refetch()
+          void refetch()
+        }
       }
     }
-  })
-  const [deleteTrashed] = useMutation(DELETE_TRASHED_JOURNEYS, {
-    update(_cache, { data }) {
-      if (data?.journeysDelete != null) {
-        enqueueSnackbar(t('Journeys Deleted'), {
-          variant: 'success'
-        })
-        void refetch()
+  )
+  const [deleteTrashed] = useMutation<DeleteTrashedJourneys>(
+    DELETE_TRASHED_JOURNEYS,
+    {
+      update(_cache, { data }) {
+        if (data?.journeysDelete != null) {
+          enqueueSnackbar(t('Templates Deleted'), {
+            variant: 'success'
+          })
+          void refetch()
+        }
       }
     }
-  })
+  )
   const [restoreDialogOpen, setRestoreDialogOpen] = useState<
     boolean | undefined
   >()
@@ -179,7 +189,7 @@ export function TrashedTemplateList({
               }}
             >
               <Typography variant="subtitle1" align="center" gutterBottom>
-                {t('Your trashed templates will appear here.')}
+                {t('Your trashed Templates will appear here.')}
               </Typography>
             </Box>
           )}
@@ -187,14 +197,18 @@ export function TrashedTemplateList({
       ) : (
         <LoadingJourneyList hideHelperText />
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
           component="div"
           sx={{ py: { xs: 3, sm: 5 }, maxWidth: 290 }}
         >
-          {t('Trashed templates are moved here for up to 40 days.')}
+          {t('Trashed Templates are moved here for up to 40 days.')}
         </Typography>
       </Stack>
       {restoreDialogOpen != null && (
@@ -213,7 +227,7 @@ export function TrashedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to restore all trashed templates immediately?'
+              'Are you sure you would like to restore all trashed Templates immediately?'
             )}
           </Typography>
         </Dialog>
@@ -234,7 +248,7 @@ export function TrashedTemplateList({
         >
           <Typography>
             {t(
-              'Are you sure you would like to permanently delete all trashed templates immediately?'
+              'Are you sure you would like to permanently delete all trashed Templates immediately?'
             )}
           </Typography>
         </Dialog>

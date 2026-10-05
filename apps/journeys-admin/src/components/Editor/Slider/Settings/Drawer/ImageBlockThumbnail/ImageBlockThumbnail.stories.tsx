@@ -55,7 +55,11 @@ const image: ImageBlock = {
 
 const Template: StoryObj<typeof ImageBlockThumbnail> = {
   render: ({ ...args }) => (
-    <Box bgcolor="white">
+    <Box
+      sx={{
+        bgcolor: 'white'
+      }}
+    >
       <ImageBlockThumbnail
         selectedBlock={args.selectedBlock}
         loading={args.loading}

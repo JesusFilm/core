@@ -48,10 +48,15 @@ export function CenterPage({ children }: CenterPageProps): ReactElement {
   return (
     <Container
       direction="column"
-      justifyContent="space-evenly"
       data-testid="CenterPageContainer"
+      sx={{ justifyContent: 'space-evenly' }}
     >
-      <Stack alignItems="center" gap={5}>
+      <Stack
+        sx={{
+          alignItems: 'center',
+          gap: 5
+        }}
+      >
         <Card variant="outlined" data-testid="CenterPageCard">
           {children}
         </Card>

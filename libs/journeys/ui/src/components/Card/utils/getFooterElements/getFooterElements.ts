@@ -10,7 +10,7 @@ export const WEBSITE_HEIGHT = '0px'
 
 interface JourneyInfoProps {
   journey?: JourneyFields
-  variant?: JourneyProviderContext['variant'] | undefined
+  renderMode?: JourneyProviderContext['renderMode'] | undefined
   /**
    * Active card. `hasAiChatButton` is purely card-level — when omitted (or
    * when `card.showAssistant` is null), the chat does not render. The
@@ -29,10 +29,10 @@ export function hasReactions({ journey }: JourneyInfoProps): boolean {
 
 export function hasHostAvatar({
   journey,
-  variant = 'default'
+  renderMode = 'default'
 }: JourneyInfoProps): boolean {
   return (
-    variant === 'admin' ||
+    renderMode === 'admin' ||
     journey?.host?.src1 != null ||
     journey?.host?.src2 != null
   )
@@ -44,19 +44,19 @@ export function hasHostDetails({ journey }: JourneyInfoProps): boolean {
 
 export function hasChatWidget({
   journey,
-  variant = 'default'
+  renderMode = 'default'
 }: JourneyInfoProps): boolean {
   return (
-    variant === 'admin' ||
+    renderMode === 'admin' ||
     (journey?.chatButtons != null && journey?.chatButtons.length > 0)
   )
 }
 
 export function hasAiChatButton({
-  variant = 'default',
+  renderMode = 'default',
   card
 }: JourneyInfoProps): boolean {
-  if (variant === 'admin' || variant === 'embed') return false
+  if (renderMode === 'admin' || renderMode === 'embed') return false
   // Card-level only. The deprecated `Journey.showAssistant` is intentionally
   // ignored here — the field itself is removed in NES-1624.
   return card?.showAssistant === true
@@ -74,34 +74,34 @@ export function getTitle({ journey }: JourneyInfoProps): string | null {
 
 export function hasCombinedFooter({
   journey,
-  variant = 'default'
+  renderMode = 'default'
 }: JourneyInfoProps): boolean {
   const hasHost =
-    hasHostAvatar({ journey, variant }) || hasHostDetails({ journey })
+    hasHostAvatar({ journey, renderMode }) || hasHostDetails({ journey })
   const title = getTitle({ journey })
   const reactions = hasReactions({ journey })
 
-  return reactions && title == null && !hasHost && variant !== 'admin'
+  return reactions && title == null && !hasHost && renderMode !== 'admin'
 }
 
 export function getFooterMobileSpacing({
   journey,
-  variant = 'default',
+  renderMode = 'default',
   card
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
-    return variant === 'admin' ? HALF_HEIGHT : WEBSITE_HEIGHT
+    return renderMode === 'admin' ? HALF_HEIGHT : WEBSITE_HEIGHT
   } else {
     const hasHost =
-      hasHostAvatar({ journey, variant }) || hasHostDetails({ journey })
+      hasHostAvatar({ journey, renderMode }) || hasHostDetails({ journey })
     const title = getTitle({ journey })
     const reactions = hasReactions({ journey })
 
-    const hasTopRow = reactions && !hasCombinedFooter({ journey, variant })
+    const hasTopRow = reactions && !hasCombinedFooter({ journey, renderMode })
     const hasBottomRow =
       hasHost ||
-      hasChatWidget({ journey, variant }) ||
-      hasAiChatButton({ journey, variant, card }) ||
+      hasChatWidget({ journey, renderMode }) ||
+      hasAiChatButton({ journey, renderMode, card }) ||
       title != null ||
       reactions
 
@@ -117,7 +117,7 @@ export function getFooterMobileSpacing({
 
 export function getFooterMobileHeight({
   journey,
-  variant = 'default',
+  renderMode = 'default',
   card
 }: JourneyInfoProps): string {
   if (journey?.website === true) {
@@ -125,10 +125,10 @@ export function getFooterMobileHeight({
   } else {
     const hasBottomRow =
       hasReactions({ journey }) ||
-      hasHostAvatar({ journey, variant }) ||
+      hasHostAvatar({ journey, renderMode }) ||
       hasHostDetails({ journey }) ||
-      hasChatWidget({ journey, variant }) ||
-      hasAiChatButton({ journey, variant, card }) ||
+      hasChatWidget({ journey, renderMode }) ||
+      hasAiChatButton({ journey, renderMode, card }) ||
       getTitle({ journey }) != null
 
     if (hasBottomRow) {

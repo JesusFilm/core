@@ -61,9 +61,11 @@ export function LocalAppBar({
       <Container maxWidth="xxl" disableGutters sx={{ px: 8 }}>
         <Stack
           direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          flexGrow={1}
+          sx={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexGrow: 1
+          }}
         >
           <Box
             component={NextLink}

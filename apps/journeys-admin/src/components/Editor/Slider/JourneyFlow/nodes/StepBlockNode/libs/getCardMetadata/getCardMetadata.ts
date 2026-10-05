@@ -1,3 +1,5 @@
+import { TFunction } from 'i18next'
+
 import { TreeBlock } from '@core/journeys/ui/block'
 import { isActionBlock } from '@core/journeys/ui/isActionBlock'
 import {
@@ -60,7 +62,8 @@ function getVideoDescription(videoBlock: VideoBlock): string {
 }
 
 export function getCardMetadata(
-  card: TreeBlock<CardBlock> | undefined
+  card: TreeBlock<CardBlock> | undefined,
+  t: TFunction
 ): CardMetadata {
   if (card == null) return {}
   const priorityBlock = getPriorityBlock(card)
@@ -102,7 +105,10 @@ export function getCardMetadata(
       // Use posterBlockId image or default poster image on video
       posterBlockImage ??
       (priorityBlock?.mediaVideo?.__typename === 'Video'
-        ? (priorityBlock?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
+        ? // ESLint's projectService and the type-check/build tsconfig resolve
+          // different type info here; tsc still needs this assertion.
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+          (priorityBlock?.mediaVideo?.images[0]?.mobileCinematicHigh as string)
         : (priorityBlock.image ?? undefined))
 
     return {
@@ -121,8 +127,8 @@ export function getCardMetadata(
   if (priorityBlock?.__typename === 'ImageBlock') {
     const width = priorityBlock.width
     const height = priorityBlock.height
-    imageTitle = 'Image'
-    imageSubititle = `${width} x ${height} pixels`
+    imageTitle = t('Image')
+    imageSubititle = t('{{width}} x {{height}} pixels', { width, height })
   }
 
   const [title, subtitle] = getCardHeadings(card.children)

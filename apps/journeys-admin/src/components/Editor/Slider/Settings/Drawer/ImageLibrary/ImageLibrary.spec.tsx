@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -66,7 +66,7 @@ describe('ImageLibrary', () => {
       )
       expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(
-        screen.getByTestId('ImageBlockEditor').parentElement?.parentElement
+        screen.getByTestId('ImageBlockEditor').closest('.swiper-no-swiping')
       ).toHaveClass('swiper-no-swiping MuiBox-root')
     })
 
@@ -112,7 +112,7 @@ describe('ImageLibrary', () => {
       )
       expect(screen.getByText('Custom')).toBeInTheDocument()
       expect(
-        screen.getByTestId('ImageBlockEditor').parentElement?.parentElement
+        screen.getByTestId('ImageBlockEditor').closest('.swiper-no-swiping')
       ).toHaveClass('swiper-no-swiping MuiBox-root')
     })
   })

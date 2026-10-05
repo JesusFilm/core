@@ -39,10 +39,12 @@ export function ReportsNavigation({
   return (
     <Stack
       direction="row"
-      alignItems="center"
-      justifyContent="flex-end"
-      flexGrow={1}
       data-testid="JourneysAdminReportsNavigation"
+      sx={{
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        flexGrow: 1
+      }}
     >
       <Chip
         icon={icon}

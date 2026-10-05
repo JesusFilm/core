@@ -353,6 +353,28 @@ describe('useLanguages', () => {
       })
     })
 
+    it('should handle a JSON error body without crashing', async () => {
+      // The API returns `{ error: '...' }` with a 500 when the gateway query
+      // fails. This is valid JSON, so it reaches transformData and must not
+      // throw (which would crash the whole page).
+      server.use(
+        http.get('/api/languages', () => {
+          return HttpResponse.json(
+            { error: 'Failed to fetch languages' },
+            { status: 500 }
+          )
+        })
+      )
+
+      const wrapper = await createI18nWrapper()
+      const { result } = renderHook(() => useLanguages(), { wrapper })
+
+      await waitFor(() => {
+        expect(result.current.languages).toEqual([])
+        expect(result.current.isLoading).toBe(false)
+      })
+    })
+
     it('should handle network error', async () => {
       server.use(
         http.get('/api/languages', () => {

@@ -55,11 +55,11 @@ export const BRAND_RED_DARK = '#A8202C'
 export const PANEL_LINK_FG = brandRed
 
 /**
- * Link colour for the same caption link on the dark overlay surface
- * (desktop ChatOverlay, below the floating input). brandRed (#C52D3A)
- * is too dim against the ~grey.900 backdrop; a brighter
- * brand-adjacent red keeps the affordance readable while staying in
- * the chat surface's red/white vocabulary.
+ * Link colour for the same caption link in the ChatHeader on the dark
+ * overlay surface (desktop ChatOverlay). brandRed (#C52D3A) is too dim
+ * against the ~grey.900 backdrop; a brighter brand-adjacent red keeps
+ * the affordance readable while staying in the chat surface's
+ * red/white vocabulary.
  */
 export const OVERLAY_LINK_FG = '#FF7A85'
 
@@ -83,38 +83,28 @@ export const SHEET_TOP_SHADOW =
 /** Translucent grey fill behind the disabled-state input pill in the loading skeleton. */
 export const INPUT_FILL = 'rgba(173, 173, 173, 0.3)'
 
-// --- PromptInput, panel (inline) variant — floating pill on the white pinned-bar surface ---
+// --- PromptInput — floating pill on the white sheet surface ---
 
 export const PANEL_INPUT_BG = 'rgba(255, 255, 255, 0.96)'
 export const PANEL_INPUT_BORDER = 'rgba(38, 38, 46, 0.12)'
 export const PANEL_INPUT_SHADOW =
   '0 6px 18px rgba(38, 38, 46, 0.16), 0 1px 3px rgba(38, 38, 46, 0.10)'
 
-// --- PromptInput, overlay (floating) variant — floating pill on the dark journey backdrop ---
+// --- Dark overlay surface (desktop ChatOverlay, NES-1738 Option B) ---
 
-export const OVERLAY_INPUT_BG = 'rgba(38, 38, 46, 0.78)'
-export const OVERLAY_INPUT_BORDER = 'rgba(255, 255, 255, 0.12)'
-export const OVERLAY_INPUT_SHADOW =
-  '0 10px 30px rgba(0, 0, 0, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1)'
-/** Muted text on the dark overlay (placeholder, disabled label). */
+/** Hairline border on the dark overlay: its top edge and the header divider. */
+export const OVERLAY_BORDER = 'rgba(255, 255, 255, 0.12)'
+/** Muted text on the dark overlay (header caption). */
 export const OVERLAY_FG_MUTED = 'rgba(255, 255, 255, 0.6)'
-/** Subtle white wash on the dark overlay (disabled button bg). */
-export const OVERLAY_FILL_LOW = 'rgba(255, 255, 255, 0.18)'
-/** Muted brand-red close control on the dark overlay. */
-export const OVERLAY_CLOSE_BG = 'rgba(197, 45, 58, 0.72)'
-/** Hover state for the muted brand-red close control. */
-export const OVERLAY_CLOSE_BG_HOVER = 'rgba(197, 45, 58, 0.86)'
+/** ChatHeader title colour on the dark overlay backdrop. */
+export const OVERLAY_TITLE_FG = 'rgba(255, 255, 255, 0.85)'
+/** Dim text colour for the retry button on the dark overlay. */
+export const OVERLAY_FG_RETRY = 'rgba(255, 255, 255, 0.7)'
 
 // --- Misc chat surfaces ---
 
 /** Plain assistant text on the dark blurred overlay backdrop. */
 export const PLAIN_ASSISTANT_FG_ON_DARK = 'rgba(255, 255, 255, 0.92)'
-
-/** Empty-state hero text colour on the dark overlay backdrop. */
-export const OVERLAY_HERO_FG = 'rgba(255, 255, 255, 0.85)'
-
-/** Dim text colour for the retry button on the dark overlay. */
-export const OVERLAY_FG_RETRY = 'rgba(255, 255, 255, 0.7)'
 
 /** Drop shadow on the floating "scroll to latest" pill in Conversation. */
 export const SCROLL_PILL_SHADOW = '0 4px 12px rgba(38, 38, 46, 0.12)'

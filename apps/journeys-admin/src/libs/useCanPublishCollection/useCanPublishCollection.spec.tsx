@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { renderHook, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { type MockInstance } from 'vitest'
@@ -17,7 +18,7 @@ function makeMock(
     routeAllTeamJourneys: boolean
   }>,
   teamId = 'teamId'
-): MockedResponse {
+): MockLink.MockedResponse {
   return {
     request: {
       query: GET_CUSTOM_DOMAINS,
@@ -38,7 +39,7 @@ function makeMock(
   }
 }
 
-function wrapWith(mocks: MockedResponse[]) {
+function wrapWith(mocks: MockLink.MockedResponse[]) {
   return function Wrapper({
     children
   }: {
@@ -128,7 +129,7 @@ describe('useCanPublishCollection', () => {
   // a custom-domain team doesn't slip through and publish a page that
   // won't route from their domain.
   describe('error path', () => {
-    const errorMock: MockedResponse = {
+    const errorMock: MockLink.MockedResponse = {
       request: { query: GET_CUSTOM_DOMAINS, variables: { teamId: 'teamId' } },
       result: { errors: [new GraphQLError('Backend exploded')] }
     }

@@ -1,12 +1,5 @@
-import {
-  Button,
-  Column,
-  Container,
-  Row,
-  Section,
-  Text
-} from '@react-email/components'
 import { ReactElement } from 'react'
+import { Button, Column, Container, Row, Section, Text } from 'react-email'
 
 export function NextStepsFooter(): ReactElement {
   return (

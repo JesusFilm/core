@@ -161,7 +161,7 @@ describe('JourneyQuickSettingsGoals', () => {
   it('should render 3 goals', () => {
     render(
       <JourneyProvider
-        value={{ journey: { ...journey, blocks }, variant: 'admin' }}
+        value={{ journey: { ...journey, blocks }, renderMode: 'admin' }}
       >
         <JourneyQuickSettingsGoals />
       </JourneyProvider>
@@ -185,7 +185,7 @@ describe('JourneyQuickSettingsGoals', () => {
     render(
       <EditorProvider initialState={state}>
         <JourneyProvider
-          value={{ journey: { ...journey, blocks }, variant: 'admin' }}
+          value={{ journey: { ...journey, blocks }, renderMode: 'admin' }}
         >
           <JourneyQuickSettingsGoals />
           <TestEditorState />
@@ -203,7 +203,7 @@ describe('JourneyQuickSettingsGoals', () => {
   it('should open and close goal details drawer', async () => {
     render(
       <JourneyProvider
-        value={{ journey: { ...journey, blocks }, variant: 'admin' }}
+        value={{ journey: { ...journey, blocks }, renderMode: 'admin' }}
       >
         <JourneyQuickSettingsGoals />
       </JourneyProvider>

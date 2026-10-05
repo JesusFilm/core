@@ -32,6 +32,13 @@ export interface TeamModeProps extends SharedModeProps {
    * shrinks so the icon stays clear of the panel.
    */
   infoPanelActive?: boolean
+  /**
+   * True when TemplateGalleryPageList owns its own Sort/bulk-actions menu
+   * for the currently active tab — computed once in JourneyList (see its
+   * showTemplateInfoPanel) and passed down rather than re-derived here from
+   * the flag + route (NES-1872 review).
+   */
+  listControlsOwnedByContent?: boolean
 }
 
 export const TeamMode = ({
@@ -45,82 +52,103 @@ export const TeamMode = ({
   setActiveEvent,
   router,
   renderList,
-  infoPanelActive = false
-}: TeamModeProps): ReactElement => (
-  <>
-    <Tabs
-      value={activeContentTypeTab}
-      onChange={handleContentTypeChange}
-      aria-label="journey content type tabs"
-      data-testid="journey-list-view"
-      sx={{
-        // Allow overflow to prevent hover circle on JourneyListMenu from being clipped
-        // MUI Tabs uses an internal scroller with overflow: hidden by default
-        overflow: 'visible',
-        pr: 2,
-        display: 'flex',
-        alignItems: 'center',
-        '& .MuiTabs-scroller': {
-          overflow: 'visible !important'
-        },
-        '& .MuiTab-root': {
-          typography: 'subtitle2'
-        }
-      }}
-    >
-      <Tab
-        label={contentTypeOptions[0].displayValue}
-        {...tabA11yProps(
-          'journeys-content-panel',
-          contentTypeOptions[0].tabIndex
-        )}
-      />
-      <Tab
-        label={contentTypeOptions[1].displayValue}
-        {...tabA11yProps(
-          'templates-content-panel',
-          contentTypeOptions[1].tabIndex
-        )}
-      />
-      <StatusFilterControl
-        selectedStatus={selectedStatus}
-        handleStatusChange={handleStatusChange}
-      />
-      <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
-      <MenuControl
-        setActiveEvent={setActiveEvent}
-        menuMarginRight={{
-          xs: 1,
-          sm:
-            router?.query?.type === 'templates'
-              ? infoPanelActive
-                ? -2
-                : -12
-              : -8
+  infoPanelActive = false,
+  listControlsOwnedByContent = false
+}: TeamModeProps): ReactElement => {
+  // Sort and the bulk-actions menu here act on every active template,
+  // collections and unsectioned alike — too blunt once the Collections
+  // panel is showing (NES-1872). They move down into TemplateGalleryPageList,
+  // scoped to just the All Templates (unsectioned) section, instead of
+  // sitting in this shared row. The status filter is unaffected.
+  const hideListControls = listControlsOwnedByContent
+
+  return (
+    <>
+      <Tabs
+        value={activeContentTypeTab}
+        onChange={handleContentTypeChange}
+        aria-label="journey content type tabs"
+        data-testid="journey-list-view"
+        sx={{
+          // Allow overflow to prevent hover circle on JourneyListMenu from being clipped
+          // MUI Tabs uses an internal scroller with overflow: hidden by default
+          overflow: 'visible',
+          pr: 2,
+          display: 'flex',
+          alignItems: 'center',
+          '& .MuiTabs-scroller': {
+            overflow: 'visible !important'
+          },
+          '& .MuiTab-root': {
+            typography: 'subtitle2'
+          }
         }}
-      />
-    </Tabs>
-    {/* Journeys tab panel */}
-    <TabPanel
-      name="journeys-content-panel"
-      value={activeContentTypeTab}
-      index={contentTypeOptions[0].tabIndex}
-      unmountUntilVisible={
-        router?.query?.type !== undefined && router?.query?.type !== 'journeys'
-      }
-    >
-      {renderList('journeys', selectedStatus)}
-    </TabPanel>
-    {/* Templates tab panel */}
-    <TabPanel
-      name="templates-content-panel"
-      value={activeContentTypeTab}
-      index={contentTypeOptions[1].tabIndex}
-      unmountUntilVisible={
-        router?.query?.type !== undefined && router?.query?.type !== 'templates'
-      }
-    >
-      {renderList('templates', selectedStatus)}
-    </TabPanel>
-  </>
-)
+      >
+        <Tab
+          label={contentTypeOptions[0].displayValue}
+          {...tabA11yProps(
+            'journeys-content-panel',
+            contentTypeOptions[0].tabIndex
+          )}
+        />
+        <Tab
+          label={contentTypeOptions[1].displayValue}
+          {...tabA11yProps(
+            'templates-content-panel',
+            contentTypeOptions[1].tabIndex
+          )}
+        />
+        <StatusFilterControl
+          selectedStatus={selectedStatus}
+          handleStatusChange={handleStatusChange}
+          menuMarginRight={
+            hideListControls
+              ? { xs: 1, sm: infoPanelActive ? -2 : -12 }
+              : undefined
+          }
+        />
+        {!hideListControls && (
+          <SortControl sortOrder={sortOrder} setSortOrder={setSortOrder} />
+        )}
+        {!hideListControls && (
+          <MenuControl
+            setActiveEvent={setActiveEvent}
+            menuMarginRight={{
+              xs: 1,
+              sm:
+                router?.query?.type === 'templates'
+                  ? infoPanelActive
+                    ? -2
+                    : -12
+                  : -8
+            }}
+          />
+        )}
+      </Tabs>
+      {/* Journeys tab panel */}
+      <TabPanel
+        name="journeys-content-panel"
+        value={activeContentTypeTab}
+        index={contentTypeOptions[0].tabIndex}
+        unmountUntilVisible={
+          router?.query?.type !== undefined &&
+          router?.query?.type !== 'journeys'
+        }
+      >
+        {renderList('journeys', selectedStatus)}
+      </TabPanel>
+      {/* Templates tab panel */}
+      <TabPanel
+        name="templates-content-panel"
+        value={activeContentTypeTab}
+        index={contentTypeOptions[1].tabIndex}
+        unmountUntilVisible={
+          router?.query?.type !== undefined &&
+          router?.query?.type !== 'templates'
+        }
+      >
+        {renderList('templates', selectedStatus)}
+      </TabPanel>
+    </>
+  )
+}

@@ -288,7 +288,7 @@ describe('TextResponse', () => {
     expect(screen.getByRole('textbox')).toBeInTheDocument()
   })
 
-  it('should show hint text', () => {
+  it('should show hint text aligned flush with the label', () => {
     const blockWithHint: TreeBlock<TextResponseFields> = {
       ...block,
       hint: 'Please provide your thoughts on this topic'
@@ -302,9 +302,15 @@ describe('TextResponse', () => {
       </JourneyProvider>
     )
 
-    expect(
-      screen.getByText('Please provide your thoughts on this topic')
-    ).toBeInTheDocument()
+    const hint = screen.getByText('Please provide your thoughts on this topic')
+    const label = screen.getByText('Your answer here')
+    expect(hint).toBeInTheDocument()
+    expect(getComputedStyle(hint).marginLeft).toBe(
+      getComputedStyle(label).marginLeft
+    )
+    expect(getComputedStyle(hint).marginRight).toBe(
+      getComputedStyle(label).marginRight
+    )
   })
 
   it('should show required text in hint', () => {

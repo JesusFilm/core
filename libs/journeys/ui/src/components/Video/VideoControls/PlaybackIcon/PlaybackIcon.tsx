@@ -34,7 +34,11 @@ export function PlaybackIcon({
       timeout={{ exit: 3000 }}
     >
       {/* Centered Play/Pause/Mute/Loading Icons */}
-      <Stack justifyContent="center">
+      <Stack
+        sx={{
+          justifyContent: 'center'
+        }}
+      >
         {!loading ? (
           <IconButton
             aria-label={`center-${state.action}-button`}

@@ -1,0 +1,59 @@
+export const env = {
+  get CLOUDFLARE_UPLOAD_KEY(): string {
+    return 'test-cloudflare-account-hash'
+  },
+  get FACEBOOK_APP_ID(): string {
+    return 'fb-app-id'
+  },
+  get FACEBOOK_APP_SECRET(): string {
+    return 'fb-app-secret'
+  },
+  get GATEWAY_HMAC_SECRET(): string {
+    // Dummy non-empty secret for any code that reads it directly in tests
+    return 'test-gateway-hmac-secret'
+  },
+  get GATEWAY_URL(): string {
+    return 'http://localhost/graphql'
+  },
+  get GOOGLE_CLIENT_ID(): string {
+    return 'test-client-id'
+  },
+  get GOOGLE_CLIENT_SECRET(): string {
+    return 'test-client-secret'
+  },
+  get INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET(): string {
+    return 'test-secret'
+  },
+  get JOURNEYS_REVALIDATE_ACCESS_TOKEN(): string {
+    return 'test-token'
+  },
+  get JOURNEYS_URL(): string {
+    return 'https://example.com'
+  },
+  get PLAUSIBLE_API_KEY(): string {
+    return process.env.PLAUSIBLE_API_KEY ?? 'test-api-key'
+  },
+  get PLAUSIBLE_URL(): string {
+    return process.env.PLAUSIBLE_URL ?? 'https://example.com'
+  },
+  // The embed allowlist (single env-sourced list). Includes the built-in
+  // provider hosts the normalizers expect plus `loom.com`, a host with no
+  // normalizer used to exercise the "allowlisted, stored as-is" path.
+  get TEMPLATE_LIBRARY_EMBED_HOSTS(): ReadonlySet<string> {
+    return new Set([
+      'canva.com',
+      'www.canva.com',
+      'canva.link',
+      'youtube.com',
+      'www.youtube.com',
+      'm.youtube.com',
+      'youtu.be',
+      'docs.google.com',
+      'loom.com',
+      'www.loom.com'
+    ])
+  },
+  get TRANSLATION_AI_MODELS(): string[] {
+    return ['google/gemma-4-26b-a4b-it', 'google/gemini-2.5-flash']
+  }
+}

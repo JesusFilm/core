@@ -6,7 +6,7 @@ import { ThemeMode, ThemeName } from '@core/shared/ui/themes'
 
 import { TreeBlock, blockHistoryVar, treeBlocksVar } from '../../../libs/block'
 import { BlockFields_StepBlock as StepBlock } from '../../../libs/block/__generated__/BlockFields'
-import { journeyUiConfig } from '../../../libs/journeyUiConfig'
+import { journeyUiConfig } from '../../../test/journeyUiConfig'
 
 import { PaginationBullets } from './PaginationBullets'
 

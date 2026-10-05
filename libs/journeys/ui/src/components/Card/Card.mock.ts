@@ -1,5 +1,5 @@
-import { type FetchResult } from '@apollo/client'
-import { MockedResponse } from '@apollo/client/testing'
+import { type ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   ButtonColor,
@@ -21,8 +21,8 @@ import {
 } from '../Button/__generated__/ButtonFields'
 import { BUTTON_CLICK_EVENT_CREATE } from '../Button/Button'
 import { ImageFields } from '../Image/__generated__/ImageFields'
-import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../MultiselectQuestion'
-import { MultiselectSubmissionEventCreate } from '../MultiselectQuestion/__generated__/MultiselectSubmissionEventCreate'
+import { MULTISELECT_SUBMISSION_EVENT_CREATE } from '../Multiselect'
+import { MultiselectSubmissionEventCreate } from '../Multiselect/__generated__/MultiselectSubmissionEventCreate'
 import { StepViewEventCreate } from '../Step/__generated__/StepViewEventCreate'
 import { STEP_VIEW_EVENT_CREATE } from '../Step/Step'
 import { TEXT_RESPONSE_SUBMISSION_EVENT_CREATE } from '../TextResponse/TextResponse'
@@ -289,7 +289,7 @@ export const journey = {
 } as unknown as Journey
 
 // GraphQL mocks
-export const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> =
+export const mockStepPreviousEventCreate: MockLink.MockedResponse<StepPreviousEventCreate> =
   {
     request: {
       query: STEP_PREVIOUS_EVENT_CREATE,
@@ -304,7 +304,7 @@ export const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate
       }
     },
     result: vi.fn(
-      (): FetchResult<StepPreviousEventCreate> => ({
+      (): ApolloLink.Result<StepPreviousEventCreate> => ({
         data: {
           stepPreviousEventCreate: {
             id: 'uuid',
@@ -315,30 +315,31 @@ export const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate
     )
   }
 
-export const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
-  request: {
-    query: STEP_NEXT_EVENT_CREATE,
-    variables: {
-      input: {
-        id: 'uuid',
-        blockId: 'step1.id',
-        nextStepId: 'step2.id',
-        label: 'Step {{number}}',
-        value: 'Step {{number}}'
-      }
-    }
-  },
-  result: vi.fn(
-    (): FetchResult<StepNextEventCreate> => ({
-      data: {
-        stepNextEventCreate: {
+export const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreate> =
+  {
+    request: {
+      query: STEP_NEXT_EVENT_CREATE,
+      variables: {
+        input: {
           id: 'uuid',
-          __typename: 'StepNextEvent'
+          blockId: 'step1.id',
+          nextStepId: 'step2.id',
+          label: 'Step {{number}}',
+          value: 'Step {{number}}'
         }
       }
-    })
-  )
-}
+    },
+    result: vi.fn(
+      (): ApolloLink.Result<StepNextEventCreate> => ({
+        data: {
+          stepNextEventCreate: {
+            id: 'uuid',
+            __typename: 'StepNextEvent'
+          }
+        }
+      })
+    )
+  }
 
 export const mockTextResponseSubmissionEventCreate = {
   request: {
@@ -432,7 +433,7 @@ export const mockTextResponseEmailSubmissionEventCreate = {
 export const getStepViewEventMock = (
   blockId: string,
   value?: string
-): MockedResponse<StepViewEventCreate> => ({
+): MockLink.MockedResponse<StepViewEventCreate> => ({
   request: {
     query: STEP_VIEW_EVENT_CREATE,
     variables: {
@@ -485,7 +486,7 @@ export const createMockButtonClickEvent = (
   }))
 })
 
-export const mockMultiselectSubmissionEventCreate: MockedResponse<MultiselectSubmissionEventCreate> =
+export const mockMultiselectSubmissionEventCreate: MockLink.MockedResponse<MultiselectSubmissionEventCreate> =
   {
     request: {
       query: MULTISELECT_SUBMISSION_EVENT_CREATE,
@@ -500,7 +501,7 @@ export const mockMultiselectSubmissionEventCreate: MockedResponse<MultiselectSub
       }
     },
     result: vi.fn(
-      (): FetchResult<MultiselectSubmissionEventCreate> => ({
+      (): ApolloLink.Result<MultiselectSubmissionEventCreate> => ({
         data: {
           multiselectSubmissionEventCreate: {
             id: 'uuid',

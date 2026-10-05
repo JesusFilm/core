@@ -54,7 +54,7 @@ export function GenericEvent({
           maxWidth: '56px'
         }}
       >
-        <Typography variant={durationVariant} color={durationColor}>
+        <Typography variant={durationVariant} sx={{ color: durationColor }}>
           {createdAt != null ? format(parseISO(createdAt), 'p') : duration}
         </Typography>
       </TimelineOppositeContent>
@@ -88,8 +88,10 @@ export function GenericEvent({
         <Stack direction="column" sx={{ width: '100%', pt: 0 }}>
           <Typography
             variant="body2"
-            color="text.secondary"
             gutterBottom={activity != null || label != null}
+            sx={{
+              color: 'text.secondary'
+            }}
           >
             {/* activity */}
             {activity != null && (
@@ -101,7 +103,7 @@ export function GenericEvent({
             {label != null && label}
           </Typography>
           {/* Value */}
-          <Typography variant={valueVariant} color={valueColor}>
+          <Typography variant={valueVariant} sx={{ color: valueColor }}>
             {value}
           </Typography>
         </Stack>

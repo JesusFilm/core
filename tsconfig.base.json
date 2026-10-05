@@ -10,13 +10,14 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "commonjs",
-    "lib": ["es2021", "dom"],
+    "lib": ["es2021", "es2022.error", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
+      "@core/journeys/ui/test/*": ["libs/journeys/ui/src/test/*"],
       "@core/journeys/ui/*": [
         "libs/journeys/ui/src/components/*",
         "libs/journeys/ui/src/libs/*"
@@ -38,7 +39,6 @@
         "libs/shared/ui/src/components/*",
         "libs/shared/ui/src/libs/*"
       ],
-      "@core/shared/ui-modern/*": ["libs/shared/ui-modern/src/*"],
       "@core/yoga/*": ["libs/yoga/src/*"]
     }
   },

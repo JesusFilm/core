@@ -60,7 +60,12 @@ const onDelete = async (): Promise<void> => await Promise.resolve()
 const Template: StoryObj<typeof ImageSource> = {
   render: ({ ...args }) => (
     <ThemeProvider>
-      <Box width={328} bgcolor="white">
+      <Box
+        sx={{
+          width: 328,
+          bgcolor: 'white'
+        }}
+      >
         <ImageSource
           selectedBlock={args.selectedBlock}
           onChange={onChange}

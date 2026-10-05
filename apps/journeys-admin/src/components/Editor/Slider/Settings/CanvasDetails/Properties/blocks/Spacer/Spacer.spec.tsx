@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -47,5 +47,27 @@ describe('Spacer', () => {
     expect(
       getByText('selectedAttributeId: spacerBlock.id-spacer-options')
     ).toBeInTheDocument()
+  })
+
+  it('should update height when a different spacer is selected', () => {
+    const { getByText, rerender } = render(
+      <MockedProvider>
+        <EditorProvider>
+          <Spacer {...defaultBlock} spacing={100} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('100 Pixels')).toBeInTheDocument()
+
+    rerender(
+      <MockedProvider>
+        <EditorProvider>
+          <Spacer {...defaultBlock} id="spacerBlock2.id" spacing={300} />
+        </EditorProvider>
+      </MockedProvider>
+    )
+
+    expect(getByText('300 Pixels')).toBeInTheDocument()
   })
 })

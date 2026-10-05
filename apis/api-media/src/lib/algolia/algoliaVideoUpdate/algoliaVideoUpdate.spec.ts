@@ -7,11 +7,13 @@ import { getLanguages } from '../languages'
 import { updateVideoInAlgolia } from './algoliaVideoUpdate'
 
 const saveObjectsSpy = vi.fn()
+const deleteObjectsSpy = vi.fn()
 
 // Mock the algolia client helper
 vi.mock('../algoliaClient', () => ({
   getAlgoliaClient: () => ({
-    saveObjects: saveObjectsSpy
+    saveObjects: saveObjectsSpy,
+    deleteObjects: deleteObjectsSpy
   }),
   getAlgoliaConfig: () => ({
     appId: 'test-app-id',
@@ -55,6 +57,7 @@ describe('algoliaVideoUpdate', () => {
 
     // Reset the spy mock return values
     saveObjectsSpy.mockResolvedValue([{ taskID: 'test-task-123' }])
+    deleteObjectsSpy.mockResolvedValue([{ taskID: 'test-delete-task-123' }])
 
     mockedGetLanguages.mockResolvedValue(mockLanguages)
   })
@@ -63,14 +66,19 @@ describe('algoliaVideoUpdate', () => {
     vi.resetAllMocks()
   })
 
-  it('should warn when video is not found', async () => {
+  it('removes the video from algolia when it no longer exists (deleted)', async () => {
     prismaMock.video.findUnique.mockResolvedValueOnce(null)
 
     await updateVideoInAlgolia('non-existent-video', mockLogger)
 
     expect(mockLogger.warn).toHaveBeenCalledWith(
-      'video non-existent-video not found'
+      'video non-existent-video not found, removing from algolia'
     )
+    expect(deleteObjectsSpy).toHaveBeenCalledWith({
+      indexName: 'test-videos',
+      objectIDs: ['non-existent-video'],
+      waitForTasks: true
+    })
     expect(saveObjectsSpy).not.toHaveBeenCalled()
   })
 
@@ -306,12 +314,14 @@ describe('algoliaVideoUpdate', () => {
     })
   })
 
-  it('should handle errors gracefully', async () => {
+  it('logs and rethrows so the caller can retry', async () => {
     prismaMock.video.findUnique.mockRejectedValueOnce(
       new Error('Database error')
     )
 
-    await updateVideoInAlgolia('test-video-id', mockLogger)
+    await expect(
+      updateVideoInAlgolia('test-video-id', mockLogger)
+    ).rejects.toThrow('Database error')
 
     expect(mockLogger.error).toHaveBeenCalledWith(
       expect.any(Error),

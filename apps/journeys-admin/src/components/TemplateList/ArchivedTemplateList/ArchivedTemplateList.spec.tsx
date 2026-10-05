@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -181,7 +181,7 @@ describe('ArchivedTemplateList', () => {
       </MockedProvider>
     )
     await waitFor(() =>
-      expect(getByText('No archived templates.')).toBeInTheDocument()
+      expect(getByText('No archived Templates.')).toBeInTheDocument()
     )
   })
 
@@ -244,6 +244,9 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByText('Unarchive'))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Templates Unarchived')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {
@@ -355,6 +358,9 @@ describe('ArchivedTemplateList', () => {
       )
       fireEvent.click(getByRole('button', { name: 'Trash' }))
       await waitFor(() => expect(result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(getByText('Templates Trashed')).toBeInTheDocument()
+      )
     })
 
     it('should show error', async () => {

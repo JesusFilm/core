@@ -7,7 +7,7 @@ This gives us a few benefits:
 
 - We can use "react like" syntax in the backend
 - Allows us to preview the emails before we ship them
-  - `nx email api-journeys-modern`
+  - `nx email api-journeys`
   - go to `localhost:4601` to view the preview environment
   - you can also run `nx email api-users` to see our other email templates
 - Gives us premade react components that are supported by most email clients
@@ -83,7 +83,7 @@ This will still send an email to the inbox of `someemail@gmail.com` so that you 
 
 In our backend, we use redis and bullmq to create a job - that at a later time, will get processed and once complete, send an email to user.
 
-The email worker lives in `apis/api-journeys-modern/src/workers/email/`:
+The email worker lives in `apis/api-journeys/src/workers/email/`:
 
 - `config.ts` — defines the queue name (`api-journeys-email`) and job name
 - `queue.ts` — exports the BullMQ `Queue` instance

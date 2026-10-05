@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
@@ -116,7 +116,7 @@ describe('TextResponse', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: customizableJourney, variant: 'admin' }}
+            value={{ journey: customizableJourney, renderMode: 'admin' }}
           >
             <TextResponse {...customizableBlock} />
           </JourneyProvider>
@@ -150,7 +150,7 @@ describe('TextResponse', () => {
       <MockedProvider>
         <ThemeProvider>
           <JourneyProvider
-            value={{ journey: customizableJourney, variant: 'admin' }}
+            value={{ journey: customizableJourney, renderMode: 'admin' }}
           >
             <TextResponse {...customizableBlock} />
           </JourneyProvider>

@@ -142,7 +142,7 @@ const IDLE_HEIGHT_PX = 144
  * reports `'active'` and the sheet reopens at 80% with history intact.
  */
 export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
-  const { variant } = useJourney()
+  const { renderMode } = useJourney()
   const { open, setOpen } = useChatOverlay()
   const [sheetState, setSheetState] = useState<AiChatSheetState>('idle')
 
@@ -150,7 +150,7 @@ export function PinnedChatBar({ sx }: PinnedChatBarProps): ReactElement | null {
     setSheetState(next)
   }, [])
 
-  if (variant === 'admin' || variant === 'embed') {
+  if (renderMode === 'admin' || renderMode === 'embed') {
     return null
   }
 

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -91,7 +92,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).toBeChecked()
@@ -107,7 +108,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -126,7 +127,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -146,7 +147,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).toBeChecked()
@@ -162,7 +163,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -178,7 +179,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       expect(screen.getByText('Needs Customization')).toBeInTheDocument()
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       expect(toggle).not.toBeChecked()
@@ -229,7 +230,7 @@ describe('BlockCustomizationToggle', () => {
           imageBlockUpdate: { ...imageBlock, customizable: true }
         }
       }))
-      const imageBlockUpdateMock: MockedResponse<
+      const imageBlockUpdateMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -257,7 +258,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -274,7 +275,7 @@ describe('BlockCustomizationToggle', () => {
           imageBlockUpdate: { ...blockWithCustomizable, customizable: false }
         }
       }))
-      const imageBlockUpdateMock: MockedResponse<
+      const imageBlockUpdateMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -302,7 +303,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -318,7 +319,7 @@ describe('BlockCustomizationToggle', () => {
           videoBlockUpdate: { ...videoBlock, customizable: true }
         }
       }))
-      const videoBlockUpdateMock: MockedResponse<
+      const videoBlockUpdateMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -340,7 +341,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -357,7 +358,7 @@ describe('BlockCustomizationToggle', () => {
           videoBlockUpdate: { ...blockWithCustomizable, customizable: false }
         }
       }))
-      const videoBlockUpdateMock: MockedResponse<
+      const videoBlockUpdateMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -379,7 +380,7 @@ describe('BlockCustomizationToggle', () => {
         </MockedProvider>
       )
 
-      const toggle = screen.getByRole('checkbox', {
+      const toggle = screen.getByRole('switch', {
         name: 'Toggle customizable'
       })
       fireEvent.click(toggle)
@@ -398,7 +399,7 @@ describe('BlockCustomizationToggle', () => {
       const undoResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: false } }
       }))
-      const executeMock: MockedResponse<
+      const executeMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -417,7 +418,7 @@ describe('BlockCustomizationToggle', () => {
         },
         result: executeResult
       }
-      const undoMock: MockedResponse<
+      const undoMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -447,7 +448,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -465,7 +466,7 @@ describe('BlockCustomizationToggle', () => {
       const redoResult = vi.fn(() => ({
         data: { imageBlockUpdate: { ...imageBlock, customizable: true } }
       }))
-      const executeMock: MockedResponse<
+      const executeMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -484,7 +485,7 @@ describe('BlockCustomizationToggle', () => {
         },
         result: executeResult
       }
-      const undoMock: MockedResponse<
+      const undoMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -503,7 +504,7 @@ describe('BlockCustomizationToggle', () => {
         },
         result: undoResult
       }
-      const redoMock: MockedResponse<
+      const redoMock: MockLink.MockedResponse<
         ImageBlockUpdate,
         ImageBlockUpdateVariables
       > = {
@@ -534,7 +535,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -552,7 +553,7 @@ describe('BlockCustomizationToggle', () => {
       const undoResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: false } }
       }))
-      const executeMock: MockedResponse<
+      const executeMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -565,7 +566,7 @@ describe('BlockCustomizationToggle', () => {
         },
         result: executeResult
       }
-      const undoMock: MockedResponse<
+      const undoMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -589,7 +590,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 
@@ -607,7 +608,7 @@ describe('BlockCustomizationToggle', () => {
       const redoResult = vi.fn(() => ({
         data: { videoBlockUpdate: { ...videoBlock, customizable: true } }
       }))
-      const executeMock: MockedResponse<
+      const executeMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -620,7 +621,7 @@ describe('BlockCustomizationToggle', () => {
         },
         result: executeResult
       }
-      const undoMock: MockedResponse<
+      const undoMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -633,7 +634,7 @@ describe('BlockCustomizationToggle', () => {
         },
         result: undoResult
       }
-      const redoMock: MockedResponse<
+      const redoMock: MockLink.MockedResponse<
         VideoBlockUpdate,
         VideoBlockUpdateVariables
       > = {
@@ -658,7 +659,7 @@ describe('BlockCustomizationToggle', () => {
       )
 
       fireEvent.click(
-        screen.getByRole('checkbox', { name: 'Toggle customizable' })
+        screen.getByRole('switch', { name: 'Toggle customizable' })
       )
       await waitFor(() => expect(executeResult).toHaveBeenCalled())
 

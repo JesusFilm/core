@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { type MockedFunction } from 'vitest'
@@ -78,11 +78,7 @@ describe('TemplateFooter', () => {
     fireEvent.click(getByRole('button', { name: 'Use This Template' }))
 
     await waitFor(() => {
-      expect(push).toHaveBeenCalledWith(
-        '/templates/journeyId/customize',
-        undefined,
-        { shallow: true }
-      )
+      expect(push).toHaveBeenCalledWith('/templates/journeyId/customize')
     })
   })
 

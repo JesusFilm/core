@@ -73,8 +73,9 @@ export interface CrowdinError {
 }
 
 export interface ProcessedTranslation {
+  /** Crowdin's numeric string id, stored as `crowdInId` on translated records. */
+  stringId: number
   identifier: string
   text: string
-  context: string
   languageId: string
 }

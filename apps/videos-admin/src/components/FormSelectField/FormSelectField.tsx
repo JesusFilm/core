@@ -4,7 +4,7 @@ import { ComponentProps, ReactElement } from 'react'
 import { FormTextField } from '../FormTextField'
 
 interface FormSelectFieldProps extends ComponentProps<typeof FormTextField> {
-  options: Array<{ label: string; value: string }>
+  options: ReadonlyArray<{ label: string; value: string }>
 }
 
 export function FormSelectField({

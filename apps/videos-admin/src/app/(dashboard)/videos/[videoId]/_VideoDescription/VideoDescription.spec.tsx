@@ -1,5 +1,7 @@
-import { NetworkStatus, useSuspenseQuery } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { NetworkStatus } from '@apollo/client'
+import { useSuspenseQuery } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import _unescape from 'lodash/unescape'
@@ -14,8 +16,8 @@ import {
 } from './VideoDescription'
 
 // Mock useSuspenseQuery hook
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useSuspenseQuery: vi.fn()
@@ -37,7 +39,7 @@ const mockVideoDescriptionResult = {
   }
 }
 
-const mockCreateVideoDescription: MockedResponse<
+const mockCreateVideoDescription: MockLink.MockedResponse<
   ResultOf<typeof CREATE_VIDEO_DESCRIPTION>,
   VariablesOf<typeof CREATE_VIDEO_DESCRIPTION>
 > = {
@@ -95,6 +97,7 @@ describe('VideoDescription', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn()
     })
@@ -149,6 +152,7 @@ describe('VideoDescription', () => {
       subscribeToMore: vi.fn(),
       client: {} as any,
       error: undefined,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       refetch: vi.fn()
     })

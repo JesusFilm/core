@@ -17,10 +17,12 @@ export default function notFound(): ReactElement {
     <ThemeProvider theme={createTheme()}>
       <CssBaseline />
       <Stack
-        alignItems="center"
-        justifyContent="center"
         spacing={2}
-        sx={{ minHeight: '100vh' }}
+        sx={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh'
+        }}
       >
         <Typography variant="h4" component="h1">
           We've Lost This Page

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { usePlausible } from 'next-plausible'
@@ -95,7 +95,7 @@ const journey = {
 describe('RadioQuestion', () => {
   it('should display the correct options', () => {
     const { getByText } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <RadioQuestion {...block} addOption={vi.fn()} />
       </MockedProvider>
     )
@@ -176,7 +176,6 @@ describe('RadioQuestion', () => {
             }
           }
         ]}
-        addTypename={false}
       >
         <RadioQuestion {...block} uuid={() => 'uuid'} />
       </MockedProvider>
@@ -191,7 +190,7 @@ describe('RadioQuestion', () => {
 
   it('should display list options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <RadioQuestion
           {...block}
           wrappers={{
@@ -218,7 +217,7 @@ describe('RadioQuestion', () => {
 
   it('should display grid options with wrappers', async () => {
     const { getByText, getAllByTestId } = render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <RadioQuestion
           {...block}
           gridView={true}

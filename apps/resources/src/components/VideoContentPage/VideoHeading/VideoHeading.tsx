@@ -47,10 +47,17 @@ export function VideoHeading({
           <Container maxWidth="xxl">
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
-              <Typography variant="h5" color="text.primary">
+              <Typography
+                variant="h5"
+                sx={{
+                  color: 'text.primary'
+                }}
+              >
                 {last(title)?.value}
               </Typography>
               <Stack
@@ -70,10 +77,18 @@ export function VideoHeading({
           <Container maxWidth="xxl" data-testid="VideoHeading">
             <Stack
               direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+              sx={{
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
             >
-              <Stack direction="row" alignItems="center" spacing={2}>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  alignItems: 'center'
+                }}
+              >
                 <NextLink
                   href={`/watch/${container.variant?.slug as string}`}
                   locale={false}

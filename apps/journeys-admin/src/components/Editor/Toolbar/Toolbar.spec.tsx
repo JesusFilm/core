@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Slider from '@mui/material/Slider'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -30,7 +31,7 @@ vi.mock('@mui/material/useMediaQuery', () => ({
 }))
 
 describe('Toolbar', () => {
-  const mockGetPlausibleJourneyFlowViewed: MockedResponse<GetPlausibleJourneyFlowViewed> =
+  const mockGetPlausibleJourneyFlowViewed: MockLink.MockedResponse<GetPlausibleJourneyFlowViewed> =
     {
       request: {
         query: GET_PLAUSIBLE_JOURNEY_FLOW_VIEWED
@@ -46,7 +47,7 @@ describe('Toolbar', () => {
       }
     }
 
-  const mockUpdatePlausibleJourneyFlowViewed: MockedResponse<
+  const mockUpdatePlausibleJourneyFlowViewed: MockLink.MockedResponse<
     UpdatePlausibleJourneyFlowViewed,
     UpdatePlausibleJourneyFlowViewedVariables
   > = {
@@ -84,7 +85,7 @@ describe('Toolbar', () => {
         ]
       }
     } as unknown as Journey,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 
   const noDescriptionJourney = {
@@ -92,7 +93,7 @@ describe('Toolbar', () => {
       ...defaultJourney.journey,
       description: ''
     } as unknown as Journey,
-    variant: 'admin'
+    renderMode: 'admin'
   }
 
   const socialImageJourney = {
@@ -122,10 +123,10 @@ describe('Toolbar', () => {
           }
         ]
       },
-      variant: 'admin'
+      renderMode: 'admin'
     } as unknown as Journey,
 
-    variant: 'admin'
+    renderMode: 'admin'
   }
 
   beforeEach(() => {
@@ -173,7 +174,7 @@ describe('Toolbar', () => {
           __typename: 'Team'
         }
       } as unknown as Journey,
-      variant: 'admin'
+      renderMode: 'admin'
     }
     render(toolbar(localTemplateJourney))
     expect(screen.getByTestId('NextStepsLogo')).toHaveAttribute(
@@ -288,7 +289,7 @@ describe('Toolbar', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney.journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>
@@ -331,7 +332,7 @@ describe('Toolbar', () => {
             <JourneyProvider
               value={{
                 journey: defaultJourney.journey,
-                variant: 'admin'
+                renderMode: 'admin'
               }}
             >
               <EditorProvider initialState={initialState}>

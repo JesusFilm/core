@@ -11,6 +11,6 @@ export const connection: RedisConnectionConfig =
   isFullUrl && envUrl != null
     ? { url: envUrl }
     : {
-        host: envUrl ?? 'redis',
+        host: envUrl ?? 'localhost',
         port: envPort != null ? Number(envPort) : 6379
       }

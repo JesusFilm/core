@@ -9,6 +9,19 @@ import { JourneyRenderer } from '../JourneyRenderer'
 
 import { ClickableCard } from './ClickableCard'
 
+declare global {
+  interface Document {
+    mozCancelFullScreen?: () => Promise<void>
+    msExitFullscreen?: () => Promise<void>
+    webkitExitFullscreen?: () => Promise<void>
+  }
+
+  interface HTMLElement {
+    msRequestFullscreen?: () => Promise<void>
+    webkitRequestFullscreen?: () => Promise<void>
+  }
+}
+
 interface EmbeddedPreviewProps {
   disableFullscreen?: boolean
 }

@@ -70,15 +70,17 @@ export function VideoHeroOverlay({
         >
           <Typography
             variant="h1"
-            color="text.primary"
-            sx={{ width: { xs: '100%', lg: '70%' } }}
+            sx={{
+              color: 'text.primary',
+              width: { xs: '100%', lg: '70%' }
+            }}
           >
             {last(title)?.value}
           </Typography>
           <Stack
             direction="row"
-            justifyContent="space-between"
             sx={{
+              justifyContent: 'space-between',
               pt: { xs: 0, md: 15 },
               width: '100%'
             }}
@@ -136,8 +138,8 @@ export function VideoHeroOverlay({
               <Stack
                 direction="row"
                 spacing={1}
-                alignItems="center"
                 sx={{
+                  alignItems: 'center',
                   color: 'text.primary',
                   opacity: 0.6
                 }}

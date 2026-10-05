@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -16,7 +16,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SlugDialog open onClose={onClose} journey={defaultJourney} />
@@ -65,7 +65,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SlugDialog open journey={defaultJourney} />
@@ -101,7 +101,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SlugDialog open journey={defaultJourney} />
@@ -151,7 +151,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
           <JourneyProvider
             value={{
               journey: defaultJourney,
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SlugDialog open journey={defaultJourney} />
@@ -181,7 +181,7 @@ describe('JourneyView/Properties/SlugDialog', () => {
                   publicTitle: 'Team'
                 }
               },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <SlugDialog

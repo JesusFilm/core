@@ -167,7 +167,7 @@ export async function importOrUpdateSubtitle({
     )
   } catch (error) {
     console.error('Error fetching existing subtitle:', error)
-    throw new Error('Failed to fetch existing subtitle')
+    throw new Error('Failed to fetch existing subtitle', { cause: error })
   }
 
   if (existingSubtitle) {

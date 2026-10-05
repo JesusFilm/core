@@ -23,10 +23,12 @@ export const LOCALE_LANGUAGES: Record<string, string> = {
   tr: '1942', // Turkish
   zh: '20615', // Chinese\
   'zh-Hans-CN': '21754', // Chinese, Simplified
+  'zh-Hant': '21753', // Chinese, Traditional
   de: '1106', // German
   ne: '1370', // Nepali
   ms: '1927', // Malay
-  pt: '584' // Portuguese
+  pt: '584', // Portuguese
+  mn: '18259' // Mongolian
 }
 
 const SUPPORTED_LOCALES = Object.keys(LOCALE_LANGUAGES)
@@ -151,6 +153,12 @@ function handleLocaleRedirect(
   return response
 }
 
+// Endpoints whose entire job is to mint or refresh the session cookie. If the
+// auth exchange fails on one of these, returning `next()` hands the client a
+// 200 with no cookie — it reloads, finds itself signed out, and loops. These
+// must fail loudly so the client can surface the error.
+const AUTH_EXCHANGE_PATHS = ['/api/login', '/api/refresh-token']
+
 export default async function proxy(req: NextRequest): Promise<NextResponse> {
   return await authMiddleware(req, {
     ...authConfig,
@@ -175,6 +183,8 @@ export default async function proxy(req: NextRequest): Promise<NextResponse> {
         pathname: req.nextUrl.pathname,
         errorMessage: error instanceof Error ? error.message : String(error)
       })
+      if (AUTH_EXCHANGE_PATHS.includes(req.nextUrl.pathname))
+        return NextResponse.json({ error: 'auth_unavailable' }, { status: 503 })
       return applyLocale(req) ?? NextResponse.next()
     }
   })

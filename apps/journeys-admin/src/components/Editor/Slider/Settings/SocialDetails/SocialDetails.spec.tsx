@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -27,7 +27,7 @@ describe('SocialDetails', () => {
         <JourneyProvider
           value={{
             journey: { status: JourneyStatus.published } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <SocialDetails />
@@ -50,7 +50,7 @@ describe('SocialDetails', () => {
         <JourneyProvider
           value={{
             journey: { status: JourneyStatus.published } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider initialState={{ activeSlide: ActiveSlide.Content }}>

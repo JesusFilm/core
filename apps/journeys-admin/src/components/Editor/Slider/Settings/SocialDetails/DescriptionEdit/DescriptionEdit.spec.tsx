@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -30,7 +30,7 @@ describe('DescriptionEdit', () => {
               description: 'journey description',
               seoDescription: 'social description'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <DescriptionEdit />
@@ -49,7 +49,7 @@ describe('DescriptionEdit', () => {
               description: null,
               seoDescription: null
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <DescriptionEdit />
@@ -93,7 +93,7 @@ describe('DescriptionEdit', () => {
               id: 'journey.id',
               slug: 'some-slug'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <DescriptionEdit />
@@ -145,7 +145,7 @@ describe('DescriptionEdit', () => {
               id: 'journey.id',
               slug: 'some-slug'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <DescriptionEdit />
@@ -175,7 +175,7 @@ describe('DescriptionEdit', () => {
               id: 'journey.id',
               slug: 'some-slug'
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <DescriptionEdit />

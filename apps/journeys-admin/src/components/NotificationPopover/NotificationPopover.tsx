@@ -69,12 +69,23 @@ export function NotificationPopover({
         }
       }}
     >
-      <Stack spacing={2} p={4}>
+      <Stack
+        spacing={2}
+        sx={{
+          p: 4
+        }}
+      >
         <Typography variant="h6" gutterBottom>
           {title}
         </Typography>
         <Typography>{description}</Typography>
-        <Stack direction="row" gap={3} sx={{ alignSelf: 'flex-end' }}>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 3,
+            alignSelf: 'flex-end'
+          }}
+        >
           <Button onClick={handleClose}>{t('Dismiss')}</Button>
           {popoverAction != null && (
             <Button onClick={handleClick}>{popoverAction.label}</Button>

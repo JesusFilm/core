@@ -70,11 +70,14 @@ export function DesktopControls({
     <Stack
       data-testid="desktop-controls"
       direction="row"
-      gap={5}
-      alignItems="center"
-      display={{
-        xs: 'none',
-        md: 'flex'
+      sx={{
+        gap: 5,
+        alignItems: 'center',
+
+        display: {
+          xs: 'none',
+          md: 'flex'
+        }
       }}
     >
       {/* Play/Pause Button  */}
@@ -91,10 +94,12 @@ export function DesktopControls({
       {showTime && (
         <Typography
           variant="caption"
-          color="secondary.main"
           noWrap
-          overflow="unset"
-          sx={{ p: 2 }}
+          sx={{
+            color: 'secondary.main',
+            overflow: 'unset',
+            p: 2
+          }}
         >
           {displayTime} / {duration}
         </Typography>
@@ -126,15 +131,17 @@ export function DesktopControls({
       />
       {/* Volume and Mute Controls */}
       <Stack
-        alignItems="center"
         spacing={2}
         direction="row"
         sx={{
+          alignItems: 'center',
+
           '> .MuiSlider-root': {
             width: 0,
             opacity: 0,
             transition: 'all 0.2s ease-out'
           },
+
           '&:hover': {
             '> .MuiSlider-root': {
               width: 70,

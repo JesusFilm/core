@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -34,7 +35,7 @@ function makePage(overrides: Partial<Page> = {}): Page {
     creatorName: '',
     creatorImageSrc: null,
     creatorImageAlt: null,
-    mediaUrl: null,
+    media: null,
     publishedAt: null,
     createdAt: '2026-05-01T00:00:00.000Z',
     updatedAt: '2026-05-01T00:00:00.000Z',
@@ -43,7 +44,7 @@ function makePage(overrides: Partial<Page> = {}): Page {
   }
 }
 
-function makePagesMock(pages: readonly Page[]): MockedResponse {
+function makePagesMock(pages: readonly Page[]): MockLink.MockedResponse {
   return {
     request: {
       query: GET_TEMPLATE_GALLERY_PAGES,
@@ -53,7 +54,7 @@ function makePagesMock(pages: readonly Page[]): MockedResponse {
   }
 }
 
-const languagesMock: MockedResponse = {
+const languagesMock: MockLink.MockedResponse = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -105,6 +106,7 @@ const languagesMock: MockedResponse = {
           '18259',
           '1254',
           '10393',
+          '374',
           '5546',
           '13172',
           '5545',
@@ -150,7 +152,7 @@ function setActiveTeam(id: string | null): void {
 }
 
 interface RenderOptions {
-  mocks?: MockedResponse[]
+  mocks?: MockLink.MockedResponse[]
   props?: Partial<React.ComponentProps<typeof CopyToCollectionDialog>>
 }
 
@@ -262,7 +264,7 @@ describe('CopyToCollectionDialog', () => {
     )
 
     fireEvent.click(
-      screen.getByRole('checkbox', {
+      screen.getByRole('switch', {
         name: 'Translate the copy to another language'
       })
     )
@@ -377,7 +379,7 @@ describe('CopyToCollectionDialog', () => {
     )
 
     fireEvent.click(
-      screen.getByRole('checkbox', {
+      screen.getByRole('switch', {
         name: 'Translate the copy to another language'
       })
     )

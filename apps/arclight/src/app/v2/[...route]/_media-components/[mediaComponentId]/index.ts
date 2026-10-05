@@ -188,14 +188,13 @@ mediaComponent.openapi(route, async (c) => {
     async () => {
       let data
       try {
-        const result = await getApolloClient().query<
-          ResultOf<typeof GET_VIDEO>
-        >({
+        const result = await getApolloClient().query({
           query: GET_VIDEO,
+          errorPolicy: 'none',
           variables: {
             metadataLanguageId,
             fallbackLanguageId,
-            id: mediaComponentId
+            id: mediaComponentId ?? ''
           }
         })
         data = result.data

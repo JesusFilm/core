@@ -1,15 +1,15 @@
 {
   "My Team": "My Team",
-  "Unable to create guest user. Please try again or sign in.": "Unable to create guest user. Please try again or sign in.",
-  "Failed to duplicate journey to team, please refresh the page and try again": "Failed to duplicate journey to team, please refresh the page and try again",
-  "Journey Translated": "Journey Translated",
-  "Journey failed to load. Please refresh the page and try again.": "Journey failed to load. Please refresh the page and try again.",
-  "Failed to load teams. Please refresh the page and try again.": "Failed to load teams. Please refresh the page and try again.",
+  "Unable to create guest user. Please try again or sign in.": "የእንግዳ ተጠቃሚ መፍጠር አልተቻለም። እባክዎ እንደገና ይሞክሩ ወይም ይግቡ።",
+  "Failed to duplicate journey to team, please refresh the page and try again": "ጉዞውን ወደ ቡድን ማባዛት አልተሳካም፤ እባክዎ ገጹን አድስተው እንደገና ይሞክሩ",
+  "Journey Translated": "ጉዞው ተተርጉሟል",
+  "Journey failed to load. Please refresh the page and try again.": "ጉዞውን መጫን አልተሳካም። እባክዎ ገጹን አድስተው እንደገና ይሞክሩ።",
+  "Failed to load teams. Please refresh the page and try again.": "ቡድኖችን መጫን አልተሳካም። እባክዎ ገጹን አድስተው እንደገና ይሞክሩ።",
   "Let's Get Started!": "Let's Get Started!",
   "Get Started": "Get Started",
-  "A few quick edits and your template will be ready to share.": "A few quick edits and your template will be ready to share.",
-  "A few quick edits and it's ready to share!": "A few quick edits and it's ready to share!",
-  "Next": "Next",
-  "Search Language": "Search Language",
-  "Translating": "Translating"
+  "A few quick edits and your template will be ready to share.": "ጥቂት ፈጣን ማስተካከያዎች ብቻ ያስፈልጋሉ፣ እና ቴምፕሌትዎ ለመጋራት ዝግጁ ይሆናል።",
+  "A few quick edits and it's ready to share!": "ጥቂት ፈጣን ማስተካከያዎች ብቻ ይፈልጋል፣ እና ለመጋራት ዝግጁ ይሆናል!",
+  "Next": "ቀጣይ",
+  "Search Language": "የፍለጋ ቋንቋ",
+  "Translating": "በመተርጎም ላይ"
 }

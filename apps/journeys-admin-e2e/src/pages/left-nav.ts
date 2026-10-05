@@ -20,7 +20,8 @@ export class LeftNav {
       await profileListItem.click()
     } catch (error) {
       throw new Error(
-        'Profile list item is not visible after waiting for a minute'
+        'Profile list item is not visible after waiting for a minute',
+        { cause: error }
       )
     }
   }

@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -37,7 +38,7 @@ function makeImages(
   }))
 }
 
-const firstFullPageMock: MockedResponse = {
+const firstFullPageMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_CLOUDFLARE_IMAGES,
     variables: { offset: 0, limit: 11, isAi: false }
@@ -47,7 +48,7 @@ const firstFullPageMock: MockedResponse = {
   }
 }
 
-const firstShortPageMock: MockedResponse = {
+const firstShortPageMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_CLOUDFLARE_IMAGES,
     variables: { offset: 0, limit: 11, isAi: false }
@@ -57,7 +58,7 @@ const firstShortPageMock: MockedResponse = {
   }
 }
 
-const secondShortPageMock: MockedResponse = {
+const secondShortPageMock: MockLink.MockedResponse = {
   request: {
     query: GET_MY_CLOUDFLARE_IMAGES,
     variables: { offset: 10, limit: 11, isAi: false }
@@ -112,7 +113,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should render nothing when the query returns no images', async () => {
-    const emptyMock: MockedResponse = {
+    const emptyMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: false }
@@ -130,7 +131,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should render an error message when the query errors', async () => {
-    const errorMock: MockedResponse = {
+    const errorMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: false }
@@ -183,7 +184,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should send image_select with isAi true when rendered as AI', async () => {
-    const aiMock: MockedResponse = {
+    const aiMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: true }
@@ -272,7 +273,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should keep the existing page when fetchMore rejects', async () => {
-    const failingSecondPage: MockedResponse = {
+    const failingSecondPage: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 10, limit: 11, isAi: false }
@@ -355,7 +356,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should forward isAi=true to the query variables', async () => {
-    const aiMock: MockedResponse = {
+    const aiMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: true }
@@ -373,7 +374,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should forward teamId to the query variables when set', async () => {
-    const teamMock: MockedResponse = {
+    const teamMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
@@ -413,7 +414,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should surface the generic error banner when the team query is rejected with FORBIDDEN', async () => {
-    const forbiddenMock: MockedResponse = {
+    const forbiddenMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }
@@ -442,7 +443,7 @@ describe('MediaLibrary', () => {
   })
 
   it('should tag a teammate upload with a Team tag and leave the caller’s own untagged', async () => {
-    const mixedMock: MockedResponse = {
+    const mixedMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }

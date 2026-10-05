@@ -57,13 +57,13 @@ describe('TagAutocomplete', () => {
     // One of the buttons is the "open dropdown button"
     expect(getAllByRole('button')).toHaveLength(2)
     expect(getByRole('button', { name: 'Christmas' })).toHaveAttribute(
-      'data-tag-index',
+      'data-item-index',
       '0'
     )
     fireEvent.click(getByRole('button', { name: 'Open' }))
     expect(getAllByRole('button')).toHaveLength(3)
     expect(getByRole('button', { name: 'Easter' })).toHaveAttribute(
-      'data-tag-index',
+      'data-item-index',
       '1'
     )
   })

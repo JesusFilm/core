@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "pageTitle": "Manlalaro",
+    "description": "Mag-navigate sa /pl/[playlistId] upang tingnan ang playlist"
   },
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} Proyekto ng Pelikulang Hesus"
   },
   "PlaylistRoutePage": {
     "defaultPageTitle": "Playlist",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "pageTitle": "{title} ni {name}",
+    "thisPlaylistIsEmpty": "Walang laman ang playlist na ito.",
+    "defaultDescription": "Ibinahagi ng kaibigan mo ang mga video na ito bilang paghihikayat sa iyo. Pindutin ang play para sa mga nakapagpapasiglang kuwento tungkol sa paghahanap ng kapayapaan kay Hesus.",
+    "description": "Ibinahagi ng kaibigan mong si {name} ang mga video na ito bilang paghihikayat sa iyo. Pindutin ang play para sa mga nakapagpapasiglang kuwento tungkol sa paghahanap ng kapayapaan kay Hesus."
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "Walang magagamit na video"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "Walang thumbnail"
   },
   "StudyQuestions": {
-    "title": "Study Questions"
+    "title": "Mga Tanong sa Pag-aaral"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "Upang mapanood ang video na ito, mangyaring paganahin ang JavaScript at isaalang-alang ang pag-upgrade sa isang web browser na <link>sumusuporta sa HTML5 video</link>."
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "Ang iyong kaibigan <strong>{name}</strong> Ibinahagi ng iyong kaibigan ang mga video na ito sa iyo bilang paghihikayat. Ang pinakamainam na paraan para mapanood ang mga video na ito ay sa pamamagitan ng pag-download ng aming app.",
+    "downloadOnAppStore": "I-download sa App Store",
+    "getItOnGooglePlay": "Kunin ito sa Google Play"
   }
 }

@@ -1,6 +1,6 @@
 // @generated
 // This file was automatically generated and should not be edited.
-// Please run `nx generate-test-data watch` to regenerate it.
+// Please run `nx generate-test-data resources` to regenerate it.
 import {
   VideoLabel,
   VideoVariantDownloadQuality

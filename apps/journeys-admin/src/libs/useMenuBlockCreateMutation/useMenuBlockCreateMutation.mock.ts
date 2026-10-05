@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { defaultJourney } from '@core/journeys/ui/TemplateView/data'
 
@@ -23,7 +23,7 @@ import {
 
 import { MENU_BLOCK_CREATE } from './useMenuBlockCreateMutation'
 
-export const mockUseMenuBlockCreateMutation: MockedResponse<
+export const mockUseMenuBlockCreateMutation: MockLink.MockedResponse<
   MenuBlockCreate,
   MenuBlockCreateVariables
 > = {

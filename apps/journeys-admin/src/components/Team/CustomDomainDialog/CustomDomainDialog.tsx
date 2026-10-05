@@ -75,7 +75,11 @@ export function CustomDomainDialog({
       <Stack spacing={6}>
         <Stack spacing={4} direction="row">
           <InformationCircleContainedIcon sx={{ color: 'secondary.light' }} />
-          <Box flexGrow={1}>
+          <Box
+            sx={{
+              flexGrow: 1
+            }}
+          >
             <CustomDomainDialogTitle title={t('Custom Domain Setup')}>
               <Box>
                 <Button

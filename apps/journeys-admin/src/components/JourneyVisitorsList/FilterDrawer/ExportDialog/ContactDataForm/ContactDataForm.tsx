@@ -17,7 +17,7 @@ import {
 
 import ChevronDown from '@core/shared/ui/icons/ChevronDown'
 
-import { CheckboxOption } from '../CheckBoxOption'
+import { CheckboxOption } from '../CheckboxOption'
 
 interface ContactDataFormProps {
   setSelectedFields: Dispatch<SetStateAction<string[]>>

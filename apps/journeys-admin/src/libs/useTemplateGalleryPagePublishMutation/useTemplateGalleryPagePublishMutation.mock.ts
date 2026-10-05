@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import {
@@ -10,7 +10,7 @@ import { TEMPLATE_GALLERY_PAGE_PUBLISH } from './useTemplateGalleryPagePublishMu
 
 export const getTemplateGalleryPagePublishMock = (
   variables: TemplateGalleryPagePublishVariables
-): MockedResponse<
+): MockLink.MockedResponse<
   TemplateGalleryPagePublish,
   TemplateGalleryPagePublishVariables
 > => ({
@@ -26,7 +26,7 @@ export const getTemplateGalleryPagePublishMock = (
         slug: 'collection'
       }
     }
-  })) as MockedResponse<
+  })) as MockLink.MockedResponse<
     TemplateGalleryPagePublish,
     TemplateGalleryPagePublishVariables
   >['result']

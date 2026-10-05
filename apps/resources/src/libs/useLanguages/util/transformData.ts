@@ -5,7 +5,12 @@ import { type Language } from '../useLanguages'
 
 export function transformData(data: unknown, locale: string): Language[] {
   const currentLanguageId = getLanguageIdFromLocale(locale)
-  const parsedData = z.array(z.array(z.string())).parse(data)
+  // The languages API can return a non-array error body (e.g. a 500
+  // `{ error: '...' }`). Degrade gracefully instead of throwing, which would
+  // crash the entire page rather than just leaving the language filter empty.
+  const result = z.array(z.array(z.string())).safeParse(data)
+  if (!result.success) return []
+  const parsedData = result.data
 
   return parsedData.map((language) => {
     const [languageIdSlugNative, ...names] = language

@@ -1,4 +1,4 @@
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import { useTranslation } from 'next-i18next/pages'
 import type { ReactElement } from 'react'
 
@@ -43,29 +43,75 @@ export function AddBlock(): ReactElement {
 
   return (
     <Drawer title={t('Add a block')} onClose={onClose}>
-      <Grid p={5} container spacing={4}>
-        <Grid item xs={6} md={12}>
+      <Grid
+        container
+        spacing={4}
+        sx={{
+          p: 5
+        }}
+      >
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewTypographyButton />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewImageButton />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewVideoButton disabled={hasChildBlock} />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewRadioQuestionButton />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewMultiselectButton />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewTextResponseButton />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewButtonButton />
         </Grid>
-        <Grid item xs={6} md={12}>
+        <Grid
+          size={{
+            xs: 6,
+            md: 12
+          }}
+        >
           <NewSpacerButton />
         </Grid>
       </Grid>

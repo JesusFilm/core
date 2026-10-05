@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 
 import {
@@ -169,7 +170,7 @@ describe('TemplateSections', () => {
     }
   ]
 
-  const getJourneysMock: MockedResponse<GetJourneys> = {
+  const getJourneysMock: MockLink.MockedResponse<GetJourneys> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -188,7 +189,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysWithTagIdsMock: MockedResponse<GetJourneys> = {
+  const getJourneysWithTagIdsMock: MockLink.MockedResponse<GetJourneys> = {
     ...getJourneysMock,
     request: {
       ...getJourneysMock.request,
@@ -211,7 +212,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysWithLanguageIdsMock: MockedResponse<GetJourneys> = {
+  const getJourneysWithLanguageIdsMock: MockLink.MockedResponse<GetJourneys> = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -252,7 +253,7 @@ describe('TemplateSections', () => {
     }
   }
 
-  const getJourneysEmptyMock: MockedResponse<GetJourneys> = {
+  const getJourneysEmptyMock: MockLink.MockedResponse<GetJourneys> = {
     ...getJourneysMock,
     result: {
       data: {
@@ -371,7 +372,7 @@ describe('TemplateSections', () => {
     }
 
     it('should not render a template whose slug starts with the QA prefix', async () => {
-      const mockWithQA: MockedResponse<GetJourneys> = {
+      const mockWithQA: MockLink.MockedResponse<GetJourneys> = {
         ...getJourneysMock,
         result: { data: { journeys: [...journeys, qaJourney] } }
       }
@@ -399,7 +400,7 @@ describe('TemplateSections', () => {
         tags: [],
         featuredAt: '2023-08-14T04:24:24.392Z'
       }
-      const mockWithPartialMatch: MockedResponse<GetJourneys> = {
+      const mockWithPartialMatch: MockLink.MockedResponse<GetJourneys> = {
         ...getJourneysMock,
         result: { data: { journeys: [...journeys, partialMatchJourney] } }
       }

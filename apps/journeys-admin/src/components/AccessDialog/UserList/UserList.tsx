@@ -76,8 +76,10 @@ export function UserList({
               <Divider sx={{ pb: 4 }}>
                 <Typography
                   variant="subtitle3"
-                  color="secondary.light"
-                  sx={{ opacity: 0.8 }}
+                  sx={{
+                    color: 'secondary.light',
+                    opacity: 0.8
+                  }}
                 >
                   {title}
                 </Typography>

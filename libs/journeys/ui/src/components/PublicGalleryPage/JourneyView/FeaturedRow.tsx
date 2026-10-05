@@ -102,9 +102,12 @@ export function FeaturedRow({
             />
           ) : (
             <Stack
-              alignItems="center"
-              justifyContent="center"
-              sx={{ position: 'absolute', inset: 0 }}
+              sx={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'absolute',
+                inset: 0
+              }}
             >
               <InsertPhotoRoundedIcon
                 sx={{ fontSize: 56, color: 'rgba(0,0,0,0.25)' }}
@@ -160,6 +163,7 @@ export function FeaturedRow({
           <Box sx={{ pt: 1 }}>
             <JourneyViewCardActions
               itemId={item.id}
+              customizable={item.customizable}
               itemTitle={item.title}
               itemSlug={item.slug}
               fullWidth="responsive"

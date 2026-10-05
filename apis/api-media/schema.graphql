@@ -1,6 +1,36 @@
 extend schema
   @link(url: "https://specs.apollo.dev/federation/v2.6", import: ["@extends", "@external", "@key", "@shareable"])
 
+type AlgoliaVideoVariantIndexIssue {
+  id: String
+  issueType: AlgoliaVideoVariantIndexIssueType
+  variantId: String
+  objectId: String
+  videoId: String
+  languageId: String
+  languageName: String
+  mismatches: [AlgoliaVideoVariantIndexIssueMismatch!]
+  error: String
+}
+
+type AlgoliaVideoVariantIndexIssueMismatch {
+  field: String
+  expected: String
+  actual: String
+}
+
+enum AlgoliaVideoVariantIndexIssueType {
+  missing
+  stale
+  extra
+  failed
+}
+
+enum AlgoliaVideoVariantIndexScanType {
+  core
+  algolia
+}
+
 type ArclightApiKey
   @key(fields: "key")
 {
@@ -58,6 +88,26 @@ type BibleCitation {
 The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
+
+input CheckAlgoliaVideoVariantIndexBatchInput {
+  scanType: AlgoliaVideoVariantIndexScanType!
+  batchKey: String
+  batchSize: Int
+  languageId: String
+}
+
+type CheckAlgoliaVideoVariantIndexBatchResult {
+  scanType: AlgoliaVideoVariantIndexScanType
+  batchKey: String
+  nextBatchKey: String
+  done: Boolean
+  checkedCount: Int
+  missingCount: Int
+  staleCount: Int
+  extraCount: Int
+  failedCount: Int
+  issues: [AlgoliaVideoVariantIndexIssue!]
+}
 
 type CheckVideoInAlgoliaMismatch {
   field: String
@@ -231,6 +281,17 @@ type Error implements BaseError
   message: String
 }
 
+input FixAlgoliaVideoVariantIndexIssuesInput {
+  issueType: AlgoliaVideoVariantIndexIssueType!
+  objectIds: [String!]!
+}
+
+type FixAlgoliaVideoVariantIndexIssuesResult {
+  fixedCount: Int
+  failedCount: Int
+  issues: [AlgoliaVideoVariantIndexIssue!]
+}
+
 type ForeignKeyConstraintError implements BaseError
   @shareable
 {
@@ -306,6 +367,7 @@ enum MaxResolutionTier {
 
 enum MediaRole {
   publisher
+  youtubeAdmin
 }
 
 type Mutation {
@@ -380,6 +442,7 @@ type Mutation {
   videoUpdate(input: VideoUpdateInput!): Video!
   videoDelete(id: ID!): Video!
   fixVideoLanguages(videoId: ID!): Boolean!
+  fixAlgoliaVideoVariantIndexIssues(input: FixAlgoliaVideoVariantIndexIssuesInput!): FixAlgoliaVideoVariantIndexIssuesResult!
   updateVideoAlgoliaIndex(videoId: ID!): Boolean!
   updateVideoVariantAlgoliaIndex(videoId: ID!): Boolean!
   videoDescriptionCreate(input: VideoTranslationCreateInput!): VideoDescription!
@@ -404,6 +467,20 @@ type Mutation {
   videoEditionCreate(input: VideoEditionCreateInput!): VideoEdition!
   videoEditionUpdate(input: VideoEditionUpdateInput!): VideoEdition!
   videoEditionDelete(id: ID!): VideoEdition!
+  videoVariantUploadStart(input: VideoVariantUploadStartInput!): VideoVariantUpload!
+  videoVariantUploadMarkR2Prepared(id: ID!, r2AssetId: ID!): VideoVariantUpload!
+  videoVariantUploadMarkR2Complete(id: ID!): VideoVariantUpload!
+  videoVariantUploadCreateMux(id: ID!, muxVideoId: ID, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantUploadResume(id: ID!, downloadable: Boolean = true, maxResolution: MaxResolutionTier = uhd): VideoVariantUpload!
+  videoVariantReconciliationRetry(id: ID!): VideoVariantReconciliation
+
+  """
+  Create-or-update a YoutubeVideo by youtubeVideoId. Idempotent; enforces the status invariant.
+  """
+  youtubeVideoUpsert(input: YoutubeVideoUpsertInput!): YoutubeVideo!
+
+  """Remove a YoutubeVideo row."""
+  youtubeVideoDelete(youtubeVideoId: ID!): Boolean!
 }
 
 input MutationBibleCitationCreateInput {
@@ -501,6 +578,11 @@ input MutationShortLinkCreateInput {
 
   """bitrate of the video variant download"""
   bitrate: Int
+
+  """
+  a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
+  """
+  sourceRef: String
 }
 
 union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
@@ -781,6 +863,7 @@ type Query {
   video(id: ID!, idType: IdType = databaseId): Video!
   videos(where: VideosFilter, offset: Int, limit: Int): [Video!]!
   videosCount(where: VideosFilter): Int!
+  checkAlgoliaVideoVariantIndexBatch(input: CheckAlgoliaVideoVariantIndexBatchInput!): CheckAlgoliaVideoVariantIndexBatchResult!
   checkVideoInAlgolia(videoId: ID!): CheckVideoInAlgoliaResult!
   checkVideoVariantsInAlgolia(videoId: ID!): CheckVideoVariantsInAlgoliaResult!
   videoOrigins(where: VideoOriginsFilter, offset: Int, limit: Int): [VideoOrigin!]!
@@ -788,9 +871,29 @@ type Query {
   videoEditions(where: VideoEditionsFilter, offset: Int, limit: Int): [VideoEdition!]!
   videoEditionsCount(where: VideoEditionsFilter): Int!
   videoEdition(id: ID!): VideoEdition
+  videoVariantUpload(id: ID!): VideoVariantUpload!
+  videoVariantUploads(input: VideoVariantUploadsFilter, offset: Int, limit: Int): [VideoVariantUpload!]!
+  videoVariantReconciliations(
+    status: VideoVariantReconciliationStatus
+    blockingStage: VideoVariantProcessingStage
+    olderThan: DateTime
+
+    """
+    Only applies when blockingStage is also supplied. Filters to reconciliations where blockingStage has been attempted at least this many times.
+    """
+    minRetryCount: Int
+    offset: Int
+    limit: Int
+  ): [VideoVariantReconciliation!]
   tags: [Tag!]!
   taxonomies(category: String, languageCodes: [String!]): [Taxonomy!]!
   youtubeClosedCaptionLanguages(videoId: ID!): QueryYoutubeClosedCaptionLanguagesResult!
+
+  """List a channel's YoutubeVideo rows (the resume-diff source)."""
+  youtubeVideos(channelId: ID!, offset: Int, limit: Int): [YoutubeVideo!]!
+
+  """Look up a single row by its youtubeVideoId."""
+  youtubeVideoByVideoId(youtubeVideoId: ID!): YoutubeVideo
   arclightApiKeys: [ArclightApiKey!]!
   arclightApiKeyByKey(key: String!): ArclightApiKey
 }
@@ -874,6 +977,7 @@ enum Service {
   apiTags
   apiUsers
   apiVideos
+  youtube
 }
 
 """A short link that redirects to a full URL"""
@@ -902,6 +1006,11 @@ type ShortLink
 
   """bitrate of the video variant download"""
   bitrate: Int
+
+  """
+  a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
+  """
+  sourceRef: String
 }
 
 """A domain that can be used for short links"""
@@ -1119,6 +1228,11 @@ type Video
   id: ID!
   label: VideoLabel!
   locked: Boolean!
+
+  """
+  When true, generated translated audio variants or generated subtitle tracks should not be created for this video. Metadata translations (title, description, study questions) are unaffected.
+  """
+  restrictTranslations: Boolean!
   primaryLanguageId: ID!
   published: Boolean!
   cloudflareAssets: [CloudflareR2!]!
@@ -1243,6 +1357,16 @@ type VideoPublishChildrenResult {
   publishedVariantsCount: Int
   dryRun: Boolean
   videosFailedValidation: [VideoPublishChildrenUnpublishedVideo!]!
+
+  """
+  Language IDs present on a direct published child Variant but missing an empty parent Variant. Populated by parentVariantsOnly mode.
+  """
+  missingParentLanguageIds: [ID!]
+
+  """
+  Subset of missingParentLanguageIds whose parent Variant was successfully created. Populated by parentVariantsOnly mode when dryRun is false; a language missing from this list relative to missingParentLanguageIds failed and was logged.
+  """
+  recoveredParentLanguageIds: [ID!]
 }
 
 type VideoPublishChildrenUnpublishedVideo {
@@ -1255,6 +1379,7 @@ enum VideoPublishMode {
   childrenVideosOnly
   childrenVideosAndVariants
   variantsOnly
+  parentVariantsOnly
 }
 
 enum VideoRedirectType {
@@ -1397,6 +1522,7 @@ input VideoUpdateInput {
   keywordIds: [String!]
   restrictDownloadPlatforms: [Platform!]
   restrictViewPlatforms: [Platform!]
+  restrictTranslations: Boolean
 }
 
 type VideoVariant {
@@ -1517,6 +1643,39 @@ input VideoVariantFilter {
   updatedAt: DateTimeFilter
 }
 
+enum VideoVariantProcessingStage {
+  mux
+  parentSync
+  downloads
+  algoliaVideo
+  algoliaVariant
+}
+
+type VideoVariantReconciliation {
+  id: ID!
+  reason: String!
+  status: VideoVariantReconciliationStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  language: Language!
+  published: Boolean!
+  videoVariantId: ID
+  errorMessage: String
+  processingStages: String
+  retryAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  videoVariant: VideoVariant
+}
+
+enum VideoVariantReconciliationStatus {
+  processing
+  degraded
+  complete
+  failed
+}
+
 input VideoVariantUpdateInput {
   id: String!
   assetId: String
@@ -1536,6 +1695,75 @@ input VideoVariantUpdateInput {
   version: Int
 }
 
+type VideoVariantUpload {
+  id: ID!
+  source: String!
+  sourceKey: String
+  status: VideoVariantUploadStatus!
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  language: Language!
+  version: Int!
+  published: Boolean!
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+  muxVideoId: ID
+  muxNonStandardInputDetectedAt: DateTime
+  videoVariantId: ID
+  errorMessage: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  r2Asset: CloudflareR2
+  muxVideo: MuxVideo
+  videoVariant: VideoVariant
+}
+
+input VideoVariantUploadStartInput {
+  id: ID
+  source: String!
+  sourceKey: String
+  videoId: ID!
+  edition: String!
+  languageId: ID!
+  version: Int!
+  published: Boolean
+  originalFilename: String
+  contentType: String
+  contentLength: BigInt
+  duration: Int
+  durationMs: Int
+  width: Int
+  height: Int
+  r2AssetId: ID
+}
+
+enum VideoVariantUploadStatus {
+  created
+  r2Prepared
+  r2Uploaded
+  muxCreated
+  muxReady
+  variantCreated
+  failed
+}
+
+input VideoVariantUploadsFilter {
+  status: VideoVariantUploadStatus
+  statuses: [VideoVariantUploadStatus!]
+  videoId: ID
+  languageId: ID
+  edition: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+}
+
 input VideosFilter {
   availableVariantLanguageIds: [ID!]
   title: String
@@ -1553,6 +1781,109 @@ type Youtube
   id: ID!
   source: VideoBlockSource @shareable
   primaryLanguageId: ID @shareable
+}
+
+"""
+Who composed a row's published title and description. One value on purpose: nothing but the youtube-studio (Wheat) app writes WHEAT, so null means "not composed by Wheat" by construction.
+"""
+enum YoutubeMetadataSource {
+  WHEAT
+}
+
+enum YoutubeReasonCode {
+  NO_CATALOG_MATCH
+  NOT_APPLICABLE
+}
+
+enum YoutubeReviewState {
+  LINKED
+  DISMISSED
+  SKIPPED
+}
+
+"""
+A YouTube video an operator has seen, mirrored into Core. Absence of a row means "not yet seen"; a row count is NOT a channel video count.
+"""
+type YoutubeVideo {
+  id: ID!
+  youtubeVideoId: String!
+  channelId: ID!
+  reviewState: YoutubeReviewState!
+  videoId: ID
+  languageId: ID
+
+  """The catalog variant a LINKED row resolves to."""
+  variant: VideoVariant
+
+  """The catalog Video a LINKED row resolves to."""
+  video: Video
+  language: Language
+  reasonCode: YoutubeReasonCode
+  reasonNote: String
+  youtubeTitle: String
+  youtubeDescription: String
+  tags: [String!]!
+  thumbnailUrl: String
+  playlists: [YoutubeVideoPlaylist!]!
+  madeForKids: Boolean
+  ageRestricted: Boolean
+  fileName: String
+  privacyStatus: String
+  publishedAt: DateTime
+  reviewedBy: String
+  reviewedAt: DateTime
+  matchMethod: String
+  matchConfidence: Float
+
+  """
+  Who composed the published title and description. Null means the text was not composed by Wheat.
+  """
+  metadataSource: YoutubeMetadataSource
+
+  """
+  The version of the composing tool's metadata rulebook — the house style guide the title and description were written against. Opaque to Core; meaningful only alongside a metadataSource.
+  """
+  metadataRulebookVersion: String
+  lastSyncedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A snapshot of a playlist a YouTube video belongs to. Non-authoritative; never a match signal.
+"""
+type YoutubeVideoPlaylist {
+  playlistId: String!
+  title: String!
+}
+
+input YoutubeVideoPlaylistInput {
+  playlistId: String!
+  title: String!
+}
+
+input YoutubeVideoUpsertInput {
+  youtubeVideoId: ID!
+  channelId: ID!
+  reviewState: YoutubeReviewState!
+  videoId: ID
+  languageId: ID
+  reasonCode: YoutubeReasonCode
+  reasonNote: String
+  youtubeTitle: String
+  youtubeDescription: String
+  tags: [String!]
+  thumbnailUrl: String
+  playlists: [YoutubeVideoPlaylistInput!]
+  madeForKids: Boolean
+  ageRestricted: Boolean
+  fileName: String
+  privacyStatus: String
+  publishedAt: DateTime
+  matchMethod: String
+  matchConfidence: Float
+  metadataSource: YoutubeMetadataSource
+  metadataRulebookVersion: String
 }
 
 type ZodError implements BaseError

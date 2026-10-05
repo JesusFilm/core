@@ -6,7 +6,7 @@ import { JourneyFields as Journey } from '../JourneyProvider/__generated__/Journ
 import { useGetValueFromJourneyCustomizationString } from './useGetValueFromJourneyCustomizationString'
 
 describe('useGetValueFromJourneyCustomizationString', () => {
-  it('returns input if admin variant and template is true', () => {
+  it('returns input if admin render mode and template is true', () => {
     const journey = {
       template: true,
       journeyCustomizationFields: [
@@ -27,7 +27,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: '{{ name }}' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             {children}
           </JourneyProvider>
         )
@@ -40,7 +40,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('Plain')
   })
 
-  it('prefers value for default variant (end-user rendering)', () => {
+  it('prefers value in default render mode (end-user rendering)', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -69,7 +69,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: '{{ name }}' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'default' }}>
+          <JourneyProvider value={{ journey, renderMode: 'default' }}>
             {children}
           </JourneyProvider>
         )
@@ -85,7 +85,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('{{ unknown }}')
   })
 
-  it('prefers value for admin variant on non-template journey', () => {
+  it('prefers value in admin render mode on non-template journey', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -106,7 +106,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: '{{ name }}' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             {children}
           </JourneyProvider>
         )
@@ -116,7 +116,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('Alice')
   })
 
-  it('replaces custom fields within mixed strings using value for default variant', () => {
+  it('replaces custom fields within mixed strings using value in default render mode', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -137,7 +137,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: 'Hello {{ name }}!' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'default' }}>
+          <JourneyProvider value={{ journey, renderMode: 'default' }}>
             {children}
           </JourneyProvider>
         )
@@ -147,7 +147,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
     expect(result.current).toBe('Hello Alice!')
   })
 
-  it('supports multiple custom fields using value for default variant', () => {
+  it('supports multiple custom fields using value in default render mode', () => {
     const journey = {
       template: false,
       journeyCustomizationFields: [
@@ -176,7 +176,7 @@ describe('useGetValueFromJourneyCustomizationString', () => {
       {
         initialProps: { label: 'Hello {{ first }} {{ last }}!' },
         wrapper: ({ children }) => (
-          <JourneyProvider value={{ journey, variant: 'default' }}>
+          <JourneyProvider value={{ journey, renderMode: 'default' }}>
             {children}
           </JourneyProvider>
         )

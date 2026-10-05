@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { intlFormat, parseISO } from 'date-fns'
@@ -39,18 +40,24 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
   return (
     <Stack
       direction={{ xs: 'column', sm: 'row' }}
-      justifyContent="flex-end"
-      alignItems={{ xs: 'flex-start', sm: 'center' }}
       spacing={8}
-      sx={{ pb: 5, px: 6, mx: { xs: -6, sm: '-30px', md: 0 } }}
       data-testid="VisitorDetails"
+      sx={{
+        justifyContent: 'flex-end',
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        pb: 5,
+        px: 6,
+        mx: { xs: -6, sm: '-30px', md: 0 }
+      }}
     >
       {data?.visitor.lastChatStartedAt != null && (
         <Stack
           direction="row"
-          alignItems="center"
           spacing={2}
-          sx={{ flexGrow: 1 }}
+          sx={{
+            alignItems: 'center',
+            flexGrow: 1
+          }}
         >
           <MessageText1Icon />
           <Typography>
@@ -66,14 +73,26 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
       )}
 
       {data?.visitor.countryCode != null && (
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <Marker2Icon />
           <Typography>{data?.visitor.countryCode}</Typography>
         </Stack>
       )}
 
       {data?.visitor.userAgent?.os.name != null && (
-        <Stack direction="row" alignItems="center" spacing={2}>
+        <Stack
+          direction="row"
+          spacing={2}
+          sx={{
+            alignItems: 'center'
+          }}
+        >
           <Iphone1Icon />
           <Typography>{data?.visitor.userAgent?.os.name}</Typography>
         </Stack>
@@ -82,9 +101,11 @@ export function VisitorDetails({ id }: VisitorDetailsProps): ReactElement {
       {data?.visitor.id != null && (
         <Stack
           direction="row"
-          alignItems="center"
           spacing={2}
-          sx={{ display: { xs: 'none', md: 'flex' } }}
+          sx={{
+            alignItems: 'center',
+            display: { xs: 'none', md: 'flex' }
+          }}
         >
           <UserProfile2Icon />
           <Typography>

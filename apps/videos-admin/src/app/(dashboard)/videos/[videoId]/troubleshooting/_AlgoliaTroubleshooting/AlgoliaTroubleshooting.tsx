@@ -1,6 +1,5 @@
 'use client'
-
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -94,7 +93,7 @@ function Alert({
         borderRadius: 1
       }}
     >
-      <Typography color={textColor}>{message}</Typography>
+      <Typography sx={{ color: textColor }}>{message}</Typography>
     </Box>
   )
 }
@@ -115,9 +114,7 @@ export function AlgoliaTroubleshooting(): ReactElement {
       loading: algoliaVideoLoading,
       error: algoliaVideoError
     }
-  ] = useLazyQuery(CHECK_VIDEO_IN_ALGOLIA, {
-    variables: { videoId }
-  })
+  ] = useLazyQuery(CHECK_VIDEO_IN_ALGOLIA)
 
   const [
     checkVideoVariantsInAlgolia,
@@ -126,9 +123,7 @@ export function AlgoliaTroubleshooting(): ReactElement {
       loading: algoliaVariantsLoading,
       error: algoliaVariantsError
     }
-  ] = useLazyQuery(CHECK_VIDEO_VARIANTS_IN_ALGOLIA, {
-    variables: { videoId }
-  })
+  ] = useLazyQuery(CHECK_VIDEO_VARIANTS_IN_ALGOLIA)
 
   const [
     updateVideoAlgolia,
@@ -169,11 +164,11 @@ export function AlgoliaTroubleshooting(): ReactElement {
   })
 
   const handleCheckAlgoliaVideo = (): void => {
-    void checkVideoInAlgolia()
+    void checkVideoInAlgolia({ variables: { videoId } })
   }
 
   const handleCheckAlgoliaVariants = (): void => {
-    void checkVideoVariantsInAlgolia()
+    void checkVideoVariantsInAlgolia({ variables: { videoId } })
   }
 
   const handleUpdateVideoAlgolia = (): void => {
@@ -317,7 +312,12 @@ export function AlgoliaTroubleshooting(): ReactElement {
           <Stack spacing={2}>
             <Typography variant="h6">Algolia Video Status</Typography>
             <Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 Video record:
               </Typography>
               <Typography
@@ -331,7 +331,12 @@ export function AlgoliaTroubleshooting(): ReactElement {
               </Typography>
               {hasAlgoliaVideoLookupError && (
                 <Box sx={{ mt: 1 }}>
-                  <Typography variant="body2" color="text.primary">
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.primary'
+                    }}
+                  >
                     Algolia error: {algoliaVideoLookupError}
                   </Typography>
                 </Box>
@@ -388,7 +393,12 @@ export function AlgoliaTroubleshooting(): ReactElement {
           <Stack spacing={2}>
             <Typography variant="h6">Algolia Video Variants Status</Typography>
             <Box>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'text.secondary'
+                }}
+              >
                 Variants in Index:
               </Typography>
               {algoliaVariantsResult.missingVariants.length === 0 ? (
@@ -407,7 +417,12 @@ export function AlgoliaTroubleshooting(): ReactElement {
                   All variants found ✓
                 </Typography>
               ) : (
-                <Typography variant="body1" color="error.main">
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: 'error.main'
+                  }}
+                >
                   Missing variants:{' '}
                   {algoliaVariantsResult.missingVariants.join(', ')}
                 </Typography>

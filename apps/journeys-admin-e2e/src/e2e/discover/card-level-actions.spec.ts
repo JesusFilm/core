@@ -72,10 +72,12 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.uploadImageInCustomTab() // uploading image in the custom tab
     //  await cardLevelActionPage.verifyImgUploadedSuccessMsg() // verifying the 'Upload successful' message
     await cardLevelActionPage.verifyImageGotChanged() // verifying the image is updated in the custom tab
+    await cardLevelActionPage.reopenImageSource() // reopen panel for next step (NES-1745 auto-closes after upload)
     await cardLevelActionPage.clickImageSelectionTab('Gallery') // clicking on Gallery tab in image drawer tab list
     await cardLevelActionPage.getImageSrc() // getting current image source
     await cardLevelActionPage.clickImgFromFeatureOfGalleryTab() // selecting an image of Gallery tab in the image drawer
     await cardLevelActionPage.verifyImageGotChanged() // verifying the seleted image is updated in the image drawer
+    await cardLevelActionPage.reopenImageSource() // reopen panel for next step (NES-1745 auto-closes after selection)
     await cardLevelActionPage.clickImgDeleteBtn() // deleting the selected image
     await cardLevelActionPage.verifyImageIsDeleted() // verifying the image is deleted from the image drawer
   })
@@ -225,7 +227,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.clickSelectImageBtn() // Select Plus icon to add the Image
     await cardLevelActionPage.selectFirstImageFromGalleryForFooter() //Select first image from the gallery for the Footer section
     await cardLevelActionPage.valdiateSelectedImageWithDeleteIcon() //Verifying the Selected Image with Delete icon is display
-    await cardLevelActionPage.closeToolDrawerForFooterImage() // Close the tool drawer after selected the Image
     await cardLevelActionPage.validateSelectedImageWithEditIcon() //Verifying the Selected image is showing under Logo section with edit button
     await cardLevelActionPage.expandJourneyAppearance('Display Title') // clicking on the 'Display Title' tab from the tab list of footer properties drawer
     await cardLevelActionPage.enterDisplayTitleForFooter(footerTitle) // Enter Display title for the Footer Section
@@ -240,7 +241,6 @@ test.describe('verify card level actions', () => {
     await cardLevelActionPage.validateWebsiteFooterSectionInCard(footerTitle) //Verifying the Selected Image, Display Title and menu icon are showing at the top of the card
     await cardLevelActionPage.expandJourneyAppearance('Menu') // clicking on the 'Menu' tab from the tab list of footer properties drawer
     await cardLevelActionPage.clickCreateMenuCardButtonInMenuFooter() //Click create menu card button to create menu card
-    await cardLevelActionPage.clickleftSideArrowIcon() //Click Left Chevron button to navigate to react flow panel
     await cardLevelActionPage.validateMenuCardInReactFlow() //Verifying the Menu card in react flow panel
   })
 })

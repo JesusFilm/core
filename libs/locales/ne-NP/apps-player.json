@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "pageTitle": "खेलाडी",
+    "description": "प्लेलिस्ट हेर्न /pl/[playlistId] मा नेभिगेट गर्नुहोस्।"
   },
   "Metadata": {
     "pageTitle": "{title} | येशू फिल्म परियोजना"
   },
   "PlaylistRoutePage": {
-    "defaultPageTitle": "Playlist",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "defaultPageTitle": "प्लेलिस्ट",
+    "pageTitle": "{title} द्वारा {name}",
+    "thisPlaylistIsEmpty": "यो प्लेलिस्ट खाली छ",
+    "defaultDescription": "तपाईंको साथीले तपाईंलाई उत्साहित गर्न यी भिडियोहरू साझा गर्नुभएको हो। येशूमा शान्ति पाउने प्रेरणादायी कथाहरू हेर्न प्ले थिच्नुहोस्।",
+    "description": "तपाईंको साथी {name} ले तपाईंलाई उत्साहित गर्न यी भिडियोहरू साझा गर्नुभएको हो। येशूमा शान्ति पाउने प्रेरणादायी कथाहरू हेर्न प्ले थिच्नुहोस्।"
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "भिडियो उपलब्ध छैन"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "थम्बनेल छैन"
   },
   "StudyQuestions": {
     "title": "अध्ययनका प्रश्नहरू"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "यो भिडियो हेर्न कृपया जाभास्क्रिप्ट सक्षम गर्नुहोस्, र <link>HTML5 भिडियोलाई समर्थन गर्ने</link> वेब ब्राउजरमा अपग्रेड गर्ने विचार गर्नुहोस्।"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "तपाईंको साथी <strong>{name}</strong> ले तपाईंलाई उत्साह दिन यी भिडियोहरू साझा गर्नुभएको हो। यी भिडियोहरू हेर्नको लागि सबैभन्दा राम्रो तरिका हाम्रो एप डाउनलोड गर्नु हो।",
+    "downloadOnAppStore": "एप स्टोरमा डाउनलोड गर्नुहोस्",
+    "getItOnGooglePlay": "Google Play मा पाउनुहोस्"
   }
 }

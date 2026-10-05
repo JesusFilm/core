@@ -1,4 +1,5 @@
-import { NetworkStatus, gql, useQuery } from '@apollo/client'
+import { NetworkStatus, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'

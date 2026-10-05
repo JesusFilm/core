@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { Image } from './Image'
 

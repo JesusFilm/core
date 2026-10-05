@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, renderHook, screen, waitFor } from '@testing-library/react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
@@ -21,7 +22,7 @@ import { CommandUndoItem } from '../../Toolbar/Items/CommandUndoItem'
 
 import { useActionCommand } from '.'
 
-const blockActionDeleteMock: MockedResponse<
+const blockActionDeleteMock: MockLink.MockedResponse<
   BlockActionDelete,
   BlockActionDeleteVariables
 > = {

@@ -12,7 +12,13 @@ export function CustomDomainDialogTitle({
   children
 }: CustomDomainDialogTitleProps): ReactElement {
   return (
-    <Stack direction="row" justifyContent="space-between" sx={{ mb: 4 }}>
+    <Stack
+      direction="row"
+      sx={{
+        justifyContent: 'space-between',
+        mb: 4
+      }}
+    >
       <Typography variant="subtitle1">{title}</Typography>
       <Stack direction="row" spacing={2}>
         {children}

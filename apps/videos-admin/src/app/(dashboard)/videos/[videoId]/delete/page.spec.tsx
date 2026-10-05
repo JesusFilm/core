@@ -1,4 +1,4 @@
-import { useMutation, useSuspenseQuery } from '@apollo/client'
+import { useMutation, useSuspenseQuery } from '@apollo/client/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { useSnackbar } from 'notistack'
@@ -8,8 +8,8 @@ import { type Mock } from 'vitest'
 import DeleteVideoPage from './page'
 
 // Mock Apollo client
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useMutation: vi.fn(() => [vi.fn(), { loading: false }]),

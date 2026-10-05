@@ -45,6 +45,8 @@ export function HostAvatarsButton(): ReactElement {
         input: { [`src${avatarNumber}`]: avatarImage.src }
       })
     }
+    // Close the secondary drawer once an avatar image is selected.
+    setOpen(false)
   }
 
   async function handleDelete(): Promise<void> {

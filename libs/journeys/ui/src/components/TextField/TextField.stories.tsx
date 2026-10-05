@@ -3,9 +3,9 @@ import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { Form, Formik } from 'formik'
 import { object, string } from 'yup'
 
-import { journeyUiConfig } from '../../libs/journeyUiConfig'
-import { simpleComponentConfig } from '../../libs/simpleComponentConfig'
-import { StoryCard } from '../StoryCard'
+import { journeyUiConfig } from '../../test/journeyUiConfig'
+import { simpleComponentConfig } from '../../test/simpleComponentConfig'
+import { StoryCard } from '../../test/StoryCard'
 
 import { TextField } from './TextField'
 

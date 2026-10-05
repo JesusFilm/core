@@ -1,0 +1,9 @@
+{
+  "name": "typescript7-runner",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Isolates the TypeScript 7 compiler so its tsc bin cannot collide with typescript 5.x in the root node_modules/.bin. Invoke via the root `pnpm tsc7` script.",
+  "dependencies": {
+    "typescript": "^7.0.2"
+  }
+}

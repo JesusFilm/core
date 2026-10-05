@@ -10,7 +10,7 @@ import { GetJourney_journey as Journey } from '../../../__generated__/GetJourney
 
 interface JourneyPageWrapperProps {
   journey: Journey
-  variant?: 'default' | 'admin' | 'embed'
+  renderMode?: 'default' | 'admin' | 'embed'
   theme?: { themeMode: ThemeMode; themeName: ThemeName }
   locale: string
   rtl: boolean
@@ -19,7 +19,7 @@ interface JourneyPageWrapperProps {
 
 export function JourneyPageWrapper({
   journey,
-  variant,
+  renderMode,
   theme,
   rtl,
   locale,
@@ -57,7 +57,7 @@ export function JourneyPageWrapper({
       customDomain="/plausible"
       domain={`${journeyDomain}${teamDomain}${templateDomain}`}
     >
-      <JourneyProvider value={{ journey, variant: variant ?? 'default' }}>
+      <JourneyProvider value={{ journey, renderMode: renderMode ?? 'default' }}>
         <ChatOverlayProvider journeyId={journeyId}>
           <ThemeProvider
             {...journeyTheme}

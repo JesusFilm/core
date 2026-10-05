@@ -6,6 +6,11 @@ on:
       name:
         required: true
         type: string
+      service:
+        description: 'Deployed identity (ECR repo, ECS service, Hive subgraph). Defaults to `name` when omitted.'
+        required: false
+        type: string
+        default: ''
       env:
         required: true
         type: string
@@ -39,8 +44,8 @@ jobs:
       HIVE_TOKEN: ${{ secrets.HIVE_TOKEN }}
       ENV_SUFFIX: ${{ inputs.branch }}
       ECS_CLUSTER: jfp-ecs-cluster-${{ inputs.env }}
-      ECS_SERVICE: ${{ inputs.name}}-${{ inputs.env }}-service
-      ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
+      ECS_SERVICE: ${{ inputs.service != '' && inputs.service || inputs.name }}-${{ inputs.env }}-service
+      ECR_REPOSITORY: jfp-${{ inputs.service != '' && inputs.service || inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       SKIP_ENV_VALIDATION: 1
@@ -114,4 +119,4 @@ jobs:
 
       - name: Update Hive managed subgraph
         run: |
-          pnpm exec hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.name }} --url ${{ inputs.endpoint_url }} --github
+          pnpm exec hive schema:publish apis/${{ inputs.name }}/schema.graphql --service ${{ inputs.service != '' && inputs.service || inputs.name }} --url ${{ inputs.endpoint_url }} --github

@@ -1,11 +1,7 @@
 'use client'
-
-import {
-  NormalizedCacheObject,
-  createHttpLink,
-  useApolloClient
-} from '@apollo/client'
-import { setContext } from '@apollo/client/link/context'
+import { HttpLink, NormalizedCacheObject } from '@apollo/client'
+import { SetContextLink } from '@apollo/client/link/context'
+import { useApolloClient } from '@apollo/client/react'
 import {
   ApolloClient,
   ApolloNextAppProvider,
@@ -32,7 +28,7 @@ function UpdateAuth({
   return <>{children}</>
 }
 
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
   headers: {
     'x-graphql-client-name': 'videos-admin',
@@ -45,7 +41,7 @@ export function ApolloProvider({
   children,
   user
 }: PropsWithChildren & { user?: User | null }): ReactNode {
-  const authLink = setContext(async (_, { headers, token }) => {
+  const authLink = new SetContextLink(async ({ headers, token }) => {
     return {
       headers: {
         ...headers,
@@ -54,11 +50,14 @@ export function ApolloProvider({
     }
   })
 
-  function makeClient(): ApolloClient<NormalizedCacheObject> {
+  function makeClient(): ApolloClient {
     return new ApolloClient({
       cache: new InMemoryCache(cache),
       link: authLink.concat(httpLink),
-      connectToDevTools: true
+
+      devtools: {
+        enabled: true
+      }
     })
   }
 

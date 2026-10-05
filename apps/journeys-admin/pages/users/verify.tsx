@@ -1,4 +1,5 @@
-import { ApolloError, gql, useApolloClient, useMutation } from '@apollo/client'
+import { ErrorLike, NormalizedCacheObject, gql } from '@apollo/client'
+import { useApolloClient, useMutation } from '@apollo/client/react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import Accordion from '@mui/material/Accordion'
 import AccordionDetails from '@mui/material/AccordionDetails'
@@ -63,7 +64,7 @@ function ValidateEmail({
   const { user } = useAuth()
   const email = user?.email ?? ''
   const { setActiveTeam } = useTeam()
-  const [error, setError] = useState<GraphQLError | ApolloError | null>(
+  const [error, setError] = useState<GraphQLError | ErrorLike | null>(
     initialError
   )
   const [disableValidationButton, setDisableValidationButton] = useState(false)
@@ -133,8 +134,17 @@ function ValidateEmail({
         >
           {({ values, handleChange, handleBlur, errors, touched }) => (
             <Form noValidate autoComplete="off" data-testid="EmailInviteForm">
-              <Stack textAlign="center">
-                <Stack textAlign="left" spacing={4}>
+              <Stack
+                sx={{
+                  textAlign: 'center'
+                }}
+              >
+                <Stack
+                  spacing={4}
+                  sx={{
+                    textAlign: 'left'
+                  }}
+                >
                   <Typography variant="subtitle2">{email}</Typography>
                   <Typography variant="body1">
                     {t(
@@ -168,12 +178,21 @@ function ValidateEmail({
                     expandIcon={<ExpandMoreIcon />}
                     data-testid="VerifyCodeAccordionSummary"
                   >
-                    <Typography px={4}>
+                    <Typography
+                      sx={{
+                        px: 4
+                      }}
+                    >
                       {t('Verify With Code Instead')}
                     </Typography>
                   </AccordionSummary>
                   <AccordionDetails sx={{ textAlign: 'left' }}>
-                    <Stack spacing={4} px={4}>
+                    <Stack
+                      spacing={4}
+                      sx={{
+                        px: 4
+                      }}
+                    >
                       <Typography variant="body1">
                         {t('Enter verification code from email')}
                       </Typography>
@@ -278,7 +297,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
           initialError: null,
           userSerialized: JSON.stringify(user),
           ...translations,
-          initialApolloState: apolloClient.cache.extract()
+          initialApolloState:
+            apolloClient.cache.extract() as NormalizedCacheObject
         }
       }
     }
@@ -301,7 +321,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       token,
       userSerialized: JSON.stringify(user),
       ...translations,
-      initialApolloState: apolloClient.cache.extract()
+      initialApolloState: apolloClient.cache.extract() as NormalizedCacheObject
     }
   }
 }

@@ -17,10 +17,12 @@ export function ContainerDescription({
   return (
     <Stack
       direction="row"
-      justifyContent="space-between"
-      alignItems="flex-start"
       spacing={4}
       data-testid="ContainerDescription"
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'flex-start'
+      }}
     >
       <Box>
         <TextFormatter

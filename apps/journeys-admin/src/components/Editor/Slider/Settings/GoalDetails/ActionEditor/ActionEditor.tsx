@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -116,7 +117,14 @@ export function ActionEditor({
         validationSchema={linkActionSchema}
         onSubmit={handleSubmit}
       />
-      <Stack gap={2} direction="row" alignItems="center" sx={{ pt: 3 }}>
+      <Stack
+        direction="row"
+        sx={{
+          gap: 2,
+          alignItems: 'center',
+          pt: 3
+        }}
+      >
         {icon}
         <Typography variant="subtitle2">{label}</Typography>
       </Stack>

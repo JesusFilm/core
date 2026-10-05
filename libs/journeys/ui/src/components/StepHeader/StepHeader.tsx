@@ -26,7 +26,7 @@ export function StepHeader({
   steps,
   selectedStep
 }: StepHeaderProps): ReactElement {
-  const { journey, variant } = useJourney()
+  const { journey, renderMode } = useJourney()
   const { rtl } = getJourneyRTL(journey)
   const { menuButtonIcon } = journey ?? {}
   const hasMenuButtonIcon = menuButtonIcon != null
@@ -55,23 +55,22 @@ export function StepHeader({
     >
       {isWebsite ? (
         <Stack
-          justifyContent="space-between"
           spacing={2}
           sx={{
-            flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             justifyContent: 'space-between',
+            flexDirection: { lg: rtl ? 'row-reverse' : 'row' },
             alignItems: { xs: 'flex-start', lg: 'center' },
             width: '100%'
           }}
         >
           <Stack
             sx={{
+              gap: 4,
               width: '100%',
               height: 52,
               flexDirection: rtl ? 'row-reverse' : 'row',
               alignItems: 'center'
             }}
-            gap={4}
           >
             <Logo />
             <Stack
@@ -103,7 +102,7 @@ export function StepHeader({
         <>
           <PaginationBullets steps={steps} selectedStep={selectedStep} />
           <InformationButton
-            sx={{ px: { xs: variant === 'default' ? 6 : 3, lg: 0 } }}
+            sx={{ px: { xs: renderMode === 'default' ? 6 : 3, lg: 0 } }}
           />
         </>
       )}

@@ -35,19 +35,28 @@ export function Suggestion({
       <ListItemIcon>
         <Globe1Icon />
       </ListItemIcon>
-      <Typography variant="h6" fontWeight="bold">
+      <Typography
+        variant="h6"
+        sx={{
+          fontWeight: 'bold'
+        }}
+      >
         {query}
       </Typography>
       <Typography
         variant="h6"
-        pl={1}
         noWrap
+        sx={{
+          pl: 1
+        }}
       >{`- in ${filtersLabel}`}</Typography>
       <Typography
         variant="h6"
-        color="text.secondary"
-        ml={6}
-        sx={{ ml: 'auto', display: { xs: 'none', md: 'block' } }}
+        sx={{
+          color: 'text.secondary',
+          ml: 'auto',
+          display: { xs: 'none', md: 'block' }
+        }}
       >
         {variant}
       </Typography>

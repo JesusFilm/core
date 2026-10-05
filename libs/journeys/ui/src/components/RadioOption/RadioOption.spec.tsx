@@ -92,7 +92,7 @@ describe('RadioOption', () => {
       const withTemplate = { ...block, label: '{{ name }}' }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <RadioOption {...withTemplate} />
         </JourneyProvider>
       )
@@ -100,7 +100,7 @@ describe('RadioOption', () => {
       expect(screen.getByRole('button')).toHaveTextContent('Alice')
     })
 
-    it('does not resolve label in admin variant for template journeys', () => {
+    it('does not resolve label in admin render mode for template journeys', () => {
       const journey = {
         template: true,
         journeyCustomizationFields: [
@@ -118,7 +118,7 @@ describe('RadioOption', () => {
       const withTemplate = { ...block, label: '{{ name }}' }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <RadioOption {...withTemplate} />
         </JourneyProvider>
       )
@@ -172,7 +172,7 @@ describe('RadioOption', () => {
       const withTemplate = { ...block, label: '{{ name }}' }
 
       render(
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <RadioOption {...withTemplate} gridView />
         </JourneyProvider>
       )

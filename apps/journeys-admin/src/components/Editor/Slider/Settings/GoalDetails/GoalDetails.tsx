@@ -48,7 +48,13 @@ export function GoalDetails(): ReactElement {
         data-testid="EditorActionDetails"
       >
         {selectedGoalUrl != null ? (
-          <Stack gap={7} sx={{ px: 6, pb: 6 }}>
+          <Stack
+            sx={{
+              gap: 7,
+              px: 6,
+              pb: 6
+            }}
+          >
             <ActionEditor
               url={selectedGoalUrl}
               setSelectedAction={setSelectedAction}

@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -134,7 +134,7 @@ function renderStepFooter(opts: {
   const tree = (
     <MockedProvider>
       <SnackbarProvider>
-        <JourneyProvider value={{ journey, variant: 'default' }}>
+        <JourneyProvider value={{ journey, renderMode: 'default' }}>
           <EditorProvider>
             <StepFooter selectedStep={opts.selectedStep} />
           </EditorProvider>

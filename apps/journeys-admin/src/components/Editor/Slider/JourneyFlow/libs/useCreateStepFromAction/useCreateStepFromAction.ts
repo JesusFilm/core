@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { BLOCK_FIELDS } from '@core/journeys/ui/block/blockFields'
@@ -329,7 +330,7 @@ export function useCreateStepFromAction(): (
               }
             },
             update(cache, { data }, { variables }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
               if (data?.blockUpdateAction == null) return
               cache.modify({
                 id: cache.identify({
@@ -361,7 +362,7 @@ export function useCreateStepFromAction(): (
               }
             },
             update(cache, { data }) {
-              blockDeleteUpdate(step, data?.blockDelete, cache, journey.id)
+              blockDeleteUpdate(cache, journey.id, step, data?.blockDelete)
             }
           })
         }

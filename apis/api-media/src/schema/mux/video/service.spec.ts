@@ -20,7 +20,9 @@ const mockMux = mockDeep<Mux>()
 
 vi.mock('@mux/mux-node', () => ({
   __esModule: true,
-  default: vi.fn(() => mockMux)
+  default: vi.fn(function () {
+    return mockMux
+  })
 }))
 
 describe('MuxVideoService', () => {

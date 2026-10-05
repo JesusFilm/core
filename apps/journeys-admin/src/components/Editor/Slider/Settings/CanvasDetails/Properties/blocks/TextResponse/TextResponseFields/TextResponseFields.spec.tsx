@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render } from '@testing-library/react'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -15,7 +15,7 @@ describe('TextResponseFields', () => {
   it('should show text response properties', () => {
     const { getByRole, getByText, getByTestId } = render(
       <MockedProvider>
-        <JourneyProvider value={{ variant: 'admin' }}>
+        <JourneyProvider value={{ renderMode: 'admin' }}>
           <EditorProvider>
             <TextResponseFields />
           </EditorProvider>

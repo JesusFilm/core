@@ -11,6 +11,8 @@ export interface UploadTask {
   file: File
   languageCode?: string
   languageName?: string
+  /** Journey the upload originated from. Lets the backend tag the asset's teamId. */
+  journeyId?: string
   status: 'waiting' | 'uploading' | 'processing' | 'completed' | 'error'
   progress: number
   error?: Error

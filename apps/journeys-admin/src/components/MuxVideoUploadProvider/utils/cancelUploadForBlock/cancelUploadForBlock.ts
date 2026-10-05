@@ -15,7 +15,9 @@ interface CancelUploadForBlockDependencies {
 }
 
 export function cancelUploadForBlock(
-  block: TreeBlock,
+  // Only the `id` is read — accept the narrow shape so non-block callers
+  // (e.g. the collection dialog's synthetic upload key) don't need a TreeBlock.
+  block: Pick<TreeBlock, 'id'>,
   dependencies: CancelUploadForBlockDependencies
 ): void {
   const {

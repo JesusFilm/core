@@ -1,4 +1,5 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
+import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -12,6 +13,7 @@ import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 
 import { JourneyFields } from '../../../../../../__generated__/JourneyFields'
 import { TestEditorState } from '../../../../../libs/TestEditorState'
+import { EditorLayoutProvider } from '../../../EditorLayoutContext'
 
 import { StrategyItem } from '.'
 
@@ -39,7 +41,8 @@ describe('StrategyItem', () => {
             </JourneyProvider>
           </EditorProvider>
         </SnackbarProvider>
-      </MockedProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
     )
 
     expect(screen.getByText('activeContent: canvas')).toBeInTheDocument()
@@ -52,11 +55,46 @@ describe('StrategyItem', () => {
     expect(mockCloseMenu).toHaveBeenCalled()
   })
 
+  it('should open goals in the settings drawer in the layered layout', async () => {
+    const state: EditorState = {
+      activeSlide: ActiveSlide.JourneyFlow,
+      activeContent: ActiveContent.Canvas,
+      activeCanvasDetailsDrawer: ActiveCanvasDetailsDrawer.Properties
+    }
+    const mockJourney: JourneyFields = {
+      id: 'journeyId',
+      title: 'Some Title',
+      slug: 'journeySlug'
+    } as unknown as JourneyFields
+
+    render(
+      <MockedProvider>
+        <SnackbarProvider>
+          <EditorProvider initialState={state}>
+            <JourneyProvider value={{ journey: mockJourney }}>
+              <EditorLayoutProvider value="layered">
+                <TestEditorState />
+                <StrategyItem variant="button" />
+              </EditorLayoutProvider>
+            </JourneyProvider>
+          </EditorProvider>
+        </SnackbarProvider>
+      </MockedProvider>,
+      { wrapper: MenuList }
+    )
+
+    fireEvent.click(screen.getByRole('button'))
+
+    expect(screen.getByText('activeContent: goals')).toBeInTheDocument()
+    expect(screen.getByText('activeSlide: 2')).toBeInTheDocument()
+  })
+
   it('Should disable "Strategy" button when showAnalytics is true', () => {
     render(
       <EditorProvider initialState={{ showAnalytics: true }}>
         <StrategyItem variant="button" />
-      </EditorProvider>
+      </EditorProvider>,
+      { wrapper: MenuList }
     )
     const strategyItemButton = screen.getByRole('button')
     expect(strategyItemButton).toBeDisabled()
@@ -66,7 +104,8 @@ describe('StrategyItem', () => {
     render(
       <EditorProvider initialState={{ showAnalytics: true }}>
         <StrategyItem variant="menu-item" />
-      </EditorProvider>
+      </EditorProvider>,
+      { wrapper: MenuList }
     )
 
     const strategyMenuItem = screen.getByRole('menuitem')

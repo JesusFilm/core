@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -59,7 +60,7 @@ const mockVideoBlock: TreeBlock<VideoBlock> = {
   mediaVideo: null
 }
 
-const mockSubtitleTrackReady: MockedResponse = {
+const mockSubtitleTrackReady: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -80,7 +81,7 @@ const mockSubtitleTrackReady: MockedResponse = {
   }
 }
 
-const mockSubtitleTrackProcessing: MockedResponse = {
+const mockSubtitleTrackProcessing: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -101,7 +102,7 @@ const mockSubtitleTrackProcessing: MockedResponse = {
   }
 }
 
-const mockSubtitleTrackErrored: MockedResponse = {
+const mockSubtitleTrackErrored: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -122,7 +123,7 @@ const mockSubtitleTrackErrored: MockedResponse = {
   }
 }
 
-const mockSubtitleTrackError: MockedResponse = {
+const mockSubtitleTrackError: MockLink.MockedResponse = {
   request: {
     query: GET_MY_GENERATED_MUX_SUBTITLE_TRACK,
     variables: {
@@ -164,7 +165,7 @@ describe('MuxSubtitleSwitch', () => {
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: 'Subtitles' })
+      screen.getByRole('switch', { name: 'Subtitles' })
     ).toBeInTheDocument()
   })
 
@@ -185,7 +186,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
+      expect(screen.getByRole('switch')).toBeDisabled()
     })
     expect(
       screen.getByText('Subtitles not available for this video language')
@@ -218,7 +219,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
+      expect(screen.getByRole('switch')).toBeDisabled()
     })
     expect(
       screen.getByText(
@@ -253,7 +254,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
+      expect(screen.getByRole('switch')).toBeDisabled()
     })
   })
 
@@ -283,7 +284,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
+      expect(screen.getByRole('switch')).toBeDisabled()
     })
   })
 
@@ -309,7 +310,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeChecked()
+      expect(screen.getByRole('switch')).toBeChecked()
     })
   })
 
@@ -330,10 +331,10 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).not.toBeDisabled()
+      expect(screen.getByRole('switch')).not.toBeDisabled()
     })
 
-    const switchElement = screen.getByRole('checkbox')
+    const switchElement = screen.getByRole('switch')
     fireEvent.click(switchElement)
 
     await waitFor(() => {
@@ -364,10 +365,10 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeChecked()
+      expect(screen.getByRole('switch')).toBeChecked()
     })
 
-    const switchElement = screen.getByRole('checkbox')
+    const switchElement = screen.getByRole('switch')
     fireEvent.click(switchElement)
 
     await waitFor(() => {
@@ -392,10 +393,10 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).not.toBeDisabled()
+      expect(screen.getByRole('switch')).not.toBeDisabled()
     })
 
-    const switchElement = screen.getByRole('checkbox')
+    const switchElement = screen.getByRole('switch')
     fireEvent.click(switchElement)
 
     await waitFor(() => {
@@ -404,7 +405,7 @@ describe('MuxSubtitleSwitch', () => {
 
     // Switch should revert back to unchecked
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).not.toBeChecked()
+      expect(screen.getByRole('switch')).not.toBeChecked()
     })
   })
 
@@ -423,10 +424,10 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).not.toBeDisabled()
+      expect(screen.getByRole('switch')).not.toBeDisabled()
     })
 
-    const switchElement = screen.getByRole('checkbox')
+    const switchElement = screen.getByRole('switch')
     fireEvent.click(switchElement)
 
     await waitFor(() => {
@@ -457,7 +458,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeChecked()
+      expect(screen.getByRole('switch')).toBeChecked()
     })
 
     // Change to invalid language
@@ -506,7 +507,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeChecked()
+      expect(screen.getByRole('switch')).toBeChecked()
     })
 
     // Change to invalid language
@@ -533,7 +534,7 @@ describe('MuxSubtitleSwitch', () => {
 
     // Switch should revert back to checked
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeChecked()
+      expect(screen.getByRole('switch')).toBeChecked()
     })
   })
 
@@ -564,7 +565,7 @@ describe('MuxSubtitleSwitch', () => {
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
+      expect(screen.getByRole('switch')).toBeDisabled()
     })
   })
 
@@ -595,7 +596,7 @@ describe('MuxSubtitleSwitch', () => {
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeDisabled()
+      expect(screen.getByRole('switch')).toBeDisabled()
     })
   })
 
@@ -616,7 +617,7 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     expect(screen.getByText('Subtitles')).toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeDisabled()
+    expect(screen.getByRole('switch')).toBeDisabled()
   })
 
   it('skips query when showGeneratedSubtitles is already set', async () => {
@@ -641,11 +642,11 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).toBeChecked()
+      expect(screen.getByRole('switch')).toBeChecked()
     })
 
     // Toggle should be enabled since subtitles are ready
-    expect(screen.getByRole('checkbox')).not.toBeDisabled()
+    expect(screen.getByRole('switch')).not.toBeDisabled()
 
     // No processing message should be shown
     expect(
@@ -677,11 +678,11 @@ describe('MuxSubtitleSwitch', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByRole('checkbox')).not.toBeChecked()
+      expect(screen.getByRole('switch')).not.toBeChecked()
     })
 
     // Toggle should be enabled since subtitles are ready (just disabled)
-    expect(screen.getByRole('checkbox')).not.toBeDisabled()
+    expect(screen.getByRole('switch')).not.toBeDisabled()
   })
 
   it('calls onChange with false when subtitle track becomes ready', async () => {

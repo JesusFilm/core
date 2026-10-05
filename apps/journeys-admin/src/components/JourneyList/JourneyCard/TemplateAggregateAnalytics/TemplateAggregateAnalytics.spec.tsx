@@ -1,5 +1,8 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
+import { formatISO } from 'date-fns'
+import { type MockedFunction } from 'vitest'
 
 import {
   GetTemplateFamilyStatsAggregate,
@@ -17,6 +20,15 @@ vi.mock('next-i18next/pages', () => ({
   })
 }))
 
+vi.mock('date-fns', async () => {
+  return {
+    ...(await vi.importActual('date-fns')),
+    formatISO: vi.fn()
+  }
+})
+
+const mockFormatIso = formatISO as MockedFunction<typeof formatISO>
+
 const mockEnqueueSnackbar = vi.fn()
 
 vi.mock('notistack', () => ({
@@ -26,6 +38,10 @@ vi.mock('notistack', () => ({
 }))
 
 describe('TemplateAggregateAnalytics', () => {
+  beforeEach(() => {
+    mockFormatIso.mockReturnValue('2024-09-26')
+  })
+
   afterEach(() => {
     vi.clearAllMocks()
   })
@@ -45,7 +61,7 @@ describe('TemplateAggregateAnalytics', () => {
   })
 
   it('should call the query with correct variables and types', async () => {
-    const templateFamilyStatsAggregateMock: MockedResponse<
+    const templateFamilyStatsAggregateMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsAggregate,
       GetTemplateFamilyStatsAggregateVariables
     > = {
@@ -54,7 +70,10 @@ describe('TemplateAggregateAnalytics', () => {
         variables: {
           id: 'journeyId',
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: '2024-06-01,2024-09-26'
+          }
         }
       },
       result: vi.fn(() => ({
@@ -66,7 +85,7 @@ describe('TemplateAggregateAnalytics', () => {
             totalJourneysResponses: 50
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         GetTemplateFamilyStatsAggregate,
         GetTemplateFamilyStatsAggregateVariables
       >['result']
@@ -88,7 +107,7 @@ describe('TemplateAggregateAnalytics', () => {
   })
 
   it('should show error snackbar when query fails', async () => {
-    const templateFamilyStatsAggregateErrorMock: MockedResponse<
+    const templateFamilyStatsAggregateErrorMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsAggregate,
       GetTemplateFamilyStatsAggregateVariables
     > = {
@@ -97,7 +116,10 @@ describe('TemplateAggregateAnalytics', () => {
         variables: {
           id: 'journeyId',
           idType: IdType.databaseId,
-          where: {}
+          where: {
+            period: 'custom',
+            date: '2024-06-01,2024-09-26'
+          }
         }
       },
       error: new Error('Failed to fetch template stats')

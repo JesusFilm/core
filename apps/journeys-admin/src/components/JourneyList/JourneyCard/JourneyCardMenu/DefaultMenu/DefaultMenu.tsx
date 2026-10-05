@@ -1,11 +1,11 @@
-import { ApolloQueryResult, gql, useQuery } from '@apollo/client'
+import { ApolloClient, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Divider from '@mui/material/Divider'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { TemplateActionButton } from '@core/journeys/ui/TemplateView/TemplateViewHeader/TemplateActionButton'
 import { useUserRoleQuery } from '@core/journeys/ui/useUserRoleQuery'
 import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -31,7 +31,6 @@ import {
 import { useCurrentUserLazyQuery } from '../../../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../../../libs/useCustomDomainsQuery'
 import { useJourneyForSharingLazyQuery } from '../../../../../libs/useJourneyForShareLazyQuery'
-import { useTemplateFamilyStatsAggregateLazyQuery } from '../../../../../libs/useTemplateFamilyStatsAggregateLazyQuery'
 import { GET_JOURNEY_WITH_PERMISSIONS } from '../../../../AccessDialog/AccessDialog'
 import { CreateTemplateItem } from '../../../../Editor/Toolbar/Items/CreateTemplateItem/CreateTemplateItem'
 import { ShareItem } from '../../../../Editor/Toolbar/Items/ShareItem/ShareItem'
@@ -74,7 +73,7 @@ interface DefaultMenuProps {
   setOpenTranslateDialog: () => void
   handleKeepMounted?: () => void
   template?: boolean
-  refetch?: () => Promise<ApolloQueryResult<GetAdminJourneys>>
+  refetch?: () => Promise<ApolloClient.QueryResult<GetAdminJourneys>>
   setHasOpenDialog?: (hasOpenDialog: boolean) => void
 }
 
@@ -97,7 +96,7 @@ interface DefaultMenuProps {
  * @param {() => void} props.setOpenTranslateDialog - Function to open the translate dialog
  * @param {() => void} [props.handleKeepMounted] - Optional function to handle keeping the component mounted
  * @param {boolean} [props.template] - Whether the journey is a template, affects available menu options
- * @param {() => Promise<ApolloQueryResult<GetAdminJourneys>>} [props.refetch] - Optional function to refetch journey data after operations
+ * @param {() => Promise<ApolloClient.QueryResult<GetAdminJourneys>>} [props.refetch] - Optional function to refetch journey data after operations
  * @returns {ReactElement} The rendered menu component with conditional menu items based on user permissions
  */
 export function DefaultMenu({
@@ -121,7 +120,6 @@ export function DefaultMenu({
   const { activeTeam } = useTeam()
   const { teamTemplateCollection } = useFlags()
   const { data: userRoleData } = useUserRoleQuery()
-  const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
   const { hostname } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
     skip: activeTeam?.id == null
@@ -196,9 +194,6 @@ export function DefaultMenu({
 
   const cantManageJourney = !canManageJourney
 
-  const isLocalTemplate =
-    journey?.template === true && journey?.team?.id !== 'jfp-team'
-
   if (hasCurrentUser && isAnonymousUser) {
     return <></>
   }
@@ -270,6 +265,7 @@ export function DefaultMenu({
             variant="menu-item"
             globalPublish={false}
             handleCloseMenu={handleCloseMenu}
+            handleKeepMounted={handleKeepMounted}
             journey={journey}
           />
           {isPublisher === true && (
@@ -277,32 +273,20 @@ export function DefaultMenu({
               variant="menu-item"
               globalPublish={true}
               handleCloseMenu={handleCloseMenu}
+              handleKeepMounted={handleKeepMounted}
               journey={journey}
             />
           )}
           <Divider />
         </>
       )}
-      {template === true && (
-        <>
-          <TemplateActionButton
-            variant="menu-item"
-            handleCloseMenu={handleCloseMenu}
-            journey={journey}
-            refetchTemplateStats={refetchTemplateStats}
-          />
-          <Divider />
-        </>
-      )}
-      {!isLocalTemplate && (
-        <CopyToTeamMenuItem
-          id={id}
-          handleCloseMenu={handleCloseMenu}
-          handleKeepMounted={handleKeepMounted}
-          journey={journey}
-          setHasOpenDialog={setHasOpenDialog}
-        />
-      )}
+      <CopyToTeamMenuItem
+        id={id}
+        handleCloseMenu={handleCloseMenu}
+        handleKeepMounted={handleKeepMounted}
+        journey={journey}
+        setHasOpenDialog={setHasOpenDialog}
+      />
       {teamTemplateCollection === true && template === true && (
         <CopyToCollectionMenuItem
           id={id}

@@ -78,7 +78,12 @@ export function FileUpload({
   }
 
   return (
-    <Stack alignItems="center" gap={2}>
+    <Stack
+      sx={{
+        alignItems: 'center',
+        gap: 2
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -104,7 +109,12 @@ export function FileUpload({
         {loading === true ? (
           <CircularProgress />
         ) : (
-          <Stack alignItems="center" gap={1}>
+          <Stack
+            sx={{
+              alignItems: 'center',
+              gap: 1
+            }}
+          >
             <Upload1Icon fontSize="large" />
             <Typography variant="body2" sx={{ cursor: 'pointer' }}>
               {maxFiles > 1

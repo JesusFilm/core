@@ -21,5 +21,7 @@
   "If you prefer not to take part": "หากคุณไม่ต้องการเข้าร่วม",
   "There is no chat-specific opt-out today. If you would rather not have your messages saved, please do not use the chat — the rest of the journey works without it.": "ขณะนี้ยังไม่มีตัวเลือกในการยกเลิกเฉพาะแชท หากคุณไม่ต้องการให้ข้อความของคุณถูกบันทึกไว้ กรุณาอย่าใช้แชท — ส่วนอื่น ๆ ของการใช้งานยังคงทำงานได้ตามปกติโดยไม่ต้องใช้แชท",
   "Last updated: June 2026": "ปรับปรุงล่าสุด: มิถุนายน 2026",
-  "Back to Next Steps": "กลับไปยังขั้นตอนถัดไป"
+  "Back to Next Steps": "กลับไปยังขั้นตอนถัดไป",
+  "This template gallery is not available.": "แกลเลอรีเทมเพลตนี้ไม่สามารถใช้งานได้",
+  "<0>This page has been created to test the embed code.<strong>If youve found this page in error click the button below.</strong></0>": "<0>หน้านี้ถูกสร้างขึ้นเพื่อทดสอบโค้ดฝัง<strong>หากคุณพบหน้านี้โดยบังเอิญ กรุณาคลิกปุ่มด้านล่าง</strong></0>"
 }

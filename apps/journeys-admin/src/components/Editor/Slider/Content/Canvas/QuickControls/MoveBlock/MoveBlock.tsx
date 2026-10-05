@@ -11,13 +11,15 @@ import {
   getNewParentOrder,
   useBlockOrderUpdateMutation
 } from '../../../../../../../libs/useBlockOrderUpdateMutation'
+import { useEditorLayout } from '../../../../../EditorLayoutContext'
 
 export function MoveBlock(): ReactElement {
   const [blockOrderUpdate] = useBlockOrderUpdateMutation()
   const {
     dispatch,
-    state: { selectedBlock, selectedStep }
+    state: { selectedBlock, selectedStep, activeSlide }
   } = useEditor()
+  const { isLayered } = useEditorLayout()
   const { add } = useCommand()
 
   const parentBlock =
@@ -39,7 +41,10 @@ export function MoveBlock(): ReactElement {
         dispatch({
           type: 'SetEditorFocusAction',
           selectedStep,
-          selectedBlock
+          selectedBlock,
+          // in the layered desktop view, keep the settings panel open while
+          // reordering (block selection would otherwise force the canvas view)
+          ...(isLayered && { activeSlide })
         })
         void blockOrderUpdate({
           variables: {

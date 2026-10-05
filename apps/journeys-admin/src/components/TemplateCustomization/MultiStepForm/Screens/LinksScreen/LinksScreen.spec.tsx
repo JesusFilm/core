@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
   render,
@@ -87,7 +88,7 @@ describe('LinksScreen', () => {
   it('renders first step card preview and chat link form when only chat buttons exist', async () => {
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={vi.fn()} />
         </JourneyProvider>
       </MockedProvider>
@@ -104,7 +105,7 @@ describe('LinksScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -124,7 +125,7 @@ describe('LinksScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -138,7 +139,7 @@ describe('LinksScreen', () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
     render(
       <MockedProvider>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>
@@ -208,7 +209,7 @@ describe('LinksScreen', () => {
       ]
     } as unknown as Journey
 
-    const linkUpdateMock: MockedResponse<
+    const linkUpdateMock: MockLink.MockedResponse<
       BlockActionLinkUpdate,
       BlockActionLinkUpdateVariables
     > = {
@@ -234,13 +235,13 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         BlockActionLinkUpdate,
         BlockActionLinkUpdateVariables
       >['result']
     }
 
-    const emailUpdateMock: MockedResponse<
+    const emailUpdateMock: MockLink.MockedResponse<
       BlockActionEmailUpdate,
       BlockActionEmailUpdateVariables
     > = {
@@ -266,13 +267,13 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         BlockActionEmailUpdate,
         BlockActionEmailUpdateVariables
       >['result']
     }
 
-    const chatUpdateMock: MockedResponse<
+    const chatUpdateMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -297,7 +298,7 @@ describe('LinksScreen', () => {
             customizable: true
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         JourneyChatButtonUpdate,
         JourneyChatButtonUpdateVariables
       >['result']
@@ -306,7 +307,7 @@ describe('LinksScreen', () => {
     render(
       <MockedProvider mocks={[linkUpdateMock, emailUpdateMock, chatUpdateMock]}>
         <JourneyProvider
-          value={{ journey: journeyWithLinks, variant: 'admin' }}
+          value={{ journey: journeyWithLinks, renderMode: 'admin' }}
         >
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
@@ -369,7 +370,7 @@ describe('LinksScreen', () => {
       ]
     } as unknown as Journey
 
-    const phoneUpdateMock: MockedResponse<
+    const phoneUpdateMock: MockLink.MockedResponse<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
     > = {
@@ -399,7 +400,7 @@ describe('LinksScreen', () => {
             parentStepId: 'step-1'
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         BlockActionPhoneUpdate,
         BlockActionPhoneUpdateVariables
       >['result']
@@ -408,7 +409,7 @@ describe('LinksScreen', () => {
     render(
       <MockedProvider mocks={[phoneUpdateMock]}>
         <JourneyProvider
-          value={{ journey: journeyWithPhone, variant: 'admin' }}
+          value={{ journey: journeyWithPhone, renderMode: 'admin' }}
         >
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
@@ -471,7 +472,7 @@ describe('LinksScreen', () => {
                 }
               ]
             } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <LinksScreen handleNext={vi.fn()} />
@@ -502,7 +503,7 @@ describe('LinksScreen', () => {
   it('calls chatButtonUpdate mutation when platform icon is changed', async () => {
     const handleNext = vi.fn().mockResolvedValue(undefined)
 
-    const platformUpdateMock: MockedResponse<
+    const platformUpdateMock: MockLink.MockedResponse<
       JourneyChatButtonUpdate,
       JourneyChatButtonUpdateVariables
     > = {
@@ -532,7 +533,7 @@ describe('LinksScreen', () => {
 
     render(
       <MockedProvider mocks={[platformUpdateMock]}>
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <LinksScreen handleNext={handleNext} />
         </JourneyProvider>
       </MockedProvider>

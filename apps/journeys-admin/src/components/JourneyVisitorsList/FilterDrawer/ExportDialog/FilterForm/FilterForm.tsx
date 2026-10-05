@@ -14,7 +14,7 @@ import ChevronUp from '@core/shared/ui/icons/ChevronUp'
 
 import { EventType } from '../../../../../../__generated__/globalTypes'
 import { FILTERED_EVENTS } from '../../../../../libs/useJourneyEventsExport/utils/constants'
-import { CheckboxOption } from '../CheckBoxOption'
+import { CheckboxOption } from '../CheckboxOption'
 
 interface CheckboxState {
   JourneyViewEvent: boolean
@@ -217,9 +217,11 @@ export function FilterForm({
         >
           <Stack
             direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ pr: 2 }}
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              pr: 2
+            }}
           >
             <CheckboxOption
               checked={videoEventsSelected === 'all'}

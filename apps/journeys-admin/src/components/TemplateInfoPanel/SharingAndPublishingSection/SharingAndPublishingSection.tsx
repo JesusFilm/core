@@ -16,7 +16,12 @@ export function SharingAndPublishingSection(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
-    <Stack gap={1} data-testid="SharingAndPublishingSection">
+    <Stack
+      data-testid="SharingAndPublishingSection"
+      sx={{
+        gap: 1
+      }}
+    >
       <Typography variant="body2">
         {t(
           'When your template is ready (you set trackable and customizable items) you can publish it.'
@@ -43,10 +48,13 @@ export function SharingAndPublishingSection(): ReactElement {
         component="img"
         src="/assets/template-info/publish-and-share-flow.gif"
         alt={t('Publish flow via three dots menu and/or Use in a team flow')}
-        width={333}
-        height={160}
         loading="lazy"
-        sx={{ ...mediaSlotSx, mt: 1 }}
+        sx={{
+          width: 333,
+          height: 160,
+          ...mediaSlotSx,
+          mt: 1
+        }}
       />
     </Stack>
   )

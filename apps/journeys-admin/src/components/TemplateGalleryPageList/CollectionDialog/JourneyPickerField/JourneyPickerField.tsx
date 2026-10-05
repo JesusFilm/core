@@ -70,7 +70,7 @@ function JourneyPickerFieldImpl({
         multiple
         disableCloseOnSelect
         disabled={disabled}
-        options={availableJourneys as Journey[]}
+        options={availableJourneys}
         getOptionLabel={(option) => option.title}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         value={selectedJourneysOrdered}
@@ -78,9 +78,9 @@ function JourneyPickerFieldImpl({
           onChange(selected.map((j) => j.id))
           onTouch?.()
         }}
-        renderTags={(value, getTagProps) =>
+        renderValue={(value, getItemProps) =>
           value.map((option, index) => {
-            const { key, ...tagProps } = getTagProps({ index })
+            const { key, ...tagProps } = getItemProps({ index })
             return (
               <Chip key={key} label={option.title} size="small" {...tagProps} />
             )

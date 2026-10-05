@@ -71,7 +71,7 @@ describe('Logo', () => {
     } as unknown as Journey
 
     render(
-      <JourneyProvider value={{ journey, variant: 'admin' }}>
+      <JourneyProvider value={{ journey, renderMode: 'admin' }}>
         <Logo />
       </JourneyProvider>
     )

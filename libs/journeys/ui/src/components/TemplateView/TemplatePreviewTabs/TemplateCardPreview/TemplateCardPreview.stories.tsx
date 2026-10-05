@@ -2,8 +2,7 @@ import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { TreeBlock } from '../../../../libs/block'
-import { transformer } from '../../../../libs/transformer'
+import { TreeBlock, transformer } from '../../../../libs/block'
 import { GetJourney_journey_blocks_StepBlock as StepBlock } from '../../../../libs/useJourneyQuery/__generated__/GetJourney'
 import { journeyVideoBlocks } from '../data'
 

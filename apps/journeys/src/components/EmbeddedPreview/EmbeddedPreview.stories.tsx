@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
@@ -115,7 +115,7 @@ const Template: StoryObj<typeof EmbeddedPreview> = {
         <JourneyProvider
           value={{
             journey,
-            variant: 'embed'
+            renderMode: 'embed'
           }}
         >
           <EmbeddedPreview {...args} />

@@ -34,13 +34,21 @@ export function JourneyCardInfo({
   return (
     <Stack
       direction="row"
-      justifyContent="space-between"
-      alignItems="center"
-      flexGrow={1}
-      sx={{ width: '100%' }}
       data-testid="JourneyCardInfo"
+      sx={{
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexGrow: 1,
+        width: '100%'
+      }}
     >
-      <Stack flexDirection="row" gap={1} sx={{ mt: 1 }}>
+      <Stack
+        sx={{
+          flexDirection: 'row',
+          gap: 1,
+          mt: 1
+        }}
+      >
         <ResponsesItem
           variant="icon-button"
           fromJourneyList={true}

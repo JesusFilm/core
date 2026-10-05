@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import omit from 'lodash/omit'
 import pick from 'lodash/pick'
 import { ReactElement, useEffect } from 'react'
@@ -221,7 +222,7 @@ export function VideoBlockEditorSettingsPosterLibrary({
             }
           },
           update(cache, { data }) {
-            blockDeleteUpdate(block, data?.blockDelete, cache, journey.id)
+            blockDeleteUpdate(cache, journey.id, block, data?.blockDelete)
           }
         })
       },
@@ -303,10 +304,10 @@ export function VideoBlockEditorSettingsPosterLibrary({
           },
           update(cache, { data }) {
             blockDeleteUpdate(
-              selectedBlock,
-              data?.blockDelete,
               cache,
-              journeyId
+              journeyId,
+              selectedBlock,
+              data?.blockDelete
             )
           }
         })
@@ -346,6 +347,9 @@ export function VideoBlockEditorSettingsPosterLibrary({
     } else {
       updateImageBlock(input)
     }
+    // Close the secondary drawer once a poster image is selected, returning the
+    // user to the video settings without disturbing the underlying drawer.
+    onClose()
   }
 
   return (

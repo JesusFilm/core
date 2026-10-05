@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, waitFor } from '@testing-library/react'
 
 import { AuthUser as User } from '../../libs/auth/types'
@@ -41,7 +42,10 @@ describe('TemplateView', () => {
     ]
   }
 
-  const getJourneysMock: MockedResponse<GetJourneys, GetJourneysVariables> = {
+  const getJourneysMock: MockLink.MockedResponse<
+    GetJourneys,
+    GetJourneysVariables
+  > = {
     request: {
       query: GET_JOURNEYS,
       variables: {
@@ -78,7 +82,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithStrategySlug,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -100,7 +104,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithoutStrategySlug,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -122,7 +126,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithoutStrategySlug,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -161,7 +165,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithCreatorDetails,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -209,7 +213,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithoutCreatorDescription,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -269,7 +273,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithTags,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -282,7 +286,7 @@ describe('TemplateView', () => {
   })
 
   it('should render template tags', async () => {
-    const getTagsMock: MockedResponse<GetTags> = {
+    const getTagsMock: MockLink.MockedResponse<GetTags> = {
       request: {
         query: GET_TAGS
       },
@@ -305,7 +309,7 @@ describe('TemplateView', () => {
         <JourneyProvider
           value={{
             journey: journeyWithTags,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <TemplateView authUser={{} as unknown as User} />
@@ -383,7 +387,7 @@ describe('TemplateView', () => {
 
     function buildRelatedJourneysMock(
       journeys: GetJourneysJourney[]
-    ): MockedResponse<GetJourneys, GetJourneysVariables> {
+    ): MockLink.MockedResponse<GetJourneys, GetJourneysVariables> {
       return {
         request: {
           query: GET_JOURNEYS,
@@ -414,7 +418,7 @@ describe('TemplateView', () => {
           mocks={[buildRelatedJourneysMock([relatedJourneyBase, qaJourney])]}
         >
           <JourneyProvider
-            value={{ journey: journeyWithTags, variant: 'admin' }}
+            value={{ journey: journeyWithTags, renderMode: 'admin' }}
           >
             <TemplateView authUser={{} as unknown as User} />
           </JourneyProvider>
@@ -435,7 +439,7 @@ describe('TemplateView', () => {
           mocks={[buildRelatedJourneysMock([relatedJourneyBase])]}
         >
           <JourneyProvider
-            value={{ journey: journeyWithTags, variant: 'admin' }}
+            value={{ journey: journeyWithTags, renderMode: 'admin' }}
           >
             <TemplateView authUser={{} as unknown as User} />
           </JourneyProvider>

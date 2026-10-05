@@ -7,6 +7,7 @@ import './workers/server'
 import './workers/processVideoDownloads/worker'
 import './workers/processVideoUploads/worker'
 import './workers/processImageBlurhash/worker'
+import './workers/videoAlgoliaSync/worker'
 
 const port = 4005
 // eslint-disable-next-line @typescript-eslint/no-misused-promises

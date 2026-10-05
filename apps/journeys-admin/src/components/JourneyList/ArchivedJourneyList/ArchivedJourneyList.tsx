@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Stack from '@mui/material/Stack'
@@ -9,6 +10,8 @@ import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import { RestoreArchivedJourneys } from '../../../../__generated__/RestoreArchivedJourneys'
+import { TrashArchivedJourneys } from '../../../../__generated__/TrashArchivedJourneys'
 import { useAdminJourneysQuery } from '../../../libs/useAdminJourneysQuery'
 import {
   extractTemplateIdsFromJourneys,
@@ -45,24 +48,29 @@ export function ArchivedJourneyList({
   })
   const { refetchTemplateStats } = useTemplateFamilyStatsAggregateLazyQuery()
 
-  const [restore] = useMutation(RESTORE_ARCHIVED_JOURNEYS, {
-    update(_cache, { data }) {
-      if (data?.journeysRestore != null) {
-        enqueueSnackbar(t('Journeys Restored'), {
-          variant: 'success'
-        })
+  const [restore] = useMutation<RestoreArchivedJourneys>(
+    RESTORE_ARCHIVED_JOURNEYS,
+    {
+      update(_cache, { data }) {
+        if (data?.journeysRestore != null) {
+          enqueueSnackbar(t('Journeys Unarchived'), {
+            variant: 'success'
+          })
 
-        // Refetch template stats for affected templates
-        const templateIds = extractTemplateIdsFromJourneys(data.journeysRestore)
-        if (templateIds.length > 0) {
-          void refetchTemplateStats(templateIds)
+          // Refetch template stats for affected templates
+          const templateIds = extractTemplateIdsFromJourneys(
+            data.journeysRestore
+          )
+          if (templateIds.length > 0) {
+            void refetchTemplateStats(templateIds)
+          }
+
+          void refetch()
         }
-
-        void refetch()
       }
     }
-  })
-  const [trash] = useMutation(TRASH_ARCHIVED_JOURNEYS, {
+  )
+  const [trash] = useMutation<TrashArchivedJourneys>(TRASH_ARCHIVED_JOURNEYS, {
     update(_cache, { data }) {
       if (data?.journeysTrash != null) {
         enqueueSnackbar(t('Journeys Trashed'), {
@@ -185,14 +193,18 @@ export function ArchivedJourneyList({
                 }}
               >
                 <Typography variant="subtitle1" align="center">
-                  {t('No archived journeys.')}
+                  {t('No archived Journeys.')}
                 </Typography>
               </Box>
             </>
           )}
         </Box>
       )}
-      <Stack alignItems="center">
+      <Stack
+        sx={{
+          alignItems: 'center'
+        }}
+      >
         <Typography
           variant="caption"
           align="center"
@@ -219,7 +231,7 @@ export function ArchivedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will unarchive all archived journeys you own.')}
+            {t('This will unarchive all archived Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>
@@ -239,7 +251,7 @@ export function ArchivedJourneyList({
           }}
         >
           <Typography sx={{ fontWeight: 'bold' }}>
-            {t('This will trash all archived journeys you own.')}
+            {t('This will trash all archived Journeys you own.')}
           </Typography>
           <Typography>{t('Are you sure you want to proceed?')}</Typography>
         </Dialog>

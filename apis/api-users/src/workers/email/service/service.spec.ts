@@ -1,5 +1,5 @@
-import { render } from '@react-email/render'
 import { Job } from 'bullmq'
+import { render } from 'react-email'
 import { MockedFunction, vi } from 'vitest'
 
 import { sendEmail } from '@core/yoga/email'
@@ -9,7 +9,10 @@ import { user } from '../../../schema/user/user.mock'
 
 import { type VerifyUserJob, service } from './service'
 
-vi.mock('@react-email/render')
+vi.mock('react-email', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('react-email')>()),
+  render: vi.fn()
+}))
 
 vi.mock('@core/yoga/email')
 

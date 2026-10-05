@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
@@ -23,7 +23,7 @@ const Template: StoryObj<typeof TextResponseFields> = {
         <JourneyProvider
           value={{
             journey: { id: 'journey.id' } as unknown as Journey,
-            variant: 'admin'
+            renderMode: 'admin'
           }}
         >
           <EditorProvider

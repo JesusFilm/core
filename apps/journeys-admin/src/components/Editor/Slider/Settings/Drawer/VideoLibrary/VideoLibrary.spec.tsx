@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
   cleanup,
@@ -160,8 +160,8 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').parentElement?.parentElement
-      ).toHaveClass('MuiDrawer-paperAnchorRight')
+        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-root')
+      ).toHaveClass('MuiDrawer-anchorRight')
     })
 
     it('should close VideoLibrary on close Icon click', () => {
@@ -316,8 +316,8 @@ describe('VideoLibrary', () => {
       )
       expect(screen.getByText('Video Library')).toBeInTheDocument()
       expect(
-        screen.getByTestId('VideoLibrary').parentElement?.parentElement
-      ).toHaveClass('MuiDrawer-paperAnchorBottom')
+        screen.getByTestId('VideoLibrary').closest('.MuiDrawer-root')
+      ).toHaveClass('MuiDrawer-anchorBottom')
     })
   })
 
@@ -432,7 +432,9 @@ describe('VideoLibrary', () => {
         videoId: 'videoId',
         videoVariantLanguageId: '529'
       },
-      true
+      // shouldFocus is false: the block is already in view, so selecting must
+      // not slide the canvas back. The outer drawer still closes via onClose.
+      false
     )
     expect(onClose).toHaveBeenCalled()
   })
@@ -1190,7 +1192,9 @@ describe('VideoLibrary', () => {
         videoId: 'videoId',
         videoVariantLanguageId: '529'
       },
-      true
+      // shouldFocus is false: the block is already in view, so selecting must
+      // not slide the canvas back. The outer drawer still closes via onClose.
+      false
     )
     expect(onClose).toHaveBeenCalled()
   })

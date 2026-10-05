@@ -107,7 +107,7 @@ Run the project's GraphQL codegen to update `apps/journeys-admin/__generated__/G
 
 ### Step 5: Frontend — Fix the filter
 
-**File:** `apps/journeys-admin/src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog.tsx`
+**File:** `apps/journeys-admin/src/components/JourneyVisitorsList/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog.tsx`
 
 Replace the current filter to use `userId` (Firebase UID) instead of `user.id` (Prisma UUID):
 
@@ -122,7 +122,7 @@ Remove the import of `GetIntegration_integrations_IntegrationGoogle` since we no
 
 ### Step 6: Update tests
 
-**File:** `apps/journeys-admin/src/components/JourneyVisitorsList/FilterDrawer/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog.spec.tsx`
+**File:** `apps/journeys-admin/src/components/JourneyVisitorsList/GoogleSheetsSyncDialog/GoogleSheetsSyncDialog.spec.tsx`
 
 - Update mock data to include `userId` field on `IntegrationGoogle` objects (keep existing `user { id }` in mocks to match query shape)
 - Add test: integration with matching `userId` appears in dropdown

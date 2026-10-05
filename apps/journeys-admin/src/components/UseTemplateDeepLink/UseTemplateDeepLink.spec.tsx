@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -29,7 +30,7 @@ vi.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-const teamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const teamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
   result: {
     data: {
@@ -52,22 +53,23 @@ const teamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
   }
 }
 
-const updateLastActiveTeamIdMock: MockedResponse<UpdateLastActiveTeamId> = {
-  request: {
-    query: UPDATE_LAST_ACTIVE_TEAM_ID,
-    variables: { input: { lastActiveTeamId: 'team-1' } }
-  },
-  result: {
-    data: {
-      journeyProfileUpdate: {
-        __typename: 'JourneyProfile',
-        id: 'profile-1'
+const updateLastActiveTeamIdMock: MockLink.MockedResponse<UpdateLastActiveTeamId> =
+  {
+    request: {
+      query: UPDATE_LAST_ACTIVE_TEAM_ID,
+      variables: { input: { lastActiveTeamId: 'team-1' } }
+    },
+    result: {
+      data: {
+        journeyProfileUpdate: {
+          __typename: 'JourneyProfile',
+          id: 'profile-1'
+        }
       }
     }
   }
-}
 
-const languagesMock: MockedResponse = {
+const languagesMock: MockLink.MockedResponse = {
   request: {
     query: GET_LANGUAGES,
     variables: {
@@ -104,7 +106,9 @@ const languagesMock: MockedResponse = {
 
 const sourceJourneyId = 'template-id'
 
-function buildJourneyMock(): MockedResponse {
+function buildJourneyMock(
+  options: { customizable?: boolean | null } = {}
+): MockLink.MockedResponse {
   return {
     request: {
       query: GET_JOURNEY,
@@ -121,6 +125,7 @@ function buildJourneyMock(): MockedResponse {
           id: sourceJourneyId,
           title: 'Sample Template',
           template: true,
+          customizable: options.customizable ?? false,
           fromTemplateId: null,
           language: {
             __typename: 'Language',
@@ -142,7 +147,7 @@ function buildJourneyDuplicateMock(
     forceNonTemplate: boolean
   },
   options: { shouldError?: boolean } = {}
-): MockedResponse<JourneyDuplicate> {
+): MockLink.MockedResponse<JourneyDuplicate> {
   if (options.shouldError === true) {
     return {
       request: { query: JOURNEY_DUPLICATE, variables },
@@ -165,7 +170,7 @@ function buildJourneyDuplicateMock(
 
 function buildTranslateSubscriptionMock(options: {
   shouldError?: boolean
-}): MockedResponse {
+}): MockLink.MockedResponse {
   if (options.shouldError === true) {
     return {
       request: {
@@ -231,6 +236,7 @@ interface SetupOptions {
   useTemplate?: string | string[] | null
   duplicateError?: boolean
   includeJourneyMock?: boolean
+  customizable?: boolean | null
   translationError?: boolean
   push?: Mock
   replace?: Mock
@@ -252,7 +258,7 @@ function setup(options: SetupOptions = {}): {
     replace
   } as unknown as NextRouter)
 
-  const mocks: MockedResponse[] = [
+  const mocks: MockLink.MockedResponse[] = [
     teamsMock,
     updateLastActiveTeamIdMock,
     languagesMock,
@@ -261,7 +267,11 @@ function setup(options: SetupOptions = {}): {
       { shouldError: options.duplicateError }
     )
   ]
-  if (options.includeJourneyMock !== false) mocks.push(buildJourneyMock())
+  if (options.includeJourneyMock !== false) {
+    mocks.push(
+      buildJourneyMock({ customizable: options.customizable ?? false })
+    )
+  }
   if (options.translationError != null) {
     mocks.push(
       buildTranslateSubscriptionMock({ shouldError: options.translationError })
@@ -281,7 +291,7 @@ function setup(options: SetupOptions = {}): {
 }
 
 async function selectTranslationSpanish(): Promise<void> {
-  fireEvent.click(screen.getByRole('checkbox', { name: 'Translation' }))
+  fireEvent.click(screen.getByRole('switch', { name: 'Translation' }))
   await waitFor(() =>
     expect(screen.getByTestId('LanguageAutocomplete')).not.toHaveAttribute(
       'aria-disabled',
@@ -322,6 +332,28 @@ describe('UseTemplateDeepLink', () => {
     await waitFor(() =>
       expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
     )
+  })
+
+  it('redirects customizable templates to the customize flow', async () => {
+    const { push, replace } = setup({ customizable: true })
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(
+        `/templates/${sourceJourneyId}/customize`
+      )
+    )
+    expect(screen.queryByTestId('CopyToTeamDialog')).not.toBeInTheDocument()
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('shows a loading indicator while the journey query resolves', async () => {
+    setup()
+    expect(screen.getByTestId('UseTemplateDeepLinkLoading')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(screen.getByTestId('CopyToTeamDialog')).toBeInTheDocument()
+    )
+    expect(
+      screen.queryByTestId('UseTemplateDeepLinkLoading')
+    ).not.toBeInTheDocument()
   })
 
   it('duplicates the journey and replaces the URL with /?type=journeys&refresh=true', async () => {
@@ -463,7 +495,7 @@ describe('UseTemplateDeepLink', () => {
     )
 
     await selectTranslationSpanish()
-    const translationCheckbox = screen.getByRole('checkbox', {
+    const translationCheckbox = screen.getByRole('switch', {
       name: 'Translation'
     })
     expect(translationCheckbox).toBeChecked()

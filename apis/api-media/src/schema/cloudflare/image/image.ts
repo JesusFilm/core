@@ -101,10 +101,20 @@ builder.queryFields((t) => ({
       return await prisma.cloudflareImage.findMany({
         ...query,
         where: {
-          ...(teamId != null
-            ? { OR: [{ userId: user.id }, { teamId }] }
-            : { userId: user.id }),
-          ...(isAi != null ? { isAi } : {})
+          AND: [
+            teamId != null
+              ? { OR: [{ userId: user.id }, { teamId }] }
+              : { userId: user.id },
+            // Treat a null isAi as "not AI". Uploads created before the isAi
+            // column existed are stored as null, and `isAi = false` would
+            // exclude them (NULL != false in SQL) — keeping historical assets
+            // out of the Custom tab. Matching false-or-null surfaces them.
+            isAi === true
+              ? { isAi: true }
+              : isAi === false
+                ? { OR: [{ isAi: false }, { isAi: null }] }
+                : {}
+          ]
         },
         orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
         take: limit ?? undefined,

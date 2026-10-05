@@ -1,4 +1,30 @@
-import { extractLanguageNames } from './extractLanguageNames'
+import { extractLanguageNames, isTwoLineOption } from './extractLanguageNames'
+
+describe('isTwoLineOption', () => {
+  it('returns true when both a local and native name are present', () => {
+    expect(
+      isTwoLineOption({ localName: 'French', nativeName: 'Français' })
+    ).toBe(true)
+  })
+
+  it('returns false when only a native name is present', () => {
+    expect(
+      isTwoLineOption({ localName: undefined, nativeName: 'English' })
+    ).toBe(false)
+  })
+
+  it('returns false when only a local name is present', () => {
+    expect(
+      isTwoLineOption({ localName: 'French', nativeName: undefined })
+    ).toBe(false)
+  })
+
+  it('returns false when neither name is present', () => {
+    expect(
+      isTwoLineOption({ localName: undefined, nativeName: undefined })
+    ).toBe(false)
+  })
+})
 
 describe('extractLanguageNames', () => {
   it('returns undefined for empty name array', () => {

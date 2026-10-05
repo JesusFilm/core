@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { TemplateGalleryPageStatus } from '../../../__generated__/globalTypes'
 import {
@@ -19,7 +19,7 @@ const defaultReordered: Reordered = {
   creatorName: 'Creator',
   creatorImageSrc: null,
   creatorImageAlt: null,
-  mediaUrl: null,
+  media: null,
   publishedAt: null,
   createdAt: '2026-05-06T00:00:00Z',
   updatedAt: '2026-05-06T00:00:00Z',
@@ -29,7 +29,7 @@ const defaultReordered: Reordered = {
 export const getTemplateGalleryPageReorderTemplateMock = (
   variables: TemplateGalleryPageReorderTemplateVariables,
   overrides: Partial<Reordered> = {}
-): MockedResponse<
+): MockLink.MockedResponse<
   TemplateGalleryPageReorderTemplate,
   TemplateGalleryPageReorderTemplateVariables
 > => ({

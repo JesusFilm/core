@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -42,7 +43,7 @@ vi.mock('react-i18next', () => ({
 }))
 
 describe('HostForm', () => {
-  const updateJourneyHostMock: MockedResponse<
+  const updateJourneyHostMock: MockLink.MockedResponse<
     UpdateJourneyHost,
     UpdateJourneyHostVariables
   > = {
@@ -72,7 +73,7 @@ describe('HostForm', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostForm
@@ -113,7 +114,7 @@ describe('HostForm', () => {
     const { getByRole, getByAltText, getByText, getByTestId } = render(
       <MockedProvider>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostForm
               handleSelection={vi.fn()}
               getAllTeamHostsQuery={vi.fn()}
@@ -150,7 +151,7 @@ describe('HostForm', () => {
           <JourneyProvider
             value={{
               journey: { ...journey, host: null },
-              variant: 'admin'
+              renderMode: 'admin'
             }}
           >
             <HostForm
@@ -167,7 +168,7 @@ describe('HostForm', () => {
   })
 
   it('should delete and update journey host on clear button click', async () => {
-    const updateJourneyHostMock: MockedResponse<
+    const updateJourneyHostMock: MockLink.MockedResponse<
       UpdateJourneyHost,
       UpdateJourneyHostVariables
     > = {
@@ -191,13 +192,13 @@ describe('HostForm', () => {
             }
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         UpdateJourneyHost,
         UpdateJourneyHostVariables
       >['result']
     }
 
-    const hostDeleteMock: MockedResponse<DeleteHost> = {
+    const hostDeleteMock: MockLink.MockedResponse<DeleteHost> = {
       request: {
         query: DELETE_HOST,
         variables: {
@@ -212,7 +213,7 @@ describe('HostForm', () => {
             id: defaultHost.id
           }
         }
-      })) as MockedResponse<DeleteHost>['result']
+      })) as MockLink.MockedResponse<DeleteHost>['result']
     }
 
     const handleSelection = vi.fn()
@@ -220,7 +221,7 @@ describe('HostForm', () => {
     const { getByRole } = render(
       <MockedProvider mocks={[hostDeleteMock, updateJourneyHostMock]}>
         <ThemeProvider>
-          <JourneyProvider value={{ journey, variant: 'admin' }}>
+          <JourneyProvider value={{ journey, renderMode: 'admin' }}>
             <HostForm
               handleSelection={handleSelection}
               getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
@@ -241,7 +242,10 @@ describe('HostForm', () => {
   })
 
   it('should call updatehost mutation on title change', async () => {
-    const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {
@@ -274,7 +278,7 @@ describe('HostForm', () => {
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <HostForm
             handleSelection={handleSelection}
             getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
@@ -292,7 +296,10 @@ describe('HostForm', () => {
   })
 
   it('should call createhost mutation on title change if host does not exist', async () => {
-    const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
+    const hostCreateMock: MockLink.MockedResponse<
+      CreateHost,
+      CreateHostVariables
+    > = {
       request: {
         query: CREATE_HOST,
         variables: {
@@ -326,7 +333,7 @@ describe('HostForm', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <HostForm
             handleSelection={handleSelection}
@@ -345,7 +352,10 @@ describe('HostForm', () => {
   })
 
   it('should call updatehost mutation on location change', async () => {
-    const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {
@@ -378,7 +388,7 @@ describe('HostForm', () => {
       <MockedProvider
         mocks={[{ ...updateHostMock, result: mockHostUpdateResult }]}
       >
-        <JourneyProvider value={{ journey, variant: 'admin' }}>
+        <JourneyProvider value={{ journey, renderMode: 'admin' }}>
           <HostForm
             handleSelection={handleSelection}
             getAllTeamHostsQuery={mockGetAllTeamHostsQuery}
@@ -396,7 +406,10 @@ describe('HostForm', () => {
   })
 
   it('should call createhost mutation on location change if host does not exist', async () => {
-    const hostCreateMock: MockedResponse<CreateHost, CreateHostVariables> = {
+    const hostCreateMock: MockLink.MockedResponse<
+      CreateHost,
+      CreateHostVariables
+    > = {
       request: {
         query: CREATE_HOST,
         variables: {
@@ -430,7 +443,7 @@ describe('HostForm', () => {
         ]}
       >
         <JourneyProvider
-          value={{ journey: { ...journey, host: null }, variant: 'admin' }}
+          value={{ journey: { ...journey, host: null }, renderMode: 'admin' }}
         >
           <HostForm
             handleSelection={handleSelection}

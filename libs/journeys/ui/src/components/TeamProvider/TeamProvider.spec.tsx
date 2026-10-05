@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
@@ -70,7 +71,7 @@ const teams: Team[] = [
   }
 ]
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -117,19 +118,20 @@ describe('TeamProvider', () => {
   })
 
   it('should show last viewed team as the active team', async () => {
-    const getLastViewedTeamMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      ...getTeamsMock,
-      result: {
-        data: {
-          teams,
-          getJourneyProfile: {
-            __typename: 'JourneyProfile',
-            id: 'journeyProfileId',
-            lastActiveTeamId: 'teamId2'
+    const getLastViewedTeamMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        ...getTeamsMock,
+        result: {
+          data: {
+            teams,
+            getJourneyProfile: {
+              __typename: 'JourneyProfile',
+              id: 'journeyProfileId',
+              lastActiveTeamId: 'teamId2'
+            }
           }
         }
       }
-    }
     render(
       <MockedProvider mocks={[getLastViewedTeamMock]}>
         <TeamProvider>
@@ -226,7 +228,7 @@ describe('TeamProvider', () => {
   it('should use sessionStorage value over database lastActiveTeamId', async () => {
     sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId2')
 
-    const updateLastActiveTeamIdMock: MockedResponse = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -274,7 +276,7 @@ describe('TeamProvider', () => {
   it('should set active team from URL activeTeam parameter', async () => {
     setUrlParam('activeTeam', 'teamId2')
 
-    const updateLastActiveTeamIdMock: MockedResponse = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -305,7 +307,7 @@ describe('TeamProvider', () => {
     sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId1')
     setUrlParam('activeTeam', 'teamId2')
 
-    const updateLastActiveTeamIdMock: MockedResponse = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -336,7 +338,7 @@ describe('TeamProvider', () => {
     setUrlParam('activeTeam', 'nonExistentTeamId')
     sessionStorage.setItem('journeys-admin:activeTeamId', 'teamId2')
 
-    const updateLastActiveTeamIdMock: MockedResponse = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
@@ -368,7 +370,7 @@ describe('TeamProvider', () => {
     setUrlParam('type', 'templates')
     const replaceStateSpy = vi.spyOn(window.history, 'replaceState')
 
-    const updateLastActiveTeamIdMock: MockedResponse = {
+    const updateLastActiveTeamIdMock: MockLink.MockedResponse = {
       request: {
         query: UPDATE_LAST_ACTIVE_TEAM_ID,
         variables: {
