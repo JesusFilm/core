@@ -26,6 +26,8 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   'journeys',
   'templates',
   'collections',
+  'campaign',
+  'campaigns',
   // Auth / account flows (current + likely future)
   'login',
   'logout',

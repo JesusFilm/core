@@ -106,10 +106,10 @@ enum TextResponseType {
 }
 
 model ChatButton {
-  id        String           @id @default(uuid())
-  journeyId String
-  link      String?
-  updatedAt DateTime         @default(now()) @updatedAt
+  id           String           @id @default(uuid())
+  journeyId    String
+  link         String?
+  updatedAt    DateTime         @default(now()) @updatedAt
   platform     MessagePlatform?
   customizable Boolean?
   journey      Journey          @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -254,6 +254,7 @@ model Team {
   qrCodes              QrCode[]
   googleSheetsSync     GoogleSheetsSync[]
   templateGalleryPages TemplateGalleryPage[]
+  campaigns            Campaign[]
 
   @@index(title)
 }
@@ -404,13 +405,13 @@ enum JourneyMenuButtonIcon {
 }
 
 model Journey {
-  id                              String                      @id @default(uuid())
+  id                              String                        @id @default(uuid())
   title                           String
   languageId                      String
   description                     String?
-  slug                            String                      @unique
+  slug                            String                        @unique
   archivedAt                      DateTime?
-  createdAt                       DateTime                    @default(now())
+  createdAt                       DateTime                      @default(now())
   deletedAt                       DateTime?
   publishedAt                     DateTime?
   trashedAt                       DateTime?
@@ -418,51 +419,51 @@ model Journey {
   status                          JourneyStatus
   seoTitle                        String?
   seoDescription                  String?
-  primaryImageBlockId             String?                     @unique
-  creatorImageBlockId             String?                     @unique
+  primaryImageBlockId             String?                       @unique
+  creatorImageBlockId             String?                       @unique
   creatorDescription              String?
-  template                        Boolean?                    @default(false)
-  templateSite                    Boolean?                    @default(false)
-  customizable                    Boolean?                    @default(false)
+  template                        Boolean?                      @default(false)
+  templateSite                    Boolean?                      @default(false)
+  customizable                    Boolean?                      @default(false)
   teamId                          String
   hostId                          String?
-  themeMode                       ThemeMode?                  @default(light)
-  themeName                       ThemeName?                  @default(base)
-  updatedAt                       DateTime                    @default(now()) @updatedAt
+  themeMode                       ThemeMode?                    @default(light)
+  themeName                       ThemeName?                    @default(base)
+  updatedAt                       DateTime                      @default(now()) @updatedAt
   strategySlug                    String?
   plausibleToken                  String?
   userJourneys                    UserJourney[]
-  team                            Team                        @relation(fields: [teamId], references: [id])
+  team                            Team                          @relation(fields: [teamId], references: [id])
   userInvites                     UserInvite[]
   blocks                          Block[]
   chatButtons                     ChatButton[]
-  host                            Host?                       @relation(fields: [hostId], references: [id])
+  host                            Host?                         @relation(fields: [hostId], references: [id])
   journeyTags                     JourneyTag[]
   actions                         Action[]
-  primaryImageBlock               Block?                      @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
-  creatorImageBlock               Block?                      @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
+  primaryImageBlock               Block?                        @relation("PrimaryImageBlock", fields: [primaryImageBlockId], references: [id], onDelete: SetNull)
+  creatorImageBlock               Block?                        @relation("CreatorImageBlock", fields: [creatorImageBlockId], references: [id], onDelete: SetNull)
   journeyVisitors                 JourneyVisitor[]
   journeyCollectionJourneys       JourneyCollectionJourneys[]
   journeyNotifications            JourneyNotification[]
-  website                         Boolean?                    @default(false)
-  showShareButton                 Boolean?                    @default(false)
-  showLikeButton                  Boolean?                    @default(false)
-  showDislikeButton               Boolean?                    @default(false)
+  website                         Boolean?                      @default(false)
+  showShareButton                 Boolean?                      @default(false)
+  showLikeButton                  Boolean?                      @default(false)
+  showDislikeButton               Boolean?                      @default(false)
   displayTitle                    String?
-  showHosts                       Boolean?                    @default(false)
-  showChatButtons                 Boolean?                    @default(false)
-  showReactionButtons             Boolean?                    @default(false)
-  showLogo                        Boolean?                    @default(false)
-  showMenu                        Boolean?                    @default(false)
-  showDisplayTitle                Boolean?                    @default(true)
+  showHosts                       Boolean?                      @default(false)
+  showChatButtons                 Boolean?                      @default(false)
+  showReactionButtons             Boolean?                      @default(false)
+  showLogo                        Boolean?                      @default(false)
+  showMenu                        Boolean?                      @default(false)
+  showDisplayTitle                Boolean?                      @default(true)
   showAssistant                   Boolean?
-  logoImageBlockId                String?                     @unique
-  logoImageBlock                  Block?                      @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
-  menuStepBlockId                 String?                     @unique
-  menuStepBlock                   Block?                      @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
+  logoImageBlockId                String?                       @unique
+  logoImageBlock                  Block?                        @relation("LogoImageBlock", fields: [logoImageBlockId], references: [id], onDelete: SetNull)
+  menuStepBlockId                 String?                       @unique
+  menuStepBlock                   Block?                        @relation("MenuStepBlock", fields: [menuStepBlockId], references: [id], onDelete: SetNull)
   menuButtonIcon                  JourneyMenuButtonIcon?
-  socialNodeX                     Int?                        @default(-240)
-  socialNodeY                     Int?                        @default(-46)
+  socialNodeX                     Int?                          @default(-240)
+  socialNodeY                     Int?                          @default(-46)
   qrCode                          QrCode[]
   Event                           Event[]
   journeyEventsExportLogs         JourneyEventsExportLog[]
@@ -472,6 +473,7 @@ model Journey {
   journeyCustomizationFields      JourneyCustomizationField[]
   googleSheetsSync                GoogleSheetsSync[]
   templateGalleryPageTemplates    TemplateGalleryPageTemplate[] @relation("JourneyTemplateGalleryPageTemplate")
+  campaignRegionLanguages         CampaignRegionLanguage[]
 
   @@index(title)
 }
@@ -732,24 +734,24 @@ enum TemplateGalleryPageStatus {
 }
 
 model TemplateGalleryPage {
-  id               String                        @id @default(uuid())
-  teamId           String
-  title            String
-  description      String                        @default("")
-  slug             String                        @unique
-  status           TemplateGalleryPageStatus     @default(draft)
-  creatorName      String
-  creatorImageSrc  String?
-  creatorImageAlt  String?
+  id              String                        @id @default(uuid())
+  teamId          String
+  title           String
+  description     String                        @default("")
+  slug            String                        @unique
+  status          TemplateGalleryPageStatus     @default(draft)
+  creatorName     String
+  creatorImageSrc String?
+  creatorImageAlt String?
   /// @deprecated NES-1704 — superseded by the `media` relation.
   /// Kept on legacy rows behind the LD flag; not read or written by new UI.
-  mediaUrl         String?
-  publishedAt      DateTime?
-  createdAt        DateTime                      @default(now())
-  updatedAt        DateTime                      @updatedAt
-  team             Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  templates        TemplateGalleryPageTemplate[]
-  media            TemplateGalleryPageMedia?
+  mediaUrl        String?
+  publishedAt     DateTime?
+  createdAt       DateTime                      @default(now())
+  updatedAt       DateTime                      @updatedAt
+  team            Team                          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  templates       TemplateGalleryPageTemplate[]
+  media           TemplateGalleryPageMedia?
 
   @@index([teamId, createdAt(sort: Desc)])
 }
@@ -795,16 +797,17 @@ model TemplateGalleryPageTemplate {
 }
 
 model QrCode {
-  id              String  @id @default(uuid())
-  teamId          String
-  journeyId       String
-  toJourneyId     String
-  toBlockId       String?
-  shortLinkId     String
-  color           String? @default("#000000")
-  backgroundColor String? @default("#FFFFFF")
-  team            Team    @relation(fields: [teamId], references: [id])
-  journey         Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  id                      String                   @id @default(uuid())
+  teamId                  String
+  journeyId               String
+  toJourneyId             String
+  toBlockId               String?
+  shortLinkId             String
+  color                   String?                  @default("#000000")
+  backgroundColor         String?                  @default("#FFFFFF")
+  team                    Team                     @relation(fields: [teamId], references: [id])
+  journey                 Journey                  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  campaignRegionLanguages CampaignRegionLanguage[]
 }
 
 model JourneyEventsExportLog {
@@ -847,4 +850,381 @@ model JourneyCustomizationField {
 
   @@unique([journeyId, key, value])
   @@index(journeyId)
+}
+
+// ---------------------------------------------------------------------------
+// Campaigns — a team-owned seasonal campaign site (see apis/api-journeys/CONTEXT.md,
+// "Campaigns"). The Campaign is the aggregate root: every row below carries its
+// campaignId and is authorised through campaign.acl.ts.
+// ---------------------------------------------------------------------------
+
+enum CampaignStatus {
+  draft
+  published
+}
+
+enum CampaignPageKind {
+  landing
+  regionTemplate
+}
+
+enum CampaignBackgroundKind {
+  none
+  surface
+  contrast
+  primary
+  custom
+  image
+}
+
+enum CampaignBackgroundOverlay {
+  light
+  medium
+  heavy
+}
+
+enum CampaignAlign {
+  left
+  center
+  right
+}
+
+enum CampaignTypographyVariant {
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6
+  subtitle1
+  subtitle2
+  body1
+  body2
+  caption
+  overline
+}
+
+enum CampaignButtonVariant {
+  text
+  contained
+  outlined
+}
+
+enum CampaignButtonSize {
+  small
+  medium
+  large
+}
+
+enum CampaignChildPlacement {
+  above
+  below
+}
+
+enum CampaignMediaSide {
+  left
+  right
+}
+
+enum CampaignSwitcherVariant {
+  cards
+  list
+  pills
+}
+
+enum CampaignJourneyListDisplay {
+  grid
+  list
+}
+
+enum CampaignColumnsRatio {
+  equal
+  wideLeft
+  wideRight
+}
+
+enum CampaignRadius {
+  square
+  slight
+  rounded
+  veryRounded
+}
+
+enum CampaignButtonRadius {
+  rounded
+  pill
+}
+
+enum CampaignStringKey {
+  allRegions
+  step1
+  step2
+  step2help
+  step3
+  step4
+  copy
+  copied
+  downloadQr
+  open
+  watch
+  openTemplate
+  youtube
+  totalVisitors
+  topCountry
+  seeAllOnWatch
+  videos
+}
+
+enum CampaignTextSource {
+  human
+  machine
+}
+
+model Campaign {
+  id                String             @id @default(uuid())
+  teamId            String
+  title             String
+  /// `{ "<languageId>": { "value": string, "source": "human" | "machine" } }`
+  /// for every campaign language except the default; the default-language
+  /// value is `title` itself. Same shape on every `<field>Translations` column.
+  titleTranslations Json               @default("{}")
+  slug              String             @unique
+  status            CampaignStatus     @default(draft)
+  /// api-languages Language id; must be one of this campaign's `languages`.
+  defaultLanguageId String
+  /// The eight most recently used picker colours, newest first, `#RRGGBB` uppercase.
+  palette           String[]
+  /// Stamped on the first publish only; never cleared by unpublish.
+  publishedAt       DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  team              Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  languages         CampaignLanguage[]
+  theme             CampaignTheme?
+  pages             CampaignPage[]
+  blocks            CampaignBlock[]
+  regions           CampaignRegion[]
+  strings           CampaignString[]
+
+  @@index([teamId, createdAt(sort: Desc)])
+}
+
+model CampaignLanguage {
+  id         String   @id @default(uuid())
+  campaignId String
+  /// api-languages Language id.
+  languageId String
+  order      Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, languageId])
+  @@index(campaignId)
+}
+
+model CampaignTheme {
+  id                      String               @id @default(uuid())
+  campaignId              String               @unique
+  themeMode               ThemeMode
+  /// Google Fonts family names; null = the base theme's default.
+  headerFont              String?
+  bodyFont                String?
+  labelFont               String?
+  /// All colours are `#RRGGBB` uppercase and non-null, seeded from the Light preset.
+  primaryColor            String
+  accentColor             String
+  backgroundColor         String
+  surfaceColor            String
+  textColor               String
+  mutedColor              String
+  contrastBackgroundColor String
+  contrastTextColor       String
+  radius                  CampaignRadius       @default(rounded)
+  buttonRadius            CampaignButtonRadius @default(pill)
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+  campaign                Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model CampaignPage {
+  id         String           @id @default(uuid())
+  campaignId String
+  kind       CampaignPageKind
+  campaign   Campaign         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  blocks     CampaignBlock[]
+
+  @@unique([campaignId, kind])
+}
+
+/// The Campaign counterpart of Block: one wide table discriminated by `typename`
+/// (`CampaignHeroBlock`, `CampaignTypographyBlock`, …) with nullable per-type
+/// columns. Top-level rows set at most one of `pageId` / `regionId`; neither set
+/// means campaign chrome (header, footer). Children copy the parent's values.
+model CampaignBlock {
+  id                      String                      @id @default(uuid())
+  typename                String
+  campaignId              String
+  pageId                  String?
+  regionId                String?
+  parentBlockId           String?
+  parentOrder             Int?
+  updatedAt               DateTime                    @default(now()) @updatedAt
+  deletedAt               DateTime?
+  // Section background and colour overrides (every section and chrome row)
+  backgroundKind          CampaignBackgroundKind      @default(none)
+  backgroundColor         String?
+  coverBlockId            String?                     @unique
+  backgroundOverlay       CampaignBackgroundOverlay?
+  headingColor            String?
+  textColor               String?
+  buttonColor             String?
+  buttonTextColor         String?
+  accentColor             String?
+  // Translatable text columns; each has a `<field>Translations` JSON sibling
+  eyebrow                 String?
+  eyebrowTranslations     Json?
+  title                   String?
+  titleTranslations       Json?
+  lede                    String?
+  ledeTranslations        Json?
+  bullets                 String?
+  bulletsTranslations     Json?
+  content                 String?
+  contentTranslations     Json?
+  intro                   String?
+  introTranslations       Json?
+  label                   String?
+  labelTranslations       Json?
+  alt                     String?
+  altTranslations         Json?
+  description             String?
+  descriptionTranslations Json?
+  // Per-type enum and scalar columns
+  align                   CampaignAlign?
+  mediaSide               CampaignMediaSide?
+  mediaBlockId            String?                     @unique
+  logoBlockId             String?                     @unique
+  switcherVariant         CampaignSwitcherVariant?
+  display                 CampaignJourneyListDisplay?
+  showMap                 Boolean?
+  ratio                   CampaignColumnsRatio?
+  typographyVariant       CampaignTypographyVariant?
+  buttonVariant           CampaignButtonVariant?
+  buttonSize              CampaignButtonSize?
+  color                   String?
+  labelColor              String?
+  placement               CampaignChildPlacement?
+  // CampaignVideoBlock and CampaignVideoCarouselBlock
+  source                  VideoBlockSource?
+  videoId                 String?
+  videoVariantLanguageId  String?
+  image                   String?
+  duration                Int?
+  // CampaignImageBlock
+  src                     String?
+  width                   Int?
+  height                  Int?
+  // CampaignJourneyBlock snapshot
+  journeyId               String?
+  campaign                Campaign                    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  page                    CampaignPage?               @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  region                  CampaignRegion?             @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  parentBlock             CampaignBlock?              @relation("CampaignParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
+  childBlocks             CampaignBlock[]             @relation("CampaignParentBlock")
+  coverBlock              CampaignBlock?              @relation("CampaignCoverBlock", fields: [coverBlockId], references: [id])
+  coverBlockParent        CampaignBlock?              @relation("CampaignCoverBlock")
+  mediaBlock              CampaignBlock?              @relation("CampaignMediaBlock", fields: [mediaBlockId], references: [id])
+  mediaBlockParent        CampaignBlock?              @relation("CampaignMediaBlock")
+  logoBlock               CampaignBlock?              @relation("CampaignLogoBlock", fields: [logoBlockId], references: [id])
+  logoBlockParent         CampaignBlock?              @relation("CampaignLogoBlock")
+  action                  CampaignAction?
+  targetActions           CampaignAction[]            @relation("CampaignActionTargetBlock")
+
+  @@index(campaignId)
+  @@index(pageId)
+  @@index(regionId)
+  @@index(parentBlockId)
+  @@index(parentOrder(sort: Asc))
+  @@index(typename)
+}
+
+/// The Links row of a CampaignButtonBlock, keyed by the block it belongs to.
+/// Resolved by populated column: `blockId` ⇒ scroll to a block on the same
+/// page, `regionId` ⇒ navigate to a region page, else `url` ⇒ web link.
+model CampaignAction {
+  campaignBlockId String          @id
+  blockId         String?
+  regionId        String?
+  url             String?
+  target          String?
+  updatedAt       DateTime        @default(now()) @updatedAt
+  parentBlock     CampaignBlock   @relation(fields: [campaignBlockId], references: [id], onDelete: Cascade)
+  block           CampaignBlock?  @relation("CampaignActionTargetBlock", fields: [blockId], references: [id], onDelete: SetNull)
+  region          CampaignRegion? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+
+  @@index(blockId)
+  @@index(regionId)
+}
+
+model CampaignRegion {
+  id               String                   @id @default(uuid())
+  campaignId       String
+  name             String
+  nameTranslations Json                     @default("{}")
+  slug             String
+  order            Int
+  listed           Boolean                  @default(true)
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+  campaign         Campaign                 @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  languages        CampaignRegionLanguage[]
+  countries        CampaignRegionCountry[]
+  blocks           CampaignBlock[]
+  actions          CampaignAction[]
+
+  @@unique([campaignId, slug])
+  @@index(campaignId)
+}
+
+/// A share language of a region: which journey the region hands out in that
+/// language. The title/description snapshot is the journey's own text and is
+/// not translated.
+model CampaignRegionLanguage {
+  id          String         @id @default(uuid())
+  regionId    String
+  /// api-languages Language id.
+  languageId  String
+  journeyId   String?
+  title       String?
+  description String?
+  qrCodeId    String?
+  order       Int
+  region      CampaignRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  journey     Journey?       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  qrCode      QrCode?        @relation(fields: [qrCodeId], references: [id], onDelete: SetNull)
+
+  @@unique([regionId, languageId])
+  @@index(journeyId)
+  @@index(qrCodeId)
+}
+
+model CampaignRegionCountry {
+  id        String         @id @default(uuid())
+  regionId  String
+  /// api-languages Country id.
+  countryId String
+  order     Int
+  region    CampaignRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([regionId, countryId])
+}
+
+model CampaignString {
+  id                String            @id @default(uuid())
+  campaignId        String
+  key               CampaignStringKey
+  value             String
+  valueTranslations Json              @default("{}")
+  campaign          Campaign          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([campaignId, key])
 }
