@@ -48,7 +48,10 @@ builder.mutationField('campaignJourneyListBlockCreate', (t) =>
     nullable: false,
     description: `Add a journey list section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It starts with no items.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\` / \`lede\` / \`display\`): the value fails its rule.`,
     args: {
-      input: t.arg({ type: CampaignJourneyListBlockCreateInput, required: true })
+      input: t.arg({
+        type: CampaignJourneyListBlockCreateInput,
+        required: true
+      })
     },
     resolve: async (_parent, { input }, context) =>
       await createSection(

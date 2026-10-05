@@ -271,8 +271,9 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   }
 
   const sectionMenuPageKind =
-    campaign.pages.find((candidate) => candidate.id === sectionMenu?.insert.pageId)
-      ?.kind ?? pageKind
+    campaign.pages.find(
+      (candidate) => candidate.id === sectionMenu?.insert.pageId
+    )?.kind ?? pageKind
 
   const addButton = (
     <>

@@ -16,7 +16,9 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 
 describe('campaignRegionShareBlockCreate', () => {
   const CREATE = graphql(`
-    mutation CampaignRegionShareBlockCreate ($input: CampaignRegionShareBlockCreateInput!) {
+    mutation CampaignRegionShareBlockCreate(
+      $input: CampaignRegionShareBlockCreateInput!
+    ) {
       campaignRegionShareBlockCreate(input: $input) {
         id
         pageId
@@ -36,7 +38,8 @@ describe('campaignRegionShareBlockCreate', () => {
     prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[1])
     prismaMock.campaignBlock.findMany.mockResolvedValue(
       fixture.blocks.filter(
-        (block) => block.pageId === 'regionPageId' && block.parentBlockId == null
+        (block) =>
+          block.pageId === 'regionPageId' && block.parentBlockId == null
       )
     )
     prismaMock.campaignBlock.create.mockImplementation((async ({

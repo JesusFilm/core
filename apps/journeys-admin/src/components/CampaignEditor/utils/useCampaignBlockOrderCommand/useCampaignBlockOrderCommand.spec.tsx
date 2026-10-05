@@ -105,7 +105,9 @@ const crossBodyMock = {
 function CrossBodyHarness(): ReactElement {
   const { campaign: current } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
-  const privacy = current.blocks.find((block) => block.id === 'footerPrivacyId')!
+  const privacy = current.blocks.find(
+    (block) => block.id === 'footerPrivacyId'
+  )!
   return (
     <Button
       onClick={() => addBlockOrder(privacy, 0, CampaignChildPlacement.above)}
@@ -223,9 +225,9 @@ describe('useCampaignBlockOrderCommand', () => {
 
   it('moves an Extra across the Section Body with its placement in the same Command', async () => {
     renderEditor(<CrossBodyHarness />)
-    expect(await screen.findByTestId('Block-footerPrivacyId')).toHaveTextContent(
-      'CampaignButtonBlock|footerId|2|below|'
-    )
+    expect(
+      await screen.findByTestId('Block-footerPrivacyId')
+    ).toHaveTextContent('CampaignButtonBlock|footerId|2|below|')
 
     fireEvent.click(screen.getByRole('button', { name: 'Move above' }))
 

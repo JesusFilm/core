@@ -74,7 +74,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock'
 ] as const
-export type CampaignSectionTypename = (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
+export type CampaignSectionTypename =
+  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
 
 /** Sections that read the region being rendered: refused on the landing page. */
 export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
@@ -476,7 +477,10 @@ export function assertTopLevelScope(
       'pageId'
     )
   if (scope.pageId == null && scope.regionId == null)
-    throw badUserInput('a top-level block needs a pageId or a regionId', 'pageId')
+    throw badUserInput(
+      'a top-level block needs a pageId or a regionId',
+      'pageId'
+    )
 }
 
 /** A campaign has exactly one header and one footer: a second is `CONFLICT` / `typename`. */
@@ -590,9 +594,13 @@ export async function reorderBlock(
   if (block.parentOrder == null)
     throw conflict('an owned block has no order to change', 'id')
   assertParentOrder(parentOrder)
-  const nextPlacement = placement == null ? undefined : assertPlacement(placement)
+  const nextPlacement =
+    placement == null ? undefined : assertPlacement(placement)
   if (nextPlacement != null && !isCampaignChildTypename(block.typename))
-    throw badUserInput('placement applies to section children only', 'placement')
+    throw badUserInput(
+      'placement applies to section children only',
+      'placement'
+    )
   return await prisma.$transaction(async (tx) => {
     if (nextPlacement != null && nextPlacement !== block.placement)
       await tx.campaignBlock.update({
@@ -714,7 +722,9 @@ export async function duplicateBlock(
             ...copyColumns(row),
             id: ids.get(row.id),
             parentBlockId:
-              row.id === block.id ? block.parentBlockId : remap(row.parentBlockId),
+              row.id === block.id
+                ? block.parentBlockId
+                : remap(row.parentBlockId),
             parentOrder: row.id === block.id ? siblings.length : row.parentOrder
           },
           include: { action: true }

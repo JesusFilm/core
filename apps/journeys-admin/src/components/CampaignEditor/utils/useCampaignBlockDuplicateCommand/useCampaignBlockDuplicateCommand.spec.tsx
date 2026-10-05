@@ -92,13 +92,13 @@ describe('useCampaignBlockDuplicateCommand', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     const nextId = copyIds()
-    vi.mocked(uuidv4).mockImplementation(nextId as never)
+    vi.mocked(uuidv4).mockImplementation(nextId)
   })
 
   it('collects a block with its children, parents first', () => {
-    expect(subtreeOf(campaign.blocks, 'heroId').map((block) => block.id)).toEqual(
-      ['heroId', 'heroButtonId']
-    )
+    expect(
+      subtreeOf(campaign.blocks, 'heroId').map((block) => block.id)
+    ).toEqual(['heroId', 'heroButtonId'])
   })
 
   it('builds the copy under new ids with references remapped, right after the original', () => {

@@ -18,7 +18,9 @@ describe('SectionDeleteDialog', () => {
     )
 
     expect(screen.getByRole('dialog')).toHaveTextContent('Delete section?')
-    expect(screen.getByText('You can undo this afterwards.')).toBeInTheDocument()
+    expect(
+      screen.getByText('You can undo this afterwards.')
+    ).toBeInTheDocument()
     expect(
       screen.queryByText('This removes the section from every region page.')
     ).not.toBeInTheDocument()
@@ -43,7 +45,9 @@ describe('SectionDeleteDialog', () => {
     expect(
       screen.getByText('This removes the section from every region page.')
     ).toBeInTheDocument()
-    expect(screen.getByText('You can undo this afterwards.')).toBeInTheDocument()
+    expect(
+      screen.getByText('You can undo this afterwards.')
+    ).toBeInTheDocument()
   })
 
   it('renders nothing while closed', () => {

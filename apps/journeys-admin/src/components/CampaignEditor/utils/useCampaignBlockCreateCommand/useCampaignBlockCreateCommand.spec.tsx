@@ -9,9 +9,9 @@ import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTy
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { BottomBar } from '../../BottomBar'
-import { campaign } from '../../data'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
+import { campaign } from '../../data'
 import {
   BlocksProbe,
   QueriedEditor,

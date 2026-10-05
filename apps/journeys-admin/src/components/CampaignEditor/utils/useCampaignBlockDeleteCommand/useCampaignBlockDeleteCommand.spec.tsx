@@ -1,7 +1,12 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
-
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
@@ -137,12 +142,14 @@ describe('useCampaignBlockDeleteCommand', () => {
       request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'heroId' } },
       result: vi.fn(() => ({
         data: {
-          campaignBlockDelete: landingSections.slice(1).map((id, parentOrder) => ({
-            __typename: campaign.blocks.find((block) => block.id === id)!
-              .__typename,
-            id,
-            parentOrder
-          }))
+          campaignBlockDelete: landingSections
+            .slice(1)
+            .map((id, parentOrder) => ({
+              __typename: campaign.blocks.find((block) => block.id === id)!
+                .__typename,
+              id,
+              parentOrder
+            }))
         }
       }))
     }
@@ -205,7 +212,9 @@ describe('useCampaignBlockDeleteCommand', () => {
 
     it('carries the "from every region page" warning on the Region Page', async () => {
       renderSectionEditor('regionHeaderId', CampaignPageKind.regionTemplate)
-      expect(await screen.findByTestId('Block-regionHeaderId')).toBeInTheDocument()
+      expect(
+        await screen.findByTestId('Block-regionHeaderId')
+      ).toBeInTheDocument()
 
       fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
 

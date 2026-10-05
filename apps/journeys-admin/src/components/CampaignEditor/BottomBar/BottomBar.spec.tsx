@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -199,7 +205,7 @@ function menuItemNames(): string[] {
 describe('BottomBar', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(uuidv4).mockImplementation((() => 'newId') as never)
+    vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
   it('shows Settings, Theme, Translations and Add section on the campaign row', () => {
@@ -258,9 +264,7 @@ describe('BottomBar', () => {
     renderBar({ selectedBlockId: 'footerId' })
 
     expect(buttonNames()).toEqual(['Campaign', 'Edit', 'Style', 'Add'])
-    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
-      'Footer'
-    )
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent('Footer')
     expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
       'data-selection',
       'chrome'
@@ -280,9 +284,7 @@ describe('BottomBar', () => {
   it('names the header in the breadcrumb', () => {
     renderBar({ selectedBlockId: 'headerId' })
 
-    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
-      'Header'
-    )
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent('Header')
     expect(buttonNames()).toEqual(['Campaign', 'Edit', 'Style', 'Add'])
   })
 
@@ -403,8 +405,8 @@ describe('BottomBar', () => {
 
   it('duplicates a section and selects the copy', async () => {
     vi.mocked(uuidv4)
-      .mockImplementationOnce((() => 'heroCopyId') as never)
-      .mockImplementationOnce((() => 'heroButtonCopyId') as never)
+      .mockImplementationOnce(() => 'heroCopyId')
+      .mockImplementationOnce(() => 'heroButtonCopyId')
     renderBar({ selectedBlockId: 'heroId' })
 
     fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))

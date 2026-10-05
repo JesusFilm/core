@@ -16,7 +16,9 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 
 describe('campaignAnalyticsBlockCreate', () => {
   const CREATE = graphql(`
-    mutation CampaignAnalyticsBlockCreate ($input: CampaignAnalyticsBlockCreateInput!) {
+    mutation CampaignAnalyticsBlockCreate(
+      $input: CampaignAnalyticsBlockCreateInput!
+    ) {
       campaignAnalyticsBlockCreate(input: $input) {
         id
         pageId
@@ -37,7 +39,8 @@ describe('campaignAnalyticsBlockCreate', () => {
     prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[0])
     prismaMock.campaignBlock.findMany.mockResolvedValue(
       fixture.blocks.filter(
-        (block) => block.pageId === 'landingPageId' && block.parentBlockId == null
+        (block) =>
+          block.pageId === 'landingPageId' && block.parentBlockId == null
       )
     )
     prismaMock.campaignBlock.create.mockImplementation((async ({

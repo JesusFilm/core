@@ -85,18 +85,17 @@ function stackSections(body: HTMLElement): void {
       `[data-testid="CanvasSection-${id}"]`
     ) as HTMLElement
     const top = index * 100
-    section.getBoundingClientRect = () =>
-      ({
-        top,
-        bottom: top + 100,
-        left: 0,
-        right: 800,
-        width: 800,
-        height: 100,
-        x: 0,
-        y: top,
-        toJSON: () => ({})
-      }) as DOMRect
+    section.getBoundingClientRect = () => ({
+      top,
+      bottom: top + 100,
+      left: 0,
+      right: 800,
+      width: 800,
+      height: 100,
+      x: 0,
+      y: top,
+      toJSON: () => ({})
+    })
   })
 }
 
@@ -115,15 +114,11 @@ describe('Canvas', () => {
 
     it('moves down to after the section under the pointer, accounting for the gap it leaves', () => {
       expect(dropParentOrder(ids, 'a', { overId: 'c', edge: 'after' })).toBe(2)
-      expect(dropParentOrder(ids, 'a', { overId: 'c', edge: 'before' })).toBe(
-        1
-      )
+      expect(dropParentOrder(ids, 'a', { overId: 'c', edge: 'before' })).toBe(1)
     })
 
     it('moves up to before or after the section under the pointer', () => {
-      expect(dropParentOrder(ids, 'd', { overId: 'b', edge: 'before' })).toBe(
-        1
-      )
+      expect(dropParentOrder(ids, 'd', { overId: 'b', edge: 'before' })).toBe(1)
       expect(dropParentOrder(ids, 'd', { overId: 'b', edge: 'after' })).toBe(2)
     })
 
@@ -274,7 +269,10 @@ describe('Canvas', () => {
 
   it('reorders a section dragged by its handle, dropping after the midpoint of the section under the pointer, as one Command', async () => {
     const { baseElement } = renderCanvas()
-    const body = await frameBody(baseElement, 'CanvasSection-landingAnalyticsId')
+    const body = await frameBody(
+      baseElement,
+      'CanvasSection-landingAnalyticsId'
+    )
     stackSections(body)
     const frameDocument = body.ownerDocument
     const handle = body.querySelector(
@@ -302,14 +300,15 @@ describe('Canvas', () => {
     await waitFor(() => expect(orderMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
-    expect(
-      body.querySelector('[data-testid="CanvasDropIndicator"]')
-    ).toBeNull()
+    expect(body.querySelector('[data-testid="CanvasDropIndicator"]')).toBeNull()
   })
 
   it('drops before the midpoint of the section under the pointer', async () => {
     const { baseElement } = renderCanvas()
-    const body = await frameBody(baseElement, 'CanvasSection-landingAnalyticsId')
+    const body = await frameBody(
+      baseElement,
+      'CanvasSection-landingAnalyticsId'
+    )
     stackSections(body)
     const frameDocument = body.ownerDocument
     const handle = body.querySelector(
@@ -339,7 +338,10 @@ describe('Canvas', () => {
 
   it('is not draggable from the section body, only while its handle is held', async () => {
     const { baseElement } = renderCanvas()
-    const body = await frameBody(baseElement, 'CanvasSection-landingAnalyticsId')
+    const body = await frameBody(
+      baseElement,
+      'CanvasSection-landingAnalyticsId'
+    )
     stackSections(body)
     const frameDocument = body.ownerDocument
     const section = body.querySelector('[data-testid="CanvasSection-heroId"]')!
@@ -349,9 +351,7 @@ describe('Canvas', () => {
     fireEvent.mouseMove(frameDocument, { clientX: 400, clientY: 180 })
     fireEvent.mouseUp(frameDocument, { clientX: 400, clientY: 180 })
 
-    expect(
-      body.querySelector('[data-testid="CanvasDropIndicator"]')
-    ).toBeNull()
+    expect(body.querySelector('[data-testid="CanvasDropIndicator"]')).toBeNull()
     expect(orderMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
