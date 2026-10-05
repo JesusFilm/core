@@ -552,6 +552,35 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CampaignAnalyticsBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  showMap?: boolean | null;
+}
+
+export interface CampaignButtonBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  parentBlockId: string;
+  label?: string | null;
+  variant?: ButtonVariant | null;
+  size?: ButtonSize | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  labelColor?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
+export interface CampaignButtonBlockUpdateInput {
+  label?: string | null;
+  variant?: ButtonVariant | null;
+  size?: ButtonSize | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  labelColor?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
 /**
  * Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
  */
@@ -561,12 +590,64 @@ export interface CampaignCreateInput {
   defaultLanguageId: string;
 }
 
+export interface CampaignHeroBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  align?: TypographyAlign | null;
+}
+
+export interface CampaignJourneyListBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  display?: CampaignJourneyListDisplay | null;
+}
+
+export interface CampaignRegionHeaderBlockUpdateInput {
+  intro?: string | null;
+}
+
+export interface CampaignRegionShareBlockUpdateInput {
+  title?: string | null;
+  intro?: string | null;
+}
+
+export interface CampaignRegionSwitcherBlockUpdateInput {
+  title?: string | null;
+  variant?: CampaignSwitcherVariant | null;
+}
+
+export interface CampaignTypographyBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  parentBlockId: string;
+  content?: string | null;
+  variant?: TypographyVariant | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
+export interface CampaignTypographyBlockUpdateInput {
+  content?: string | null;
+  variant?: TypographyVariant | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
 /**
  * Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
  */
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
+}
+
+export interface CampaignVideoCarouselBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
 }
 
 export interface CardBlockCreateInput {

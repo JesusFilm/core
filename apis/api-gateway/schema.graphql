@@ -267,6 +267,155 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID) : PhoneAction! @join__field(graph: API_JOURNEYS_MODERN) 
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID) : ChatAction! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Add a text Extra to a section or chrome block. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. Omitted content is empty; the editor shows the placeholder "Your text".
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
+  - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule.
+  """
+  campaignTypographyBlockCreate(input: CampaignTypographyBlockCreateInput!) : CampaignTypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update a text block’s default-language content, variant, alignment, colour or placement. Only the given fields change; translations are untouched.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignTypographyBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `content`): over 2000 characters.
+  - BAD_USER_INPUT (field: `variant`, `align`, `color`, `placement`): the value fails its rule.
+  """
+  campaignTypographyBlockUpdate(id: ID!, input: CampaignTypographyBlockUpdateInput!) : CampaignTypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a button Extra to a section or chrome block, with no action. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. An omitted label is "Button".
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
+  - BAD_USER_INPUT (field: `label`, `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+  """
+  campaignButtonBlockCreate(input: CampaignButtonBlockCreateInput!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update a button’s default-language label, variant, size, alignment, colours or placement. Only the given fields change; the action and translations are untouched.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignButtonBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `label`): over 60 characters.
+  - BAD_USER_INPUT (field: `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+  """
+  campaignButtonBlockUpdate(id: ID!, input: CampaignButtonBlockUpdateInput!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the hero’s default-language eyebrow, title, lede or alignment. Only the given fields change; empty text is allowed and not rendered.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignHeroBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `align`): not left, center or right.
+  """
+  campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the region switcher’s default-language title or its variant (cards, list, pills). Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRegionSwitcherBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title`): over 150 characters.
+  - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+  """
+  campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the journey list’s default-language eyebrow, title or lede, or its display (grid, list). Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignJourneyListBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `display`): not grid or list.
+  """
+  campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the analytics section’s default-language eyebrow or title, or whether the world map shows. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignAnalyticsBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the region header’s default-language intro.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRegionHeaderBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `intro`): over 500 characters.
+  """
+  campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!) : CampaignRegionHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the region share panel’s default-language title or intro. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRegionShareBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
+  """
+  campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. The row keeps everything, so `campaignBlockRestore` is how undo of a delete works.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `id`): the header or footer; chrome is never deleted.
+  """
+  campaignBlockDelete(id: ID!) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Restore a soft-deleted campaign block: clear `deletedAt` and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  """
+  campaignBlockRestore(id: ID!) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
@@ -5215,6 +5364,68 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   actionValue: String
 }
 
+input CampaignAnalyticsBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
+  showMap: Boolean
+}
+
+input CampaignButtonBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A section or chrome block of the campaign.
+  """
+  parentBlockId: ID!
+  """
+  Default-language label; "Button" when omitted. At most 60 characters.
+  """
+  label: String
+  variant: ButtonVariant
+  size: ButtonSize
+  """
+  Null follows the section.
+  """
+  align: TypographyAlign
+  """
+  `#RRGGBB` or null.
+  """
+  color: String
+  """
+  `#RRGGBB` or null.
+  """
+  labelColor: String
+  """
+  Defaults to `below`.
+  """
+  placement: CampaignChildPlacement
+}
+
+input CampaignButtonBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Default-language label. At most 60 characters.
+  """
+  label: String
+  variant: ButtonVariant
+  size: ButtonSize
+  align: TypographyAlign
+  """
+  `#RRGGBB` or null.
+  """
+  color: String
+  """
+  `#RRGGBB` or null.
+  """
+  labelColor: String
+  placement: CampaignChildPlacement
+}
+
 """
 Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
 """
@@ -5233,6 +5444,104 @@ input CampaignCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   defaultLanguageId: ID!
 }
 
+input CampaignHeroBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 500 characters.
+  """
+  lede: String
+  align: TypographyAlign
+}
+
+input CampaignJourneyListBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 500 characters.
+  """
+  lede: String
+  display: CampaignJourneyListDisplay
+}
+
+input CampaignRegionHeaderBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 500 characters.
+  """
+  intro: String
+}
+
+input CampaignRegionShareBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 500 characters.
+  """
+  intro: String
+}
+
+input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 150 characters.
+  """
+  title: String
+  variant: CampaignSwitcherVariant
+}
+
+input CampaignTypographyBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A section or chrome block of the campaign.
+  """
+  parentBlockId: ID!
+  """
+  Default-language text; empty when omitted. At most 2000 characters.
+  """
+  content: String
+  variant: TypographyVariant
+  """
+  Null follows the section.
+  """
+  align: TypographyAlign
+  """
+  `#RRGGBB` or null.
+  """
+  color: String
+  """
+  Defaults to `below`.
+  """
+  placement: CampaignChildPlacement
+}
+
+input CampaignTypographyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Default-language text. At most 2000 characters.
+  """
+  content: String
+  variant: TypographyVariant
+  align: TypographyAlign
+  """
+  `#RRGGBB` or null.
+  """
+  color: String
+  placement: CampaignChildPlacement
+}
+
 """
 Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
 """
@@ -5245,6 +5554,17 @@ input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.
   """
   slug: String
+}
+
+input CampaignVideoCarouselBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 80 characters.
+  """
+  eyebrow: String
+  """
+  At most 150 characters.
+  """
+  title: String
 }
 
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

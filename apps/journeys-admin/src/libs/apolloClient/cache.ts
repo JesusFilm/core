@@ -1,6 +1,8 @@
 import { InMemoryCache } from '@apollo/client'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 
+import { CAMPAIGN_POSSIBLE_TYPES } from './campaignPossibleTypes'
+
 export const cache = (): InMemoryCache =>
   new InMemoryCache({
     /* https://www.apollographql.com/docs/react/data/fragments/#defining-possibletypes-manually
@@ -36,7 +38,8 @@ export const cache = (): InMemoryCache =>
         'TypographyBlock',
         'VideoBlock',
         'VideoTriggerBlock'
-      ]
+      ],
+      ...CAMPAIGN_POSSIBLE_TYPES
     },
     typePolicies: {
       Query: {
