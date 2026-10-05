@@ -70,6 +70,24 @@ describe('resolveBand', () => {
       })
     })
 
+    it('image → the contrast background behind the cover, white text and dark translucent cards', () => {
+      expect(
+        resolveBand(
+          { backgroundKind: 'image', backgroundOverlay: 'heavy' },
+          light
+        )
+      ).toMatchObject({
+        background: '#26262E',
+        text: '#FFFFFF',
+        heading: '#FFFFFF',
+        muted: alpha('#FFFFFF', 0.7),
+        card: 'rgba(0, 0, 0, 0.4)',
+        eyebrow: '#F2B544',
+        button: '#C52D3A',
+        buttonLabel: onPrimary
+      })
+    })
+
     it('custom → the section backgroundColor with text computed from that hex', () => {
       const dark = resolveBand(
         { backgroundKind: 'custom', backgroundColor: '#102030' },

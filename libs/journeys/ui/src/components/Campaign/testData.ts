@@ -371,6 +371,40 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
   })
 ]
 
+/** An Image section as the images ticket stores it: a Cloudflare address with its measured size. */
+export const imageSectionBlock = section('CampaignImageBlock', {
+  id: 'imageSectionId',
+  pageId: LANDING_PAGE_ID,
+  parentOrder: 5,
+  src: 'https://imagedelivery.net/accountHash/imageSection/public',
+  alt: 'A family reading together',
+  width: 1600,
+  height: 900
+})
+
+/** The hero’s owned background cover (`parentOrder: null`, named by `coverBlockId`). */
+export const heroCoverBlock = section('CampaignImageBlock', {
+  id: 'heroCoverId',
+  pageId: LANDING_PAGE_ID,
+  parentBlockId: 'heroId',
+  parentOrder: null,
+  src: 'https://imagedelivery.net/accountHash/heroCover/public',
+  alt: null,
+  width: 1600,
+  height: 400
+})
+
+/** The header’s owned logo (`parentOrder: null`, named by `logoBlockId`). */
+export const headerLogoBlock = section('CampaignImageBlock', {
+  id: 'headerLogoId',
+  parentBlockId: 'headerId',
+  parentOrder: null,
+  src: 'https://imagedelivery.net/accountHash/headerLogo/public',
+  alt: 'Christmas logo',
+  width: 320,
+  height: 80
+})
+
 export const headerBlock = section('CampaignHeaderBlock', {
   id: 'headerId',
   parentOrder: 0,

@@ -13,7 +13,8 @@ import {
 import { useCampaignEditor } from './CampaignEditorProvider'
 import { campaign } from './data'
 
-export interface StyleMock {
+/** A type alias, not an interface, so the array is assignable to the editors' `Record<string, unknown>[]` mocks. */
+export type StyleMock = {
   request: Record<string, unknown>
   result: ReturnType<typeof vi.fn>
   delay?: number

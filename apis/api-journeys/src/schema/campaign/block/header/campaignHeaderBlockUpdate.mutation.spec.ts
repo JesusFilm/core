@@ -31,6 +31,7 @@ describe('campaignHeaderBlockUpdate', () => {
         buttonColor
         buttonTextColor
         accentColor
+        logoBlockId
       }
     }
   `)
@@ -85,6 +86,63 @@ describe('campaignHeaderBlockUpdate', () => {
       where: { id: 'campaignId' },
       data: { updatedAt: expect.any(Date) }
     })
+  })
+
+  it('sets logoBlockId to a live image block of the campaign', async () => {
+    prismaMock.campaignBlock.findFirst
+      .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
+      .mockResolvedValueOnce({ id: 'logoId' } as never)
+
+    const result = await update({ logoBlockId: 'logoId' })
+
+    expect(result.data.campaignHeaderBlockUpdate).toMatchObject({
+      id: 'headerId',
+      logoBlockId: 'logoId'
+    })
+    expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+      where: {
+        id: 'logoId',
+        campaignId: 'campaignId',
+        typename: 'CampaignImageBlock',
+        deletedAt: null
+      },
+      select: { id: true }
+    })
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'headerId' },
+      data: { logoBlockId: 'logoId' },
+      include: { action: true }
+    })
+  })
+
+  it('clears logoBlockId with null, without a lookup', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'headerId', { logoBlockId: 'logoId' })
+    )
+
+    const result = await update({ logoBlockId: null })
+
+    expect(result.data.campaignHeaderBlockUpdate.logoBlockId).toBeNull()
+    expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'headerId' },
+      data: { logoBlockId: null },
+      include: { action: true }
+    })
+  })
+
+  it('rejects a logo that is not a live CampaignImageBlock of the campaign (BAD_USER_INPUT, logoBlockId)', async () => {
+    prismaMock.campaignBlock.findFirst
+      .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
+      .mockResolvedValueOnce(null)
+
+    const result = await update({ logoBlockId: 'heroId' })
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'logoBlockId'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
   it('rejects a bad colour with the column as field (BAD_USER_INPUT)', async () => {

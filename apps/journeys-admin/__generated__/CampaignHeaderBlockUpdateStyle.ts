@@ -34,7 +34,7 @@ export interface CampaignHeaderBlockUpdateStyle_campaignHeaderBlockUpdate {
 
 export interface CampaignHeaderBlockUpdateStyle {
   /**
-   * Update the header’s Section Background and colour overrides. Only the given fields change.
+   * Update the header’s Section Background, colour overrides or logo. Only the given fields change.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -45,6 +45,7 @@ export interface CampaignHeaderBlockUpdateStyle {
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
    * - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
    * - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
+   * - BAD_USER_INPUT (field: `logoBlockId`): not a live CampaignImageBlock of this campaign.
    */
   campaignHeaderBlockUpdate: CampaignHeaderBlockUpdateStyle_campaignHeaderBlockUpdate;
 }

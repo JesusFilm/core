@@ -339,6 +339,10 @@ _Avoid_: nav bar, site header/footer, layout, shell
 The fixed leading element of the Campaign header: the logo image when one is set, otherwise the Campaign's title as text, always linking to the landing page in the visitor's Page Language. On a region page it is preceded by the "All regions" chip.
 _Avoid_: logo (the logo is one of its two forms), home button, title
 
+**Campaign Image**:
+The campaign picture block, one typename in two roles: an Image section (a full-width picture with its space reserved from the stored width and height, and translated alt text), or an owned block with no sibling order — a section's **Section Background** cover or the header's **Brand Mark** logo, named by the parent's slot column and replaced, never edited in place. Every picture lives on Cloudflare Images: an upload or a pasted image URL is fetched there under the Campaign's Team, so the stored address is always a Cloudflare one and the server measures its size.
+_Avoid_: image block (bare, where the Journey ImageBlock could be meant), photo, asset, media (that includes video)
+
 **Campaign Public Page**:
 How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rebuilt in the background about once a minute (and at once on publish, unpublish or a domain change), from one read of the published Campaign in the visitor's Page Language. A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.
 _Avoid_: viewer page (the viewer is the app), static page, preview (that is the editor's)

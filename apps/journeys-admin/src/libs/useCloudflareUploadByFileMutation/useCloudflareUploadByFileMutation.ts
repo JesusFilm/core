@@ -7,8 +7,8 @@ import {
 } from '../../../__generated__/CreateCloudflareUploadByFile'
 
 export const CREATE_CLOUDFLARE_UPLOAD_BY_FILE = gql`
-  mutation CreateCloudflareUploadByFile($journeyId: ID) {
-    createCloudflareUploadByFile(journeyId: $journeyId) {
+  mutation CreateCloudflareUploadByFile($journeyId: ID, $teamId: ID) {
+    createCloudflareUploadByFile(journeyId: $journeyId, teamId: $teamId) {
       uploadUrl
       id
     }

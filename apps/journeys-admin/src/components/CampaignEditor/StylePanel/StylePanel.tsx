@@ -1,5 +1,6 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
@@ -13,29 +14,45 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { resolveBand } from '@core/journeys/ui/Campaign'
+import { campaignImageSource, resolveBand } from '@core/journeys/ui/Campaign'
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { CampaignBackgroundKind } from '../../../../__generated__/globalTypes'
 import {
+  CampaignBackgroundKind,
+  CampaignBackgroundOverlay,
+  CampaignImageSlot
+} from '../../../../__generated__/globalTypes'
+import {
+  CampaignSectionStyleInput,
   CampaignStyledBlock,
   SECTION_OVERRIDE_FIELDS,
-  SectionOverrideField
+  SectionOverrideField,
+  useCampaignSectionStyleMutation
 } from '../../../libs/useCampaignSectionStyleMutation'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { PaletteColorPicker } from '../PaletteColorPicker'
-import { useCampaignSectionStyleCommand } from '../utils/useCampaignSectionStyleCommand'
+import { ImagePicker } from '../Pickers/ImagePicker'
+import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
+import { previousOf } from '../utils/useCampaignStyleCommand'
 
 type StyleTab = 'background' | 'colours'
 
-/** The kinds the Background tab offers; `image` arrives with the images ticket. */
+/** The six Section Background kinds, in the Background tab's order. */
 export const BACKGROUND_KINDS = [
   CampaignBackgroundKind.none,
   CampaignBackgroundKind.surface,
   CampaignBackgroundKind.contrast,
   CampaignBackgroundKind.primary,
-  CampaignBackgroundKind.custom
+  CampaignBackgroundKind.custom,
+  CampaignBackgroundKind.image
+] as const
+
+/** The overlay strengths over an image cover; null on the block means medium. */
+export const BACKGROUND_OVERLAYS = [
+  CampaignBackgroundOverlay.light,
+  CampaignBackgroundOverlay.medium,
+  CampaignBackgroundOverlay.heavy
 ] as const
 
 interface StylePanelProps {
@@ -45,29 +62,58 @@ interface StylePanelProps {
 
 /**
  * A section's Style: the Background tab sets the Section Background kind
- * and, for `custom`, its colour; the Colours tab sets the five overrides.
- * Every change is one Command through the section type's update mutation.
- * The custom colour and each override commit on picker blur; clearing an
- * override writes null. Only the pure hex rule is checked here; the API's
- * message is shown verbatim otherwise.
+ * and, for `custom`, its colour, or for `image`, its cover (upload or
+ * paste) and overlay; the Colours tab sets the five overrides. Every change
+ * is one Command through the section type's update mutation — picking a
+ * cover creates the owned image and writes the kind and overlay as one. The
+ * custom colour and each override commit on picker blur; clearing an
+ * override writes null. Only the pure hex and https rules are checked here;
+ * the API's message is shown verbatim otherwise.
  */
 export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addSectionStyle, error } = useCampaignSectionStyleCommand()
+  const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
+  const writeStyle = useCampaignSectionStyleMutation()
   const [tab, setTab] = useState<StyleTab>('background')
   const [override, setOverride] = useState<SectionOverrideField>('headingColor')
+  /** The author chose Image but the section has no cover yet: the picker shows, no Command until a picture is kept. */
+  const [choosingCover, setChoosingCover] = useState(false)
   const band = useMemo(
     () => resolveBand(block, campaign.theme),
     [block, campaign.theme]
   )
+  const coverBlock = campaign.blocks.find(
+    (candidate) => candidate.id === block.coverBlockId
+  )
+  const cover = campaignImageSource(
+    coverBlock?.__typename === 'CampaignImageBlock' ? coverBlock : null
+  )
+
+  function addSectionStyle(
+    target: CampaignStyledBlock,
+    input: CampaignSectionStyleInput
+  ): void {
+    addStyle({
+      block: target,
+      input,
+      previous: previousOf(target, input),
+      run: writeStyle
+    })
+  }
 
   const kindLabels: Record<(typeof BACKGROUND_KINDS)[number], string> = {
     none: t('None'),
     surface: t('Surface'),
     contrast: t('Contrast'),
     primary: t('Primary'),
-    custom: t('Custom')
+    custom: t('Custom'),
+    image: t('Image')
+  }
+  const overlayLabels: Record<(typeof BACKGROUND_OVERLAYS)[number], string> = {
+    light: t('Light'),
+    medium: t('Medium'),
+    heavy: t('Heavy')
   }
   const overrideLabels: Record<SectionOverrideField, string> = {
     headingColor: t('Heading'),
@@ -88,9 +134,46 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
     _event: unknown,
     kind: CampaignBackgroundKind | null
   ): void {
-    if (kind == null || kind === block.backgroundKind) return
+    if (kind == null) return
+    if (kind !== CampaignBackgroundKind.image) setChoosingCover(false)
+    if (kind === block.backgroundKind && !choosingCover) return
+    if (kind === CampaignBackgroundKind.image && cover == null) {
+      setChoosingCover(true)
+      return
+    }
     addSectionStyle(block, { backgroundKind: kind })
   }
+
+  /** A kept picture: the cover is created and the kind and overlay written as one Command. */
+  function handleCoverPick(src: string): void {
+    setChoosingCover(false)
+    const input = (imageId: string): CampaignSectionStyleInput => ({
+      backgroundKind: CampaignBackgroundKind.image,
+      coverBlockId: imageId,
+      backgroundOverlay:
+        block.backgroundOverlay ?? CampaignBackgroundOverlay.medium
+    })
+    addOwnedImage({
+      owner: block,
+      slot: CampaignImageSlot.cover,
+      src,
+      input,
+      previous: previousOf(block, input('')),
+      write: writeStyle
+    })
+  }
+
+  function handleOverlayChange(
+    _event: unknown,
+    overlay: CampaignBackgroundOverlay | null
+  ): void {
+    if (overlay == null || overlay === (block.backgroundOverlay ?? 'medium'))
+      return
+    addSectionStyle(block, { backgroundOverlay: overlay })
+  }
+
+  const showingImage =
+    choosingCover || block.backgroundKind === CampaignBackgroundKind.image
 
   return (
     <Stack
@@ -132,7 +215,9 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
             exclusive
             fullWidth
             size="small"
-            value={block.backgroundKind}
+            value={
+              choosingCover ? CampaignBackgroundKind.image : block.backgroundKind
+            }
             onChange={handleKindChange}
             aria-label={t('Background')}
           >
@@ -152,6 +237,58 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
               }
               testId="StyleBackgroundColor"
             />
+          )}
+          {showingImage && (
+            <Stack spacing={3} data-testid="StyleBackgroundImage">
+              {cover != null && !choosingCover && (
+                <>
+                  <Box
+                    component="img"
+                    src={cover.src}
+                    alt={cover.alt ?? ''}
+                    data-testid="StyleBackgroundCover"
+                    sx={{
+                      width: '100%',
+                      maxHeight: 140,
+                      objectFit: 'cover',
+                      borderRadius: 1
+                    }}
+                  />
+                  <ToggleButtonGroup
+                    exclusive
+                    fullWidth
+                    size="small"
+                    value={
+                      block.backgroundOverlay ?? CampaignBackgroundOverlay.medium
+                    }
+                    onChange={handleOverlayChange}
+                    aria-label={t('Overlay')}
+                  >
+                    {BACKGROUND_OVERLAYS.map((overlay) => (
+                      <ToggleButton key={overlay} value={overlay}>
+                        {overlayLabels[overlay]}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => setChoosingCover(true)}
+                    sx={{ alignSelf: 'flex-start' }}
+                  >
+                    {t('Replace image')}
+                  </Button>
+                </>
+              )}
+              {(cover == null || choosingCover) && (
+                <ImagePicker
+                  teamId={campaign.teamId}
+                  onPick={handleCoverPick}
+                  pickLabel={t('Use as background')}
+                  testId="StyleCoverPicker"
+                />
+              )}
+            </Stack>
           )}
         </Stack>
       )}

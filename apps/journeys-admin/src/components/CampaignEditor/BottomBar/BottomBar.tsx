@@ -33,6 +33,8 @@ import { BarButton } from '../BarButton'
 import { blockLabel } from '../blockLabel'
 import { ButtonControls } from '../ButtonControls'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { ChromeEdit } from '../ChromeEdit'
+import { ImageSectionEdit } from '../ImageSectionEdit'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import {
   newSectionBlock,
@@ -68,9 +70,11 @@ interface SectionInsert {
  * is selected. Campaign row: Settings, Theme, Translations, +Add section.
  * Section: Edit, Style, +Add (an Extra, or a section above or below), move
  * up/down, duplicate, bin behind a confirmation. Chrome: Edit, Style, +Add
- * only. Text Extra: size, align, colour, Style, bin. Button Extra adds the
- * link chip and variant/size/colours. Controls that belong to later tickets
- * render disabled.
+ * only; the header's Edit opens the logo editor and an Image section's Edit
+ * opens the picture editor, both in a drawer. Text Extra: size, align,
+ * colour, Style, bin. Button Extra adds the link chip and
+ * variant/size/colours. Controls that belong to later tickets render
+ * disabled.
  */
 export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -97,6 +101,7 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   } | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   /** The section or chrome block the Style panel edits: the selection's host. */
   const styledHost =
@@ -113,7 +118,18 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
     (candidate) => candidate.id === selectedSection?.id
   )
 
+  /** The header and an Image section edit in a drawer (logo, picture); everything else edits its text in place. */
+  const editedBlock =
+    selection.block?.__typename === 'CampaignHeaderBlock' ||
+    selection.block?.__typename === 'CampaignImageBlock'
+      ? selection.block
+      : undefined
+
   function handleEdit(): void {
+    if (editedBlock != null) {
+      setEditOpen(true)
+      return
+    }
     dispatch({ type: 'RequestEditAction' })
   }
 
@@ -491,6 +507,21 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       >
         {styledHost != null && (
           <StylePanel block={styledHost} onClose={() => setStyleOpen(false)} />
+        )}
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={editOpen && editedBlock != null}
+        onClose={() => setEditOpen(false)}
+      >
+        {editedBlock?.__typename === 'CampaignHeaderBlock' && (
+          <ChromeEdit block={editedBlock} onClose={() => setEditOpen(false)} />
+        )}
+        {editedBlock?.__typename === 'CampaignImageBlock' && (
+          <ImageSectionEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
         )}
       </Drawer>
     </Stack>
