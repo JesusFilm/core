@@ -545,7 +545,10 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock_action_C
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_regions_lines_CampaignButtonBlock_action = CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1121,7 +1124,10 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock_action_Campaign
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_chrome_CampaignButtonBlock_action = CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1598,7 +1604,10 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_Ca
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_pages_blocks_CampaignButtonBlock_action = CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;

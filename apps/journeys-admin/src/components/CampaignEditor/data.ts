@@ -81,7 +81,24 @@ export const campaign: Campaign = {
     }
   ],
   blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks],
-  regions: []
+  regions: [
+    {
+      __typename: 'CampaignRegion',
+      id: 'eurRegionId',
+      name: 'Europe',
+      slug: 'eur',
+      order: 0,
+      listed: true
+    },
+    {
+      __typename: 'CampaignRegion',
+      id: 'afrRegionId',
+      name: 'Africa',
+      slug: 'afr',
+      order: 1,
+      listed: true
+    }
+  ]
 }
 
 export const publishedCampaign: Campaign = {

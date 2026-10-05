@@ -34,6 +34,19 @@ export function campaignBasePath(slug: string): string {
   return `/campaign/${slug}`
 }
 
+/**
+ * A path inside the campaign carrying the Page Language forward as the
+ * `lang` param (PRD §2: every in-campaign link carries it), so a region switch
+ * never changes the language the visitor is reading in.
+ */
+export function campaignPageHref(
+  path: string,
+  bcp47: string | null | undefined
+): string {
+  if (bcp47 == null || bcp47 === '') return path
+  return `${path}?lang=${encodeURIComponent(bcp47)}`
+}
+
 export function CampaignProvider({
   value,
   children

@@ -7,16 +7,19 @@ export type CampaignActionTypename =
 
 /**
  * Resolve a CampaignAction row to its typename by populated column, as the
- * journeys Action does: `blockId` ⇒ scroll, `regionId` ⇒ navigate to region,
- * else a web link.
+ * journeys Action does: `blockId` ⇒ scroll, `url` ⇒ a web link, else navigate
+ * to region. A link always has a url, so a row with every target column null
+ * is a region action whose region was deleted (`regionId` set null), not a
+ * link — the editor shows it as "Missing region" and the renderer inert.
  */
 export function resolveCampaignActionType(action: {
   blockId?: string | null
   regionId?: string | null
+  url?: string | null
 }): CampaignActionTypename {
   if (action.blockId != null) return 'CampaignScrollToBlockAction'
-  if (action.regionId != null) return 'CampaignNavigateToRegionAction'
-  return 'CampaignLinkAction'
+  if (action.url != null) return 'CampaignLinkAction'
+  return 'CampaignNavigateToRegionAction'
 }
 
 export const CampaignActionInterface = builder.prismaInterface(
@@ -78,11 +81,11 @@ export const CampaignNavigateToRegionActionRef = builder.prismaObject(
     isTypeOf: (action: any) =>
       resolveCampaignActionType(action) === 'CampaignNavigateToRegionAction',
     description:
-      "Navigate to a Campaign Region's page, carrying the visitor's Page Language. The target is set null when the region is deleted.",
+      'Navigate to a Campaign Region\'s page, carrying the visitor\'s Page Language. The target is set null when the region is deleted: the editor shows "Missing region" and the public page renders the button static.',
     fields: (t) => ({
-      regionId: t.string({
-        nullable: false,
-        resolve: (action) => action.regionId ?? ''
+      regionId: t.exposeString('regionId', {
+        nullable: true,
+        description: 'Null once the region has been deleted.'
       })
     })
   }

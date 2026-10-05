@@ -34,7 +34,10 @@ export interface CampaignButtonBlockCreate_campaignButtonBlockCreate_action_Camp
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignButtonBlockCreate_campaignButtonBlockCreate_action = CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignLinkAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignScrollToBlockAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignNavigateToRegionAction;

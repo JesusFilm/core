@@ -10,6 +10,7 @@ export { CampaignPage, shouldRenderSection } from './CampaignPage'
 export {
   CampaignProvider,
   campaignBasePath,
+  campaignPageHref,
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'

@@ -1,6 +1,7 @@
 export {
   CampaignProvider,
   campaignBasePath,
+  campaignPageHref,
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'

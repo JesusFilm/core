@@ -710,6 +710,14 @@ type CampaignLinkAction implements CampaignAction {
   target: String
 }
 
+input CampaignLinkActionInput {
+  """An https address of at most 2048 characters."""
+  url: String!
+
+  """`_blank` to open in a new tab; null for the same tab."""
+  target: String
+}
+
 """Which side of a Featured Media section the Media Slot renders on."""
 enum CampaignMediaSide {
   left
@@ -717,13 +725,20 @@ enum CampaignMediaSide {
 }
 
 """
-Navigate to a Campaign Region's page, carrying the visitor's Page Language. The target is set null when the region is deleted.
+Navigate to a Campaign Region's page, carrying the visitor's Page Language. The target is set null when the region is deleted: the editor shows "Missing region" and the public page renders the button static.
 """
 type CampaignNavigateToRegionAction implements CampaignAction {
   """The CampaignButtonBlock this action belongs to."""
   parentBlockId: ID!
   parentBlock: CampaignBlock!
-  regionId: String!
+
+  """Null once the region has been deleted."""
+  regionId: String
+}
+
+input CampaignNavigateToRegionActionInput {
+  """A Campaign Region of the same campaign."""
+  regionId: ID!
 }
 
 """
@@ -1076,6 +1091,11 @@ type CampaignScrollToBlockAction implements CampaignAction {
   parentBlockId: ID!
   parentBlock: CampaignBlock!
   blockId: String!
+}
+
+input CampaignScrollToBlockActionInput {
+  """A live block of the same campaign."""
+  blockId: ID!
 }
 
 """
@@ -2900,6 +2920,57 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   """
   campaignBlockRestore(id: ID!): [CampaignBlock!]!
+
+  """
+  Point a button at a web address (a journey, a video or any https page). The button’s one action becomes this link; any scroll or region target it had is cleared.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  - BAD_USER_INPUT (field: `url`): not an https address, or over 2048 characters.
+  """
+  campaignBlockUpdateLinkAction(id: ID!, input: CampaignLinkActionInput!): CampaignLinkAction!
+
+  """
+  Point a button at a block of the same campaign: the public page scrolls to `#<blockId>` when the target is on the same page and renders the button static otherwise. The button’s one action becomes this scroll; any link or region target it had is cleared.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  - BAD_USER_INPUT (field: `blockId`): not a live block of this campaign.
+  """
+  campaignBlockUpdateScrollToBlockAction(id: ID!, input: CampaignScrollToBlockActionInput!): CampaignScrollToBlockAction!
+
+  """
+  Point a button at a Campaign Region’s page, carrying the visitor’s Page Language. The button’s one action becomes this navigation; any link or scroll target it had is cleared. Deleting the region later sets the target null and the button renders static.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  - BAD_USER_INPUT (field: `regionId`): not a region of this campaign.
+  """
+  campaignBlockUpdateNavigateToRegionAction(id: ID!, input: CampaignNavigateToRegionActionInput!): CampaignNavigateToRegionAction!
+
+  """
+  Remove a button’s action so it renders static. Returns the button with `action` null; a button that had no action is returned unchanged.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  """
+  campaignBlockDeleteAction(id: ID!): CampaignButtonBlock!
 
   """
   Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.

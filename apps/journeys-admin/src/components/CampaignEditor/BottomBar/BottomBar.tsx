@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
@@ -14,7 +13,6 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
-import LinkIcon from '@core/shared/ui/icons/Link'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
@@ -27,6 +25,7 @@ import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
 import { useCampaignButtonBlockCreateMutation } from '../../../libs/useCampaignButtonBlockCreateMutation'
 import { useCampaignTypographyBlockCreateMutation } from '../../../libs/useCampaignTypographyBlockCreateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { LinkChip } from '../LinkChip'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
 
@@ -294,12 +293,9 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       case 'button':
         return (
           <>
-            <Chip
-              icon={<LinkIcon />}
-              label={t('Add link')}
-              variant="outlined"
-              disabled
-            />
+            {selection.block?.__typename === 'CampaignButtonBlock' && (
+              <LinkChip block={selection.block} />
+            )}
             <BarButton label={t('Variant')} icon={<Type1Icon />} disabled />
             <BarButton label={t('Size')} icon={<Type1Icon />} disabled />
             <BarButton label={t('Colours')} icon={<PaletteIcon />} disabled />

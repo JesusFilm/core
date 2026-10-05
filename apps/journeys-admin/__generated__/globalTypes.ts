@@ -604,6 +604,15 @@ export interface CampaignJourneyListBlockUpdateInput {
   display?: CampaignJourneyListDisplay | null;
 }
 
+export interface CampaignLinkActionInput {
+  url: string;
+  target?: string | null;
+}
+
+export interface CampaignNavigateToRegionActionInput {
+  regionId: string;
+}
+
 export interface CampaignRegionHeaderBlockUpdateInput {
   intro?: string | null;
 }
@@ -616,6 +625,10 @@ export interface CampaignRegionShareBlockUpdateInput {
 export interface CampaignRegionSwitcherBlockUpdateInput {
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+}
+
+export interface CampaignScrollToBlockActionInput {
+  blockId: string;
 }
 
 export interface CampaignTypographyBlockCreateInput {

@@ -1,4 +1,3 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import { useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -11,6 +10,7 @@ import {
   useCampaignBlockTextMutation
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { messageOf } from '../messageOf'
 
 interface UseCampaignTextCommandOptions {
   block: CampaignTextBlock
@@ -40,12 +40,6 @@ export function textDebounceKey(
   field: CampaignTextField
 ): string {
   return `${block.__typename}:${block.id}:${field}`
-}
-
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
 }
 
 /**
