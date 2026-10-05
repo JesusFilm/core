@@ -768,6 +768,26 @@ export interface CampaignRegionSwitcherBlockUpdateInput {
   accentColor?: string | null;
 }
 
+/**
+ * The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+ */
+export interface CampaignThemeUpdateInput {
+  themeMode?: ThemeMode | null;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+  primaryColor?: string | null;
+  accentColor?: string | null;
+  backgroundColor?: string | null;
+  surfaceColor?: string | null;
+  textColor?: string | null;
+  mutedColor?: string | null;
+  contrastBackgroundColor?: string | null;
+  contrastTextColor?: string | null;
+  radius?: CampaignRadius | null;
+  buttonRadius?: CampaignButtonRadius | null;
+}
+
 export interface CampaignTypographyBlockCreateInput {
   id?: string | null;
   campaignId: string;

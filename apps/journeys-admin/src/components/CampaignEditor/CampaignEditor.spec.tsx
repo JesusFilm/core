@@ -142,6 +142,21 @@ describe('CampaignEditor', () => {
     await waitFor(() => expect(title).toHaveValue('Christmas 2026'))
   })
 
+  it('opens the Theme panel from the campaign row', async () => {
+    renderEditor()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
+
+    expect(await screen.findByTestId('CampaignThemePanel')).toHaveAttribute(
+      'data-preset',
+      'light'
+    )
+    expect(screen.getByRole('button', { name: 'Light' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+  })
+
   it('offers Delete campaign to the manager', async () => {
     renderEditor()
 

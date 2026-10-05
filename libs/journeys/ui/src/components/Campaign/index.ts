@@ -30,6 +30,15 @@ export {
   createCampaignTheme
 } from './libs/createCampaignTheme'
 export { bandCssVariables, contrastText, resolveBand } from './libs/resolveBand'
+export {
+  CAMPAIGN_THEME_PRESETS,
+  DARK_PRESET,
+  LIGHT_PRESET,
+  PRESET_COLOR_COLUMNS,
+  PRESET_COLUMNS,
+  activeThemePreset,
+  presetColors
+} from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
 export { hasText, isCampaignSection } from './types'
 export type {
@@ -44,4 +53,10 @@ export type {
 } from './types'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
 export type { ResolvedBand } from './libs/resolveBand'
+export type {
+  CampaignThemePreset,
+  CampaignThemePresetColumn,
+  CampaignThemePresetLabel,
+  CampaignThemePresetName
+} from './libs/themePresets'
 export type { CampaignTreeBlock } from './libs/transformer'

@@ -1607,6 +1607,59 @@ type CampaignTheme {
 }
 
 """
+The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+"""
+input CampaignThemeUpdateInput {
+  """The MUI palette mode the theme is built on."""
+  themeMode: ThemeMode
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  headerFont: String
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  bodyFont: String
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  labelFont: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  primaryColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  accentColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  backgroundColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  surfaceColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  textColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  mutedColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  contrastBackgroundColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  contrastTextColor: String
+
+  """Corner radius: square, slight, rounded or veryRounded."""
+  radius: CampaignRadius
+
+  """Button shape: rounded or pill."""
+  buttonRadius: CampaignButtonRadius
+}
+
+"""
 The campaign text block: an Extra of a section or chrome block, or a Region Line when regionId is set. The variant decides size, weight and font family through the Campaign Theme.
 """
 type CampaignTypographyBlock implements CampaignBlock {
@@ -3581,6 +3634,24 @@ type Mutation {
   - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
+
+  """
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a Campaign Theme.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: the colour column): a colour is null, empty or not a hex colour.
+  - BAD_USER_INPUT (field: `headerFont` / `bodyFont` / `labelFont`): a font name is not in the shared curated list.
+  - BAD_USER_INPUT (field: `themeMode` / `radius` / `buttonRadius`): null, or not one of the enum’s values.
+  """
+  campaignThemeUpdate(
+    """The Campaign Theme id (`campaign.theme.id`)."""
+    id: ID!
+    input: CampaignThemeUpdateInput!
+  ): CampaignTheme!
 
   """
   Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.

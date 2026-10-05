@@ -1462,5 +1462,17 @@
   "Recent colours": "Recent colours",
   "Use {{hex}}": "Use {{hex}}",
   "Button colour": "Button colour",
-  "Button text colour": "Button text colour"
+  "Button text colour": "Button text colour",
+  "Contrast background": "Contrast background",
+  "Contrast text": "Contrast text",
+  "Square": "Square",
+  "Slight": "Slight",
+  "Rounded": "Rounded",
+  "Very rounded": "Very rounded",
+  "Pill": "Pill",
+  "Theme preset": "Theme preset",
+  "Theme colours": "Theme colours",
+  "Fonts": "Fonts",
+  "Corner radius": "Corner radius",
+  "Button shape": "Button shape"
 }
