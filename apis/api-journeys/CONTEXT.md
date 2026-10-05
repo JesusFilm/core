@@ -295,6 +295,10 @@ _Avoid_: journey link (the long address nobody hands out), campaign link (that i
 A **QR Code** row owned by the Campaign's Team and tied to one region language, created the moment a Journey is linked to that language and removed with it. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
+**Snapshot refresh**:
+Re-reading a Share Language's title and description from its linked Journey on request, replacing both; never automatic. The editor runs it as a Command whose undo writes the previous wording back, and asks first only when the snapshot differs from what the Journey says now, since the row keeps no record of who changed it.
+_Avoid_: sync (nothing runs on its own), re-link (the Journey stays the same)
+
 **Unlinked language**:
 A region language whose Journey has not been picked yet, or whose Journey is no longer published. Visitors never see it; the editor shows it with a prompt to pick a Journey.
 _Avoid_: empty language, missing journey, placeholder

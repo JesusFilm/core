@@ -1472,5 +1472,16 @@
   "Journey link": "Journey link",
   "Paste the journey’s admin link or its public address.": "Paste the journey’s admin link or its public address.",
   "Looking up journey…": "Looking up journey…",
-  "Use this journey": "Use this journey"
+  "Use this journey": "Use this journey",
+  "Needs journey": "Needs journey",
+  "Journey unpublished. Visitors cannot see this language until it is published again or another journey is linked.": "Journey unpublished. Visitors cannot see this language until it is published again or another journey is linked.",
+  "Open": "Open",
+  "Download QR code": "Download QR code",
+  "Refresh from journey": "Refresh from journey",
+  "Link copied": "Link copied",
+  "{{language}} · hidden until a journey is linked": "{{language}} · hidden until a journey is linked",
+  "{{language}} · hidden while unpublished": "{{language}} · hidden while unpublished",
+  "Replace your wording?": "Replace your wording?",
+  "Refresh": "Refresh",
+  "The title and description here differ from the journey’s. Refreshing replaces them with what the journey says now.": "The title and description here differ from the journey’s. Refreshing replaces them with what the journey says now."
 }

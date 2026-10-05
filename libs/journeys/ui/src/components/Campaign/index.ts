@@ -14,7 +14,13 @@ export {
   useOptionalCampaign
 } from './CampaignProvider'
 export { CampaignRegionHeader } from './CampaignRegionHeader'
-export { CampaignRegionShare } from './CampaignRegionShare'
+export {
+  CampaignRegionShare,
+  PREVIEW_IFRAME_ALLOW,
+  PREVIEW_IFRAME_SANDBOX,
+  previewEmbedUrl,
+  qrCodeFileName
+} from './CampaignRegionShare'
 export {
   CampaignRegionCountries,
   CampaignRegionSwitcher,

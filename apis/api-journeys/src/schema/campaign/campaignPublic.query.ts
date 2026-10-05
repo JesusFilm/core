@@ -137,6 +137,7 @@ function toRegionLanguage(
     languageId: regionLanguage.languageId,
     order: regionLanguage.order,
     journeyStatus: live,
+    title: published ? regionLanguage.title : null,
     shortLinkUrl:
       published && shortLinkId != null
         ? (shortLinkUrls.get(shortLinkId) ?? null)
