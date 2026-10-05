@@ -566,6 +566,15 @@ export interface CampaignAnalyticsBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   showMap?: boolean | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 /**
@@ -608,6 +617,36 @@ export interface CampaignCreateInput {
   defaultLanguageId: string;
 }
 
+/**
+ * The footer’s Section Background and colour overrides: the shared section fields and nothing else.
+ */
+export interface CampaignFooterBlockUpdateInput {
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+/**
+ * The header’s Section Background and colour overrides: the shared section fields and nothing else. The brand mark is set by the images ticket’s mutations.
+ */
+export interface CampaignHeaderBlockUpdateInput {
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
 export interface CampaignHeroBlockCreateInput {
   id?: string | null;
   campaignId: string;
@@ -624,6 +663,15 @@ export interface CampaignHeroBlockUpdateInput {
   title?: string | null;
   lede?: string | null;
   align?: TypographyAlign | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CampaignJourneyListBlockCreateInput {
@@ -642,6 +690,15 @@ export interface CampaignJourneyListBlockUpdateInput {
   title?: string | null;
   lede?: string | null;
   display?: CampaignJourneyListDisplay | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CampaignRegionHeaderBlockCreateInput {
@@ -654,6 +711,15 @@ export interface CampaignRegionHeaderBlockCreateInput {
 
 export interface CampaignRegionHeaderBlockUpdateInput {
   intro?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CampaignRegionShareBlockCreateInput {
@@ -668,6 +734,15 @@ export interface CampaignRegionShareBlockCreateInput {
 export interface CampaignRegionShareBlockUpdateInput {
   title?: string | null;
   intro?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CampaignRegionSwitcherBlockCreateInput {
@@ -682,6 +757,15 @@ export interface CampaignRegionSwitcherBlockCreateInput {
 export interface CampaignRegionSwitcherBlockUpdateInput {
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CampaignTypographyBlockCreateInput {
@@ -704,11 +788,12 @@ export interface CampaignTypographyBlockUpdateInput {
 }
 
 /**
- * Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+ * Campaign settings and the Palette. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.
  */
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
+  palette?: string[] | null;
 }
 
 export interface CampaignVideoCarouselBlockCreateInput {
@@ -723,6 +808,15 @@ export interface CampaignVideoCarouselBlockCreateInput {
 export interface CampaignVideoCarouselBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CardBlockCreateInput {
