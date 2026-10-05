@@ -61,6 +61,7 @@ export const CAMPAIGN_HOST_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
+  'CampaignImageBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
@@ -71,7 +72,7 @@ export const CAMPAIGN_CHROME_TYPENAMES = [
   'CampaignFooterBlock'
 ] as const
 
-/** The seeded section typenames: what "+Add section" offers today. */
+/** The section typenames "+Add section" offers: the seeded seven and the Image section. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -79,7 +80,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignJourneyListBlock',
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignImageBlock'
 ] as const
 export type CampaignSectionTypename =
   (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
@@ -857,6 +859,42 @@ export function sectionStyleColumns(
   return data
 }
 
+/** The two slot columns an owned image fills; `mediaBlockId` belongs to the videos ticket. */
+export const CAMPAIGN_IMAGE_SLOT_COLUMNS = [
+  'coverBlockId',
+  'logoBlockId'
+] as const
+export type CampaignImageSlotColumn =
+  (typeof CAMPAIGN_IMAGE_SLOT_COLUMNS)[number]
+
+/**
+ * A slot column (`coverBlockId`, `logoBlockId`) names a live
+ * CampaignImageBlock of the same campaign and nothing else: `BAD_USER_INPUT`
+ * with the slot column as `field`. Null clears without a lookup.
+ */
+export async function validateImageSlotTarget(
+  imageBlockId: string | number | null | undefined,
+  campaignId: string,
+  field: CampaignImageSlotColumn
+): Promise<string | null> {
+  if (imageBlockId == null) return null
+  const image = await prisma.campaignBlock.findFirst({
+    where: {
+      id: String(imageBlockId),
+      campaignId,
+      typename: CAMPAIGN_IMAGE_TYPENAME,
+      deletedAt: null
+    },
+    select: { id: true }
+  })
+  if (image == null)
+    throw badUserInput(
+      `${field} must be a live image block of this campaign`,
+      field
+    )
+  return image.id
+}
+
 /**
  * The shared section style helper every section and chrome update runs:
  * the pure rules above, then a given cover resolved to a live
@@ -868,19 +906,96 @@ export async function validateSectionStyle(
 ): Promise<SectionStyleColumns> {
   const data = sectionStyleColumns(input)
   if (data.coverBlockId == null) return data
-  const cover = await prisma.campaignBlock.findFirst({
-    where: {
-      id: data.coverBlockId,
-      campaignId: block.campaignId,
-      typename: CAMPAIGN_IMAGE_TYPENAME,
-      deletedAt: null
-    },
-    select: { id: true }
-  })
-  if (cover == null)
-    throw badUserInput(
-      'coverBlockId must be a live image block of this campaign',
-      'coverBlockId'
-    )
+  await validateImageSlotTarget(
+    data.coverBlockId,
+    block.campaignId,
+    'coverBlockId'
+  )
   return data
+}
+
+// ---------------------------------------------------------------------------
+// Owned images: a section's background cover or the header logo, one block
+// per slot, replaced rather than edited in place.
+// ---------------------------------------------------------------------------
+
+export type CampaignImageSlotName = 'cover' | 'logo'
+
+const IMAGE_SLOT_COLUMN: Record<
+  CampaignImageSlotName,
+  CampaignImageSlotColumn
+> = { cover: 'coverBlockId', logo: 'logoBlockId' }
+
+/**
+ * An owned image's parent is a live section or chrome block of the same
+ * campaign (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the image can
+ * copy its scoping down.
+ */
+export async function validateImageOwner(
+  parentBlockId: string,
+  campaignId: string
+): Promise<CampaignBlock> {
+  const owner = await prisma.campaignBlock.findFirst({
+    where: { id: parentBlockId, campaignId, deletedAt: null }
+  })
+  if (owner == null || !isCampaignHostTypename(owner.typename))
+    throw badUserInput(
+      'parentBlockId must be a section or chrome block of this campaign',
+      'parentBlockId'
+    )
+  return owner
+}
+
+/**
+ * The slot an owned image fills, `cover` when omitted. Every section and
+ * chrome block has a cover; only the header has a logo (`BAD_USER_INPUT` /
+ * `logoBlockId`, the slot column, as the field).
+ */
+export function assertImageSlot(
+  owner: Pick<CampaignBlock, 'typename'>,
+  slot: string | null | undefined
+): CampaignImageSlotName {
+  const name = assertEnum(slot ?? 'cover', 'slot', ['cover', 'logo'] as const)
+  if (name === 'logo' && owner.typename !== 'CampaignHeaderBlock')
+    throw badUserInput('only the header has a logo', 'logoBlockId')
+  return name
+}
+
+/**
+ * Create an owned image inside `tx`: `parentOrder: null`, the owner's
+ * scoping copied down, the owner's slot column pointed at the new row, and
+ * the image the slot held before soft-deleted (restore brings it back as a
+ * row, not as the slot's image). Returns the new image.
+ */
+export async function createOwnedImageBlock(
+  tx: Prisma.TransactionClient,
+  owner: CampaignBlock,
+  slot: CampaignImageSlotName,
+  data: Omit<CampaignChildCreateData, 'typename'>
+): Promise<CampaignBlockWithAction> {
+  const column = IMAGE_SLOT_COLUMN[slot]
+  const previousId = owner[column]
+  if (previousId != null)
+    await tx.campaignBlock.update({
+      where: { id: previousId },
+      data: { deletedAt: new Date() }
+    })
+  const image = await tx.campaignBlock.create({
+    data: {
+      ...data,
+      typename: CAMPAIGN_IMAGE_TYPENAME,
+      campaignId: owner.campaignId,
+      pageId: owner.pageId,
+      regionId: owner.regionId,
+      parentBlockId: owner.id,
+      parentOrder: null
+    },
+    include: { action: true }
+  })
+  await tx.campaignBlock.update({
+    where: { id: owner.id },
+    data: { [column]: image.id }
+  })
+  await touchCampaign(tx, owner.campaignId)
+  return image
 }

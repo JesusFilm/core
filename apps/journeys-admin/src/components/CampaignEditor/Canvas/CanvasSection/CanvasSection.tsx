@@ -4,6 +4,7 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import {
   MouseEvent,
@@ -15,7 +16,12 @@ import {
   useState
 } from 'react'
 
-import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
+import {
+  bandCssVariables,
+  campaignImageSource,
+  overlayAlpha,
+  resolveBand
+} from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -25,6 +31,7 @@ import {
   GetCampaign_campaign_theme as CampaignTheme
 } from '../../../../../__generated__/GetCampaign'
 import {
+  CampaignBackgroundKind,
   CampaignChildPlacement,
   TypographyVariant
 } from '../../../../../__generated__/globalTypes'
@@ -254,6 +261,7 @@ export function CanvasSection({
 }: CanvasSectionProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const {
+    campaign,
     selection,
     selectBlock,
     state: { editRequest }
@@ -302,6 +310,19 @@ export function CanvasSection({
 
   if (band == null) return null
 
+  const styled = 'backgroundKind' in block ? block : null
+  const cover =
+    styled?.backgroundKind === CampaignBackgroundKind.image
+      ? campaignImageSource(block.cover)
+      : null
+  const logo =
+    block.__typename === 'CampaignHeaderBlock'
+      ? campaignImageSource(block.logo)
+      : null
+  const picture =
+    block.__typename === 'CampaignImageBlock'
+      ? campaignImageSource(block)
+      : null
   const align = 'align' in block ? block.align : null
   const titleVariant = block.__typename === 'CampaignHeroBlock' ? 'h1' : 'h2'
   const above = block.children.filter(isAbove)
@@ -391,6 +412,34 @@ export function CanvasSection({
           <DragIcon fontSize="small" />
         </Box>
       )}
+      {cover != null && (
+        <>
+          <Box
+            component="img"
+            src={cover.src}
+            alt=""
+            aria-hidden
+            data-testid="CanvasSectionCover"
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              pointerEvents: 'none'
+            }}
+          />
+          <Box
+            data-testid="CanvasSectionOverlay"
+            sx={{
+              position: 'absolute',
+              inset: 0,
+              backgroundColor: `rgba(0, 0, 0, ${overlayAlpha(styled?.backgroundOverlay)})`,
+              pointerEvents: 'none'
+            }}
+          />
+        </>
+      )}
       {dropEdge != null && (
         <Box
           data-testid="CanvasDropIndicator"
@@ -408,9 +457,77 @@ export function CanvasSection({
           }}
         />
       )}
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ position: 'relative' }}>
         <Stack spacing={3} sx={{ alignItems }}>
+          {block.__typename === 'CampaignHeaderBlock' && (
+            <Box
+              data-testid="CanvasBrandMark"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                alignSelf: 'stretch'
+              }}
+            >
+              {logo != null ? (
+                <Box
+                  component="img"
+                  src={logo.src}
+                  alt={logo.alt ?? campaign.title}
+                  data-testid="CanvasBrandMarkLogo"
+                  sx={{ height: 40, maxWidth: 200, objectFit: 'contain' }}
+                />
+              ) : (
+                <Typography
+                  variant="h6"
+                  component="span"
+                  noWrap
+                  data-testid="CanvasBrandMarkTitle"
+                  sx={{ color: 'var(--campaign-band-text)' }}
+                >
+                  {campaign.title}
+                </Typography>
+              )}
+            </Box>
+          )}
           {above.map(renderExtra)}
+          {block.__typename === 'CampaignImageBlock' &&
+            (picture != null ? (
+              <Box
+                component="img"
+                src={picture.src}
+                alt={picture.alt ?? ''}
+                data-testid="CanvasSectionImage"
+                sx={{
+                  display: 'block',
+                  width: '100%',
+                  height: 'auto',
+                  aspectRatio:
+                    picture.width != null && picture.height != null
+                      ? `${picture.width} / ${picture.height}`
+                      : undefined,
+                  objectFit: 'cover',
+                  borderRadius: 1
+                }}
+              />
+            ) : (
+              <Box
+                data-testid="CanvasSectionImagePlaceholder"
+                sx={{
+                  width: '100%',
+                  aspectRatio: '16 / 6',
+                  border: '1px dashed var(--campaign-band-border)',
+                  borderRadius: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--campaign-band-muted)'
+                }}
+              >
+                <Typography variant="body2">
+                  {t('Add a picture from Edit')}
+                </Typography>
+              </Box>
+            ))}
           {isCampaignTextBlock(block) &&
             textFields.map((field) => (
               <SectionText

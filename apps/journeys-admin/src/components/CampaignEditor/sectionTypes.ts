@@ -105,6 +105,15 @@ export function newSectionBlock(
       return { __typename: typename, ...shared, intro: null }
     case 'CampaignRegionShareBlock':
       return { __typename: typename, ...shared, title: null, intro: null }
+    case 'CampaignImageBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        src: null,
+        alt: null,
+        width: null,
+        height: null
+      }
   }
 }
 

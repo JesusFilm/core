@@ -4,12 +4,25 @@ export {
 } from './campaignPublicFields'
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
+export { CampaignFooter } from './CampaignFooter'
+export {
+  CampaignHeader,
+  CampaignLanguageSelect,
+  languageAutonym
+} from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
+export { CampaignImage } from './CampaignImage'
 export { CampaignJourneyList } from './CampaignJourneyList'
-export { CampaignPage, shouldRenderSection } from './CampaignPage'
+export {
+  CampaignPage,
+  campaignChromeTrees,
+  shouldRenderSection
+} from './CampaignPage'
 export {
   CampaignProvider,
   campaignBasePath,
+  campaignLandingHref,
+  campaignPageHref,
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'
@@ -17,19 +30,37 @@ export { CampaignRegionHeader } from './CampaignRegionHeader'
 export { CampaignRegionShare } from './CampaignRegionShare'
 export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
-export { CampaignSectionBand, useCampaignSection } from './CampaignSectionBand'
+export {
+  CAMPAIGN_HEADER_HEIGHT,
+  CampaignBandCover,
+  CampaignSectionBand,
+  useCampaignSection
+} from './CampaignSectionBand'
 export { CampaignSectionHeading } from './CampaignSectionHeading'
+export {
+  CampaignSeo,
+  campaignPagePath,
+  campaignSeoProps,
+  campaignSocialImage
+} from './CampaignSeo'
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideoCarousel } from './CampaignVideoCarousel'
 export {
   campaignFontsHref,
   CAMPAIGN_DEFAULT_FONTS
 } from './libs/campaignFontsHref'
+export { campaignImageSource } from './libs/campaignImageSource'
 export {
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
-export { bandCssVariables, contrastText, resolveBand } from './libs/resolveBand'
+export {
+  CAMPAIGN_OVERLAY_ALPHA,
+  bandCssVariables,
+  contrastText,
+  overlayAlpha,
+  resolveBand
+} from './libs/resolveBand'
 export { transformCampaignBlocks } from './libs/transformer'
 export { hasText, isCampaignSection } from './types'
 export type {
@@ -42,6 +73,9 @@ export type {
   CampaignTree,
   CampaignTreeOf
 } from './types'
+export type { CampaignChromeTrees } from './CampaignPage'
+export type { CampaignSeoOptions } from './CampaignSeo'
+export type { CampaignImageSource } from './libs/campaignImageSource'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
-export type { ResolvedBand } from './libs/resolveBand'
+export type { CampaignBandOverlay, ResolvedBand } from './libs/resolveBand'
 export type { CampaignTreeBlock } from './libs/transformer'

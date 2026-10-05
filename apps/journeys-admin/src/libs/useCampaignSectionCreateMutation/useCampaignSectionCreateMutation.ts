@@ -6,8 +6,9 @@ import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import { campaignBlockInsertUpdate } from '../campaignBlockCache'
+import { CAMPAIGN_IMAGE_BLOCK_CREATE } from '../useCampaignImageBlockCreateMutation'
 
-/** The seeded section typenames: what "+Add section" offers today. */
+/** The section typenames "+Add section" offers: the seeded seven and the Image section. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -15,7 +16,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignJourneyListBlock',
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignImageBlock'
 ] as const
 
 export type CampaignSectionTypename =
@@ -146,6 +148,10 @@ export const SECTION_CREATE_OPERATIONS: Record<
   CampaignRegionShareBlock: {
     document: CAMPAIGN_REGION_SHARE_BLOCK_CREATE,
     operation: 'campaignRegionShareBlockCreate'
+  },
+  CampaignImageBlock: {
+    document: CAMPAIGN_IMAGE_BLOCK_CREATE,
+    operation: 'campaignImageBlockCreate'
   }
 }
 

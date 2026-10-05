@@ -373,6 +373,47 @@ describe('useImageUpload', () => {
     })
   })
 
+  it('should pass teamId to the upload mutation instead of the journey id when given', async () => {
+    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
+      data: {
+        createCloudflareUploadByFile: { uploadUrl: 'https://upload.url' }
+      }
+    })
+    mockUseCloudflareUploadByFileMutation.mockReturnValue([
+      createCloudflareUploadByFile
+    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
+    getMockFetch().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, result: { id: 'image-id' } })
+    })
+    const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
+      <JourneyProvider
+        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+      >
+        {children}
+      </JourneyProvider>
+    )
+
+    renderHook(() => useImageUpload({ onUploadComplete, teamId: 'teamId' }), {
+      wrapper
+    })
+    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+    await act(async () => {
+      await onDrop?.(
+        [new File(['file'], 'test.png', { type: 'image/png' })],
+        [],
+        {} as any
+      )
+    })
+
+    expect(createCloudflareUploadByFile).toHaveBeenCalledWith({
+      variables: { teamId: 'teamId' }
+    })
+    expect(onUploadComplete).toHaveBeenCalledWith(
+      'https://imagedelivery.net/cloudflare-key/image-id/public'
+    )
+  })
+
   it('should handle missing uploadUrl in mutation response', async () => {
     const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
       data: {

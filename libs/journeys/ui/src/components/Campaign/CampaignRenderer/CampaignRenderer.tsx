@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 import { CampaignAnalytics } from '../CampaignAnalytics'
 import { CampaignButton } from '../CampaignButton'
 import { CampaignHero } from '../CampaignHero'
+import { CampaignImage } from '../CampaignImage'
 import { CampaignJourneyList } from '../CampaignJourneyList'
 import { CampaignRegionHeader } from '../CampaignRegionHeader'
 import { CampaignRegionShare } from '../CampaignRegionShare'
@@ -38,6 +39,8 @@ export function CampaignRenderer({
       return <CampaignRegionHeader block={block} />
     case 'CampaignRegionShareBlock':
       return <CampaignRegionShare block={block} />
+    case 'CampaignImageBlock':
+      return <CampaignImage block={block} />
     case 'CampaignTypographyBlock':
       return <CampaignTypography block={block} />
     case 'CampaignButtonBlock':

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 
 import {
   CampaignBackgroundKind,
+  CampaignBackgroundOverlay,
   CampaignChildPlacement,
   CampaignPageKind,
   TypographyAlign
@@ -15,9 +16,10 @@ import {
   resolveBand
 } from '../libs/resolveBand'
 import { transformCampaignBlocks } from '../libs/transformer'
-import { campaignPublic, landingBlocks } from '../testData'
+import { campaignPublic, heroCoverBlock, landingBlocks } from '../testData'
 import type { CampaignSectionTree } from '../types'
 
+import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
 import { CampaignSectionBand } from './CampaignSectionBand'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
@@ -179,6 +181,94 @@ describe('CampaignSectionBand', () => {
       'Below button',
       'Below text'
     ])
+  })
+
+  it('offsets every band by the sticky header height so a ScrollToBlockAction target is not covered', () => {
+    renderBand(sectionWithExtras())
+    expect(CAMPAIGN_HEADER_HEIGHT).toBe(64)
+    expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({
+      scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`
+    })
+  })
+
+  it('renders the image kind cover and overlay behind the content', () => {
+    const section = sectionWithExtras()
+    const cover = {
+      __typename: 'CampaignImageBlock',
+      id: 'coverId',
+      campaignId: 'campaignId',
+      pageId: null,
+      regionId: null,
+      parentBlockId: 'heroId',
+      parentOrder: null,
+      src: 'https://images.example.org/cover.jpg',
+      alt: null,
+      width: 1600,
+      height: 900,
+      children: [],
+      cover: null,
+      media: null,
+      logo: null
+    } as unknown as CampaignSectionTree['cover']
+    renderBand({
+      ...section,
+      backgroundKind: CampaignBackgroundKind.image,
+      coverBlockId: 'coverId',
+      backgroundOverlay: null,
+      cover
+    })
+    expect(screen.getByTestId('CampaignBandCover')).toHaveAttribute(
+      'src',
+      'https://images.example.org/cover.jpg'
+    )
+    expect(screen.getByTestId('CampaignBandOverlay')).toHaveStyle({
+      backgroundColor: 'rgba(0, 0, 0, 0.55)'
+    })
+    expect(screen.getByTestId('Body')).toBeInTheDocument()
+  })
+
+  it.each([
+    [CampaignBackgroundOverlay.light, 0.3],
+    [CampaignBackgroundOverlay.medium, 0.55],
+    [CampaignBackgroundOverlay.heavy, 0.75]
+  ])(
+    'paints the %s overlay at %d over the cover, with white text and dark translucent cards',
+    (overlay, alphaValue) => {
+      const section = sectionWithExtras()
+      renderBand({
+        ...section,
+        backgroundKind: CampaignBackgroundKind.image,
+        coverBlockId: heroCoverBlock.id,
+        backgroundOverlay: overlay,
+        cover: {
+          ...heroCoverBlock,
+          children: [],
+          cover: null,
+          media: null,
+          logo: null
+        }
+      })
+      expect(screen.getByTestId('CampaignBandOverlay')).toHaveStyle({
+        backgroundColor: `rgba(0, 0, 0, ${alphaValue})`
+      })
+      const band = screen.getByTestId('CampaignSectionBand-heroId')
+      expect(band.style.getPropertyValue('--campaign-band-text')).toBe(
+        '#FFFFFF'
+      )
+      expect(band.style.getPropertyValue('--campaign-band-card')).toBe(
+        'rgba(0, 0, 0, 0.4)'
+      )
+    }
+  )
+
+  it('renders no cover for the image kind when the slot is empty', () => {
+    renderBand({
+      ...sectionWithExtras(),
+      backgroundKind: CampaignBackgroundKind.image,
+      coverBlockId: null
+    })
+    expect(screen.queryByTestId('CampaignBandCover')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignBandOverlay')).not.toBeInTheDocument()
   })
 
   it('applies the body alignment to the band', () => {

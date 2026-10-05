@@ -99,6 +99,14 @@ export enum CampaignChildPlacement {
 }
 
 /**
+ * Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, or the header `logo` (the Brand Mark). An owned image has `parentOrder: null` and replaces the slot’s previous image.
+ */
+export enum CampaignImageSlot {
+  cover = "cover",
+  logo = "logo",
+}
+
+/**
  * How a Journey List renders its items: a card grid or a list.
  */
 export enum CampaignJourneyListDisplay {
@@ -633,7 +641,7 @@ export interface CampaignFooterBlockUpdateInput {
 }
 
 /**
- * The header’s Section Background and colour overrides: the shared section fields and nothing else. The brand mark is set by the images ticket’s mutations.
+ * The header’s Section Background and colour overrides (the shared section fields) and its logo slot.
  */
 export interface CampaignHeaderBlockUpdateInput {
   backgroundKind?: CampaignBackgroundKind | null;
@@ -645,6 +653,7 @@ export interface CampaignHeaderBlockUpdateInput {
   buttonColor?: string | null;
   buttonTextColor?: string | null;
   accentColor?: string | null;
+  logoBlockId?: string | null;
 }
 
 export interface CampaignHeroBlockCreateInput {
@@ -663,6 +672,34 @@ export interface CampaignHeroBlockUpdateInput {
   title?: string | null;
   lede?: string | null;
   align?: TypographyAlign | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+/**
+ * One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover or logo and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
+ */
+export interface CampaignImageBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId?: string | null;
+  parentOrder?: number | null;
+  parentBlockId?: string | null;
+  slot?: CampaignImageSlot | null;
+  src?: string | null;
+  alt?: string | null;
+}
+
+export interface CampaignImageBlockUpdateInput {
+  src?: string | null;
+  alt?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;

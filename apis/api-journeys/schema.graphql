@@ -661,7 +661,7 @@ type CampaignHeaderBlock implements CampaignBlock & CampaignSectionBlock {
 }
 
 """
-The header’s Section Background and colour overrides: the shared section fields and nothing else. The brand mark is set by the images ticket’s mutations.
+The header’s Section Background and colour overrides (the shared section fields) and its logo slot.
 """
 input CampaignHeaderBlockUpdateInput {
   """
@@ -696,6 +696,11 @@ input CampaignHeaderBlockUpdateInput {
 
   """`#RRGGBB` or null to inherit."""
   accentColor: String
+
+  """
+  The owned CampaignImageBlock shown as the Brand Mark; null clears the logo so the campaign title shows instead. Usually set by campaignImageBlockCreate with slot logo.
+  """
+  logoBlockId: ID
 }
 
 """
@@ -815,6 +820,143 @@ input CampaignHeroBlockUpdateInput {
 
   """`#RRGGBB` or null to inherit."""
   accentColor: String
+}
+
+"""
+The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is always an https imagedelivery.net address; width and height are measured by the server.
+"""
+type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+
+  """
+  The Cloudflare image address (`https://imagedelivery.net/…`); null until an image is chosen.
+  """
+  src: String
+
+  """Visitor-facing alternative text; at most 500 characters."""
+  alt: String
+  altTranslations: [TranslatedValue!]!
+
+  """Measured by the server from the image; never client-supplied."""
+  width: Int
+
+  """Measured by the server from the image; never client-supplied."""
+  height: Int
+}
+
+"""
+One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover or logo and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
+"""
+input CampaignImageBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign; the Image section role."""
+  pageId: ID
+
+  """
+  Section role only: position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """A section or chrome block of the campaign; the owned image role."""
+  parentBlockId: ID
+
+  """
+  Owned role only: which slot of the parent this image fills. Defaults to `cover`; `logo` needs the header as parent.
+  """
+  slot: CampaignImageSlot
+
+  """
+  An https imagedelivery.net address. Width and height are measured by the server.
+  """
+  src: String
+
+  """At most 500 characters."""
+  alt: String
+}
+
+input CampaignImageBlockUpdateInput {
+  """
+  An https imagedelivery.net address; null clears the image. Width and height are re-measured by the server.
+  """
+  src: String
+
+  """Default-language alternative text. At most 500 characters."""
+  alt: String
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
+}
+
+"""
+Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, or the header `logo` (the Brand Mark). An owned image has `parentOrder: null` and replaces the slot’s previous image.
+"""
+enum CampaignImageSlot {
+  cover
+  logo
 }
 
 """
@@ -3470,7 +3612,42 @@ type Mutation {
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
 
   """
-  Update the header’s Section Background and colour overrides. Only the given fields change.
+  Add an image in one of two roles. With `pageId`: an Image section, last among the page’s sections or at `parentOrder`. With `parentBlockId` and `slot`: an owned image with `parentOrder: null` that becomes the parent’s background cover (any section or chrome block) or the header logo, replacing (soft-deleting) the image that slot held. `width` and `height` are measured by the server from `src`; the editor never supplies them.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
+  - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
+  - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
+  - BAD_USER_INPUT (field: `alt`): over 500 characters.
+  """
+  campaignImageBlockCreate(input: CampaignImageBlockCreateInput!): CampaignImageBlock!
+
+  """
+  Update an image’s address or default-language alt text, and for an Image section its Section Background and colour overrides. Only the given fields change; alt translations are untouched. A new `src` is re-measured by the server; null clears the image and its size.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignImageBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
+  - BAD_USER_INPUT (field: `alt`): over 500 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
+  """
+  campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!): CampaignImageBlock!
+
+  """
+  Update the header’s Section Background, colour overrides or logo. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3481,6 +3658,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
+  - BAD_USER_INPUT (field: `logoBlockId`): not a live CampaignImageBlock of this campaign.
   """
   campaignHeaderBlockUpdate(id: ID!, input: CampaignHeaderBlockUpdateInput!): CampaignHeaderBlock!
 

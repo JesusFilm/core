@@ -2,7 +2,8 @@ import { Prisma, prisma } from '@core/prisma/media/client'
 
 import {
   assertTeamMembership,
-  maybeResolveTeamId
+  maybeResolveTeamId,
+  resolveUploadTeamId
 } from '../../../lib/journeysAccess/journeysAccess'
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
 import { queue as processImageBlurhashQueue } from '../../../workers/processImageBlurhash/queue'
@@ -184,10 +185,24 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: {
         input: t.arg({ type: ImageInput, required: false }),
-        journeyId: t.arg.id({ required: false })
+        journeyId: t.arg.id({ required: false }),
+        teamId: t.arg.id({
+          required: false,
+          description:
+            'The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.'
+        })
       },
-      resolve: async (query, _root, { input, journeyId }, { user }) => {
-        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+      resolve: async (
+        query,
+        _root,
+        { input, journeyId, teamId: requestedTeamId },
+        { user }
+      ) => {
+        const teamId = await resolveUploadTeamId({
+          journeyId,
+          teamId: requestedTeamId,
+          userId: user.id
+        })
 
         const { id, uploadURL } = await createImageByDirectUpload()
 
@@ -213,13 +228,24 @@ builder.mutationFields((t) => ({
       args: {
         url: t.arg.string({ required: true }),
         input: t.arg({ type: ImageInput, required: false }),
-        journeyId: t.arg.id({ required: false })
+        journeyId: t.arg.id({ required: false }),
+        teamId: t.arg.id({
+          required: false,
+          description:
+            'The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.'
+        })
       },
-      resolve: async (query, _root, { url, input, journeyId }, context) => {
+      resolve: async (
+        query,
+        _root,
+        { url, input, journeyId, teamId: requestedTeamId },
+        context
+      ) => {
         const user = context.type === 'authenticated' ? context.user : undefined
 
-        const teamId = await maybeResolveTeamId({
+        const teamId = await resolveUploadTeamId({
           journeyId,
+          teamId: requestedTeamId,
           userId: user?.id
         })
 
