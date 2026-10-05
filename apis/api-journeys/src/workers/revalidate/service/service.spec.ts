@@ -101,6 +101,20 @@ describe('RevalidateService', () => {
         'Failed to revalidate /home/campaign/a: Error: Network error'
       )
     })
+
+    it('logs a rejected revalidation with its status', async () => {
+      const job = {
+        data: { paths: ['/home/campaign/a'] }
+      } as Job
+
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 401 } as any)
+
+      await revalidatePaths(job, mockLogger as unknown as Logger)
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to revalidate /home/campaign/a: HTTP 401'
+      )
+    })
   })
 
   describe('revalidate', () => {
