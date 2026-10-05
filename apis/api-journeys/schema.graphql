@@ -1041,6 +1041,11 @@ type CampaignRegionLanguagePublic {
   journeyStatus: JourneyStatus
 
   """
+  Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.
+  """
+  title: String
+
+  """
   The Share Link: the short link the Campaign QR Code encodes, `https://<short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
   """
   shortLinkUrl: String
@@ -3351,6 +3356,19 @@ type Mutation {
   - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
   """
   campaignRegionLanguageUpdate(id: ID!, input: CampaignRegionLanguageUpdateInput!): CampaignRegionLanguage!
+
+  """
+  "Refresh from journey": re-read the linked journey’s title and description from the public journey and replace the Share Language’s snapshot with them. The snapshot is the journey’s own language, so only those two values change; nothing else on the row is touched. Never automatic — the editor runs it on request, as a Command whose undo writes the previous snapshot back through `campaignRegionLanguageUpdate`.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `journeyId`): no journey is linked.
+  - BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.
+  """
+  campaignRegionLanguageSnapshotRefresh(id: ID!): CampaignRegionLanguage!
 
   """
   Remove a Share Language from a Campaign Region. Its Campaign QR Code and short link are deleted with it, as `qrCodeDelete` does; the linked journey is untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.

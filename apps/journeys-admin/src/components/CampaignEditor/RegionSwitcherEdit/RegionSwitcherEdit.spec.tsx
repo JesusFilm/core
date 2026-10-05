@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
@@ -113,6 +119,34 @@ describe('RegionSwitcherEdit', () => {
     // Africa is unlisted; and the region being rendered never shows itself.
     expect(
       screen.queryByTestId('RegionCardEdit-afrRegionId')
+    ).not.toBeInTheDocument()
+  })
+
+  it(`carries a "Needs journey" badge while any of the region's languages is unlinked`, async () => {
+    renderSwitcher(
+      {
+        ...campaignWithRegions,
+        regions: campaignWithRegions.regions.map((region) =>
+          region.id === 'afrRegionId'
+            ? {
+                ...region,
+                listed: true,
+                languages: [{ ...region.languages[0], journeyId: 'journeyId' }]
+              }
+            : region
+        )
+      },
+      { pageKind: CampaignPageKind.landing }
+    )
+
+    // Europe's French is unlinked; Africa's one language is linked.
+    const europe = await screen.findByTestId('RegionCardEdit-eurRegionId')
+    expect(within(europe).getByTestId('RegionNeedsJourney')).toHaveTextContent(
+      'Needs journey'
+    )
+    const africa = screen.getByTestId('RegionCardEdit-afrRegionId')
+    expect(
+      within(africa).queryByTestId('RegionNeedsJourney')
     ).not.toBeInTheDocument()
   })
 

@@ -27,6 +27,11 @@ export interface CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate_journ
   id: string;
   slug: string;
   status: JourneyStatus;
+  /**
+   * private title for creators
+   */
+  title: string;
+  description: string | null;
 }
 
 export interface CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate_qrCode_shortLink_domain {

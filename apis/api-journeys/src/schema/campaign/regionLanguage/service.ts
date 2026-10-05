@@ -115,16 +115,20 @@ export async function resolveJourneyLink(
   return journey
 }
 
-/** A journey addressed by id must likewise be live-published. */
+/**
+ * A journey addressed by id must likewise be live-published; `field` names
+ * the input the failure is reported on (`journeyId` for a link by id, `url`
+ * for a snapshot refresh, which re-reads the journey the paste linked).
+ */
 export async function resolveJourneyId(
-  journeyId: string
+  journeyId: string,
+  field: 'journeyId' | 'url' = 'journeyId'
 ): Promise<JourneyWithPublicUrl> {
   const journey = await prisma.journey.findFirst({
     where: { id: journeyId, status: 'published', deletedAt: null },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
-  if (journey == null)
-    throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, 'journeyId')
+  if (journey == null) throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, field)
   return journey
 }
 

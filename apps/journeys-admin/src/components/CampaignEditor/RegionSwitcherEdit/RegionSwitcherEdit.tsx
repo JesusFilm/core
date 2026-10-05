@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -17,6 +18,7 @@ import {
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import {
   regionLines,
+  regionNeedsJourney,
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
@@ -41,9 +43,10 @@ interface RegionCardEditProps {
 }
 
 /**
- * One region card on the canvas: the name, its Region Lines as inline text
- * and its country chips. Clicking the card selects the region; clicking a
- * line selects that line, which then edits in place as any typography.
+ * One region card on the canvas: the name (with a "Needs journey" badge
+ * while any of its Share Languages is unlinked), its Region Lines as inline
+ * text and its country chips. Clicking the card selects the region; clicking
+ * a line selects that line, which then edits in place as any typography.
  */
 function RegionCardEdit({
   region,
@@ -78,14 +81,28 @@ function RegionCardEdit({
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
-      <Typography
-        variant="h5"
-        component="span"
-        data-testid="RegionCardName"
-        sx={{ color: 'var(--campaign-band-heading)' }}
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ alignItems: 'center', flexWrap: 'wrap' }}
       >
-        {region.name}
-      </Typography>
+        <Typography
+          variant="h5"
+          component="span"
+          data-testid="RegionCardName"
+          sx={{ color: 'var(--campaign-band-heading)' }}
+        >
+          {region.name}
+        </Typography>
+        {regionNeedsJourney(region) && (
+          <Chip
+            size="small"
+            color="warning"
+            label={t('Needs journey')}
+            data-testid="RegionNeedsJourney"
+          />
+        )}
+      </Stack>
       {lines.map((line) =>
         line.__typename === 'CampaignTypographyBlock' ? (
           <Box

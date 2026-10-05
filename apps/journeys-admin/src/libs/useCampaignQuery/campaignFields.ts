@@ -30,6 +30,8 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
       id
       slug
       status
+      title
+      description
     }
     qrCode {
       id

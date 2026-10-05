@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -31,7 +32,7 @@ import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { Item } from '../../Editor/Toolbar/Items/Item/Item'
 import { LabelChip } from '../../LabelChip'
 import { campaignPermanentAddress } from '../campaignAddress'
-import { sortedRegions } from '../CampaignEditorProvider'
+import { regionNeedsJourney, sortedRegions } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 
 import { UnpublishDialog } from './UnpublishDialog'
@@ -199,6 +200,15 @@ export function TopBar({
           {regions.map((region) => (
             <MenuItem key={region.id} value={`region:${region.id}`}>
               {regionPageLabel(t, region)}
+              {regionNeedsJourney(region) && (
+                <Chip
+                  size="small"
+                  color="warning"
+                  label={t('Needs journey')}
+                  data-testid="RegionNeedsJourney"
+                  sx={{ ml: 1 }}
+                />
+              )}
             </MenuItem>
           ))}
         </Select>

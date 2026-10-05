@@ -126,7 +126,9 @@ export const eurEnglish: CampaignRegionLanguage = {
     __typename: 'Journey',
     id: 'eurJourneyId',
     slug: 'christmas-europe',
-    status: JourneyStatus.published
+    status: JourneyStatus.published,
+    title: 'Christmas in Europe',
+    description: 'A journey for Europe.'
   },
   qrCode: {
     __typename: 'QrCode',

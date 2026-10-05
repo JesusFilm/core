@@ -138,6 +138,13 @@ export function sortedRegions(regions: CampaignRegion[]): CampaignRegion[] {
 }
 
 /** A region's Region Lines in line order. */
+/** A region needs a journey while any of its Share Languages is unlinked: its switcher card and page-selector entry carry the badge. */
+export function regionNeedsJourney(
+  region: Pick<CampaignRegion, 'languages'>
+): boolean {
+  return region.languages.some((language) => language.journeyId == null)
+}
+
 export function regionLines(
   blocks: CampaignBlock[],
   regionId: string

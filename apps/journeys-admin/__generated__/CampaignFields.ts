@@ -574,6 +574,11 @@ export interface CampaignFields_regions_languages_journey {
   id: string;
   slug: string;
   status: JourneyStatus;
+  /**
+   * private title for creators
+   */
+  title: string;
+  description: string | null;
 }
 
 export interface CampaignFields_regions_languages_qrCode_shortLink_domain {
