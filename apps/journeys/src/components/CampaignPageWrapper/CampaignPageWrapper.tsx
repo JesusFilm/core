@@ -1,16 +1,15 @@
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import Head from 'next/head'
-import { NextSeo } from 'next-seo'
 import PlausibleProvider from 'next-plausible'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import {
   CampaignPage,
+  CampaignSeo,
   campaignBasePath,
   campaignFontsHref,
-  createCampaignTheme,
-  hasText
+  createCampaignTheme
 } from '@core/journeys/ui/Campaign'
 import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
@@ -26,23 +25,10 @@ interface CampaignPageWrapperProps {
   children?: ReactNode
 }
 
-function heroDescription(
-  campaign: CampaignPublic,
-  pageKind: CampaignPageKind
-): string | undefined {
-  const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
-  const hero = page?.blocks.find(
-    (block) => block.__typename === 'CampaignHeroBlock'
-  )
-  if (hero == null || hero.__typename !== 'CampaignHeroBlock') return undefined
-  if (hasText(hero.lede)) return hero.lede
-  if (hasText(hero.title)) return hero.title
-  return undefined
-}
-
 /**
  * Everything a public campaign page shares: the campaign theme, the Google
- * Fonts link, SEO tags, and Plausible page views on the campaign team's
+ * Fonts link, SEO and social tags (`CampaignSeo`, canonical to the
+ * root-domain path until a Campaign Root is attached), and Plausible page views on the campaign team's
  * existing site through the same `/plausible` proxy journeys use (page path
  * as rendered; automatic page views, so nothing is reported from the admin
  * canvas, which uses its own components).
@@ -59,10 +45,6 @@ export function CampaignPageWrapper({
     [campaign.theme, rtl]
   )
   const basePath = campaignBasePath(campaign.slug)
-  const canonicalPath =
-    region == null ? basePath : `${basePath}/${region.slug}`
-  const title =
-    region == null ? campaign.title : `${region.name} · ${campaign.title}`
 
   return (
     <PlausibleProvider
@@ -75,18 +57,12 @@ export function CampaignPageWrapper({
       <Head>
         <link rel="stylesheet" href={campaignFontsHref(campaign.theme)} />
       </Head>
-      <NextSeo
-        title={title}
-        description={heroDescription(campaign, pageKind)}
-        canonical={`https://${ROOT_DOMAIN}${canonicalPath}`}
-        openGraph={{
-          type: 'website',
-          title,
-          description: heroDescription(campaign, pageKind),
-          url: `https://${ROOT_DOMAIN}${canonicalPath}`,
-          site_name: campaign.title
-        }}
-        twitter={{ site: '@YourNextStepIs', cardType: 'summary_large_image' }}
+      <CampaignSeo
+        campaign={campaign}
+        pageKind={pageKind}
+        region={region}
+        origin={`https://${ROOT_DOMAIN}`}
+        basePath={basePath}
       />
       <ThemeProvider theme={theme}>
         <CssBaseline />

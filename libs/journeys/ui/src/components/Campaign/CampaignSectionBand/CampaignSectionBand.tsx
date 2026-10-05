@@ -12,7 +12,9 @@ import { CampaignRenderer } from '../CampaignRenderer'
 import { bandCssVariables, resolveBand } from '../libs/resolveBand'
 import type { CampaignSectionTree, CampaignTree } from '../types'
 
+import { CampaignBandCover } from './CampaignBandCover'
 import { CampaignSectionContext } from './CampaignSectionContext'
+import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
 
 interface CampaignSectionBandProps {
   block: CampaignSectionTree
@@ -31,10 +33,12 @@ function isAbove(child: CampaignTree): boolean {
 }
 
 /**
- * The one wrapper every section and chrome block renders through: paints the
- * band from the §4 table as CSS variables, anchors the band by block id, and
- * orders the Extras placed above, then the typed body, then the Extras placed
- * below, each group by parentOrder.
+ * The one wrapper every section renders through: paints the band from the
+ * §4 table as CSS variables (with the `image` cover and overlay behind),
+ * anchors the band by block id under the sticky header, and orders the
+ * Extras placed above, then the typed body, then the Extras placed below,
+ * each group by parentOrder. The chrome paints the same band through
+ * `CampaignHeader` and `CampaignFooter`.
  */
 export function CampaignSectionBand({
   block,
@@ -57,14 +61,16 @@ export function CampaignSectionBand({
         data-testid={`CampaignSectionBand-${block.id}`}
         style={bandCssVariables(band)}
         sx={{
+          position: 'relative',
           backgroundColor: 'var(--campaign-band-background)',
           color: 'var(--campaign-band-text)',
           textAlign: align ?? undefined,
-          scrollMarginTop: 'var(--campaign-header-height, 64px)',
+          scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
           py: { xs: 6, md: 10 }
         }}
       >
-        <Container maxWidth="lg">
+        <CampaignBandCover block={block} />
+        <Container maxWidth="lg" sx={{ position: 'relative' }}>
           <Stack spacing={3}>
             {above.map((child) => (
               <CampaignRenderer key={child.id} block={child} />

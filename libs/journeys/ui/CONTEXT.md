@@ -30,7 +30,7 @@ A block that can carry an Action (button, radio option, sign-up, video). Only Ac
 ### Campaign rendering (viewer-side)
 
 **Campaign Renderer**:
-The campaign counterpart of the Block Renderer, under `components/Campaign`: one switch over `__typename` to one component per campaign typename, with no Wrappers — the editor canvas paints with its own components and shares only the pure helpers (`createCampaignTheme`, `resolveBand`, `transformCampaignBlocks`, `campaignFontsHref`). Header and footer are Campaign Chrome rendered by the page's slots, not sections.
+The campaign counterpart of the Block Renderer, under `components/Campaign`: one switch over `__typename` to one component per campaign typename, with no Wrappers — the editor canvas paints with its own components and shares only the pure helpers (`createCampaignTheme`, `resolveBand`, `transformCampaignBlocks`, `campaignFontsHref`). Header and footer are Campaign Chrome, not sections: `CampaignPage` trees them from the payload's `chrome` list and renders them through `CampaignHeader` (a sticky AppBar with the fixed Brand Mark, back chip and language select around the authored nav buttons) and `CampaignFooter`, both painted from the same band table; `CampaignSeo` builds the page's `NextSeo` props.
 _Avoid_: block renderer (the journey one), wrapper (there are none here)
 
 **Campaign Page**:

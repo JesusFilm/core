@@ -28,6 +28,30 @@ export function campaignBasePath(slug: string): string {
   return `/campaign/${slug}`
 }
 
+/**
+ * A campaign page path in the current Page Language: the `lang` param
+ * carried forward whenever the visitor has a choice (two or more campaign
+ * languages), so every in-campaign link keeps the language sticky.
+ */
+export function campaignPageHref(
+  path: string,
+  campaign: Pick<CampaignPublic, 'language' | 'languages'>
+): string {
+  const bcp47 = campaign.language.bcp47
+  if (campaign.languages.length < 2 || bcp47 == null) return path
+  return `${path}?lang=${encodeURIComponent(bcp47)}`
+}
+
+/** The landing page in the current Page Language (`/` on a Campaign Root). */
+export function campaignLandingHref(
+  context: Pick<CampaignContextValue, 'campaign' | 'basePath'>
+): string {
+  return campaignPageHref(
+    context.basePath === '' ? '/' : context.basePath,
+    context.campaign
+  )
+}
+
 export function CampaignProvider({
   value,
   children

@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -36,13 +36,7 @@ function renderPage(
 ) {
   return render(
     <ThemeProvider theme={theme}>
-      <CampaignPage
-        campaign={campaign}
-        pageKind={pageKind}
-        region={region}
-        headerSlot={<header data-testid="HeaderSlot" />}
-        footerSlot={<footer data-testid="FooterSlot" />}
-      />
+      <CampaignPage campaign={campaign} pageKind={pageKind} region={region} />
     </ThemeProvider>
   )
 }
@@ -64,10 +58,10 @@ function styleText(): string {
 }
 
 describe('CampaignPage', () => {
-  it('renders the landing page: the seeded sections in order between the chrome slots', () => {
+  it('renders the landing page: the seeded sections in order between the chrome', () => {
     renderPage(campaignPublic)
-    expect(screen.getByTestId('HeaderSlot')).toBeInTheDocument()
-    expect(screen.getByTestId('FooterSlot')).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignHeader')).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignFooter')).toBeInTheDocument()
     expect(bandIds()).toEqual([
       'heroId',
       'landingSwitcherId',
@@ -93,6 +87,57 @@ describe('CampaignPage', () => {
     expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
   })
 
+  describe('chrome', () => {
+    function chromeRows(): { nav: string[]; lines: string[]; links: string[] } {
+      const nav = within(screen.getByTestId('CampaignHeaderNav'))
+        .getAllByTestId('CampaignButton')
+        .map((button) => button.textContent ?? '')
+      const lines = within(screen.getByTestId('CampaignFooterLines'))
+        .getAllByTestId('CampaignTypography')
+        .map((line) => line.textContent ?? '')
+      const links = within(screen.getByTestId('CampaignFooterLinks'))
+        .getAllByRole('link')
+        .map((link) => link.textContent ?? '')
+      return { nav, lines, links }
+    }
+
+    it('renders the header and footer rows the same way on landing and region pages; only the back-chip slot differs', () => {
+      const { unmount } = renderPage(campaignPublic)
+      const landing = chromeRows()
+      expect(landing).toEqual({
+        nav: ['Home', 'Resources'],
+        lines: ['© 2026 Jesus Film Project'],
+        links: ['Terms of Use', 'Your Privacy']
+      })
+      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent('Christmas 2026')
+      expect(screen.queryByTestId('CampaignAllRegionsChip')).not.toBeInTheDocument()
+      unmount()
+
+      renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
+      expect(chromeRows()).toEqual(landing)
+      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent('Christmas 2026')
+      expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
+        'href',
+        '/campaign/christmas-2026?lang=en'
+      )
+    })
+
+    it('always renders the header and footer, even from an empty chrome list', () => {
+      renderPage({ ...campaignPublic, chrome: [] })
+      expect(screen.getByTestId('CampaignHeader')).toBeInTheDocument()
+      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent('Christmas 2026')
+      expect(screen.queryByTestId('CampaignHeaderNav')).not.toBeInTheDocument()
+      expect(screen.getByTestId('CampaignFooter')).toHaveAttribute('data-empty', 'true')
+    })
+
+    it('orders the header before the sections and the footer after them', () => {
+      renderPage(campaignPublic)
+      const page = screen.getByTestId('CampaignPage')
+      const order = Array.from(page.children).map((child) => child.tagName)
+      expect(order).toEqual(['HEADER', 'MAIN', 'FOOTER'])
+    })
+  })
+
   describe('empty-state matrix', () => {
     it('an empty text field renders nothing and editor hints never render', () => {
       renderPage(
@@ -103,9 +148,10 @@ describe('CampaignPage', () => {
           pick('journeyListNoteId', { content: '' })
         ])
       )
-      expect(screen.queryByTestId('CampaignEyebrow')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('CampaignLede')).not.toBeInTheDocument()
-      expect(screen.queryByTestId('CampaignTypography')).not.toBeInTheDocument()
+      const main = within(screen.getByRole('main'))
+      expect(main.queryByTestId('CampaignEyebrow')).not.toBeInTheDocument()
+      expect(main.queryByTestId('CampaignLede')).not.toBeInTheDocument()
+      expect(main.queryByTestId('CampaignTypography')).not.toBeInTheDocument()
       expect(screen.queryByText(/your text/i)).not.toBeInTheDocument()
       expect(screen.queryByText(/add your first region/i)).not.toBeInTheDocument()
     })
