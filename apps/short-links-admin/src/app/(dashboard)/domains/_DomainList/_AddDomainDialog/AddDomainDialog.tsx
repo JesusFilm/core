@@ -70,7 +70,9 @@ interface AddDomainDialogProps {
 
 /**
  * superAdmin only. Adds the domain record in core; the hostname is not
- * registered anywhere yet. Its Cloudflare setup is done on the domain page.
+ * registered anywhere yet. Its namespace, Worker binding and route are set up
+ * by hand (workers/short-links-redirect/README.md, "Setting up a domain") and
+ * the namespace id and binding are then entered on the domain page.
  */
 export function AddDomainDialog({
   open,
@@ -149,8 +151,9 @@ export function AddDomainDialog({
         <DialogHeader>
           <DialogTitle>Add domain</DialogTitle>
           <DialogDescription>
-            Adds the domain to core. Nothing changes in Cloudflare until you set
-            up its KV and attach it on the domain page.
+            Adds the domain to core. Nothing changes in Cloudflare: create its
+            KV namespace and route by hand, then enter the namespace id and
+            Worker binding on the domain page.
           </DialogDescription>
         </DialogHeader>
         <DialogPanel className="flex flex-col gap-4">

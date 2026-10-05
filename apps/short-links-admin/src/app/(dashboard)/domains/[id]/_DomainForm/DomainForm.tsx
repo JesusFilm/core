@@ -32,7 +32,6 @@ import {
 } from '../../../../../libs/shortLink'
 import { notify, notifyError } from '../../../../../libs/toast'
 import { useShortLinkAccess } from '../../../../../libs/useShortLinkAccess'
-import { DomainInfrastructure } from '../_DomainInfrastructure'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -482,8 +481,6 @@ export function DomainForm(): ReactElement {
         </CardPanel>
       </Card>
 
-      {isSuperAdmin && <DomainInfrastructure domainId={domain.id} />}
-
       <Formik
         initialValues={initialValues}
         validationSchema={schema}
@@ -631,7 +628,7 @@ export function DomainForm(): ReactElement {
                       value={values.kvNamespaceId}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText="Filled in by Set up KV. Edit by hand only for local dev, where it is the Worker binding name."
+                      helperText="The id printed by `wrangler kv namespace create`. Locally it is the Worker binding name. Leave empty until the namespace exists; the domain's links are not published until then."
                     />
                     <TextField
                       id="kvBinding"
@@ -640,7 +637,7 @@ export function DomainForm(): ReactElement {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       error={fieldError('kvBinding')}
-                      helperText="Filled in by Set up KV, e.g. KV_JESUS_FILM. Edit by hand only for local dev."
+                      helperText="The [[kv_namespaces]] binding declared in the Worker's wrangler.toml, e.g. KV_JESUS_FILM."
                     />
                   </div>
                 </Section>
@@ -668,7 +665,7 @@ export function DomainForm(): ReactElement {
       <ConfirmDialog
         open={removeOpen}
         title={`Remove ${domain.hostname}?`}
-        description="Removes the domain from core. Its links must be deleted and its KV setup removed first. Nothing is deleted in Cloudflare."
+        description="Removes the domain from core and its record from the edge. Its links must be deleted first, and its route and namespace in Cloudflare are removed by hand (see the Worker README)."
         confirmLabel="Remove domain"
         confirmColor="error"
         loading={removing}

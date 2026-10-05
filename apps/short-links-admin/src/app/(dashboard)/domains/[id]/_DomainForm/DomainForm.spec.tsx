@@ -17,12 +17,6 @@ import {
 
 vi.mock('next/navigation')
 vi.mock('../../../../../libs/toast')
-// the card runs its own live query; it has its own spec
-vi.mock('../_DomainInfrastructure', () => ({
-  DomainInfrastructure: ({ domainId }: { domainId: string }) => (
-    <div data-testid="DomainInfrastructure">{domainId}</div>
-  )
-}))
 
 const push = vi.fn()
 vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
@@ -265,7 +259,7 @@ describe('DomainForm', () => {
   })
 
   describe('for an admin who is not a superAdmin', () => {
-    it('hides the infrastructure fields and leaves them out of the save', async () => {
+    it('hides the edge wiring fields and leaves them out of the save', async () => {
       const update = {
         request: {
           query: SHORT_LINK_DOMAIN_UPDATE,
@@ -314,21 +308,10 @@ describe('DomainForm', () => {
       expect(
         screen.queryByRole('button', { name: 'Remove domain' })
       ).not.toBeInTheDocument()
-      expect(
-        screen.queryByTestId('DomainInfrastructure')
-      ).not.toBeInTheDocument()
     })
   })
 
   describe('for a superAdmin', () => {
-    it('shows the Cloudflare infrastructure card', async () => {
-      renderForm([domainMock])
-
-      expect(
-        await screen.findByTestId('DomainInfrastructure')
-      ).toHaveTextContent('domain-1')
-    })
-
     it('removes the domain once its hostname has been typed', async () => {
       const remove = {
         request: {

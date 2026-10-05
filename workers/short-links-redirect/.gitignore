@@ -1,4 +1,2 @@
 .wrangler
 node_modules
-# written by scripts/deploy.ts on every deploy
-wrangler.deploy.toml

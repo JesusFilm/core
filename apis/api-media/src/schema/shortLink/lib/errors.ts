@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { ZodError } from 'zod'
 
 /**
@@ -29,14 +28,4 @@ export const REDIRECT_STATUS_MESSAGE = 'must be one of 301, 302, 307, 308'
 
 export function isRedirectStatus(value: number): boolean {
   return REDIRECT_STATUSES.includes(value)
-}
-
-/**
- * The request is well formed but the domain is not in a state that allows it
- * (remove the KV setup before deleting, set KV up before attaching, ...).
- */
-export function failedPrecondition(message: string): GraphQLError {
-  return new GraphQLError(message, {
-    extensions: { code: 'FAILED_PRECONDITION' }
-  })
 }

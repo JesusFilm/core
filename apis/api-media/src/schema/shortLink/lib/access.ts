@@ -51,9 +51,9 @@ export function assertShortLinkAdmin(context: Context, message: string): void {
 }
 
 /**
- * superAdmin (the flag on the user in the users database) owns a domain's
- * Cloudflare infrastructure: its KV namespace and Worker binding, what is
- * attached to the Worker, and which domains exist.
+ * superAdmin (the flag on the user in the users database) owns which domains
+ * exist and how a domain is wired to the edge: its path prefix, KV namespace
+ * and Worker binding.
  */
 export async function assertSuperAdmin(
   context: Context,

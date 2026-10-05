@@ -128,13 +128,12 @@ looks like a KV namespace.
 
 **One binding per domain.** A Worker only reaches a namespace through a
 binding, so every domain has one, named `KV_<HOSTNAME>` (`jesus.film` →
-`KV_JESUS_FILM`). On stage and prod these are **not** in `wrangler.toml`: a
-superAdmin sets a domain up from the admin app, and api-media creates the
-namespace and adds the binding to the live Worker through the Cloudflare API
-(see [Domains are set up from the admin](#domains-are-set-up-from-the-admin)).
-The dev (top-level) section still declares `KV_JESUS_FILM`, `KV_NXSTP_IS`,
-`KV_ARC_GT` and `KV_STG_ARC_GT` for tests and `wrangler dev`; those are typed
-on `Env`, and any other name works through the index signature.
+`KV_JESUS_FILM`, `stage.jesus.film` → `KV_STAGE_JESUS_FILM`), declared under
+the environment that serves it in `wrangler.toml`. Adding one is a manual
+step: see [Setting up a domain](#setting-up-a-domain). The dev (top-level)
+section declares `KV_JESUS_FILM`, `KV_NXSTP_IS`, `KV_ARC_GT` and
+`KV_STG_ARC_GT` for tests and `wrangler dev`; those are typed on `Env`, and any
+other name works through the index signature.
 
 Write-back of an api-media hit goes to the domain namespace (as `<slug>`) when
 the returned link belongs to this domain and the binding exists, else to the
@@ -170,7 +169,6 @@ is ever stored.
 | `src/userAgent.ts`    | `classifyUserAgent(ua)` → `{ deviceClass, os, browser }`                                                                   |
 | `src/queue.ts`        | `handleQueueBatch(batch, env)`: row mapping and the ClickHouse insert                                                      |
 | `src/lostPage.ts`     | The inline 404 HTML                                                                                                        |
-| `scripts/deploy.ts`   | The `deploy` target: carries the live `KV_*` bindings over, then runs `wrangler deploy`                                    |
 | `clickhouse/…`        | The ClickHouse database and table                                                                                          |
 | `test/`               | `fetchMock` (outbound fetch stubbing), fixtures and request helpers                                                        |
 
@@ -200,32 +198,80 @@ The dev (top-level) KV ids are local-only names (`short-links-dev-jesus-film`,
 binding needs a distinct one or the tests would see every domain namespace as
 the same store.
 
-### Domains are set up from the admin
+### Setting up a domain
 
-Per-domain KV bindings and the route (or custom domain) that sends a hostname
-to this Worker are managed by api-media through the Cloudflare API, on behalf
-of a superAdmin in `apps/short-links-admin`. Neither is in `wrangler.toml` for
-stage or prod.
+Cloudflare resources are created and wired by hand, with wrangler and
+`wrangler.toml`; api-media never calls Cloudflare's control plane. Who does
+what:
 
-| What                      | Owned by        | Notes                                                                               |
-| ------------------------- | --------------- | ----------------------------------------------------------------------------------- |
-| `KV_*` bindings           | api-media       | One per domain; added and removed on the live Worker, carried over by every deploy  |
-| Every other binding       | `wrangler.toml` | `SHORT_LINKS_KV`, the queue, vars and secrets                                       |
-| Routes and custom domains | api-media       | `jesus.film/s/*` style route for a prefixed domain, custom domain for a root domain |
+| Step                                              | Where                          | Who                           |
+| ------------------------------------------------- | ------------------------------ | ----------------------------- |
+| Create the domain's KV namespace                  | `wrangler kv namespace create` | whoever has Cloudflare access |
+| Declare its binding and its route                 | `wrangler.toml`, then deploy   | a PR                          |
+| Add the domain and enter the namespace id/binding | the admin app                  | a superAdmin                  |
 
-Two rules follow, and breaking either takes domains down:
+Per environment, once (the ids go into `wrangler.toml`, commands at the top
+of that file): the global namespace, the two queues, the ClickHouse database
+and the `CLICKHOUSE_*` secrets.
 
-- **Never add `routes` to `wrangler.toml`.** With none, a deploy leaves existing
-  routes and custom domains alone. With any, wrangler replaces the whole set
-  and deletes the rest.
-- **Never deploy stage or prod with a bare `wrangler deploy`.** It uploads only
-  the bindings in `wrangler.toml` and unbinds every domain. Use the `deploy`
-  target (below).
+Per domain, with `stage.jesus.film` on stage as the example:
+
+```bash
+cd workers/short-links-redirect
+export CLOUDFLARE_ACCOUNT_ID=<Jesus Film Project account id>   # the login can see more than one account
+
+# 1. the namespace; note the id it prints
+pnpm exec wrangler kv namespace create short-links-stage-stage-jesus-film
+```
+
+```toml
+# 2. wrangler.toml: bind it under the environment that serves the hostname
+[[env.stage.kv_namespaces]]
+binding = "KV_STAGE_JESUS_FILM"
+id = "<id from step 1>"
+
+# 3. wrangler.toml: route the hostname to the Worker. A path-prefixed domain is
+# a zone route; a root domain (nxstp.is) is a custom domain. The hostname needs
+# a proxied DNS record in a zone of this account; wrangler creates neither.
+[env.stage]
+routes = [{ pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" }]
+```
+
+```bash
+# 4. deploy (CI does this on a push to stage / main)
+pnpm exec wrangler deploy --env=stage
+```
+
+5. In the admin app, as a superAdmin: Domains → **Add domain** (hostname,
+   path prefix `s`), then on the domain page set **KV namespace id** to the id
+   from step 1 and **Worker binding** to `KV_STAGE_JESUS_FILM`, and save.
+   Saving publishes the domain record and every link into the namespace.
+
+Until step 5 the Worker serves the domain through the api-media fallback and
+logs `publish_gap` on every slug; after it, from KV.
+
+Taking a domain down is the reverse: remove the route from `wrangler.toml` and
+deploy (traffic stops reaching the Worker), clear the two fields in the admin
+(the links stop being published), remove the binding and deploy, delete the
+namespace, then remove the domain in the admin:
+
+```bash
+pnpm exec wrangler kv namespace delete --namespace-id <id>
+```
+
+Two rules:
+
+- **Every route lives in `wrangler.toml`.** A deploy replaces the Worker's
+  route set with what the config says, so a route added in the dashboard is
+  deleted by the next deploy.
+- **A binding missing from the config is removed by the next deploy.** The
+  domain then logs `missing_binding` once per isolate and is served through the
+  global namespace and api-media until the binding is declared again.
 
 The first rollout is `jesus.film/s` and `jesus.movie/s`, proven first on
-`stage.jesus.film/s` and `stage.jesus.movie/s` against the stage Worker.
-api-media's `CLOUDFLARE_SHORT_LINKS_ALLOWED_HOSTNAMES` limits each environment
-to its own hostnames.
+`stage.jesus.film/s` and `stage.jesus.movie/s` against the stage Worker. Their
+stage namespaces exist and are bound; their routes are commented out in
+`wrangler.toml` until the hostnames have DNS records.
 
 ## Local development
 
@@ -331,57 +377,36 @@ pnpm exec wrangler deploy --dry-run --outdir /tmp/slr-dry \
 `.github/workflows/worker-deploy.yml` discovers every affected project with a
 `deploy` target (`tools/scripts/deploy-apps.ts`) on pushes to `stage` and
 `main` and runs `nx run-many --target=deploy --projects=short-links-redirect`
-(`--prod` on `main`) with `CLOUDFLARE_API_TOKEN` from repository secrets.
-
-The target runs `tsx scripts/deploy.ts --env=stage|prod`, not `wrangler deploy`
-directly:
-
-1. It reads the bindings of the live Worker from the Cloudflare API.
-2. It writes `wrangler.deploy.toml` (gitignored): `wrangler.toml` without the
-   dev-only top-level namespaces, plus every live `KV_*` binding the config does
-   not declare.
-3. It runs `wrangler deploy --env=<env> --config wrangler.deploy.toml`.
-
-It **fails closed**: if the live bindings cannot be read for any reason other
-than "this Worker has never been deployed", nothing is deployed. The account is
-resolved the way wrangler does (`account_id` in the config, then
-`CLOUDFLARE_ACCOUNT_ID`, then the token's single account).
-
-A binding api-media adds between step 1 and the upload is lost. The domain page
-in the admin then shows the binding as missing and "Set up KV" restores it;
-redirects keep working through the global namespace and api-media meanwhile.
+(`--prod` on `main`), i.e. `wrangler deploy --env=stage` / `--env=prod` from this
+directory with `CLOUDFLARE_API_TOKEN` from repository secrets.
 
 Environment names: `short-links-redirect-dev` / `-stage` / `-prod`. Stage and
-prod have `logpush = true` and observability logs enabled.
+prod have `logpush = true` and observability logs enabled. wrangler warns on
+every stage and prod deploy that the dev-only bindings (`KV_NXSTP_IS`, ...)
+are not declared for that environment; that is expected until those domains
+are cut over.
 
 ## Cutover per domain
 
-Summarised from TECH-DESIGN.md ("superAdmin-managed Cloudflare infrastructure").
+[Setting up a domain](#setting-up-a-domain) is the per-domain procedure; this
+is the order across environments.
 
-Once per environment:
-
-1. Create the global KV namespace, the queue and its dead-letter queue, and the
-   ClickHouse database/table (`clickhouse/0001_init.sql`).
-2. Fill the namespace id into `wrangler.toml`, set `CLICKHOUSE_USER` /
-   `CLICKHOUSE_PASSWORD` with `wrangler secret put`, deploy.
-3. Set api-media's `CLOUDFLARE_SHORT_LINKS_*` variables, including the Worker
-   name, the infrastructure token and the allowed hostnames.
-
-Per domain, by a superAdmin in the admin app (stage hostname first):
-
-4. Add the domain (or open the existing one), with path prefix `s`.
-5. **Set up KV**: creates the namespace, publishes every live link into it and
-   binds it to this Worker.
-6. **Attach to Worker**: creates the route `<hostname>/s/*`. The hostname's zone
-   must already be in the Cloudflare account and the hostname must already have
-   a proxied DNS record; DNS is never edited from the admin.
-7. Watch the `publish_gap` logs; zero is the goal.
-
-To take a domain down: Detach from Worker, then Remove KV, then Remove domain.
+1. Once per environment: the global KV namespace, the queue and its
+   dead-letter queue, the ClickHouse database/table (`clickhouse/0001_init.sql`),
+   `CLICKHOUSE_USER` / `CLICKHOUSE_PASSWORD` with `wrangler secret put`; fill
+   the namespace id into `wrangler.toml`; deploy.
+2. Set api-media's `CLOUDFLARE_SHORT_LINKS_*` variables (Doppler).
+3. Stage first: set `stage.jesus.film` and `stage.jesus.movie` up and prove the
+   redirects, link edits and the `publish_gap` log there.
+4. Prod: the same for `jesus.film` and `jesus.movie`.
+5. Watch the `publish_gap` logs; zero is the goal.
 
 nxstp.is and arc.gt are not part of the first rollout. As root domains they
-would attach as Workers Custom Domains, which Cloudflare refuses while the
-hostname still has DNS records pointing elsewhere.
+become Workers custom domains (`{ pattern = "nxstp.is", custom_domain = true }`),
+which Cloudflare refuses while the hostname still has DNS records pointing at
+the legacy app; for arc.gt the domain is configured with
+`notFound = passthrough`, `passthroughOrigin = https://api.arclight.org`,
+`redirectStatus = 302`, `reservedPaths = [s, hls, dl, dh, v2, api]`.
 
 ## Failure order
 

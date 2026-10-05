@@ -369,21 +369,18 @@ Existing `isPublisher` + `isValidInterop` gates on the short link mutations stay
 
 ### api-media
 
-| Variable                                                      | Purpose                                                                                                |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `CLOUDFLARE_ACCOUNT_ID`                                       | already present                                                                                        |
-| `CLOUDFLARE_SHORT_LINKS_API_TOKEN`                            | API token with Workers KV Storage:Edit                                                                 |
-| `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`                      | KV namespace id; unset → publishing is a no-op                                                         |
-| `CLOUDFLARE_SHORT_LINKS_API_BASE_URL`                         | local dev only: the Worker's local edge API; unset → api.cloudflare.com                                |
-| `CLOUDFLARE_SHORT_LINKS_WORKER_NAME`                          | the deployed redirect Worker, e.g. `short-links-redirect-stage`; unset → infrastructure management off |
-| `CLOUDFLARE_SHORT_LINKS_INFRA_API_TOKEN`                      | API token with Workers Scripts:Edit, Workers KV Storage:Edit, Workers Routes:Edit, Zone:Read           |
-| `CLOUDFLARE_SHORT_LINKS_ALLOWED_HOSTNAMES`                    | comma-separated hostnames this environment may set up; empty → none                                    |
-| `PG_DATABASE_URL_USERS`                                       | read-only use: the `superAdmin` flag of the caller                                                     |
-| `SHORT_LINKS_CLICKHOUSE_URL`                                  | e.g. `https://xxx.us-east-2.aws.clickhouse.cloud:8443`; unset → stats return zeros                     |
-| `SHORT_LINKS_CLICKHOUSE_USER`                                 |                                                                                                        |
-| `SHORT_LINKS_CLICKHOUSE_PASSWORD`                             |                                                                                                        |
-| `SHORT_LINKS_CLICKHOUSE_DATABASE`                             | default `redirects`                                                                                    |
-| `SLACK_SHORT_LINKS_BOT_TOKEN`, `SLACK_SHORT_LINKS_CHANNEL_ID` | optional; health-check alerts                                                                          |
+| Variable                                                      | Purpose                                                                            |
+| ------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `CLOUDFLARE_ACCOUNT_ID`                                       | already present                                                                    |
+| `CLOUDFLARE_SHORT_LINKS_API_TOKEN`                            | API token with Workers KV Storage:Edit                                             |
+| `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`                      | KV namespace id; unset → publishing is a no-op                                     |
+| `CLOUDFLARE_SHORT_LINKS_API_BASE_URL`                         | local dev only: the Worker's local edge API; unset → api.cloudflare.com            |
+| `PG_DATABASE_URL_USERS`                                       | read-only use: the `superAdmin` flag of the caller                                 |
+| `SHORT_LINKS_CLICKHOUSE_URL`                                  | e.g. `https://xxx.us-east-2.aws.clickhouse.cloud:8443`; unset → stats return zeros |
+| `SHORT_LINKS_CLICKHOUSE_USER`                                 |                                                                                    |
+| `SHORT_LINKS_CLICKHOUSE_PASSWORD`                             |                                                                                    |
+| `SHORT_LINKS_CLICKHOUSE_DATABASE`                             | default `redirects`                                                                |
+| `SLACK_SHORT_LINKS_BOT_TOKEN`, `SLACK_SHORT_LINKS_CHANNEL_ID` | optional; health-check alerts                                                      |
 
 ### Worker (`wrangler.toml` vars / `wrangler secret`)
 
@@ -487,13 +484,13 @@ Domain form gains "KV namespace id" and "Worker binding" fields (admin). Link fo
 
 `20260929120000_short_link_per_domain_kv_and_global_slugs` adds the columns and the registry table and sets `kvBinding` for jesus.film, nxstp.is, arc.gt/core.arc.gt and stg.arc.gt. Namespace ids are filled per environment after the namespaces exist.
 
-## superAdmin-managed Cloudflare infrastructure (2026-10-01)
+## superAdmin-owned domains, Cloudflare set up by hand (2026-10-01, revised 2026-10-05)
 
-Decisions: a domain's Cloudflare infrastructure is set up from the admin app by a **superAdmin** (the `superAdmin` flag on the user in the users database, not a media role), and api-media does the work through the Cloudflare API. Nothing creates or deletes a Cloudflare zone, and DNS records are never edited. This section amends everything above where they differ.
+Decisions: which short link domains exist, and how a domain is wired to the edge (path prefix, KV namespace id, Worker binding), belong to a **superAdmin** (the `superAdmin` flag on the user in the users database, not a media role). The Cloudflare resources themselves (namespace, binding, route) are created by hand with wrangler and `wrangler.toml`; api-media never calls Cloudflare's control plane. An api-media module that did so through the Cloudflare API was built and then removed on 2026-10-05 as too much control for the service to hold; its procedure survives as the runbook in `workers/short-links-redirect/README.md`, "Setting up a domain". This section amends everything above where they differ.
 
 ### Rollout
 
-Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stage.jesus.film/s` and `stage.jesus.movie/s`, attached to `short-links-redirect-stage`; the base domains are attached to `short-links-redirect-prod` only after that. `CLOUDFLARE_SHORT_LINKS_ALLOWED_HOSTNAMES` enforces it per environment (stage: `stage.jesus.film,stage.jesus.movie`; prod: `jesus.film,jesus.movie`). `stage.jesus.film` and `jesus.film` share a zone, so the token cannot separate them; the allowlist does. nxstp.is and arc.gt are not in either list.
+Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stage.jesus.film/s` and `stage.jesus.movie/s`, served by `short-links-redirect-stage`; the base domains are routed to `short-links-redirect-prod` only after that. The stage namespaces exist and are bound in `wrangler.toml`; the routes are declared there, commented out, until the hostnames have DNS records. nxstp.is and arc.gt are not in the first rollout.
 
 ### Permissions
 
@@ -502,76 +499,18 @@ Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stag
 | Redirect, slug, services settings; `shortLinkDomainPublish`                   | `shortLinkAdmin`, `publisher`, superAdmin |
 | Changing `pathPrefix`, `kvNamespaceId`, `kvBinding` (`shortLinkDomainUpdate`) | superAdmin                                |
 | `shortLinkDomainCreate`, `shortLinkDomainDelete`                              | superAdmin                                |
-| `ShortLinkDomain.infrastructure` and the four infrastructure mutations        | superAdmin                                |
 
-A superAdmin with no media role reaches the Domains section of the admin and nothing else. The superAdmin lookup is lazy (only when the role scopes fail), cached per request, and fails closed.
+A superAdmin with no media role reaches the Domains section of the admin and nothing else. The superAdmin lookup is lazy (only when the role scopes fail), cached per request, and fails closed. api-media reads it from the users database (`PG_DATABASE_URL_USERS`), as api-journeys does.
 
-`shortLinkDomainCreate` takes `vercel: Boolean` (default true, the legacy contract). The admin passes `false`: a Worker-served domain is never registered on the legacy Vercel project. `shortLinkDomainDelete` is refused while the domain has a KV setup. `kvBinding` must match `^KV_[A-Z0-9_]+$`.
+`shortLinkDomainCreate` takes `vercel: Boolean` (default true, the legacy contract). The admin passes `false`: a Worker-served domain is never registered on the legacy Vercel project. `kvBinding` must match `^KV_[A-Z0-9_]+$`, the naming of the per-domain bindings in `wrangler.toml`.
 
-### GraphQL
+### Admin app
 
-```graphql
-type ShortLinkDomain {
-  infrastructure: ShortLinkDomainInfrastructure! # superAdmin; ~5 Cloudflare calls, never select in a list
-}
-type ShortLinkDomainInfrastructure {
-  configured: Boolean!
-  workerName: String
-  hostnameAllowed: Boolean!
-  zone: ShortLinkDomainInfrastructureCheck!
-  kvNamespace: ShortLinkDomainInfrastructureCheck!
-  kvBinding: ShortLinkDomainInfrastructureCheck!
-  attachment: ShortLinkDomainInfrastructureCheck!
-}
-type ShortLinkDomainInfrastructureCheck {
-  state: ShortLinkDomainInfrastructureState! # ok | missing | mismatch | error | unknown
-  detail: String!
-}
-# all superAdmin, idempotent, return the domain
-shortLinkDomainKvSetup(id: String!)
-shortLinkDomainKvRemove(id: String!)
-shortLinkDomainWorkerAttach(id: String!)
-shortLinkDomainWorkerDetach(id: String!)
-```
+Domains list: **Add domain** (superAdmin). Domain page: **Remove domain** behind a typed confirmation (superAdmin); the path prefix and the two KV fields are shown and sent for a superAdmin only, with helper text pointing at the wrangler commands. There is no Cloudflare status or provisioning in the app.
 
-### What each operation does (`schema/shortLink/infrastructure`)
+### Per-domain procedure
 
-Order is chosen so redirects keep working at every failure point (the Worker falls back domain KV → global KV → api-media).
-
-- **KV setup**: find the namespace (the row's id, else the title `<workerName>:<hostname>`, else create it) → save `kvNamespaceId` → `publishDomainWithLinks` → prune keys that are no longer live when the namespace already existed → add the `KV_<HOSTNAME>` binding to the Worker → save `kvBinding` and republish the domain record. Also the repair for a binding a deploy dropped.
-- **KV remove** (refused while attached): clear `kvBinding` and republish the domain record → remove the binding → clear `kvNamespaceId`. The namespace is left in Cloudflare.
-- **Attach** (needs the KV setup): a domain with a path prefix gets the zone route `<hostname>/<pathPrefix>/*`; a root domain gets a Workers Custom Domain. Already attached to this Worker is a no-op; attached to another Worker is refused, with no override. A route needs the hostname to already have a proxied DNS record; a custom domain makes Cloudflare create the record and certificate and is refused when records already exist.
-- **Detach**: deletes only routes / custom domains on the hostname that point at this Worker.
-
-Teardown order is detach → remove KV → remove domain.
-
-### Worker bindings
-
-- Changing bindings uses `GET` / `PATCH /accounts/{a}/workers/scripts/{name}/settings` through the SDK's low-level client (the installed `cloudflare@4.2.0` has no method for it). PATCH carries one multipart part `settings` holding JSON, replaces the whole binding list and deploys; every binding to keep is sent as `{ type: "inherit", name }`.
-- After every change the bindings are read back, and any binding lost that should have been kept fails the mutation loudly (recovery: redeploy the Worker). This is the guard for the one thing not provable without the real API.
-- Read-modify-write is serialised across api-media tasks with a Postgres advisory lock.
-- **Ownership**: bindings named `KV_*` belong to api-media; everything else belongs to `wrangler.toml`. api-media never adds or removes anything else.
-
-### Deploy
-
-`wrangler deploy` uploads exactly the bindings in its config and drops the rest, so `workers/short-links-redirect/scripts/deploy.ts` (the `deploy` target) reads the live Worker's bindings, writes `wrangler.deploy.toml` (`wrangler.toml`, minus the dev-only top-level namespaces, plus every live `KV_*` binding it does not declare) and deploys from that. It aborts without deploying when the live bindings cannot be read, unless the Worker has never been deployed. A setup that lands between its read and the upload is lost; the status then shows the binding missing and "Set up KV" repairs it.
-
-`wrangler.toml` declares no `routes`: with none, a deploy leaves API-managed routes and custom domains alone; with any, wrangler replaces the whole set.
-
-### Cutover per domain (replaces the list above)
-
-1. Once per environment: the global namespace, queues, ClickHouse and Worker secrets as before; fill the namespace id into `wrangler.toml`; deploy.
-2. Once per environment: set the api-media variables above (Doppler).
-3. Per domain, by a superAdmin in the admin: Add domain (or open the existing one) → Set up KV → Attach to Worker. The hostname's zone must already be in the account, and for a prefixed domain the hostname must already have a proxied DNS record.
-4. Watch `publish_gap` logs; zero is the goal.
-
-### Not verified against the real API
-
-Built from the SDK source, wrangler's own requests and the API reference, and exercised against a fake API only. Prove on stage before prod: (1) "Set up KV" leaves the Worker's secrets and queue binding intact; (2) a stage deploy keeps the binding; (3) attach, detach, remove KV and remove domain are each reflected in Cloudflare and the namespace is left in place; (4) attaching a hostname served by another Worker is refused.
-
-### Local dev
-
-Not emulated. With `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` set (or the Worker name / token unset) the status reports `configured: false` and the mutations refuse; the manual KV fields (superAdmin) remain the local path.
+In `workers/short-links-redirect/README.md`, "Setting up a domain": create the namespace with `wrangler kv namespace create`, declare its `KV_<HOSTNAME>` binding and the hostname's route under the environment in `wrangler.toml`, deploy, then add the domain in the admin and enter the namespace id and binding. Teardown is the reverse. Two rules follow from how wrangler deploys: every route lives in `wrangler.toml` (a deploy replaces the Worker's route set), and a binding missing from the config is removed by the next deploy.
 
 ## KV-only edge store (2026-10-02)
 

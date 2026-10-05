@@ -48,9 +48,10 @@ In scope
   failover, and a per-link destination history that doubles as the audit log.
 - Roles: `shortLinkEditor` (links, campaigns) and `shortLinkAdmin` (domain
   settings, protected assets, republishing). `publisher` keeps its existing
-  powers. Adding and removing domains and their Cloudflare infrastructure (KV
-  namespace, Worker binding, route) belong to `superAdmin` users, from the
-  admin app.
+  powers. Adding and removing domains, and the fields that wire a domain to
+  the edge (path prefix, KV namespace id, Worker binding), belong to
+  `superAdmin` users. The Cloudflare resources themselves are created by hand
+  with wrangler, never by api-media.
 
 Out of scope for this version
 

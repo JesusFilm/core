@@ -37,7 +37,7 @@ An image (PNG or SVG) rendered by this app's own `/api/qr` route. It always enco
 _Avoid_: QR link (the link is the Short Link; the QR is one rendering of it)
 
 **Editor / Admin**:
-The two role levels. Editor (`shortLinkEditor`, or `shortLinkAdmin`, or `publisher`) manages links and campaigns. Admin (`shortLinkAdmin` or `publisher`) additionally edits Domain settings, changes protected Destinations, and republishes to the edge. `publisher` keeps its existing powers; it is not a third level. Separate from both: a **superAdmin** (the flag on the user, not a media role) adds and removes domains and manages their Cloudflare infrastructure (KV namespace, Worker binding, route) from the domain page, and with no media role reaches the Domains section only.
+The two role levels. Editor (`shortLinkEditor`, or `shortLinkAdmin`, or `publisher`) manages links and campaigns. Admin (`shortLinkAdmin` or `publisher`) additionally edits Domain settings, changes protected Destinations, and republishes to the edge. `publisher` keeps its existing powers; it is not a third level. Separate from both: a **superAdmin** (the flag on the user, not a media role) adds and removes domains and edits the fields that wire a domain to the edge (path prefix, KV namespace id, Worker binding); with no media role it reaches the Domains section only. The Cloudflare resources behind those fields are created by hand (Worker README, "Setting up a domain").
 _Avoid_: Owner, superuser, "publisher role" when you mean admin
 
 **Path Prefix**:

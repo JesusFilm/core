@@ -12,7 +12,7 @@ export interface ShortLinkAccess {
   isAdmin: boolean
   /**
    * The `superAdmin` flag on the user (api-users), not a media role: owns
-   * which domains exist and their Cloudflare infrastructure. On its own it
+   * which domains exist and how they are wired to the edge. On its own it
    * opens the domains section only.
    */
   isSuperAdmin: boolean

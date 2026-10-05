@@ -1443,29 +1443,6 @@ describe('shortLinkDomain', () => {
         expect(prismaMock.shortLinkDomain.delete).not.toHaveBeenCalled()
       })
 
-      it('should refuse to delete a domain that still has its KV setup', async () => {
-        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
-          buildShortLinkDomain({
-            id: 'testId',
-            kvNamespaceId: 'ns-1',
-            kvBinding: 'KV_X'
-          })
-        )
-        const result = await authClient({
-          document: SHORT_LINK_DOMAIN_DELETE_MUTATION,
-          variables: { id: 'testId' }
-        })
-        expect(result).toMatchObject({
-          errors: [
-            expect.objectContaining({
-              message: 'remove the KV setup of this domain before deleting it'
-            })
-          ]
-        })
-        expect(prismaMock.shortLinkDomain.delete).not.toHaveBeenCalled()
-        expect(unpublishDomainMock).not.toHaveBeenCalled()
-      })
-
       it('should delete a short link domain and unpublish its record', async () => {
         mockRemoveVercelDomain.mockResolvedValue(true)
         prismaMock.shortLinkDomain.delete.mockResolvedValue(

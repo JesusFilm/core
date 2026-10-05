@@ -118,7 +118,7 @@ The compact JSON a short link publishes to the Edge Store (`link:<hostname>/<pat
 _Avoid_: Cache entry, snapshot
 
 **Edge Store**:
-Cloudflare Workers KV holding Domain and Routing Records; there is no replica, api-media itself is the Worker's fallback (`shortLinkByPath`, `shortLinkDomainByHostname`). One **global namespace** per environment (`CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`) holds `domain:<hostname>` records and `link:<pathname>` Global Links; each Short Link Domain publishes its own routing records as `<pathname>` into its own namespace (`kvNamespaceId`, read by the Worker through `kvBinding`). A domain without a namespace is not published. A KV write failure fails the mutation. Unset `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID` makes publishing a no-op. Locally, `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points publishing at the redirect Worker's `wrangler dev`, where a namespace id is the Worker binding name. On stage and prod a domain's namespace, its `KV_*` Worker binding and its route are created through the Cloudflare API by a superAdmin (`schema/shortLink/infrastructure`); `KV_*` bindings are owned here, everything else on the Worker by its `wrangler.toml`.
+Cloudflare Workers KV holding Domain and Routing Records; there is no replica, api-media itself is the Worker's fallback (`shortLinkByPath`, `shortLinkDomainByHostname`). One **global namespace** per environment (`CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID`) holds `domain:<hostname>` records and `link:<pathname>` Global Links; each Short Link Domain publishes its own routing records as `<pathname>` into its own namespace (`kvNamespaceId`, read by the Worker through `kvBinding`). A domain without a namespace is not published. A KV write failure fails the mutation. Unset `CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID` makes publishing a no-op. Locally, `CLOUDFLARE_SHORT_LINKS_API_BASE_URL` points publishing at the redirect Worker's `wrangler dev`, where a namespace id is the Worker binding name. A domain's namespace, `KV_<HOSTNAME>` Worker binding and route are created by hand with wrangler and declared in the Worker's `wrangler.toml`; api-media never calls Cloudflare's control plane, it only publishes records.
 _Avoid_: Cache, CDN
 
 **Global Link**:
@@ -136,7 +136,7 @@ A user's media-specific preferences — their interest in particular Videos, lan
 _Avoid_: Account, user (the identity lives elsewhere)
 
 **Media Role**:
-A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (domain settings, protected links, republishing). Governs what a user may do within this context specifically. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed) to gate which domains exist and their Cloudflare infrastructure.
+A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (domain settings, protected links, republishing). Governs what a user may do within this context specifically. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed) to gate which domains exist and how a domain is wired to the edge (path prefix, KV namespace id, Worker binding).
 _Avoid_: Permission, access level
 
 ### External media services

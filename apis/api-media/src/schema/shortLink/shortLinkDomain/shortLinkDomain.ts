@@ -15,7 +15,6 @@ import { assertSuperAdmin } from '../lib/access'
 import {
   HTTPS_URL_MESSAGE,
   REDIRECT_STATUS_MESSAGE,
-  failedPrecondition,
   inputValidationError,
   isHttpsUrl,
   isRedirectStatus
@@ -41,7 +40,9 @@ const settingsScopes = {
 } as const
 
 // Which domains exist, and everything that decides where a domain is served
-// from (path prefix, KV namespace, Worker binding), belongs to superAdmin.
+// from (path prefix, KV namespace, Worker binding), belongs to superAdmin. The
+// Cloudflare side (namespace, binding, route) is done by hand: see
+// workers/short-links-redirect/README.md, "Setting up a domain".
 const superAdminScopes = { isSuperAdmin: true } as const
 
 const INFRASTRUCTURE_FIELDS_MESSAGE =
@@ -277,8 +278,7 @@ function resolvePathPrefix(
   return normalized
 }
 
-// `KV_*` bindings on the Worker are owned by api-media; every other binding is
-// owned by wrangler.toml (the Worker deploy carries `KV_*` over, nothing else)
+// Per-domain bindings in the Worker's wrangler.toml are named `KV_<HOSTNAME>`
 const KV_BINDING_PATTERN = /^KV_[A-Z0-9_]+$/
 const KV_BINDING_MESSAGE =
   'kvBinding must be an upper-case Worker binding name starting with KV_ (e.g. KV_JESUS_FILM)'
@@ -327,7 +327,7 @@ builder.mutationFields((t) => ({
   shortLinkDomainCreate: t.withAuth(superAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and attached with shortLinkDomainWorkerAttach',
+      'Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml',
     errors: {
       types: [ZodError, NotUniqueError]
     },
@@ -614,7 +614,7 @@ builder.mutationFields((t) => ({
   shortLinkDomainDelete: t.withAuth(superAdminScopes).prismaField({
     type: 'ShortLinkDomain',
     description:
-      'delete an existing short link domain (superAdmin only; all related short links must be deleted and its KV setup removed first)',
+      'delete an existing short link domain (superAdmin only; all related short links must be deleted first)',
     errors: {
       types: [NotFoundError, ForeignKeyConstraintError]
     },
@@ -623,17 +623,6 @@ builder.mutationFields((t) => ({
       id: t.arg.string({ required: true })
     },
     resolve: async (query, _, { id }) => {
-      // A domain cannot be attached to the Worker without its KV setup, so
-      // this also keeps an attached hostname from losing its domain record.
-      const existing = await prisma.shortLinkDomain.findUnique({
-        where: { id },
-        select: { kvNamespaceId: true, kvBinding: true }
-      })
-      if (existing?.kvNamespaceId != null || existing?.kvBinding != null)
-        throw failedPrecondition(
-          'remove the KV setup of this domain before deleting it'
-        )
-
       return await prisma.$transaction(async (tx) => {
         try {
           const shortLinkDomain = await tx.shortLinkDomain.delete({

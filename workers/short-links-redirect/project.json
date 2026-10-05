@@ -39,12 +39,12 @@
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx scripts/deploy.ts --env=stage",
+        "command": "wrangler deploy --env=stage",
         "cwd": "workers/short-links-redirect"
       },
       "configurations": {
         "production": {
-          "command": "tsx scripts/deploy.ts --env=prod"
+          "command": "wrangler deploy --env=prod"
         }
       }
     }
