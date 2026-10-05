@@ -178,7 +178,9 @@ export function resolveBand(
     text,
     heading: section.headingColor ?? text,
     muted:
-      section.textColor != null ? alpha(section.textColor, MUTED_ALPHA) : row.muted,
+      section.textColor != null
+        ? alpha(section.textColor, MUTED_ALPHA)
+        : row.muted,
     border: alpha(text, BORDER_ALPHA),
     eyebrow: section.accentColor ?? row.eyebrow,
     accent: section.accentColor ?? row.accent,

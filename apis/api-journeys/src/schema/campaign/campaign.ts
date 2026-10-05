@@ -90,7 +90,8 @@ export const CampaignRef = builder.prismaObject('Campaign', {
     }),
     regions: t.relation('regions', {
       nullable: false,
-      description: 'Every Campaign Region, listed and orphan, in switcher order.',
+      description:
+        'Every Campaign Region, listed and orphan, in switcher order.',
       query: { orderBy: { order: 'asc' } }
     }),
     strings: t.relation('strings', {

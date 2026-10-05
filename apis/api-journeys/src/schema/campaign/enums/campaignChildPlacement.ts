@@ -2,7 +2,10 @@ import { CampaignChildPlacement as PrismaCampaignChildPlacement } from '@core/pr
 
 import { builder } from '../../builder'
 
-export const CampaignChildPlacement = builder.enumType(PrismaCampaignChildPlacement, {
-  name: 'CampaignChildPlacement',
-  description: 'Which side of the Section Body an Extra renders on.'
-})
+export const CampaignChildPlacement = builder.enumType(
+  PrismaCampaignChildPlacement,
+  {
+    name: 'CampaignChildPlacement',
+    description: 'Which side of the Section Body an Extra renders on.'
+  }
+)

@@ -147,9 +147,11 @@ export function toCampaignPublic(
     languageId,
     publishedAt: campaign.publishedAt,
     languages: campaign.languages,
-    theme: campaign.theme ?? (() => {
-      throw notFound()
-    })(),
+    theme:
+      campaign.theme ??
+      (() => {
+        throw notFound()
+      })(),
     strings: campaign.strings.map((string) => ({
       ...string,
       value: resolveText(string.value, string.valueTranslations, languageId),

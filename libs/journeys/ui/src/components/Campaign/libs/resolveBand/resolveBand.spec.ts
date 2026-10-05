@@ -4,7 +4,9 @@ import {
   CampaignBandTheme,
   bandCssVariables,
   contrastText,
-  resolveBand, overlayAlpha } from './resolveBand'
+  overlayAlpha,
+  resolveBand
+} from './resolveBand'
 
 const light: CampaignBandTheme = {
   primaryColor: '#C52D3A',

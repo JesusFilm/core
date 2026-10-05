@@ -67,7 +67,10 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
           ? {
               ...block,
               titleTranslations: {
-                [FRENCH]: { value: "Partagez l'histoire de Noël", source: 'machine' }
+                [FRENCH]: {
+                  value: "Partagez l'histoire de Noël",
+                  source: 'machine'
+                }
               }
             }
           : block
@@ -86,7 +89,9 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
         lede: null,
         align: null,
         content: 'Europe',
-        contentTranslations: { [FRENCH]: { value: 'Europe (FR)', source: 'human' } },
+        contentTranslations: {
+          [FRENCH]: { value: 'Europe (FR)', source: 'human' }
+        },
         typographyVariant: 'overline',
         action: null
       }
@@ -132,7 +137,11 @@ describe('campaignPublic', () => {
 
   const CAMPAIGN_PUBLIC = graphql(`
     query CampaignPublic($slug: String, $hostname: String, $languageId: ID) {
-      campaignPublic(slug: $slug, hostname: $hostname, languageId: $languageId) {
+      campaignPublic(
+        slug: $slug
+        hostname: $hostname
+        languageId: $languageId
+      ) {
         id
         teamId
         slug

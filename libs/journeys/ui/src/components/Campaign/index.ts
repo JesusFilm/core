@@ -1,4 +1,7 @@
-export { CAMPAIGN_PUBLIC_BLOCK_FIELDS, CAMPAIGN_PUBLIC_FIELDS } from './campaignPublicFields'
+export {
+  CAMPAIGN_PUBLIC_BLOCK_FIELDS,
+  CAMPAIGN_PUBLIC_FIELDS
+} from './campaignPublicFields'
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignFooter } from './CampaignFooter'
@@ -41,7 +44,10 @@ export {
 } from './CampaignSeo'
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideoCarousel } from './CampaignVideoCarousel'
-export { campaignFontsHref, CAMPAIGN_DEFAULT_FONTS } from './libs/campaignFontsHref'
+export {
+  campaignFontsHref,
+  CAMPAIGN_DEFAULT_FONTS
+} from './libs/campaignFontsHref'
 export { campaignImageSource } from './libs/campaignImageSource'
 export {
   CAMPAIGN_RADIUS_PX,

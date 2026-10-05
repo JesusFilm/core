@@ -1,9 +1,9 @@
 import { CampaignAction, prisma } from '@core/prisma/journeys/client'
 
-import { builder } from '../../builder'
 import { ButtonSize } from '../../block/button/enums/buttonSize'
 import { ButtonVariant } from '../../block/button/enums/buttonVariant'
 import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
+import { builder } from '../../builder'
 import { CampaignActionInterface } from '../action/campaignAction'
 import { CampaignChildPlacement } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'

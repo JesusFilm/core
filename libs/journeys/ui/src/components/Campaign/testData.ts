@@ -172,13 +172,17 @@ const english = {
   __typename: 'Language' as const,
   id: '529',
   bcp47: 'en',
-  name: [{ __typename: 'LanguageName' as const, value: 'English', primary: true }]
+  name: [
+    { __typename: 'LanguageName' as const, value: 'English', primary: true }
+  ]
 }
 const french = {
   __typename: 'Language' as const,
   id: '496',
   bcp47: 'fr',
-  name: [{ __typename: 'LanguageName' as const, value: 'Français', primary: true }]
+  name: [
+    { __typename: 'LanguageName' as const, value: 'Français', primary: true }
+  ]
 }
 
 export const eurRegion: CampaignPublicFields_regions = {
@@ -329,7 +333,8 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     id: 'regionHeaderId',
     pageId: REGION_PAGE_ID,
     parentOrder: 0,
-    intro: 'A Christmas journey chosen and contextualised by your regional team.'
+    intro:
+      'A Christmas journey chosen and contextualised by your regional team.'
   }),
   section('CampaignRegionShareBlock', {
     id: 'regionShareId',

@@ -239,7 +239,9 @@ describe('journeys proxy', () => {
 
     it('rewrites /campaign/<slug> on a dev host', async () => {
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
-      process.env.NEXT_PUBLIC_DEV_HOSTS = JSON.stringify({ x: 'tailscale-dev-x' })
+      process.env.NEXT_PUBLIC_DEV_HOSTS = JSON.stringify({
+        x: 'tailscale-dev-x'
+      })
       const result = await proxy(
         buildRequest('tailscale-dev-x:4100', '/campaign/christmas-2026')
       )

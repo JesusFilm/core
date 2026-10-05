@@ -1,4 +1,10 @@
-import { ReactElement, ReactNode, createContext, useContext, useMemo } from 'react'
+import {
+  ReactElement,
+  ReactNode,
+  createContext,
+  useContext,
+  useMemo
+} from 'react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import type { CampaignPublic, CampaignRegion } from '../types'

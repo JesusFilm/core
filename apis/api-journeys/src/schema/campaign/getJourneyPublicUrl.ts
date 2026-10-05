@@ -36,6 +36,8 @@ export function getJourneyPublicUrl(journey: JourneyWithPublicUrl): string {
 }
 
 /** The root-domain embed route, which skips the domain filter for any team. */
-export function getJourneyEmbedUrl(journey: Pick<JourneyWithPublicUrl, 'slug'>): string {
+export function getJourneyEmbedUrl(
+  journey: Pick<JourneyWithPublicUrl, 'slug'>
+): string {
   return `${env.JOURNEYS_URL}/embed/${journey.slug}`
 }

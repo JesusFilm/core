@@ -10,7 +10,12 @@ import { campaignChromeTrees } from '../CampaignPage/campaignChromeTrees'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { resolveBand } from '../libs/resolveBand'
-import { campaignPublic, chromeBlocks, eurRegion, headerBlock } from '../testData'
+import {
+  campaignPublic,
+  chromeBlocks,
+  eurRegion,
+  headerBlock
+} from '../testData'
 import type { CampaignBlock, CampaignPublic, CampaignRegion } from '../types'
 
 import { CampaignHeader } from './CampaignHeader'
@@ -65,7 +70,11 @@ function renderHeader(
     pageKind = CampaignPageKind.landing,
     region = null,
     basePath
-  }: { pageKind?: CampaignPageKind; region?: CampaignRegion | null; basePath?: string } = {}
+  }: {
+    pageKind?: CampaignPageKind
+    region?: CampaignRegion | null
+    basePath?: string
+  } = {}
 ) {
   const { header } = campaignChromeTrees(campaign)
   return render(
@@ -84,21 +93,29 @@ function styleText(): string {
 }
 
 function emotionClass(element: Element): string {
-  const name = Array.from(element.classList).find((candidate) => candidate.startsWith('css-'))
+  const name = Array.from(element.classList).find((candidate) =>
+    candidate.startsWith('css-')
+  )
   if (name == null) throw new Error('no emotion class')
   return name.replace(/[-]/g, '\\-')
 }
 
 /** The element's base emotion rule body. */
 function baseRule(element: Element): string {
-  return styleText().match(new RegExp(`(?:^|\\})\\.${emotionClass(element)}\\{([^}]*)\\}`))?.[1] ?? ''
+  return (
+    styleText().match(
+      new RegExp(`(?:^|\\})\\.${emotionClass(element)}\\{([^}]*)\\}`)
+    )?.[1] ?? ''
+  )
 }
 
 /** The element's emotion rule body under the `min-width` media query. */
 function mediaRule(element: Element, minWidth: number): string {
   return (
     styleText().match(
-      new RegExp(`@media \\(min-width:${minWidth}px\\)[^{]*\\{\\.${emotionClass(element)}\\{([^}]*)\\}`)
+      new RegExp(
+        `@media \\(min-width:${minWidth}px\\)[^{]*\\{\\.${emotionClass(element)}\\{([^}]*)\\}`
+      )
     )?.[1] ?? ''
   )
 }
@@ -107,8 +124,12 @@ describe('CampaignHeader', () => {
   describe('brand mark', () => {
     it('renders the campaign title as text when no logo is set, linking to the landing page in the page language', () => {
       renderHeader()
-      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent('Christmas 2026')
-      expect(screen.queryByTestId('CampaignBrandMarkLogo')).not.toBeInTheDocument()
+      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
+        'Christmas 2026'
+      )
+      expect(
+        screen.queryByTestId('CampaignBrandMarkLogo')
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
         '/campaign/christmas-2026?lang=en'
@@ -116,11 +137,15 @@ describe('CampaignHeader', () => {
     })
 
     it('renders the logo image when logoBlockId is set', () => {
-      renderHeader(withHeader({ logoBlockId: 'logoId' }, [...chromeBlocks, logoBlock]))
+      renderHeader(
+        withHeader({ logoBlockId: 'logoId' }, [...chromeBlocks, logoBlock])
+      )
       const logo = screen.getByTestId('CampaignBrandMarkLogo')
       expect(logo).toHaveAttribute('src', 'https://images.example.org/logo.png')
       expect(logo).toHaveAttribute('alt', 'Christmas logo')
-      expect(screen.queryByTestId('CampaignBrandMarkTitle')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CampaignBrandMarkTitle')
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
         '/campaign/christmas-2026?lang=en'
@@ -129,11 +154,16 @@ describe('CampaignHeader', () => {
 
     it('falls back to the title when logoBlockId names no block in the chrome', () => {
       renderHeader(withHeader({ logoBlockId: 'missingId' }))
-      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent('Christmas 2026')
+      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
+        'Christmas 2026'
+      )
     })
 
     it('omits the lang param on a single-language campaign', () => {
-      renderHeader({ ...campaignPublic, languages: [campaignPublic.languages[0]] })
+      renderHeader({
+        ...campaignPublic,
+        languages: [campaignPublic.languages[0]]
+      })
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
         '/campaign/christmas-2026'
@@ -142,7 +172,10 @@ describe('CampaignHeader', () => {
 
     it('links to the domain root on a Campaign Root', () => {
       renderHeader(campaignPublic, { basePath: '' })
-      expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute('href', '/?lang=en')
+      expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
+        'href',
+        '/?lang=en'
+      )
     })
 
     it('links in the current page language, not the default', () => {
@@ -165,13 +198,19 @@ describe('CampaignHeader', () => {
         region: eurRegion
       })
       const chip = screen.getByTestId('CampaignAllRegionsChip')
-      expect(within(screen.getByTestId('CampaignHeaderLeading')).getByText('All regions')).toBeInTheDocument()
+      expect(
+        within(screen.getByTestId('CampaignHeaderLeading')).getByText(
+          'All regions'
+        )
+      ).toBeInTheDocument()
       expect(chip).toHaveAttribute('href', '/campaign/christmas-2026?lang=en')
     })
 
     it('leaves the leading slot empty on the landing page', () => {
       renderHeader()
-      expect(screen.queryByTestId('CampaignAllRegionsChip')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CampaignAllRegionsChip')
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignHeaderLeading')).toBeEmptyDOMElement()
     })
   })
@@ -181,9 +220,13 @@ describe('CampaignHeader', () => {
       renderHeader()
       const select = screen.getByTestId('CampaignLanguageSelect')
       expect(select).toBeInTheDocument()
-      expect(screen.getByRole('combobox', { name: 'Language' })).toHaveTextContent('English')
+      expect(
+        screen.getByRole('combobox', { name: 'Language' })
+      ).toHaveTextContent('English')
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Language' }))
-      const options = screen.getAllByRole('option').map((option) => option.textContent)
+      const options = screen
+        .getAllByRole('option')
+        .map((option) => option.textContent)
       expect(options).toEqual(['English', 'Français'])
     })
 
@@ -196,13 +239,20 @@ describe('CampaignHeader', () => {
         ]
       })
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Language' }))
-      const options = screen.getAllByRole('option').map((option) => option.textContent)
+      const options = screen
+        .getAllByRole('option')
+        .map((option) => option.textContent)
       expect(options).toEqual(['Français', 'English'])
     })
 
     it('is not rendered with one campaign language', () => {
-      renderHeader({ ...campaignPublic, languages: [campaignPublic.languages[0]] })
-      expect(screen.queryByTestId('CampaignLanguageSelect')).not.toBeInTheDocument()
+      renderHeader({
+        ...campaignPublic,
+        languages: [campaignPublic.languages[0]]
+      })
+      expect(
+        screen.queryByTestId('CampaignLanguageSelect')
+      ).not.toBeInTheDocument()
     })
 
     it('reloads the page with the chosen language as the lang param', () => {
@@ -210,13 +260,22 @@ describe('CampaignHeader', () => {
       const location = window.location
       Object.defineProperty(window, 'location', {
         configurable: true,
-        value: { ...location, href: 'http://localhost/campaign/christmas-2026?lang=en#heroId', assign }
+        value: {
+          ...location,
+          href: 'http://localhost/campaign/christmas-2026?lang=en#heroId',
+          assign
+        }
       })
       renderHeader()
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Language' }))
       fireEvent.click(screen.getByRole('option', { name: 'Français' }))
-      expect(assign).toHaveBeenCalledWith('http://localhost/campaign/christmas-2026?lang=fr')
-      Object.defineProperty(window, 'location', { configurable: true, value: location })
+      expect(assign).toHaveBeenCalledWith(
+        'http://localhost/campaign/christmas-2026?lang=fr'
+      )
+      Object.defineProperty(window, 'location', {
+        configurable: true,
+        value: location
+      })
     })
   })
 
@@ -225,7 +284,10 @@ describe('CampaignHeader', () => {
       renderHeader()
       const nav = screen.getByTestId('CampaignHeaderNav')
       const links = within(nav).getAllByRole('link')
-      expect(links.map((link) => link.textContent)).toEqual(['Home', 'Resources'])
+      expect(links.map((link) => link.textContent)).toEqual([
+        'Home',
+        'Resources'
+      ])
       expect(links[0]).toHaveAttribute('href', '#heroId')
       expect(links[1]).toHaveAttribute('href', '#carouselId')
     })
@@ -242,13 +304,17 @@ describe('CampaignHeader', () => {
       fireEvent.click(button)
       const menu = screen.getByRole('menu')
       const items = within(menu).getAllByRole('menuitem')
-      expect(items.map((item) => item.textContent)).toEqual(['Home', 'Resources'])
+      expect(items.map((item) => item.textContent)).toEqual([
+        'Home',
+        'Resources'
+      ])
       expect(items[0]).toHaveAttribute('href', '#heroId')
     })
 
     it('renders a menu item inert when its target is missing', () => {
       const chrome = chromeBlocks.map((block) =>
-        block.id === 'navResourcesId' && block.__typename === 'CampaignButtonBlock'
+        block.id === 'navResourcesId' &&
+        block.__typename === 'CampaignButtonBlock'
           ? {
               ...block,
               action: {
@@ -269,14 +335,18 @@ describe('CampaignHeader', () => {
     it('renders no nav and no menu icon when the header has no button children', () => {
       renderHeader(withHeader({}, [headerBlock]))
       expect(screen.queryByTestId('CampaignHeaderNav')).not.toBeInTheDocument()
-      expect(screen.queryByRole('button', { name: 'Open menu' })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Open menu' })
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignBrandMark')).toBeInTheDocument()
     })
   })
 
   describe('styling', () => {
     it('is a sticky AppBar painted from the band table like any section', () => {
-      renderHeader(withHeader({ backgroundKind: CampaignBackgroundKind.contrast }))
+      renderHeader(
+        withHeader({ backgroundKind: CampaignBackgroundKind.contrast })
+      )
       const header = screen.getByTestId('CampaignHeader')
       expect(header.tagName).toBe('HEADER')
       expect(header.id).toBe('headerId')
@@ -287,15 +357,24 @@ describe('CampaignHeader', () => {
         { ...headerBlock, backgroundKind: CampaignBackgroundKind.contrast },
         campaignPublic.theme
       )
-      expect(header.style.getPropertyValue('--campaign-band-background')).toBe(band.background)
-      expect(header.style.getPropertyValue('--campaign-band-text')).toBe(band.text)
-      expect(header.style.getPropertyValue('--campaign-band-accent')).toBe(band.accent)
+      expect(header.style.getPropertyValue('--campaign-band-background')).toBe(
+        band.background
+      )
+      expect(header.style.getPropertyValue('--campaign-band-text')).toBe(
+        band.text
+      )
+      expect(header.style.getPropertyValue('--campaign-band-accent')).toBe(
+        band.accent
+      )
       expect(band.background).toBe('#26262E')
     })
 
     it('rule 1: fixed elements take the band text and accent colours; nav buttons follow the button fallback chain', () => {
       renderHeader(
-        withHeader({ backgroundKind: CampaignBackgroundKind.contrast, buttonColor: null }),
+        withHeader({
+          backgroundKind: CampaignBackgroundKind.contrast,
+          buttonColor: null
+        }),
         { pageKind: CampaignPageKind.regionTemplate, region: eurRegion }
       )
       const chip = baseRule(screen.getByTestId('CampaignAllRegionsChip'))
@@ -307,10 +386,12 @@ describe('CampaignHeader', () => {
       expect(baseRule(screen.getByTestId('CampaignLanguageSelect'))).toContain(
         'color:var(--campaign-band-text)'
       )
-      expect(baseRule(screen.getByRole('button', { name: 'Open menu' }))).toContain(
-        'color:var(--campaign-band-text)'
-      )
-      const [home] = within(screen.getByTestId('CampaignHeaderNav')).getAllByTestId('CampaignButton')
+      expect(
+        baseRule(screen.getByRole('button', { name: 'Open menu' }))
+      ).toContain('color:var(--campaign-band-text)')
+      const [home] = within(
+        screen.getByTestId('CampaignHeaderNav')
+      ).getAllByTestId('CampaignButton')
       expect(home).toHaveStyle({ backgroundColor: '#F2B544' })
     })
 
@@ -319,9 +400,9 @@ describe('CampaignHeader', () => {
         block.id === 'navResourcesId' ? { ...block, color: '#112233' } : block
       )
       renderHeader(withHeader({ buttonColor: '#445566' }, chrome))
-      const [home, resources] = within(screen.getByTestId('CampaignHeaderNav')).getAllByTestId(
-        'CampaignButton'
-      )
+      const [home, resources] = within(
+        screen.getByTestId('CampaignHeaderNav')
+      ).getAllByTestId('CampaignButton')
       expect(home).toHaveStyle({ backgroundColor: '#445566' })
       expect(resources).toHaveStyle({ backgroundColor: '#112233' })
     })
@@ -338,27 +419,38 @@ describe('CampaignHeader', () => {
         )
       )
       const cover = screen.getByTestId('CampaignBandCover')
-      expect(cover).toHaveAttribute('src', 'https://images.example.org/cover.jpg')
+      expect(cover).toHaveAttribute(
+        'src',
+        'https://images.example.org/cover.jpg'
+      )
       expect(cover).toHaveStyle({ objectFit: 'cover', height: '100%' })
       expect(screen.getByTestId('CampaignBandOverlay')).toHaveStyle({
         backgroundColor: 'rgba(0, 0, 0, 0.75)'
       })
-      expect(screen.getByTestId('CampaignHeader').style.getPropertyValue('--campaign-band-text')).toBe(
-        '#FFFFFF'
-      )
+      expect(
+        screen
+          .getByTestId('CampaignHeader')
+          .style.getPropertyValue('--campaign-band-text')
+      ).toBe('#FFFFFF')
     })
 
     it('renders no cover for a non-image kind or an empty cover slot', () => {
       const { unmount } = renderHeader(
-        withHeader({ backgroundKind: CampaignBackgroundKind.image, coverBlockId: null })
+        withHeader({
+          backgroundKind: CampaignBackgroundKind.image,
+          coverBlockId: null
+        })
       )
       expect(screen.queryByTestId('CampaignBandCover')).not.toBeInTheDocument()
       unmount()
       renderHeader(
-        withHeader({ backgroundKind: CampaignBackgroundKind.surface, coverBlockId: 'headerCoverId' }, [
-          ...chromeBlocks,
-          coverBlock
-        ])
+        withHeader(
+          {
+            backgroundKind: CampaignBackgroundKind.surface,
+            coverBlockId: 'headerCoverId'
+          },
+          [...chromeBlocks, coverBlock]
+        )
       )
       expect(screen.queryByTestId('CampaignBandCover')).not.toBeInTheDocument()
     })

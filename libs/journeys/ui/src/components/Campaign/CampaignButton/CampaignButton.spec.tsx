@@ -24,7 +24,11 @@ const heroButton = landingBlocks.find(
 
 const noneBand = resolveBand({ backgroundKind: 'none' }, campaignPublic.theme)
 const overriddenBand = resolveBand(
-  { backgroundKind: 'none', buttonColor: '#112233', buttonTextColor: '#EEEEEE' },
+  {
+    backgroundKind: 'none',
+    buttonColor: '#112233',
+    buttonTextColor: '#EEEEEE'
+  },
   campaignPublic.theme
 )
 
@@ -39,9 +43,13 @@ function renderButton(
 ) {
   return render(
     <ThemeProvider theme={theme}>
-      <CampaignProvider value={{ campaign: campaignPublic, pageKind, region: null }}>
+      <CampaignProvider
+        value={{ campaign: campaignPublic, pageKind, region: null }}
+      >
         {section ? (
-          <CampaignSectionContext.Provider value={{ band, align }}>{ui}</CampaignSectionContext.Provider>
+          <CampaignSectionContext.Provider value={{ band, align }}>
+            {ui}
+          </CampaignSectionContext.Provider>
         ) : (
           ui
         )}
@@ -52,7 +60,11 @@ function renderButton(
 
 describe('CampaignButton', () => {
   it('defaults variant to contained and size to medium', () => {
-    renderButton(<CampaignButton block={{ ...heroButton, buttonVariant: null, size: null }} />)
+    renderButton(
+      <CampaignButton
+        block={{ ...heroButton, buttonVariant: null, size: null }}
+      />
+    )
     const button = screen.getByTestId('CampaignButton')
     expect(button).toHaveClass('MuiButton-contained')
     expect(button).toHaveClass('MuiButton-sizeMedium')
@@ -61,7 +73,11 @@ describe('CampaignButton', () => {
   it('honours an explicit variant and size', () => {
     renderButton(
       <CampaignButton
-        block={{ ...heroButton, buttonVariant: ButtonVariant.outlined, size: ButtonSize.small }}
+        block={{
+          ...heroButton,
+          buttonVariant: ButtonVariant.outlined,
+          size: ButtonSize.small
+        }}
       />
     )
     const button = screen.getByTestId('CampaignButton')
@@ -79,16 +95,25 @@ describe('CampaignButton', () => {
   })
 
   it('uses its own alignment over the section', () => {
-    renderButton(<CampaignButton block={{ ...heroButton, align: TypographyAlign.right }} />, {
-      align: TypographyAlign.center
-    })
+    renderButton(
+      <CampaignButton
+        block={{ ...heroButton, align: TypographyAlign.right }}
+      />,
+      {
+        align: TypographyAlign.center
+      }
+    )
     expect(screen.getByTestId('CampaignButton').parentElement).toHaveStyle({
       justifyContent: 'flex-end'
     })
   })
 
   it('color null ⇒ theme primary with on-primary label when the section has no override', () => {
-    renderButton(<CampaignButton block={{ ...heroButton, color: null, labelColor: null }} />)
+    renderButton(
+      <CampaignButton
+        block={{ ...heroButton, color: null, labelColor: null }}
+      />
+    )
     expect(screen.getByTestId('CampaignButton')).toHaveStyle({
       backgroundColor: '#C52D3A',
       color: contrastText('#C52D3A')
@@ -96,9 +121,14 @@ describe('CampaignButton', () => {
   })
 
   it('color null ⇒ the section buttonColor and buttonTextColor overrides', () => {
-    renderButton(<CampaignButton block={{ ...heroButton, color: null, labelColor: null }} />, {
-      band: overriddenBand
-    })
+    renderButton(
+      <CampaignButton
+        block={{ ...heroButton, color: null, labelColor: null }}
+      />,
+      {
+        band: overriddenBand
+      }
+    )
     expect(screen.getByTestId('CampaignButton')).toHaveStyle({
       backgroundColor: '#112233',
       color: '#EEEEEE'
@@ -107,7 +137,9 @@ describe('CampaignButton', () => {
 
   it('its own hex colours win over the section and the theme', () => {
     renderButton(
-      <CampaignButton block={{ ...heroButton, color: '#010203', labelColor: '#FAFBFC' }} />,
+      <CampaignButton
+        block={{ ...heroButton, color: '#010203', labelColor: '#FAFBFC' }}
+      />,
       { band: overriddenBand }
     )
     expect(screen.getByTestId('CampaignButton')).toHaveStyle({
@@ -129,11 +161,16 @@ describe('CampaignButton', () => {
     const target = document.getElementById('landingSwitcherId') as HTMLElement
     target.scrollIntoView = vi.fn()
     fireEvent.click(link)
-    expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' })
+    expect(target.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start'
+    })
   })
 
   it('renders a missing scroll target static: same look, no href, aria-disabled, no pointer effect', () => {
-    renderButton(<CampaignButton block={heroButton} />, { pageKind: CampaignPageKind.regionTemplate })
+    renderButton(<CampaignButton block={heroButton} />, {
+      pageKind: CampaignPageKind.regionTemplate
+    })
     const button = screen.getByTestId('CampaignButton')
     expect(button).toHaveTextContent('Choose your region')
     expect(button).not.toHaveAttribute('href')
@@ -148,10 +185,9 @@ describe('CampaignButton', () => {
       (block) => block.id === 'switcherEuropeButtonId'
     ) as CampaignBlockOf<'CampaignButtonBlock'>
     const { unmount } = renderButton(<CampaignButton block={navigate} />)
-    expect(screen.getByRole('link', { name: 'Start with Europe' })).toHaveAttribute(
-      'href',
-      '/campaign/christmas-2026/eur'
-    )
+    expect(
+      screen.getByRole('link', { name: 'Start with Europe' })
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
     unmount()
 
     renderButton(
@@ -166,7 +202,10 @@ describe('CampaignButton', () => {
         }}
       />
     )
-    expect(screen.getByTestId('CampaignButton')).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByTestId('CampaignButton')).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 
   it('renders a LinkAction as an external link, opening a new tab safely when asked', () => {
@@ -191,11 +230,16 @@ describe('CampaignButton', () => {
 
   it('renders a button with no action static', () => {
     renderButton(<CampaignButton block={{ ...heroButton, action: null }} />)
-    expect(screen.getByTestId('CampaignButton')).toHaveAttribute('aria-disabled', 'true')
+    expect(screen.getByTestId('CampaignButton')).toHaveAttribute(
+      'aria-disabled',
+      'true'
+    )
   })
 
   it('renders nothing for an empty label', () => {
-    const { container } = renderButton(<CampaignButton block={{ ...heroButton, label: '' }} />)
+    const { container } = renderButton(
+      <CampaignButton block={{ ...heroButton, label: '' }} />
+    )
     expect(container).toBeEmptyDOMElement()
   })
 })

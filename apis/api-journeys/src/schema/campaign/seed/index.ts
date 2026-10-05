@@ -5,7 +5,10 @@ export {
   presetColors
 } from './presets'
 export type { CampaignThemePreset } from './presets'
-export { CAMPAIGN_STRING_DEFAULTS, CAMPAIGN_STRING_KEYS } from './campaignStrings'
+export {
+  CAMPAIGN_STRING_DEFAULTS,
+  CAMPAIGN_STRING_KEYS
+} from './campaignStrings'
 export { adminLocaleFolder, resolveCampaignStringValues } from './adminLocale'
 export * from './sections'
 export { seedCampaign } from './seedCampaign'

@@ -13,8 +13,8 @@ import { bandCssVariables, resolveBand } from '../libs/resolveBand'
 import type { CampaignSectionTree, CampaignTree } from '../types'
 
 import { CampaignBandCover } from './CampaignBandCover'
-import { CampaignSectionContext } from './CampaignSectionContext'
 import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
+import { CampaignSectionContext } from './CampaignSectionContext'
 
 interface CampaignSectionBandProps {
   block: CampaignSectionTree
