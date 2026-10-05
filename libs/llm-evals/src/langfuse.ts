@@ -44,5 +44,7 @@ export async function fetchSystemPrompt({
     )
   }
 
-  return promptClient.compile(variables ?? {})
+  // Journeys always supplies the ESV translation to this prompt. Keep evals
+  // aligned with the live chat path while allowing a scenario to override it.
+  return promptClient.compile({ translation: 'ESV', ...variables })
 }

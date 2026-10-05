@@ -10,7 +10,7 @@ const scenario: Scenario = {
     { provider: 'openrouter', modelId: 'google/gemini-3-flash-preview' },
     { provider: 'apologist', modelId: 'openai/gpt/4o-mini' },
     { provider: 'apologist', modelId: 'anthropic/claude/haiku-4.5' },
-    { provider: 'apologist', modelId: 'google/gemini/3-flash' },
+    { provider: 'apologist', modelId: 'google/gemini/3.7-flash' },
     { provider: 'apologist', modelId: 'anthropic/claude/sonnet-4.6' }
   ],
   query: "Who was Cain's wife? Where did she come from?",

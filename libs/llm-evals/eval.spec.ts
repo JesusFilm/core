@@ -165,7 +165,7 @@ describe('llm-evals', () => {
       updatedCells.push(meta)
     }
     const allCells = mergeWithExistingCells(updatedCells)
-    writeSummary(allCells, updatedAt)
+    writeSummary(allCells, updatedCells, updatedAt)
     console.log(
       `\nResults written to ${relative(repoRoot, resultsRoot)}/ (summary.md + ${updatedCells.length} cell file${updatedCells.length === 1 ? '' : 's'} updated)`
     )
@@ -310,19 +310,28 @@ function readCellMeta(filePath: string): CellMeta | null {
   }
 }
 
-function writeSummary(cells: CellMeta[], at: Date): void {
+function writeSummary(
+  cells: CellMeta[],
+  updatedCells: CellMeta[],
+  at: Date
+): void {
   mkdirSync(resultsRoot, { recursive: true })
 
   const lines: string[] = []
-  lines.push('# llm-evals — current state')
+  lines.push('# llm-evals — latest recorded results')
   lines.push('')
   lines.push(`_Last updated: ${at.toISOString()}_`)
   lines.push('')
 
   const passed = cells.filter((c) => c.pass).length
+  const runPassed = updatedCells.filter((c) => c.pass).length
   const scenarios = new Set(cells.map((c) => c.scenarioSlug))
   lines.push(
-    `**${passed}/${cells.length} cells passing** across ${scenarios.size} scenario(s).`
+    `**This run: ${runPassed}/${updatedCells.length} cells passing**${modelFilter === '' ? '' : ` for \`${modelFilter}\``}.`
+  )
+  lines.push('')
+  lines.push(
+    `**Saved matrix: ${passed}/${cells.length} cells passing** across ${scenarios.size} scenario(s). These cells were last run on different dates; compare their timestamps before comparing models.`
   )
   lines.push('')
 
@@ -413,6 +422,7 @@ function shortTime(iso: string): string {
 function blockquote(text: string): string {
   return text
     .split('\n')
+    .map((line) => line.trimEnd())
     .map((line) => (line === '' ? '>' : `> ${line}`))
     .join('\n')
 }

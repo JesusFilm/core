@@ -40,10 +40,10 @@ console.log(
 )
 
 async function main(): Promise<void> {
-  console.log('\n## Single live call: apologist:google/gemini/3-flash')
+  console.log('\n## Single live call: apologist:google/gemini/3.7-flash')
   const { model, provider, modelId } = buildEvalModel({
     provider: 'apologist',
-    modelId: 'google/gemini/3-flash'
+    modelId: 'google/gemini/3.7-flash'
   })
   console.log(`Resolved   = provider=${provider} modelId=${modelId}`)
 

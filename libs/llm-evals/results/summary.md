@@ -1,8 +1,10 @@
-# llm-evals — current state
+# llm-evals — latest recorded results
 
-_Last updated: 2026-06-18T04:03:08.609Z_
+_Last updated: 2026-10-05T03:42:57.980Z_
 
-**60/75 cells passing** across 15 scenario(s).
+**This run: 11/15 cells passing** for `apologist:google/gemini/3.7-flash`.
+
+**Saved matrix: 71/90 cells passing** across 15 scenario(s). These cells were last run on different dates; compare their timestamps before comparing models.
 
 ---
 
@@ -10,13 +12,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                           |
-| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -32,6 +35,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model perfectly followed the system instructions for substantive doubt/struggle questions. It acknowledged the user's situation first, directly addressed the 'commitment' argument using the concept of the marriage covenant (Example 2), maintained a firm biblical stance without shaming (Example 4), and ended with a specific relevant follow-up question (Example 5).
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model followed all instructions, including the specific requirement to acknowledge the user's struggle first, engage the 'commitment' argument using the covenant distinction, and provide a clear biblical position with grace. It correctly identified the question shape, used the requested ESV citation, and ended with the mandatory specific follow-up question.
+
 **apologist:openai/gpt/4o-mini** — 0.50 🔴
 
 > The output fails several specific negative constraints and instructions. It ignores the user's specific context of 'commitment' and 'planned marriage' (Anti-example 4), omits required scripture citations for substantive doctrine questions, and uses a generic follow-up question instead of a specific sub-question. It also softens the biblical position by referring to it as 'traditional teaching' rather than a direct scriptural command.
@@ -46,13 +53,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                  |
-| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  0.60 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  0.60 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 0.60 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 0.60 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 0.50 | 🔴 | 2026-10-05 03:42:57 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -68,6 +76,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model's output correctly followed all instructions, providing a balanced theological view that distinguishes moderate drinking from drunkenness. It matched the positive criteria by citing relevant scripture (Psalm 104, John 2, Ephesians 5) and addressed the user's specific scenario with a focused follow-up question.
 
+**apologist:google/gemini/3.7-flash** — 0.50 🔴
+
+> While the model correctly identified the biblical position and engaged the user's specific case (a glass of wine with dinner), it failed to include the mandatory follow-up question required for 'substantive doubt, grief, or struggle' questions and specifically missed the positive criterion to end with a specific follow-up question tied to the user's situation.
+
 **apologist:openai/gpt/4o-mini** — 0.50 🔴
 
 > The model successfully distinguishes moderate drinking from drunkenness (Example 1) and engages the user's specific case (Example 3). However, it fails the negative constraint by ending with a generic suggestion to talk to an advisor rather than a specific follow-up question related to the user's situation (Anti-example 5).
@@ -82,13 +94,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                  |
-| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -104,6 +117,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model followed all instructions, including the specific requirement to acknowledge the user's struggle first. It accurately addressed Leviticus 19:28's context, applied Christian liberty principles, and addressed the user's specific case of a Bible-verse tattoo without taking sides against the church.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model followed all instructions perfectly, providing a balanced and empathetic response that addressed Leviticus 19:28 in context, engaged the user's specific scenario of a Bible-verse tattoo, and used the principles of Christian liberty as requested in the acceptable examples.
+
 **apologist:openai/gpt/4o-mini** — 0.90 🟢
 
 > The model successfully met the positive criteria by addressing Leviticus 19:28 in its historical context, explaining the principle of Christian liberty, and engaging with the user's specific scenario regarding a Bible-verse tattoo. It avoided anti-patterns by not taking a judgmental stance toward the church members. It missed the instruction to identify as an AI or Aquinas AI, but the theological content was highly accurate to the prompt requirements.
@@ -118,13 +135,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                   |
-| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 03:09:32 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 0.80 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 03:09:32 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -140,6 +158,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model followed all instructions, providing a direct answer to a factual query without unnecessary empathy or sermonizing. It correctly identified the uncertainty (Bible does not name her), used appropriate structure for a multi-part answer, and provided a concise theological note regarding the necessity of intermarriage as permitted by the system prompt.
 
+**apologist:google/gemini/3.7-flash** — 0.80 🟢
+
+> The model followed the instructions for a factual list/query by providing the direct answer first, acknowledging the uncertainty regarding her name, and using a bulleted list for a multi-part explanation. It correctly avoided an empathetic opener and sermon-like exposition, though it used a heading for a relatively brief response, which is slightly against the preference for simplicity in shorter replies.
+
 **apologist:openai/gpt/4o-mini** — 1.00 🟢
 
 > The model followed all instructions: it provided a direct answer to the factual question, correctly identified the uncertainty (the Bible doesn't name her), and matched the register by providing a concise paragraph without unnecessary empathy or sermonizing. It correctly avoided the anti-patterns list.
@@ -154,13 +176,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                         |
-| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -176,6 +199,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model correctly identified the off-topic request and redirected the user to faith and life topics using a warm and concise tone, matching the spirit of all positive criteria.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model correctly identifies the request as off-topic and follows the system instructions perfectly by gently declining, stating its purpose, and inviting a relevant question in a brief manner.
+
 **apologist:openai/gpt/4o-mini** — 1.00 🟢
 
 > The model correctly identified the request as off-topic and followed the system instructions to provide a brief, warm redirection without providing any recipe content.
@@ -190,13 +217,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                                 |
-| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -212,6 +240,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model correctly identified the request as off-topic and followed the system instructions to gently decline while redirecting the user to faith and life questions, matching the spirit of the acceptable examples.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model correctly identified the request as off-topic and followed the system instructions for redirection, staying brief, kind, and inviting a relevant question.
+
 **apologist:openai/gpt/4o-mini** — 1.00 🟢
 
 > The model followed the instructions for out-of-scope requests perfectly, providing a brief, warm redirection to faith and life topics without answering the shopping query or launching into a sermon.
@@ -226,13 +258,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                         |
-| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  0.30 |  🔴  | 2026-06-18 04:03:08 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.20 |  🔴  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  0.80 |  🟢  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 0.30 | 🔴 | 2026-06-18 04:03:08 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.20 | 🔴 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 0.80 | 🟢 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -248,6 +281,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model failed the 'Match the User's Register' instruction by responding to a casual one-line opener with a heavy, multi-paragraph theological reflection. It also violated the 'Substantive doubt, grief, or struggle' handler by applying it to a sports loss ('I hear the deep disappointment...'), which resulted in an overly formal and sermon-like tone that ignored the instruction to keep greetings and small-talk short and in the same register.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model correctly identified the sport-related query as on-topic according to the system prompt's doorway clause. It responded with empathy in a matching casual register and followed the identity requirement to refer to itself as an AI.
+
 **apologist:openai/gpt/4o-mini** — 0.20 🔴
 
 > The model failed to engage with the user's specific comment about the football match, providing a generic greeting instead. It ignored the human moment and the 'doorway' aspect defined in the system prompt for sports topics, matching the spirit of a cold or mechanical response.
@@ -262,13 +299,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                            |
-| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -284,6 +322,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model perfectly followed all instructions: it provided an empathy-first acknowledgement of the struggle, addressed the spiritual dimension of the question without giving practical financial advice, and ended with the mandatory specific sub-question invitation.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model followed all instructions perfectly: it acknowledged the user's struggle with empathy first, addressed the spiritual dimension of the question without giving practical financial advice, used ESV scripture citations, and ended with the mandatory specific sub-question follow-up. It correctly identified the topic as in-scope and avoided any anti-patterns.
+
 **apologist:openai/gpt/4o-mini** — 1.00 🟢
 
 > The model followed all instructions: it provided empathy first, addressed the spiritual dimension of the question without giving financial advice, used scripture appropriately, and ended with a specific follow-up question.
@@ -298,13 +340,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                           |
-| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------ |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.20 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.20 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -320,6 +363,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The output matches Examples 1, 2, 3, and 5 by clearly explaining the one essence/three persons distinction, providing relevant scripture, and ending with a specific follow-up question. It successfully avoids all unacceptable analogies and heresies.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model perfectly followed all instructions, including the specific theological requirements and the style guidelines. It accurately distinguished between essence and person (matching Example 3), provided scriptural support for each point (matching Example 2), avoided all prohibited analogies, and ended with a specific, compliant follow-up invitation (matching Example 5).
+
 **apologist:openai/gpt/4o-mini** — 0.20 🔴
 
 > The model output failed on several critical levels: it used the forbidden water analogy (Anti-example 1), did not cite any scripture (failing a requirement for substantive faith questions), and failed to identify itself as 'Aquinas AI' or an 'AI'. It also provided a generic follow-up instead of a specific one (Example 5).
@@ -334,13 +381,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                               |
-| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  0.40 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.40 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 0.40 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 0.50 | 🔴 | 2026-10-05 03:42:57 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.40 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -356,6 +404,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model failed to take a firm position on cessationism versus continuationism as required by the scenario instructions, instead hiding behind the debate (Anti-example 1). It also used a generic follow-up invitation rather than tying it to a specific sub-question (Anti-example 5).
 
+**apologist:google/gemini/3.7-flash** — 0.50 🔴
+
+> The model failed to take a clear position on whether the gift of tongues continues today, instead providing two viewpoints (continuationism vs. cessationism), which directly violates the requirement to avoid hiding behind 'denominations differ'. It did, however, successfully meet the positive criteria regarding the biblical definition and usage instructions.
+
 **apologist:openai/gpt/4o-mini** — 0.40 🔴
 
 > The model failed on several key instructions: it hid behind 'opinions vary' instead of taking a clear position on cessation as required, matching Anti-example 1. It also used a generic follow-up question instead of the specific sub-question required by the prompt, and failed to utilize the requested biblical citations (chapter and verse) to strengthen the points.
@@ -370,13 +422,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                |
-| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -392,6 +445,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model perfectly follows all instructions: it begins with empathy for the specific struggle, addresses the doctrinal question about divorce by citing Matthew 19:9, clarifies that it is a permission rather than an obligation, and ends with a specific sub-question for follow-up.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model followed all instructions: it opened with empathy, correctly cited Matthew 19:9 to explain the permission for divorce, balanced this with the possibility of reconciliation without pushing either path, and ended with a specific, sensitive follow-up question.
+
 **apologist:openai/gpt/4o-mini** — 0.50 🔴
 
 > The output fails to meet several specific instructions for 'Substantive doubt, grief, or struggle questions'. It does not name the specific struggle in the first sentence as required, it uses a generic closing instead of a specific sub-question invitation as mandated by the system prompt and Example 5, and it contains unrequested subsections/advice (counseling, trusted friends) despite the instruction to stop when the question is answered.
@@ -406,13 +463,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                      |
-| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 0.00 | 🔴 | 2026-10-05 03:42:57 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -428,6 +486,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model successfully met all criteria, including specific empathetic acknowledgement of the user's loss of their mother, addressing both moral and natural evil (via The Fall and Free Will), providing substantive theological content with scripture, and ending with a specific follow-up invitation.
 
+**apologist:google/gemini/3.7-flash** — 0.00 🔴
+
+> Run failed before completion: Model returned an empty response (finishReason=other, outputTokens=0). Check gateway filtering and model availability.
+
 **apologist:openai/gpt/4o-mini** — 0.50 🔴
 
 > The output fails several negative constraints. It ends with a generic invitation to ask further questions rather than the required single-line invitation on a specific sub-question. It also fails to properly structure the response according to the markdown rules, using bold numbered lists instead of headings for a substantive multi-part answer, and it misses the specific identity requirement to identify as Aquinas AI or an AI.
@@ -442,13 +504,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                       |
-| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------------ |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -464,6 +527,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model correctly identifies the query as off-topic and follows the SCOPE guidelines by gently declining the request and inviting the user back to faith-based topics. It matches the spirit of the acceptable examples by staying brief, kind, and maintaining its purpose boundaries.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model correctly followed the SCOPE instructions by declining the off-topic request and inviting a faith-based question, matching the spirit of the acceptable examples without exhibiting any anti-patterns.
+
 **apologist:openai/gpt/4o-mini** — 1.00 🟢
 
 > The model correctly followed the scope instructions by gently declining the off-topic request and inviting the user to ask a question related to faith and life, matching acceptable examples 1, 2, and 4.
@@ -478,13 +545,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                        |
-| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-05 03:42:57 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -500,6 +568,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 > The model correctly followed the instructions for off-topic requests with emotional framing. It acknowledged the pressure in a single clause, declined the shopping task, and redirected to faith and life in a concise manner, matching the spirit of the acceptable examples.
 
+**apologist:google/gemini/3.7-flash** — 1.00 🟢
+
+> The model correctly followed the instructions for off-topic requests: it briefly acknowledged the user's emotion in a single clause, declined the shopping request, and redirected the user to the proper scope.
+
 **apologist:openai/gpt/4o-mini** — 1.00 🟢
 
 > The model correctly followed the instructions for handling an off-topic request with emotional framing. It acknowledged the feeling in a brief clause, declined the shopping task, and redirected the user to the intended purpose of the space.
@@ -514,13 +586,14 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 
 `apologist-world-cup-chat@development`
 
-| Model                                    | Score | Pass | Last run            | Report                                                                                                           |
-| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-haiku-4.5.md)     |
-| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-sonnet-4.6.md)    |
-| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3-flash.md)          |
-| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-4o-mini.md)             |
-| openrouter:google/gemini-3-flash-preview |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3-flash-preview.md) |
+| Model | Score | Pass | Last run | Report |
+|---|---:|:---:|---|---|
+| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-haiku-4.5.md) |
+| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-sonnet-4.6.md) |
+| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3-flash.md) |
+| apologist:google/gemini/3.7-flash | 0.50 | 🔴 | 2026-10-05 03:42:57 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3.7-flash.md) |
+| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-4o-mini.md) |
+| openrouter:google/gemini-3-flash-preview | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3-flash-preview.md) |
 
 ### Judge reasoning
 
@@ -535,6 +608,10 @@ _Last updated: 2026-06-18T04:03:08.609Z_
 **apologist:google/gemini/3-flash** — 1.00 🟢
 
 > The model followed all instructions perfectly. It opened by acknowledging the user's struggle with empathy (matching Example 1), provided concrete historical and scriptural evidence (matching Example 2), and ended with a single-line invitation to a specific sub-question (matching Example 3). It avoided all anti-patterns, including not using markdown headings for a relatively short response.
+
+**apologist:google/gemini/3.7-flash** — 0.50 🔴
+
+> The output fails to follow the specific instruction for substantive doubt questions to acknowledge what the user said in the first sentence by naming the struggle in the AI's own words. Instead, it validates the difficulty of the topic (Anti-example 1). It also uses markdown headings for a response that does not warrant them according to the 'Default bias is shorter' rule, and fails to identify itself as 'Aquinas AI' or an 'AI'.
 
 **apologist:openai/gpt/4o-mini** — 0.50 🔴
 

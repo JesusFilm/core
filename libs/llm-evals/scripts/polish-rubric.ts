@@ -13,7 +13,7 @@ import { config as loadDotenv } from 'dotenv'
 
 import { fetchSystemPrompt } from '../src/langfuse'
 import { buildEvalModel } from '../src/providers'
-import type { EvalProvider, Scenario, ScenarioModel } from '../src/types'
+import type { Scenario, ScenarioModel } from '../src/types'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const libRoot = resolve(here, '..')
@@ -316,7 +316,7 @@ function parseResponse(text: string): PolisherResponse {
     unacceptableExamples: obj.unacceptableExamples.map(String),
     changes:
       typeof obj.changes === 'object' && obj.changes !== null
-        ? (obj.changes as PolisherResponse['changes'])
+        ? obj.changes
         : undefined
   }
 }
@@ -504,7 +504,7 @@ function parseModelSpec(raw: string): ScenarioModel {
     throw new Error(
       `--polisher provider must be openrouter | gemini | apologist — got "${provider}"`
     )
-  return { provider: provider as EvalProvider, modelId }
+  return { provider, modelId }
 }
 
 function parseArgs(argv: string[]): CliArgs {

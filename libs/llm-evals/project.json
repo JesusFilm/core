@@ -21,6 +21,7 @@
       }
     },
     "eval": {
+      "cache": false,
       "executor": "@nx/vitest:test",
       "options": {
         "configFile": "libs/llm-evals/vitest.evals.mts"

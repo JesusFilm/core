@@ -82,6 +82,8 @@ Runs every scenario × model cell declared across `scenarios/**/*.eval.ts`. For 
 3. Calls the judge model (independently configured) with the system prompt, scenario, query, actual output, `acceptableExamples`, and `unacceptableExamples` — getting back `{ pass, score, reason }`.
 4. Asserts `pass === true`.
 
+Live eval calls are never served from the Nx cache. An empty model response fails as a generation error before the judge runs, so gateway filtering cannot be mistaken for a low-quality answer.
+
 #### Results layout — one file per (scenario, model) cell, no timestamps
 
 Results are organised by **(scenario, model)** as the primary key, not by run timestamp. Re-running a cell overwrites just that cell's file. Re-running a scenario overwrites only its files. Other cells are preserved.
@@ -105,10 +107,10 @@ The `results/` directory **is tracked**, so the current matrix state and per-cel
 
 By default, every scenario × model cell runs. Two env vars narrow the matrix:
 
-| Env var         | Effect                                                                         |
-| --------------- | ------------------------------------------------------------------------------ |
-| `EVAL_SCENARIO` | Slug of a single scenario (lowercase, dash-separated form of `scenario.name`). |
-| `EVAL_MODEL`    | Single cell within that scenario, in `provider:modelId` form.                  |
+| Env var         | Effect                                                                                          |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| `EVAL_SCENARIO` | Slug of a single scenario (lowercase, dash-separated form of `scenario.name`).                  |
+| `EVAL_MODEL`    | All matching cells, in `provider:modelId` form. It can be used with or without `EVAL_SCENARIO`. |
 
 ```bash
 # Just one scenario, all its models
@@ -220,38 +222,32 @@ models: [
 | ------------ | ---------------------------------------- | ----------------------------------------------------- |
 | `openrouter` | `OPENROUTER_API_KEY`                     | OpenRouter slug, e.g. `google/gemini-3-flash-preview` |
 | `gemini`     | `GOOGLE_GENERATIVE_AI_API_KEY`           | Google model id, e.g. `gemini-2.0-flash`              |
-| `apologist`  | `APOLOGIST_API_URL`, `APOLOGIST_API_KEY` | Gateway slug, see slug pattern below                  |
+| `apologist`  | `APOLOGIST_API_URL`, `APOLOGIST_API_KEY` | Exact ID from the Apologist model list                |
 
-### Apologist gateway slug pattern
+### Apologist gateway model IDs
 
-The Apologist gateway is not openly documented, but the slug follows a consistent transformation of the display name on the [Apologist pricing page](https://apologistproject.org/pricing):
-
-1. Lowercase the display name.
-2. Drop the leading vendor word (e.g. drop "OpenAI" since it becomes the first slash-segment).
-3. Replace spaces with hyphens.
-4. **Preserve internal punctuation** — dots in version numbers (`4.5`, `4.6`) stay as dots.
-5. Use `/` between segments: `<vendor>/<family>/<rest>`.
+Use the exact ID in Apologist's [Chat Completions model list](https://apologistproject.org/documentation/apologist-fusion/chat-completion). The AI SDK forwards this string unchanged. Do not infer an ID from a display name or assume an older family name aliases a newer version.
 
 | Display name on pricing page | Slug                          |
 | ---------------------------- | ----------------------------- |
 | OpenAI GPT-4o mini           | `openai/gpt/4o-mini`          |
-| Google Gemini 3 Flash        | `google/gemini/3-flash`       |
+| Google Gemini 3.7 Flash      | `google/gemini/3.7-flash`     |
 | Anthropic Claude Haiku 4.5   | `anthropic/claude/haiku-4.5`  |
 | Anthropic Claude Sonnet 4.6  | `anthropic/claude/sonnet-4.6` |
 
-A wrong slug returns `Unprocessable Entity` from the gateway and the eval cell captures that error in its report file — fail-loud, easy to spot.
+An invalid ID returns HTTP 422 with `Invalid model.` from the gateway; the eval cell captures that error in its report file.
 
 ### Currently wired-up models
 
 Each existing apologist scenario lists the same matrix so cross-scenario behaviour can be compared on the same axis:
 
-| Model id                                   | Tier                          | Notes                                                                    |
-| ------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------ |
-| `openrouter:google/gemini-3-flash-preview` | OpenRouter baseline           | Mirrors `apps/journeys/pages/api/chat/index.ts`                          |
-| `apologist:openai/gpt/4o-mini`             | Apologist Limited (1 credit)  | Original gateway default; consistently underperforms on doubt scenarios. |
-| `apologist:google/gemini/3-flash`          | Apologist Limited (2 credits) | Closest apples-to-apples comparison vs OpenRouter.                       |
-| `apologist:anthropic/claude/haiku-4.5`     | Apologist Limited (2 credits) | Cheap Anthropic option.                                                  |
-| `apologist:anthropic/claude/sonnet-4.6`    | Apologist Premium (7 credits) | Highest-performing on the doubt / pastoral scenarios so far.             |
+| Model id                                   | Tier                          | Notes                                                                                  |
+| ------------------------------------------ | ----------------------------- | -------------------------------------------------------------------------------------- |
+| `openrouter:google/gemini-3-flash-preview` | OpenRouter baseline           | Mirrors `apps/journeys/pages/api/chat/index.ts`                                        |
+| `apologist:openai/gpt/4o-mini`             | Apologist Limited (1 credit)  | Original gateway default; consistently underperforms on doubt scenarios.               |
+| `apologist:google/gemini/3.7-flash`        | Apologist gateway             | Current Flash model under evaluation; historical 3 Flash results remain in `results/`. |
+| `apologist:anthropic/claude/haiku-4.5`     | Apologist Limited (2 credits) | Cheap Anthropic option.                                                                |
+| `apologist:anthropic/claude/sonnet-4.6`    | Apologist Premium (7 credits) | Highest-performing on the doubt / pastoral scenarios so far.                           |
 
 **The judge is independent** of any of these — it stays on OpenRouter by default so that running a scenario against the cost-billed apologist gateway does not double-bill it for judging. Override the judge only when you explicitly want apples-to-apples scoring against the same model:
 
@@ -287,5 +283,5 @@ libs/llm-evals/
 ## Notes
 
 - This suite calls **real** Langfuse, OpenRouter, and (optionally) Apologist APIs. It is **not** part of `nx test` and is **never** run in CI.
-- Drift risk: the suite composes the system prompt the same way `apps/journeys/pages/api/chat/index.ts` does (Langfuse prompt by label, compiled with `{ language }` variables). If the chat route later adds extra instructions before the system prompt, that drift will not be reflected here — keep this in mind when interpreting eval results.
+- Drift risk: the suite composes the system prompt the same way `apps/journeys/pages/api/chat/index.ts` does (Langfuse prompt by label, compiled with `translation: 'ESV'` and any scenario variables). If the chat route later adds extra instructions before the system prompt, that drift will not be reflected here — keep this in mind when interpreting eval results.
 - The branch this lib lives on is not intended to merge into `main`. Rebase periodically to keep up with prompt / provider changes upstream.

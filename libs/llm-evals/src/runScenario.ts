@@ -23,11 +23,17 @@ export async function runScenario(
 
   const { model, provider, modelId } = buildEvalModel(modelSpec)
 
-  const { text } = await generateText({
+  const { text, finishReason, usage } = await generateText({
     model,
     system: systemPrompt,
     prompt: scenario.query
   })
+
+  if (text.trim() === '') {
+    throw new Error(
+      `Model returned an empty response (finishReason=${finishReason}, outputTokens=${usage.outputTokens ?? 'unknown'}). Check gateway filtering and model availability.`
+    )
+  }
 
   return { systemPrompt, output: text, provider, modelId }
 }
