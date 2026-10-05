@@ -83,7 +83,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandRedoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} />
+      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </QueriedEditor>
   )
 }

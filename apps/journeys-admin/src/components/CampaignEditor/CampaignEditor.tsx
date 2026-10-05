@@ -26,6 +26,7 @@ import type { CanvasView } from './Canvas'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
 import { Settings } from './Settings'
+import { ThemePanel } from './ThemePanel'
 import { TopBar } from './TopBar'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
@@ -52,6 +53,7 @@ function CampaignEditorShell({
   const [previewLanguageId, setPreviewLanguageId] = useState<string>()
   const [view, setView] = useState<CanvasView>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [themeOpen, setThemeOpen] = useState(false)
 
   function handlePageKindChange(nextPageKind: CampaignPageKind): void {
     dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind })
@@ -77,13 +79,23 @@ function CampaignEditorShell({
         previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
         view={view}
       />
-      <BottomBar onSettingsClick={() => setSettingsOpen(true)} />
+      <BottomBar
+        onSettingsClick={() => setSettingsOpen(true)}
+        onThemeClick={() => setThemeOpen(true)}
+      />
       <Drawer
         anchor="right"
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
       >
         <Settings campaign={campaign} isManager={isManager} />
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={themeOpen}
+        onClose={() => setThemeOpen(false)}
+      >
+        <ThemePanel onClose={() => setThemeOpen(false)} />
       </Drawer>
     </Stack>
   )

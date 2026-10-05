@@ -1,7 +1,11 @@
 import { InMemoryCache, gql } from '@apollo/client'
 import { ReactElement } from 'react'
 
-import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_theme as CampaignTheme
+} from '../../../__generated__/GetCampaign'
+import { CampaignThemeUpdateInput } from '../../../__generated__/globalTypes'
 import { CAMPAIGN_PALETTE_UPDATE } from '../../libs/useCampaignPaletteUpdateMutation'
 import {
   CampaignSectionStyleInput,
@@ -9,11 +13,12 @@ import {
   SECTION_STYLE_OPERATIONS,
   campaignSectionStyleRow
 } from '../../libs/useCampaignSectionStyleMutation'
+import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation'
 
 import { useCampaignEditor } from './CampaignEditorProvider'
 import { campaign } from './data'
 
-export interface StyleMock {
+export type StyleMock = {
   request: Record<string, unknown>
   result: ReturnType<typeof vi.fn>
   delay?: number
@@ -100,4 +105,50 @@ export function WithBlock<T extends CampaignBlock['__typename']>({
   const block = current.blocks.find((candidate) => candidate.id === blockId)
   if (block == null || block.__typename !== typename) return null
   return children(block as Extract<CampaignBlock, { __typename: T }>)
+}
+
+/** A mock for one Campaign Theme write: the theme row with `input` applied over `current`. */
+export function themeMock(
+  input: CampaignThemeUpdateInput,
+  current: Partial<CampaignTheme> = {}
+): StyleMock {
+  return {
+    request: {
+      query: CAMPAIGN_THEME_UPDATE,
+      variables: { id: campaign.theme.id, input }
+    },
+    result: vi.fn(() => ({
+      data: { campaignThemeUpdate: { ...campaign.theme, ...current, ...input } }
+    }))
+  }
+}
+
+const THEME_FIELDS = gql`
+  fragment ThemeFields on CampaignTheme {
+    themeMode
+    headerFont
+    bodyFont
+    labelFont
+    primaryColor
+    accentColor
+    backgroundColor
+    surfaceColor
+    textColor
+    mutedColor
+    contrastBackgroundColor
+    contrastTextColor
+    radius
+    buttonRadius
+  }
+`
+
+/** The Campaign Theme as the cache currently holds it (optimistic layer included). */
+export function readTheme(
+  cache: InMemoryCache
+): Record<string, unknown> | null {
+  return cache.readFragment({
+    id: `CampaignTheme:${campaign.theme.id}`,
+    fragment: THEME_FIELDS,
+    optimistic: true
+  })
 }

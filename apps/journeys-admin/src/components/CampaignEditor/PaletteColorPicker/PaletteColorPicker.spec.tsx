@@ -5,6 +5,7 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import type { Mock } from 'vitest'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { ThemeMode } from '../../../../__generated__/globalTypes'
@@ -50,11 +51,11 @@ function renderPicker(
     palette?: string[]
     value?: string | null
     mocks?: Array<ReturnType<typeof paletteMock>>
-    onCommit?: ReturnType<typeof vi.fn>
+    onCommit?: Mock<(hex: string) => void>
     theme?: Partial<Campaign['theme']>
   } = {}
-): ReturnType<typeof render> & { onCommit: ReturnType<typeof vi.fn> } {
-  const onCommit = options.onCommit ?? vi.fn()
+): ReturnType<typeof render> & { onCommit: Mock<(hex: string) => void> } {
+  const onCommit = options.onCommit ?? vi.fn<(hex: string) => void>()
   const campaignProp: Campaign = {
     ...campaign,
     palette: options.palette ?? eight,

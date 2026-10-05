@@ -53,6 +53,7 @@ export const NEW_BUTTON_LABEL = 'Button'
 
 interface BottomBarProps {
   onSettingsClick: () => void
+  onThemeClick: () => void
 }
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
@@ -72,7 +73,10 @@ interface SectionInsert {
  * link chip and variant/size/colours. Controls that belong to later tickets
  * render disabled.
  */
-export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
+export function BottomBar({
+  onSettingsClick,
+  onThemeClick
+}: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
@@ -364,7 +368,11 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
               icon={<SettingsIcon />}
               onClick={onSettingsClick}
             />
-            <BarButton label={t('Theme')} icon={<PaletteIcon />} disabled />
+            <BarButton
+              label={t('Theme')}
+              icon={<PaletteIcon />}
+              onClick={onThemeClick}
+            />
             <BarButton
               label={t('Translations')}
               icon={<TranslateIcon />}

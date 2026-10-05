@@ -71,7 +71,7 @@ The Campaign Editor's rendering of the selected Campaign Page inside a FramePort
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
 **Campaign Row**:
-The contextual bottom bar shown while nothing on the Campaign Canvas is selected: Settings, Theme, Translations and Add section. **Settings** holds the title, the slug with its address hint (the permanent root-domain address and the current public address), the status copy and, for team managers, Delete campaign; title and slug save through `campaignUpdate` and are not Commands.
+The contextual bottom bar shown while nothing on the Campaign Canvas is selected: Settings, Theme, Translations and Add section. **Settings** holds the title, the slug with its address hint (the permanent root-domain address and the current public address), the status copy and, for team managers, Delete campaign; title and slug save through `campaignUpdate` and are not Commands. **Theme** opens the Theme panel: the Light and Dark Theme Preset swatches, the eight Campaign Theme colours as swatch plus hex, the three font selects over the journeys theme dialog's curated lists, the four corner radii and the two button shapes; every change, and each preset application, is one Command through `campaignThemeUpdate`, and the Light / Dark / Custom label is derived by comparing the nine values to the preset constants, never stored.
 _Avoid_: toolbar (that is the Top Bar), properties panel
 
 **Top Bar**:
