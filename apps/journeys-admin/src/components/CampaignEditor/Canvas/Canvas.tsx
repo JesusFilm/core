@@ -26,25 +26,27 @@ export const PHONE_FRAME_WIDTH = 390
 interface CanvasProps {
   campaign: Campaign
   pageKind: CampaignPageKind
-  previewLanguageId: string
   view: CanvasView
 }
 
 /**
  * The campaign canvas: the chosen page rendered inside a FramePortal iframe
- * with the editor's own section components under the campaign's theme.
- * Desktop/Phone is a view toggle held by the shell, never a Command. The
- * frame carries its own Hotkeys, since its key events never leave it, and
- * a click on the empty frame returns to the campaign row.
+ * with the editor's own section components under the campaign's theme, in
+ * the Preview Language the top bar chose (its text direction follows that
+ * language's bcp47). Desktop/Phone is a view toggle held by the shell, never
+ * a Command. The frame carries its own Hotkeys, since its key events never
+ * leave it, and a click on the empty frame returns to the campaign row.
  */
 export function Canvas({
   campaign,
   pageKind,
-  previewLanguageId,
   view
 }: CanvasProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selectBlock } = useCampaignEditor()
+  const {
+    selectBlock,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const pageId = page?.id
   const sections = useMemo(

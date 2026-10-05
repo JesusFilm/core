@@ -50,14 +50,7 @@ function PageKindCanvas(): ReactElement {
   const {
     state: { pageKind }
   } = useCampaignEditor()
-  return (
-    <Canvas
-      campaign={campaign}
-      pageKind={pageKind}
-      previewLanguageId="529"
-      view="desktop"
-    />
-  )
+  return <Canvas campaign={campaign} pageKind={pageKind} view="desktop" />
 }
 
 const deleteMock = {
@@ -114,9 +107,19 @@ describe('CampaignEditorProvider', () => {
   describe('reducer', () => {
     const state: CampaignEditorState = {
       pageKind: CampaignPageKind.landing,
+      previewLanguageId: '529',
       selectedBlockId: 'heroId',
       editRequest: 0
     }
+
+    it('changes the preview language without touching the selection', () => {
+      expect(
+        reducer(state, {
+          type: 'SetPreviewLanguageAction',
+          previewLanguageId: '496'
+        })
+      ).toEqual({ ...state, previewLanguageId: '496' })
+    })
 
     it('clears the selection when the page changes', () => {
       expect(
@@ -126,6 +129,7 @@ describe('CampaignEditorProvider', () => {
         })
       ).toEqual({
         pageKind: CampaignPageKind.regionTemplate,
+        previewLanguageId: '529',
         selectedBlockId: undefined,
         editRequest: 0
       })

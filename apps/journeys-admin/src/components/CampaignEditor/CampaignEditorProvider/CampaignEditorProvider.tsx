@@ -18,6 +18,12 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 export interface CampaignEditorState {
   /** The page the canvas shows; a view choice, never a Command. */
   pageKind: CampaignPageKind
+  /**
+   * The Preview Language the canvas renders in: a campaign language id, the
+   * default on first open. Text edits made while it is not the default write
+   * translations for it. A view choice, never a Command.
+   */
+  previewLanguageId: string
   /** The selected block; undefined is the campaign row. */
   selectedBlockId?: string
   /** Bumped by the bar's Edit so the selected block's primary text takes focus. */
@@ -44,11 +50,16 @@ interface SetEditorFocusAction {
 interface RequestEditAction {
   type: 'RequestEditAction'
 }
+interface SetPreviewLanguageAction {
+  type: 'SetPreviewLanguageAction'
+  previewLanguageId: string
+}
 export type CampaignEditorAction =
   | SetPageKindAction
   | SelectBlockAction
   | SetEditorFocusAction
   | RequestEditAction
+  | SetPreviewLanguageAction
 
 export function reducer(
   state: CampaignEditorState,
@@ -67,6 +78,8 @@ export function reducer(
       }
     case 'RequestEditAction':
       return { ...state, editRequest: state.editRequest + 1 }
+    case 'SetPreviewLanguageAction':
+      return { ...state, previewLanguageId: action.previewLanguageId }
   }
 }
 
@@ -156,6 +169,7 @@ export function CampaignEditorProvider({
 }: CampaignEditorProviderProps): ReactElement {
   const [state, dispatch] = useReducer(reducer, {
     pageKind: CampaignPageKind.landing,
+    previewLanguageId: campaign.defaultLanguageId,
     editRequest: 0,
     ...initialState
   })

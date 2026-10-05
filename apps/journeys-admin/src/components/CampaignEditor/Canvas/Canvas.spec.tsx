@@ -2,7 +2,10 @@ import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignTextSource
+} from '../../../../__generated__/globalTypes'
 import { campaign } from '../data'
 import {
   CommandProbe,
@@ -25,7 +28,6 @@ function ViewHarness(): ReactElement {
       <Canvas
         campaign={campaign}
         pageKind={CampaignPageKind.landing}
-        previewLanguageId="529"
         view={view}
       />
     </StaticEditor>
@@ -39,12 +41,7 @@ function renderCanvas(
   return render(
     <StaticEditor>
       <SelectionProbe />
-      <Canvas
-        campaign={campaign}
-        pageKind={pageKind}
-        previewLanguageId="529"
-        view={view}
-      />
+      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
     </StaticEditor>
   )
 }
@@ -143,5 +140,91 @@ describe('Canvas', () => {
 
     fireEvent.click(body.querySelector('[data-testid="CampaignCanvasPage"]')!)
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
+  })
+})
+
+describe('Canvas preview language', () => {
+  const translated: typeof campaign = {
+    ...campaign,
+    blocks: campaign.blocks.map((block) =>
+      block.__typename === 'CampaignHeroBlock'
+        ? {
+            ...block,
+            titleTranslations: [
+              {
+                __typename: 'TranslatedValue',
+                languageId: '496',
+                value: "Partagez l'histoire de Noël",
+                source: CampaignTextSource.human
+              }
+            ]
+          }
+        : block
+    )
+  }
+
+  it('renders the campaign text in the preview language the top bar chose, falling back to the default where no translation exists', async () => {
+    const { baseElement } = render(
+      <StaticEditor
+        campaignProp={translated}
+        initialState={{ previewLanguageId: '496' }}
+      >
+        <Canvas
+          campaign={translated}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const hero = body.querySelector('[data-testid="CanvasSection-heroId"]')
+    expect(hero?.textContent).toContain("Partagez l'histoire de Noël")
+    expect(hero?.textContent).not.toContain('Share the story of Christmas')
+    // The untranslated eyebrow shows the default-language fallback, marked.
+    const eyebrow = hero?.querySelector('[data-testid="InlineText-eyebrow"]')
+    expect(eyebrow).toHaveTextContent('Christmas 2026')
+    expect(eyebrow).toHaveAttribute('data-fallback', 'true')
+  })
+
+  it('sets the frame direction from the preview language', async () => {
+    const arabic: typeof campaign = {
+      ...campaign,
+      languages: [
+        ...campaign.languages,
+        {
+          __typename: 'CampaignLanguage',
+          id: 'campaignLanguageArId',
+          languageId: '22658',
+          order: 2,
+          language: {
+            __typename: 'Language',
+            id: '22658',
+            bcp47: 'ar',
+            name: [
+              { __typename: 'LanguageName', value: 'العربية', primary: true }
+            ]
+          }
+        }
+      ]
+    }
+    const { baseElement } = render(
+      <StaticEditor
+        campaignProp={arabic}
+        initialState={{ previewLanguageId: '22658' }}
+      >
+        <Canvas
+          campaign={arabic}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    await frameBody(baseElement, 'CanvasSection-heroId')
+    const iframe = baseElement.getElementsByTagName('iframe')[0]
+    expect(iframe.contentDocument?.documentElement).toHaveAttribute(
+      'dir',
+      'rtl'
+    )
   })
 })

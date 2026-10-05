@@ -12,13 +12,15 @@ import {
   CampaignTextField,
   isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
+import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import {
   CampaignEditorState,
   useCampaignEditor
 } from '../../CampaignEditorProvider'
-import { campaign } from '../../data'
+import { campaign, campaignStrings } from '../../data'
 import {
   CommandProbe,
   QueriedEditor,
@@ -297,5 +299,209 @@ describe('useCampaignTextCommand', () => {
     await waitFor(() =>
       expect(input).toHaveValue('Share the story of Christmas')
     )
+  })
+})
+
+describe('useCampaignTextCommand on Campaign Strings and translations', () => {
+  const copy = campaignStrings.find((string) => string.key === 'copy')!
+
+  function StringField({
+    stringKey
+  }: {
+    stringKey: string
+  }): ReactElement | null {
+    const { campaign: current } = useCampaignEditor()
+    const string = current.strings.find(
+      (candidate) => candidate.key === stringKey
+    )
+    if (string == null) return null
+    return <BoundStringField string={string} />
+  }
+
+  function BoundStringField({
+    string
+  }: {
+    string: (typeof campaignStrings)[number]
+  }): ReactElement {
+    const { value, fallback, handleChange, handleFocus, handleBlur } =
+      useCampaignTextCommand({ string })
+    return (
+      <>
+        <input
+          aria-label={string.key}
+          value={value}
+          placeholder={fallback}
+          onChange={(event) => handleChange(event.target.value)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+        />
+      </>
+    )
+  }
+
+  function stringMock(value: string): Mock {
+    return {
+      request: {
+        query: CAMPAIGN_STRING_UPDATE,
+        variables: { campaignId: 'campaignId', key: 'copy', value }
+      },
+      result: vi.fn(() => ({
+        data: {
+          campaignStringUpdate: {
+            __typename: 'CampaignString',
+            id: copy.id,
+            key: 'copy',
+            value
+          }
+        }
+      }))
+    }
+  }
+
+  function translationMock(
+    target: Record<string, string>,
+    field: string,
+    value: string,
+    translations: Array<{ languageId: string; value: string }>
+  ): Mock {
+    return {
+      request: {
+        query: CAMPAIGN_TRANSLATION_SET,
+        variables: {
+          input: { target, field, languageId: '496', value }
+        }
+      },
+      result: vi.fn(() => ({
+        data: {
+          campaignTranslationSet: translations.map((translation) => ({
+            __typename: 'TranslatedValue',
+            source: 'human',
+            ...translation
+          }))
+        }
+      }))
+    }
+  }
+
+  function renderWith(
+    mocks: Mock[],
+    children: ReactElement,
+    initialState?: Partial<CampaignEditorState>
+  ): ReturnType<typeof render> & { cache: InMemoryCache } {
+    const cache = campaignCache()
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([getCampaignMock, ...mocks] as never)
+    ])
+    const rendered = render(
+      <QueriedEditor link={link} cache={cache} initialState={initialState}>
+        <CommandUndoItem variant="button" />
+        <CommandProbe />
+        <SelectionProbe />
+        <PreviewLanguageProbe />
+        {children}
+      </QueriedEditor>
+    )
+    return { ...rendered, cache }
+  }
+
+  function PreviewLanguageProbe(): ReactElement {
+    const {
+      state: { previewLanguageId }
+    } = useCampaignEditor()
+    return <span data-testid="PreviewLanguage">{previewLanguageId}</span>
+  }
+
+  it('edits a Campaign String in the default language as one Command through campaignStringUpdate', async () => {
+    const mocks = [stringMock('Copy the link'), stringMock('Copy link')]
+    renderWith(mocks, <StringField stringKey="copy" />)
+    const input = await screen.findByRole('textbox', { name: 'copy' })
+    expect(input).toHaveValue('Copy link')
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Copy the link' } })
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+    expect(input).toHaveValue('Copy link')
+  })
+
+  it('edits any text while previewing a non-default language as one Command through campaignTranslationSet with source human', async () => {
+    const mocks = [
+      translationMock({ blockId: 'heroId' }, 'title', 'Noël', [
+        { languageId: '496', value: 'Noël' }
+      ]),
+      translationMock({ blockId: 'heroId' }, 'title', '', [])
+    ]
+    const { cache } = renderWith(
+      mocks,
+      <Field blockId="heroId" field="title" />,
+      {
+        previewLanguageId: '496'
+      }
+    )
+    const input = await screen.findByRole('textbox', { name: 'title' })
+    // No French translation yet: the field starts empty and the API never
+    // receives a default-language write.
+    expect(input).toHaveValue('')
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Noël' } })
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    expect(readTitle(cache)).toBe('Share the story of Christmas')
+    const heroTranslations = cache.readFragment<{
+      titleTranslations: Array<{
+        languageId: string
+        value: string
+        source: string
+      }>
+    }>({
+      id: 'CampaignHeroBlock:heroId',
+      fragment: gql`
+        fragment HeroTitleTranslations on CampaignHeroBlock {
+          titleTranslations {
+            languageId
+            value
+            source
+          }
+        }
+      `
+    })
+    expect(heroTranslations?.titleTranslations).toEqual([
+      {
+        __typename: 'TranslatedValue',
+        languageId: '496',
+        value: 'Noël',
+        source: 'human'
+      }
+    ])
+
+    // Undo clears the entry it wrote, in the language it was written.
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+    await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+    expect(input).toHaveValue('')
+  })
+
+  it('translates a Campaign String by stringId while previewing a non-default language', async () => {
+    const mocks = [
+      translationMock({ stringId: copy.id }, 'value', 'Copier le lien', [
+        { languageId: '496', value: 'Copier le lien' }
+      ])
+    ]
+    renderWith(mocks, <StringField stringKey="copy" />, {
+      previewLanguageId: '496'
+    })
+    const input = await screen.findByRole('textbox', { name: 'copy' })
+    expect(input).toHaveValue('')
+    expect(input).toHaveAttribute('placeholder', 'Copy link')
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Copier le lien' } })
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    expect(input).toHaveValue('Copier le lien')
   })
 })

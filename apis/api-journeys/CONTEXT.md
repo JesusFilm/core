@@ -336,7 +336,7 @@ The fixed leading element of the Campaign header: the logo image when one is set
 _Avoid_: logo (the logo is one of its two forms), home button, title
 
 **Campaign Public Page**:
-How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rebuilt in the background about once a minute (and at once on publish, unpublish or a domain change), from one read of the published Campaign in the visitor's Page Language. A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.
+How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rendered per request from one read of the published Campaign in the visitor's Page Language (the request's `lang` parameter, saved cookie and `Accept-Language` decide it, so the page cannot be pre-built; a response the link's `lang` parameter alone decided is shared-cacheable for a minute, every other one is private). A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.
 _Avoid_: viewer page (the viewer is the app), static page, preview (that is the editor's)
 
 **Campaign Renderer**:
