@@ -43,15 +43,12 @@ describe('campaignImageBlockCreate', () => {
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
-    vi.mocked(transformInput).mockImplementation(
-      async (input) =>
-        ({
-          ...input,
-          width: 1600,
-          height: 900,
-          blurhash: 'LKO2?U%2Tw'
-        })
-    )
+    vi.mocked(transformInput).mockImplementation(async (input) => ({
+      ...input,
+      width: 1600,
+      height: 900,
+      blurhash: 'LKO2?U%2Tw'
+    }))
     const hero = campaignBlockWithAcl(fixture, 'heroId')
     prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[0])
     prismaMock.campaignBlock.findMany.mockResolvedValue(

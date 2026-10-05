@@ -48,10 +48,12 @@ describe('campaignImageBlockUpdate', () => {
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
-    vi.mocked(transformInput).mockImplementation(
-      async (input) =>
-        ({ ...input, width: 640, height: 480, blurhash: 'LKO2?U%2Tw' })
-    )
+    vi.mocked(transformInput).mockImplementation(async (input) => ({
+      ...input,
+      width: 640,
+      height: 480,
+      blurhash: 'LKO2?U%2Tw'
+    }))
     const image = campaignBlockWithAcl(fixture, 'heroId', {
       typename: 'CampaignImageBlock',
       src: SRC,
