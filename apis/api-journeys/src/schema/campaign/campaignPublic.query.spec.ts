@@ -264,7 +264,7 @@ describe('campaignPublic', () => {
   })
 
   it('returns a published campaign with every text field resolved to the requested language and translation lists omitted', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture() as any)
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
@@ -420,7 +420,7 @@ describe('campaignPublic', () => {
   })
 
   it('resolves to the default language when none is requested or the language is not a campaign language', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture() as any)
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
 
     const omitted = (await publicClient({
       document: CAMPAIGN_PUBLIC,
@@ -456,7 +456,7 @@ describe('campaignPublic', () => {
             : { ...language.journey, deletedAt: new Date() }
       }))
     }))
-    prismaMock.campaign.findFirst.mockResolvedValue(fixture as any)
+    prismaMock.campaign.findFirst.mockResolvedValue(fixture)
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
@@ -539,7 +539,7 @@ describe('campaignPublic', () => {
   })
 
   it('requires no authentication', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture() as any)
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,

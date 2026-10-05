@@ -2,6 +2,7 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import Head from 'next/head'
 import PlausibleProvider from 'next-plausible'
+import { NextSeo } from 'next-seo'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import {

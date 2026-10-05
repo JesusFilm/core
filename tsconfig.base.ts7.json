@@ -25,6 +25,7 @@
         "./libs/journeys/ui/src/components/*",
         "./libs/journeys/ui/src/libs/*"
       ],
+      "@core/locales/*": ["./libs/locales/*"],
       "@core/prisma/analytics/*": ["./libs/prisma/analytics/src/*"],
       "@core/prisma/journeys/*": ["./libs/prisma/journeys/src/*"],
       "@core/prisma/languages/*": ["./libs/prisma/languages/src/*"],
