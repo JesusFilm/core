@@ -213,4 +213,53 @@ describe('journeys proxy', () => {
       )
     })
   })
+
+  describe('campaign short-circuit', () => {
+    it('rewrites /campaign/<slug> to /home/campaign/<slug> on a custom domain', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('custom.example.com', '/campaign/christmas-2026')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/home/campaign/christmas-2026'
+      )
+    })
+
+    it('rewrites a region page with its query string on the root domain', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('your.nextstep.is', '/campaign/christmas-2026/eur?lang=fr')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://your.nextstep.is/home/campaign/christmas-2026/eur?lang=fr'
+      )
+    })
+
+    it('rewrites /campaign/<slug> on a dev host', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      process.env.NEXT_PUBLIC_DEV_HOSTS = JSON.stringify({
+        x: 'tailscale-dev-x'
+      })
+      const result = await proxy(
+        buildRequest('tailscale-dev-x:4100', '/campaign/christmas-2026')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://tailscale-dev-x:4100/home/campaign/christmas-2026'
+      )
+    })
+
+    it('does NOT short-circuit paths that only share the prefix (e.g. /campaign-foo)', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('custom.example.com', '/campaign-foo')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/campaign-foo'
+      )
+    })
+  })
 })

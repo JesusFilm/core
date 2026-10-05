@@ -220,7 +220,7 @@ What a Campaign Button does when pressed, one row per button keyed by the button
 _Avoid_: link (bare), href, navigation
 
 **Campaign Status**:
-Whether a Campaign is `draft` or `published`. Status is the only public gate: a draft is never served, a published campaign is served as it is right now. `publishedAt` records the first publish and is never cleared by unpublishing, so it means "first went live", not "currently live". Publish and unpublish are explicit actions, never undo steps; nothing on a Campaign is locked by its status.
+Whether a Campaign is `draft` or `published`. Status is the only public gate: a draft is never served, a published campaign is served as it is right now. `publishedAt` records the first publish and is never cleared by unpublishing, so it means "first went live", not "currently live". Publish and unpublish are explicit actions, never undo steps; nothing on a Campaign is locked by its status. `campaignPublish` and `campaignUnpublish` are Manage-only, idempotent, and queue one revalidate job per public page path (landing and every region) through the revalidate worker's `paths[]` job; content mutations queue nothing.
 _Avoid_: live/offline (use published/draft), visibility, state
 
 **Live Editing**:
@@ -252,7 +252,7 @@ Who may do what to a Campaign, decided by the caller's **Team Role** on the owni
 _Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
 
 **Campaign Public**:
-The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals.
+The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals. Read by `campaignPublic(slug | hostname, languageId)`: exactly one key, no auth, draft or unknown is `NOT_FOUND`; every Translated Field arrives resolved through `resolveText` (requested language → default column → empty), blocks come as flat lists per page plus the chrome, and each region carries its Share Languages with the linked journey's live status and resolved addresses. `hostname` resolves through a Campaign Root once that lands.
 _Avoid_: public campaign (as a status), published view, visitor API
 
 **Campaign Address**:

@@ -27,6 +27,22 @@ _Avoid_: page, screen, slide (a Slide is an editor panel — see traps)
 **Action Block**:
 A block that can carry an Action (button, radio option, sign-up, video). Only Action Blocks participate in goal/target analysis.
 
+### Campaign rendering (viewer-side)
+
+**Campaign Renderer**:
+The campaign counterpart of the Block Renderer, under `components/Campaign`: one switch over `__typename` to one component per campaign typename, with no Wrappers — the editor canvas paints with its own components and shares only the pure helpers (`createCampaignTheme`, `resolveBand`, `transformCampaignBlocks`, `campaignFontsHref`). Header and footer are Campaign Chrome rendered by the page's slots, not sections.
+_Avoid_: block renderer (the journey one), wrapper (there are none here)
+
+**Campaign Page**:
+One of a campaign's two pages built from the `CampaignPublic` payload, a page kind and (for the Region Page) a region: the page's flat block list is treed, each section is kept or skipped by the empty-state matrix (`shouldRenderSection`), and the survivors render through the Campaign Renderer between the chrome slots.
+
+**Section Band**:
+The one wrapper every campaign section renders through (`CampaignSectionBand`): it resolves the band table (`backgroundKind` × theme plus the section's colour overrides) into CSS variables on a `<section id={block.id}>`, and orders the Extras placed above, the typed body, then the Extras placed below. Typography and buttons inside read their colours and alignment from its context.
+_Avoid_: section wrapper, card (a card sits inside a band)
+
+**Inert button**:
+A campaign button whose action target is missing (a scroll target on another page, a deleted region, no action at all): rendered static with the same look, no `href`, `aria-disabled` and no pointer effect — never hidden.
+
 ### Playback (viewer-side)
 
 **Block History**:

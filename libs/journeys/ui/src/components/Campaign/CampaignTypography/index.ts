@@ -1,0 +1,1 @@
+export { CampaignTypography } from './CampaignTypography'

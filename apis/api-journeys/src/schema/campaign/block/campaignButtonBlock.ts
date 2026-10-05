@@ -1,7 +1,10 @@
-import { builder } from '../../builder'
+import { CampaignAction, prisma } from '@core/prisma/journeys/client'
+
 import { ButtonSize } from '../../block/button/enums/buttonSize'
 import { ButtonVariant } from '../../block/button/enums/buttonVariant'
 import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
+import { builder } from '../../builder'
+import { CampaignActionInterface } from '../action/campaignAction'
 import { CampaignChildPlacement } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
@@ -55,6 +58,19 @@ export const CampaignButtonBlock = builder.prismaObject('CampaignBlock', {
       type: CampaignChildPlacement,
       nullable: true
     }),
-    action: t.relation('action', { nullable: true })
+    // Reads the action a parent list preloaded (the admin `blocks` list and
+    // `campaignPublic` both include it) and only queries when the row arrived
+    // bare, so no public read pays a second query per button.
+    action: t.field({
+      type: CampaignActionInterface,
+      nullable: true,
+      resolve: async (block) => {
+        if ('action' in block)
+          return (block as { action: CampaignAction | null }).action
+        return await prisma.campaignAction.findUnique({
+          where: { campaignBlockId: block.id }
+        })
+      }
+    })
   })
 })
