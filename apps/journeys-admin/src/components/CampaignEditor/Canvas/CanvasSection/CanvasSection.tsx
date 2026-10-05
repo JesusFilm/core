@@ -2,11 +2,20 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
-import { ReactElement, useMemo } from 'react'
+import { SimplePaletteColorOptions } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next/pages'
+import {
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
 import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -16,6 +25,15 @@ import {
   CampaignChildPlacement,
   TypographyVariant
 } from '../../../../../__generated__/globalTypes'
+import {
+  CAMPAIGN_TEXT_FIELDS,
+  CampaignTextBlock,
+  CampaignTextField,
+  isCampaignTextBlock,
+  primaryTextField
+} from '../../../../libs/useCampaignBlockTextMutation'
+import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { InlineText } from '../InlineText'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 
@@ -24,33 +42,11 @@ interface CanvasSectionProps {
   theme: CampaignTheme
 }
 
-interface SectionText {
-  eyebrow?: string | null
-  title?: string | null
-  lede?: string | null
-}
+const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
-function hasText(value: string | null | undefined): value is string {
-  return value != null && value.trim() !== ''
-}
-
-function sectionText(block: CanvasBlock): SectionText {
-  switch (block.__typename) {
-    case 'CampaignHeroBlock':
-    case 'CampaignJourneyListBlock':
-      return { eyebrow: block.eyebrow, title: block.title, lede: block.lede }
-    case 'CampaignVideoCarouselBlock':
-    case 'CampaignAnalyticsBlock':
-      return { eyebrow: block.eyebrow, title: block.title }
-    case 'CampaignRegionSwitcherBlock':
-      return { title: block.title }
-    case 'CampaignRegionShareBlock':
-      return { title: block.title, lede: block.intro }
-    case 'CampaignRegionHeaderBlock':
-      return { lede: block.intro }
-    default:
-      return {}
-  }
+const SELECTED_OUTLINE = {
+  outline: `2px solid ${adminPrimary.main}`,
+  outlineOffset: -2
 }
 
 function isAbove(child: CanvasBlock): boolean {
@@ -61,30 +57,63 @@ function isAbove(child: CanvasBlock): boolean {
   )
 }
 
-function CanvasExtra({ block }: { block: CanvasBlock }): ReactElement | null {
+interface CanvasExtraProps {
+  block: CanvasBlock
+  selected: boolean
+  onSelect: () => void
+  focusField?: CampaignTextField
+}
+
+/** A text or button Extra: click to select, edit its one text field in place. */
+function CanvasExtra({
+  block,
+  selected,
+  onSelect,
+  focusField
+}: CanvasExtraProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  function handleClick(event: MouseEvent<HTMLElement>): void {
+    event.stopPropagation()
+    onSelect()
+  }
+
   switch (block.__typename) {
     case 'CampaignTypographyBlock':
-      if (!hasText(block.content)) return null
-      return (
-        <Typography
-          variant={block.typographyVariant ?? TypographyVariant.body1}
-          variantMapping={{ overline: 'p', caption: 'p' }}
-          align={block.align ?? undefined}
-          data-testid="CanvasTypography"
-          sx={{
-            color: block.color ?? 'var(--campaign-band-text)',
-            whiteSpace: 'pre-line',
-            wordBreak: 'break-word'
-          }}
-        >
-          {block.content}
-        </Typography>
-      )
-    case 'CampaignButtonBlock':
       return (
         <Box
+          data-testid={`CanvasExtra-${block.id}`}
+          onClick={handleClick}
+          sx={{
+            width: '100%',
+            cursor: 'pointer',
+            ...(selected ? SELECTED_OUTLINE : {})
+          }}
+        >
+          <InlineText
+            block={block}
+            field="content"
+            placeholder={t('Your text')}
+            editing={selected}
+            autoFocus={selected && focusField === 'content'}
+            onSelect={onSelect}
+            variant={block.typographyVariant ?? TypographyVariant.body1}
+            variantMapping={{ overline: 'p', caption: 'p' }}
+            align={block.align ?? undefined}
+            sx={{ color: block.color ?? 'var(--campaign-band-text)' }}
+          />
+        </Box>
+      )
+    case 'CampaignButtonBlock': {
+      const buttonVariant = block.buttonVariant ?? 'contained'
+      return (
+        <Box
+          data-testid={`CanvasExtra-${block.id}`}
+          onClick={handleClick}
           sx={{
             display: 'flex',
+            cursor: 'pointer',
+            ...(selected ? SELECTED_OUTLINE : {}),
             justifyContent:
               block.align === 'center'
                 ? 'center'
@@ -96,41 +125,133 @@ function CanvasExtra({ block }: { block: CanvasBlock }): ReactElement | null {
           }}
         >
           <Button
-            variant={block.buttonVariant ?? 'contained'}
+            component="div"
+            variant={buttonVariant}
             size={block.size ?? 'medium'}
             data-testid="CanvasButton"
             tabIndex={-1}
             sx={{
-              pointerEvents: 'none',
               bgcolor:
-                (block.buttonVariant ?? 'contained') === 'contained'
+                buttonVariant === 'contained'
                   ? (block.color ?? 'var(--campaign-band-button)')
                   : undefined,
               color:
-                (block.buttonVariant ?? 'contained') === 'contained'
+                buttonVariant === 'contained'
                   ? (block.labelColor ?? 'var(--campaign-band-button-label)')
                   : (block.color ?? 'var(--campaign-band-button)'),
               borderColor: block.color ?? 'var(--campaign-band-button)'
             }}
           >
-            {block.label}
+            <InlineText
+              block={block}
+              field="label"
+              placeholder={t('Button')}
+              editing={selected}
+              autoFocus={selected && focusField === 'label'}
+              onSelect={onSelect}
+              variant="inherit"
+              component="span"
+            />
           </Button>
         </Box>
       )
+    }
     default:
       return null
   }
 }
 
+interface SectionTextProps {
+  block: CampaignTextBlock
+  field: CampaignTextField
+  editing: boolean
+  focusField?: CampaignTextField
+  onSelect: (field: CampaignTextField) => void
+  titleVariant: 'h1' | 'h2'
+}
+
+function sectionFieldPlaceholder(
+  t: (key: string) => string,
+  field: CampaignTextField
+): string {
+  switch (field) {
+    case 'eyebrow':
+      return t('Eyebrow')
+    case 'title':
+      return t('Title')
+    case 'lede':
+      return t('Lede')
+    case 'intro':
+      return t('Intro')
+    default:
+      return t('Your text')
+  }
+}
+
+/** One of a section's typed text fields, styled as the public page styles it. */
+function SectionText({
+  block,
+  field,
+  editing,
+  focusField,
+  onSelect,
+  titleVariant
+}: SectionTextProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+  const value = (block as unknown as Record<string, string | null>)[field]
+  if (!editing && (value == null || value.trim() === '')) return null
+  const styles = {
+    eyebrow: {
+      variant: 'overline' as const,
+      sx: { color: 'var(--campaign-band-eyebrow)' }
+    },
+    title: {
+      variant: titleVariant,
+      sx: { color: 'var(--campaign-band-heading)' }
+    },
+    lede: {
+      variant: 'body1' as const,
+      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+    },
+    intro: {
+      variant: 'body1' as const,
+      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+    }
+  }[field as 'eyebrow' | 'title' | 'lede' | 'intro']
+
+  return (
+    <InlineText
+      block={block}
+      field={field}
+      placeholder={sectionFieldPlaceholder(t, field)}
+      editing={editing}
+      autoFocus={editing && focusField === field}
+      onSelect={onSelect}
+      variant={styles.variant}
+      sx={styles.sx}
+    />
+  )
+}
+
 /**
- * The editor canvas's own read-only rendering of one section: the band from
- * the shared resolution table, the Extras placed above, the section text,
- * then the Extras placed below. Inline editing arrives with the text ticket.
+ * One section on the editor canvas: the band from the shared resolution
+ * table, the Extras placed above, the section's typed text, then the Extras
+ * placed below. Clicking anywhere selects the section; clicking an Extra
+ * selects it. The selected block's text fields become inline inputs.
  */
 export function CanvasSection({
   block,
   theme
 }: CanvasSectionProps): ReactElement | null {
+  const {
+    selection,
+    selectBlock,
+    state: { editRequest }
+  } = useCampaignEditor()
+  const [focusField, setFocusField] = useState<CampaignTextField>()
+  const seenEditRequest = useRef(editRequest)
+  const selectedId = selection.block?.id
+  const sectionSelected = selectedId === block.id
   const band = useMemo(() => {
     if (
       block.__typename === 'CampaignTypographyBlock' ||
@@ -139,9 +260,20 @@ export function CanvasSection({
       return null
     return resolveBand(block, theme)
   }, [block, theme])
+
+  useEffect(() => {
+    if (editRequest === seenEditRequest.current) return
+    seenEditRequest.current = editRequest
+    const target = selection.block
+    if (target == null || !isCampaignTextBlock(target)) return
+    const inSection =
+      target.id === block.id || target.parentBlockId === block.id
+    if (!inSection) return
+    setFocusField(primaryTextField(target.__typename))
+  }, [editRequest, selection.block, block.id])
+
   if (band == null) return null
 
-  const text = sectionText(block)
   const align = 'align' in block ? block.align : null
   const titleVariant = block.__typename === 'CampaignHeroBlock' ? 'h1' : 'h2'
   const above = block.children.filter(isAbove)
@@ -152,56 +284,71 @@ export function CanvasSection({
       : align === 'right'
         ? 'flex-end'
         : 'flex-start'
+  const textFields: readonly CampaignTextField[] = isCampaignTextBlock(block)
+    ? CAMPAIGN_TEXT_FIELDS[block.__typename]
+    : []
+
+  function handleSelectField(field: CampaignTextField): void {
+    setFocusField(field)
+    selectBlock(block.id)
+  }
+
+  function selectExtra(child: CanvasBlock, field: CampaignTextField): void {
+    setFocusField(field)
+    selectBlock(child.id)
+  }
+
+  function renderExtra(child: CanvasBlock): ReactElement | null {
+    const field: CampaignTextField =
+      child.__typename === 'CampaignButtonBlock' ? 'label' : 'content'
+    return (
+      <CanvasExtra
+        key={child.id}
+        block={child}
+        selected={selectedId === child.id}
+        onSelect={() => selectExtra(child, field)}
+        focusField={focusField}
+      />
+    )
+  }
 
   return (
     <Box
       component="section"
       id={block.id}
       data-testid={`CanvasSection-${block.id}`}
+      data-selected={sectionSelected}
       style={bandCssVariables(band)}
+      onClick={(event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation()
+        setFocusField(undefined)
+        selectBlock(block.id)
+      }}
       sx={{
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
-        py: { xs: 6, md: 10 }
+        py: { xs: 6, md: 10 },
+        cursor: 'pointer',
+        ...(sectionSelected ? SELECTED_OUTLINE : {})
       }}
     >
       <Container maxWidth="lg">
         <Stack spacing={3} sx={{ alignItems }}>
-          {above.map((child) => (
-            <CanvasExtra key={child.id} block={child} />
-          ))}
-          {hasText(text.eyebrow) && (
-            <Typography
-              variant="overline"
-              component="p"
-              data-testid="CanvasEyebrow"
-              sx={{ color: 'var(--campaign-band-eyebrow)' }}
-            >
-              {text.eyebrow}
-            </Typography>
-          )}
-          {hasText(text.title) && (
-            <Typography
-              variant={titleVariant}
-              data-testid="CanvasTitle"
-              sx={{ color: 'var(--campaign-band-heading)' }}
-            >
-              {text.title}
-            </Typography>
-          )}
-          {hasText(text.lede) && (
-            <Typography
-              variant="body1"
-              data-testid="CanvasLede"
-              sx={{ color: 'var(--campaign-band-muted)', maxWidth: 720 }}
-            >
-              {text.lede}
-            </Typography>
-          )}
-          {below.map((child) => (
-            <CanvasExtra key={child.id} block={child} />
-          ))}
+          {above.map(renderExtra)}
+          {isCampaignTextBlock(block) &&
+            textFields.map((field) => (
+              <SectionText
+                key={field}
+                block={block}
+                field={field}
+                editing={sectionSelected}
+                focusField={focusField}
+                onSelect={handleSelectField}
+                titleVariant={titleVariant}
+              />
+            ))}
+          {below.map(renderExtra)}
         </Stack>
       </Container>
     </Box>

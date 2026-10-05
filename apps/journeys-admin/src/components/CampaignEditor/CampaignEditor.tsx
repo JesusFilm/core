@@ -17,9 +17,14 @@ import {
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 
 import { BottomBar } from './BottomBar'
+import {
+  CampaignEditorProvider,
+  useCampaignEditor
+} from './CampaignEditorProvider'
 import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { FirstRunHint } from './FirstRunHint'
+import { Hotkeys } from './Hotkeys'
 import { Settings } from './Settings'
 import { TopBar } from './TopBar'
 
@@ -30,22 +35,72 @@ interface CampaignEditorProps {
   campaign?: Campaign
 }
 
+interface CampaignEditorShellProps {
+  campaign: Campaign
+  isManager: boolean
+}
+
+/** Everything inside the providers: the bars, the hint, the canvas and the settings drawer. */
+function CampaignEditorShell({
+  campaign,
+  isManager
+}: CampaignEditorShellProps): ReactElement {
+  const {
+    state: { pageKind },
+    dispatch
+  } = useCampaignEditor()
+  const [previewLanguageId, setPreviewLanguageId] = useState<string>()
+  const [view, setView] = useState<CanvasView>('desktop')
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  function handlePageKindChange(nextPageKind: CampaignPageKind): void {
+    dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind })
+  }
+
+  return (
+    <Stack data-testid="CampaignEditor" sx={{ height: '100vh' }}>
+      <Hotkeys />
+      <TopBar
+        campaign={campaign}
+        pageKind={pageKind}
+        onPageKindChange={handlePageKindChange}
+        previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
+        onPreviewLanguageChange={setPreviewLanguageId}
+        view={view}
+        onViewChange={setView}
+        isManager={isManager}
+      />
+      <FirstRunHint campaignId={campaign.id} />
+      <Canvas
+        campaign={campaign}
+        pageKind={pageKind}
+        previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
+        view={view}
+      />
+      <BottomBar onSettingsClick={() => setSettingsOpen(true)} />
+      <Drawer
+        anchor="right"
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      >
+        <Settings campaign={campaign} isManager={isManager} />
+      </Drawer>
+    </Stack>
+  )
+}
+
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
- * so the Command history survives switching page, the top bar, the first-run
- * hint, the canvas and the campaign-row bottom bar. First open after create
- * shows the landing page, nothing selected, Desktop view, the default
- * language. Nothing replaces Save.
+ * so the Command history survives switching page, the selection reducer,
+ * the top bar, the first-run hint, the canvas and the contextual bottom
+ * bar. First open after create shows the landing page, nothing selected,
+ * Desktop view, the default language. Nothing replaces Save.
  */
 export function CampaignEditor({
   campaign
 }: CampaignEditorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const isDesktop = useMediaQuery(`(min-width:${EDITOR_MIN_WIDTH}px)`)
-  const [pageKind, setPageKind] = useState(CampaignPageKind.landing)
-  const [previewLanguageId, setPreviewLanguageId] = useState<string>()
-  const [view, setView] = useState<CanvasView>('desktop')
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
   useEffect(() => {
@@ -96,33 +151,9 @@ export function CampaignEditor({
 
   return (
     <CommandProvider>
-      <Stack data-testid="CampaignEditor" sx={{ height: '100vh' }}>
-        <TopBar
-          campaign={campaign}
-          pageKind={pageKind}
-          onPageKindChange={setPageKind}
-          previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
-          onPreviewLanguageChange={setPreviewLanguageId}
-          view={view}
-          onViewChange={setView}
-          isManager={isManager}
-        />
-        <FirstRunHint campaignId={campaign.id} />
-        <Canvas
-          campaign={campaign}
-          pageKind={pageKind}
-          previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
-          view={view}
-        />
-        <BottomBar onSettingsClick={() => setSettingsOpen(true)} />
-        <Drawer
-          anchor="right"
-          open={settingsOpen}
-          onClose={() => setSettingsOpen(false)}
-        >
-          <Settings campaign={campaign} isManager={isManager} />
-        </Drawer>
-      </Stack>
+      <CampaignEditorProvider campaign={campaign}>
+        <CampaignEditorShell campaign={campaign} isManager={isManager} />
+      </CampaignEditorProvider>
     </CommandProvider>
   )
 }
