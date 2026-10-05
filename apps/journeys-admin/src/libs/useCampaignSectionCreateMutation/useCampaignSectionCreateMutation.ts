@@ -18,7 +18,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignRegionShareBlock'
 ] as const
 
-export type CampaignSectionTypename = (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
+export type CampaignSectionTypename =
+  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
 
 export type CampaignSectionBlock = Extract<
   CampaignBlock,
@@ -166,7 +167,8 @@ export function useCampaignSectionCreateMutation(
   const client = useApolloClient()
   return useCallback(
     async (block, input) => {
-      const { document, operation } = SECTION_CREATE_OPERATIONS[block.__typename]
+      const { document, operation } =
+        SECTION_CREATE_OPERATIONS[block.__typename]
       return await client.mutate<SectionCreateResult>({
         mutation: document,
         variables: { input },

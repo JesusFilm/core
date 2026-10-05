@@ -10,13 +10,13 @@ import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 import {
   assertPlacement,
   assertTopLevelScope,
-  authorizeStructuralBlock,
-  collectSubtree,
-  createTopLevelBlock,
   authorizeBlockCreate,
   authorizeBlockUpdate,
+  authorizeStructuralBlock,
   authorizeTypedBlockUpdate,
+  collectSubtree,
   createChildBlock,
+  createTopLevelBlock,
   getSiblings,
   removeBlock,
   restoreBlock,
@@ -421,7 +421,10 @@ describe('campaign block service', () => {
           authorizeStructuralBlock(id, user, 'deleted')
         )
 
-        expect(error.extensions).toMatchObject({ code: 'CONFLICT', field: 'id' })
+        expect(error.extensions).toMatchObject({
+          code: 'CONFLICT',
+          field: 'id'
+        })
       }
     )
 
@@ -433,15 +436,25 @@ describe('campaign block service', () => {
         })
       )
 
-      const error = await errorOf(authorizeStructuralBlock('slotId', user, 'moved'))
+      const error = await errorOf(
+        authorizeStructuralBlock('slotId', user, 'moved')
+      )
 
       expect(error.extensions).toMatchObject({ code: 'CONFLICT', field: 'id' })
     })
 
     it('tells a page id apart from an unknown id and refuses it (CONFLICT, id)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
-      const { team, languages, theme, pages, blocks, regions, strings, ...row } =
-        fixture
+      const {
+        team,
+        languages,
+        theme,
+        pages,
+        blocks,
+        regions,
+        strings,
+        ...row
+      } = fixture
       prismaMock.campaignPage.findUnique.mockResolvedValue({
         ...pages[1],
         campaign: { ...row, team }
@@ -461,8 +474,16 @@ describe('campaign block service', () => {
     it('throws FORBIDDEN for a page of another team’s campaign, not CONFLICT', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
       const other = campaignFactory({ userId: 'someoneElse' }).build()
-      const { team, languages, theme, pages, blocks, regions, strings, ...row } =
-        other
+      const {
+        team,
+        languages,
+        theme,
+        pages,
+        blocks,
+        regions,
+        strings,
+        ...row
+      } = other
       prismaMock.campaignPage.findUnique.mockResolvedValue({
         ...pages[0],
         campaign: { ...row, team }
@@ -479,7 +500,9 @@ describe('campaign block service', () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
       prismaMock.campaignPage.findUnique.mockResolvedValue(null)
 
-      const error = await errorOf(authorizeStructuralBlock('nope', user, 'deleted'))
+      const error = await errorOf(
+        authorizeStructuralBlock('nope', user, 'deleted')
+      )
 
       expect(error.extensions.code).toBe('NOT_FOUND')
     })
@@ -531,7 +554,10 @@ describe('campaign block service', () => {
 
     it('rejects a section with neither (BAD_USER_INPUT, pageId)', () => {
       expect(() =>
-        assertTopLevelScope('CampaignHeroBlock', { pageId: null, regionId: null })
+        assertTopLevelScope('CampaignHeroBlock', {
+          pageId: null,
+          regionId: null
+        })
       ).toThrow(
         expect.objectContaining({
           extensions: { code: 'BAD_USER_INPUT', field: 'pageId' }
@@ -553,7 +579,10 @@ describe('campaign block service', () => {
           })
         )
         expect(() =>
-          assertTopLevelScope(typename, { pageId: null, regionId: 'eurRegionId' })
+          assertTopLevelScope(typename, {
+            pageId: null,
+            regionId: 'eurRegionId'
+          })
         ).toThrow(
           expect.objectContaining({
             extensions: { code: 'BAD_USER_INPUT', field: 'pageId' }
@@ -658,7 +687,11 @@ describe('campaign block service', () => {
       prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[1])
 
       await expect(
-        validateSectionPage('campaignId', 'regionPageId', 'CampaignRegionShareBlock')
+        validateSectionPage(
+          'campaignId',
+          'regionPageId',
+          'CampaignRegionShareBlock'
+        )
       ).resolves.toBe(fixture.pages[1])
       expect(prismaMock.campaignPage.findFirst).toHaveBeenCalledWith({
         where: { id: 'regionPageId', campaignId: 'campaignId' }
@@ -685,7 +718,11 @@ describe('campaign block service', () => {
       prismaMock.campaignPage.findFirst.mockResolvedValue(null)
 
       const error = await errorOf(
-        validateSectionPage('otherCampaign', 'landingPageId', 'CampaignHeroBlock')
+        validateSectionPage(
+          'otherCampaign',
+          'landingPageId',
+          'CampaignHeroBlock'
+        )
       )
 
       expect(error.extensions).toMatchObject({
@@ -697,10 +734,17 @@ describe('campaign block service', () => {
 
   describe('collectSubtree', () => {
     it('lists a block, then its children and owned blocks, parents first', () => {
-      const media = { ...hero, id: 'heroMediaId', parentBlockId: null, parentOrder: null }
+      const media = {
+        ...hero,
+        id: 'heroMediaId',
+        parentBlockId: null,
+        parentOrder: null
+      }
       const live = [
         ...fixture.blocks.map((block) =>
-          block.id === 'heroId' ? { ...block, mediaBlockId: 'heroMediaId' } : block
+          block.id === 'heroId'
+            ? { ...block, mediaBlockId: 'heroMediaId' }
+            : block
         ),
         media
       ]

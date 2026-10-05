@@ -107,8 +107,20 @@ describe('campaignBlockDuplicate', () => {
     ])
 
     expect(result.data.campaignBlockDuplicate).toEqual([
-      { id: 'heroId', parentBlockId: null, parentOrder: 0, title: 'Share the story of Christmas', mediaBlockId: null },
-      { id: 'heroCopyId', parentBlockId: null, parentOrder: 1, title: 'Share the story of Christmas', mediaBlockId: null },
+      {
+        id: 'heroId',
+        parentBlockId: null,
+        parentOrder: 0,
+        title: 'Share the story of Christmas',
+        mediaBlockId: null
+      },
+      {
+        id: 'heroCopyId',
+        parentBlockId: null,
+        parentOrder: 1,
+        title: 'Share the story of Christmas',
+        mediaBlockId: null
+      },
       { id: 'landingSwitcherId', parentBlockId: null, parentOrder: 2 },
       { id: 'carouselId', parentBlockId: null, parentOrder: 3 },
       { id: 'landingJourneyListId', parentBlockId: null, parentOrder: 4 },
@@ -183,12 +195,15 @@ describe('campaignBlockDuplicate', () => {
       content: 'poster'
     }
     setLive(
-      fixture.blocks.map((block) => {
-        if (block.id === 'heroId') return { ...block, mediaBlockId: 'heroMediaId' }
-        if (block.id === 'heroButtonId')
-          return { ...block, action: { ...block.action!, blockId: 'heroId' } }
-        return block
-      }).concat(media)
+      fixture.blocks
+        .map((block) => {
+          if (block.id === 'heroId')
+            return { ...block, mediaBlockId: 'heroMediaId' }
+          if (block.id === 'heroButtonId')
+            return { ...block, action: { ...block.action!, blockId: 'heroId' } }
+          return block
+        })
+        .concat(media)
     )
 
     const result = await duplicate('heroId', [
@@ -216,7 +231,12 @@ describe('campaignBlockDuplicate', () => {
       where: { id: 'heroButtonCopyId' },
       data: {
         action: {
-          create: { blockId: 'heroCopyId', regionId: null, url: null, target: null }
+          create: {
+            blockId: 'heroCopyId',
+            regionId: null,
+            url: null,
+            target: null
+          }
         }
       },
       include: { action: true }

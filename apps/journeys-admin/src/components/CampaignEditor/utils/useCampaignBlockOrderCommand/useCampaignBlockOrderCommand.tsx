@@ -105,7 +105,11 @@ export function useCampaignBlockOrderCommand(): {
 
     add<OrderParameters>({
       parameters: { execute: after, undo: before },
-      execute({ parentOrder: nextParentOrder, placement: nextPlacement, rows }) {
+      execute({
+        parentOrder: nextParentOrder,
+        placement: nextPlacement,
+        rows
+      }) {
         dispatch({
           type: 'SetEditorFocusAction',
           pageKind: blockPageKind,

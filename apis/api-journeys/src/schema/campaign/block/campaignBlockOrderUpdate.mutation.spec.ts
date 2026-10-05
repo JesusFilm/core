@@ -105,7 +105,9 @@ describe('campaignBlockOrderUpdate', () => {
       })
     )
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalledWith(
-      expect.objectContaining({ data: expect.objectContaining({ placement: expect.anything() }) })
+      expect.objectContaining({
+        data: expect.objectContaining({ placement: expect.anything() })
+      })
     )
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
       where: { id: 'campaignId' },

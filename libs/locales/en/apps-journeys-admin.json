@@ -1430,5 +1430,11 @@
   "Your text": "Your text",
   "Eyebrow": "Eyebrow",
   "Lede": "Lede",
-  "Intro": "Intro"
+  "Intro": "Intro",
+  "Delete section?": "Delete section?",
+  "This removes the section from every region page.": "This removes the section from every region page.",
+  "You can undo this afterwards.": "You can undo this afterwards.",
+  "Section above": "Section above",
+  "Section below": "Section below",
+  "Drag section": "Drag section"
 }

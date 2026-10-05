@@ -180,8 +180,16 @@ describe('campaignBlockDelete', () => {
     'refuses to delete the page %s (CONFLICT, id)',
     async (id) => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
-      const { team, languages, theme, pages, blocks, regions, strings, ...row } =
-        fixture
+      const {
+        team,
+        languages,
+        theme,
+        pages,
+        blocks,
+        regions,
+        strings,
+        ...row
+      } = fixture
       prismaMock.campaignPage.findUnique.mockResolvedValue({
         ...pages.find((page) => page.id === id)!,
         campaign: { ...row, team }
