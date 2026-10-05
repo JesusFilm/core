@@ -1,6 +1,7 @@
 import { builder } from '../builder'
 import { Language } from '../language'
 
+import { CampaignBlock } from './block'
 import { CampaignStatus } from './enums'
 import { TranslatedValueRef, toTranslatedValues } from './translatedValue'
 
@@ -73,14 +74,19 @@ export const CampaignRef = builder.prismaObject('Campaign', {
       description: 'Exactly the landing page and the Region Page.',
       query: { orderBy: { kind: 'asc' } }
     }),
-    blocks: t.relation('blocks', {
+    blocks: t.field({
+      type: [CampaignBlock],
       nullable: false,
       description:
         'Every live Campaign Block of the campaign as one flat list (both pages, chrome, Region Lines, owned blocks), ordered by parentOrder; the client trees it by parentBlockId and partitions it by pageId / regionId.',
-      query: {
-        where: { deletedAt: null },
-        orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }]
-      }
+      select: {
+        blocks: {
+          where: { deletedAt: null },
+          orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
+          include: { action: true }
+        }
+      },
+      resolve: (campaign) => campaign.blocks
     }),
     regions: t.relation('regions', {
       nullable: false,

@@ -671,6 +671,64 @@ enum CampaignPageKind {
 }
 
 """
+One of the two campaign pages with its live blocks as a flat list (sections, their Extras and owned blocks) that the viewer trees by parentBlockId and parentOrder.
+"""
+type CampaignPagePublic {
+  id: ID!
+  kind: CampaignPageKind!
+
+  """
+  Every live block scoped to this page, ordered by parentOrder; every text field resolved to the requested language.
+  """
+  blocks: [CampaignBlock!]!
+}
+
+"""
+The narrowed read of a published Campaign served to anonymous visitors by `campaignPublic`. Every Translated Field arrives resolved to the requested language (translation lists are empty); blocks come as flat lists per page plus the chrome. Nothing here leads to the team, its members or linked-journey internals; the admin `Campaign` type keeps the full shape behind campaign Read.
+"""
+type CampaignPublic {
+  id: ID!
+
+  """
+  Owning team id, so page views reach the team's existing Plausible site. An opaque id; the team itself is not reachable from here.
+  """
+  teamId: ID!
+  slug: String!
+
+  """Resolved to the requested language; the public page title."""
+  title: String!
+  defaultLanguageId: ID!
+  defaultLanguage: Language!
+
+  """
+  The Page Language every text field was resolved to: the requested campaign language, else the default.
+  """
+  languageId: ID!
+  language: Language!
+  publishedAt: DateTimeISO
+
+  """Page Languages in selector order."""
+  languages: [CampaignLanguage!]!
+  theme: CampaignTheme!
+
+  """The seventeen Campaign Strings, values resolved."""
+  strings: [CampaignString!]!
+
+  """Every Campaign Region, listed and orphan, in switcher order."""
+  regions: [CampaignRegionPublic!]!
+  header: CampaignHeaderBlock!
+  footer: CampaignFooterBlock!
+
+  """
+  The Campaign Chrome as a flat list: the header, the footer, their children and the header logo, ordered by parentOrder.
+  """
+  chrome: [CampaignBlock!]!
+
+  """The landing page and the Region Page, each with its blocks."""
+  pages: [CampaignPagePublic!]!
+}
+
+"""
 Corner radius of the Campaign Theme: square 0, slight 6, rounded 14, veryRounded 24 px.
 """
 enum CampaignRadius {
@@ -782,6 +840,55 @@ type CampaignRegionLanguage {
   description: String
   qrCodeId: ID
   order: Int!
+}
+
+"""
+A Share Language of a Campaign Region as the public page reads it: the language, whether its linked journey is live, and the journey's resolved public and embed addresses. Nothing here leads to the journey row itself.
+"""
+type CampaignRegionLanguagePublic {
+  id: ID!
+
+  """api-languages Language id."""
+  languageId: ID!
+  language: Language!
+  order: Int!
+
+  """
+  The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.
+  """
+  journeyStatus: JourneyStatus
+
+  """
+  The linked journey's public address, decided by its own team's domains; null unless the journey is live-published.
+  """
+  journeyUrl: String
+
+  """
+  The root-domain embed route for the linked journey; null unless the journey is live-published.
+  """
+  embedUrl: String
+}
+
+"""
+A Campaign Region as the public page reads it: listed and orphan regions alike, name resolved to the requested language, with its countries, Share Languages and Region Lines.
+"""
+type CampaignRegionPublic {
+  id: ID!
+  slug: String!
+
+  """Resolved to the requested language."""
+  name: String!
+  listed: Boolean!
+  order: Int!
+  countries: [CampaignRegionCountry!]!
+
+  """Share Languages in selector order."""
+  languages: [CampaignRegionLanguagePublic!]!
+
+  """
+  The Region Lines: CampaignTypographyBlock rows scoped to the region, in order, text resolved.
+  """
+  lines: [CampaignBlock!]!
 }
 
 """
@@ -2498,6 +2605,28 @@ type Mutation {
   - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
   """
   campaignCreate(input: CampaignCreateInput!): Campaign!
+
+  """
+  Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
+  
+  Auth: campaign Manage — a manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not a manager of the team.
+  """
+  campaignPublish(id: ID!): Campaign!
+
+  """
+  Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
+  
+  Auth: campaign Manage — a manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not a manager of the team.
+  """
+  campaignUnpublish(id: ID!): Campaign!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
@@ -3081,6 +3210,28 @@ type Query {
   - FORBIDDEN: caller is not in the team.
   """
   campaigns(teamId: ID!): [Campaign!]!
+
+  """
+  Public, unauthenticated read of a published Campaign for the public page: exactly one of `slug` (the root-domain address) or `hostname` (a Custom Domain whose Campaign Root it is), plus the Page Language to resolve every text field to (null = the campaign default). `status: published` is the only gate.
+  
+  Errors:
+  - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
+  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).
+  """
+  campaignPublic(
+    """
+    The campaign slug; must match `^[a-z0-9]+(-[a-z0-9]+)*$` and be at most 200 characters.
+    """
+    slug: String
+
+    """A Custom Domain name whose Campaign Root to read."""
+    hostname: String
+
+    """
+    api-languages Language id of the Page Language; a language the campaign does not have, or null, resolves to the default.
+    """
+    languageId: ID
+  ): CampaignPublic!
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node

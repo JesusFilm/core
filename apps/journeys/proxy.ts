@@ -71,6 +71,13 @@ export default async function proxy(
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
+  // Campaign pages resolve on every host (PRD §8): a campaign is always
+  // reachable at its root-domain address `/campaign/<slug>…`, on a custom
+  // domain and on a dev host alike, so the same prefix rewrite applies.
+  if (url.pathname.startsWith('/campaign/')) {
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url))
+  }
+
   // rewrite root application to `/home` folder
   if (
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
