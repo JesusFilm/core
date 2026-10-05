@@ -16,6 +16,8 @@ import './campaigns.query'
 import './campaignPublic'
 import './campaignPublic.query'
 import './campaignCreate.mutation'
+import './campaignUpdate.mutation'
+import './campaignDelete.mutation'
 import './campaignPublish.mutation'
 import './campaignUnpublish.mutation'
 
