@@ -1016,11 +1016,16 @@ type CampaignRegionLanguage {
   title: String
   description: String
   qrCodeId: ID
+
+  """
+  The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+  """
+  qrCode: QrCode
   order: Int!
 }
 
 """
-A Share Language of a Campaign Region as the public page reads it: the language, whether its linked journey is live, and the journey's resolved public and embed addresses. Nothing here leads to the journey row itself.
+A Share Language of a Campaign Region as the public page reads it: the language, whether its linked journey is live, the Share Link and the journey's resolved public and embed addresses. Nothing here leads to the journey row itself.
 """
 type CampaignRegionLanguagePublic {
   id: ID!
@@ -1036,6 +1041,11 @@ type CampaignRegionLanguagePublic {
   journeyStatus: JourneyStatus
 
   """
+  The Share Link: the short link the Campaign QR Code encodes, `https://<short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
+  """
+  shortLinkUrl: String
+
+  """
   The linked journey's public address, decided by its own team's domains; null unless the journey is live-published.
   """
   journeyUrl: String
@@ -1044,6 +1054,26 @@ type CampaignRegionLanguagePublic {
   The root-domain embed route for the linked journey; null unless the journey is live-published.
   """
   embedUrl: String
+}
+
+input CampaignRegionLanguageUpdateInput {
+  """
+  A pasted journey link: an admin link (`/journeys/<id>`) or the journey’s public URL on any domain (`/<slug>`). Resolves to a live-published journey of any team and links it, snapshotting its title and description; the Campaign QR Code is created or retargeted in the same step.
+  """
+  url: String
+
+  """
+  Link a live-published journey by id, or `null` to unlink the current journey, which deletes its Campaign QR Code and short link. Ignored when `url` is given.
+  """
+  journeyId: ID
+
+  """Edit the snapshotted title; at most 200 characters. Null clears it."""
+  title: String
+
+  """
+  Edit the snapshotted description; at most 1000 characters. Null clears it.
+  """
+  description: String
 }
 
 """
@@ -3263,7 +3293,7 @@ type Mutation {
   campaignRegionOrderUpdate(id: ID!, order: Int!): [CampaignRegion!]!
 
   """
-  Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages, its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.
+  Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages (each deleting its Campaign QR Code and short link), its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3298,6 +3328,54 @@ type Mutation {
   campaignRegionCountryRemove(id: ID!): CampaignRegionCountry!
 
   """
+  Add a Share Language to a Campaign Region, appended last in selector order with no journey yet (an Unlinked Language). The id is an api-languages Language id; a share language need not be a campaign language. Paste a journey through `campaignRegionLanguageUpdate` to link it.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: regionId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already on the region.
+  """
+  campaignRegionLanguageCreate(regionId: ID!, languageId: ID!): CampaignRegionLanguage!
+
+  """
+  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".
+  - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
+  """
+  campaignRegionLanguageUpdate(id: ID!, input: CampaignRegionLanguageUpdateInput!): CampaignRegionLanguage!
+
+  """
+  Remove a Share Language from a Campaign Region. Its Campaign QR Code and short link are deleted with it, as `qrCodeDelete` does; the linked journey is untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  """
+  campaignRegionLanguageDelete(id: ID!): CampaignRegionLanguage!
+
+  """
+  Move a Share Language to `order` among its region’s languages (a position past the end moves it last) and renumber them contiguously; the public Share selector follows this order. Returns every Share Language of the region with its new `order`.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `order`): negative.
+  """
+  campaignRegionLanguageOrderUpdate(id: ID!, order: Int!): [CampaignRegionLanguage!]!
+
+  """
   Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
@@ -3325,7 +3403,7 @@ type Mutation {
   campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
 
   """
-  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.
+  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
   
   Auth: campaign Delete — a manager of the campaign’s team.
   

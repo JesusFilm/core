@@ -3,6 +3,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { conflict, touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
+import { deleteQrCodes, findRegionQrCodes } from '../regionLanguage/service'
 
 import { authorizeRegionUpdate, getRegions, reorderRegions } from './service'
 
@@ -11,7 +12,7 @@ builder.mutationField('campaignRegionDelete', (t) =>
     type: CampaignRegionRef,
     nullable: false,
     description:
-      'Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages, its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT (field: `regionId`): the region is listed; unlist it first.',
+      'Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages (each deleting its Campaign QR Code and short link), its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT (field: `regionId`): the region is listed; unlist it first.',
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -23,6 +24,10 @@ builder.mutationField('campaignRegionDelete', (t) =>
           'regionId'
         )
       return await prisma.$transaction(async (tx) => {
+        await deleteQrCodes(
+          tx,
+          await findRegionQrCodes(tx, { regionId: region.id })
+        )
         const deleted = await tx.campaignRegion.delete({
           where: { id: region.id }
         })

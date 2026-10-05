@@ -3,9 +3,76 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { JourneyStatus } from "./globalTypes";
+
 // ====================================================
 // GraphQL mutation operation: CampaignRegionCreate
 // ====================================================
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages_language_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignRegionCreate_campaignRegionCreate_languages_language_name[];
+}
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+  status: JourneyStatus;
+}
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages_qrCode_shortLink_domain {
+  __typename: "ShortLinkDomain";
+  hostname: string;
+}
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages_qrCode_shortLink {
+  __typename: "ShortLink";
+  id: string;
+  /**
+   * short link path not including the leading slash
+   */
+  pathname: string;
+  domain: CampaignRegionCreate_campaignRegionCreate_languages_qrCode_shortLink_domain;
+}
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages_qrCode {
+  __typename: "QrCode";
+  id: string;
+  shortLink: CampaignRegionCreate_campaignRegionCreate_languages_qrCode_shortLink;
+}
+
+export interface CampaignRegionCreate_campaignRegionCreate_languages {
+  __typename: "CampaignRegionLanguage";
+  id: string;
+  regionId: string;
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  journeyId: string | null;
+  /**
+   * Snapshot of the linked journey's title; the journey's own language, not translated.
+   */
+  title: string | null;
+  description: string | null;
+  qrCodeId: string | null;
+  order: number;
+  language: CampaignRegionCreate_campaignRegionCreate_languages_language;
+  journey: CampaignRegionCreate_campaignRegionCreate_languages_journey | null;
+  /**
+   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   */
+  qrCode: CampaignRegionCreate_campaignRegionCreate_languages_qrCode | null;
+}
 
 export interface CampaignRegionCreate_campaignRegionCreate_countries_country_name {
   __typename: "CountryName";
@@ -51,6 +118,10 @@ export interface CampaignRegionCreate_campaignRegionCreate {
    * Whether the region appears on the Region Switcher.
    */
   listed: boolean;
+  /**
+   * Share Languages in selector order.
+   */
+  languages: CampaignRegionCreate_campaignRegionCreate_languages[];
   /**
    * Region Countries in chip order.
    */

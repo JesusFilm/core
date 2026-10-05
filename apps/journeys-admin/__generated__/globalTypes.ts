@@ -656,6 +656,13 @@ export interface CampaignRegionHeaderBlockUpdateInput {
   intro?: string | null;
 }
 
+export interface CampaignRegionLanguageUpdateInput {
+  url?: string | null;
+  journeyId?: string | null;
+  title?: string | null;
+  description?: string | null;
+}
+
 export interface CampaignRegionShareBlockCreateInput {
   id?: string | null;
   campaignId: string;

@@ -7,8 +7,16 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { fetchShortLink } from './gatewayClient'
+
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('./gatewayClient', () => ({
+  fetchShortLink: vi.fn(),
+  shortLinkUrl: (shortLink: { hostname: string; pathname: string }) =>
+    `https://${shortLink.hostname}/${shortLink.pathname}`
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -115,6 +123,19 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
           : {},
       languages: region.languages.map((language) => ({
         ...language,
+        qrCode:
+          language.qrCodeId == null
+            ? null
+            : {
+                id: language.qrCodeId,
+                teamId: 'teamId',
+                journeyId: language.journeyId,
+                toJourneyId: language.journeyId,
+                toBlockId: null,
+                shortLinkId: `${language.qrCodeId}-shortLinkId`,
+                color: '#000000',
+                backgroundColor: '#FFFFFF'
+              },
         journey:
           language.journeyId === 'eurJourneyId'
             ? journeyRow('eurJourneyId', 'eur-journey', {
@@ -198,6 +219,7 @@ describe('campaignPublic', () => {
             languageId
             order
             journeyStatus
+            shortLinkUrl
             journeyUrl
             embedUrl
           }
@@ -276,6 +298,11 @@ describe('campaignPublic', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(null)
+    vi.mocked(fetchShortLink).mockImplementation(async (id) => ({
+      id,
+      pathname: id.replace('-qrCodeId-shortLinkId', ''),
+      hostname: 'short.example.org'
+    }))
   })
 
   it('returns a published campaign with every text field resolved to the requested language and translation lists omitted', async () => {
@@ -394,6 +421,7 @@ describe('campaignPublic', () => {
             languageId: '529',
             order: 0,
             journeyStatus: 'published',
+            shortLinkUrl: 'https://short.example.org/eurRegionId-529',
             journeyUrl: 'https://journeys.example.org/eur-journey',
             embedUrl: 'https://example.com/embed/eur-journey'
           }
@@ -419,6 +447,7 @@ describe('campaignPublic', () => {
             languageId: '529',
             order: 0,
             journeyStatus: 'published',
+            shortLinkUrl: 'https://short.example.org/afrRegionId-529',
             journeyUrl: 'https://example.com/afr-journey',
             embedUrl: 'https://example.com/embed/afr-journey'
           }
@@ -432,6 +461,27 @@ describe('campaignPublic', () => {
         where: { slug: 'christmas-2026', status: 'published' }
       })
     )
+    expect(fetchShortLink).toHaveBeenCalledTimes(2)
+    expect(fetchShortLink).toHaveBeenCalledWith(
+      'eurRegionId-529-qrCodeId-shortLinkId'
+    )
+  })
+
+  it('leaves the Share Link null when the gateway no longer knows the short link', async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+    vi.mocked(fetchShortLink).mockResolvedValue(null)
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC,
+      variables: { slug: 'christmas-2026' }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignPublic.regions[0].languages[0]).toMatchObject({
+      journeyStatus: 'published',
+      shortLinkUrl: null,
+      journeyUrl: 'https://journeys.example.org/eur-journey'
+    })
   })
 
   it('resolves to the default language when none is requested or the language is not a campaign language', async () => {
@@ -482,6 +532,7 @@ describe('campaignPublic', () => {
       languageId: '529',
       order: 0,
       journeyStatus: 'draft',
+      shortLinkUrl: null,
       journeyUrl: null,
       embedUrl: null
     })
@@ -489,9 +540,11 @@ describe('campaignPublic', () => {
       languageId: '529',
       order: 0,
       journeyStatus: null,
+      shortLinkUrl: null,
       journeyUrl: null,
       embedUrl: null
     })
+    expect(fetchShortLink).not.toHaveBeenCalled()
   })
 
   it('is NOT_FOUND for a draft or unknown slug', async () => {
