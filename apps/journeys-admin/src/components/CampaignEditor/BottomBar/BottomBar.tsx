@@ -25,10 +25,23 @@ import Type1Icon from '@core/shared/ui/icons/Type1'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
 import { useCampaignButtonBlockCreateMutation } from '../../../libs/useCampaignButtonBlockCreateMutation'
+import {
+  CampaignSectionTypename,
+  useCampaignSectionCreateMutation
+} from '../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignTypographyBlockCreateMutation } from '../../../libs/useCampaignTypographyBlockCreateMutation'
+import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { SectionDeleteDialog } from '../SectionDeleteDialog'
+import {
+  newSectionBlock,
+  pageSections,
+  sectionTypesForPage
+} from '../sectionTypes'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
+import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
+import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 
 import { Breadcrumb } from './Breadcrumb'
 
@@ -67,24 +80,55 @@ function BarButton({
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
+/** Where "+Add section" puts the new section: a page and a position among its sections. */
+interface SectionInsert {
+  pageId: string
+  parentOrder: number
+}
+
 /**
  * The one contextual bottom bar: the breadcrumb, then the controls for what
  * is selected. Campaign row: Settings, Theme, Translations, +Add section.
- * Section: Edit, Style, +Add, move/duplicate, bin. Chrome: Edit, Style, +Add.
- * Text Extra: size, align, colour, Style, bin. Button Extra adds the link
- * chip and variant/size/colours. Controls that belong to later tickets
+ * Section: Edit, Style, +Add (an Extra, or a section above or below), move
+ * up/down, duplicate, bin behind a confirmation. Chrome: Edit, Style, +Add
+ * only. Text Extra: size, align, colour, Style, bin. Button Extra adds the
+ * link chip and variant/size/colours. Controls that belong to later tickets
  * render disabled.
  */
 export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection, dispatch } = useCampaignEditor()
+  const {
+    campaign,
+    selection,
+    state: { pageKind },
+    dispatch,
+    pageKindOf
+  } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
   const { addBlockDelete } = useCampaignBlockDeleteCommand()
+  const { addBlockDuplicate } = useCampaignBlockDuplicateCommand()
+  const { addBlockOrder } = useCampaignBlockOrderCommand()
   const [typographyCreate] = useCampaignTypographyBlockCreateMutation(
     campaign.id
   )
   const [buttonCreate] = useCampaignButtonBlockCreateMutation(campaign.id)
+  const sectionCreate = useCampaignSectionCreateMutation(campaign.id)
   const [addAnchor, setAddAnchor] = useState<HTMLElement | null>(null)
+  const [sectionMenu, setSectionMenu] = useState<{
+    anchor: HTMLElement
+    insert: SectionInsert
+  } | null>(null)
+  const [deleteOpen, setDeleteOpen] = useState(false)
+
+  const selectedSection =
+    selection.kind === 'section' ? selection.block : undefined
+  const sectionSiblings =
+    selectedSection != null
+      ? pageSections(campaign.blocks, selectedSection.pageId)
+      : []
+  const sectionIndex = sectionSiblings.findIndex(
+    (candidate) => candidate.id === selectedSection?.id
+  )
 
   function handleEdit(): void {
     dispatch({ type: 'RequestEditAction' })
@@ -159,10 +203,76 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
     })
   }
 
+  /** The campaign row's "+Add section": appended to the page the canvas shows. */
+  function handleAddSectionClick(event: MouseEvent<HTMLButtonElement>): void {
+    const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
+    if (page == null) return
+    setSectionMenu({
+      anchor: event.currentTarget,
+      insert: {
+        pageId: page.id,
+        parentOrder: pageSections(campaign.blocks, page.id).length
+      }
+    })
+  }
+
+  /** A section's "+Add": a sibling section above or below it, never a child. */
+  function handleSectionPlacement(where: 'above' | 'below'): void {
+    const anchor = addAnchor
+    setAddAnchor(null)
+    const host = selection.host
+    if (anchor == null || host?.pageId == null || host.parentOrder == null)
+      return
+    setSectionMenu({
+      anchor,
+      insert: {
+        pageId: host.pageId,
+        parentOrder: where === 'above' ? host.parentOrder : host.parentOrder + 1
+      }
+    })
+  }
+
+  function handleAddSection(typename: CampaignSectionTypename): void {
+    const insert = sectionMenu?.insert
+    setSectionMenu(null)
+    if (insert == null) return
+    const id = uuidv4()
+    const block = newSectionBlock(typename, {
+      id,
+      campaignId: campaign.id,
+      ...insert
+    })
+    addBlock({
+      block,
+      execute() {
+        void sectionCreate(block, { id, campaignId: campaign.id, ...insert })
+      }
+    })
+  }
+
+  function handleMove(step: -1 | 1): void {
+    if (selectedSection?.parentOrder == null) return
+    addBlockOrder(selectedSection, selectedSection.parentOrder + step)
+  }
+
+  function handleDuplicate(): void {
+    if (selectedSection == null) return
+    addBlockDuplicate(selectedSection)
+  }
+
   function handleDelete(): void {
     if (selection.block == null) return
     addBlockDelete(selection.block)
   }
+
+  function handleConfirmDelete(): void {
+    setDeleteOpen(false)
+    handleDelete()
+  }
+
+  const sectionMenuPageKind =
+    campaign.pages.find((candidate) => candidate.id === sectionMenu?.insert.pageId)
+      ?.kind ?? pageKind
 
   const addButton = (
     <>
@@ -212,8 +322,36 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
         >
           {t('Button below')}
         </MenuItem>
+        {selectedSection != null && <Divider />}
+        {selectedSection != null && (
+          <MenuItem onClick={() => handleSectionPlacement('above')}>
+            {t('Section above')}
+          </MenuItem>
+        )}
+        {selectedSection != null && (
+          <MenuItem onClick={() => handleSectionPlacement('below')}>
+            {t('Section below')}
+          </MenuItem>
+        )}
       </Menu>
     </>
+  )
+
+  const sectionTypeMenu = (
+    <Menu
+      anchorEl={sectionMenu?.anchor}
+      open={sectionMenu != null}
+      onClose={() => setSectionMenu(null)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      data-testid="CampaignSectionTypeMenu"
+    >
+      {sectionTypesForPage(sectionMenuPageKind).map((typename) => (
+        <MenuItem key={typename} onClick={() => handleAddSection(typename)}>
+          {blockLabel(t, typename)}
+        </MenuItem>
+      ))}
+    </Menu>
   )
 
   const styleButton = (
@@ -242,7 +380,11 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
               icon={<TranslateIcon />}
               disabled
             />
-            <BarButton label={t('Add section')} icon={<Plus2Icon />} disabled />
+            <BarButton
+              label={t('Add section')}
+              icon={<Plus2Icon />}
+              onClick={handleAddSectionClick}
+            />
           </>
         )
       case 'section':
@@ -255,16 +397,29 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
             />
             {styleButton}
             {addButton}
-            <IconButton aria-label={t('Move up')} disabled>
+            <IconButton
+              aria-label={t('Move up')}
+              disabled={sectionIndex <= 0}
+              onClick={() => handleMove(-1)}
+            >
               <ChevronUpIcon />
             </IconButton>
-            <IconButton aria-label={t('Move down')} disabled>
+            <IconButton
+              aria-label={t('Move down')}
+              disabled={
+                sectionIndex < 0 || sectionIndex >= sectionSiblings.length - 1
+              }
+              onClick={() => handleMove(1)}
+            >
               <ChevronDownIcon />
             </IconButton>
-            <IconButton aria-label={t('Duplicate')} disabled>
+            <IconButton aria-label={t('Duplicate')} onClick={handleDuplicate}>
               <CopyLeftIcon />
             </IconButton>
-            <IconButton aria-label={t('Delete')} disabled>
+            <IconButton
+              aria-label={t('Delete')}
+              onClick={() => setDeleteOpen(true)}
+            >
               <Trash2Icon />
             </IconButton>
           </>
@@ -328,6 +483,17 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       <Breadcrumb />
       <Divider orientation="vertical" flexItem />
       {renderControls()}
+      {sectionTypeMenu}
+      <SectionDeleteDialog
+        open={deleteOpen && selectedSection != null}
+        pageKind={
+          selectedSection != null
+            ? (pageKindOf(selectedSection) ?? pageKind)
+            : pageKind
+        }
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </Stack>
   )
 }

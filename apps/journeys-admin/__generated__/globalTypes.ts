@@ -552,10 +552,28 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CampaignAnalyticsBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  showMap?: boolean | null;
+}
+
 export interface CampaignAnalyticsBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   showMap?: boolean | null;
+}
+
+/**
+ * A client-chosen id for one block of the copy, so the editor can show the duplicate before the response arrives.
+ */
+export interface CampaignBlockDuplicateIdMapInput {
+  oldId: string;
+  newId: string;
 }
 
 export interface CampaignButtonBlockCreateInput {
@@ -590,11 +608,33 @@ export interface CampaignCreateInput {
   defaultLanguageId: string;
 }
 
+export interface CampaignHeroBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  align?: TypographyAlign | null;
+}
+
 export interface CampaignHeroBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   lede?: string | null;
   align?: TypographyAlign | null;
+}
+
+export interface CampaignJourneyListBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  display?: CampaignJourneyListDisplay | null;
 }
 
 export interface CampaignJourneyListBlockUpdateInput {
@@ -604,13 +644,39 @@ export interface CampaignJourneyListBlockUpdateInput {
   display?: CampaignJourneyListDisplay | null;
 }
 
+export interface CampaignRegionHeaderBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  intro?: string | null;
+}
+
 export interface CampaignRegionHeaderBlockUpdateInput {
+  intro?: string | null;
+}
+
+export interface CampaignRegionShareBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  title?: string | null;
   intro?: string | null;
 }
 
 export interface CampaignRegionShareBlockUpdateInput {
   title?: string | null;
   intro?: string | null;
+}
+
+export interface CampaignRegionSwitcherBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  title?: string | null;
+  variant?: CampaignSwitcherVariant | null;
 }
 
 export interface CampaignRegionSwitcherBlockUpdateInput {
@@ -643,6 +709,15 @@ export interface CampaignTypographyBlockUpdateInput {
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
+}
+
+export interface CampaignVideoCarouselBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
 }
 
 export interface CampaignVideoCarouselBlockUpdateInput {
