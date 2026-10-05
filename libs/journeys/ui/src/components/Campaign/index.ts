@@ -15,7 +15,13 @@ export {
 } from './CampaignProvider'
 export { CampaignRegionHeader } from './CampaignRegionHeader'
 export { CampaignRegionShare } from './CampaignRegionShare'
-export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
+export {
+  CampaignRegionCountries,
+  CampaignRegionSwitcher,
+  countryLabel,
+  listedRegions,
+  switcherRegions
+} from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
 export { CampaignSectionBand, useCampaignSection } from './CampaignSectionBand'
 export { CampaignSectionHeading } from './CampaignSectionHeading'

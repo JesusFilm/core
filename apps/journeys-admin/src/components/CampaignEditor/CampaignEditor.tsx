@@ -25,6 +25,7 @@ import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
+import { RegionSettings } from './RegionSettings'
 import { Settings } from './Settings'
 import { TopBar } from './TopBar'
 
@@ -47,14 +48,22 @@ function CampaignEditorShell({
 }: CampaignEditorShellProps): ReactElement {
   const {
     state: { pageKind },
+    currentRegion,
+    selection,
     dispatch
   } = useCampaignEditor()
   const [previewLanguageId, setPreviewLanguageId] = useState<string>()
   const [view, setView] = useState<CanvasView>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [regionSettingsOpen, setRegionSettingsOpen] = useState(false)
+  const settingsRegion =
+    selection.kind === 'region' ? selection.region : undefined
 
-  function handlePageKindChange(nextPageKind: CampaignPageKind): void {
-    dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind })
+  function handlePageKindChange(
+    nextPageKind: CampaignPageKind,
+    regionId?: string
+  ): void {
+    dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind, regionId })
   }
 
   return (
@@ -63,6 +72,7 @@ function CampaignEditorShell({
       <TopBar
         campaign={campaign}
         pageKind={pageKind}
+        regionId={currentRegion?.id}
         onPageKindChange={handlePageKindChange}
         previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
         onPreviewLanguageChange={setPreviewLanguageId}
@@ -77,13 +87,23 @@ function CampaignEditorShell({
         previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
         view={view}
       />
-      <BottomBar onSettingsClick={() => setSettingsOpen(true)} />
+      <BottomBar
+        onSettingsClick={() => setSettingsOpen(true)}
+        onRegionSettingsClick={() => setRegionSettingsOpen(true)}
+      />
       <Drawer
         anchor="right"
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
       >
         <Settings campaign={campaign} isManager={isManager} />
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={regionSettingsOpen && settingsRegion != null}
+        onClose={() => setRegionSettingsOpen(false)}
+      >
+        {settingsRegion != null && <RegionSettings region={settingsRegion} />}
       </Drawer>
     </Stack>
   )

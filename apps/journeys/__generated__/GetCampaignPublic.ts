@@ -71,6 +71,18 @@ export interface GetCampaignPublic_campaignPublic_strings {
   value: string;
 }
 
+export interface GetCampaignPublic_campaignPublic_regions_countries_country_name {
+  __typename: "CountryName";
+  value: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_countries_country {
+  __typename: "Country";
+  id: string;
+  flagPngSrc: string | null;
+  name: GetCampaignPublic_campaignPublic_regions_countries_country_name[];
+}
+
 export interface GetCampaignPublic_campaignPublic_regions_countries {
   __typename: "CampaignRegionCountry";
   id: string;
@@ -79,6 +91,10 @@ export interface GetCampaignPublic_campaignPublic_regions_countries {
    */
   countryId: string;
   order: number;
+  /**
+   * The api-languages Country, resolved through federation: flag and translated name live there.
+   */
+  country: GetCampaignPublic_campaignPublic_regions_countries_country;
 }
 
 export interface GetCampaignPublic_campaignPublic_regions_languages_language_name {

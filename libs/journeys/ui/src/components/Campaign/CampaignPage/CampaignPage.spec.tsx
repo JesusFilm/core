@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
+  afrRegion,
   campaignPublic,
   eurRegion,
   landingBlocks,
@@ -92,6 +93,49 @@ describe('CampaignPage', () => {
       'regionSwitcherId'
     ])
     expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
+  })
+
+  it('renders the same Region Page rows for every region; region-only sections read the region from the request', () => {
+    const { unmount } = renderPage(
+      campaignPublic,
+      CampaignPageKind.regionTemplate,
+      eurRegion
+    )
+    const eurBands = bandIds()
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
+    expect(
+      screen.queryByTestId('CampaignRegionCard-eurRegionId')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('CampaignRegionCard-afrRegionId')
+    ).toBeInTheDocument()
+    unmount()
+
+    renderPage(campaignPublic, CampaignPageKind.regionTemplate, afrRegion)
+    expect(bandIds()).toEqual(eurBands)
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Africa')
+    expect(
+      screen.queryByTestId('CampaignRegionCard-afrRegionId')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toBeInTheDocument()
+  })
+
+  it('renders the Region Page for an orphan region too, hidden from the switcher', () => {
+    const orphan = { ...afrRegion, listed: false }
+    renderPage(
+      { ...campaignPublic, regions: [eurRegion, orphan] },
+      CampaignPageKind.regionTemplate,
+      orphan
+    )
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Africa')
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CampaignRegionCard-afrRegionId')
+    ).not.toBeInTheDocument()
   })
 
   describe('empty-state matrix', () => {
