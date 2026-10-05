@@ -1,4 +1,3 @@
-import { Reference } from '@apollo/client'
 import { DragEndEvent } from '@dnd-kit/core'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
@@ -6,19 +5,32 @@ import { MutableRefObject } from 'react'
 
 import { GetAdminJourneys_journeys as Journey } from '../../../../__generated__/GetAdminJourneys'
 import { GetTemplateGalleryPages_templateGalleryPages as TemplateGalleryPage } from '../../../../__generated__/GetTemplateGalleryPages'
-import { sendCollectionTemplateDragEvent } from '../../../libs/sendCollectionEvent'
-import { useTemplateGalleryPageAssignJourneyMutation } from '../../../libs/useTemplateGalleryPageAssignJourneyMutation'
+import {
+  sendCollectionTemplateDragEvent,
+  sendCollectionTemplateRemoveEvent
+} from '../../../libs/sendCollectionEvent'
+import { useTemplateGalleryPageLinkJourneyMutation } from '../../../libs/useTemplateGalleryPageLinkJourneyMutation'
+import { useTemplateGalleryPageMoveJourneyMutation } from '../../../libs/useTemplateGalleryPageMoveJourneyMutation'
+import { useTemplateGalleryPageRemoveJourneyMutation } from '../../../libs/useTemplateGalleryPageRemoveJourneyMutation'
 import { useTemplateGalleryPageReorderTemplateMutation } from '../../../libs/useTemplateGalleryPageReorderTemplateMutation'
-import { parseDropZoneId } from '../Droppables'
+import { DropAction, parseCardId, parseDropZoneId } from '../Droppables'
+
+type GalleryItem = TemplateGalleryPage['templates'][number]
+type Membership = TemplateGalleryPage['memberships'][number]
+
+/** Where one template lives, derived from every collection's `memberships`. */
+export interface JourneyMembership {
+  homeCollectionId: string | null
+  collectionIds: readonly string[]
+}
 
 export interface UseDragEndHandlerParams {
   /** Map of journeyId → full Journey (from the team's templates query). */
   journeyById: ReadonlyMap<string, Journey>
-  /** Map of templateId → its parent collection. Templates not in any
-   * collection are absent from this map. */
-  templateIdToCollection: ReadonlyMap<string, TemplateGalleryPage>
   /** Map of collectionId → collection. */
   collectionsById: ReadonlyMap<string, TemplateGalleryPage>
+  /** Map of journeyId → its memberships. Absent when in no collection. */
+  membershipsByJourneyId: ReadonlyMap<string, JourneyMembership>
   /** Synchronous in-flight guard. The ref is the source of truth for
    * "is a drop currently being processed?" — closure-captured state
    * would read stale `false` for a second drop arriving in the same
@@ -32,20 +44,33 @@ export interface UseDragEndHandlerParams {
   setActiveDragId: (next: string | null) => void
   /**
    * NES-1717: true when the given collection is currently collapsed. A drop
-   * onto a collapsed collection lands via its header (the only visible part),
-   * so the user can't see the template arrive — we surface a confirmation
-   * toast instead. Defaults to "never collapsed" when omitted.
+   * onto a collapsed collection lands on its slim drop strip, so the user
+   * can't see the template arrive — we surface a confirmation toast.
+   * Defaults to "never collapsed" when omitted.
    */
   isCollectionCollapsed?: (collectionId: string) => boolean
 }
 
+/** What the card was dropped on, decoded from dnd-kit's `over.id`. */
+type DropTarget =
+  | { kind: 'reorder'; index: number }
+  | { kind: 'action'; collectionId: string; action: DropAction }
+  | { kind: 'collection'; collectionId: string }
+  | { kind: 'unsectioned' }
+
 /**
  * Returns a `handleDragEnd` callback that dispatches a dnd-kit drop into
- * either `templateGalleryPageReorderTemplate` (intra-collection move)
- * or `templateGalleryPageAssignJourney` (cross-collection move,
- * add-from-unsectioned, or remove-to-unsectioned). Owns the optimistic
- * responses and the source-page `cache.modify` for cross-collection
- * moves.
+ * the right mutation:
+ *  - a drop on a card in the card's own collection → reorder;
+ *  - a drop on a collection's "Move here" box → move (the membership
+ *    relocates, keeping its home / link role);
+ *  - a drop on "Link here" (or "Add here" from All Templates) → link;
+ *  - a drop on All Templates → remove from the source collection;
+ *  - a drop on a collection but between its boxes → nothing, plus a hint.
+ *
+ * Owns the optimistic responses. Each mutation returns every page it
+ * changed (with `memberships`), so Apollo's normalized merge settles the
+ * final state; `refetchQueries` is the belt-and-braces from NES-1668.
  *
  * Extracted from TemplateGalleryPageList so the dispatch logic is
  * unit-testable in isolation.
@@ -55,8 +80,8 @@ export function useDragEndHandler(
 ): (event: DragEndEvent) => Promise<void> {
   const {
     journeyById,
-    templateIdToCollection,
     collectionsById,
+    membershipsByJourneyId,
     dragInFlightRef,
     setDragInFlight,
     setActiveDragId,
@@ -65,10 +90,261 @@ export function useDragEndHandler(
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
 
-  const [templateGalleryPageAssignJourney] =
-    useTemplateGalleryPageAssignJourneyMutation()
+  const [templateGalleryPageLinkJourney] =
+    useTemplateGalleryPageLinkJourneyMutation()
+  const [templateGalleryPageMoveJourney] =
+    useTemplateGalleryPageMoveJourneyMutation()
+  const [templateGalleryPageRemoveJourney] =
+    useTemplateGalleryPageRemoveJourneyMutation()
   const [templateGalleryPageReorderTemplate] =
     useTemplateGalleryPageReorderTemplateMutation()
+
+  // The narrow TemplateGalleryItem shape for optimistic writes: reuse the
+  // ref a collection already holds, else build one from the journey.
+  function galleryItemFor(journeyId: string): GalleryItem | null {
+    for (const collection of collectionsById.values()) {
+      const item = collection.templates.find((tpl) => tpl.id === journeyId)
+      if (item != null) return item
+    }
+    const journey = journeyById.get(journeyId)
+    if (journey == null) return null
+    return {
+      __typename: 'TemplateGalleryItem',
+      id: journey.id,
+      title: journey.title,
+      primaryImageBlock:
+        journey.primaryImageBlock != null
+          ? {
+              __typename: 'ImageBlock',
+              id: journey.primaryImageBlock.id,
+              src: journey.primaryImageBlock.src,
+              alt: journey.primaryImageBlock.alt
+            }
+          : null
+    }
+  }
+
+  function withoutJourney(
+    collection: TemplateGalleryPage,
+    journeyId: string
+  ): TemplateGalleryPage {
+    return {
+      ...collection,
+      templates: collection.templates.filter((tpl) => tpl.id !== journeyId),
+      memberships: collection.memberships.filter(
+        (membership) => membership.journeyId !== journeyId
+      )
+    }
+  }
+
+  function withJourney(
+    collection: TemplateGalleryPage,
+    item: GalleryItem,
+    isHome: boolean
+  ): TemplateGalleryPage {
+    const membership: Membership = {
+      __typename: 'TemplateGalleryPageMembership',
+      journeyId: item.id,
+      isHome
+    }
+    return {
+      ...collection,
+      templates: [...collection.templates, item],
+      memberships: [...collection.memberships, membership]
+    }
+  }
+
+  function showError(error: unknown, fallback: string): void {
+    enqueueSnackbar(error instanceof Error ? error.message : fallback, {
+      variant: 'error',
+      preventDuplicate: true
+    })
+  }
+
+  function templateTitle(journeyId: string): string {
+    return journeyById.get(journeyId)?.title ?? t('template')
+  }
+
+  async function linkInto(
+    journeyId: string,
+    target: TemplateGalleryPage,
+    source: TemplateGalleryPage | null
+  ): Promise<void> {
+    const item = galleryItemFor(journeyId)
+    const hasHome =
+      membershipsByJourneyId.get(journeyId)?.homeCollectionId != null
+    const targetWasCollapsed = isCollectionCollapsed?.(target.id) === true
+    const { data } = await templateGalleryPageLinkJourney({
+      variables: { journeyId, pageId: target.id },
+      refetchQueries: ['GetTemplateGalleryPages'],
+      optimisticResponse:
+        item != null
+          ? {
+              templateGalleryPageLinkJourney: withJourney(
+                target,
+                item,
+                !hasHome
+              )
+            }
+          : undefined
+    })
+    const returned = data?.templateGalleryPageLinkJourney
+    const accepted =
+      returned?.memberships.some((m) => m.journeyId === journeyId) ?? false
+    if (!accepted) {
+      // Success-shaped response whose page doesn't include the journey —
+      // typically the journey's team ≠ the page's team or it isn't a
+      // template. Apollo has already rolled the optimistic write back.
+      enqueueSnackbar(
+        t("Couldn't add template — the server rejected the drop."),
+        { variant: 'error', preventDuplicate: true }
+      )
+      return
+    }
+    sendCollectionTemplateDragEvent({
+      collectionId: target.id,
+      templateId: journeyId,
+      mode: source == null ? 'add' : 'link'
+    })
+    const title = templateTitle(journeyId)
+    const collection = returned?.title ?? target.title
+    if (source == null) {
+      // From All Templates the card visibly leaves the pool; only confirm
+      // when it landed somewhere the user can't see (NES-1717).
+      if (targetWasCollapsed) {
+        enqueueSnackbar(t('Added to {{collection}}', { collection }), {
+          variant: 'success',
+          preventDuplicate: true
+        })
+      }
+      return
+    }
+    enqueueSnackbar(
+      t('Linked {{template}} into {{collection}}. Still in {{source}}.', {
+        template: title,
+        collection,
+        source: source.title
+      }),
+      { variant: 'success', preventDuplicate: true }
+    )
+  }
+
+  async function moveTo(
+    journeyId: string,
+    source: TemplateGalleryPage,
+    target: TemplateGalleryPage
+  ): Promise<void> {
+    const item = galleryItemFor(journeyId)
+    const sourceMembership = source.memberships.find(
+      (m) => m.journeyId === journeyId
+    )
+    const { data } = await templateGalleryPageMoveJourney({
+      variables: { journeyId, fromPageId: source.id, toPageId: target.id },
+      refetchQueries: ['GetTemplateGalleryPages'],
+      optimisticResponse:
+        item != null
+          ? {
+              templateGalleryPageMoveJourney: [
+                withoutJourney(source, journeyId),
+                withJourney(target, item, sourceMembership?.isHome ?? false)
+              ]
+            }
+          : undefined
+    })
+    const returnedTarget = data?.templateGalleryPageMoveJourney.find(
+      (page) => page.id === target.id
+    )
+    const accepted =
+      returnedTarget?.memberships.some((m) => m.journeyId === journeyId) ??
+      false
+    if (!accepted) {
+      enqueueSnackbar(
+        t("Couldn't move template — the server rejected the move."),
+        { variant: 'error', preventDuplicate: true }
+      )
+      return
+    }
+    sendCollectionTemplateDragEvent({
+      collectionId: target.id,
+      templateId: journeyId,
+      mode: 'move'
+    })
+    enqueueSnackbar(
+      t('Moved {{template}} to {{collection}}', {
+        template: templateTitle(journeyId),
+        collection: returnedTarget?.title ?? target.title
+      }),
+      { variant: 'success', preventDuplicate: true }
+    )
+  }
+
+  async function removeFrom(
+    journeyId: string,
+    source: TemplateGalleryPage
+  ): Promise<void> {
+    const { data } = await templateGalleryPageRemoveJourney({
+      variables: { journeyId, pageId: source.id },
+      refetchQueries: ['GetTemplateGalleryPages'],
+      optimisticResponse: {
+        templateGalleryPageRemoveJourney: [withoutJourney(source, journeyId)]
+      }
+    })
+    sendCollectionTemplateRemoveEvent({
+      collectionId: source.id,
+      templateId: journeyId,
+      via: 'drag'
+    })
+    // The server also returns the page whose link became the new home,
+    // when the removed membership was the home.
+    const promoted = data?.templateGalleryPageRemoveJourney.find(
+      (page) =>
+        page.id !== source.id &&
+        page.memberships.some((m) => m.journeyId === journeyId && m.isHome)
+    )
+    const title = templateTitle(journeyId)
+    enqueueSnackbar(
+      promoted != null
+        ? t(
+            'Removed {{template}} from {{collection}}. Its home is now {{home}}.',
+            { template: title, collection: source.title, home: promoted.title }
+          )
+        : t('Removed {{template}} from {{collection}}', {
+            template: title,
+            collection: source.title
+          }),
+      { variant: 'success', preventDuplicate: true }
+    )
+  }
+
+  function resolveTarget(
+    overId: string,
+    sourceCollection: TemplateGalleryPage | null
+  ): DropTarget | null {
+    const overZone = parseDropZoneId(overId)
+    if (overZone?.kind === 'action') {
+      return {
+        kind: 'action',
+        collectionId: overZone.collectionId,
+        action: overZone.action
+      }
+    }
+    if (overZone?.kind === 'collection') {
+      return { kind: 'collection', collectionId: overZone.id }
+    }
+    if (overZone?.kind === 'unsectioned') return { kind: 'unsectioned' }
+
+    // Not a zone: a card. Its zone says which section it sits in.
+    const overCard = parseCardId(overId)
+    if (overCard == null) return null
+    if (overCard.zone.kind === 'unsectioned') return { kind: 'unsectioned' }
+    if (sourceCollection != null && overCard.zone.id === sourceCollection.id) {
+      const index = sourceCollection.templates.findIndex(
+        (tpl) => tpl.id === overCard.journeyId
+      )
+      return { kind: 'reorder', index }
+    }
+    return { kind: 'collection', collectionId: overCard.zone.id }
+  }
 
   return async function handleDragEnd(event: DragEndEvent): Promise<void> {
     setActiveDragId(null)
@@ -78,248 +354,94 @@ export function useDragEndHandler(
     const { active, over } = event
     if (over == null) return
 
-    const templateId = String(active.id)
-    const sourceCollection = templateIdToCollection.get(templateId) ?? null
+    const activeCard = parseCardId(String(active.id))
+    if (activeCard == null) return
+    const { journeyId } = activeCard
+    const sourceCollection =
+      activeCard.zone.kind === 'collection'
+        ? (collectionsById.get(activeCard.zone.id) ?? null)
+        : null
 
-    // overId is either a sortable item id (a journey id) or an encoded
-    // drop-zone id from `encodeDropZoneId`.
-    const overId = String(over.id)
-    let targetCollectionId: string | null
-    let targetIndex: number | null
-    const overZone = parseDropZoneId(overId)
-    if (overZone != null) {
-      targetCollectionId = overZone.kind === 'collection' ? overZone.id : null
-      targetIndex = null // dropped on the zone itself, not a specific item
-    } else {
-      // overId is another journey id. Look up its parent collection (or
-      // unsectioned) and its index inside that list.
-      const overCollection = templateIdToCollection.get(overId) ?? null
-      targetCollectionId = overCollection?.id ?? null
-      if (overCollection != null) {
-        targetIndex = overCollection.templates.findIndex(
-          (tpl) => tpl.id === overId
-        )
-      } else {
-        targetIndex = null // unsectioned: order is implicit, no reorder there
-      }
+    const target = resolveTarget(String(over.id), sourceCollection)
+    if (target == null) return
+    // unsectioned → unsectioned, and a drop on the source collection's own
+    // background (no slot to reorder to): nothing to do.
+    if (target.kind === 'unsectioned' && sourceCollection == null) return
+    if (
+      target.kind === 'collection' &&
+      sourceCollection?.id === target.collectionId
+    ) {
+      return
     }
-
-    // unsectioned -> unsectioned: no-op
-    if (sourceCollection == null && targetCollectionId == null) return
 
     // `setDragInFlight` in the parent is a wrapper that flips both the
     // state and the ref together — call it once, never set the ref
     // directly here (Mike review, NES-1644).
     setDragInFlight(true)
     try {
-      const sameCollection =
-        sourceCollection != null &&
-        targetCollectionId != null &&
-        sourceCollection.id === targetCollectionId
-
-      if (sameCollection) {
-        // Intra-collection reorder. If we don't know the target index
-        // (dropped on the zone background), no-op rather than guess.
-        if (targetIndex == null) return
-        const sourceIndex = sourceCollection.templates.findIndex(
-          (tpl) => tpl.id === templateId
-        )
-        if (sourceIndex < 0 || sourceIndex === targetIndex) return
-        // Optimistic response so the cache reflects the new order on
-        // the SAME tick the drop happens — eliminates the brief flash
-        // where the card snaps back to its source position before the
-        // server response lands.
-        const reorderedTemplates = [...sourceCollection.templates]
-        const [moving] = reorderedTemplates.splice(sourceIndex, 1)
-        reorderedTemplates.splice(targetIndex, 0, moving)
-        await templateGalleryPageReorderTemplate({
-          variables: {
-            pageId: sourceCollection.id,
-            journeyId: templateId,
-            order: targetIndex
-          },
-          optimisticResponse: {
-            templateGalleryPageReorderTemplate: {
-              ...sourceCollection,
-              templates: reorderedTemplates
-            }
-          }
-        })
-      } else {
-        // Membership change: cross-collection move, add from unsectioned, or
-        // remove back to unsectioned. The server enforces the
-        // single-membership invariant; passing pageId: null unassigns.
-        const movingFromSource = sourceCollection?.templates.find(
-          (tpl) => tpl.id === templateId
-        )
-        const movingFromUnsectioned = journeyById.get(templateId)
-        const movingTemplate =
-          movingFromSource ??
-          (movingFromUnsectioned != null
-            ? {
-                __typename: 'TemplateGalleryItem' as const,
-                id: movingFromUnsectioned.id,
-                title: movingFromUnsectioned.title,
-                primaryImageBlock:
-                  movingFromUnsectioned.primaryImageBlock != null
-                    ? {
-                        __typename: 'ImageBlock' as const,
-                        id: movingFromUnsectioned.primaryImageBlock.id,
-                        src: movingFromUnsectioned.primaryImageBlock.src,
-                        alt: movingFromUnsectioned.primaryImageBlock.alt
-                      }
-                    : null
+      switch (target.kind) {
+        case 'reorder': {
+          if (sourceCollection == null || target.index < 0) return
+          const sourceIndex = sourceCollection.templates.findIndex(
+            (tpl) => tpl.id === journeyId
+          )
+          if (sourceIndex < 0 || sourceIndex === target.index) return
+          // Optimistic response so the cache reflects the new order on
+          // the SAME tick the drop happens — eliminates the brief flash
+          // where the card snaps back to its source position before the
+          // server response lands.
+          const reorderedTemplates = [...sourceCollection.templates]
+          const [moving] = reorderedTemplates.splice(sourceIndex, 1)
+          reorderedTemplates.splice(target.index, 0, moving)
+          await templateGalleryPageReorderTemplate({
+            variables: {
+              pageId: sourceCollection.id,
+              journeyId,
+              order: target.index
+            },
+            optimisticResponse: {
+              templateGalleryPageReorderTemplate: {
+                ...sourceCollection,
+                templates: reorderedTemplates
               }
-            : null)
-        const targetCollection =
-          targetCollectionId != null
-            ? collectionsById.get(targetCollectionId)
-            : null
-        // Capture collapse state at drop time, before the await — the toast
-        // confirms "you dropped onto something you couldn't see", which is a
-        // fact about the moment of the drop, not about whatever the state has
-        // become by the time the network round-trip resolves (NES-1717 review).
-        const targetWasCollapsed =
-          targetCollectionId != null &&
-          isCollectionCollapsed?.(targetCollectionId) === true
-        const assignResult = await templateGalleryPageAssignJourney({
-          variables: { journeyId: templateId, pageId: targetCollectionId },
-          // NES-1668: in production the source-page `cache.modify` below
-          // wasn't reliably trimming the moved template — QA observed the
-          // card showing in both source and target until a manual refresh.
-          // The historical concern in `useTemplateGalleryPageAssignJourneyMutation.ts`
-          // (NES-1539 todo 021) was that a `refetchQueries` on the mutation
-          // hook itself races with the optimisticResponse for rapid
-          // back-to-back drops and produces a one-frame ghost-card flash.
-          // We accept that minor edge-case flash as the cost of an always-
-          // consistent gallery — the user-visible "stays in both until I
-          // hit refresh" bug is strictly worse. Keep the optimisticResponse
-          // + cache.modify for instant feedback; the refetch is the
-          // belt-and-suspenders that papers over whatever the modify
-          // misses (likely the `accepted` gate misfiring on certain
-          // server response shapes).
-          refetchQueries: ['GetTemplateGalleryPages'],
-          // Optimistic + cache.modify so both the target page (gain) and
-          // the source page (loss) update in the same tick as the drop.
-          // The server response replaces the optimistic write for the
-          // returned page; the source-page modify is a sibling write the
-          // response doesn't cover (the mutation only returns one page).
-          optimisticResponse:
-            targetCollection != null && movingTemplate != null
-              ? {
-                  templateGalleryPageAssignJourney: {
-                    ...targetCollection,
-                    templates: [...targetCollection.templates, movingTemplate]
-                  }
-                }
-              : sourceCollection != null
-                ? {
-                    templateGalleryPageAssignJourney: {
-                      ...sourceCollection,
-                      templates: sourceCollection.templates.filter(
-                        (tpl) => tpl.id !== templateId
-                      )
-                    }
-                  }
-                : undefined,
-          update: (cache, { data }) => {
-            // Trim the moving template out of the SOURCE page's cached
-            // templates list. Cross-collection moves return only the
-            // target; without this the source page keeps the moving
-            // ref stale until the next refetch.
-            if (
-              sourceCollection == null ||
-              sourceCollection.id === targetCollectionId
-            ) {
-              return
             }
-            // Gate the trim on the response actually confirming the
-            // move. Apollo runs `update` twice when an optimistic
-            // response is set: once with the optimistic data (where
-            // the target already includes the journey, so accepted is
-            // true and the trim runs on the optimistic layer for an
-            // instant UI update), and once with the real server
-            // response. On a silent rejection (success-shaped response
-            // whose page doesn't include the journey), accepted is
-            // false on the real pass — we skip the trim, and Apollo
-            // rolls back the prior optimistic trim, restoring the
-            // source. Without this gate the real-pass trim would run
-            // unconditionally and leave the source permanently missing
-            // the moved template.
-            if (targetCollectionId != null) {
-              const returned = data?.templateGalleryPageAssignJourney
-              const accepted =
-                returned?.templates.some((tpl) => tpl.id === templateId) ??
-                false
-              if (!accepted) return
-            }
-            const sourceCacheId = cache.identify({
-              __typename: 'TemplateGalleryPage',
-              id: sourceCollection.id
-            })
-            const movedRef = cache.identify({
-              __typename: 'TemplateGalleryItem',
-              id: templateId
-            })
-            if (sourceCacheId == null || movedRef == null) return
-            cache.modify({
-              id: sourceCacheId,
-              fields: {
-                templates(existing) {
-                  if (!Array.isArray(existing)) return existing
-                  return (existing as Reference[]).filter(
-                    (ref) => ref.__ref !== movedRef
-                  )
-                }
-              }
-            })
-          }
-        })
-        // Detect silent server rejection. The mutation can succeed at
-        // the GraphQL layer (no errors) but return a page that still
-        // doesn't include the journey we asked it to add — typically
-        // when the journey's team ≠ the page's team or the journey
-        // isn't a template. Apollo merges the response over the
-        // optimistic write, so the UI silently bounces the card back
-        // to the unsectioned section. Surface a snackbar so the user
-        // knows the move didn't take.
-        if (targetCollectionId != null) {
-          const returnedPage =
-            assignResult.data?.templateGalleryPageAssignJourney
-          const accepted =
-            returnedPage?.templates.some((tpl) => tpl.id === templateId) ??
-            false
-          if (!accepted) {
-            enqueueSnackbar(
-              t("Couldn't move template — the server rejected the move."),
-              { variant: 'error', preventDuplicate: true }
-            )
+          })
+          return
+        }
+        case 'collection': {
+          // Landed on another collection but between its Move / Link boxes.
+          // Never guess: say what to aim for.
+          enqueueSnackbar(t('Drop on “Move here” or “Link here”.'), {
+            variant: 'info',
+            preventDuplicate: true
+          })
+          return
+        }
+        case 'unsectioned': {
+          if (sourceCollection == null) return
+          await removeFrom(journeyId, sourceCollection)
+          return
+        }
+        case 'action': {
+          const targetCollection = collectionsById.get(target.collectionId)
+          if (targetCollection == null) return
+          // "Already here" is a disabled droppable, so this only guards a
+          // stale drop that raced a membership change.
+          const alreadyThere =
+            membershipsByJourneyId
+              .get(journeyId)
+              ?.collectionIds.includes(target.collectionId) ?? false
+          if (alreadyThere) return
+          if (sourceCollection == null || target.action === 'link') {
+            await linkInto(journeyId, targetCollection, sourceCollection)
           } else {
-            sendCollectionTemplateDragEvent({
-              collectionId: targetCollectionId,
-              templateId
-            })
-            if (targetWasCollapsed) {
-              // The template landed in a collapsed collection the user can't
-              // see — confirm the drop so the move doesn't feel like it
-              // vanished (NES-1717). Fall back to a generic message rather than
-              // interpolating an empty name if the title can't be resolved.
-              const targetName = targetCollection?.title ?? returnedPage?.title
-              enqueueSnackbar(
-                targetName != null && targetName !== ''
-                  ? t('Added to {{collection}}', { collection: targetName })
-                  : t('Added to collection'),
-                { variant: 'success', preventDuplicate: true }
-              )
-            }
+            await moveTo(journeyId, sourceCollection, targetCollection)
           }
+          return
         }
       }
     } catch (error) {
-      enqueueSnackbar(
-        error instanceof Error ? error.message : t("Couldn't move template"),
-        { variant: 'error', preventDuplicate: true }
-      )
+      showError(error, t("Couldn't move template"))
     } finally {
       setDragInFlight(false)
     }
