@@ -3,12 +3,17 @@ import {
   LANDING_PAGE_ID,
   REGION_PAGE_ID,
   chromeBlocks,
+  eurRegion as eurRegionPublic,
   landingBlocks,
   lightTheme,
   regionPageBlocks
 } from '@core/journeys/ui/Campaign/testData'
 
-import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign as Campaign,
+  GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_regions as CampaignRegion
+} from '../../../__generated__/GetCampaign'
 import {
   CampaignPageKind,
   CampaignStatus,
@@ -82,6 +87,54 @@ export const campaign: Campaign = {
   ],
   blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks],
   regions: []
+}
+
+/** A listed region with one country chip and one Region Line (`eurLine`, in `campaignWithRegions.blocks`). */
+export const eurRegion: CampaignRegion = {
+  __typename: 'CampaignRegion',
+  id: 'eurRegionId',
+  campaignId: CAMPAIGN_ID,
+  name: 'Europe',
+  slug: 'eur',
+  order: 0,
+  listed: true,
+  countries: [
+    {
+      __typename: 'CampaignRegionCountry',
+      id: 'eurCountry-FR',
+      regionId: 'eurRegionId',
+      countryId: 'FR',
+      order: 0,
+      country: {
+        __typename: 'Country',
+        id: 'FR',
+        flagPngSrc: 'https://flags.example.org/fr.png',
+        name: [{ __typename: 'CountryName', value: 'France' }]
+      }
+    }
+  ]
+}
+
+/** An unlisted region: its Region Page is an Orphan Page. */
+export const afrRegion: CampaignRegion = {
+  __typename: 'CampaignRegion',
+  id: 'afrRegionId',
+  campaignId: CAMPAIGN_ID,
+  name: 'Africa',
+  slug: 'afr',
+  order: 1,
+  listed: false,
+  countries: []
+}
+
+/** The Region Line of `eurRegion`, as the flat block list carries it. */
+export const eurLine: CampaignBlock = eurRegionPublic.lines[0]
+
+/** The seeded campaign with two regions: Europe (listed, one line, one country) and Africa (unlisted). */
+export const campaignWithRegions: Campaign = {
+  ...campaign,
+  blocks: [...campaign.blocks, eurLine],
+  regions: [eurRegion, afrRegion]
 }
 
 export const publishedCampaign: Campaign = {

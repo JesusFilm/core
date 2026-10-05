@@ -10,8 +10,14 @@ export const CampaignTypographyBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       campaignId: t.id({ required: true }),
       parentBlockId: t.id({
-        required: true,
-        description: 'A section or chrome block of the campaign.'
+        required: false,
+        description:
+          'A section or chrome block of the campaign, for a text Extra. Exactly one of parentBlockId and regionId.'
+      }),
+      regionId: t.id({
+        required: false,
+        description:
+          'A region of the campaign, for a Region Line. Exactly one of parentBlockId and regionId.'
       }),
       content: t.string({
         required: false,
@@ -28,7 +34,7 @@ export const CampaignTypographyBlockCreateInput = builder.inputType(
       placement: t.field({
         type: CampaignChildPlacement,
         required: false,
-        description: 'Defaults to `below`.'
+        description: 'Defaults to `below`; not allowed on a Region Line.'
       })
     })
   }

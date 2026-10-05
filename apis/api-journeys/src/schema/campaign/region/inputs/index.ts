@@ -1,0 +1,1 @@
+export { CampaignRegionUpdateInput } from './campaignRegionUpdateInput'

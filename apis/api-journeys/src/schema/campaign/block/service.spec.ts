@@ -16,11 +16,13 @@ import {
   authorizeTypedBlockUpdate,
   collectSubtree,
   createChildBlock,
+  createRegionLine,
   createTopLevelBlock,
   getSiblings,
   removeBlock,
   restoreBlock,
   validateParentBlock,
+  validateRegion,
   validateSectionPage
 } from './service'
 
@@ -679,6 +681,96 @@ describe('campaign block service', () => {
         ['landingJourneyListId', 4],
         ['landingAnalyticsId', 5]
       ])
+    })
+  })
+
+  describe('validateRegion', () => {
+    it('returns a region of the campaign', async () => {
+      const region = campaignFactory().withRegion('EUR').build().regions[0]
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(region)
+
+      await expect(validateRegion('eurRegionId', 'campaignId')).resolves.toBe(
+        region
+      )
+      expect(prismaMock.campaignRegion.findFirst).toHaveBeenCalledWith({
+        where: { id: 'eurRegionId', campaignId: 'campaignId' }
+      })
+    })
+
+    it('rejects a region of another campaign (BAD_USER_INPUT, regionId)', async () => {
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(validateRegion('eurRegionId', 'campaignId'))
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'regionId'
+      })
+    })
+  })
+
+  describe('createRegionLine', () => {
+    it('creates exactly a Typography block scoped to the region, with pageId, parentBlockId and placement null and parentOrder = line order', async () => {
+      const region = campaignFactory().withRegion('EUR').build().regions[0]
+      const existingLine = {
+        ...hero,
+        id: 'eurLineId',
+        typename: 'CampaignTypographyBlock',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentOrder: 0
+      }
+      prismaMock.campaignBlock.findMany.mockResolvedValue([existingLine])
+      prismaMock.campaignBlock.create.mockImplementation((async ({
+        data
+      }: any) => ({
+        ...hero,
+        ...data,
+        id: 'newLineId',
+        action: null
+      })) as never)
+
+      const line = await createRegionLine(prismaMock, region, {
+        typename: 'CampaignTypographyBlock',
+        content: 'EUR',
+        placement: 'above'
+      })
+
+      expect(line).toMatchObject({
+        id: 'newLineId',
+        typename: 'CampaignTypographyBlock',
+        campaignId: 'campaignId',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentBlockId: null,
+        parentOrder: 1,
+        placement: null,
+        content: 'EUR'
+      })
+      expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            campaignId: 'campaignId',
+            parentBlockId: null,
+            pageId: null,
+            regionId: 'eurRegionId',
+            deletedAt: null
+          })
+        })
+      )
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+        data: {
+          typename: 'CampaignTypographyBlock',
+          content: 'EUR',
+          placement: null,
+          campaignId: 'campaignId',
+          pageId: null,
+          regionId: 'eurRegionId',
+          parentBlockId: null,
+          parentOrder: 1
+        },
+        include: { action: true }
+      })
     })
   })
 

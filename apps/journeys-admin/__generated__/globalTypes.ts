@@ -684,10 +684,17 @@ export interface CampaignRegionSwitcherBlockUpdateInput {
   variant?: CampaignSwitcherVariant | null;
 }
 
+export interface CampaignRegionUpdateInput {
+  name?: string | null;
+  slug?: string | null;
+  listed?: boolean | null;
+}
+
 export interface CampaignTypographyBlockCreateInput {
   id?: string | null;
   campaignId: string;
-  parentBlockId: string;
+  parentBlockId?: string | null;
+  regionId?: string | null;
   content?: string | null;
   variant?: TypographyVariant | null;
   align?: TypographyAlign | null;

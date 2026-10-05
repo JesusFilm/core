@@ -556,9 +556,37 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
 
 export type CampaignCreate_campaignCreate_blocks = CampaignCreate_campaignCreate_blocks_CampaignHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignFooterBlock | CampaignCreate_campaignCreate_blocks_CampaignHeroBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock | CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock | CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock;
 
+export interface CampaignCreate_campaignCreate_regions_countries_country_name {
+  __typename: "CountryName";
+  value: string;
+}
+
+export interface CampaignCreate_campaignCreate_regions_countries_country {
+  __typename: "Country";
+  id: string;
+  flagPngSrc: string | null;
+  name: CampaignCreate_campaignCreate_regions_countries_country_name[];
+}
+
+export interface CampaignCreate_campaignCreate_regions_countries {
+  __typename: "CampaignRegionCountry";
+  id: string;
+  regionId: string;
+  /**
+   * api-languages Country id.
+   */
+  countryId: string;
+  order: number;
+  /**
+   * The api-languages Country, resolved through federation: flag and translated name live there.
+   */
+  country: CampaignCreate_campaignCreate_regions_countries_country;
+}
+
 export interface CampaignCreate_campaignCreate_regions {
   __typename: "CampaignRegion";
   id: string;
+  campaignId: string;
   /**
    * Required, at most 60 characters.
    */
@@ -572,6 +600,10 @@ export interface CampaignCreate_campaignCreate_regions {
    * Whether the region appears on the Region Switcher.
    */
   listed: boolean;
+  /**
+   * Region Countries in chip order.
+   */
+  countries: CampaignCreate_campaignCreate_regions_countries[];
 }
 
 export interface CampaignCreate_campaignCreate {

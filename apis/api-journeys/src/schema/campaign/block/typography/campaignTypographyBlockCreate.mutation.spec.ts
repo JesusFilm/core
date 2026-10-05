@@ -25,6 +25,7 @@ describe('campaignTypographyBlockCreate', () => {
         parentBlockId
         parentOrder
         pageId
+        regionId
         content
         variant
         align
@@ -71,6 +72,7 @@ describe('campaignTypographyBlockCreate', () => {
           parentBlockId: 'heroId',
           parentOrder: 1,
           pageId: 'landingPageId',
+          regionId: null,
           content: '',
           variant: null,
           align: null,
@@ -161,5 +163,102 @@ describe('campaignTypographyBlockCreate', () => {
     const result = await create({ campaignId: 'missing' })
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+  })
+
+  describe('Region Lines', () => {
+    const region = campaignFactory().withRegion('EUR').build().regions[0]
+
+    async function createLine(input: Record<string, unknown>): Promise<any> {
+      return await authClient({
+        document: CREATE,
+        variables: { input: { campaignId: 'campaignId', ...input } }
+      })
+    }
+
+    beforeEach(() => {
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(region)
+      prismaMock.campaignBlock.findMany.mockResolvedValue([])
+    })
+
+    it('creates a line scoped to the region with regionId set and pageId, parentBlockId and placement null', async () => {
+      const result = await createLine({
+        regionId: 'eurRegionId',
+        content: 'EUR'
+      })
+
+      expect(result).toEqual({
+        data: {
+          campaignTypographyBlockCreate: {
+            id: 'newTextId',
+            parentBlockId: null,
+            parentOrder: 0,
+            pageId: null,
+            regionId: 'eurRegionId',
+            content: 'EUR',
+            variant: null,
+            align: null,
+            color: null,
+            placement: null
+          }
+        }
+      })
+      expect(prismaMock.campaignRegion.findFirst).toHaveBeenCalledWith({
+        where: { id: 'eurRegionId', campaignId: 'campaignId' }
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+        data: {
+          id: undefined,
+          typename: 'CampaignTypographyBlock',
+          content: 'EUR',
+          placement: null,
+          campaignId: 'campaignId',
+          pageId: null,
+          regionId: 'eurRegionId',
+          parentBlockId: null,
+          parentOrder: 0
+        },
+        include: { action: true }
+      })
+    })
+
+    it('rejects a region of another campaign (BAD_USER_INPUT, regionId)', async () => {
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
+
+      const result = await createLine({ regionId: 'otherRegionId' })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'regionId'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
+
+    it('rejects a placement on a line (BAD_USER_INPUT, placement)', async () => {
+      const result = await createLine({
+        regionId: 'eurRegionId',
+        placement: 'above'
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'placement'
+      })
+    })
+
+    it('rejects neither or both of parentBlockId and regionId (BAD_USER_INPUT, parentBlockId)', async () => {
+      expect((await createLine({})).errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'parentBlockId'
+      })
+      expect(
+        (
+          await createLine({
+            parentBlockId: 'heroId',
+            regionId: 'eurRegionId'
+          })
+        ).errors[0].extensions
+      ).toMatchObject({ code: 'BAD_USER_INPUT', field: 'parentBlockId' })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
   })
 })

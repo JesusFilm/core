@@ -295,3 +295,23 @@ export async function validateRegionSlug(
   if (existing != null) throw new SlugTakenError()
   return slug
 }
+
+/**
+ * On a Custom Domain a region slug outranks a journey slug with the same
+ * spelling, so a region may not take the address of a live journey in the
+ * campaign's team: `BAD_USER_INPUT` / `slug`, naming the journey.
+ */
+export async function assertRegionSlugFreeOfJourneys(
+  teamId: string,
+  slug: string
+): Promise<void> {
+  const journey = await prisma.journey.findFirst({
+    where: { teamId, slug, deletedAt: null },
+    select: { id: true, title: true }
+  })
+  if (journey != null)
+    throw badUserInput(
+      `slug "${slug}" is already the address of the journey "${journey.title}" in this team`,
+      'slug'
+    )
+}

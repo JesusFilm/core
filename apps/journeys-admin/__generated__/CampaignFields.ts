@@ -556,9 +556,37 @@ export interface CampaignFields_blocks_CampaignButtonBlock {
 
 export type CampaignFields_blocks = CampaignFields_blocks_CampaignHeaderBlock | CampaignFields_blocks_CampaignFooterBlock | CampaignFields_blocks_CampaignHeroBlock | CampaignFields_blocks_CampaignRegionSwitcherBlock | CampaignFields_blocks_CampaignVideoCarouselBlock | CampaignFields_blocks_CampaignJourneyListBlock | CampaignFields_blocks_CampaignAnalyticsBlock | CampaignFields_blocks_CampaignRegionHeaderBlock | CampaignFields_blocks_CampaignRegionShareBlock | CampaignFields_blocks_CampaignTypographyBlock | CampaignFields_blocks_CampaignButtonBlock;
 
+export interface CampaignFields_regions_countries_country_name {
+  __typename: "CountryName";
+  value: string;
+}
+
+export interface CampaignFields_regions_countries_country {
+  __typename: "Country";
+  id: string;
+  flagPngSrc: string | null;
+  name: CampaignFields_regions_countries_country_name[];
+}
+
+export interface CampaignFields_regions_countries {
+  __typename: "CampaignRegionCountry";
+  id: string;
+  regionId: string;
+  /**
+   * api-languages Country id.
+   */
+  countryId: string;
+  order: number;
+  /**
+   * The api-languages Country, resolved through federation: flag and translated name live there.
+   */
+  country: CampaignFields_regions_countries_country;
+}
+
 export interface CampaignFields_regions {
   __typename: "CampaignRegion";
   id: string;
+  campaignId: string;
   /**
    * Required, at most 60 characters.
    */
@@ -572,6 +600,10 @@ export interface CampaignFields_regions {
    * Whether the region appears on the Region Switcher.
    */
   listed: boolean;
+  /**
+   * Region Countries in chip order.
+   */
+  countries: CampaignFields_regions_countries[];
 }
 
 export interface CampaignFields {
