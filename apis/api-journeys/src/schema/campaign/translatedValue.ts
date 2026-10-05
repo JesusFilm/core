@@ -41,8 +41,7 @@ builder.objectType(TranslatedValueRef, {
 
 /** Turn a `<field>Translations` JSON column into the GraphQL list shape. */
 export function toTranslatedValues(json: unknown): TranslatedValueShape[] {
-  if (json == null || typeof json !== 'object' || Array.isArray(json))
-    return []
+  if (json == null || typeof json !== 'object' || Array.isArray(json)) return []
   return Object.entries(json as TranslationsJson)
     .filter(([, entry]) => entry != null && typeof entry.value === 'string')
     .map(([languageId, entry]) => ({

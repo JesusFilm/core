@@ -1,4 +1,8 @@
-import { GraphQLInterfaceType, GraphQLObjectType, GraphQLResolveInfo } from 'graphql'
+import {
+  GraphQLInterfaceType,
+  GraphQLObjectType,
+  GraphQLResolveInfo
+} from 'graphql'
 
 import { schema } from '../../schema'
 
@@ -6,7 +10,9 @@ import { resolveCampaignActionType } from './campaignAction'
 
 describe('CampaignAction', () => {
   const info = {} as unknown as GraphQLResolveInfo
-  const campaignAction = schema.getType('CampaignAction') as GraphQLInterfaceType
+  const campaignAction = schema.getType(
+    'CampaignAction'
+  ) as GraphQLInterfaceType
 
   function isTypeOf(typename: string, action: Record<string, unknown>) {
     const type = schema.getType(typename) as GraphQLObjectType
@@ -18,9 +24,9 @@ describe('CampaignAction', () => {
     expect(resolveCampaignActionType(action)).toBe(
       'CampaignScrollToBlockAction'
     )
-    expect(
-      campaignAction.resolveType?.(action, {}, info, campaignAction)
-    ).toBe('CampaignScrollToBlockAction')
+    expect(campaignAction.resolveType?.(action, {}, info, campaignAction)).toBe(
+      'CampaignScrollToBlockAction'
+    )
     expect(isTypeOf('CampaignScrollToBlockAction', action)).toBe(true)
     expect(isTypeOf('CampaignLinkAction', action)).toBe(false)
   })
@@ -30,9 +36,9 @@ describe('CampaignAction', () => {
     expect(resolveCampaignActionType(action)).toBe(
       'CampaignNavigateToRegionAction'
     )
-    expect(
-      campaignAction.resolveType?.(action, {}, info, campaignAction)
-    ).toBe('CampaignNavigateToRegionAction')
+    expect(campaignAction.resolveType?.(action, {}, info, campaignAction)).toBe(
+      'CampaignNavigateToRegionAction'
+    )
     expect(isTypeOf('CampaignNavigateToRegionAction', action)).toBe(true)
     expect(isTypeOf('CampaignLinkAction', action)).toBe(false)
   })
@@ -40,9 +46,9 @@ describe('CampaignAction', () => {
   it('resolves everything else to CampaignLinkAction', () => {
     const action = { blockId: null, regionId: null, url: 'https://x.test' }
     expect(resolveCampaignActionType(action)).toBe('CampaignLinkAction')
-    expect(
-      campaignAction.resolveType?.(action, {}, info, campaignAction)
-    ).toBe('CampaignLinkAction')
+    expect(campaignAction.resolveType?.(action, {}, info, campaignAction)).toBe(
+      'CampaignLinkAction'
+    )
     expect(isTypeOf('CampaignLinkAction', action)).toBe(true)
     expect(isTypeOf('CampaignScrollToBlockAction', action)).toBe(false)
     expect(isTypeOf('CampaignNavigateToRegionAction', action)).toBe(false)

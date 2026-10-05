@@ -4,5 +4,6 @@ import { builder } from '../../builder'
 
 export const CampaignStringKey = builder.enumType(PrismaCampaignStringKey, {
   name: 'CampaignStringKey',
-  description: 'The fixed interface phrases every Campaign carries as Campaign Strings.'
+  description:
+    'The fixed interface phrases every Campaign carries as Campaign Strings.'
 })

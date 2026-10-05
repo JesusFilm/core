@@ -61,7 +61,8 @@ export const LANDING_HERO_BUTTON_SEED: SectionSeed = {
 export const REGION_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignRegionHeaderBlock',
-    intro: 'A Christmas journey chosen and contextualised by your regional team.',
+    intro:
+      'A Christmas journey chosen and contextualised by your regional team.',
     backgroundKind: 'none'
   },
   {

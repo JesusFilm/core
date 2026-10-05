@@ -30,7 +30,10 @@ builder.queryField('campaign', (t) =>
         throw new GraphQLError('user is not allowed to view campaign', {
           extensions: { code: 'FORBIDDEN' }
         })
-      return await prisma.campaign.findUniqueOrThrow({ ...query, where: { id } })
+      return await prisma.campaign.findUniqueOrThrow({
+        ...query,
+        where: { id }
+      })
     }
   })
 )

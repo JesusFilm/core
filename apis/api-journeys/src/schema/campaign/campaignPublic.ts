@@ -1,19 +1,23 @@
 import {
   CampaignBlock as CampaignBlockRow,
   CampaignLanguage,
-  CampaignPageKind as PrismaCampaignPageKind,
   CampaignRegionCountry,
   CampaignString,
   CampaignTheme,
-  JourneyStatus as PrismaJourneyStatus,
-  Prisma
+  Prisma,
+  CampaignPageKind as PrismaCampaignPageKind,
+  JourneyStatus as PrismaJourneyStatus
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 import { JourneyStatus } from '../journey/enums/journeyStatus'
 import { Language } from '../language'
 
-import { CampaignBlock, CampaignFooterBlock, CampaignHeaderBlock } from './block'
+import {
+  CampaignBlock,
+  CampaignFooterBlock,
+  CampaignHeaderBlock
+} from './block'
 import { CampaignLanguageRef } from './campaignLanguage'
 import { CampaignRegionCountryRef } from './campaignRegionCountry'
 import { CampaignStringRef } from './campaignString'
@@ -233,7 +237,8 @@ builder.objectType(CampaignPublicRef, {
     regions: t.field({
       type: [CampaignRegionPublicRef],
       nullable: false,
-      description: 'Every Campaign Region, listed and orphan, in switcher order.',
+      description:
+        'Every Campaign Region, listed and orphan, in switcher order.',
       resolve: (campaign) => campaign.regions
     }),
     header: t.field({
@@ -256,7 +261,8 @@ builder.objectType(CampaignPublicRef, {
     pages: t.field({
       type: [CampaignPagePublicRef],
       nullable: false,
-      description: 'The landing page and the Region Page, each with its blocks.',
+      description:
+        'The landing page and the Region Page, each with its blocks.',
       resolve: (campaign) => campaign.pages
     })
   })

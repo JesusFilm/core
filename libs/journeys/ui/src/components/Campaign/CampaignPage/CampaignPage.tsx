@@ -7,7 +7,11 @@ import { CampaignProvider } from '../CampaignProvider'
 import { CampaignRenderer } from '../CampaignRenderer'
 import { transformCampaignBlocks } from '../libs/transformer'
 import { isCampaignSection } from '../types'
-import type { CampaignPublic, CampaignRegion, CampaignSectionTree } from '../types'
+import type {
+  CampaignPublic,
+  CampaignRegion,
+  CampaignSectionTree
+} from '../types'
 
 import { shouldRenderSection } from './shouldRenderSection'
 
@@ -44,7 +48,7 @@ export function CampaignPage({
     return transformCampaignBlocks(page.blocks).filter(
       (block): block is CampaignSectionTree =>
         isCampaignSection(block) &&
-        shouldRenderSection(block as CampaignSectionTree, {
+        shouldRenderSection(block, {
           pageKind,
           region,
           regions: campaign.regions

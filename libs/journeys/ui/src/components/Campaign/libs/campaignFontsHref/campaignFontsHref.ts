@@ -19,7 +19,9 @@ function formatFontName(font: string): string {
  * weights 400–800, deduplicated and sorted, `display=swap`. Null fonts add
  * nothing, so a theme with no fonts set loads the defaults only.
  */
-export function campaignFontsHref(fonts: CampaignFonts | null | undefined): string {
+export function campaignFontsHref(
+  fonts: CampaignFonts | null | undefined
+): string {
   const families = [
     ...CAMPAIGN_DEFAULT_FONTS,
     fonts?.headerFont ?? '',

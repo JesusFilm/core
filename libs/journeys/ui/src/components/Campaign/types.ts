@@ -21,9 +21,8 @@ export interface CampaignTreeSlots {
 }
 export type CampaignTree<T extends CampaignBlock = CampaignBlock> = T &
   CampaignTreeSlots
-export type CampaignTreeOf<T extends CampaignBlock['__typename']> = CampaignTree<
-  CampaignBlockOf<T>
->
+export type CampaignTreeOf<T extends CampaignBlock['__typename']> =
+  CampaignTree<CampaignBlockOf<T>>
 
 export type CampaignPublic = CampaignPublicFields
 export type CampaignRegion = CampaignPublicFields_regions

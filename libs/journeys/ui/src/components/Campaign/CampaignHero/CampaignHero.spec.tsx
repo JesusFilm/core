@@ -1,7 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
-import { CampaignPageKind, TypographyAlign } from '../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  TypographyAlign
+} from '../../../../__generated__/globalTypes'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { transformCampaignBlocks } from '../libs/transformer'
@@ -17,8 +20,12 @@ function heroTree(
   extraBlocks: typeof landingBlocks = []
 ): CampaignTreeOf<'CampaignHeroBlock'> {
   const hero = landingBlocks.find((block) => block.id === 'heroId')
-  if (hero == null || hero.__typename !== 'CampaignHeroBlock') throw new Error('fixture')
-  const tree = transformCampaignBlocks([{ ...hero, ...overrides }, ...extraBlocks])[0]
+  if (hero == null || hero.__typename !== 'CampaignHeroBlock')
+    throw new Error('fixture')
+  const tree = transformCampaignBlocks([
+    { ...hero, ...overrides },
+    ...extraBlocks
+  ])[0]
   return tree as CampaignTreeOf<'CampaignHeroBlock'>
 }
 
@@ -26,7 +33,11 @@ function renderHero(block: CampaignTreeOf<'CampaignHeroBlock'>) {
   return render(
     <ThemeProvider theme={theme}>
       <CampaignProvider
-        value={{ campaign: campaignPublic, pageKind: CampaignPageKind.landing, region: null }}
+        value={{
+          campaign: campaignPublic,
+          pageKind: CampaignPageKind.landing,
+          region: null
+        }}
       >
         <CampaignHero block={block} />
       </CampaignProvider>
@@ -37,9 +48,14 @@ function renderHero(block: CampaignTreeOf<'CampaignHeroBlock'>) {
 describe('CampaignHero', () => {
   it('renders eyebrow, title and lede', () => {
     renderHero(heroTree())
-    expect(screen.getByTestId('CampaignEyebrow')).toHaveTextContent('Christmas 2026')
+    expect(screen.getByTestId('CampaignEyebrow')).toHaveTextContent(
+      'Christmas 2026'
+    )
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Share the story of Christmas' })
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Share the story of Christmas'
+      })
     ).toBeInTheDocument()
     expect(screen.getByTestId('CampaignLede')).toHaveTextContent(
       'Pick your region to find a journey in your language, ready to share.'
@@ -48,7 +64,9 @@ describe('CampaignHero', () => {
 
   it('applies align to the band and the heading', () => {
     renderHero(heroTree({ align: TypographyAlign.center }))
-    expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({ textAlign: 'center' })
+    expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({
+      textAlign: 'center'
+    })
     expect(screen.getByTestId('CampaignTitle')).toBeInTheDocument()
   })
 

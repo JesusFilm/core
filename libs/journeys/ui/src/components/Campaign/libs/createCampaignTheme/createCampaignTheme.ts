@@ -16,7 +16,11 @@ import {
 import { contrastText } from '../resolveBand'
 
 export type CampaignThemeMode = 'light' | 'dark'
-export type CampaignThemeRadius = 'square' | 'slight' | 'rounded' | 'veryRounded'
+export type CampaignThemeRadius =
+  | 'square'
+  | 'slight'
+  | 'rounded'
+  | 'veryRounded'
 export type CampaignThemeButtonRadius = 'rounded' | 'pill'
 
 /** The `CampaignTheme` columns the MUI theme is built from. */
@@ -92,7 +96,7 @@ function withUnitlessLineHeights(
       lineHeight: Math.round((parseFloat(lineHeight) / fontSize) * 1000) / 1000
     }
   }
-  return { typography: next as ThemeOptions['typography'] }
+  return { typography: next }
 }
 
 /**

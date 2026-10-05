@@ -5,7 +5,12 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { transformCampaignBlocks } from '../libs/transformer'
-import { campaignPublic, eurRegion, landingBlocks, regionPageBlocks } from '../testData'
+import {
+  campaignPublic,
+  eurRegion,
+  landingBlocks,
+  regionPageBlocks
+} from '../testData'
 import type { CampaignTree } from '../types'
 
 import { CampaignRenderer } from './CampaignRenderer'
@@ -22,7 +27,8 @@ function renderBlock(
         value={{
           campaign: campaignPublic,
           pageKind,
-          region: pageKind === CampaignPageKind.regionTemplate ? eurRegion : null
+          region:
+            pageKind === CampaignPageKind.regionTemplate ? eurRegion : null
         }}
       >
         <CampaignRenderer block={block} />
@@ -42,21 +48,26 @@ describe('CampaignRenderer', () => {
     renderBlock(treeOf(landingBlocks, 'heroId'))
     expect(screen.getByTestId('CampaignSectionBand-heroId')).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Share the story of Christmas' })
+      screen.getByRole('heading', {
+        level: 1,
+        name: 'Share the story of Christmas'
+      })
     ).toBeInTheDocument()
   })
 
   it('renders CampaignRegionSwitcherBlock through CampaignRegionSwitcher', () => {
     renderBlock(treeOf(landingBlocks, 'landingSwitcherId'))
     expect(screen.getByTestId('CampaignRegionSwitcherGrid')).toBeInTheDocument()
-    expect(screen.getByTestId('CampaignRegionCard-eurRegionId')).toHaveTextContent('Europe')
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveTextContent('Europe')
   })
 
   it('renders CampaignVideoCarouselBlock through CampaignVideoCarousel', () => {
     renderBlock(treeOf(landingBlocks, 'carouselId'))
-    expect(screen.getByTestId('CampaignSectionBand-carouselId')).toHaveTextContent(
-      'Films for the season'
-    )
+    expect(
+      screen.getByTestId('CampaignSectionBand-carouselId')
+    ).toHaveTextContent('Films for the season')
   })
 
   it('renders CampaignJourneyListBlock through CampaignJourneyList', () => {
@@ -72,25 +83,35 @@ describe('CampaignRenderer', () => {
   })
 
   it('renders CampaignRegionHeaderBlock through CampaignRegionHeader', () => {
-    renderBlock(treeOf(regionPageBlocks, 'regionHeaderId'), CampaignPageKind.regionTemplate)
+    renderBlock(
+      treeOf(regionPageBlocks, 'regionHeaderId'),
+      CampaignPageKind.regionTemplate
+    )
     expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
   })
 
   it('renders CampaignRegionShareBlock through CampaignRegionShare', () => {
-    renderBlock(treeOf(regionPageBlocks, 'regionShareId'), CampaignPageKind.regionTemplate)
+    renderBlock(
+      treeOf(regionPageBlocks, 'regionShareId'),
+      CampaignPageKind.regionTemplate
+    )
     expect(screen.getByTestId('CampaignRegionShareIntro')).toBeInTheDocument()
   })
 
   it('renders CampaignTypographyBlock through CampaignTypography', () => {
     const [note] = treeOf(landingBlocks, 'landingJourneyListId').children
     renderBlock(note)
-    expect(screen.getByTestId('CampaignTypography')).toHaveTextContent('New this season')
+    expect(screen.getByTestId('CampaignTypography')).toHaveTextContent(
+      'New this season'
+    )
   })
 
   it('renders CampaignButtonBlock through CampaignButton', () => {
     const [heroButton] = treeOf(landingBlocks, 'heroId').children
     renderBlock(heroButton)
-    expect(screen.getByTestId('CampaignButton')).toHaveTextContent('Choose your region')
+    expect(screen.getByTestId('CampaignButton')).toHaveTextContent(
+      'Choose your region'
+    )
   })
 
   it('renders nothing for an unknown typename', () => {

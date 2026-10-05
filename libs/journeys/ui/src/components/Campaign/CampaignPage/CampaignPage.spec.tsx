@@ -22,10 +22,7 @@ function withLanding(
   return {
     ...campaignPublic,
     ...overrides,
-    pages: [
-      { ...campaignPublic.pages[0], blocks },
-      campaignPublic.pages[1]
-    ]
+    pages: [{ ...campaignPublic.pages[0], blocks }, campaignPublic.pages[1]]
   }
 }
 
@@ -48,10 +45,15 @@ function renderPage(
 }
 
 function bandIds(): string[] {
-  return Array.from(document.querySelectorAll('section[id]')).map((node) => node.id)
+  return Array.from(document.querySelectorAll('section[id]')).map(
+    (node) => node.id
+  )
 }
 
-function pick(id: string, overrides: Partial<CampaignBlock> = {}): CampaignBlock {
+function pick(
+  id: string,
+  overrides: Partial<CampaignBlock> = {}
+): CampaignBlock {
   const block = landingBlocks.find((candidate) => candidate.id === id)
   if (block == null) throw new Error(`no fixture block ${id}`)
   return { ...block, ...overrides } as CampaignBlock
@@ -75,10 +77,9 @@ describe('CampaignPage', () => {
       'landingJourneyListId',
       'landingAnalyticsId'
     ])
-    expect(screen.getByRole('link', { name: 'Choose your region' })).toHaveAttribute(
-      'href',
-      '#landingSwitcherId'
-    )
+    expect(
+      screen.getByRole('link', { name: 'Choose your region' })
+    ).toHaveAttribute('href', '#landingSwitcherId')
   })
 
   it('renders the region page for a region: header, share, lists, analytics, switcher', () => {
@@ -107,14 +108,20 @@ describe('CampaignPage', () => {
       expect(screen.queryByTestId('CampaignLede')).not.toBeInTheDocument()
       expect(screen.queryByTestId('CampaignTypography')).not.toBeInTheDocument()
       expect(screen.queryByText(/your text/i)).not.toBeInTheDocument()
-      expect(screen.queryByText(/add your first region/i)).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(/add your first region/i)
+      ).not.toBeInTheDocument()
     })
 
     it('skips a section with no body content and no extras, band and all', () => {
       renderPage(
         withLanding([
           pick('heroId', { eyebrow: null, title: null, lede: null }),
-          pick('landingJourneyListId', { eyebrow: null, title: null, lede: null })
+          pick('landingJourneyListId', {
+            eyebrow: null,
+            title: null,
+            lede: null
+          })
         ])
       )
       expect(bandIds()).toEqual([])
@@ -122,7 +129,9 @@ describe('CampaignPage', () => {
 
     it('Hero renders with any text, media or extra', () => {
       renderPage(
-        withLanding([pick('heroId', { eyebrow: null, title: null, lede: 'Only a lede' })])
+        withLanding([
+          pick('heroId', { eyebrow: null, title: null, lede: 'Only a lede' })
+        ])
       )
       expect(bandIds()).toEqual(['heroId'])
     })
@@ -140,7 +149,10 @@ describe('CampaignPage', () => {
     it('Region switcher with no listed regions is skipped', () => {
       renderPage(
         withLanding([pick('landingSwitcherId')], {
-          regions: campaignPublic.regions.map((region) => ({ ...region, listed: false }))
+          regions: campaignPublic.regions.map((region) => ({
+            ...region,
+            listed: false
+          }))
         })
       )
       expect(bandIds()).toEqual([])
@@ -152,8 +164,12 @@ describe('CampaignPage', () => {
           regions: [eurRegion, { ...campaignPublic.regions[1], listed: false }]
         })
       )
-      expect(screen.getByTestId('CampaignRegionCard-eurRegionId')).toBeInTheDocument()
-      expect(screen.queryByTestId('CampaignRegionCard-afrRegionId')).not.toBeInTheDocument()
+      expect(
+        screen.getByTestId('CampaignRegionCard-eurRegionId')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CampaignRegionCard-afrRegionId')
+      ).not.toBeInTheDocument()
     })
 
     it('Video carousel in explicit mode with nothing renders text if any, else is skipped', () => {
@@ -163,19 +179,29 @@ describe('CampaignPage', () => {
       expect(bandIds()).toEqual(['carouselId'])
       unmount()
 
-      renderPage(withLanding([pick('carouselId', { eyebrow: null, title: null })]))
+      renderPage(
+        withLanding([pick('carouselId', { eyebrow: null, title: null })])
+      )
       expect(bandIds()).toEqual([])
     })
 
     it('Journey list with no live-published journeys renders text if any, else is skipped', () => {
       const { unmount } = renderPage(
-        withLanding([pick('landingJourneyListId', { eyebrow: null, lede: null })])
+        withLanding([
+          pick('landingJourneyListId', { eyebrow: null, lede: null })
+        ])
       )
       expect(bandIds()).toEqual(['landingJourneyListId'])
       unmount()
 
       renderPage(
-        withLanding([pick('landingJourneyListId', { eyebrow: null, title: null, lede: null })])
+        withLanding([
+          pick('landingJourneyListId', {
+            eyebrow: null,
+            title: null,
+            lede: null
+          })
+        ])
       )
       expect(bandIds()).toEqual([])
     })
@@ -183,29 +209,48 @@ describe('CampaignPage', () => {
     it('Analytics always renders, with its eyebrow and title over the skeleton state', () => {
       renderPage(withLanding([pick('landingAnalyticsId')]))
       expect(bandIds()).toEqual(['landingAnalyticsId'])
-      expect(screen.getByTestId('CampaignEyebrow')).toHaveTextContent('Around the world')
-      expect(screen.getByTestId('CampaignTitle')).toHaveTextContent('Where the story is spreading')
-      expect(screen.getByTestId('CampaignAnalyticsSkeleton')).toBeInTheDocument()
+      expect(screen.getByTestId('CampaignEyebrow')).toHaveTextContent(
+        'Around the world'
+      )
+      expect(screen.getByTestId('CampaignTitle')).toHaveTextContent(
+        'Where the story is spreading'
+      )
+      expect(
+        screen.getByTestId('CampaignAnalyticsSkeleton')
+      ).toBeInTheDocument()
     })
 
     it('Analytics renders even with no text', () => {
-      renderPage(withLanding([pick('landingAnalyticsId', { eyebrow: null, title: null })]))
+      renderPage(
+        withLanding([
+          pick('landingAnalyticsId', { eyebrow: null, title: null })
+        ])
+      )
       expect(bandIds()).toEqual(['landingAnalyticsId'])
     })
 
     it('Region header and share render only on a region page', () => {
       const landingWithRegionSections = withLanding([
-        ...regionPageBlocks.map((block) => ({ ...block, pageId: 'landingPageId' }))
+        ...regionPageBlocks.map((block) => ({
+          ...block,
+          pageId: 'landingPageId'
+        }))
       ])
       renderPage(landingWithRegionSections)
-      expect(bandIds()).toEqual(['regionJourneyListId', 'regionAnalyticsId', 'regionSwitcherId'])
+      expect(bandIds()).toEqual([
+        'regionJourneyListId',
+        'regionAnalyticsId',
+        'regionSwitcherId'
+      ])
     })
   })
 
   describe('responsive', () => {
     it('is single column below md and auto-fills switcher cards at 230px minimum at md and up', () => {
       renderPage(campaignPublic)
-      expect(screen.getByTestId('CampaignRegionSwitcherGrid')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('CampaignRegionSwitcherGrid')
+      ).toBeInTheDocument()
       const css = styleText()
       expect(css).toContain('grid-template-columns:1fr')
       expect(css).toMatch(

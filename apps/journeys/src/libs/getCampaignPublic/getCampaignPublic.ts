@@ -3,9 +3,9 @@ import { ApolloClient, CombinedGraphQLErrors, gql } from '@apollo/client'
 import { CAMPAIGN_PUBLIC_FIELDS } from '@core/journeys/ui/Campaign'
 
 import {
+  GetCampaignPublic_campaignPublic as CampaignPublic,
   GetCampaignPublic,
-  GetCampaignPublicVariables,
-  GetCampaignPublic_campaignPublic as CampaignPublic
+  GetCampaignPublicVariables
 } from '../../../__generated__/GetCampaignPublic'
 
 // The one page query (PRD §11): one server-side request per render, text
