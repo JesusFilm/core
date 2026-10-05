@@ -12,7 +12,8 @@ export const CampaignImageBlockUpdateInput = builder.inputType(
       }),
       alt: t.string({
         required: false,
-        description: 'Default-language alternative text. At most 500 characters.'
+        description:
+          'Default-language alternative text. At most 500 characters.'
       }),
       ...sectionStyleInputFields(t)
     })

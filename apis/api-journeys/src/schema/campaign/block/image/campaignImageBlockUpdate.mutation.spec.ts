@@ -8,8 +8,8 @@ import {
   campaignFactory
 } from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
-import { transformInput } from '../../../block/image/transformInput'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
+import { transformInput } from '../../../block/image/transformInput'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -50,7 +50,7 @@ describe('campaignImageBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     vi.mocked(transformInput).mockImplementation(
       async (input) =>
-        ({ ...input, width: 640, height: 480, blurhash: 'LKO2?U%2Tw' }) as never
+        ({ ...input, width: 640, height: 480, blurhash: 'LKO2?U%2Tw' })
     )
     const image = campaignBlockWithAcl(fixture, 'heroId', {
       typename: 'CampaignImageBlock',

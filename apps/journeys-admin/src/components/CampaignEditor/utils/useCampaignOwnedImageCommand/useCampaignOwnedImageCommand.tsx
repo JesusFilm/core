@@ -67,7 +67,7 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
           created = true
           await createOwnedImage({
             id: imageId,
-            owner: current as unknown as CampaignImageOwner,
+            owner: current,
             slot,
             src
           })

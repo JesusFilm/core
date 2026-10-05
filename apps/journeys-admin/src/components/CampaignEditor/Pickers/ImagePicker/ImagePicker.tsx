@@ -126,9 +126,7 @@ export function ImagePicker({
         <Button
           variant="outlined"
           size="small"
-          startIcon={
-            loading ? <CircularProgress size={16} /> : <Upload1Icon />
-          }
+          startIcon={loading ? <CircularProgress size={16} /> : <Upload1Icon />}
           disabled={loading}
           onClick={open}
         >

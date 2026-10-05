@@ -5,7 +5,6 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
-
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -153,8 +152,12 @@ describe('StylePanel', () => {
         'true'
       )
       expect(screen.getByTestId('StyleCoverPicker')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Upload a file' })).toBeEnabled()
-      expect(screen.getByRole('textbox', { name: 'Image URL' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Upload a file' })
+      ).toBeEnabled()
+      expect(
+        screen.getByRole('textbox', { name: 'Image URL' })
+      ).toBeInTheDocument()
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
       expect(screen.queryByRole('group', { name: 'Overlay' })).toBeNull()
     })
@@ -178,7 +181,11 @@ describe('StylePanel', () => {
           },
           imageInput
         ),
-        sectionStyleMock(hero, { backgroundOverlay: CampaignBackgroundOverlay.heavy }, imageInput)
+        sectionStyleMock(
+          hero,
+          { backgroundOverlay: CampaignBackgroundOverlay.heavy },
+          imageInput
+        )
       ]
       renderPanel(mocks)
       fireEvent.click(await screen.findByRole('button', { name: 'Image' }))
@@ -187,10 +194,9 @@ describe('StylePanel', () => {
         target: { value: PASTED }
       })
       fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
-      expect(screen.getByTestId('StyleCoverPickerPreviewImage')).toHaveAttribute(
-        'src',
-        PASTED
-      )
+      expect(
+        screen.getByTestId('StyleCoverPickerPreviewImage')
+      ).toHaveAttribute('src', PASTED)
       fireEvent.click(screen.getByRole('button', { name: 'Use as background' }))
 
       await waitFor(() => expect(uploadByUrlMock.result).toHaveBeenCalled())

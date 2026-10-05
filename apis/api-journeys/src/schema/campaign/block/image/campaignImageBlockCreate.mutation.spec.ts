@@ -8,8 +8,8 @@ import {
   campaignFactory
 } from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
-import { transformInput } from '../../../block/image/transformInput'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
+import { transformInput } from '../../../block/image/transformInput'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -45,7 +45,12 @@ describe('campaignImageBlockCreate', () => {
     fixture = setupCampaignBlockSpec()
     vi.mocked(transformInput).mockImplementation(
       async (input) =>
-        ({ ...input, width: 1600, height: 900, blurhash: 'LKO2?U%2Tw' }) as never
+        ({
+          ...input,
+          width: 1600,
+          height: 900,
+          blurhash: 'LKO2?U%2Tw'
+        })
     )
     const hero = campaignBlockWithAcl(fixture, 'heroId')
     prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[0])
@@ -278,14 +283,15 @@ describe('campaignImageBlockCreate', () => {
         }),
         include: { action: true }
       })
-      expect(prismaMock.campaignBlock.update.mock.calls.map(([c]: any) => c))
-        .toEqual([
-          {
-            where: { id: 'oldCoverId' },
-            data: { deletedAt: expect.any(Date) }
-          },
-          { where: { id: 'heroId' }, data: { coverBlockId: 'coverId' } }
-        ])
+      expect(
+        prismaMock.campaignBlock.update.mock.calls.map(([c]: any) => c)
+      ).toEqual([
+        {
+          where: { id: 'oldCoverId' },
+          data: { deletedAt: expect.any(Date) }
+        },
+        { where: { id: 'heroId' }, data: { coverBlockId: 'coverId' } }
+      ])
       // Siblings are never read for an owned block.
       expect(prismaMock.campaignBlock.findMany).not.toHaveBeenCalled()
     })

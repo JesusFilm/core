@@ -216,7 +216,9 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
             fullWidth
             size="small"
             value={
-              choosingCover ? CampaignBackgroundKind.image : block.backgroundKind
+              choosingCover
+                ? CampaignBackgroundKind.image
+                : block.backgroundKind
             }
             onChange={handleKindChange}
             aria-label={t('Background')}
@@ -259,7 +261,8 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
                     fullWidth
                     size="small"
                     value={
-                      block.backgroundOverlay ?? CampaignBackgroundOverlay.medium
+                      block.backgroundOverlay ??
+                      CampaignBackgroundOverlay.medium
                     }
                     onChange={handleOverlayChange}
                     aria-label={t('Overlay')}

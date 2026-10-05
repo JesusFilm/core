@@ -375,7 +375,9 @@ describe('useImageUpload', () => {
 
   it('should pass teamId to the upload mutation instead of the journey id when given', async () => {
     const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
-      data: { createCloudflareUploadByFile: { uploadUrl: 'https://upload.url' } }
+      data: {
+        createCloudflareUploadByFile: { uploadUrl: 'https://upload.url' }
+      }
     })
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       createCloudflareUploadByFile

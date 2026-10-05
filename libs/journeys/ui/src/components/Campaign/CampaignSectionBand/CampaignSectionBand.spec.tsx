@@ -247,7 +247,7 @@ describe('CampaignSectionBand', () => {
           media: null,
           logo: null
         }
-      } as CampaignSectionTree)
+      })
       expect(screen.getByTestId('CampaignBandOverlay')).toHaveStyle({
         backgroundColor: `rgba(0, 0, 0, ${alphaValue})`
       })

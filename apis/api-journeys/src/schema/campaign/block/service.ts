@@ -860,8 +860,12 @@ export function sectionStyleColumns(
 }
 
 /** The two slot columns an owned image fills; `mediaBlockId` belongs to the videos ticket. */
-export const CAMPAIGN_IMAGE_SLOT_COLUMNS = ['coverBlockId', 'logoBlockId'] as const
-export type CampaignImageSlotColumn = (typeof CAMPAIGN_IMAGE_SLOT_COLUMNS)[number]
+export const CAMPAIGN_IMAGE_SLOT_COLUMNS = [
+  'coverBlockId',
+  'logoBlockId'
+] as const
+export type CampaignImageSlotColumn =
+  (typeof CAMPAIGN_IMAGE_SLOT_COLUMNS)[number]
 
 /**
  * A slot column (`coverBlockId`, `logoBlockId`) names a live
@@ -917,8 +921,10 @@ export async function validateSectionStyle(
 
 export type CampaignImageSlotName = 'cover' | 'logo'
 
-const IMAGE_SLOT_COLUMN: Record<CampaignImageSlotName, CampaignImageSlotColumn> =
-  { cover: 'coverBlockId', logo: 'logoBlockId' }
+const IMAGE_SLOT_COLUMN: Record<
+  CampaignImageSlotName,
+  CampaignImageSlotColumn
+> = { cover: 'coverBlockId', logo: 'logoBlockId' }
 
 /**
  * An owned image's parent is a live section or chrome block of the same

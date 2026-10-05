@@ -59,7 +59,8 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
       const slot = assertImageSlot(owner, input.slot)
       const data = await validateImageInput(input)
       return await prisma.$transaction(
-        async (tx) => await createOwnedImageBlock(tx, owner, slot, { id, ...data })
+        async (tx) =>
+          await createOwnedImageBlock(tx, owner, slot, { id, ...data })
       )
     }
   })

@@ -133,7 +133,9 @@ describe('ChromeEdit', () => {
       screen.getByText('No logo: the campaign title shows as the brand mark.')
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Upload a file' })).toBeEnabled()
-    expect(screen.getByRole('textbox', { name: 'Image URL' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Image URL' })
+    ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Clear logo' })).toBeNull()
     expect(vi.mocked(useImageUpload).mock.calls[0][0].teamId).toBe('teamId')
   })

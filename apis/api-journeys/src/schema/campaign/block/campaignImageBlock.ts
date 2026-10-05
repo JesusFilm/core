@@ -27,11 +27,13 @@ export const CampaignImageBlock = builder.prismaObject('CampaignBlock', {
     }),
     width: t.exposeInt('width', {
       nullable: true,
-      description: 'Measured by the server from the image; never client-supplied.'
+      description:
+        'Measured by the server from the image; never client-supplied.'
     }),
     height: t.exposeInt('height', {
       nullable: true,
-      description: 'Measured by the server from the image; never client-supplied.'
+      description:
+        'Measured by the server from the image; never client-supplied.'
     })
   })
 })

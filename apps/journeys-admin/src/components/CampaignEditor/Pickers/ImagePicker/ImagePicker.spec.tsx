@@ -73,7 +73,9 @@ describe('ImagePicker', () => {
     expect(
       screen.getByRole('button', { name: 'Upload a file' })
     ).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: 'Image URL' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'Image URL' })
+    ).toBeInTheDocument()
     expect(screen.queryByRole('tab')).not.toBeInTheDocument()
     expect(screen.queryByText(/library/i)).not.toBeInTheDocument()
   })
@@ -109,10 +111,9 @@ describe('ImagePicker', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
 
-    expect(screen.getByTestId('CampaignImagePickerPreviewImage')).toHaveAttribute(
-      'src',
-      PASTED
-    )
+    expect(
+      screen.getByTestId('CampaignImagePickerPreviewImage')
+    ).toHaveAttribute('src', PASTED)
     expect(uploadByUrlMock.result).not.toHaveBeenCalled()
     expect(onPick).not.toHaveBeenCalled()
 

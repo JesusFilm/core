@@ -144,7 +144,9 @@ describe('journeysAccess', () => {
       await expect(
         resolveUploadTeamId({ journeyId: 'journeyId', userId: 'userId' })
       ).resolves.toBe('journeyTeamId')
-      await expect(resolveUploadTeamId({ userId: 'userId' })).resolves.toBeNull()
+      await expect(
+        resolveUploadTeamId({ userId: 'userId' })
+      ).resolves.toBeNull()
     })
   })
 

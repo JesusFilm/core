@@ -816,7 +816,10 @@ describe('cloudflareImage', () => {
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_TEAM_MUTATION,
-          variables: { url: 'https://example.com/picture.jpg', teamId: 'teamId' }
+          variables: {
+            url: 'https://example.com/picture.jpg',
+            teamId: 'teamId'
+          }
         })) as { errors?: unknown }
 
         expect(result.errors).toBeUndefined()
@@ -842,7 +845,10 @@ describe('cloudflareImage', () => {
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_TEAM_MUTATION,
-          variables: { url: 'https://example.com/picture.jpg', teamId: 'teamId' }
+          variables: {
+            url: 'https://example.com/picture.jpg',
+            teamId: 'teamId'
+          }
         })) as { errors?: { extensions?: { code?: string } }[] }
 
         expect(result.errors?.[0]?.extensions?.code).toBe('FORBIDDEN')

@@ -33,7 +33,10 @@ export function assertImageSrc(src: string): string {
   const trimmed = src.trim()
   assertHttpsUrl(trimmed, 'src')
   if (new URL(trimmed).hostname !== CAMPAIGN_IMAGE_HOST)
-    throw badUserInput(`src must be an https://${CAMPAIGN_IMAGE_HOST} image`, 'src')
+    throw badUserInput(
+      `src must be an https://${CAMPAIGN_IMAGE_HOST} image`,
+      'src'
+    )
   return trimmed
 }
 

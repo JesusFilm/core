@@ -3,8 +3,8 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import {
   MouseEvent,
@@ -320,7 +320,9 @@ export function CanvasSection({
       ? campaignImageSource(block.logo)
       : null
   const picture =
-    block.__typename === 'CampaignImageBlock' ? campaignImageSource(block) : null
+    block.__typename === 'CampaignImageBlock'
+      ? campaignImageSource(block)
+      : null
   const align = 'align' in block ? block.align : null
   const titleVariant = block.__typename === 'CampaignHeroBlock' ? 'h1' : 'h2'
   const above = block.children.filter(isAbove)
@@ -460,7 +462,11 @@ export function CanvasSection({
           {block.__typename === 'CampaignHeaderBlock' && (
             <Box
               data-testid="CanvasBrandMark"
-              sx={{ display: 'flex', alignItems: 'center', alignSelf: 'stretch' }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                alignSelf: 'stretch'
+              }}
             >
               {logo != null ? (
                 <Box

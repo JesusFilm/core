@@ -780,9 +780,9 @@ describe('owned images (cover and logo)', () => {
     it('returns a live section or chrome block of the campaign', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
 
-      await expect(
-        validateImageOwner('headerId', 'campaignId')
-      ).resolves.toBe(header)
+      await expect(validateImageOwner('headerId', 'campaignId')).resolves.toBe(
+        header
+      )
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
         where: { id: 'headerId', campaignId: 'campaignId', deletedAt: null }
       })
@@ -792,7 +792,9 @@ describe('owned images (cover and logo)', () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(
         fixture.blocks.find((block) => block.id === 'heroButtonId')!
       )
-      const extra = await errorOf(validateImageOwner('heroButtonId', 'campaignId'))
+      const extra = await errorOf(
+        validateImageOwner('heroButtonId', 'campaignId')
+      )
       expect(extra.extensions).toEqual({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
