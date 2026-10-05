@@ -11,7 +11,10 @@ import { campaignBlockCreateUpdate } from '../campaignBlockCache'
 
 export const CAMPAIGN_BUTTON_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
-  mutation CampaignButtonBlockCreate($input: CampaignButtonBlockCreateInput!) {
+  mutation CampaignButtonBlockCreate(
+    $input: CampaignButtonBlockCreateInput!
+    $languageId: ID
+  ) {
     campaignButtonBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
     }

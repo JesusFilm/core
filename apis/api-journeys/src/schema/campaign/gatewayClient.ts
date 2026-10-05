@@ -59,3 +59,36 @@ export async function fetchLanguage(
   const language = data.language as GatewayLanguage | null | undefined
   return language ?? null
 }
+
+export interface GatewayWatchVideo {
+  id: string
+  label: string
+  childrenCount: number
+}
+
+/**
+ * Resolve a Watch variant slug (`<videoSlug>/<languageSlug>`) to its Video
+ * through api-media's `video(id, idType: slug)`, which serves published
+ * videos only; `null` when the slug resolves to nothing.
+ */
+export async function fetchWatchVideoBySlug(
+  slug: string
+): Promise<GatewayWatchVideo | null> {
+  const query = `
+    query CampaignWatchVideo($id: ID!) {
+      video(id: $id, idType: slug) {
+        id
+        label
+        childrenCount
+      }
+    }
+  `
+  try {
+    const data = await graphqlRequest(query, { id: slug })
+    const video = data.video as GatewayWatchVideo | null | undefined
+    return video ?? null
+  } catch (error) {
+    if (error instanceof GraphQLError) return null
+    throw error
+  }
+}

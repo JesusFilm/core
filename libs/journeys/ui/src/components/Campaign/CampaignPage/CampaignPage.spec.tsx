@@ -6,6 +6,9 @@ import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
   campaignPublic,
   eurRegion,
+  featuredMediaImageBlock,
+  featuredMediaSectionBlock,
+  heroVideoBlock,
   landingBlocks,
   regionPageBlocks
 } from '../testData'
@@ -191,6 +194,52 @@ describe('CampaignPage', () => {
         ])
       )
       expect(bandIds()).toEqual(['heroId'])
+    })
+
+    it('Hero renders with media alone, and its owned video never renders as a section', () => {
+      renderPage(
+        withLanding([
+          pick('heroId', {
+            eyebrow: null,
+            title: null,
+            lede: null,
+            mediaBlockId: heroVideoBlock.id
+          }),
+          heroVideoBlock
+        ])
+      )
+      expect(bandIds()).toEqual(['heroId'])
+      expect(
+        within(screen.getByTestId('CampaignSectionBand-heroId')).getByTestId(
+          'JourneysVideo-heroVideoId'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('Featured media renders its text beside its media', () => {
+      renderPage(
+        withLanding([featuredMediaSectionBlock, featuredMediaImageBlock])
+      )
+      expect(bandIds()).toEqual(['featuredMediaId'])
+      expect(
+        screen.getByRole('img', { name: 'Children watching a film' })
+      ).toBeInTheDocument()
+    })
+
+    it('Featured media with neither text nor media is skipped', () => {
+      renderPage(
+        withLanding([
+          {
+            ...featuredMediaSectionBlock,
+            eyebrow: null,
+            title: '',
+            lede: null,
+            bullets: '',
+            mediaBlockId: null
+          }
+        ])
+      )
+      expect(bandIds()).toEqual([])
     })
 
     it('Hero renders with an extra alone', () => {

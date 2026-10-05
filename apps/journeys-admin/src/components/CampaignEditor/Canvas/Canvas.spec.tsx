@@ -2,9 +2,15 @@ import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import {
+  CampaignPageKind,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
+import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import { campaign } from '../data'
+import { newSectionBlock } from '../sectionTypes'
 import {
   CommandProbe,
   SelectionProbe,
@@ -62,14 +68,15 @@ function ViewHarness(): ReactElement {
 
 function renderCanvas(
   pageKind = CampaignPageKind.landing,
-  view: CanvasView = 'desktop'
+  view: CanvasView = 'desktop',
+  canvasCampaign: Campaign = campaign
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor mocks={[orderMock]}>
+    <StaticEditor mocks={[orderMock]} campaignProp={canvasCampaign}>
       <SelectionProbe />
       <CommandProbe />
       <Canvas
-        campaign={campaign}
+        campaign={canvasCampaign}
         pageKind={pageKind}
         previewLanguageId="529"
         view={view}
@@ -220,6 +227,60 @@ describe('Canvas', () => {
       '100%'
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('shows the hero’s media slot beside its text, and a Featured Media section’s placeholder and bullets', async () => {
+    const hero = campaign.blocks.find((block) => block.id === 'heroId')
+    if (hero?.__typename !== 'CampaignHeroBlock') throw new Error('no hero')
+    const heroVideo = {
+      ...newOwnedVideoBlock('heroVideoId', hero, {
+        source: VideoBlockSource.youTube,
+        videoId: 'jQaeIJOA6J0'
+      }),
+      title: 'Blessing and Curse',
+      image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
+    }
+    const featured = {
+      ...newSectionBlock('CampaignFeaturedMediaBlock', {
+        id: 'featuredId',
+        campaignId: campaign.id,
+        pageId: hero.pageId ?? '',
+        parentOrder: 5
+      }),
+      bullets: 'Free to share\nIn many languages'
+    }
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'desktop', {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks.map((block) =>
+          block.id === 'heroId'
+            ? { ...hero, mediaBlockId: 'heroVideoId' }
+            : block
+        ),
+        heroVideo,
+        featured
+      ]
+    })
+    const body = await frameBody(baseElement, 'CanvasSection-featuredId')
+
+    const heroSection = body.querySelector(
+      '[data-testid="CanvasSection-heroId"]'
+    ) as HTMLElement
+    expect(
+      heroSection.querySelector('[data-testid="CanvasMediaVideoPoster"]')
+    ).toHaveAttribute('src', 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg')
+    expect(heroSection.textContent).toContain('Blessing and Curse')
+    expect(heroSection.textContent).toContain('Share the story of Christmas')
+
+    const featuredSection = body.querySelector(
+      '[data-testid="CanvasSection-featuredId"]'
+    ) as HTMLElement
+    expect(
+      featuredSection.querySelector('[data-testid="CanvasMediaPlaceholder"]')
+    ).not.toBeNull()
+    expect(
+      featuredSection.querySelector('[data-testid="InlineText-bullets"]')
+    ).toHaveTextContent('Free to share In many languages')
   })
 
   it('selects a section on click and turns its text into inline inputs', async () => {

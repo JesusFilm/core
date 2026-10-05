@@ -5,6 +5,7 @@ import {
   CampaignButtonRadius,
   CampaignChildPlacement,
   CampaignJourneyListDisplay,
+  CampaignMediaSide,
   CampaignPageKind,
   CampaignRadius,
   CampaignStringKey,
@@ -12,7 +13,9 @@ import {
   JourneyStatus,
   ThemeMode,
   TypographyAlign,
-  TypographyVariant
+  TypographyVariant,
+  VideoBlockSource,
+  VideoLabel
 } from '../../../__generated__/globalTypes'
 
 import type { CampaignPublicBlockFields } from './__generated__/CampaignPublicBlockFields'
@@ -380,6 +383,154 @@ export const imageSectionBlock = section('CampaignImageBlock', {
   alt: 'A family reading together',
   width: 1600,
   height: 900
+})
+
+type VideoBlock = Extract<
+  CampaignPublicBlockFields,
+  { __typename: 'CampaignVideoBlock' }
+>
+
+function video(
+  row: Pick<VideoBlock, 'id' | 'source' | 'videoId' | 'mediaVideo'> &
+    Partial<VideoBlock>
+): VideoBlock {
+  return {
+    __typename: 'CampaignVideoBlock',
+    campaignId: CAMPAIGN_ID,
+    pageId: LANDING_PAGE_ID,
+    regionId: null,
+    parentBlockId: null,
+    parentOrder: null,
+    videoVariantLanguageId: null,
+    title: '',
+    description: '',
+    image: null,
+    duration: null,
+    ...row
+  }
+}
+
+function watchVideo(
+  id: string,
+  slug: string,
+  childrenCount: number
+): Extract<VideoBlock['mediaVideo'], { __typename: 'Video' }> {
+  return {
+    __typename: 'Video',
+    id,
+    label: childrenCount > 0 ? VideoLabel.featureFilm : VideoLabel.shortFilm,
+    slug,
+    childrenCount,
+    title: [
+      {
+        __typename: 'VideoTitle',
+        value: 'The Nativity',
+        primary: true,
+        language: { __typename: 'Language', id: '529' }
+      },
+      {
+        __typename: 'VideoTitle',
+        value: 'La Nativité',
+        primary: false,
+        language: { __typename: 'Language', id: '496' }
+      }
+    ],
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh: `https://imagedelivery.net/accountHash/${id}/mobileCinematicHigh`
+      }
+    ],
+    variant: {
+      __typename: 'VideoVariant',
+      id: `${id}-529`,
+      hls: `https://arc.gt/hls/${id}/529`,
+      duration: 180,
+      slug: `${slug}/english`
+    }
+  }
+}
+
+/**
+ * The hero’s owned Media Slot video: a Watch video with no children (it plays
+ * inline), its text read live through `mediaVideo` (the row’s overrides
+ * resolve to `""`). Pair with `mediaBlockId: heroVideoBlock.id` on the hero.
+ */
+export const heroVideoBlock = video({
+  id: 'heroVideoId',
+  parentBlockId: 'heroId',
+  source: VideoBlockSource.internal,
+  videoId: 'nativityVideoId',
+  videoVariantLanguageId: '529',
+  mediaVideo: watchVideo('nativityVideoId', 'the-nativity', 0)
+})
+
+/** A Watch video with children, shown as a poster card linking to Watch. */
+export const watchParentVideoBlock = video({
+  id: 'watchParentVideoId',
+  parentBlockId: 'heroId',
+  source: VideoBlockSource.internal,
+  videoId: 'jesusVideoId',
+  videoVariantLanguageId: '529',
+  mediaVideo: watchVideo('jesusVideoId', 'jesus', 61)
+})
+
+/** A YouTube video with its title, description, poster and duration captured at pick. */
+export const youTubeVideoBlock = video({
+  id: 'youTubeVideoId',
+  parentBlockId: 'heroId',
+  source: VideoBlockSource.youTube,
+  videoId: 'jQaeIJOA6J0',
+  title: 'Christmas around the world',
+  description: 'How the story is told in twelve countries.',
+  image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/hqdefault.jpg',
+  duration: 245,
+  mediaVideo: { __typename: 'YouTube', id: 'jQaeIJOA6J0' }
+})
+
+/** An uploaded Mux video with its text captured at pick. */
+export const muxVideoBlock = video({
+  id: 'muxVideoId',
+  parentBlockId: 'heroId',
+  source: VideoBlockSource.mux,
+  videoId: 'muxAssetVideoId',
+  title: 'Our Christmas outreach',
+  description: null,
+  image: 'https://image.mux.com/muxPlaybackId/thumbnail.png',
+  duration: 95,
+  mediaVideo: {
+    __typename: 'MuxVideo',
+    id: 'muxAssetVideoId',
+    playbackId: 'muxPlaybackId'
+  }
+})
+
+/**
+ * A Featured Media section (not in `landingBlocks`): text and bullets with
+ * an owned image in its Media Slot, the media on the left.
+ */
+export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
+  id: 'featuredMediaId',
+  pageId: LANDING_PAGE_ID,
+  parentOrder: 6,
+  eyebrow: 'Why it matters',
+  title: 'A story for every home',
+  lede: 'Short films in the languages your neighbours speak.',
+  bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
+  mediaSide: CampaignMediaSide.left,
+  mediaBlockId: 'featuredMediaImageId'
+})
+
+/** The Featured Media section’s owned image (`parentOrder: null`, named by `mediaBlockId`). */
+export const featuredMediaImageBlock = section('CampaignImageBlock', {
+  id: 'featuredMediaImageId',
+  pageId: LANDING_PAGE_ID,
+  parentBlockId: 'featuredMediaId',
+  parentOrder: null,
+  src: 'https://imagedelivery.net/accountHash/featuredMedia/public',
+  alt: 'Children watching a film',
+  width: 1200,
+  height: 800
 })
 
 /** The hero’s owned background cover (`parentOrder: null`, named by `coverBlockId`). */

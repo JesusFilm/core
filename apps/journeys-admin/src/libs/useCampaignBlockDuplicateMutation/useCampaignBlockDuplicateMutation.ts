@@ -14,6 +14,7 @@ export const CAMPAIGN_BLOCK_DUPLICATE = gql`
   mutation CampaignBlockDuplicate(
     $id: ID!
     $idMap: [CampaignBlockDuplicateIdMapInput!]
+    $languageId: ID
   ) {
     campaignBlockDuplicate(id: $id, idMap: $idMap) {
       ...CampaignPublicBlockFields

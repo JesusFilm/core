@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, VideoLabel, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionShareBlockCreate
@@ -67,4 +67,5 @@ export interface CampaignRegionShareBlockCreate {
 
 export interface CampaignRegionShareBlockCreateVariables {
   input: CampaignRegionShareBlockCreateInput;
+  languageId?: string | null;
 }

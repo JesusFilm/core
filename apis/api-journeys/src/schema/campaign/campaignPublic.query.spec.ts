@@ -2,7 +2,11 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
-import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
+import {
+  CampaignBlockRow,
+  CampaignFixture,
+  campaignFactory
+} from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -441,6 +445,254 @@ describe('campaignPublic', () => {
     expect(foreign.data.campaignPublic).toMatchObject({
       languageId: '529',
       title: 'Christmas 2026'
+    })
+  })
+
+  describe('owned Campaign Videos', () => {
+    const CAMPAIGN_PUBLIC_VIDEOS = graphql(`
+      query CampaignPublicVideos($slug: String, $languageId: ID) {
+        campaignPublic(slug: $slug, languageId: $languageId) {
+          pages {
+            kind
+            blocks {
+              __typename
+              id
+              parentBlockId
+              parentOrder
+              ... on CampaignHeroBlock {
+                mediaBlockId
+              }
+              ... on CampaignFeaturedMediaBlock {
+                mediaSide
+                mediaBlockId
+              }
+              ... on CampaignVideoBlock {
+                source
+                videoId
+                videoVariantLanguageId
+                title
+                titleTranslations {
+                  languageId
+                }
+                description
+                image
+                duration
+                mediaVideo {
+                  __typename
+                  # Video's primaryLanguageId is ID!, the others' ID: alias one.
+                  ... on Video {
+                    id
+                    videoPrimaryLanguageId: primaryLanguageId
+                  }
+                  ... on YouTube {
+                    id
+                    primaryLanguageId
+                  }
+                  ... on MuxVideo {
+                    id
+                    primaryLanguageId
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `)
+
+    function videoRow(
+      fixture: CampaignFixture,
+      row: Partial<CampaignBlockRow>
+    ): CampaignBlockRow {
+      const hero = fixture.blocks.find((block) => block.id === 'heroId')!
+      return {
+        ...hero,
+        typename: 'CampaignVideoBlock',
+        parentOrder: null,
+        eyebrow: null,
+        title: null,
+        titleTranslations: null,
+        lede: null,
+        align: null,
+        action: null,
+        ...row
+      }
+    }
+
+    function videoFixture(): CampaignFixture & Record<string, unknown> {
+      const fixture = publishedFixture()
+      const hero = fixture.blocks.find((block) => block.id === 'heroId')!
+      return {
+        ...fixture,
+        blocks: [
+          ...fixture.blocks.map((block) =>
+            block.id === 'heroId'
+              ? { ...block, mediaBlockId: 'heroVideoId' }
+              : block
+          ),
+          {
+            ...hero,
+            id: 'youTubeSectionId',
+            typename: 'CampaignFeaturedMediaBlock',
+            parentOrder: 5,
+            titleTranslations: null,
+            mediaSide: 'left' as const,
+            mediaBlockId: 'youTubeVideoId'
+          },
+          {
+            ...hero,
+            id: 'muxSectionId',
+            typename: 'CampaignFeaturedMediaBlock',
+            parentOrder: 6,
+            titleTranslations: null,
+            mediaSide: null,
+            mediaBlockId: 'muxVideoId'
+          },
+          videoRow(fixture, {
+            id: 'heroVideoId',
+            parentBlockId: 'heroId',
+            source: 'internal',
+            videoId: '1_jf-0-0',
+            videoVariantLanguageId: '529',
+            description: 'Our description',
+            descriptionTranslations: {
+              [FRENCH]: { value: 'Notre description', source: 'human' }
+            }
+          }),
+          videoRow(fixture, {
+            id: 'youTubeVideoId',
+            parentBlockId: 'youTubeSectionId',
+            source: 'youTube',
+            videoId: 'jQaN9DvFTbw',
+            title: 'YouTube title',
+            titleTranslations: {
+              [FRENCH]: { value: 'Titre YouTube', source: 'machine' }
+            },
+            description: 'YouTube description',
+            image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+            duration: 120
+          }),
+          videoRow(fixture, {
+            id: 'muxVideoId',
+            parentBlockId: 'muxSectionId',
+            source: 'mux',
+            videoId: 'muxAssetId',
+            title: 'Mux title',
+            image: 'https://image.mux.com/playbackId/thumbnail.png?time=1',
+            duration: 90
+          })
+        ]
+      }
+    }
+
+    it('returns each section’s owned video in pages[].blocks with mediaVideo as an unresolved federation reference by source', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      prismaMock.campaign.findFirst.mockResolvedValue(videoFixture())
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_VIDEOS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const blocks = result.data.campaignPublic.pages[0].blocks
+      const byId = (id: string): any =>
+        blocks.find((block: any) => block.id === id)
+
+      expect(byId('heroId')).toMatchObject({ mediaBlockId: 'heroVideoId' })
+      expect(byId('youTubeSectionId')).toMatchObject({
+        __typename: 'CampaignFeaturedMediaBlock',
+        mediaSide: 'left',
+        mediaBlockId: 'youTubeVideoId'
+      })
+      expect(byId('muxSectionId').mediaSide).toBe('right')
+
+      expect(byId('heroVideoId')).toEqual({
+        __typename: 'CampaignVideoBlock',
+        id: 'heroVideoId',
+        parentBlockId: 'heroId',
+        parentOrder: null,
+        source: 'internal',
+        videoId: '1_jf-0-0',
+        videoVariantLanguageId: '529',
+        title: null,
+        titleTranslations: [],
+        description: 'Our description',
+        image: null,
+        duration: null,
+        mediaVideo: {
+          __typename: 'Video',
+          id: '1_jf-0-0',
+          videoPrimaryLanguageId: '529'
+        }
+      })
+      expect(byId('youTubeVideoId')).toMatchObject({
+        parentBlockId: 'youTubeSectionId',
+        parentOrder: null,
+        title: 'YouTube title',
+        image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+        duration: 120,
+        mediaVideo: {
+          __typename: 'YouTube',
+          id: 'jQaN9DvFTbw',
+          primaryLanguageId: null
+        }
+      })
+      expect(byId('muxVideoId').mediaVideo).toEqual({
+        __typename: 'MuxVideo',
+        id: 'muxAssetId',
+        primaryLanguageId: null
+      })
+      // The gateway resolves the reference; api-journeys never fetches the video.
+      expect(fetchSpy).not.toHaveBeenCalled()
+      fetchSpy.mockRestore()
+    })
+
+    it('resolves a video’s title and description overrides to the requested language like other text', async () => {
+      prismaMock.campaign.findFirst.mockResolvedValue(videoFixture())
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_VIDEOS,
+        variables: { slug: 'christmas-2026', languageId: FRENCH }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const blocks = result.data.campaignPublic.pages[0].blocks
+      const byId = (id: string): any =>
+        blocks.find((block: any) => block.id === id)
+      expect(byId('heroVideoId')).toMatchObject({
+        title: null,
+        description: 'Notre description'
+      })
+      expect(byId('youTubeVideoId')).toMatchObject({
+        title: 'Titre YouTube',
+        titleTranslations: [],
+        description: 'YouTube description'
+      })
+      expect(byId('muxVideoId')).toMatchObject({
+        title: 'Mux title',
+        description: null
+      })
+    })
+
+    it('returns a null mediaVideo for a video row without an id', async () => {
+      const fixture = videoFixture()
+      fixture.blocks = (fixture.blocks as any[]).map((block) =>
+        block.id === 'heroVideoId' ? { ...block, videoId: null } : block
+      )
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_VIDEOS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(
+        result.data.campaignPublic.pages[0].blocks.find(
+          (block: any) => block.id === 'heroVideoId'
+        ).mediaVideo
+      ).toBeNull()
     })
   })
 

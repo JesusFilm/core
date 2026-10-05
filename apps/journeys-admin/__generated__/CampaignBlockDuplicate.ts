@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBlockDuplicateIdMapInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignBlockDuplicateIdMapInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, VideoLabel, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockDuplicate
@@ -429,6 +429,167 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBloc
   height: number | null;
 }
 
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo = CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_MuxVideo | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -537,7 +698,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlo
   action: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock_action | null;
 }
 
-export type CampaignBlockDuplicate_campaignBlockDuplicate = CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFooterBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypographyBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock;
+export type CampaignBlockDuplicate_campaignBlockDuplicate = CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFooterBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypographyBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock;
 
 export interface CampaignBlockDuplicate {
   /**
@@ -556,4 +717,5 @@ export interface CampaignBlockDuplicate {
 export interface CampaignBlockDuplicateVariables {
   id: string;
   idMap?: CampaignBlockDuplicateIdMapInput[] | null;
+  languageId?: string | null;
 }

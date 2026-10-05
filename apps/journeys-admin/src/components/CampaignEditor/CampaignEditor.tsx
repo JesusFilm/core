@@ -15,6 +15,7 @@ import {
   UserTeamRole
 } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
+import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
 import { BottomBar } from './BottomBar'
 import {
@@ -92,7 +93,8 @@ function CampaignEditorShell({
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
- * the top bar, the first-run hint, the canvas and the contextual bottom
+ * the Mux upload queue (so a Media Slot upload outlives its drawer), the
+ * top bar, the first-run hint, the canvas and the contextual bottom
  * bar. First open after create shows the landing page, nothing selected,
  * Desktop view, the default language. Nothing replaces Save.
  */
@@ -152,7 +154,9 @@ export function CampaignEditor({
   return (
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
-        <CampaignEditorShell campaign={campaign} isManager={isManager} />
+        <MuxVideoUploadProvider>
+          <CampaignEditorShell campaign={campaign} isManager={isManager} />
+        </MuxVideoUploadProvider>
       </CampaignEditorProvider>
     </CommandProvider>
   )

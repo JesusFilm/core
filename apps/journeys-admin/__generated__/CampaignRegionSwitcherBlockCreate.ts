@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionSwitcherBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRegionSwitcherBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, VideoLabel, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionSwitcherBlockCreate
@@ -66,4 +66,5 @@ export interface CampaignRegionSwitcherBlockCreate {
 
 export interface CampaignRegionSwitcherBlockCreateVariables {
   input: CampaignRegionSwitcherBlockCreateInput;
+  languageId?: string | null;
 }

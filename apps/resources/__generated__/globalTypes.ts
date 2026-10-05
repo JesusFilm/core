@@ -102,6 +102,14 @@ export enum CampaignJourneyListDisplay {
 }
 
 /**
+ * Which side of a Featured Media section the Media Slot renders on.
+ */
+export enum CampaignMediaSide {
+  left = "left",
+  right = "right",
+}
+
+/**
  * One of the two pages every Campaign has: the landing page, or the Region Page that every Campaign Region renders.
  */
 export enum CampaignPageKind {

@@ -9,7 +9,7 @@ import { CAMPAIGN_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_CREATE = gql`
   ${CAMPAIGN_FIELDS}
-  mutation CampaignCreate($input: CampaignCreateInput!) {
+  mutation CampaignCreate($input: CampaignCreateInput!, $languageId: ID) {
     campaignCreate(input: $input) {
       ...CampaignFields
     }

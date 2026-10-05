@@ -62,6 +62,7 @@ export const CAMPAIGN_HOST_TYPENAMES = [
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
   'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
@@ -72,7 +73,7 @@ export const CAMPAIGN_CHROME_TYPENAMES = [
   'CampaignFooterBlock'
 ] as const
 
-/** The section typenames "+Add section" offers: the seeded seven and the Image section. */
+/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -81,7 +82,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
-  'CampaignImageBlock'
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock'
 ] as const
 export type CampaignSectionTypename =
   (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
@@ -350,12 +352,17 @@ export async function createChildBlock(
   return block
 }
 
-/** Write validated columns to a block and bump its campaign. */
+/**
+ * Write validated columns to a block and bump its campaign. `before` runs
+ * first in the same transaction (the Media Slot swap uses it).
+ */
 export async function updateBlock(
   block: Pick<CampaignBlock, 'id' | 'campaignId'>,
-  data: Prisma.CampaignBlockUncheckedUpdateInput
+  data: Prisma.CampaignBlockUncheckedUpdateInput,
+  before?: (tx: Prisma.TransactionClient) => Promise<void>
 ): Promise<CampaignBlockWithAction> {
   return await prisma.$transaction(async (tx) => {
+    if (before != null) await before(tx)
     const updated = await tx.campaignBlock.update({
       where: { id: block.id },
       data,
@@ -859,7 +866,7 @@ export function sectionStyleColumns(
   return data
 }
 
-/** The two slot columns an owned image fills; `mediaBlockId` belongs to the videos ticket. */
+/** The two slot columns only an image fills; `mediaBlockId` also takes a video (`validateMediaSlotTarget`). */
 export const CAMPAIGN_IMAGE_SLOT_COLUMNS = [
   'coverBlockId',
   'logoBlockId'
@@ -915,21 +922,48 @@ export async function validateSectionStyle(
 }
 
 // ---------------------------------------------------------------------------
-// Owned images: a section's background cover or the header logo, one block
-// per slot, replaced rather than edited in place.
+// Owned blocks: a section's background cover, the header logo and the Media
+// Slot of a hero or Featured Media section — one block per slot, replaced
+// rather than edited in place.
 // ---------------------------------------------------------------------------
 
-export type CampaignImageSlotName = 'cover' | 'logo'
+export type CampaignImageSlotName = 'cover' | 'logo' | 'media'
+
+export type CampaignOwnedSlotColumn =
+  | 'coverBlockId'
+  | 'logoBlockId'
+  | 'mediaBlockId'
 
 const IMAGE_SLOT_COLUMN: Record<
   CampaignImageSlotName,
-  CampaignImageSlotColumn
-> = { cover: 'coverBlockId', logo: 'logoBlockId' }
+  CampaignOwnedSlotColumn
+> = { cover: 'coverBlockId', logo: 'logoBlockId', media: 'mediaBlockId' }
+
+/** The owned video typename a Media Slot may point at. */
+export const CAMPAIGN_VIDEO_TYPENAME = 'CampaignVideoBlock'
+
+/** The sections with a Media Slot (`mediaBlockId`). */
+export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
+  'CampaignHeroBlock',
+  'CampaignFeaturedMediaBlock'
+] as const
+
+/** What a Media Slot holds: a Campaign Video or a Campaign Image. */
+export const CAMPAIGN_MEDIA_TYPENAMES = [
+  CAMPAIGN_VIDEO_TYPENAME,
+  CAMPAIGN_IMAGE_TYPENAME
+] as const
+
+export function isCampaignMediaOwnerTypename(typename: string): boolean {
+  return (CAMPAIGN_MEDIA_OWNER_TYPENAMES as readonly string[]).includes(
+    typename
+  )
+}
 
 /**
- * An owned image's parent is a live section or chrome block of the same
- * campaign (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the image can
- * copy its scoping down.
+ * An owned block's parent is a live section or chrome block of the same
+ * campaign (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the owned
+ * block can copy its scoping down.
  */
 export async function validateImageOwner(
   parentBlockId: string,
@@ -947,43 +981,60 @@ export async function validateImageOwner(
 }
 
 /**
+ * Only a hero or a Featured Media section has a Media Slot: any other owner
+ * is `BAD_USER_INPUT` with the slot column, `mediaBlockId`, as the field.
+ */
+export function assertMediaOwner(owner: Pick<CampaignBlock, 'typename'>): void {
+  if (!isCampaignMediaOwnerTypename(owner.typename))
+    throw badUserInput(
+      'only a hero or Featured Media section has a media slot',
+      'mediaBlockId'
+    )
+}
+
+/**
  * The slot an owned image fills, `cover` when omitted. Every section and
  * chrome block has a cover; only the header has a logo (`BAD_USER_INPUT` /
- * `logoBlockId`, the slot column, as the field).
+ * `logoBlockId`) and only a hero or Featured Media section a media slot
+ * (`BAD_USER_INPUT` / `mediaBlockId`) — the slot column is the field.
  */
 export function assertImageSlot(
   owner: Pick<CampaignBlock, 'typename'>,
   slot: string | null | undefined
 ): CampaignImageSlotName {
-  const name = assertEnum(slot ?? 'cover', 'slot', ['cover', 'logo'] as const)
+  const name = assertEnum(slot ?? 'cover', 'slot', [
+    'cover',
+    'logo',
+    'media'
+  ] as const)
   if (name === 'logo' && owner.typename !== 'CampaignHeaderBlock')
     throw badUserInput('only the header has a logo', 'logoBlockId')
+  if (name === 'media') assertMediaOwner(owner)
   return name
 }
 
 /**
- * Create an owned image inside `tx`: `parentOrder: null`, the owner's
+ * Create an owned block inside `tx`: `parentOrder: null`, the owner's
  * scoping copied down, the owner's slot column pointed at the new row, and
- * the image the slot held before soft-deleted (restore brings it back as a
- * row, not as the slot's image). Returns the new image.
+ * the block the slot held before soft-deleted (block restore brings it back
+ * as a row; a Media Slot update brings it back as the slot's block). Returns
+ * the new block.
  */
-export async function createOwnedImageBlock(
+export async function createOwnedBlock(
   tx: Prisma.TransactionClient,
   owner: CampaignBlock,
-  slot: CampaignImageSlotName,
-  data: Omit<CampaignChildCreateData, 'typename'>
+  column: CampaignOwnedSlotColumn,
+  data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
-  const column = IMAGE_SLOT_COLUMN[slot]
   const previousId = owner[column]
   if (previousId != null)
     await tx.campaignBlock.update({
       where: { id: previousId },
       data: { deletedAt: new Date() }
     })
-  const image = await tx.campaignBlock.create({
+  const block = await tx.campaignBlock.create({
     data: {
       ...data,
-      typename: CAMPAIGN_IMAGE_TYPENAME,
       campaignId: owner.campaignId,
       pageId: owner.pageId,
       regionId: owner.regionId,
@@ -994,8 +1045,76 @@ export async function createOwnedImageBlock(
   })
   await tx.campaignBlock.update({
     where: { id: owner.id },
-    data: { [column]: image.id }
+    data: { [column]: block.id }
   })
   await touchCampaign(tx, owner.campaignId)
-  return image
+  return block
+}
+
+/** `createOwnedBlock` for a CampaignImageBlock in the named slot. */
+export async function createOwnedImageBlock(
+  tx: Prisma.TransactionClient,
+  owner: CampaignBlock,
+  slot: CampaignImageSlotName,
+  data: Omit<CampaignChildCreateData, 'typename'>
+): Promise<CampaignBlockWithAction> {
+  return await createOwnedBlock(tx, owner, IMAGE_SLOT_COLUMN[slot], {
+    ...data,
+    typename: CAMPAIGN_IMAGE_TYPENAME
+  })
+}
+
+/**
+ * `mediaBlockId` on a hero or Featured Media update names a
+ * CampaignVideoBlock or CampaignImageBlock that section owns — live, or
+ * soft-deleted by an earlier swap so undo can bring it back. Anything else
+ * is `BAD_USER_INPUT` / `mediaBlockId`. Null empties the slot without a
+ * lookup; omitted leaves it alone.
+ */
+export async function validateMediaSlotTarget(
+  mediaBlockId: string | number | null | undefined,
+  owner: Pick<CampaignBlock, 'id' | 'campaignId'>
+): Promise<string | null | undefined> {
+  if (mediaBlockId === undefined) return undefined
+  if (mediaBlockId == null) return null
+  const media = await prisma.campaignBlock.findFirst({
+    where: {
+      id: String(mediaBlockId),
+      campaignId: owner.campaignId,
+      parentBlockId: owner.id
+    },
+    select: { id: true, typename: true }
+  })
+  if (
+    media == null ||
+    !(CAMPAIGN_MEDIA_TYPENAMES as readonly string[]).includes(media.typename)
+  )
+    throw badUserInput(
+      'mediaBlockId must be a video or image block owned by this section',
+      'mediaBlockId'
+    )
+  return media.id
+}
+
+/**
+ * Point the Media Slot at `mediaBlockId`, or empty it, inside `tx`, keeping
+ * 0 or 1 live block in the slot: the block it held is soft-deleted and the
+ * new one restored if an earlier swap deleted it. The owner's column itself
+ * is written by the caller's update.
+ */
+export async function swapMediaSlot(
+  tx: Prisma.TransactionClient,
+  owner: Pick<CampaignBlock, 'mediaBlockId'>,
+  mediaBlockId: string | null
+): Promise<void> {
+  if (owner.mediaBlockId != null && owner.mediaBlockId !== mediaBlockId)
+    await tx.campaignBlock.update({
+      where: { id: owner.mediaBlockId },
+      data: { deletedAt: new Date() }
+    })
+  if (mediaBlockId != null)
+    await tx.campaignBlock.update({
+      where: { id: mediaBlockId },
+      data: { deletedAt: null }
+    })
 }
