@@ -1,6 +1,6 @@
-import { builder } from '../../builder'
 import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
 import { TypographyVariant } from '../../block/typography/enums/typographyVariant'
+import { builder } from '../../builder'
 import { CampaignChildPlacement } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 

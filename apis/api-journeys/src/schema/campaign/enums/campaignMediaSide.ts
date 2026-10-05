@@ -4,5 +4,6 @@ import { builder } from '../../builder'
 
 export const CampaignMediaSide = builder.enumType(PrismaCampaignMediaSide, {
   name: 'CampaignMediaSide',
-  description: 'Which side of a Featured Media section the Media Slot renders on.'
+  description:
+    'Which side of a Featured Media section the Media Slot renders on.'
 })

@@ -233,7 +233,8 @@ export function seededBlocks(
       typename: 'CampaignRegionHeaderBlock',
       pageId: 'regionPageId',
       parentOrder: 0,
-      intro: 'A Christmas journey chosen and contextualised by your regional team.',
+      intro:
+        'A Christmas journey chosen and contextualised by your regional team.',
       backgroundKind: 'none'
     }),
     block(campaignId, {

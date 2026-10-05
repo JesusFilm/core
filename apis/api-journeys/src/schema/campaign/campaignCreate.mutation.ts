@@ -40,9 +40,14 @@ builder.mutationField('campaignCreate', (t) =>
           extensions: { code: 'FORBIDDEN' }
         })
 
-      const title = assertLength(input.title, 'title', TEXT_CAPS.campaignTitle, {
-        required: true
-      })
+      const title = assertLength(
+        input.title,
+        'title',
+        TEXT_CAPS.campaignTitle,
+        {
+          required: true
+        }
+      )
       const defaultLanguageId = String(input.defaultLanguageId)
       const language = await fetchLanguage(defaultLanguageId)
       if (language == null)

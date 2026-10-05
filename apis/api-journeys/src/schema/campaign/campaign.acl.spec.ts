@@ -49,21 +49,16 @@ describe('campaignAcl', () => {
     }
   )
 
-  it.each(everyAction)(
-    'denies %s to a user outside the team',
-    (action) => {
-      expect(
-        campaignAcl(action, campaignFor(UserTeamRole.manager, 'other'), user)
-      ).toBe(false)
-    }
-  )
+  it.each(everyAction)('denies %s to a user outside the team', (action) => {
+    expect(
+      campaignAcl(action, campaignFor(UserTeamRole.manager, 'other'), user)
+    ).toBe(false)
+  })
 
   it.each(everyAction)(
     'denies %s when the team has no members at all',
     (action) => {
-      expect(campaignAcl(action, { team: { userTeams: [] } }, user)).toBe(
-        false
-      )
+      expect(campaignAcl(action, { team: { userTeams: [] } }, user)).toBe(false)
     }
   )
 })

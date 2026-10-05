@@ -89,7 +89,10 @@ describe('campaign validation', () => {
     ])(
       'rejects %s with BAD_USER_INPUT and the column as field',
       (_label, value) => {
-        expectBadUserInput(() => assertHex(value, 'backgroundColor'), 'backgroundColor')
+        expectBadUserInput(
+          () => assertHex(value, 'backgroundColor'),
+          'backgroundColor'
+        )
       }
     )
 
@@ -129,7 +132,13 @@ describe('campaign validation', () => {
         1000,
         false
       ],
-      ['CampaignJourneyBlock.title', 'title', TEXT_CAPS.journeyTitle, 200, false],
+      [
+        'CampaignJourneyBlock.title',
+        'title',
+        TEXT_CAPS.journeyTitle,
+        200,
+        false
+      ],
       [
         'CampaignJourneyBlock.description',
         'description',
@@ -152,7 +161,10 @@ describe('campaign validation', () => {
           field
         )
         if (required) {
-          expectBadUserInput(() => assertLength('   ', field, cap, { required }), field)
+          expectBadUserInput(
+            () => assertLength('   ', field, cap, { required }),
+            field
+          )
         } else {
           expect(assertLength('   ', field, cap)).toBe('')
         }
@@ -161,7 +173,9 @@ describe('campaign validation', () => {
 
     it('lets a nullable text column accept null', () => {
       expect(assertLengthOrNull(null, 'eyebrow', TEXT_CAPS.eyebrow)).toBeNull()
-      expect(assertLengthOrNull(' hi ', 'eyebrow', TEXT_CAPS.eyebrow)).toBe('hi')
+      expect(assertLengthOrNull(' hi ', 'eyebrow', TEXT_CAPS.eyebrow)).toBe(
+        'hi'
+      )
     })
   })
 
@@ -228,7 +242,10 @@ describe('campaign validation', () => {
     })
 
     it('rejects a duplicate country with BAD_USER_INPUT, field countryId', () => {
-      expectBadUserInput(() => assertRegionCountries(['FR', 'DE', 'FR']), 'countryId')
+      expectBadUserInput(
+        () => assertRegionCountries(['FR', 'DE', 'FR']),
+        'countryId'
+      )
     })
 
     it('allows up to 250 countries per region and rejects 251', () => {
@@ -261,7 +278,8 @@ describe('campaign validation', () => {
       "%s takes its enum's values only, else BAD_USER_INPUT with the column as field",
       (column, values) => {
         const field = column.split(' ')[0]
-        for (const value of values) expect(assertEnum(value, field, values)).toBe(value)
+        for (const value of values)
+          expect(assertEnum(value, field, values)).toBe(value)
         expectBadUserInput(() => assertEnum('bogus', field, values), field)
         expectBadUserInput(() => assertEnum('', field, values), field)
       }
@@ -271,13 +289,18 @@ describe('campaign validation', () => {
       const values = Object.values(CampaignAlign)
       expect(assertEnumOrNull(null, 'align', values)).toBeNull()
       expect(assertEnumOrNull('left', 'align', values)).toBe('left')
-      expectBadUserInput(() => assertEnumOrNull('middle', 'align', values), 'align')
+      expectBadUserInput(
+        () => assertEnumOrNull('middle', 'align', values),
+        'align'
+      )
     })
   })
 
   describe('parseWithZod', () => {
     const schema = z.object({
-      videoId: z.string().regex(/^[\w-]{11}$/, 'videoId must be a valid YouTube videoId')
+      videoId: z
+        .string()
+        .regex(/^[\w-]{11}$/, 'videoId must be a valid YouTube videoId')
     })
 
     it('returns the parsed value on success', () => {
@@ -346,25 +369,40 @@ describe('campaign validation', () => {
     it('RESERVED_SLUGS applies and now contains campaign and campaigns', async () => {
       expect(RESERVED_SLUGS.has('campaign')).toBe(true)
       expect(RESERVED_SLUGS.has('campaigns')).toBe(true)
-      await expectBadUserInputAsync(generateUniqueCampaignSlug('Campaign'), 'slug')
-      await expectBadUserInputAsync(generateUniqueCampaignSlug('campaigns'), 'slug')
-      await expectBadUserInputAsync(validateCampaignSlug('admin', 'campaignId'), 'slug')
+      await expectBadUserInputAsync(
+        generateUniqueCampaignSlug('Campaign'),
+        'slug'
+      )
+      await expectBadUserInputAsync(
+        generateUniqueCampaignSlug('campaigns'),
+        'slug'
+      )
+      await expectBadUserInputAsync(
+        validateCampaignSlug('admin', 'campaignId'),
+        'slug'
+      )
     })
 
     it('is author-editable through the gallery author-slug validation', async () => {
-      await expect(validateCampaignSlug(' Christmas 2026 ', 'campaignId')).resolves.toBe(
-        'christmas-2026'
-      )
+      await expect(
+        validateCampaignSlug(' Christmas 2026 ', 'campaignId')
+      ).resolves.toBe('christmas-2026')
       expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith({
         where: { slug: 'christmas-2026', NOT: { id: 'campaignId' } },
         select: { id: true }
       })
-      await expectBadUserInputAsync(validateCampaignSlug('!!!', 'campaignId'), 'slug')
+      await expectBadUserInputAsync(
+        validateCampaignSlug('!!!', 'campaignId'),
+        'slug'
+      )
     })
 
     it('keeps slug collisions as BAD_USER_INPUT, field slug', async () => {
       prismaMock.campaign.findFirst.mockResolvedValue({ id: 'other' } as any)
-      await expectBadUserInputAsync(validateCampaignSlug('christmas', 'campaignId'), 'slug')
+      await expectBadUserInputAsync(
+        validateCampaignSlug('christmas', 'campaignId'),
+        'slug'
+      )
     })
   })
 
@@ -375,7 +413,9 @@ describe('campaign validation', () => {
     })
 
     it('generates the slug from the name, unique per campaign', async () => {
-      prismaMock.campaignRegion.findMany.mockResolvedValue([{ slug: 'eur' }] as any)
+      prismaMock.campaignRegion.findMany.mockResolvedValue([
+        { slug: 'eur' }
+      ] as any)
       await expect(generateUniqueRegionSlug('campaignId', 'EUR')).resolves.toBe(
         'eur-2'
       )
@@ -398,7 +438,10 @@ describe('campaign validation', () => {
       ]) {
         expect(REGION_RESERVED_SLUGS.has(reserved)).toBe(true)
       }
-      await expectBadUserInputAsync(generateUniqueRegionSlug('campaignId', 'Embed'), 'slug')
+      await expectBadUserInputAsync(
+        generateUniqueRegionSlug('campaignId', 'Embed'),
+        'slug'
+      )
       await expectBadUserInputAsync(
         validateRegionSlug('campaignId', 'legal', 'regionId'),
         'slug'
@@ -406,16 +449,24 @@ describe('campaign validation', () => {
     })
 
     it('is author-editable with the same pattern, length and uniqueness within the campaign', async () => {
-      await expect(validateRegionSlug('campaignId', ' Lac ', 'regionId')).resolves.toBe('lac')
+      await expect(
+        validateRegionSlug('campaignId', ' Lac ', 'regionId')
+      ).resolves.toBe('lac')
       expect(prismaMock.campaignRegion.findFirst).toHaveBeenCalledWith({
-        where: { campaignId: 'campaignId', slug: 'lac', NOT: { id: 'regionId' } },
+        where: {
+          campaignId: 'campaignId',
+          slug: 'lac',
+          NOT: { id: 'regionId' }
+        },
         select: { id: true }
       })
       await expectBadUserInputAsync(
         validateRegionSlug('campaignId', 'x'.repeat(201), 'regionId'),
         'slug'
       )
-      prismaMock.campaignRegion.findFirst.mockResolvedValue({ id: 'other' } as any)
+      prismaMock.campaignRegion.findFirst.mockResolvedValue({
+        id: 'other'
+      } as any)
       await expectBadUserInputAsync(
         validateRegionSlug('campaignId', 'lac', 'regionId'),
         'slug'
