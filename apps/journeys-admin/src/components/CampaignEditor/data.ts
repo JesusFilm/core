@@ -27,6 +27,7 @@ export const campaign: Campaign = {
   status: CampaignStatus.draft,
   defaultLanguageId: '529',
   publishedAt: null,
+  palette: ['#C52D3A', '#F2B544', '#FBF7F1', '#FFFFFF', '#26262E', '#6D6F81'],
   createdAt: '2026-10-05T00:00:00.000Z',
   updatedAt: '2026-10-05T00:00:00.000Z',
   team: {
