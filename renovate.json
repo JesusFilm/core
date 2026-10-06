@@ -8,7 +8,7 @@
   "rangeStrategy": "auto",
   "argocd": {
     "managerFilePatterns": [
-      "infrastructure/kube/argocd/applications/.+\\.ya?ml$"
+      "/^infrastructure/kube/argocd/applications/.+\\.ya?ml$/"
     ]
   },
   "customManagers": [
