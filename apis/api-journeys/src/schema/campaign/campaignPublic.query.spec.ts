@@ -448,6 +448,121 @@ describe('campaignPublic', () => {
     })
   })
 
+  describe('the Video Carousel', () => {
+    const CAMPAIGN_PUBLIC_CAROUSEL = graphql(`
+      query CampaignPublicCarousel($slug: String) {
+        campaignPublic(slug: $slug) {
+          pages {
+            blocks {
+              __typename
+              id
+              parentBlockId
+              parentOrder
+              ... on CampaignVideoCarouselBlock {
+                videoId
+                videoVariantLanguageId
+                video {
+                  __typename
+                  id
+                  primaryLanguageId
+                }
+              }
+              ... on CampaignVideoBlock {
+                source
+                videoId
+              }
+            }
+          }
+        }
+      }
+    `)
+
+    function carouselFixture(
+      carousel: Partial<CampaignBlockRow>
+    ): CampaignFixture & Record<string, unknown> {
+      const fixture = publishedFixture()
+      const row = fixture.blocks.find((block) => block.id === 'carouselId')!
+      const item = (id: string, parentOrder: number): CampaignBlockRow => ({
+        ...row,
+        id,
+        typename: 'CampaignVideoBlock',
+        parentBlockId: 'carouselId',
+        parentOrder,
+        eyebrow: null,
+        title: null,
+        source: 'youTube',
+        videoId: id
+      })
+      return {
+        ...fixture,
+        blocks: [
+          ...fixture.blocks.map((block) =>
+            block.id === 'carouselId' ? { ...block, ...carousel } : block
+          ),
+          item('firstItemId', 0),
+          item('secondItemId', 1)
+        ]
+      }
+    }
+
+    it('returns an expanded carousel’s video as a federation reference key only, fetching nothing', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      prismaMock.campaign.findFirst.mockResolvedValue(
+        carouselFixture({
+          videoId: 'collectionVideoId',
+          videoVariantLanguageId: '529'
+        })
+      )
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_CAROUSEL,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const blocks = result.data.campaignPublic.pages[0].blocks
+      expect(blocks.find((block: any) => block.id === 'carouselId')).toEqual({
+        __typename: 'CampaignVideoCarouselBlock',
+        id: 'carouselId',
+        parentBlockId: null,
+        parentOrder: 2,
+        videoId: 'collectionVideoId',
+        videoVariantLanguageId: '529',
+        video: {
+          __typename: 'Video',
+          id: 'collectionVideoId',
+          primaryLanguageId: '529'
+        }
+      })
+      // Expansion is the gateway's join: api-journeys fetches and caches nothing.
+      expect(fetchSpy).not.toHaveBeenCalled()
+      fetchSpy.mockRestore()
+    })
+
+    it('returns a null video in explicit mode, with the items as ordered CampaignVideoBlock children', async () => {
+      prismaMock.campaign.findFirst.mockResolvedValue(carouselFixture({}))
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_CAROUSEL,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const blocks = result.data.campaignPublic.pages[0].blocks
+      expect(
+        blocks.find((block: any) => block.id === 'carouselId').video
+      ).toBeNull()
+      expect(
+        blocks
+          .filter((block: any) => block.parentBlockId === 'carouselId')
+          .map((block: any) => [block.id, block.parentOrder])
+      ).toEqual([
+        ['firstItemId', 0],
+        ['secondItemId', 1]
+      ])
+    })
+  })
+
   describe('owned Campaign Videos', () => {
     const CAMPAIGN_PUBLIC_VIDEOS = graphql(`
       query CampaignPublicVideos($slug: String, $languageId: ID) {

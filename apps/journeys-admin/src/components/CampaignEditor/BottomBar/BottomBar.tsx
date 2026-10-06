@@ -9,6 +9,8 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
@@ -34,6 +36,8 @@ import { BarButton } from '../BarButton'
 import { blockLabel } from '../blockLabel'
 import { ButtonControls } from '../ButtonControls'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { CarouselCardEdit } from '../CarouselCardEdit'
+import { CarouselEdit } from '../CarouselEdit'
 import { ChromeEdit } from '../ChromeEdit'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { MediaSectionEdit } from '../MediaSectionEdit'
@@ -46,7 +50,10 @@ import {
 import { StylePanel } from '../StylePanel'
 import { TextControls } from '../TextControls'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
-import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
+import {
+  siblingsOf,
+  useCampaignBlockDeleteCommand
+} from '../utils/useCampaignBlockDeleteCommand'
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 
@@ -73,8 +80,10 @@ interface SectionInsert {
  * Section: Edit, Style, +Add (an Extra, or a section above or below), move
  * up/down, duplicate, bin behind a confirmation. Chrome: Edit, Style, +Add
  * only; the header's Edit opens the logo editor, an Image section's Edit
- * the picture editor and a hero's or Featured Media section's Edit the
- * media editor, all in a drawer. Text Extra: size, align,
+ * the picture editor, a hero's or Featured Media section's Edit the
+ * media editor and a Video Carousel's Edit the carousel editor, all in a
+ * drawer. Carousel card: Edit (its title and description), ← → (one order
+ * Command each) and bin (a delete Command, no confirmation). Text Extra: size, align,
  * colour, Style, bin. Button Extra adds the link chip and
  * variant/size/colours. Controls that belong to later tickets render
  * disabled.
@@ -121,14 +130,28 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
     (candidate) => candidate.id === selectedSection?.id
   )
 
-  /** The header, an Image section and the sections with a Media Slot edit in a drawer (logo, picture, media); everything else edits its text in place. */
+  /** The header, an Image section, the sections with a Media Slot, a Video Carousel and its cards edit in a drawer (logo, picture, media, videos, card text); everything else edits its text in place. */
   const editedBlock =
     selection.block != null &&
     (selection.block.__typename === 'CampaignHeaderBlock' ||
       selection.block.__typename === 'CampaignImageBlock' ||
+      selection.block.__typename === 'CampaignVideoCarouselBlock' ||
+      selection.kind === 'card' ||
       isCampaignMediaOwner(selection.block))
       ? selection.block
       : undefined
+
+  /** A selected card's neighbours among its carousel's items, which the arrows swap it with. */
+  const selectedCard = selection.kind === 'card' ? selection.block : undefined
+  const cardItems =
+    selectedCard != null
+      ? [selectedCard, ...siblingsOf(campaign.blocks, selectedCard)]
+          .filter((candidate) => candidate.__typename === 'CampaignVideoBlock')
+          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+      : []
+  const cardIndex = cardItems.findIndex(
+    (candidate) => candidate.id === selectedCard?.id
+  )
 
   function handleEdit(): void {
     if (editedBlock != null) {
@@ -257,6 +280,13 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   function handleMove(step: -1 | 1): void {
     if (selectedSection?.parentOrder == null) return
     addBlockOrder(selectedSection, selectedSection.parentOrder + step)
+  }
+
+  /** ← / →: the card takes its neighbour item's position, one order Command. */
+  function handleCardMove(step: -1 | 1): void {
+    const neighbour = cardItems[cardIndex + step]
+    if (selectedCard == null || neighbour?.parentOrder == null) return
+    addBlockOrder(selectedCard, neighbour.parentOrder)
   }
 
   function handleDuplicate(): void {
@@ -447,6 +477,31 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
             {addButton}
           </>
         )
+      case 'card':
+        return (
+          <>
+            <BarButton
+              label={t('Edit')}
+              icon={<Edit2Icon />}
+              onClick={handleEdit}
+            />
+            <IconButton
+              aria-label={t('Move left')}
+              disabled={cardIndex <= 0}
+              onClick={() => handleCardMove(-1)}
+            >
+              <ArrowLeftIcon />
+            </IconButton>
+            <IconButton
+              aria-label={t('Move right')}
+              disabled={cardIndex < 0 || cardIndex >= cardItems.length - 1}
+              onClick={() => handleCardMove(1)}
+            >
+              <ArrowRightIcon />
+            </IconButton>
+            {binButton}
+          </>
+        )
       case 'text':
         return (
           <>
@@ -524,6 +579,18 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
         )}
         {editedBlock?.__typename === 'CampaignImageBlock' && (
           <ImageSectionEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
+        )}
+        {editedBlock?.__typename === 'CampaignVideoCarouselBlock' && (
+          <CarouselEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
+        )}
+        {editedBlock?.__typename === 'CampaignVideoBlock' && (
+          <CarouselCardEdit
             block={editedBlock}
             onClose={() => setEditOpen(false)}
           />

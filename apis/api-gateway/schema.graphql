@@ -387,7 +387,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the video carousel’s default-language eyebrow or title, or its Section Background and colour overrides. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
+  Update the video carousel’s default-language eyebrow or title, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -395,12 +395,29 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
+  - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
+  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Import the first 12 videos of a YouTube playlist into a Video Carousel as explicit CampaignVideoBlock items, appended after its children in playlist order, in one bulk create. Each item is a `youTube` video with the title, description, poster and duration the Data API returns, captured once as for a single YouTube pick. The carousel’s `videoId` is left alone: the items show once it is null. Returns the created items.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock; the playlist is unknown to YouTube.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `url`): "That link isn't a YouTube playlist", or the playlist has no public videos.
+  """
+  campaignVideoCarouselBlockPlaylistImport(id: ID!, """
+  A `youtube.com/playlist?list=<id>` address.
+  """
+  url: String!) : [CampaignVideoBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Add a journey list section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It starts with no items.
   
@@ -551,7 +568,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!) : CampaignImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Fill the Media Slot of a hero or Featured Media section with a Campaign Video, replacing (soft-deleting) the block the slot held. YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once; a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, and only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
+  Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once; a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, and only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
   
   Auth: campaign Update — any member or manager of the campaign's team.
   
@@ -559,7 +576,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: campaignId does not resolve; a YouTube or Mux id unknown to its service.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live section of this campaign.
-  - BAD_USER_INPUT (field: `mediaBlockId`): the section has no Media Slot (only hero and Featured Media do).
+  - BAD_USER_INPUT (field: `mediaBlockId`): the section has no Media Slot (only hero and Featured Media do) and is not a video carousel.
   - BAD_USER_INPUT (field: `source`): not internal, youTube or mux.
   - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or a url on a YouTube or Mux video.
@@ -2097,7 +2114,7 @@ type CampaignTypographyBlock implements CampaignBlock @join__type(graph: API_JOU
 }
 
 """
-The Campaign Video: a reference to a Watch Video (`internal`), a YouTube video or an uploaded Mux video, with optional title and description overrides. Owned by a hero or Featured Media section through its `mediaBlockId` (`parentOrder: null`). YouTube and Mux text, poster and duration are captured once when the video is picked; Watch text is read live through `mediaVideo` in the campaign language, the row’s overrides winning.
+The Campaign Video: a reference to a Watch Video (`internal`), a YouTube video or an uploaded Mux video, with optional title and description overrides. Owned by a hero or Featured Media section through its `mediaBlockId` (`parentOrder: null`), or an explicit item of a Video Carousel, ordered among its children by `parentOrder`. YouTube and Mux text, poster and duration are captured once when the video is picked; Watch text is read live through `mediaVideo` in the campaign language, the row’s overrides winning.
 """
 type CampaignVideoBlock implements CampaignBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  {
   id: ID!
@@ -2196,7 +2213,14 @@ type CampaignVideoCarouselBlock implements CampaignBlock & CampaignSectionBlock 
   The Watch Video to expand; null for explicit children.
   """
   videoId: ID
+  """
+  The campaign language when the Watch Video was linked; the language the expansion resolves in.
+  """
   videoVariantLanguageId: ID
+  """
+  Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+  """
+  video: Video
 }
 
 type CardBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -6656,13 +6680,13 @@ input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`); it replaces the block the slot held and gets `parentOrder: null`. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
+A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`), replacing the block the slot held with `parentOrder: null`, or the next explicit item of a Video Carousel. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
 """
 input CampaignVideoBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   campaignId: ID!
   """
-  The hero or Featured Media section whose Media Slot this fills.
+  The hero or Featured Media section whose Media Slot this fills, or the Video Carousel this is an item of.
   """
   parentBlockId: ID!
   """
@@ -6731,6 +6755,18 @@ input CampaignVideoCarouselBlockUpdateInput @join__type(graph: API_JOURNEYS_MODE
   At most 150 characters.
   """
   title: String
+  """
+  A pasted Watch address: resolved by the server through its variant slug to a Video of any label, which becomes `videoId` (Watch expansion). Not together with `videoId`.
+  """
+  url: String
+  """
+  A published Watch Video id (Watch expansion), or null for explicit mode (the ordered CampaignVideoBlock children). Omitted leaves the mode alone.
+  """
+  videoId: ID
+  """
+  With `url` or `videoId`: the language the expansion resolves in; defaults to the campaign language.
+  """
+  videoVariantLanguageId: ID
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
   """

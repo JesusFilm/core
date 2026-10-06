@@ -76,6 +76,7 @@ export type CampaignSelectionKind =
   | 'chrome'
   | 'text'
   | 'button'
+  | 'card'
 
 export interface CampaignSelection {
   kind: CampaignSelectionKind
@@ -94,6 +95,20 @@ function isChrome(block: CampaignBlock): boolean {
   )
 }
 
+/** A Video Carousel's explicit item: a CampaignVideoBlock ordered among its children. */
+export function isCarouselItem(
+  blocks: CampaignBlock[],
+  block: CampaignBlock
+): boolean {
+  if (block.__typename !== 'CampaignVideoBlock' || block.parentOrder == null)
+    return false
+  return blocks.some(
+    (candidate) =>
+      candidate.id === block.parentBlockId &&
+      candidate.__typename === 'CampaignVideoCarouselBlock'
+  )
+}
+
 /** Resolve the selection from the block list: what is selected and where it sits. */
 export function resolveSelection(
   blocks: CampaignBlock[],
@@ -102,6 +117,12 @@ export function resolveSelection(
   if (selectedBlockId == null) return CAMPAIGN_SELECTION
   const block = blocks.find((candidate) => candidate.id === selectedBlockId)
   if (block == null) return CAMPAIGN_SELECTION
+  if (isCarouselItem(blocks, block)) {
+    const host = blocks.find(
+      (candidate) => candidate.id === block.parentBlockId
+    )
+    return { kind: 'card', block, host }
+  }
   if (
     block.__typename === 'CampaignTypographyBlock' ||
     block.__typename === 'CampaignButtonBlock'
@@ -125,7 +146,7 @@ export interface CampaignEditorContextValue {
   selection: CampaignSelection
   /** Select a block, or the campaign row when no id is given. */
   selectBlock: (blockId?: string) => void
-  /** Escape: an Extra steps up to its section, a section or chrome block to the campaign row. */
+  /** Escape: an Extra or a card steps up to its section, a section or chrome block to the campaign row. */
   escape: () => void
   /** The page a block sits on; undefined for chrome, which every page shows. */
   pageKindOf: (
@@ -169,7 +190,11 @@ export function CampaignEditorProvider({
   )
   const escape = useCallback(() => {
     if (selection.kind === 'campaign') return
-    if (selection.kind === 'text' || selection.kind === 'button') {
+    if (
+      selection.kind === 'text' ||
+      selection.kind === 'button' ||
+      selection.kind === 'card'
+    ) {
       selectBlock(selection.host?.id)
       return
     }

@@ -217,20 +217,26 @@ export async function authorizeStructuralBlock(
   return block
 }
 
+/** The section whose ordered items are Campaign Videos. */
+export const CAMPAIGN_CAROUSEL_TYPENAME = 'CampaignVideoCarouselBlock'
+
 /**
  * A child block's parent is a section or chrome block of the same campaign,
- * not soft-deleted (`BAD_USER_INPUT` / `parentBlockId`), and the child is a
- * Typography or Button block (`BAD_USER_INPUT` / `typename`). Returns the
- * parent so create can copy its scoping down.
+ * not soft-deleted (`BAD_USER_INPUT` / `parentBlockId`). The child is a
+ * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
+ * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
+ * else (`BAD_USER_INPUT` / `typename`). Returns the parent so create can
+ * copy its scoping down.
  */
 export async function validateParentBlock(
   parentBlockId: string,
   campaignId: string,
   typename: string
 ): Promise<CampaignBlock> {
-  if (!isCampaignChildTypename(typename))
+  const item = typename === CAMPAIGN_VIDEO_TYPENAME
+  if (!item && !isCampaignChildTypename(typename))
     throw badUserInput(
-      `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}`,
+      `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}, or ${CAMPAIGN_VIDEO_TYPENAME} in a video carousel`,
       'typename'
     )
   const parent = await prisma.campaignBlock.findFirst({
@@ -240,6 +246,11 @@ export async function validateParentBlock(
     throw badUserInput(
       'parentBlockId must be a section or chrome block of this campaign',
       'parentBlockId'
+    )
+  if (item && parent.typename !== CAMPAIGN_CAROUSEL_TYPENAME)
+    throw badUserInput(
+      `only a video carousel takes ${CAMPAIGN_VIDEO_TYPENAME} items`,
+      'typename'
     )
   return parent
 }

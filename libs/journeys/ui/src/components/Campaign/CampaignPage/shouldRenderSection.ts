@@ -2,6 +2,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { featuredMediaBullets } from '../CampaignFeaturedMedia'
 import { hasCampaignMedia } from '../CampaignMediaSlot'
 import { listedRegions } from '../CampaignRegionSwitcher'
+import { hasCarouselCards } from '../CampaignVideoCarousel'
 import { hasText } from '../types'
 import type { CampaignRegion, CampaignSectionTree } from '../types'
 
@@ -26,8 +27,10 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * or empty frames. Per type: Hero renders with any text, media or Extra;
  * Featured Media renders with any text, bullet, media or Extra (text alone
  * full width, media alone, both empty skipped); a Region Switcher with no
- * listed regions is skipped; a Video Carousel in explicit mode with nothing
- * renders its text if any, else is skipped; a Journey List with no
+ * listed regions is skipped; a Video Carousel with no card (explicit mode
+ * with no items, or a Watch video the gateway no longer serves) renders its
+ * text if any, else is skipped — an expanded Video with no published
+ * children is still its own card; a Journey List with no
  * live-published journeys renders its text if any, else is skipped;
  * Analytics always renders; Region Header and Region Share render
  * on a Region Page (Share needs text until a language is linked); an Image
@@ -60,7 +63,7 @@ export function shouldRenderSection(
       return listedRegions(context.regions).length > 0
     case 'CampaignVideoCarouselBlock':
       return (
-        section.videoId != null ||
+        hasCarouselCards(section) ||
         hasText(section.eyebrow) ||
         hasText(section.title) ||
         extras

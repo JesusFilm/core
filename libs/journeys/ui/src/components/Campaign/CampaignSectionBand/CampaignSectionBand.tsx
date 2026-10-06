@@ -51,7 +51,10 @@ export function CampaignSectionBand({
     [block, campaign.theme]
   )
   const above = block.children.filter(isAbove)
-  const below = block.children.filter((child) => !isAbove(child))
+  // A carousel's CampaignVideoBlock items are its body's cards, not Extras.
+  const below = block.children.filter(
+    (child) => !isAbove(child) && child.__typename !== 'CampaignVideoBlock'
+  )
 
   return (
     <CampaignSectionContext.Provider value={{ band, align }}>
