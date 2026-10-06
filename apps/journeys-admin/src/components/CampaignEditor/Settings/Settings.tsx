@@ -64,15 +64,26 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
     {}
   )
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [saving, setSaving] = useState<Partial<Record<SettingsField, boolean>>>(
+    {}
+  )
   const [campaignUpdate] = useCampaignUpdateMutation()
+  // The mutation defers its cache evict past this component's redirect, so
+  // the unmounted `GetCampaign` can not refetch the deleted campaign and
+  // flash "Campaign not found".
   const [campaignDelete, { loading: deleting }] = useCampaignDeleteMutation()
 
+  // While a save is in flight, or a field error describes a rejected value,
+  // the fields hold what the user is reading about, so skip the sync; after a
+  // failed save they adopt the rolled-back value from `campaign` again.
+  const titleBlocked = (saving.title ?? false) || errors.title != null
+  const slugBlocked = (saving.slug ?? false) || errors.slug != null
   useEffect(() => {
-    setTitle(campaign.title)
-  }, [campaign.title])
+    if (!titleBlocked) setTitle(campaign.title)
+  }, [campaign.title, titleBlocked])
   useEffect(() => {
-    setSlug(campaign.slug)
-  }, [campaign.slug])
+    if (!slugBlocked) setSlug(campaign.slug)
+  }, [campaign.slug, slugBlocked])
 
   function setFieldError(field: SettingsField, message?: string): void {
     setErrors((previous) => ({ ...previous, [field]: message }))
@@ -103,6 +114,7 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
       setFieldError(field, message)
       return
     }
+    setSaving((previous) => ({ ...previous, [field]: true }))
     try {
       await campaignUpdate({
         variables: { id: campaign.id, input: { [field]: value } },
@@ -130,8 +142,7 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
         error instanceof Error ? error.message : t('Could not save campaign'),
         { variant: 'error', preventDuplicate: true }
       )
-      if (field === 'title') setTitle(campaign.title)
-      if (field === 'slug') setSlug(campaign.slug)
+      setFieldError(field, undefined)
     }
   }
 

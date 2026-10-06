@@ -82,6 +82,17 @@ type ButtonBlock = Extract<
   { __typename: 'CampaignButtonBlock' }
 >
 
+type TranslatedValue = Extract<
+  CampaignPublicBlockFields,
+  { __typename: 'CampaignHeroBlock' }
+>['titleTranslations'][number]
+
+const NO_TRANSLATIONS: TranslatedValue[] = []
+
+function frenchValue(value: string): TranslatedValue {
+  return { __typename: 'TranslatedValue', languageId: '496', value }
+}
+
 function typography(
   row: Pick<TypographyBlock, 'id' | 'content'> & Partial<TypographyBlock>
 ): TypographyBlock {
@@ -92,6 +103,7 @@ function typography(
     regionId: null,
     parentBlockId: null,
     parentOrder: 0,
+    contentTranslations: NO_TRANSLATIONS,
     typographyVariant: null,
     align: null,
     color: null,
@@ -110,6 +122,7 @@ function button(
     regionId: null,
     parentBlockId: null,
     parentOrder: 0,
+    labelTranslations: NO_TRANSLATIONS,
     buttonVariant: null,
     size: null,
     align: null,
@@ -252,8 +265,15 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 0,
     eyebrow: 'Christmas 2026',
+    eyebrowTranslations: [frenchValue('Noël 2026')],
     title: 'Share the story of Christmas',
+    titleTranslations: [frenchValue('Partagez l’histoire de Noël')],
     lede: 'Pick your region to find a journey in your language, ready to share.',
+    ledeTranslations: [
+      frenchValue(
+        'Choisissez votre région pour trouver un parcours dans votre langue, prêt à partager.'
+      )
+    ],
     align: TypographyAlign.center,
     mediaBlockId: null
   }),
@@ -263,6 +283,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentBlockId: 'heroId',
     parentOrder: 0,
     label: 'Choose your region',
+    labelTranslations: [frenchValue('Choisissez votre région')],
     action: {
       __typename: 'CampaignScrollToBlockAction',
       parentBlockId: 'heroButtonId',
@@ -274,6 +295,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 1,
     title: 'Choose your region',
+    titleTranslations: [frenchValue('Choisissez votre région')],
     switcherVariant: CampaignSwitcherVariant.cards
   }),
   button({
@@ -294,7 +316,9 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 2,
     eyebrow: 'Watch',
+    eyebrowTranslations: [frenchValue('Regarder')],
     title: 'Films for the season',
+    titleTranslations: [frenchValue('Films de la saison')],
     videoId: null,
     videoVariantLanguageId: null,
     backgroundKind: CampaignBackgroundKind.surface
@@ -304,8 +328,15 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 3,
     eyebrow: 'Journeys',
+    eyebrowTranslations: [frenchValue('Parcours')],
     title: 'Ready-made journeys',
+    titleTranslations: [frenchValue('Parcours prêts à l’emploi')],
     lede: 'Interactive stories your friends can walk through on their phone.',
+    ledeTranslations: [
+      frenchValue(
+        'Des histoires interactives que vos amis peuvent parcourir sur leur téléphone.'
+      )
+    ],
     display: CampaignJourneyListDisplay.grid
   }),
   typography({
@@ -322,7 +353,9 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     pageId: LANDING_PAGE_ID,
     parentOrder: 4,
     eyebrow: 'Around the world',
+    eyebrowTranslations: [frenchValue('Dans le monde entier')],
     title: 'Where the story is spreading',
+    titleTranslations: [frenchValue('Où l’histoire se diffuse')],
     showMap: true,
     backgroundKind: CampaignBackgroundKind.contrast
   })
@@ -334,14 +367,25 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     pageId: REGION_PAGE_ID,
     parentOrder: 0,
     intro:
-      'A Christmas journey chosen and contextualised by your regional team.'
+      'A Christmas journey chosen and contextualised by your regional team.',
+    introTranslations: [
+      frenchValue(
+        'Un parcours de Noël choisi et contextualisé par votre équipe régionale.'
+      )
+    ]
   }),
   section('CampaignRegionShareBlock', {
     id: 'regionShareId',
     pageId: REGION_PAGE_ID,
     parentOrder: 1,
     title: 'Share this journey',
+    titleTranslations: [frenchValue('Partagez ce parcours')],
     intro: 'Pick a language, preview it, and share the link or QR code.',
+    introTranslations: [
+      frenchValue(
+        'Choisissez une langue, prévisualisez-la, et partagez le lien ou le QR code.'
+      )
+    ],
     backgroundKind: CampaignBackgroundKind.surface
   }),
   section('CampaignJourneyListBlock', {
@@ -349,8 +393,11 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     pageId: REGION_PAGE_ID,
     parentOrder: 2,
     eyebrow: 'More journeys',
+    eyebrowTranslations: [frenchValue('Plus de parcours')],
     title: 'Other journeys for this region',
+    titleTranslations: [frenchValue('D’autres parcours pour cette région')],
     lede: null,
+    ledeTranslations: [],
     display: CampaignJourneyListDisplay.grid
   }),
   section('CampaignAnalyticsBlock', {
@@ -358,7 +405,9 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     pageId: REGION_PAGE_ID,
     parentOrder: 3,
     eyebrow: 'In this region',
+    eyebrowTranslations: [frenchValue('Dans cette région')],
     title: 'Where the story is spreading',
+    titleTranslations: [frenchValue('Où l’histoire se diffuse')],
     showMap: true,
     backgroundKind: CampaignBackgroundKind.contrast
   }),
@@ -367,6 +416,7 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     pageId: REGION_PAGE_ID,
     parentOrder: 4,
     title: 'Other regions',
+    titleTranslations: [frenchValue('Autres régions')],
     switcherVariant: CampaignSwitcherVariant.cards
   })
 ]

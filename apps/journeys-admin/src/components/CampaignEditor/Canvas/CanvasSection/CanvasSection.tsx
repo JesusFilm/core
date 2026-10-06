@@ -22,6 +22,8 @@ export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 interface CanvasSectionProps {
   block: CanvasBlock
   theme: CampaignTheme
+  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
+  previewLanguageId: string | null
 }
 
 interface SectionText {
@@ -34,20 +36,117 @@ function hasText(value: string | null | undefined): value is string {
   return value != null && value.trim() !== ''
 }
 
-function sectionText(block: CanvasBlock): SectionText {
+type TranslationValue = { languageId: string; value: string }
+
+/** The preview-language value of a Translated Field; the default-language value stands in while there is none. */
+function translatedValue(
+  defaultValue: string | null | undefined,
+  translations: readonly TranslationValue[],
+  languageId: string | null
+): string | null | undefined {
+  if (languageId == null) return defaultValue
+  return (
+    translations.find((entry) => entry.languageId === languageId)?.value ??
+    defaultValue
+  )
+}
+
+function sectionText(
+  block: CanvasBlock,
+  previewLanguageId: string | null
+): SectionText {
   switch (block.__typename) {
     case 'CampaignHeroBlock':
+      return {
+        eyebrow: translatedValue(
+          block.eyebrow,
+          block.eyebrowTranslations,
+          previewLanguageId
+        ),
+        title: translatedValue(
+          block.title,
+          block.titleTranslations,
+          previewLanguageId
+        ),
+        lede: translatedValue(
+          block.lede,
+          block.ledeTranslations,
+          previewLanguageId
+        )
+      }
     case 'CampaignJourneyListBlock':
-      return { eyebrow: block.eyebrow, title: block.title, lede: block.lede }
+      return {
+        eyebrow: translatedValue(
+          block.eyebrow,
+          block.eyebrowTranslations,
+          previewLanguageId
+        ),
+        title: translatedValue(
+          block.title,
+          block.titleTranslations,
+          previewLanguageId
+        ),
+        lede: translatedValue(
+          block.lede,
+          block.ledeTranslations,
+          previewLanguageId
+        )
+      }
     case 'CampaignVideoCarouselBlock':
+      return {
+        eyebrow: translatedValue(
+          block.eyebrow,
+          block.eyebrowTranslations,
+          previewLanguageId
+        ),
+        title: translatedValue(
+          block.title,
+          block.titleTranslations,
+          previewLanguageId
+        )
+      }
     case 'CampaignAnalyticsBlock':
-      return { eyebrow: block.eyebrow, title: block.title }
+      return {
+        eyebrow: translatedValue(
+          block.eyebrow,
+          block.eyebrowTranslations,
+          previewLanguageId
+        ),
+        title: translatedValue(
+          block.title,
+          block.titleTranslations,
+          previewLanguageId
+        )
+      }
     case 'CampaignRegionSwitcherBlock':
-      return { title: block.title }
+      return {
+        title: translatedValue(
+          block.title,
+          block.titleTranslations,
+          previewLanguageId
+        )
+      }
     case 'CampaignRegionShareBlock':
-      return { title: block.title, lede: block.intro }
+      return {
+        title: translatedValue(
+          block.title,
+          block.titleTranslations,
+          previewLanguageId
+        ),
+        lede: translatedValue(
+          block.intro,
+          block.introTranslations,
+          previewLanguageId
+        )
+      }
     case 'CampaignRegionHeaderBlock':
-      return { lede: block.intro }
+      return {
+        lede: translatedValue(
+          block.intro,
+          block.introTranslations,
+          previewLanguageId
+        )
+      }
     default:
       return {}
   }
@@ -61,10 +160,21 @@ function isAbove(child: CanvasBlock): boolean {
   )
 }
 
-function CanvasExtra({ block }: { block: CanvasBlock }): ReactElement | null {
+function CanvasExtra({
+  block,
+  previewLanguageId
+}: {
+  block: CanvasBlock
+  previewLanguageId: string | null
+}): ReactElement | null {
   switch (block.__typename) {
-    case 'CampaignTypographyBlock':
-      if (!hasText(block.content)) return null
+    case 'CampaignTypographyBlock': {
+      const content = translatedValue(
+        block.content,
+        block.contentTranslations,
+        previewLanguageId
+      )
+      if (!hasText(content)) return null
       return (
         <Typography
           variant={block.typographyVariant ?? TypographyVariant.body1}
@@ -77,10 +187,16 @@ function CanvasExtra({ block }: { block: CanvasBlock }): ReactElement | null {
             wordBreak: 'break-word'
           }}
         >
-          {block.content}
+          {content}
         </Typography>
       )
-    case 'CampaignButtonBlock':
+    }
+    case 'CampaignButtonBlock': {
+      const label = translatedValue(
+        block.label,
+        block.labelTranslations,
+        previewLanguageId
+      )
       return (
         <Box
           sx={{
@@ -113,10 +229,11 @@ function CanvasExtra({ block }: { block: CanvasBlock }): ReactElement | null {
               borderColor: block.color ?? 'var(--campaign-band-button)'
             }}
           >
-            {block.label}
+            {label}
           </Button>
         </Box>
       )
+    }
     default:
       return null
   }
@@ -129,7 +246,8 @@ function CanvasExtra({ block }: { block: CanvasBlock }): ReactElement | null {
  */
 export function CanvasSection({
   block,
-  theme
+  theme,
+  previewLanguageId
 }: CanvasSectionProps): ReactElement | null {
   const band = useMemo(() => {
     if (
@@ -141,7 +259,7 @@ export function CanvasSection({
   }, [block, theme])
   if (band == null) return null
 
-  const text = sectionText(block)
+  const text = sectionText(block, previewLanguageId)
   const align = 'align' in block ? block.align : null
   const titleVariant = block.__typename === 'CampaignHeroBlock' ? 'h1' : 'h2'
   const above = block.children.filter(isAbove)
@@ -169,7 +287,11 @@ export function CanvasSection({
       <Container maxWidth="lg">
         <Stack spacing={3} sx={{ alignItems }}>
           {above.map((child) => (
-            <CanvasExtra key={child.id} block={child} />
+            <CanvasExtra
+              key={child.id}
+              block={child}
+              previewLanguageId={previewLanguageId}
+            />
           ))}
           {hasText(text.eyebrow) && (
             <Typography
@@ -200,7 +322,11 @@ export function CanvasSection({
             </Typography>
           )}
           {below.map((child) => (
-            <CanvasExtra key={child.id} block={child} />
+            <CanvasExtra
+              key={child.id}
+              block={child}
+              previewLanguageId={previewLanguageId}
+            />
           ))}
         </Stack>
       </Container>

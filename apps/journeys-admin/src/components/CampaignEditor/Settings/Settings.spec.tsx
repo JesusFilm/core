@@ -187,6 +187,37 @@ describe('Settings', () => {
     ).toBeInTheDocument()
   })
 
+  it('keeps the field on the rejected value while the API error is shown', async () => {
+    renderSettings({
+      mocks: [
+        {
+          request: {
+            query: CAMPAIGN_UPDATE,
+            variables: { id: 'campaignId', input: { slug: 'campaign' } }
+          },
+          result: {
+            errors: [
+              new GraphQLError('slug "campaign" is reserved', {
+                extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
+              })
+            ]
+          }
+        }
+      ]
+    })
+
+    const slug = screen.getByLabelText('Slug')
+    fireEvent.change(slug, { target: { value: 'campaign' } })
+    fireEvent.blur(slug)
+
+    // The optimistic value rolled back in the cache, but the field still shows
+    // what the error describes.
+    expect(
+      await screen.findByText('slug "campaign" is reserved')
+    ).toBeInTheDocument()
+    expect(slug).toHaveValue('campaign')
+  })
+
   it('rejects an empty title before calling the API', () => {
     renderSettings()
 
