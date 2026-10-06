@@ -28,7 +28,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 >
 > > "And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery." (Matthew 19:9, ESV; see also Matthew 5:32)
 >
-> Here, Jesus uses the Greek word *porneia* (sexual immorality, which includes adultery). According to this passage, unfaithfulness breaks the marriage covenant and provides biblical grounds for divorce.
+> Here, Jesus uses the Greek word _porneia_ (sexual immorality, which includes adultery). According to this passage, unfaithfulness breaks the marriage covenant and provides biblical grounds for divorce.
 >
 > A few key principles to consider from Scripture:
 >

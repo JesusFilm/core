@@ -26,7 +26,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > The primary verse cited against tattoos is found in the Mosaic Law:
 >
-> > *"You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord."* (Leviticus 19:28)
+> > _"You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord."_ (Leviticus 19:28)
 >
 > In its historical context, this prohibition was given to the nation of Israel to separate them from surrounding pagan cultures. Pagan mourning rites often involved cutting the flesh and marking the body to appease gods or commune with the dead. God called Israel to be distinct and holy, rejecting these idolatrous practices.
 >
@@ -38,8 +38,8 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > When deciding whether to get a tattoo, the New Testament offers several guiding principles:
 >
-> - **Motive and Heart:** Ask whether this decision genuinely honors God. *"So, whether you eat or drink, or whatever you do, do all to the glory of God."* (1 Corinthians 10:31)
-> - **Honoring the Body:** Scripture teaches that a believer’s body is a dwelling place for the Spirit. *"Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body."* (1 Corinthians 6:19–20)
+> - **Motive and Heart:** Ask whether this decision genuinely honors God. _"So, whether you eat or drink, or whatever you do, do all to the glory of God."_ (1 Corinthians 10:31)
+> - **Honoring the Body:** Scripture teaches that a believer’s body is a dwelling place for the Spirit. _"Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body."_ (1 Corinthians 6:19–20)
 > - **Conscience and Unity:** If your own conscience feels uneasy, or if getting one would needlessly create conflict or a stumbling block in your specific church community, Scripture calls for wisdom, humility, and love (Romans 14:13–23).
 >
 > A tattoo of a Bible verse done with a clean conscience and a desire to honor God is not forbidden by New Testament teaching.

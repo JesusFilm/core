@@ -24,17 +24,15 @@ _Last run: 2026-10-06T02:57:17.092Z_
 >
 > This question — often called the problem of evil — sits at the heart of Christian faith, especially for those who grieve. Christians don't have a single answer; different traditions and thinkers emphasize different pieces of the truth.
 >
-> **The most honest frame:** God permits suffering He could stop. The Bible does not hide this. God allowed Job's suffering, allowed the disciples to face persecution, allowed Christ Himself to suffer and die. The question is *why* — and the Bible offers several truths that work together:
+> **The most honest frame:** God permits suffering He could stop. The Bible does not hide this. God allowed Job's suffering, allowed the disciples to face persecution, allowed Christ Himself to suffer and die. The question is _why_ — and the Bible offers several truths that work together:
 >
-> - **God works through suffering, not around it.** Romans 8:28 promises that God works all things together for good for those who love Him — but not that He removes the difficulty. Often He refines us *through* it. Your mother's death was not good; but God is not absent from your grief.
->
+> - **God works through suffering, not around it.** Romans 8:28 promises that God works all things together for good for those who love Him — but not that He removes the difficulty. Often He refines us _through_ it. Your mother's death was not good; but God is not absent from your grief.
 > - **God gave humans and creation genuine freedom, and that freedom has real consequences.** Some suffering flows from human sin and choice (violence, cruelty, greed). Some flows from living in a world that is, for now, "under the curse" — disease, decay, death itself. God did not cause these, but He permits them. To remove suffering entirely would require removing human freedom and the nature of creation itself.
->
 > - **We see only part of the story.** God's purposes are not always visible to us in the moment. This is not a substitute for real answers, but it is part of the Christian testimony: suffering is not the final word. Resurrection is.
 >
-> **What Christians often *don't* say:** that God "needed" your mother's death to teach you something, or that it happened "for a reason" in any happy sense. That language can sting the bereaved and obscure the real mystery. Your mother's death was a tragedy. God grieves with you in it (John 11:35).
+> **What Christians often _don't_ say:** that God "needed" your mother's death to teach you something, or that it happened "for a reason" in any happy sense. That language can sting the bereaved and obscure the real mystery. Your mother's death was a tragedy. God grieves with you in it (John 11:35).
 >
-> **What the New Testament emphasizes:** God entered into human suffering Himself. Jesus did not theorize about pain from a distance — He felt torture, abandonment, and death. Hebrews 4:15 tells us He is touched by our weaknesses. That does not erase the why, but it means you are not abandoned *in* the why.
+> **What the New Testament emphasizes:** God entered into human suffering Himself. Jesus did not theorize about pain from a distance — He felt torture, abandonment, and death. Hebrews 4:15 tells us He is touched by our weaknesses. That does not erase the why, but it means you are not abandoned _in_ the why.
 >
 > The deepest Christian answer is not an intellectual one. It is that God promises to be present with us in suffering, to work redemption even through loss, and that death — the final enemy — has been conquered. You will see your mother again.
 >

@@ -28,19 +28,15 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >   - Deuteronomy 6:4 (ESV): “Hear, O Israel: The LORD our God, the LORD is one.”
 >   - Matthew 28:19 (ESV): “baptizing them in the name of the Father and of the Son and of the Holy Spirit.”
 >   - John 1:1 (ESV): “In the beginning was the Word, and the Word was with God, and the Word was God.”
->
 > - One “what,” three “who.”
 >   - God is one in essence or being (one divine nature — the same “what”).
 >   - God exists in three distinct persons: Father, Son, and Holy Spirit (three “who” — distinct centers of personal existence and relation).
 >   - That means Christians are not saying “three gods” (tritheism) nor “one person who merely appears three ways” (modalism). The Trinity affirms one divine nature shared by three eternal persons who relate to one another.
->
 > - Why this isn’t a logical contradiction.
 >   - “One” and “three” are answering different questions: “How many divine beings are there?” (one) versus “In how many personal ways does the one God exist?” (three). Distinguishing the categories prevents contradiction.
 >   - The doctrine flows from the biblical witness where the Father, Son, and Spirit act, speak, and are honored together yet are identified as God.
->
 > - A limited analogy (with a caution).
 >   - Think of a triangle: one triangle, three distinct corners. The analogy helps show unity and distinction, but it fails in important ways (God’s persons are distinct persons, not parts of a whole), so treat all analogies carefully.
->
 > - Finally: mystery, not nonsense.
 >   - The Trinity is a revealed truth beyond full human comprehension, not an irrational claim. It’s how the one true God has disclosed himself in Scripture and in the history of salvation.
 >

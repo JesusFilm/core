@@ -25,6 +25,7 @@ _Last run: 2026-10-06T03:06:23.499Z_
 > In 1 Corinthians 14, Paul says tongues must be used in an orderly way and interpreted if they are spoken publicly: “If any speak in a tongue, let there be only two or at most three, and each in turn, and let someone interpret” (1 Corinthians 14:27, ESV). He also says prophecy is greater in public worship because it edifies more directly (1 Corinthians 14:5).
 >
 > Is it still happening today? Christians disagree.
+>
 > - **Continuationists** believe tongues can still be a gift today.
 > - **Cessationists** believe that particular sign gifts belonged to the apostolic era and are not normative now.
 >

@@ -25,20 +25,24 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > Scripture teaches that sexual intimacy is a gift created by God exclusively for the covenant of marriage.
 >
 > ### 1. Covenant Precedes Intimacy
+>
 > In Christian theology, commitment alone does not constitute marriage. Marriage is a formal, public covenant made before God and community (Genesis 2:24). Until those vows are spoken, you remain two unmarried individuals.
 >
 > The author of Hebrews writes:
-> > *"Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."* (Hebrews 13:4)
+>
+> > _"Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."_ (Hebrews 13:4)
 >
 > ### 2. The Nature of Sexual Immorality
-> The New Testament uses the Greek word *porneia* (often translated as "sexual immorality" or "fornication") to refer to any sexual activity outside the bounds of marriage. Scripture calls believers to honor God with their bodies by abstaining from intimacy until the covenant is sealed:
 >
-> > *"For this is the will of God, your sanctification: that you abstain from sexual immorality; that each one of you know how to control his own body in holiness and honor."* (1 Thessalonians 4:3–4)
+> The New Testament uses the Greek word _porneia_ (often translated as "sexual immorality" or "fornication") to refer to any sexual activity outside the bounds of marriage. Scripture calls believers to honor God with their bodies by abstaining from intimacy until the covenant is sealed:
+>
+> > _"For this is the will of God, your sanctification: that you abstain from sexual immorality; that each one of you know how to control his own body in holiness and honor."_ (1 Thessalonians 4:3–4)
 >
 > Sex outside of marriage violates God’s moral order and misses the full beauty and protection He designed for the relationship.
 >
 > ### 3. Grace and Moving Forward
-> Addressing sin directly is vital because it separates us from God's design and will for our lives. However, God responds to repentance with complete mercy and forgiveness. First John 1:9 assures us that *"if we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness."*
+>
+> Addressing sin directly is vital because it separates us from God's design and will for our lives. However, God responds to repentance with complete mercy and forgiveness. First John 1:9 assures us that _"if we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness."_
 >
 > Honoring God in this season means choosing to pause sexual intimacy until your wedding day, using this engagement period to build a foundation rooted in obedience, spiritual unity, and mutual respect.
 >

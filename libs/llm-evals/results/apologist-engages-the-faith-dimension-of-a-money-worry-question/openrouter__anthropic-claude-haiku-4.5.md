@@ -22,7 +22,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 
 > You're carrying real anxiety about something that genuinely matters — that's not a spiritual defect, it's a human reality. The worry itself isn't sin.
 >
-> But you're right to notice the tension with trust. Jesus does call us to "seek first the kingdom of God and his righteousness, and all these things will be added to you" (Matthew 6:33), and He asks: "who of you by worrying can add a single hour to his life?" (Matthew 6:27). The worry often *prevents* us from acting wisely — it clouds judgment rather than clarifying it.
+> But you're right to notice the tension with trust. Jesus does call us to "seek first the kingdom of God and his righteousness, and all these things will be added to you" (Matthew 6:33), and He asks: "who of you by worrying can add a single hour to his life?" (Matthew 6:27). The worry often _prevents_ us from acting wisely — it clouds judgment rather than clarifying it.
 >
 > So the question isn't whether worry is a sin; it's whether your worry is crowding out both **prudence** (taking reasonable steps with your finances) and **trust** (believing God is faithful even when you cannot control outcomes). Both matter. A Christian who worries obsessively while refusing to work or plan has a trust problem. A Christian who plans well but still feels the weight of uncertainty? That's normal — and the invitation is to notice where trust is weak and ask God to strengthen it.
 >

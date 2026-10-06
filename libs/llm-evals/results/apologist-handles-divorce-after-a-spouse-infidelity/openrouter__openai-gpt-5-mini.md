@@ -23,18 +23,22 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > I’m so sorry — finding out about an affair is painful and disorienting. I hear your hurt.
 >
 > Short answer
+>
 > - The New Testament does allow divorce on the ground of sexual immorality (adultery), while also calling believers to seek reconciliation when possible. Scripture that directly addresses this includes Jesus’ words and Paul’s pastoral instructions:
 >
 > Scripture anchors (ESV)
+>
 > - Matthew 19:9 — “And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery.”
 > - 1 Corinthians 7:10–11 — “To the married I give this charge (not I, but the Lord): the wife should not separate from her husband… and the husband should not divorce his wife.”
 >
 > What that means simply
+>
 > - Jesus teaches that adultery is a biblically recognized ground for divorce. At the same time, both Jesus and Paul urge the married to pursue forgiveness and reconciliation where that is genuinely possible.
 > - If both spouses are committed Christians, the default biblical call is to work toward restoration. If the unfaithful spouse refuses repentance or the marriage is unsafe, separation or divorce may be a justifiable and necessary option.
 > - Christians differ in some details (for example, how immediate divorce and remarriage should be handled), so pastoral guidance from a trusted church leader matters.
 >
 > Practical next steps
+>
 > - Protect yourself and any children first (safety, finances, housing).
 > - Seek pastoral counsel from a wise, trusted pastor or elder who knows your church’s convictions.
 > - Consider professional marriage counseling if reconciliation is a real possibility.

@@ -22,13 +22,14 @@ _Last run: 2026-10-06T03:04:51.308Z_
 
 > # Speaking in Tongues in Scripture
 >
-> The Bible describes speaking in tongues (*glossolalia*) as a spiritual gift given by the Holy Spirit, primarily in Paul's letters and Acts.
+> The Bible describes speaking in tongues (_glossolalia_) as a spiritual gift given by the Holy Spirit, primarily in Paul's letters and Acts.
 >
 > ## What Scripture Says
 >
 > **In Acts**, tongues appear as a sign of the Spirit's presence: at Pentecost (2:4), when Peter preaches to Gentiles (10:46), and when Paul lays hands on believers at Ephesus (19:6). The speakers "spoke in other languages as the Spirit gave them utterance" (2:4).
 >
 > **In 1 Corinthians 12–14**, Paul treats tongues as one gift among many (12:10, 28–30). He emphasizes that:
+>
 > - Not all believers speak in tongues (12:30: "Do all speak in tongues? No.")
 > - Tongues without interpretation should be silent in corporate worship (14:28).
 > - Prophecy is more valuable for the church because it edifies others directly (14:5).

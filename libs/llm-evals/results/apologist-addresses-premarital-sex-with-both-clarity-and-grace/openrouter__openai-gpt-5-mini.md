@@ -25,6 +25,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > Short answer: from a biblical perspective, yes — sexual relations are intended by Scripture for the covenant of marriage, so sex outside of marriage is considered sin even within a committed relationship. Hebrews 13:4 (ESV) says, “Let marriage be held in honor among all, and let the marriage bed be undefiled; for God will judge the sexually immoral and adulterous.” 1 Thessalonians 4:3–5 (ESV) adds that God’s will is our sanctification and to abstain from sexual immorality. All sin separates us from God (it’s serious), but God offers forgiveness to those who repent (1 John 1:9, ESV: “If we confess our sins, he is faithful and just to forgive us our sins and to cleanse us from all unrighteousness”).
 >
 > Practical next steps
+>
 > - Stop sexual activity now and set clear boundaries while you prepare for marriage.
 > - Confess honestly to God and to one another, asking forgiveness and recommitting to purity.
 > - Seek pastoral help or premarital counseling and an accountability partner or couple to support you.

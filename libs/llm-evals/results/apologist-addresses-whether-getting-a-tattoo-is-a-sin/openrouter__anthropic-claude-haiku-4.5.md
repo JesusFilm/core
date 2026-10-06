@@ -22,7 +22,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 
 > The Bible doesn't forbid tattoos outright. Leviticus 19:28 says, "You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord" — but this command was part of the Old Testament law given specifically to Israel, often to distinguish them from pagan practices. Christians are not bound by the ceremonial laws of Leviticus.
 >
-> The New Testament doesn't prohibit tattoos. What *does* matter to God is your heart and your conscience. Paul writes about the principle: if something causes *you* to sin against your conscience, or if it causes a weaker believer to stumble, be thoughtful about it (Romans 14:23). That's different from saying tattoos are sinful — it's saying act with wisdom and humility.
+> The New Testament doesn't prohibit tattoos. What _does_ matter to God is your heart and your conscience. Paul writes about the principle: if something causes _you_ to sin against your conscience, or if it causes a weaker believer to stumble, be thoughtful about it (Romans 14:23). That's different from saying tattoos are sinful — it's saying act with wisdom and humility.
 >
 > A tattoo of Scripture can be a genuine expression of faith. Many Christians have them without spiritual harm. The real questions are: Why do you want this verse? Is it a true commitment to what it says, or more about appearance? Will it draw you closer to God's Word or just be decoration?
 >

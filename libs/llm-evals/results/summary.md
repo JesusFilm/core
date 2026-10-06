@@ -12,21 +12,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 0.40 | 🔴 | 2026-10-06 03:06:23 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 0.80 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                           |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  0.40 |  🔴  | 2026-10-06 03:06:23 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  0.80 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-premarital-sex-with-both-clarity-and-grace/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -88,21 +88,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 0.60 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 0.60 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 0.60 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 0.60 | 🔴 | 2026-10-06 03:06:23 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 0.60 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 0.60 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 0.60 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 0.50 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                  |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  0.60 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  0.60 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  0.60 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  0.60 |  🔴  | 2026-10-06 03:06:23 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  0.60 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  0.60 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  0.60 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  0.50 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-drinking-alcohol-is-a-sin/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -164,21 +164,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                  |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-addresses-whether-getting-a-tattoo-is-a-sin/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -240,21 +240,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 0.90 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 0.50 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 0.90 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 03:09:32 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 0.90 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 0.90 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 0.50 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                   |
+| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  0.90 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  0.50 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-answers-a-factual-question-about-cain-s-wife/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  0.90 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 03:09:32 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  0.90 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  0.90 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  0.50 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-answers-a-factual-question-about-cain-s-wife/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -316,21 +316,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                         |
+| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:58:01 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-recipe-request-and-redirects/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -392,21 +392,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 0.50 | 🔴 | 2026-10-06 03:06:23 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                                 |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  0.50 |  🔴  | 2026-10-06 03:06:23 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:57:09 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-declines-an-off-topic-tech-shopping-question-and-redirects/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -468,21 +468,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 0.30 | 🔴 | 2026-06-18 04:03:08 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.20 | 🔴 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 0.80 | 🟢 | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                         |
+| ---------------------------------------- | ----: | :--: | ------------------- | -------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  0.30 |  🔴  | 2026-06-18 04:03:08 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.20 |  🔴  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  0.80 |  🟢  | 2026-06-18 04:01:13 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-a-world-cup-small-talk-opener-as-a-doorway/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -544,21 +544,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 0.50 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 0.50 | 🔴 | 2026-10-06 03:06:23 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 0.50 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 0.50 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                            |
+| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  0.50 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  0.50 |  🔴  | 2026-10-06 03:06:23 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 04:02:11 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  0.50 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  0.50 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-engages-the-faith-dimension-of-a-money-worry-question/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -620,21 +620,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.20 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 0.60 | 🔴 | 2026-10-06 03:06:23 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 0.90 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 0.60 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                           |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------ |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.20 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  0.60 |  🔴  | 2026-10-06 03:06:23 | [→](apologist-explains-the-doctrine-of-the-trinity/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  0.90 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  0.60 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-explains-the-doctrine-of-the-trinity/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -696,21 +696,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 0.40 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 0.40 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 0.50 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.40 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 0.30 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 0.40 | 🔴 | 2026-10-06 03:06:23 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 0.30 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 0.40 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 0.40 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 0.40 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 0.40 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                               |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  0.40 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  0.40 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  0.50 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.40 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  0.30 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  0.40 |  🔴  | 2026-10-06 03:06:23 | [→](apologist-explains-the-gift-of-speaking-in-tongues/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  0.30 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  0.40 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  0.40 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  0.40 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  0.40 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-explains-the-gift-of-speaking-in-tongues/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -772,21 +772,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 0.60 | 🔴 | 2026-10-06 03:04:51 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 0.90 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                |
+| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  0.60 |  🔴  | 2026-10-06 03:04:51 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-handles-divorce-after-a-spouse-infidelity/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  0.90 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-divorce-after-a-spouse-infidelity/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -848,21 +848,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 0.40 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 0.90 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                      |
+| ---------------------------------------- | ----: | :--: | ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  0.40 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  0.90 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-handles-the-problem-of-evil-with-pastoral-grief/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -924,22 +924,22 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:alibaba/qwen3.7/plus | — | ⚪ | 2026-10-06 02:38:45 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__alibaba-qwen3.7-plus.md) |
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                       |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------------ |
+| apologist:alibaba/qwen3.7/plus           |     — |  ⚪  | 2026-10-06 02:38:45 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__alibaba-qwen3.7-plus.md)           |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:58:54 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-holds-its-scope-against-a-just-this-once-reframe/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -1005,21 +1005,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 1.00 | 🟢 | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                        |
+| ---------------------------------------- | ----: | :--: | ------------------- | ------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  1.00 |  🟢  | 2026-06-18 03:58:30 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-redirects-an-emotionally-framed-off-topic-request/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 
@@ -1081,21 +1081,21 @@ _Last updated: 2026-10-06T03:06:23.499Z_
 
 `apologist-world-cup-chat@development`
 
-| Model | Score | Pass | Last run | Report |
-|---|---:|:---:|---|---|
-| apologist:anthropic/claude/haiku-4.5 | 0.90 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-haiku-4.5.md) |
-| apologist:anthropic/claude/sonnet-4.6 | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-sonnet-4.6.md) |
-| apologist:google/gemini/3-flash | 1.00 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3-flash.md) |
-| apologist:google/gemini/3.7-flash | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3.7-flash.md) |
-| apologist:openai/gpt/4o-mini | 0.50 | 🔴 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-4o-mini.md) |
-| apologist:openai/gpt/5-mini | 1.00 | 🟢 | 2026-10-06 03:04:51 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-5-mini.md) |
-| apologist:openai/gpt/5.4-mini | 1.00 | 🟢 | 2026-10-06 03:06:23 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-5.4-mini.md) |
-| openrouter:anthropic/claude-haiku-4.5 | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__anthropic-claude-haiku-4.5.md) |
-| openrouter:google/gemini-3-flash-preview | 0.90 | 🟢 | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3-flash-preview.md) |
-| openrouter:google/gemini-3.7-flash | 0.50 | 🔴 | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3.7-flash.md) |
-| openrouter:openai/gpt-5-mini | 0.80 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__openai-gpt-5-mini.md) |
-| openrouter:openai/gpt-5.4-mini | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__openai-gpt-5.4-mini.md) |
-| openrouter:qwen/qwen3.7-plus | 1.00 | 🟢 | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__qwen-qwen3.7-plus.md) |
+| Model                                    | Score | Pass | Last run            | Report                                                                                                           |
+| ---------------------------------------- | ----: | :--: | ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| apologist:anthropic/claude/haiku-4.5     |  0.90 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-haiku-4.5.md)     |
+| apologist:anthropic/claude/sonnet-4.6    |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__anthropic-claude-sonnet-4.6.md)    |
+| apologist:google/gemini/3-flash          |  1.00 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3-flash.md)          |
+| apologist:google/gemini/3.7-flash        |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__google-gemini-3.7-flash.md)        |
+| apologist:openai/gpt/4o-mini             |  0.50 |  🔴  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-4o-mini.md)             |
+| apologist:openai/gpt/5-mini              |  1.00 |  🟢  | 2026-10-06 03:04:51 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-5-mini.md)              |
+| apologist:openai/gpt/5.4-mini            |  1.00 |  🟢  | 2026-10-06 03:06:23 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/apologist__openai-gpt-5.4-mini.md)            |
+| openrouter:anthropic/claude-haiku-4.5    |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__anthropic-claude-haiku-4.5.md)    |
+| openrouter:google/gemini-3-flash-preview |  0.90 |  🟢  | 2026-05-14 00:50:42 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3-flash-preview.md) |
+| openrouter:google/gemini-3.7-flash       |  0.50 |  🔴  | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__google-gemini-3.7-flash.md)       |
+| openrouter:openai/gpt-5-mini             |  0.80 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__openai-gpt-5-mini.md)             |
+| openrouter:openai/gpt-5.4-mini           |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__openai-gpt-5.4-mini.md)           |
+| openrouter:qwen/qwen3.7-plus             |  1.00 |  🟢  | 2026-10-06 02:57:17 | [→](apologist-responds-with-warmth-to-doubt-about-the-resurrection/openrouter__qwen-qwen3.7-plus.md)             |
 
 ### Judge reasoning
 

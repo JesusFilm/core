@@ -23,16 +23,16 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > It is understandable to feel conflicted when your desire to honor Scripture with a tattoo conflicts with the convictions of others in your church community. The short answer is that the Bible does not explicitly forbid Christians from getting tattoos, but it does provide clear principles to guide your decision.
 >
 > **The Old Testament Context**
-> The primary verse people point to is Leviticus 19:28: *"You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord"* (ESV).
+> The primary verse people point to is Leviticus 19:28: _"You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord"_ (ESV).
 >
 > To understand this verse, we must look at its historical and cultural context. This command was given to ancient Israel to separate them from the surrounding pagan nations. The Canaanites and Egyptians specifically cut their skin and tattooed themselves as part of idolatrous worship and pagan mourning rituals for the dead. The prohibition was not a universal, timeless ban on all body art; rather, it was a specific boundary to keep Israel from adopting the religious and cultural practices of the pagan nations around them.
 >
 > **New Testament Principles**
 > Under the New Covenant, the ceremonial and civil laws of the Old Testament are fulfilled in Christ. The New Testament does not mention tattoos. Instead, it offers broader principles for how we treat our bodies and make personal choices:
 >
-> *   **The Body as a Temple:** *"Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body"* (1 Corinthians 6:19-20, ESV). We are called to honor God with our physical bodies.
-> *   **Doing Everything for God's Glory:** *"So, whether you eat or drink, or whatever you do, do all to the glory of God"* (1 Corinthians 10:31, ESV). The motivation behind the tattoo matters deeply. Is it to honor God and proclaim His truth, or is it driven by rebellion, vanity, or fleeting worldly trends?
-> *   **Christian Liberty and Conscience:** Romans 14 teaches that in matters not explicitly commanded or forbidden by Scripture, Christians have liberty. However, we must not violate our own conscience, and we must be careful not to cause a fellow believer to stumble.
+> - **The Body as a Temple:** _"Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body"_ (1 Corinthians 6:19-20, ESV). We are called to honor God with our physical bodies.
+> - **Doing Everything for God's Glory:** _"So, whether you eat or drink, or whatever you do, do all to the glory of God"_ (1 Corinthians 10:31, ESV). The motivation behind the tattoo matters deeply. Is it to honor God and proclaim His truth, or is it driven by rebellion, vanity, or fleeting worldly trends?
+> - **Christian Liberty and Conscience:** Romans 14 teaches that in matters not explicitly commanded or forbidden by Scripture, Christians have liberty. However, we must not violate our own conscience, and we must be careful not to cause a fellow believer to stumble.
 >
 > **How to Move Forward**
 > If you are considering a tattoo of a Bible verse, examine your heart and your motives. Ensure the design is honoring to God and that your motivation is to glorify Him.

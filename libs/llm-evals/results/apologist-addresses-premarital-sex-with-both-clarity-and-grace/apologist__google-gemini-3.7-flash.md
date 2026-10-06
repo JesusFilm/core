@@ -25,18 +25,21 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Scripture speaks with both love and clarity about the purpose and boundaries of sexual intimacy:
 >
 > ### 1. Covenant Precedes Union
+>
 > In the biblical design, sex is not merely an expression of emotional closeness or future intentions; it is the physical seal of an actual, established covenant. Genesis 2:24 describes marriage as leaving, cleaving, and becoming "one flesh." An engagement or an intention to marry is a promise of a future covenant, but it is not yet the covenant itself before God and the community.
 >
-> > *"Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."* (Hebrews 13:4)
+> > _"Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."_ (Hebrews 13:4)
 >
 > ### 2. God’s Call to Sexual Purity
-> God reserves sexual union exclusively for marriage to protect both you and the sacredness of the relationship. Scripture consistently calls believers to abstain from sexual intimacy outside of marriage (often termed *porneia* or sexual immorality).
 >
-> > *"For this is the will of God, your sanctification: that you abstain from sexual immorality; that each one of you know how to control his own body in holiness and honor."* (1 Thessalonians 4:3–4)
+> God reserves sexual union exclusively for marriage to protect both you and the sacredness of the relationship. Scripture consistently calls believers to abstain from sexual intimacy outside of marriage (often termed _porneia_ or sexual immorality).
+>
+> > _"For this is the will of God, your sanctification: that you abstain from sexual immorality; that each one of you know how to control his own body in holiness and honor."_ (1 Thessalonians 4:3–4)
 >
 > Stepping outside of God's design, even with good intentions, falls short of His holy standard and introduces spiritual compromise into the foundation of your future marriage.
 >
 > ### 3. Grace and Moving Forward
+>
 > God’s boundaries are given for your protection and flourishing, not to withhold joy. Where there has been disobedience, God offers complete forgiveness and grace through Christ to all who repent.
 >
 > Honoring God during this season involves choosing abstinence until your wedding day, establishing healthy boundaries, and trusting God with your relationship.

@@ -21,15 +21,18 @@ _Last run: 2026-10-06T02:57:17.092Z_
 ## Output
 
 > # Short answer
+>
 > The Bible describes “speaking in tongues” as a gift of the Holy Spirit that first appears at Pentecost and is treated at length in 1 Corinthians 12–14; Scripture presents it as real, useful for prayer and worship, and—when properly ordered—helpful to the church. Christians disagree about whether the specific charismatic manifestations we call “tongues” continue today.
 >
 > ## What the Bible says (brief)
+>
 > - New Testament examples: Acts 2 (Pentecost), Acts 10 (Cornelius’ household), Acts 19 (Ephesus). Paul addresses the gift and its regulation in 1 Corinthians 12–14. Mark 16:17 also mentions tongues (the longer ending).
 > - Purpose and character (from Paul): tongues can be a Spirit-given, non‑understandable utterance (used in personal prayer) and a gift that should be used to build up the church when accompanied by interpretation. Paul warns against disorder and emphasizes that the goal is edification (not spectacle).
 >
 > Scripture (ESV): “For one who speaks in a tongue speaks not to men but to God; for no one understands him, but he utters mysteries in the Spirit... The one who speaks in a tongue builds up himself, but the one who prophesies builds up the church.” (1 Corinthians 14:2,4)
 >
 > ## Is it still happening today?
+>
 > There are two broad, historically rooted Christian positions:
 >
 > - Continuationism (many Pentecostal and charismatic churches): The Spirit’s gifts—including speaking in tongues—continue today. Proponents point to New Testament instruction that the Spirit gives gifts as He wills and to abundant contemporary testimonies and movements (e.g., Azusa Street revival onward).

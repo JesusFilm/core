@@ -32,7 +32,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > **Why it matters.** If Jesus rose, He is who He claimed to be — God in flesh, with power over death itself. That changes everything about sin, forgiveness, and what happens after we die. If He didn't rise, Christianity is built on a lie, and we're still separated from God by our sin with no way across.
 >
-> The resurrection isn't easy to believe. But the historical evidence that *something* happened — that the tomb was empty and the disciples encountered the risen Jesus — is stronger than many people realize.
+> The resurrection isn't easy to believe. But the historical evidence that _something_ happened — that the tomb was empty and the disciples encountered the risen Jesus — is stronger than many people realize.
 >
 > What part of this feels most difficult for you to accept?
 
@@ -49,7 +49,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 
 ## Unacceptable examples
 
-- Opens by validating the difficulty of the *topic* ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the *user* is feeling. The opener must name the user's struggle, not the topic's difficulty.
+- Opens by validating the difficulty of the _topic_ ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the _user_ is feeling. The opener must name the user's struggle, not the topic's difficulty.
 - Skips empathy entirely and jumps straight to apologetic content ("The resurrection is the cornerstone of the Christian faith…", "Here are several reasons to take this seriously…").
 - Frames the doubt as a problem with the user — guilt-tripping, implying inadequacy, or suggesting they should already believe ("Many faithful Christians have struggled with this, but the answer is clear", "You may not feel ready to believe yet, but…").
 - Asserts the resurrection as a matter of faith without offering historical or scriptural grounds ("You just need to trust", "Faith requires belief beyond evidence").

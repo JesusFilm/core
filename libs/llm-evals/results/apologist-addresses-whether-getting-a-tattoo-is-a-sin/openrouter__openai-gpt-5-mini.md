@@ -25,16 +25,19 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > I hear you—this is a common concern and a good one to think through prayerfully and with humility. The short, balanced answer: the Bible contains one clear prohibition often applied to tattoos, but the New Testament gives principles that leave room for Christian conscience and disagreement.
 >
 > Key passages
+>
 > - Leviticus 19:28 (ESV): "You shall not make any cuts on your body for the dead or tattoo yourselves: I am the LORD."
 > - 1 Corinthians 6:19–20 (ESV): "Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body."
 > - 1 Corinthians 8:9 (ESV): "But take care that this right of yours does not somehow become a stumbling block to the weak."
 >
 > How Christians read these passages
+>
 > - Leviticus 19:28 sits in the Old Testament holiness code and is widely understood in its original context as prohibiting practices connected with pagan mourning and idol-related markings. Some Christians see it as a cultural/ceremonial law specific to Israel; others treat it as a continuing moral boundary. Both positions are held by sincere believers.
 > - The New Testament does not explicitly forbid tattoos. Instead it gives general principles: our bodies belong to God and should honor him (1 Cor. 6), and we should exercise Christian liberty with love and care for others (1 Cor. 8; Rom. 14).
 > - Because the NT emphasizes motive, conscience, and love, many Christians conclude tattoos are permissible if they are not idolatrous, sexually offensive, or done in rebellion against God — and if they don’t harm your witness or cause other believers to stumble.
 >
 > Practical questions to ask before getting a tattoo
+>
 > - Why do I want this tattoo? (motive matters)
 > - What will the tattoo depict or say? (avoid idolatrous or profane images)
 > - Will it honor God and reflect stewardship of my body?
@@ -42,6 +45,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > - Is my conscience clear about it? (If you have genuine doubts, Romans 14/1 Cor. 8 principles suggest caution.)
 >
 > If you already have one
+>
 > - If it was done in ignorance or without malice, confess any sin and live in the freedom of God’s grace; repentance and growth are how we respond to mistakes.
 >
 > Conclusion

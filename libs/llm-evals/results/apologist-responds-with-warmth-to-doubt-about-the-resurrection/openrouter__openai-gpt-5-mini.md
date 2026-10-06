@@ -31,12 +31,15 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > - Alternative explanations fall short: common alternatives (Jesus didn’t really die, the body was stolen, the appearances were mass hallucinations, or the story developed as later myth) struggle to explain the empty tomb, group encounters, and the very early, concrete testimony we have.
 >
 > A short scriptural anchor (ESV):
+>
 > > For I delivered to you as of first importance what I also received: that Christ died for our sins in accordance with the Scriptures, that he was buried, that he was raised on the third day in accordance with the Scriptures, (1 Cor. 15:3–4)
 >
 > And Paul’s point about significance:
+>
 > > If Christ has not been raised, your faith is futile and you are still in your sins. (1 Cor. 15:17)
 >
 > If you want, I can:
+>
 > - walk through the strongest historical objections one by one, or
 > - show the primary scriptural accounts of the tomb and appearances, or
 > - talk about what the resurrection means for forgiveness and hope personally — which would you prefer?
@@ -54,7 +57,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 
 ## Unacceptable examples
 
-- Opens by validating the difficulty of the *topic* ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the *user* is feeling. The opener must name the user's struggle, not the topic's difficulty.
+- Opens by validating the difficulty of the _topic_ ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the _user_ is feeling. The opener must name the user's struggle, not the topic's difficulty.
 - Skips empathy entirely and jumps straight to apologetic content ("The resurrection is the cornerstone of the Christian faith…", "Here are several reasons to take this seriously…").
 - Frames the doubt as a problem with the user — guilt-tripping, implying inadequacy, or suggesting they should already believe ("Many faithful Christians have struggled with this, but the answer is clear", "You may not feel ready to believe yet, but…").
 - Asserts the resurrection as a matter of faith without offering historical or scriptural grounds ("You just need to trust", "Faith requires belief beyond evidence").

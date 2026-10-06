@@ -25,28 +25,33 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Thank you — that’s an important question Christians have wrestled with for centuries.
 >
 > ## Biblical passages and the basic picture
+>
 > - At Pentecost the Spirit came and the apostles “were all filled with the Holy Spirit and began to speak in other tongues as the Spirit gave them utterance” (Acts 2:4 ESV).
 > - Paul treats tongues as one of the Spirit’s gifts and gives rules for its use in worship, stressing that gifts must build up the church and that public speaking in tongues should be accompanied by interpretation, because “the one who speaks in a tongue speaks not to men but to God… he builds up himself, but the one who prophesies builds up the church” (1 Corinthians 14:2–5 ESV).
 > - Other New Testament examples: the Spirit’s manifesting at Cornelius’s house (Acts 10) and at Ephesus (Acts 19), and Jesus’ promise that the Father would give the Holy Spirit (John 14–16), which the early church connected with these signs.
 >
 > Key biblical principles from these texts:
+>
 > - Tongues can function as a sign (especially to unbelievers) and as private prayer/adoration (speaking to God).
 > - In corporate worship tongues must be intelligible to the congregation (through interpretation) or else be limited so that the whole assembly is edified.
 > - Spiritual gifts are given by the one Spirit for the common good (see 1 Corinthians 12–14).
 >
 > ## Is speaking in tongues still happening today?
+>
 > - Christians disagree. Broadly speaking there are two main streams:
 >   - Continuationists (e.g., Pentecostal and many charismatic churches) believe the Spirit’s gifts, including tongues and interpretation, continue today and are present where the Spirit gives them.
 >   - Cessationists (some Reformed traditions) hold that the sign gifts fulfilled an apostolic function and ceased with the close of the apostolic age; they are skeptical that modern claims are the same as the New Testament phenomenon.
 > - Between those poles are cautious or regulated positions that accept private prayer language but require strict biblical testing for public use.
 >
 > How churches and individuals should discern claims of tongues:
+>
 > - Test experiences against Scripture (do they honor Christ and align with biblical teaching?).
 > - Expect order: public manifestations should follow Paul’s rules (interpretation, one at a time, not disruptive).
 > - Look for fruit: humility, unity, and the building up of the church rather than pride or disorder.
 > - Seek wise counsel from mature church leaders and pastoral oversight.
 >
 > If you’d like, I can (choose one):
+>
 > - explain 1 Corinthians 12–14 verse-by-verse,
 > - compare classic Pentecostal and cessationist arguments more fully, or
 > - suggest questions to ask a church about how they practice and test spiritual gifts.

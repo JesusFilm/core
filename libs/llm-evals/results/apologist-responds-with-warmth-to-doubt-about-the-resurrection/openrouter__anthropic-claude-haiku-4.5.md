@@ -26,7 +26,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 >
 > Three things make the Resurrection credible:
 >
-> **The disciples' transformation.** They fled in terror after the crucifixion. Something changed them radically — they went back out and told the same people who had just executed their leader that He was alive, and they were willing to die for it. People don't die for what they *know* is a lie. This needs explanation.
+> **The disciples' transformation.** They fled in terror after the crucifixion. Something changed them radically — they went back out and told the same people who had just executed their leader that He was alive, and they were willing to die for it. People don't die for what they _know_ is a lie. This needs explanation.
 >
 > **The empty tomb.** Even hostile sources in the early centuries didn't deny the tomb was empty — they offered alternative explanations (the disciples stole the body, the guards fell asleep). Matthew's Gospel explicitly records the accusation. If the tomb weren't empty, the Sanhedrin could have produced the body and ended Christianity before it started. They didn't.
 >
@@ -49,7 +49,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 
 ## Unacceptable examples
 
-- Opens by validating the difficulty of the *topic* ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the *user* is feeling. The opener must name the user's struggle, not the topic's difficulty.
+- Opens by validating the difficulty of the _topic_ ("the resurrection is a monumental claim to grasp", "this is one of the hardest questions in Christianity") rather than acknowledging what the _user_ is feeling. The opener must name the user's struggle, not the topic's difficulty.
 - Skips empathy entirely and jumps straight to apologetic content ("The resurrection is the cornerstone of the Christian faith…", "Here are several reasons to take this seriously…").
 - Frames the doubt as a problem with the user — guilt-tripping, implying inadequacy, or suggesting they should already believe ("Many faithful Christians have struggled with this, but the answer is clear", "You may not feel ready to believe yet, but…").
 - Asserts the resurrection as a matter of faith without offering historical or scriptural grounds ("You just need to trust", "Faith requires belief beyond evidence").

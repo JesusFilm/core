@@ -30,7 +30,7 @@ _Last run: 2026-10-06T03:06:23.499Z_
 > - **God entered suffering Himself in Jesus.** The cross means God is not distant from pain; He bears it and works through it. “Surely he has borne our griefs and carried our sorrows” (Isaiah 53:4, ESV).
 > - **Christian hope looks to final justice and restoration.** God promises a day when suffering and death will end (Revelation 21:4).
 >
-> That does not make grief small. Christianity does not say, “This is fine.” It says God hates death, entered it, and will one day undo it. If you want, I can also help with the hardest follow-up: why God would allow *your mother’s* suffering in particular.
+> That does not make grief small. Christianity does not say, “This is fine.” It says God hates death, entered it, and will one day undo it. If you want, I can also help with the hardest follow-up: why God would allow _your mother’s_ suffering in particular.
 
 ## Reason
 

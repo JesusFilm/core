@@ -26,13 +26,13 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > In Matthew 19:9, Jesus says:
 >
-> > *"And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery."*
+> > _"And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery."_
 >
-> In the biblical text, the term used for "sexual immorality" (*porneia*) includes adultery. By violating the marriage covenant through an affair, your husband has broken the sacred bond of faithfulness.
+> In the biblical text, the term used for "sexual immorality" (_porneia_) includes adultery. By violating the marriage covenant through an affair, your husband has broken the sacred bond of faithfulness.
 >
 > Here are a few biblical truths to help you navigate this moment:
 >
-> - **Permission, not a command:** Scripture *permits* divorce in cases of sexual immorality to protect the wronged spouse, but it does not *command* it.
+> - **Permission, not a command:** Scripture _permits_ divorce in cases of sexual immorality to protect the wronged spouse, but it does not _command_ it.
 > - **Reconciliation is possible, but requires true repentance:** If your husband is genuinely repentant, seeking accountability, and willing to do the hard work of rebuilding broken trust, healing and restoration are possible through God’s grace. However, reconciliation cannot happen without genuine repentance and complete honesty on his part.
 > - **You do not have to decide everything today:** The shock of betrayal is overwhelming. Give yourself space to process your grief before making permanent legal decisions. Seek the support of a trusted Christian counselor or pastor who can walk beside you.
 >

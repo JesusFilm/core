@@ -25,6 +25,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > Short answer: not necessarily — but persistent anxiety about money usually shows that your trust needs care. Scripture invites us to bring these fears to God and promises his help. For example, Philippians 4:6–7 (ESV) says, “Do not be anxious about anything, but in everything by prayer and supplication with thanksgiving let your requests be made known to God. And the peace of God, which surpasses all understanding, will guard your hearts and your minds in Christ Jesus.” And 1 Peter 5:7 (ESV) adds, “casting all your anxieties on him, because he cares for you.”
 >
 > What to do next (brief, practical, spiritual steps)
+>
 > - Tell God honestly about the worry (use prayer and the specific petition Philippians recommends).
 > - Ask whether the worry comes from real, solvable needs (e.g., no income, debt) or from a heart clinging to money; if it’s the latter, confess and turn to God — grace is offered to those who repent.
 > - Take practical actions: make a simple budget, get trustworthy financial counsel, and prioritize essentials. Practical stewardship is not opposed to trusting God.

@@ -25,6 +25,7 @@ _Last run: 2026-10-06T03:06:23.499Z_
 > The verse people usually mean is Leviticus 19:28: “You shall not make any cuts on your body for the dead or tattoo yourselves: I am the LORD.” In context, that command was given to Israel and was tied to pagan mourning practices, not a blanket discussion of every modern tattoo.
 >
 > So biblically, the issue is less “Is a tattoo always sin?” and more:
+>
 > - **Your motive**: is it honoring God or drawing attention to self?
 > - **Your conscience**: can you do it in faith without conviction? (Romans 14)
 > - **Modesty and wisdom**: will it serve love and not cause needless offense? (1 Corinthians 10:31–33)

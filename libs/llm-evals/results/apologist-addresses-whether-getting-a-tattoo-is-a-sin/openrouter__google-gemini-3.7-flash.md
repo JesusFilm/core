@@ -36,9 +36,9 @@ _Last run: 2026-10-06T02:57:17.092Z_
 >
 > The New Testament does not explicitly command or forbid tattoos. Instead, it offers broader principles to guide personal conscience:
 >
-> - **Motivation and Glory to God:** The central question for any Christian liberty is whether it honors the Lord. *"So, whether you eat or drink, or whatever you do, do all to the glory of God"* (1 Corinthians 10:31). A tattoo intended to honor Scripture or reflect one's devotion can come from a sincere heart of worship.
-> - **The Body as a Temple:** Paul writes, *"Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body"* (1 Corinthians 6:19–20). Believers should consider how care for their body reflects stewardship and reverence for God.
-> - **Conscience and Faith:** Paul teaches in Romans 14 that what is done without conviction of faith becomes sin for the individual: *"For whatever does not proceed from faith is sin"* (Romans 14:23). If your conscience is uneasy, it is wise to wait.
+> - **Motivation and Glory to God:** The central question for any Christian liberty is whether it honors the Lord. _"So, whether you eat or drink, or whatever you do, do all to the glory of God"_ (1 Corinthians 10:31). A tattoo intended to honor Scripture or reflect one's devotion can come from a sincere heart of worship.
+> - **The Body as a Temple:** Paul writes, _"Or do you not know that your body is a temple of the Holy Spirit within you, whom you have from God? You are not your own, for you were bought with a price. So glorify God in your body"_ (1 Corinthians 6:19–20). Believers should consider how care for their body reflects stewardship and reverence for God.
+> - **Conscience and Faith:** Paul teaches in Romans 14 that what is done without conviction of faith becomes sin for the individual: _"For whatever does not proceed from faith is sin"_ (Romans 14:23). If your conscience is uneasy, it is wise to wait.
 > - **Love and Unity in the Church:** Scripture calls Christians to be mindful of brothers and sisters who hold weaker or stricter consciences on matters of Christian liberty, ensuring our choices do not needlessly cause division or offense (Romans 14:13–19).
 >
 > In summary, Scripture does not prohibit a Christian from getting a tattoo in faith and with a clear conscience to honor God.

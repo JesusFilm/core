@@ -29,6 +29,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > **Why this matters:**
 >
 > The New Testament presents all three persons as God:
+>
 > - The Father is God (throughout Scripture)
 > - Jesus is called God in John 1:1 and elsewhere — "the Word was God"
 > - The Holy Spirit is God in Acts 5:3–4 (lying to the Spirit is lying to God)
@@ -37,9 +38,9 @@ _Last run: 2026-10-06T02:57:17.092Z_
 >
 > **The limits of explanation:**
 >
-> The Trinity cannot be fully *explained* using earthly analogies because God's nature transcends ours. Water as ice, liquid, and vapor, or the sun's light, heat, and rays — these comparisons break down quickly. The doctrine rests on Scripture's witness, not on human logic alone. We accept it not because we can picture it perfectly, but because Scripture teaches it consistently.
+> The Trinity cannot be fully _explained_ using earthly analogies because God's nature transcends ours. Water as ice, liquid, and vapor, or the sun's light, heat, and rays — these comparisons break down quickly. The doctrine rests on Scripture's witness, not on human logic alone. We accept it not because we can picture it perfectly, but because Scripture teaches it consistently.
 >
-> Does the distinction between "one *what*" and three "*who*" help, or would you like to explore a specific aspect — maybe how the persons relate in the work of salvation?
+> Does the distinction between "one _what_" and three "_who_" help, or would you like to explore a specific aspect — maybe how the persons relate in the work of salvation?
 
 ## Reason
 

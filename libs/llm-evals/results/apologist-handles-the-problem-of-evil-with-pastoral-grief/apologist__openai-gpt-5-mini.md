@@ -25,9 +25,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > You’re not alone in asking this. Christians typically answer in three short, connected ways:
 >
 > - The world is broken and people have real freedom. God made human beings with free will; that freedom makes genuine love and moral responsibility possible, but it also makes evil and harm possible. Some suffering is the direct or indirect result of human sin and a fallen creation.
->
 > - God is not distant from our pain; he enters it and brings meaning. In Jesus God himself suffered, wept, and was present with sufferers. Christians believe God can bring healing, character, and deeper compassion out of suffering even when the specific reasons remain hidden to us. As Scripture says, “For all things work together for good to those who love God, who are called according to his purpose” (Romans 8:28, ESV), and God is “the Father of mercies and God of all comfort, who comforts us in all our affliction” (2 Corinthians 1:3–4, ESV).
->
 > - There is a promised end to suffering. Christianity looks forward to a day when God will make all things new and wipe away pain and death: “He will wipe away every tear from their eyes, and death shall be no more” (Revelation 21:4, ESV).
 >
 > I won’t pretend this removes the sting of losing your mother or answer every why — some things remain mysterious. But Christian faith holds that God is loving, present in sorrow, able to bring good from pain, and that death is not the final word.

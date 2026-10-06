@@ -25,19 +25,20 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Short answer: Scripture does permit divorce in the case of sexual immorality, but it treats divorce as weighty and urges forgiveness and reconciliation when possible.
 >
 > Key verses (ESV):
+>
 > > "And I say to you: whoever divorces his wife, except for sexual immorality, and marries another, commits adultery." —
 >
 > > “Now I tell you that whoever divorces his wife, except for sexual immorality, and marries another woman commits adultery. ”
 > > — Matthew 19:9, BSB
 >
->
->
 > What this means in practice
+>
 > - Jesus allows divorce on the ground of sexual immorality (the Greek word porneia is generally understood to include marital unfaithfulness). Christians and traditions differ on precisely how to apply that word, but many pastors accept adultery as a legitimate biblical ground for divorce.
 > - At the same time, Scripture calls the church toward forgiveness, restoration, and reconciliation where repentance is genuine. Divorce is permitted in certain cases, not commanded as the first response.
 > - The Bible also gives space for separation in situations where staying would be harmful, though it urges care about remarriage and the seriousness of that step.
 >
 > Practical next steps (gentle, urgent, and wise)
+>
 > - Prioritize your safety and the safety of any children. If you are at risk, get help right away.
 > - Talk with a trusted pastor or Christian counselor who will listen and help you weigh spiritual, emotional, and practical factors.
 > - Document what you need for legal or protective measures and, if appropriate, consult legal counsel about separation/divorce and custody.

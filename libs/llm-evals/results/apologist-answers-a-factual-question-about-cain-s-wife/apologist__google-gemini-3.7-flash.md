@@ -25,7 +25,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Here is the biblical context:
 >
 > - **Eve is the mother of all humanity:** Genesis 3:20 states that Eve was "the mother of all living." Every human descended from Adam and Eve.
-> - **Adam and Eve had many children:** While Genesis highlights Cain, Abel, and Seth, Genesis 5:4 notes, *"The days of Adam after he fathered Seth were 800 years; and he had other sons and daughters."*
+> - **Adam and Eve had many children:** While Genesis highlights Cain, Abel, and Seth, Genesis 5:4 notes, _"The days of Adam after he fathered Seth were 800 years; and he had other sons and daughters."_
 > - **Close-relative marriage in early history:** In the earliest generations of humanity, marrying a sibling or close relative was necessary to obey God's command to fill the earth (Genesis 1:28). Because the human gene pool was still near its original, pristine creation, genetic defects from close intermarriage were not yet a factor. God later prohibited marriage between close relatives in the Law of Moses (Leviticus 18).
 
 ## Reason

@@ -25,7 +25,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > ### What Scripture Teaches
 >
 > - **Drinking in moderation is permissible:** Wine is spoken of in Scripture as part of God's provision and a source of gladness (Psalm 104:14–15). Jesus' first miracle was turning water into wine at the wedding in Cana (John 2:1–11), and the Apostle Paul encouraged Timothy to "use a little wine for the sake of your stomach" (1 Timothy 5:23).
-> - **Drunkenness is explicitly sinful:** Losing control through alcohol harms the body, impairs moral judgment, and dishonors God. Paul writes: *"And do not get drunk with wine, for that is debauchery, but be filled with the Spirit"* (Ephesians 5:18). Scripture lists drunkenness among works of the flesh that stand contrary to a life of faith (Galatians 5:19–21).
+> - **Drunkenness is explicitly sinful:** Losing control through alcohol harms the body, impairs moral judgment, and dishonors God. Paul writes: _"And do not get drunk with wine, for that is debauchery, but be filled with the Spirit"_ (Ephesians 5:18). Scripture lists drunkenness among works of the flesh that stand contrary to a life of faith (Galatians 5:19–21).
 > - **Conscience and Christian liberty:** In Romans 14, Scripture teaches that if an action violates your personal conscience, or if it causes a fellow believer who struggles with alcohol to stumble, it is better to abstain (Romans 14:21–23).
 >
 > ### Practical Guidance

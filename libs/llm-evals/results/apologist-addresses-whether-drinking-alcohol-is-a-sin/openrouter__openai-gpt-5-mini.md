@@ -25,10 +25,12 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > Short answer: drinking alcohol itself is not automatically a sin for Christians. The Bible nowhere forbids moderate drinking and even uses wine in positive ways (e.g., at the Lord’s table and in Jesus’ first miracle). But the Bible clearly condemns drunkenness and warns about harming others by our freedoms.
 >
 > Key scriptural points (ESV):
+>
 > - “And do not get drunk with wine, for that is debauchery, but be filled with the Spirit.” — Ephesians 5:18
 > - “It is good not to eat meat or drink wine or do anything that causes your brother to stumble.” — Romans 14:21
 >
 > Practical guidelines to help you decide:
+>
 > - Avoid drunkenness. Loss of self-control is sinful and harmful.
 > - Consider your conscience. If drinking makes you feel uneasy before God, abstain.
 > - Think about your witness and the weaker brother principle: if your drinking causes others to stumble or encourages someone with a history of addiction, love may require you to refrain.

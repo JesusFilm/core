@@ -24,7 +24,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > Worry itself isn't automatically sin. Jesus acknowledged that people have material needs (Matthew 6:11), and prudent concern about provision is part of stewardship. But there's a difference between wise caution and the kind of worry that consumes you and crowds out trust.
 >
-> When Jesus teaches about anxiety in Matthew 6:25–34, He's not scolding you for thinking about money at all. He's pointing to a deeper posture: *"Seek first the kingdom of God and his righteousness, and all these things will be added to you."* The issue isn't the thought — it's whether worry has become your functional god, the thing you're actually trusting to secure your future.
+> When Jesus teaches about anxiety in Matthew 6:25–34, He's not scolding you for thinking about money at all. He's pointing to a deeper posture: _"Seek first the kingdom of God and his righteousness, and all these things will be added to you."_ The issue isn't the thought — it's whether worry has become your functional god, the thing you're actually trusting to secure your future.
 >
 > Some questions worth sitting with: Does your worry drive you toward wise action (budgeting, work, prudent planning), or does it paralyze you? Are you praying about it and then releasing it to God, or does anxiety keep circling? Do you believe God is good and faithful, even if the outcome isn't what you want?
 >

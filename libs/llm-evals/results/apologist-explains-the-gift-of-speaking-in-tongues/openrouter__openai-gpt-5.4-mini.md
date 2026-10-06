@@ -23,6 +23,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > The Bible teaches that speaking in tongues is a real spiritual gift, but it is always to be used under God’s order and for the good of the church, not as a display. In 1 Corinthians 12–14, Paul says tongues are one gift among many, that they should be interpreted if used publicly, and that love is greater than all gifts (1 Cor. 13:1, 8; 14:27–28, ESV).
 >
 > As to whether it is still happening today: Christians disagree.
+>
 > - **Continuationists** say tongues continue today and can still be given by the Holy Spirit.
 > - **Cessationists** say the gift was tied to the apostolic era and is no longer given in the same way.
 >

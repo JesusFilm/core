@@ -22,29 +22,29 @@ _Last run: 2026-10-06T03:04:51.308Z_
 
 > To understand the doctrine of the Trinity, it helps to recognize that God is not "one" and "three" in the same sense. Christianity does not teach that God is one Person who is also three Persons, nor that He is three gods who are also one God. That would be a contradiction.
 >
-> Instead, the historic Christian faith teaches that God is **one in *being* (or essence)** and **three in *person***: the Father, the Son, and the Holy Spirit.
+> Instead, the historic Christian faith teaches that God is **one in _being_ (or essence)** and **three in _person_**: the Father, the Son, and the Holy Spirit.
 >
 > ---
 >
 > ### 1. "Being" vs. "Person"
-> - **Being (Essence):** *What* you are. A being is the underlying nature or substance. God is one divine Being.
-> - **Person:** *Who* you are. A person is a distinct center of consciousness, relationship, and agency.
+>
+> - **Being (Essence):** _What_ you are. A being is the underlying nature or substance. God is one divine Being.
+> - **Person:** _Who_ you are. A person is a distinct center of consciousness, relationship, and agency.
 >
 > With humans, one being equals one person. With God, one divine Being exists eternally as three distinct Persons.
 >
 > ---
 >
 > ### 2. The Biblical Foundation
+>
 > The doctrine of the Trinity summarizes what Scripture reveals across three core truths:
 >
 > 1. **There is only one God.**
->    > *"Hear, O Israel: The Lord our God, the Lord is one."* (Deuteronomy 6:4)
->
+>    > _"Hear, O Israel: The Lord our God, the Lord is one."_ (Deuteronomy 6:4)
 > 2. **The Father, the Son, and the Holy Spirit are each identified as God.**
 >    - The Father is God (1 Corinthians 8:6).
->    - The Son (Jesus) is God: *"In the beginning was the Word, and the Word was with God, and the Word was God."* (John 1:1)
+>    - The Son (Jesus) is God: _"In the beginning was the Word, and the Word was with God, and the Word was God."_ (John 1:1)
 >    - The Holy Spirit is God: In Acts 5:3–4, lying to the Holy Spirit is explicitly called lying to God.
->
 > 3. **The three Persons are distinct from one another.**
 >    - They are not simply three "modes" or "roles" worn like masks. At Jesus’ baptism, the Son is in the water, the Father speaks from heaven, and the Spirit descends like a dove (Matthew 3:16–17).
 >    - They relate to one another in love: the Father sends the Son, and the Father and the Son send the Spirit (John 14:26, John 16:7).
@@ -52,6 +52,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > ---
 >
 > ### 3. Co-Equal and Co-Eternal
+>
 > All three Persons possess the exact same divine nature fully and completely. The Son is not "part" of God, nor is He a lesser deity created by the Father. Each Person is fully God, co-equal in power and glory, and co-eternal from everlasting to everlasting.
 >
 > ---

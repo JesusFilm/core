@@ -20,7 +20,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 
 ## Output
 
-> The Trinity is one of Christianity's deepest mysteries — and it's worth saying upfront that no analogy perfectly captures it. But here's the core claim: God is one *being* and three *persons*.
+> The Trinity is one of Christianity's deepest mysteries — and it's worth saying upfront that no analogy perfectly captures it. But here's the core claim: God is one _being_ and three _persons_.
 >
 > **What this means:**
 >
@@ -28,7 +28,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > **Why the distinction matters:**
 >
-> The problem with most analogies (water as ice/liquid/steam, or an egg with shell/white/yolk) is that they describe *modes* or *parts* of one thing, not three *persons* who are each fully God. The Trinity isn't God wearing three masks; it's one God existing as three distinct persons in eternal relationship.
+> The problem with most analogies (water as ice/liquid/steam, or an egg with shell/white/yolk) is that they describe _modes_ or _parts_ of one thing, not three _persons_ who are each fully God. The Trinity isn't God wearing three masks; it's one God existing as three distinct persons in eternal relationship.
 >
 > **What Scripture shows:**
 >
@@ -40,7 +40,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > **The honest truth:**
 >
-> We cannot fully *comprehend* how this works because God's nature transcends human logic. But we can *affirm* it because Scripture consistently teaches it. The Trinity isn't illogical — it's *trans*-logical. God is infinite; our minds are finite. We should expect some mystery here.
+> We cannot fully _comprehend_ how this works because God's nature transcends human logic. But we can _affirm_ it because Scripture consistently teaches it. The Trinity isn't illogical — it's _trans_-logical. God is infinite; our minds are finite. We should expect some mystery here.
 >
 > Does a particular aspect of this puzzle you most — the relationship between the persons, or how each can be fully God?
 

@@ -23,10 +23,12 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > The Bible addresses speaking in tongues primarily in the book of Acts and in Paul’s first letter to the Corinthians. In Acts 2, the disciples speak in actual human languages they had not previously learned to proclaim the gospel to the crowds. In other instances (such as Acts 10 and 19), it appears as ecstatic praise or prayer directed to God.
 >
 > In 1 Corinthians 12–14, Paul confirms that tongues are a genuine spiritual gift, but he provides strict guidelines for their use in the church:
+>
 > - **Purpose and Interpretation:** The gift is meant for building up the church. If no one can interpret what is being said, the speaker should not use the gift publicly. Paul writes, "If any speak in a tongue, let there be only two or at most three, and each in turn, and let someone interpret. But if there is no one to interpret, let each of them keep silent in church and speak to himself and to God" (1 Corinthians 14:27-28).
 > - **Order and Love:** Paul emphasizes that God is a God of peace, commanding that all things in the church be done "decently and in order" (1 Corinthians 14:40). He also elevates intelligible teaching (prophecy) over uninterpreted tongues, because the clear word instructs the whole church.
 >
 > As for whether this is still happening today, faithful, orthodox Christians hold two different views:
+>
 > - **Continuationists** believe that all spiritual gifts, including tongues, continue today to operate in the life of the church, provided they are practiced strictly according to biblical guidelines.
 > - **Cessationists** believe that the "sign gifts," including tongues, ceased at the end of the apostolic age or with the completion of the New Testament. They view tongues primarily as a temporary sign to authenticate the apostles' message before the biblical canon was closed.
 >

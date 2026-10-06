@@ -20,16 +20,14 @@ _Last run: 2026-10-06T02:57:17.092Z_
 
 ## Output
 
-> In the New Testament, speaking in tongues (*glossolalia*) refers to a supernatural gift of the Holy Spirit where a believer speaks in a language given by God.
+> In the New Testament, speaking in tongues (_glossolalia_) refers to a supernatural gift of the Holy Spirit where a believer speaks in a language given by God.
 >
 > ### What the Bible Says About Tongues
 >
 > 1. **Known Human Languages at Pentecost**
 >    In Acts 2:4–11, the Holy Spirit enabled the disciples to speak in existing foreign languages that they had never learned, allowing visitors from various nations to hear "the mighty works of God" in their own native tongues.
->
 > 2. **A Spiritual Gift for Prayer and Edification**
 >    In 1 Corinthians 12–14, Paul describes tongues as a spiritual gift distributed by the Spirit for the common good (1 Corinthians 12:7–11). It can serve as personal prayer to God (1 Corinthians 14:2) or as a message for the congregation when accompanied by the gift of interpretation (1 Corinthians 14:5, 13).
->
 > 3. **Biblical Guidelines for Public Worship**
 >    Paul placed clear boundaries on the use of tongues in church gatherings:
 >    - Order must be maintained; no more than two or three should speak, each in turn (1 Corinthians 14:27).

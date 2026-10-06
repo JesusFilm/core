@@ -25,20 +25,20 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > That's a good and honest question — many believers and seekers struggle with how God can be both one and three. Scripture and the church teach that this is not a contradiction but a mystery of how the one God exists.
 >
 > - God is one.
-> > "Hear, O Israel: The LORD our God, the LORD is one." (Deut. 6:4 ESV)
->
+>   > "Hear, O Israel: The LORD our God, the LORD is one." (Deut. 6:4 ESV)
 > - God is revealed as Father, Son, and Holy Spirit — distinct persons acting in the world.
-> > "Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit." (Matt. 28:19 ESV)
->
+>   > "Go therefore and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit." (Matt. 28:19 ESV)
 > - The Son (Jesus) is truly divine.
-> > "In the beginning was the Word, and the Word was with God, and the Word was God." (John 1:1 ESV)
+>   > "In the beginning was the Word, and the Word was with God, and the Word was God." (John 1:1 ESV)
 >
 > How to hold those together (briefly and carefully)
+>
 > - One "what," three "whos." The Trinity means there is one divine being (one essence, one God) who exists eternally as three distinct persons (Father, Son, Holy Spirit). So we ask two different questions: What is God? (one divine nature) Who is God? (three persons who are really distinct from one another).
 > - The persons are not three separate gods (that would be tritheism). Nor are they merely three modes or masks of the same person (that would be modalism). The New Testament shows real interpersonal relations (the Father speaks to the Son, the Spirit intercedes, Jesus prays to the Father).
 > - Analogies can help a little (e.g., one substance with three personal centers), but all analogies fall short — they either collapse into modalism or suggest three gods. The point is to keep both truths together: unity of essence and plurality of persons.
 >
 > Why this matters
+>
 > - The Trinity shapes how God saves and relates to us: the Father plans, the Son accomplishes redemption, the Spirit applies and dwells in believers — yet all are fully and equally God.
 >
 > It is ultimately a revealed mystery — something God discloses about his own being that goes beyond human intuition but is coherent and grounded in Scripture. Would you like to look more closely at one passage (for example John 14–17 or the baptism accounts) or at the classic church definitions (how "one essence, three persons" was formulated)?

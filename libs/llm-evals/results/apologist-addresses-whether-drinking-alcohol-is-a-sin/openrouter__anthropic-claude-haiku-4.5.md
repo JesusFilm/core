@@ -28,7 +28,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 >
 > - A glass of wine with dinner does not violate Scripture.
 > - Drinking to intoxication does.
-> - If alcohol is a stumbling block for you personally — if you struggle with self-control around it, or if it damages your relationships or health — then abstinence becomes the wise choice for *you*, even if it is not universally required.
+> - If alcohol is a stumbling block for you personally — if you struggle with self-control around it, or if it damages your relationships or health — then abstinence becomes the wise choice for _you_, even if it is not universally required.
 >
 > Paul also teaches that we should be careful not to cause a weaker believer to stumble (Romans 14:21), so context and community matter too. But the baseline principle is simple: moderation is fine, drunkenness is sin.
 >

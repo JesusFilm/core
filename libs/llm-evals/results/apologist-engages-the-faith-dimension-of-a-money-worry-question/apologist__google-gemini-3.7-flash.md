@@ -25,9 +25,11 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Worrying about money does not mean you have entirely failed God or that you lack genuine faith. Scripture recognizes that anxiety is a common human struggle in a fallen world, which is why Jesus gently addresses it rather than condemning it.
 >
 > In the Sermon on the Mount, Jesus reassures His followers:
+>
 > > "Therefore do not be anxious, saying, 'What shall we eat?' or 'What shall we drink?' or 'What shall we wear?' ... For your heavenly Father knows that you need them all. But seek first the kingdom of God and his righteousness, and all these things will be added to you." (Matthew 6:31–33)
 >
 > Anxiety often signals a moment where our human desire for control meets our real limitations. While chronic worry can reveal areas where our trust in God's providence is still growing, Scripture treats it as an invitation to turn toward God rather than proof of spiritual failure. As the Apostle Peter writes:
+>
 > > "Casting all your anxieties on him, because he cares for you." (1 Peter 5:7)
 >
 > The goal is not to instantly eliminate every feeling of fear, but to continually bring those practical fears to God in prayer, trusting that He provides our daily bread.

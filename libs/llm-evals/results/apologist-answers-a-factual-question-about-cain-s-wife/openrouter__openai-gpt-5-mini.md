@@ -23,6 +23,7 @@ _Last run: 2026-10-06T02:57:17.092Z_
 > Good question — the Bible doesn't give her name. The most straightforward reading is that Cain married a close relative (a sister or niece), a descendant of Adam and Eve.
 >
 > Key verses (ESV):
+>
 > - Genesis 4:17: "Cain knew his wife, and she conceived and bore Enoch."
 > - Genesis 5:4: "After he begot Seth, the days of Adam were 800 years; and he had other sons and daughters."
 >

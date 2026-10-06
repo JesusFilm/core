@@ -28,11 +28,11 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > Scripture presents tongues as a supernatural gift of the Holy Spirit, used for two primary purposes:
 >
-> *   **A sign of the gospel crossing cultural and linguistic barriers (Acts):** At Pentecost, the disciples spoke in foreign languages they had never learned, allowing listeners from various nations to hear "the mighty works of God" in their native tongues (Acts 2:6–11). Similar manifestations occurred as the gospel reached the Gentiles (Acts 10:46) and disciples of John the Baptist (Acts 19:6).
-> *   **A spiritual gift for prayer and edification (1 Corinthians):** Paul describes tongues as a gift given by the Spirit as He wills (1 Corinthians 12:10–11). In personal devotion, it serves to edify the speaker in prayer (1 Corinthians 14:2, 4, 14). In a public gathering, Paul requires strict order:
->     *   Tongues must be accompanied by interpretation so the whole congregation is built up (1 Corinthians 14:5, 13).
->     *   No more than two or three should speak, each in turn, and if there is no interpreter, the speaker must remain silent in church (1 Corinthians 14:27–28).
->     *   The gift is secondary to love, which never ends (1 Corinthians 13:1, 8).
+> - **A sign of the gospel crossing cultural and linguistic barriers (Acts):** At Pentecost, the disciples spoke in foreign languages they had never learned, allowing listeners from various nations to hear "the mighty works of God" in their native tongues (Acts 2:6–11). Similar manifestations occurred as the gospel reached the Gentiles (Acts 10:46) and disciples of John the Baptist (Acts 19:6).
+> - **A spiritual gift for prayer and edification (1 Corinthians):** Paul describes tongues as a gift given by the Spirit as He wills (1 Corinthians 12:10–11). In personal devotion, it serves to edify the speaker in prayer (1 Corinthians 14:2, 4, 14). In a public gathering, Paul requires strict order:
+>   - Tongues must be accompanied by interpretation so the whole congregation is built up (1 Corinthians 14:5, 13).
+>   - No more than two or three should speak, each in turn, and if there is no interpreter, the speaker must remain silent in church (1 Corinthians 14:27–28).
+>   - The gift is secondary to love, which never ends (1 Corinthians 13:1, 8).
 >
 > ---
 >
@@ -41,9 +41,11 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Sincere, Bible-believing Christians generally hold one of two perspectives on whether tongues continue today:
 >
 > #### Continuationism
+>
 > Continuationists believe that all spiritual gifts, including tongues, remain active and available to the church until the return of Christ. They argue that the New Testament never explicitly states that sign gifts would cease before the Second Coming (often referencing 1 Corinthians 13:9–12) and that the Spirit continues to distribute gifts to empower believers for ministry.
 >
 > #### Cessationism
+>
 > Cessationists believe that miraculous sign gifts, such as tongues and prophetic revelation, were intended specifically for the apostolic era. Their purpose was to authenticate the apostles' message and establish the early church before the completion of the New Testament canon (Ephesians 2:20; Hebrews 2:3–4). From this perspective, once the foundation was laid and Scripture was complete, these sign gifts ceased to function as they did in the first century.
 >
 > ---

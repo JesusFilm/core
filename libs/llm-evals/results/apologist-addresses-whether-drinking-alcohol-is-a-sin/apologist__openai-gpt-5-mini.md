@@ -25,12 +25,14 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > Short answer: drinking alcohol in itself is not necessarily a sin, but drunkenness and anything that harms you or causes others to sin are.
 >
 > Concise guidance:
+>
 > - The Bible forbids drunkenness (it calls drunkenness debauchery), not moderate drinking.
 > - Consider your conscience and the witness you bear to others — if your drinking tempts you or someone else to sin, you should abstain.
 > - If you or your family have a history of addiction, or if alcohol harms your body or relationships, abstaining is the wise and loving choice.
 > - If you have sinned through excess, confess and seek repentance; God’s grace is available to those who turn from sin.
 >
 > Helpful verses (ESV):
+>
 > - Ephesians 5:18 — “And do not get drunk with wine, for that is debauchery, but be filled with the Spirit.”
 > - 1 Timothy 5:23 — “No longer drink only water, but use a little wine for the sake of your stomach and your frequent ailments.”
 > - Romans 14:21 — “It is good not to eat meat or drink wine or do anything that causes your brother to stumble.”

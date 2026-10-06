@@ -22,14 +22,15 @@ _Last run: 2026-10-06T02:57:17.092Z_
 
 > The doctrine of the Trinity is one of the most profound mysteries of the Christian faith, but it is not a logical contradiction. The confusion usually comes from how we use the words "one" and "three."
 >
-> To understand it, we have to distinguish between *what* something is (its essence or nature) and *who* someone is (its personhood).
+> To understand it, we have to distinguish between _what_ something is (its essence or nature) and _who_ someone is (its personhood).
 >
 > - **God is one in essence.** There is only one divine being, one divine nature, and one divine power. As Deuteronomy 6:4 says, "Hear, O Israel: The Lord our God, the Lord is one."
 > - **God is three in person.** Within this one undivided divine essence, there are three distinct persons: the Father, the Son, and the Holy Spirit. They are not just three modes, roles, or masks of one person, but truly distinct in how they relate to one another.
 >
-> When we say God is "one and three," we are not saying He is one *person* and three *persons* (which would be a contradiction). Nor are we saying He is one *God* and three *Gods*. We are saying He is one *God* (in essence) and three *persons* (in relation).
+> When we say God is "one and three," we are not saying He is one _person_ and three _persons_ (which would be a contradiction). Nor are we saying He is one _God_ and three _Gods_. We are saying He is one _God_ (in essence) and three _persons_ (in relation).
 >
 > The Bible reveals this truth progressively:
+>
 > 1. It clearly teaches there is only one true God (Isaiah 44:6).
 > 2. It reveals that the Father is God, the Son is God (John 1:1), and the Holy Spirit is God (Acts 5:3-4).
 > 3. It shows that the Father, Son, and Holy Spirit are distinct from one another, such as when Jesus is baptized and the Father speaks from heaven while the Spirit descends like a dove (Matthew 3:16-17).

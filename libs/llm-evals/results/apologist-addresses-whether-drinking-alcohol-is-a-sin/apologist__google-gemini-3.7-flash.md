@@ -29,7 +29,7 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > However, the Bible gives clear boundaries and principles for Christians:
 >
-> 1. **Avoid drunkenness:** Scripture strictly warns against losing control. *"And do not get drunk with wine, for that is debauchery, but be filled with the Spirit"* (Ephesians 5:18; see also Proverbs 20:1, Galatians 5:19–21). Drunkenness impairs judgment, leads to further sin, and fails to honor God.
+> 1. **Avoid drunkenness:** Scripture strictly warns against losing control. _"And do not get drunk with wine, for that is debauchery, but be filled with the Spirit"_ (Ephesians 5:18; see also Proverbs 20:1, Galatians 5:19–21). Drunkenness impairs judgment, leads to further sin, and fails to honor God.
 > 2. **Examine your conscience:** If drinking violates your own conscience or leads you toward addiction, it is right to abstain (Romans 14:23).
 > 3. **Love your neighbor:** If drinking around someone who struggles with alcoholism might cause them to stumble, Christian love calls for laying aside your freedom in that moment (Romans 14:21).
 >

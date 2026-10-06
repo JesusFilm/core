@@ -26,14 +26,13 @@ _Last run: 2026-10-06T03:04:51.308Z_
 >
 > - Leviticus 19:28 (ESV): "You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord."
 >   - Context: this law is in the Old Covenant code given to Israel and sits amid prohibitions against pagan mourning and idolatry. Most scholars read it as forbidding practices tied to pagan rituals, not as a timeless blanket prohibition of any permanent body marking.
->
 > - 1 Corinthians 6:19–20 (ESV): "Or do you not know that your body is a temple of the Holy Spirit... You were bought with a price. So glorify God in your body."
 >   - This New Testament principle stresses stewardship of our bodies for God’s glory. It warns against sexual immorality specifically, but the principle is applied by Christians when deciding whether an action honors God.
->
 > - Romans 14 (summary principle): Paul teaches that in "disputable matters" Christians should act according to conscience and love so as not to judge or to make others stumble.
 >   - There is no explicit New Testament command forbidding tattoos; instead the NT gives principles (freedom in Christ, stewardship, love for neighbor, conscience) to apply.
 >
 > Practical way to think about it
+>
 > - Ask your motive: Is the tattoo intended to honor God, witness, remember, or is it for pride, rebellion, or a harmful lifestyle? Sinful motives call for repentance; good motives still need wisdom.
 > - Consider witness and community: If your tattoo will cause offense or be a stumbling block in your local church or family, love may call you to refrain (Romans 14; 1 Cor. 8–10).
 > - Think of permanence and content: A Bible verse tattoo should be accurate (check translation and citation), placed and worded with humility, and you should be prepared for how others will read it.

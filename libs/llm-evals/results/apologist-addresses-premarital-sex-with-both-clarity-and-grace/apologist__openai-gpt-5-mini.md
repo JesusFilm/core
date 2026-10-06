@@ -28,11 +28,13 @@ _Last run: 2026-10-06T03:04:51.308Z_
 > - Hebrews 13:4: “Let marriage be held in honor among all, and let the marriage bed be undefiled...”
 >
 > Why it matters (briefly):
+>
 > - Sex is designed to communicate a permanent, exclusive covenant. Having that intimacy before the covenant can misplace meaning and create entanglements that later harm trust.
 > - Scripture sees sexual sin as spiritually significant because it involves the whole person (body, heart, conscience).
 > - There are emotional and relational consequences (guilt, secrecy, harder transitions into married sexual faithfulness).
 >
 > Good news and next practical steps:
+>
 > - God’s grace and forgiveness are available when we repent (1 John 1:9). Turning back is always possible.
 > - Practical steps you can take now:
 >   - Stop sexual activity and set clear physical boundaries (sleep separately, avoid being alone in private).
