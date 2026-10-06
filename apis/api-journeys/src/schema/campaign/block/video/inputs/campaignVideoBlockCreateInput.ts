@@ -5,14 +5,14 @@ export const CampaignVideoBlockCreateInput = builder.inputType(
   'CampaignVideoBlockCreateInput',
   {
     description:
-      'A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`); it replaces the block the slot held and gets `parentOrder: null`. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.',
+      'A Campaign Video as a child of a section: it fills the Media Slot of a hero or Featured Media section (replacing the block the slot held, `parentOrder: null`) or is appended as an explicit item of a video carousel (the next ordered child). A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.',
     fields: (t) => ({
       id: t.id({ required: false }),
       campaignId: t.id({ required: true }),
       parentBlockId: t.id({
         required: true,
         description:
-          'The hero or Featured Media section whose Media Slot this fills.'
+          'The hero, Featured Media section or video carousel this item belongs to.'
       }),
       source: t.field({
         type: VideoBlockSource,

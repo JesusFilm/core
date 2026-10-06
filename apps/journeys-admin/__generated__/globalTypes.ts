@@ -885,7 +885,7 @@ export interface CampaignUpdateInput {
 }
 
 /**
- * A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`); it replaces the block the slot held and gets `parentOrder: null`. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
+ * A Campaign Video as a child of a section: it fills the Media Slot of a hero or Featured Media section (replacing the block the slot held, `parentOrder: null`) or is appended as an explicit item of a video carousel (the next ordered child). A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
  */
 export interface CampaignVideoBlockCreateInput {
   id?: string | null;
@@ -910,6 +910,9 @@ export interface CampaignVideoCarouselBlockCreateInput {
 export interface CampaignVideoCarouselBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
+  url?: string | null;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;

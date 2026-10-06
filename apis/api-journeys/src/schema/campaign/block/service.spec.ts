@@ -31,7 +31,8 @@ import {
   validateMediaSlotTarget,
   validateParentBlock,
   validateSectionPage,
-  validateSectionStyle
+  validateSectionStyle,
+  validateVideoItemOwner
 } from './service'
 
 const user = { id: 'userId' } as unknown as User
@@ -223,6 +224,81 @@ describe('campaign block service', () => {
         field: 'typename'
       })
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('validateVideoItemOwner', () => {
+    const carousel = fixture.blocks.find(
+      (block) => block.id === 'carouselId'
+    )!
+
+    it('accepts a carousel as the owner of a CampaignVideoBlock and returns it', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+
+      await expect(
+        validateVideoItemOwner(
+          'carouselId',
+          'campaignId',
+          'CampaignVideoBlock'
+        )
+      ).resolves.toBe(carousel)
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'carouselId',
+          campaignId: 'campaignId',
+          deletedAt: null
+        }
+      })
+    })
+
+    it('accepts a hero as the owner of a CampaignVideoBlock (Media Slot path)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+
+      await expect(
+        validateVideoItemOwner(
+          'heroId',
+          'campaignId',
+          'CampaignVideoBlock'
+        )
+      ).resolves.toBe(hero)
+    })
+
+    it('rejects a non-CampaignVideoBlock child of a carousel (BAD_USER_INPUT, typename)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+      const error = await errorOf(
+        validateVideoItemOwner('carouselId', 'campaignId', 'CampaignImageBlock')
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'typename'
+      })
+    })
+
+    it('rejects a parent of another campaign or a soft-deleted one (BAD_USER_INPUT, parentBlockId)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(
+        validateVideoItemOwner('carouselId', 'otherCampaign', 'CampaignVideoBlock')
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'parentBlockId'
+      })
+    })
+
+    it('rejects an Extra as a parent (BAD_USER_INPUT, parentBlockId)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(heroButton)
+
+      const error = await errorOf(
+        validateVideoItemOwner('heroButtonId', 'campaignId', 'CampaignVideoBlock')
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'parentBlockId'
+      })
     })
   })
 

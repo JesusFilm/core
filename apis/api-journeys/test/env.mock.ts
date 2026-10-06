@@ -55,5 +55,9 @@ export const env = {
   },
   get TRANSLATION_AI_MODELS(): string[] {
     return ['google/gemma-4-26b-a4b-it', 'google/gemini-2.5-flash']
+  },
+  // The YouTube Data API key; specs stub `fetch` so its value is never sent.
+  get FIREBASE_API_KEY(): string {
+    return 'test-youtube-api-key'
   }
 }

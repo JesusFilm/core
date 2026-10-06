@@ -696,6 +696,95 @@ describe('campaignPublic', () => {
     })
   })
 
+  describe('the video carousel’s Watch expansion', () => {
+    const CAMPAIGN_PUBLIC_CAROUSEL_VIDEO = graphql(`
+      query CampaignPublicCarouselVideo($slug: String) {
+        campaignPublic(slug: $slug) {
+          pages {
+            kind
+            blocks {
+              __typename
+              id
+              ... on CampaignVideoCarouselBlock {
+                videoId
+                videoVariantLanguageId
+                video {
+                  id
+                  primaryLanguageId
+                }
+              }
+            }
+          }
+        }
+      }
+    `)
+
+    function expandedCarouselFixture(): CampaignFixture & Record<string, unknown> {
+      const fixture = publishedFixture()
+      const carousel = fixture.blocks.find(
+        (block) => block.id === 'carouselId'
+      )!
+      return {
+        ...fixture,
+        blocks: fixture.blocks.map((block) =>
+          block.id === 'carouselId'
+            ? {
+                ...block,
+                videoId: '1_jf-0-0',
+                videoVariantLanguageId: '529'
+              }
+            : block
+        )
+      }
+    }
+
+    it('returns the carousel’s video as an unresolved federation reference by the reference key only', async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      prismaMock.campaign.findFirst.mockResolvedValue(expandedCarouselFixture())
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_CAROUSEL_VIDEO,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const blocks = result.data.campaignPublic.pages[0].blocks
+      const carousel = blocks.find(
+        (block: any) => block.id === 'carouselId'
+      )
+      expect(carousel).toEqual({
+        __typename: 'CampaignVideoCarouselBlock',
+        id: 'carouselId',
+        videoId: '1_jf-0-0',
+        videoVariantLanguageId: '529',
+        video: { id: '1_jf-0-0', primaryLanguageId: '529' }
+      })
+      // Expanding the reference’s `children` is the gateway’s join;
+      // api-journeys fetches and caches nothing.
+      expect(fetchSpy).not.toHaveBeenCalled()
+      fetchSpy.mockRestore()
+    })
+
+    it('returns a null video for a carousel in explicit mode', async () => {
+      prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_CAROUSEL_VIDEO,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const carousel = result.data.campaignPublic.pages[0].blocks.find(
+        (block: any) => block.id === 'carouselId'
+      )
+      expect(carousel).toMatchObject({
+        videoId: null,
+        videoVariantLanguageId: null,
+        video: null
+      })
+    })
+  })
+
   it('treats an unpublished or deleted linked journey as unlinked', async () => {
     const fixture = publishedFixture()
     fixture.regions = (fixture.regions as any[]).map((region) => ({

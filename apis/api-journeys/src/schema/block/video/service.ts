@@ -112,6 +112,23 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   image: string
   duration: number
 }> {
+  const item = await youTubeVideoItem(videoId)
+  return {
+    title: item.snippet.title,
+    description: item.snippet.description,
+    image: item.snippet.thumbnails.high.url,
+    duration: parseISO8601Duration(item.contentDetails.duration)
+  }
+}
+
+/**
+ * One `youtube#video` item by id: the Data API's `items[0]`, read the way
+ * the journey video service reads it. An unknown id answers with no items;
+ * a failed request (quota, key) must not read as "video does not exist".
+ */
+export async function youTubeVideoItem(
+  videoId: string
+): Promise<NonNullable<YoutubeVideosData['items']>[number]> {
   const query = new URLSearchParams({
     part: 'snippet,contentDetails',
     key: env.FIREBASE_API_KEY,
@@ -120,24 +137,16 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   const videosData: YoutubeVideosData = await (
     await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
   ).json()
-  if (videosData.error != null) {
-    // quota/auth failures must not read as "video does not exist"
+  if (videosData.error != null)
     throw new GraphQLError(
       `YouTube API request failed: ${videosData.error.message}`,
       { extensions: { code: 'INTERNAL_SERVER_ERROR' } }
     )
-  }
-  if (videosData.items?.[0] == null) {
+  if (videosData.items?.[0] == null)
     throw new GraphQLError('videoId cannot be found on YouTube', {
       extensions: { code: 'NOT_FOUND' }
     })
-  }
-  return {
-    title: videosData.items[0].snippet.title,
-    description: videosData.items[0].snippet.description,
-    image: videosData.items[0].snippet.thumbnails.high.url,
-    duration: parseISO8601Duration(videosData.items[0].contentDetails.duration)
-  }
+  return videosData.items[0]
 }
 
 function parseISO8601Duration(duration: string): number {

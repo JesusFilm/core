@@ -73,10 +73,12 @@ describe('campaignVideoBlockCreate', () => {
 
   let fixture: CampaignFixture
   let hero: CampaignBlockRow
+  let carousel: CampaignBlockRow
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
     hero = fixture.blocks.find((block) => block.id === 'heroId')!
+    carousel = fixture.blocks.find((block) => block.id === 'carouselId')!
     prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
     vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
       title: 'YouTube title',
@@ -219,12 +221,14 @@ describe('campaignVideoBlockCreate', () => {
     })
 
     it('refuses a section without a Media Slot (BAD_USER_INPUT, mediaBlockId)', async () => {
+      // A Region Switcher hosts Extras but has no Media Slot (and is not a
+      // carousel, so it does not take explicit video items either).
       prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'carouselId')!
+        fixture.blocks.find((block) => block.id === 'landingSwitcherId')!
       )
 
       const result = await create({
-        parentBlockId: 'carouselId',
+        parentBlockId: 'landingSwitcherId',
         source: 'youTube',
         videoId: YOUTUBE_ID
       })
@@ -262,6 +266,47 @@ describe('campaignVideoBlockCreate', () => {
         field: 'parentBlockId'
       })
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('the carousel item', () => {
+    it('appends an explicit YouTube item as the next ordered child, without touching any Media Slot', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+      // One item already sits in the carousel, so the new one is order 1.
+      prismaMock.campaignBlock.findMany.mockResolvedValue([
+        { ...carousel, id: 'item0', parentBlockId: 'carouselId', parentOrder: 0 }
+      ])
+
+      const result = await create({
+        parentBlockId: 'carouselId',
+        source: 'youTube',
+        videoId: YOUTUBE_ID
+      })
+
+      expect(result.data.campaignVideoBlockCreate).toMatchObject({
+        id: 'newVideoId',
+        parentBlockId: 'carouselId',
+        parentOrder: 1,
+        source: 'youTube',
+        videoId: YOUTUBE_ID
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            typename: 'CampaignVideoBlock',
+            parentBlockId: 'carouselId',
+            parentOrder: 1,
+            pageId: 'landingPageId',
+            regionId: null
+          })
+        })
+      )
+      // A carousel item is a child, not a Media Slot swap.
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).toHaveBeenCalledWith({
+        where: { id: 'campaignId' },
+        data: { updatedAt: expect.any(Date) }
+      })
     })
   })
 

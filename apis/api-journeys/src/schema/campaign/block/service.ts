@@ -942,6 +942,42 @@ const IMAGE_SLOT_COLUMN: Record<
 /** The owned video typename a Media Slot may point at. */
 export const CAMPAIGN_VIDEO_TYPENAME = 'CampaignVideoBlock'
 
+/** The section that holds explicit Campaign Video items: its ordered children. */
+export const CAMPAIGN_VIDEO_ITEM_OWNER_TYPENAMES = [
+  'CampaignVideoCarouselBlock'
+] as const
+
+/**
+ * A Campaign Video's parent is a live section or chrome block of the same
+ * campaign (`BAD_USER_INPUT` / `parentBlockId`), and a child of a
+ * carousel — where items are explicit — must be a Campaign Video
+ * (`BAD_USER_INPUT` / `typename`). Returns the parent so the video can
+ * copy its scoping down.
+ */
+export async function validateVideoItemOwner(
+  parentBlockId: string,
+  campaignId: string,
+  typename: string
+): Promise<CampaignBlock> {
+  const parent = await prisma.campaignBlock.findFirst({
+    where: { id: parentBlockId, campaignId, deletedAt: null }
+  })
+  if (parent == null || !isCampaignHostTypename(parent.typename))
+    throw badUserInput(
+      'parentBlockId must be a section or chrome block of this campaign',
+      'parentBlockId'
+    )
+  if (
+    parent.typename === 'CampaignVideoCarouselBlock' &&
+    typename !== CAMPAIGN_VIDEO_TYPENAME
+  )
+    throw badUserInput(
+      'a carousel item must be a CampaignVideoBlock',
+      'typename'
+    )
+  return parent
+}
+
 /** The sections with a Media Slot (`mediaBlockId`). */
 export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
   'CampaignHeroBlock',
