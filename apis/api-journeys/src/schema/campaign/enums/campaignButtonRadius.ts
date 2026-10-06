@@ -2,7 +2,10 @@ import { CampaignButtonRadius as PrismaCampaignButtonRadius } from '@core/prisma
 
 import { builder } from '../../builder'
 
-export const CampaignButtonRadius = builder.enumType(PrismaCampaignButtonRadius, {
-  name: 'CampaignButtonRadius',
-  description: 'Button corner shape of the Campaign Theme.'
-})
+export const CampaignButtonRadius = builder.enumType(
+  PrismaCampaignButtonRadius,
+  {
+    name: 'CampaignButtonRadius',
+    description: 'Button corner shape of the Campaign Theme.'
+  }
+)

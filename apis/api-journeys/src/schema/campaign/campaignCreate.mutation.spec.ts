@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction, vi } from 'vitest'
 
 import { Prisma } from '@core/prisma/journeys/client'
@@ -12,8 +13,6 @@ import {
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-
-import { v4 as uuidv4 } from 'uuid'
 
 import { fetchLanguage } from './gatewayClient'
 
@@ -471,7 +470,8 @@ describe('campaignCreate', () => {
         pageId: regionPageId(),
         parentBlockId: null,
         parentOrder: 0,
-        intro: 'A Christmas journey chosen and contextualised by your regional team.'
+        intro:
+          'A Christmas journey chosen and contextualised by your regional team.'
       })
     })
 
@@ -699,7 +699,9 @@ describe('campaignCreate', () => {
       const rows = firstCallData<Array<{ key: string; value: string }>>(
         prismaMock.campaignString.createMany
       )
-      const byKey = Object.fromEntries(rows.map(({ key, value }) => [key, value]))
+      const byKey = Object.fromEntries(
+        rows.map(({ key, value }) => [key, value])
+      )
       // "Copy link" exists in the Spanish admin bundle; the other sixteen do
       // not and keep their English wording.
       expect(byKey.copy).toBe('Copiar enlace')
@@ -730,7 +732,9 @@ describe('campaignCreate', () => {
     it('throws NOT_FOUND for an unknown team', async () => {
       prismaMock.team.findUnique.mockResolvedValue(null)
       const result = await create({ teamId: 'missing' })
-      expect(result.errors?.[0]?.extensions).toMatchObject({ code: 'NOT_FOUND' })
+      expect(result.errors?.[0]?.extensions).toMatchObject({
+        code: 'NOT_FOUND'
+      })
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
 
@@ -764,7 +768,9 @@ describe('campaignCreate', () => {
     })
 
     it('rolls everything back when a write inside the transaction fails', async () => {
-      prismaMock.campaignBlock.create.mockRejectedValueOnce(new Error('disk full'))
+      prismaMock.campaignBlock.create.mockRejectedValueOnce(
+        new Error('disk full')
+      )
       const result = await create()
       expect(result.data).toBeNull()
       expect(result.errors).toHaveLength(1)
@@ -903,24 +909,28 @@ describe('campaignCreate', () => {
       // Label every id on both sides by its position in creation order.
       const factoryLabels = new Map<string, string>([
         [fixture.id, 'campaign'],
-        ...fixture.pages.map(
-          (page): [string, string] => [page.id, `page:${page.kind}`]
-        ),
-        ...fixture.blocks.map(
-          (block, index): [string, string] => [block.id, `block:${index}`]
-        )
+        ...fixture.pages.map((page): [string, string] => [
+          page.id,
+          `page:${page.kind}`
+        ]),
+        ...fixture.blocks.map((block, index): [string, string] => [
+          block.id,
+          `block:${index}`
+        ])
       ])
       const createdPages = prismaMock.campaignPage.create.mock.calls.map(
         ([args]) => args.data as { id: string; kind: string }
       )
       const mutationLabels = new Map<string, string>([
         ['id-1', 'campaign'],
-        ...createdPages.map(
-          (page): [string, string] => [page.id, `page:${page.kind}`]
-        ),
-        ...createdBlocks().map(
-          (block, index): [string, string] => [block.id as string, `block:${index}`]
-        )
+        ...createdPages.map((page): [string, string] => [
+          page.id,
+          `page:${page.kind}`
+        ]),
+        ...createdBlocks().map((block, index): [string, string] => [
+          block.id as string,
+          `block:${index}`
+        ])
       ])
 
       expect(
@@ -932,7 +942,8 @@ describe('campaignCreate', () => {
       )
 
       const createdActions = prismaMock.campaignAction.create.mock.calls.map(
-        ([args]) => normalize(args.data as Record<string, unknown>, mutationLabels)
+        ([args]) =>
+          normalize(args.data as Record<string, unknown>, mutationLabels)
       )
       expect(createdActions).toEqual(
         fixture.blocks
@@ -943,10 +954,7 @@ describe('campaignCreate', () => {
       )
 
       expect(
-        normalize(
-          firstCallData(prismaMock.campaign.create),
-          mutationLabels
-        )
+        normalize(firstCallData(prismaMock.campaign.create), mutationLabels)
       ).toEqual(
         normalize(
           {
@@ -986,7 +994,10 @@ describe('campaignCreate', () => {
         ).map((row) => normalize({ ...row, id: null }, mutationLabels))
       ).toEqual(
         fixture.strings.map((row) =>
-          normalize({ ...row, id: null, valueTranslations: null }, factoryLabels)
+          normalize(
+            { ...row, id: null, valueTranslations: null },
+            factoryLabels
+          )
         )
       )
     })

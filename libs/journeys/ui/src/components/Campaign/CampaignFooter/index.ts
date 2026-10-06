@@ -1,0 +1,1 @@
+export { CampaignFooter } from './CampaignFooter'

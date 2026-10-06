@@ -52,7 +52,8 @@ export const CampaignSectionBlock = builder.prismaInterface('CampaignBlock', {
     backgroundOverlay: t.expose('backgroundOverlay', {
       type: CampaignBackgroundOverlay,
       nullable: true,
-      description: 'Read only when backgroundKind is `image`; null means medium.'
+      description:
+        'Read only when backgroundKind is `image`; null means medium.'
     }),
     headingColor: t.exposeString('headingColor', { nullable: true }),
     textColor: t.exposeString('textColor', { nullable: true }),

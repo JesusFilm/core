@@ -1,5 +1,5 @@
-import { builder } from '../../builder'
 import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
+import { builder } from '../../builder'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock } from './campaignBlock'
@@ -33,7 +33,8 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
     align: t.field({
       type: TypographyAlign,
       nullable: true,
-      description: 'Alignment of the Section Body; the editor offers left and center.',
+      description:
+        'Alignment of the Section Body; the editor offers left and center.',
       resolve: (block) => block.align
     }),
     mediaBlockId: t.exposeID('mediaBlockId', {

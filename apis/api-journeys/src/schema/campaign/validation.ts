@@ -152,7 +152,8 @@ export function assertPalette(entries: string[], field = 'palette'): string[] {
 export function assertUniqueIds(ids: string[], field: string): string[] {
   const seen = new Set<string>()
   for (const id of ids) {
-    if (seen.has(id)) throw badUserInput(`${field} ${id} is listed twice`, field)
+    if (seen.has(id))
+      throw badUserInput(`${field} ${id} is listed twice`, field)
     seen.add(id)
   }
   return ids
