@@ -1,12 +1,31 @@
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { listedRegions } from '../CampaignRegionSwitcher'
-import { hasText } from '../types'
-import type { CampaignRegion, CampaignSectionTree } from '../types'
+import { splitParagraphs } from '../CampaignRichText'
+import { hasText, isCampaignSection } from '../types'
+import type {
+  CampaignRegion,
+  CampaignSectionTree,
+  CampaignTree
+} from '../types'
 
 export interface SectionRenderContext {
   pageKind: CampaignPageKind
   region: CampaignRegion | null
   regions: CampaignRegion[]
+}
+
+/**
+ * The section a Column Slot holds when it renders: the slot's one child, if it
+ * is a section that passes the empty-state matrix. Anything else leaves the
+ * slot empty.
+ */
+export function slotSection(
+  slot: CampaignTree,
+  context: SectionRenderContext
+): CampaignSectionTree | null {
+  const child = slot.children[0]
+  if (child == null || !isCampaignSection(child)) return null
+  return shouldRenderSection(child, context) ? child : null
 }
 
 function hasExtras(section: CampaignSectionTree): boolean {
@@ -26,7 +45,9 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * explicit mode with nothing renders its text if any, else is skipped; a
  * Journey List with no live-published journeys renders its text if any, else
  * is skipped; Analytics always renders; Region Header and Region Share render
- * on a Region Page (Share needs text until a language is linked).
+ * on a Region Page (Share needs text until a language is linked); Rich Text
+ * needs a title or a non-empty paragraph; Columns needs a Column Slot whose
+ * section itself renders, or an Extra, so two empty slots skip the band.
  */
 export function shouldRenderSection(
   section: CampaignSectionTree,
@@ -69,6 +90,17 @@ export function shouldRenderSection(
       return (
         context.pageKind === CampaignPageKind.regionTemplate &&
         (hasText(section.title) || hasText(section.intro) || extras)
+      )
+    case 'CampaignRichTextBlock':
+      return (
+        hasText(section.title) ||
+        splitParagraphs(section.richTextContent).length > 0 ||
+        extras
+      )
+    case 'CampaignColumnsBlock':
+      return (
+        extras ||
+        section.children.some((slot) => slotSection(slot, context) != null)
       )
     case 'CampaignHeaderBlock':
     case 'CampaignFooterBlock':

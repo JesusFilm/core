@@ -4,29 +4,41 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 
+/** A block and everything above it, outermost first. */
+function trailOf(
+  blocks: CampaignBlock[],
+  block: CampaignBlock | undefined
+): CampaignBlock[] {
+  const trail: CampaignBlock[] = []
+  let current = block
+  while (current != null && trail.length < blocks.length) {
+    trail.unshift(current)
+    const parentId: string | null = current.parentBlockId
+    current = blocks.find((candidate) => candidate.id === parentId)
+  }
+  return trail
+}
+
 /**
- * Campaign › Section › Extra. Each earlier crumb selects that level, so the
- * breadcrumb replaces back buttons; the last crumb is the selection itself.
+ * Campaign › Section › Extra, and inside a Columns section Campaign ›
+ * Columns › Column › Section › Extra. Each earlier crumb selects that level,
+ * so the breadcrumb replaces back buttons; the last crumb is the selection
+ * itself.
  */
 export function Breadcrumb(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selection, selectBlock } = useCampaignEditor()
+  const { campaign, selection, selectBlock } = useCampaignEditor()
   const crumbs: Array<{ label: string; blockId?: string }> = [
-    { label: t('Campaign') }
+    { label: t('Campaign') },
+    ...trailOf(campaign.blocks, selection.block).map((block) => ({
+      label: blockLabel(t, block.__typename),
+      blockId: block.id
+    }))
   ]
-  if (selection.host != null)
-    crumbs.push({
-      label: blockLabel(t, selection.host.__typename),
-      blockId: selection.host.id
-    })
-  if (selection.block != null && selection.block.id !== selection.host?.id)
-    crumbs.push({
-      label: blockLabel(t, selection.block.__typename),
-      blockId: selection.block.id
-    })
 
   return (
     <Breadcrumbs

@@ -159,6 +159,33 @@ describe('campaignBlockDelete', () => {
     )
   })
 
+  it('empties a column by soft-deleting the slot’s section, not the slot', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', {
+        parentBlockId: 'slotId',
+        parentOrder: 0
+      })
+    )
+    prismaMock.campaignBlock.findMany.mockResolvedValue([])
+
+    const result = await remove('heroId')
+
+    expect(result).toEqual({ data: { campaignBlockDelete: [] } })
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'heroId' },
+      data: { deletedAt: expect.any(Date) }
+    })
+    expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          parentBlockId: 'slotId',
+          deletedAt: null
+        })
+      })
+    )
+  })
+
   it('refuses to delete a column slot (CONFLICT, id)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroId', {

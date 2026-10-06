@@ -192,7 +192,7 @@ What a Campaign Section sits on: nothing, the theme surface, the contrast band, 
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:
-One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section. A slot may be empty; a Columns section and a Region Share section may not sit in a slot. Mirrors GridContainer → GridItem.
+One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section. A slot may be empty; a Columns section and a Region Share section may not sit in a slot. The section in a slot is its only child, created with the section create's `parentBlockId`, and "bin" soft-deletes that section, never the slot. Mirrors GridContainer → GridItem.
 _Avoid_: column (ambiguous with the Columns section), cell, pane
 
 **Media Slot**:
@@ -208,7 +208,7 @@ Which side of the Section Body an Extra renders on: `above` or `below`. Sibling 
 _Avoid_: position, slot, side
 
 **Protected Block**:
-A Campaign Block the structural mutations refuse with `CONFLICT`: the header and footer (a campaign has exactly one of each, so a second is refused on create too), a **Column Slot**, and the two Campaign Pages themselves. A protected block is edited and styled like any other but is never deleted, moved or duplicated. Every other section and Extra is added, moved (`campaignBlockOrderUpdate`), duplicated with its subtree (`campaignBlockDuplicate`), soft-deleted and restored by the editor's structural Commands.
+A Campaign Block the structural mutations refuse with `CONFLICT`: the header and footer (a campaign has exactly one of each, so a second is refused on create too), a **Column Slot**, and the two Campaign Pages themselves. A protected block is edited and styled like any other but is never deleted or duplicated, and only the header, footer and pages are never moved: a Column Slot takes an order update, which is how the editor swaps the two slots (a slot never changes parent, and the Extras of a Columns section stay after its slots). Every other section and Extra is added, moved (`campaignBlockOrderUpdate`), duplicated with its subtree (`campaignBlockDuplicate`), soft-deleted and restored by the editor's structural Commands.
 _Avoid_: locked, fixed block, system block
 
 **Campaign Typography**:

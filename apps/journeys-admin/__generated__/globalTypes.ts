@@ -99,6 +99,15 @@ export enum CampaignChildPlacement {
 }
 
 /**
+ * The width ratio of the two Column Slots of a Columns section.
+ */
+export enum CampaignColumnsRatio {
+  equal = "equal",
+  wideLeft = "wideLeft",
+  wideRight = "wideRight",
+}
+
+/**
  * How a Journey List renders its items: a card grid or a list.
  */
 export enum CampaignJourneyListDisplay {
@@ -556,6 +565,7 @@ export interface CampaignAnalyticsBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
@@ -599,6 +609,16 @@ export interface CampaignButtonBlockUpdateInput {
   placement?: CampaignChildPlacement | null;
 }
 
+export interface CampaignColumnsBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  ratio?: CampaignColumnsRatio | null;
+  slotIds?: string[] | null;
+}
+
 /**
  * Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
  */
@@ -612,6 +632,7 @@ export interface CampaignHeroBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
@@ -630,6 +651,7 @@ export interface CampaignJourneyListBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
@@ -648,6 +670,7 @@ export interface CampaignRegionHeaderBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   intro?: string | null;
 }
@@ -660,6 +683,7 @@ export interface CampaignRegionShareBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   title?: string | null;
   intro?: string | null;
@@ -674,6 +698,7 @@ export interface CampaignRegionSwitcherBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
@@ -682,6 +707,21 @@ export interface CampaignRegionSwitcherBlockCreateInput {
 export interface CampaignRegionSwitcherBlockUpdateInput {
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+}
+
+export interface CampaignRichTextBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  title?: string | null;
+  content?: string | null;
+}
+
+export interface CampaignRichTextBlockUpdateInput {
+  title?: string | null;
+  content?: string | null;
 }
 
 export interface CampaignTypographyBlockCreateInput {
@@ -715,6 +755,7 @@ export interface CampaignVideoCarouselBlockCreateInput {
   id?: string | null;
   campaignId: string;
   pageId: string;
+  parentBlockId?: string | null;
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;

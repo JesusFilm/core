@@ -54,6 +54,8 @@ export const CAMPAIGN_HOST_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
@@ -72,7 +74,9 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignJourneyListBlock',
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock'
 ] as const
 export type CampaignSectionTypename =
   (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
@@ -85,6 +89,15 @@ export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
 
 /** Column slots are created with their Columns section and never touched on their own. */
 export const CAMPAIGN_SLOT_TYPENAMES = ['CampaignColumnBlock'] as const
+
+/** No nesting, and the share panel reads a whole page: neither sits in a slot. */
+export const CAMPAIGN_SLOT_DISALLOWED_TYPENAMES = [
+  'CampaignColumnsBlock',
+  'CampaignRegionShareBlock'
+] as const
+
+/** A Columns section is created with exactly this many slots. */
+export const CAMPAIGN_COLUMN_SLOT_COUNT = 2
 
 export const CAMPAIGN_CHILD_PLACEMENTS = ['above', 'below'] as const
 
@@ -110,6 +123,12 @@ export function isCampaignRegionOnlyTypename(typename: string): boolean {
 
 export function isCampaignSlotTypename(typename: string): boolean {
   return (CAMPAIGN_SLOT_TYPENAMES as readonly string[]).includes(typename)
+}
+
+export function isCampaignSlotDisallowedTypename(typename: string): boolean {
+  return (CAMPAIGN_SLOT_DISALLOWED_TYPENAMES as readonly string[]).includes(
+    typename
+  )
 }
 
 function notFound(message: string): GraphQLError {
@@ -178,6 +197,8 @@ export type StructuralVerb = 'deleted' | 'moved' | 'duplicated'
  * Delete, move and duplicate share one gate: campaign Update on the block's
  * campaign, then the protected rows refused with `CONFLICT` / `id` — the
  * header and footer, a column slot, and the landing or Region Page itself.
+ * A slot is refused everywhere but a move: swapping the two slots is an order
+ * update, and an order update never changes a block's parent.
  * A page id is not a block id, but the editor's structural controls may
  * still address one, so a page is told apart from an unknown id.
  */
@@ -201,7 +222,7 @@ export async function authorizeStructuralBlock(
     throw forbidden('user is not allowed to update block')
   if (isCampaignChromeTypename(block.typename))
     throw conflict(`the header and footer cannot be ${verb}`, 'id')
-  if (isCampaignSlotTypename(block.typename))
+  if (isCampaignSlotTypename(block.typename) && verb !== 'moved')
     throw conflict(`a column slot cannot be ${verb}`, 'id')
   return block
 }
@@ -581,6 +602,23 @@ export async function createSectionBlock(
 }
 
 /**
+ * A Columns section's children are its two slots (always first, at 0 and 1)
+ * then its Extras. A move stays on its own side of that line, so the slots
+ * keep their order values whatever the Extras do: a slot lands among the
+ * slots, anything else after them. Any other parent has no slots, and the
+ * position only clamps to the end.
+ */
+function clampAroundSlots(
+  parentOrder: number,
+  movingSlot: boolean,
+  slotCount: number,
+  otherCount: number
+): number {
+  if (movingSlot) return Math.min(parentOrder, slotCount - 1)
+  return Math.min(Math.max(parentOrder, slotCount), otherCount)
+}
+
+/**
  * Move a block among its siblings to `parentOrder` (clamped to the end) and
  * renumber contiguously. An Extra may change `placement` in the same move:
  * crossing the Section Body updates the column, moving among neighbours is
@@ -610,7 +648,16 @@ export async function reorderBlock(
     const all = await getSiblings(block, tx)
     const self = all.find((candidate) => candidate.id === block.id)
     const others = all.filter((candidate) => candidate.id !== block.id)
-    others.splice(Math.min(parentOrder, others.length), 0, {
+    const slotCount = all.filter((candidate) =>
+      isCampaignSlotTypename(candidate.typename)
+    ).length
+    const position = clampAroundSlots(
+      parentOrder,
+      isCampaignSlotTypename(block.typename),
+      slotCount,
+      others.length
+    )
+    others.splice(position, 0, {
       ...(self ?? { ...block, action: null }),
       placement: nextPlacement ?? block.placement
     })
@@ -767,4 +814,99 @@ export async function duplicateBlock(
     await touchCampaign(tx, block.campaignId)
     return [...reordered, ...copies.slice(1)]
   })
+}
+
+// ---------------------------------------------------------------------------
+// Columns: the two slots, and the one section a slot holds.
+// ---------------------------------------------------------------------------
+
+/**
+ * Create a Columns section with its two Column Slots in `tx`, so the
+ * container never exists without them. The slots are rows of their own at
+ * `parentOrder` 0 and 1 with the section's scoping copied down;
+ * `slotIds` fixes their ids (exactly two) so the editor can show them
+ * before the response arrives. Returns the section; the slots are its
+ * children.
+ */
+export async function createColumnsSection(
+  tx: Prisma.TransactionClient,
+  page: CampaignPage,
+  data: CampaignBlockCreateData,
+  parentOrder?: number | null,
+  slotIds?: string[] | null
+): Promise<CampaignBlockWithAction> {
+  if (slotIds != null && slotIds.length !== CAMPAIGN_COLUMN_SLOT_COUNT)
+    throw badUserInput(
+      `slotIds must name exactly ${CAMPAIGN_COLUMN_SLOT_COUNT} slots`,
+      'slotIds'
+    )
+  const section = await createSectionBlock(tx, page, data, parentOrder)
+  for (let slot = 0; slot < CAMPAIGN_COLUMN_SLOT_COUNT; slot++)
+    await tx.campaignBlock.create({
+      data: {
+        ...(slotIds != null ? { id: slotIds[slot] } : {}),
+        typename: 'CampaignColumnBlock',
+        campaignId: section.campaignId,
+        pageId: section.pageId,
+        regionId: section.regionId,
+        parentBlockId: section.id,
+        parentOrder: slot
+      }
+    })
+  return section
+}
+
+/**
+ * A section's slot is a live Column Slot of a live Columns section on the
+ * same page, and `typename` may sit in a slot at all (`BAD_USER_INPUT` /
+ * `parentBlockId` otherwise). Whether the slot is still free is decided in
+ * the insert's transaction, by `createSlotChild`.
+ */
+export async function validateSlotParent(
+  parentBlockId: string,
+  campaignId: string,
+  page: CampaignPage,
+  typename: string
+): Promise<CampaignBlock> {
+  const slot = await prisma.campaignBlock.findFirst({
+    where: {
+      id: parentBlockId,
+      campaignId,
+      pageId: page.id,
+      typename: 'CampaignColumnBlock',
+      deletedAt: null,
+      parentBlock: { is: { deletedAt: null } }
+    }
+  })
+  if (slot == null)
+    throw badUserInput(
+      'parentBlockId must be a column slot on the same page',
+      'parentBlockId'
+    )
+  if (isCampaignSlotDisallowedTypename(typename))
+    throw badUserInput(
+      `${typename} cannot sit in a column slot`,
+      'parentBlockId'
+    )
+  return slot
+}
+
+/**
+ * Create the one section a slot holds inside `tx`: `parentOrder` 0, the
+ * slot's scoping copied down. A slot that already holds a live section is
+ * `BAD_USER_INPUT` / `parentBlockId`; the author bins or changes the
+ * type of what is there first.
+ */
+export async function createSlotChild(
+  tx: Prisma.TransactionClient,
+  slot: CampaignBlock,
+  data: CampaignBlockCreateData
+): Promise<CampaignBlockWithAction> {
+  const occupant = await getSiblings({ ...slot, parentBlockId: slot.id }, tx)
+  if (occupant.length > 0)
+    throw badUserInput(
+      'a column slot holds at most one section',
+      'parentBlockId'
+    )
+  return await createChildBlock(tx, slot, data)
 }

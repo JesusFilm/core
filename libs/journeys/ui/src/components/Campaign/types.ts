@@ -30,7 +30,7 @@ export type CampaignRegion = CampaignPublicFields_regions
 /** Every typename that renders through `CampaignSectionBand`. */
 export type CampaignSectionTypename = Exclude<
   CampaignBlock['__typename'],
-  'CampaignTypographyBlock' | 'CampaignButtonBlock'
+  'CampaignTypographyBlock' | 'CampaignButtonBlock' | 'CampaignColumnBlock'
 >
 export type CampaignSectionBlock = CampaignBlockOf<CampaignSectionTypename>
 export type CampaignSectionTree = CampaignTree<CampaignSectionBlock>
@@ -40,7 +40,8 @@ export function isCampaignSection(
 ): block is CampaignSectionBlock {
   return (
     block.__typename !== 'CampaignTypographyBlock' &&
-    block.__typename !== 'CampaignButtonBlock'
+    block.__typename !== 'CampaignButtonBlock' &&
+    block.__typename !== 'CampaignColumnBlock'
   )
 }
 

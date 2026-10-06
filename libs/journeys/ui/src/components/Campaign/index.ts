@@ -4,6 +4,7 @@ export {
 } from './campaignPublicFields'
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
+export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
 export { CampaignHero } from './CampaignHero'
 export { CampaignJourneyList } from './CampaignJourneyList'
 export { CampaignPage, shouldRenderSection } from './CampaignPage'
@@ -17,7 +18,13 @@ export { CampaignRegionHeader } from './CampaignRegionHeader'
 export { CampaignRegionShare } from './CampaignRegionShare'
 export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
-export { CampaignSectionBand, useCampaignSection } from './CampaignSectionBand'
+export { CampaignRichText, splitParagraphs } from './CampaignRichText'
+export {
+  CampaignSectionBand,
+  CampaignSlotContext,
+  useCampaignSection,
+  useCampaignSlot
+} from './CampaignSectionBand'
 export { CampaignSectionHeading } from './CampaignSectionHeading'
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideoCarousel } from './CampaignVideoCarousel'

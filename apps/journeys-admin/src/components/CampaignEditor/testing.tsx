@@ -96,6 +96,8 @@ function QueriedEditorInner({
 
 interface RenderEditorProps extends QueriedEditorProps {
   mocks?: Array<Record<string, unknown>>
+  /** The campaign `GetCampaign` resolves to; defaults to the seeded fixture. */
+  campaignData?: Campaign
   cache?: InMemoryCache
   /** A custom link (for instance with the DebounceLink); it must serve GetCampaign itself. */
   link?: ApolloLink
@@ -110,14 +112,19 @@ export function QueriedEditor({
   children,
   initialState,
   mocks = [],
+  campaignData,
   cache = campaignCache(),
   link
 }: RenderEditorProps): ReactElement {
+  const campaignMock =
+    campaignData == null
+      ? getCampaignMock
+      : { ...getCampaignMock, result: { data: { campaign: campaignData } } }
   return (
     <MockedProvider
       {...(link != null
         ? { link }
-        : { mocks: [getCampaignMock, ...mocks] as never })}
+        : { mocks: [campaignMock, ...mocks] as never })}
       cache={cache}
     >
       <CommandProvider>

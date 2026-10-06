@@ -15,7 +15,11 @@ import {
   useState
 } from 'react'
 
-import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
+import {
+  bandCssVariables,
+  columnsGridTemplate,
+  resolveBand
+} from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -25,6 +29,7 @@ import {
   GetCampaign_campaign_theme as CampaignTheme
 } from '../../../../../__generated__/GetCampaign'
 import {
+  CampaignBackgroundKind,
   CampaignChildPlacement,
   TypographyVariant
 } from '../../../../../__generated__/globalTypes'
@@ -36,6 +41,7 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { InlineText } from '../InlineText'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
@@ -47,6 +53,8 @@ interface CanvasSectionProps {
   draggable?: boolean
   /** The drop indicator to show while another section is dragged over this one. */
   dropEdge?: 'before' | 'after'
+  /** The section sits in a Column Slot: no page container, no section rhythm. */
+  inSlot?: boolean
 }
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -190,6 +198,8 @@ function sectionFieldPlaceholder(
       return t('Lede')
     case 'intro':
       return t('Intro')
+    case 'richTextContent':
+      return t('Your text')
     default:
       return t('Your text')
   }
@@ -223,8 +233,12 @@ function SectionText({
     intro: {
       variant: 'body1' as const,
       sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+    },
+    richTextContent: {
+      variant: 'body1' as const,
+      sx: { maxWidth: 720 }
     }
-  }[field as 'eyebrow' | 'title' | 'lede' | 'intro']
+  }[field as 'eyebrow' | 'title' | 'lede' | 'intro' | 'richTextContent']
 
   return (
     <InlineText
@@ -250,7 +264,8 @@ export function CanvasSection({
   block,
   theme,
   draggable = false,
-  dropEdge
+  dropEdge,
+  inSlot = false
 }: CanvasSectionProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -283,7 +298,8 @@ export function CanvasSection({
   const band = useMemo(() => {
     if (
       block.__typename === 'CampaignTypographyBlock' ||
-      block.__typename === 'CampaignButtonBlock'
+      block.__typename === 'CampaignButtonBlock' ||
+      block.__typename === 'CampaignColumnBlock'
     )
       return null
     return resolveBand(block, theme)
@@ -304,8 +320,14 @@ export function CanvasSection({
 
   const align = 'align' in block ? block.align : null
   const titleVariant = block.__typename === 'CampaignHeroBlock' ? 'h1' : 'h2'
-  const above = block.children.filter(isAbove)
-  const below = block.children.filter((child) => !isAbove(child))
+  const slots = block.children.filter(
+    (child) => child.__typename === 'CampaignColumnBlock'
+  )
+  const extras = block.children.filter(
+    (child) => child.__typename !== 'CampaignColumnBlock'
+  )
+  const above = extras.filter(isAbove)
+  const below = extras.filter((child) => !isAbove(child))
   const alignItems =
     align === 'center'
       ? 'center'
@@ -340,6 +362,44 @@ export function CanvasSection({
     )
   }
 
+  const body = (
+    <Stack spacing={3} sx={{ alignItems }}>
+      {above.map(renderExtra)}
+      {isCampaignTextBlock(block) &&
+        textFields.map((field) => (
+          <SectionText
+            key={field}
+            block={block}
+            field={field}
+            editing={sectionSelected}
+            focusField={focusField}
+            onSelect={handleSelectField}
+            titleVariant={titleVariant}
+          />
+        ))}
+      {block.__typename === 'CampaignColumnsBlock' && (
+        <Box
+          data-testid={`CanvasColumns-${block.id}`}
+          sx={{
+            width: '100%',
+            display: 'grid',
+            gap: 3,
+            alignItems: 'start',
+            gridTemplateColumns: {
+              xs: 'minmax(0, 1fr)',
+              md: columnsGridTemplate(block.ratio)
+            }
+          }}
+        >
+          {slots.map((slot) => (
+            <CanvasColumnSlot key={slot.id} slot={slot} theme={theme} />
+          ))}
+        </Box>
+      )}
+      {below.map(renderExtra)}
+    </Stack>
+  )
+
   return (
     <Box
       ref={setSectionRef}
@@ -358,7 +418,12 @@ export function CanvasSection({
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
-        py: { xs: 6, md: 10 },
+        ...(inSlot
+          ? 'backgroundKind' in block &&
+            block.backgroundKind !== CampaignBackgroundKind.none
+            ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
+            : {}
+          : { py: { xs: 6, md: 10 } }),
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
         ...(sectionSelected ? SELECTED_OUTLINE : {})
@@ -408,24 +473,7 @@ export function CanvasSection({
           }}
         />
       )}
-      <Container maxWidth="lg">
-        <Stack spacing={3} sx={{ alignItems }}>
-          {above.map(renderExtra)}
-          {isCampaignTextBlock(block) &&
-            textFields.map((field) => (
-              <SectionText
-                key={field}
-                block={block}
-                field={field}
-                editing={sectionSelected}
-                focusField={focusField}
-                onSelect={handleSelectField}
-                titleVariant={titleVariant}
-              />
-            ))}
-          {below.map(renderExtra)}
-        </Stack>
-      </Container>
+      {inSlot ? body : <Container maxWidth="lg">{body}</Container>}
     </Box>
   )
 }

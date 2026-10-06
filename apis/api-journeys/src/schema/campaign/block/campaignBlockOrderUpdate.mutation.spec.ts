@@ -227,19 +227,102 @@ describe('campaignBlockOrderUpdate', () => {
     }
   )
 
-  it('refuses to move a column slot (CONFLICT, id)', async () => {
-    prismaMock.campaignBlock.findFirst.mockResolvedValue(
-      campaignBlockWithAcl(fixture, 'heroId', {
-        id: 'slotId',
-        typename: 'CampaignColumnBlock'
+  describe('column slots', () => {
+    function slotRows(): CampaignFixture['blocks'] {
+      const base = campaignBlockWithAcl(fixture, 'heroId')
+      const { campaign, action, ...hero } = base
+      const row = (
+        id: string,
+        typename: string,
+        parentOrder: number,
+        parentBlockId: string
+      ) => ({
+        ...hero,
+        id,
+        typename,
+        parentBlockId,
+        parentOrder,
+        action: null
       })
-    )
+      return [
+        row('slotLeftId', 'CampaignColumnBlock', 0, 'columnsId'),
+        row('slotRightId', 'CampaignColumnBlock', 1, 'columnsId'),
+        row('extraId', 'CampaignTypographyBlock', 2, 'columnsId')
+      ] as never
+    }
 
-    const result = await move('slotId', 1)
+    beforeEach(() => {
+      fixture.blocks.push(...slotRows())
+    })
 
-    expect(result.errors[0].extensions).toMatchObject({
-      code: 'CONFLICT',
-      field: 'id'
+    function slotBlock(id: string): ReturnType<typeof campaignBlockWithAcl> {
+      return campaignBlockWithAcl(fixture, 'heroId', {
+        id,
+        typename: 'CampaignColumnBlock',
+        parentBlockId: 'columnsId',
+        parentOrder: id === 'slotLeftId' ? 0 : 1
+      })
+    }
+
+    it('swaps the two slots with an order update, leaving the Extras after them', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(
+        slotBlock('slotLeftId')
+      )
+      prismaMock.campaignBlock.findMany.mockResolvedValue(slotRows())
+
+      const result = await move('slotLeftId', 1)
+
+      expect(result).toEqual({
+        data: {
+          campaignBlockOrderUpdate: [
+            { id: 'slotRightId', parentOrder: 0 },
+            { id: 'slotLeftId', parentOrder: 1 },
+            { id: 'extraId', parentOrder: 2, placement: null }
+          ]
+        }
+      })
+    })
+
+    it('keeps a slot among the slots when moved past the Extras', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(
+        slotBlock('slotLeftId')
+      )
+      prismaMock.campaignBlock.findMany.mockResolvedValue(slotRows())
+
+      const result = await move('slotLeftId', 5)
+
+      expect(
+        result.data.campaignBlockOrderUpdate.map(
+          (block: { id: string }) => block.id
+        )
+      ).toEqual(['slotRightId', 'slotLeftId', 'extraId'])
+    })
+
+    it('keeps an Extra after the slots when moved to the front', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(
+        campaignBlockWithAcl(fixture, 'heroId', {
+          id: 'extraId',
+          typename: 'CampaignTypographyBlock',
+          parentBlockId: 'columnsId',
+          parentOrder: 2
+        })
+      )
+      prismaMock.campaignBlock.findMany.mockResolvedValue(slotRows())
+
+      const result = await move('extraId', 0)
+
+      expect(
+        result.data.campaignBlockOrderUpdate.map(
+          (block: { id: string; parentOrder: number }) => [
+            block.id,
+            block.parentOrder
+          ]
+        )
+      ).toEqual([
+        ['slotLeftId', 0],
+        ['slotRightId', 1],
+        ['extraId', 2]
+      ])
     })
   })
 

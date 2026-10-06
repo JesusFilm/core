@@ -8,6 +8,7 @@ export type CampaignTextField =
   | 'title'
   | 'lede'
   | 'intro'
+  | 'richTextContent'
 
 /** PRD §15 text caps, mirrored for the editor's pure pre-validation. */
 export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
@@ -16,7 +17,17 @@ export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
   eyebrow: 80,
   title: 150,
   lede: 500,
-  intro: 500
+  intro: 500,
+  richTextContent: 5000
+}
+
+/**
+ * The API input key a text field is written under. Rich text `content` is
+ * read as `richTextContent` because the public fragment aliases it away
+ * from the Typography block's `content`.
+ */
+export function campaignTextInputKey(field: CampaignTextField): string {
+  return field === 'richTextContent' ? 'content' : field
 }
 
 /** The text fields each typename carries, in render order. */
@@ -29,7 +40,8 @@ export const CAMPAIGN_TEXT_FIELDS = {
   CampaignJourneyListBlock: ['eyebrow', 'title', 'lede'],
   CampaignAnalyticsBlock: ['eyebrow', 'title'],
   CampaignRegionHeaderBlock: ['intro'],
-  CampaignRegionShareBlock: ['title', 'intro']
+  CampaignRegionShareBlock: ['title', 'intro'],
+  CampaignRichTextBlock: ['title', 'richTextContent']
 } as const satisfies Partial<
   Record<CampaignBlock['__typename'], readonly CampaignTextField[]>
 >

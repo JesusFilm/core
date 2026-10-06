@@ -2,11 +2,13 @@ import { ReactElement } from 'react'
 
 import { CampaignAnalytics } from '../CampaignAnalytics'
 import { CampaignButton } from '../CampaignButton'
+import { CampaignColumns } from '../CampaignColumns'
 import { CampaignHero } from '../CampaignHero'
 import { CampaignJourneyList } from '../CampaignJourneyList'
 import { CampaignRegionHeader } from '../CampaignRegionHeader'
 import { CampaignRegionShare } from '../CampaignRegionShare'
 import { CampaignRegionSwitcher } from '../CampaignRegionSwitcher'
+import { CampaignRichText } from '../CampaignRichText'
 import { CampaignTypography } from '../CampaignTypography'
 import { CampaignVideoCarousel } from '../CampaignVideoCarousel'
 import type { CampaignTree } from '../types'
@@ -38,6 +40,10 @@ export function CampaignRenderer({
       return <CampaignRegionHeader block={block} />
     case 'CampaignRegionShareBlock':
       return <CampaignRegionShare block={block} />
+    case 'CampaignRichTextBlock':
+      return <CampaignRichText block={block} />
+    case 'CampaignColumnsBlock':
+      return <CampaignColumns block={block} />
     case 'CampaignTypographyBlock':
       return <CampaignTypography block={block} />
     case 'CampaignButtonBlock':

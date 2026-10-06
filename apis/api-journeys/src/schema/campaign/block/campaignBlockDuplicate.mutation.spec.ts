@@ -274,6 +274,63 @@ describe('campaignBlockDuplicate', () => {
     }
   )
 
+  it('copies both slots of a Columns section with the section each one holds', async () => {
+    const template = fixture.blocks[0]
+    const row = (
+      id: string,
+      typename: string,
+      parentBlockId: string | null,
+      parentOrder: number
+    ): CampaignBlockRow => ({
+      ...template,
+      id,
+      typename,
+      parentBlockId,
+      parentOrder,
+      pageId: 'landingPageId',
+      coverBlockId: null,
+      mediaBlockId: null,
+      logoBlockId: null,
+      action: null
+    })
+    const columns = [
+      row('columnsId', 'CampaignColumnsBlock', null, 0),
+      row('slotLeftId', 'CampaignColumnBlock', 'columnsId', 0),
+      row('slotRightId', 'CampaignColumnBlock', 'columnsId', 1),
+      row('slotHeroId', 'CampaignHeroBlock', 'slotLeftId', 0)
+    ]
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', columns[0])
+    )
+    fixture.blocks.push(...columns)
+    setLive(columns)
+
+    const result = await duplicate('columnsId', [
+      { oldId: 'columnsId', newId: 'columnsCopyId' },
+      { oldId: 'slotLeftId', newId: 'slotLeftCopyId' },
+      { oldId: 'slotRightId', newId: 'slotRightCopyId' },
+      { oldId: 'slotHeroId', newId: 'slotHeroCopyId' }
+    ])
+
+    expect(result.errors).toBeUndefined()
+    expect(
+      result.data.campaignBlockDuplicate
+        .filter((block: { id: string }) => block.id.endsWith('CopyId'))
+        .map(
+          (block: {
+            id: string
+            parentBlockId: string | null
+            parentOrder: number
+          }) => [block.id, block.parentBlockId, block.parentOrder]
+        )
+    ).toEqual([
+      ['columnsCopyId', null, 1],
+      ['slotLeftCopyId', 'columnsCopyId', 0],
+      ['slotRightCopyId', 'columnsCopyId', 1],
+      ['slotHeroCopyId', 'slotLeftCopyId', 0]
+    ])
+  })
+
   it('refuses to duplicate a column slot (CONFLICT, id)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroId', {

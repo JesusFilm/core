@@ -1,6 +1,10 @@
 import { builder } from '../../../builder'
 import { CampaignRegionShareBlock } from '../campaignRegionShareBlock'
-import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
+import {
+  SECTION_CREATE_ERRORS,
+  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
+  createSection
+} from '../createSection'
 import { validateSectionText } from '../validateSectionText'
 
 export const CampaignRegionShareBlockCreateInput = builder.inputType(
@@ -12,6 +16,10 @@ export const CampaignRegionShareBlockCreateInput = builder.inputType(
       pageId: t.id({
         required: true,
         description: 'The Region Page; refused on the landing page.'
+      }),
+      parentBlockId: t.id({
+        required: false,
+        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
       }),
       parentOrder: t.int({
         required: false,

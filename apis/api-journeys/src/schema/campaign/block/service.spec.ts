@@ -16,12 +16,15 @@ import {
   authorizeTypedBlockUpdate,
   collectSubtree,
   createChildBlock,
+  createColumnsSection,
+  createSlotChild,
   createTopLevelBlock,
   getSiblings,
   removeBlock,
   restoreBlock,
   validateParentBlock,
-  validateSectionPage
+  validateSectionPage,
+  validateSlotParent
 } from './service'
 
 const user = { id: 'userId' } as unknown as User
@@ -428,19 +431,37 @@ describe('campaign block service', () => {
       }
     )
 
-    it('refuses a column slot (CONFLICT, id)', async () => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        campaignBlockWithAcl(fixture, 'heroId', {
-          id: 'slotId',
-          typename: 'CampaignColumnBlock'
+    it.each(['deleted', 'duplicated'] as const)(
+      'refuses a column slot that is %s (CONFLICT, id)',
+      async (verb) => {
+        prismaMock.campaignBlock.findFirst.mockResolvedValue(
+          campaignBlockWithAcl(fixture, 'heroId', {
+            id: 'slotId',
+            typename: 'CampaignColumnBlock'
+          })
+        )
+
+        const error = await errorOf(
+          authorizeStructuralBlock('slotId', user, verb)
+        )
+
+        expect(error.extensions).toMatchObject({
+          code: 'CONFLICT',
+          field: 'id'
         })
-      )
+      }
+    )
 
-      const error = await errorOf(
+    it('lets a column slot be moved: swapping the two slots is an order update', async () => {
+      const slot = campaignBlockWithAcl(fixture, 'heroId', {
+        id: 'slotId',
+        typename: 'CampaignColumnBlock'
+      })
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
+
+      await expect(
         authorizeStructuralBlock('slotId', user, 'moved')
-      )
-
-      expect(error.extensions).toMatchObject({ code: 'CONFLICT', field: 'id' })
+      ).resolves.toBe(slot)
     })
 
     it('tells a page id apart from an unknown id and refuses it (CONFLICT, id)', async () => {
@@ -728,6 +749,184 @@ describe('campaign block service', () => {
       expect(error.extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field: 'pageId'
+      })
+    })
+  })
+
+  describe('validateSlotParent', () => {
+    const page = fixture.pages[0]
+    const slot = {
+      ...hero,
+      id: 'slotId',
+      typename: 'CampaignColumnBlock',
+      parentBlockId: 'columnsId',
+      parentOrder: 0
+    }
+
+    it('returns a live slot of a live Columns section on the same page', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
+
+      await expect(
+        validateSlotParent('slotId', 'campaignId', page, 'CampaignHeroBlock')
+      ).resolves.toBe(slot)
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'slotId',
+          campaignId: 'campaignId',
+          pageId: page.id,
+          typename: 'CampaignColumnBlock',
+          deletedAt: null,
+          parentBlock: { is: { deletedAt: null } }
+        }
+      })
+    })
+
+    it('refuses a parent that is not such a slot (BAD_USER_INPUT, parentBlockId)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(
+        validateSlotParent('heroId', 'campaignId', page, 'CampaignHeroBlock')
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'parentBlockId'
+      })
+    })
+
+    it.each(['CampaignColumnsBlock', 'CampaignRegionShareBlock'])(
+      'never takes a %s in a slot (BAD_USER_INPUT, parentBlockId)',
+      async (typename) => {
+        prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
+
+        const error = await errorOf(
+          validateSlotParent('slotId', 'campaignId', page, typename)
+        )
+
+        expect(error.extensions).toMatchObject({
+          code: 'BAD_USER_INPUT',
+          field: 'parentBlockId'
+        })
+      }
+    )
+
+    it.each([
+      'CampaignHeroBlock',
+      'CampaignRegionSwitcherBlock',
+      'CampaignVideoCarouselBlock',
+      'CampaignJourneyListBlock',
+      'CampaignAnalyticsBlock',
+      'CampaignRegionHeaderBlock',
+      'CampaignRichTextBlock'
+    ])('takes a %s in a slot', async (typename) => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
+
+      await expect(
+        validateSlotParent('slotId', 'campaignId', page, typename)
+      ).resolves.toBe(slot)
+    })
+
+    it('still refuses a region-only section on the landing page inside a slot (BAD_USER_INPUT, pageId)', async () => {
+      prismaMock.campaignPage.findFirst.mockResolvedValue(page)
+
+      const error = await errorOf(
+        validateSectionPage('campaignId', page.id, 'CampaignRegionHeaderBlock')
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'pageId'
+      })
+    })
+  })
+
+  describe('createSlotChild', () => {
+    const slot = {
+      ...hero,
+      id: 'slotId',
+      typename: 'CampaignColumnBlock',
+      parentBlockId: 'columnsId',
+      parentOrder: 0
+    }
+
+    it('creates the slot’s only section at parentOrder 0 with the slot’s scoping', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([])
+      prismaMock.campaignBlock.create.mockResolvedValue({
+        ...hero,
+        parentBlockId: 'slotId',
+        parentOrder: 0
+      })
+
+      await createSlotChild(prismaMock, slot, {
+        typename: 'CampaignHeroBlock'
+      })
+
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          typename: 'CampaignHeroBlock',
+          campaignId: slot.campaignId,
+          pageId: slot.pageId,
+          parentBlockId: 'slotId',
+          parentOrder: 0
+        }),
+        include: { action: true }
+      })
+    })
+
+    it('refuses a slot that already holds a live section (BAD_USER_INPUT, parentBlockId)', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([
+        { ...hero, parentBlockId: 'slotId', parentOrder: 0 }
+      ])
+
+      const error = await errorOf(
+        createSlotChild(prismaMock, slot, { typename: 'CampaignHeroBlock' })
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'parentBlockId'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            parentBlockId: 'slotId',
+            deletedAt: null
+          })
+        })
+      )
+    })
+  })
+
+  describe('createColumnsSection', () => {
+    it('creates the section and exactly two slots at parentOrder 0 and 1', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([])
+      prismaMock.campaignBlock.create.mockResolvedValue({
+        ...hero,
+        id: 'columnsId',
+        typename: 'CampaignColumnsBlock',
+        parentOrder: 0
+      })
+
+      const section = await createColumnsSection(prismaMock, fixture.pages[0], {
+        typename: 'CampaignColumnsBlock'
+      })
+
+      expect(section.id).toBe('columnsId')
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(3)
+      expect(prismaMock.campaignBlock.create).toHaveBeenNthCalledWith(2, {
+        data: expect.objectContaining({
+          typename: 'CampaignColumnBlock',
+          parentBlockId: 'columnsId',
+          parentOrder: 0
+        })
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenNthCalledWith(3, {
+        data: expect.objectContaining({
+          typename: 'CampaignColumnBlock',
+          parentBlockId: 'columnsId',
+          parentOrder: 1
+        })
       })
     })
   })

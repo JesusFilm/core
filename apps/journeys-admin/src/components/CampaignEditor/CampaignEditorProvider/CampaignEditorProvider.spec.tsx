@@ -9,7 +9,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { BottomBar } from '../BottomBar'
 import { Canvas } from '../Canvas'
-import { campaign } from '../data'
+import { campaign, campaignWithColumns } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { SelectionProbe, StaticEditor, frameBody } from '../testing'
 
@@ -111,6 +111,28 @@ describe('CampaignEditorProvider', () => {
     })
   })
 
+  describe('resolveSelection in a Columns section', () => {
+    it('resolves a slot with its Columns section as host, and the section in a slot as a column child', () => {
+      expect(
+        resolveSelection(campaignWithColumns.blocks, 'slotRightId')
+      ).toMatchObject({
+        kind: 'slot',
+        block: { id: 'slotRightId' },
+        host: { id: 'columnsId' }
+      })
+      expect(
+        resolveSelection(campaignWithColumns.blocks, 'slotRichTextId')
+      ).toMatchObject({
+        kind: 'column',
+        block: { id: 'slotRichTextId' },
+        host: { id: 'slotRichTextId' }
+      })
+      expect(
+        resolveSelection(campaignWithColumns.blocks, 'columnsId')
+      ).toMatchObject({ kind: 'section' })
+    })
+  })
+
   describe('reducer', () => {
     const state: CampaignEditorState = {
       pageKind: CampaignPageKind.landing,
@@ -196,6 +218,46 @@ describe('CampaignEditorProvider', () => {
 
     await userEvent.keyboard('{Escape}')
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
+  })
+
+  it('steps up from a column child and from a slot to the Columns section', async () => {
+    render(
+      <StaticEditor
+        campaignProp={campaignWithColumns}
+        initialState={{ selectedBlockId: 'slotRichTextId' }}
+      >
+        <Hotkeys />
+        <SelectionProbe />
+        <BottomBar onSettingsClick={vi.fn()} />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+      'Campaign›Columns›Column›Rich text'
+    )
+
+    await userEvent.keyboard('{Escape}')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('columnsId')
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Campaign' }))
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
+  })
+
+  it('steps up from a slot to the Columns section on Escape', async () => {
+    render(
+      <StaticEditor
+        campaignProp={campaignWithColumns}
+        initialState={{ selectedBlockId: 'slotRightId' }}
+      >
+        <Hotkeys />
+        <SelectionProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('slot')
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('columnsId')
   })
 
   it('selects a level from the breadcrumb', () => {

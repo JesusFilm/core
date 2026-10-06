@@ -4,7 +4,7 @@ import { ReactElement, useState } from 'react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
-import { campaign } from '../data'
+import { campaign, campaignWithColumns } from '../data'
 import {
   CommandProbe,
   SelectionProbe,
@@ -37,6 +37,25 @@ const orderMock = {
           parentOrder: 0
         },
         { __typename: 'CampaignHeroBlock', id: 'heroId', parentOrder: 1 }
+      ]
+    }
+  }))
+}
+
+const swapMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+    variables: { id: 'slotLeftId', parentOrder: 1 }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockOrderUpdate: [
+        {
+          __typename: 'CampaignColumnBlock',
+          id: 'slotRightId',
+          parentOrder: 0
+        },
+        { __typename: 'CampaignColumnBlock', id: 'slotLeftId', parentOrder: 1 }
       ]
     }
   }))
@@ -354,5 +373,146 @@ describe('Canvas', () => {
     expect(body.querySelector('[data-testid="CanvasDropIndicator"]')).toBeNull()
     expect(orderMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  describe('Columns', () => {
+    function renderColumnsCanvas(): ReturnType<typeof render> {
+      return render(
+        <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+          <SelectionProbe />
+          <CommandProbe />
+          <Canvas
+            campaign={campaignWithColumns}
+            pageKind={CampaignPageKind.landing}
+            previewLanguageId="529"
+            view="desktop"
+          />
+        </StaticEditor>
+      )
+    }
+
+    /** Lay the two slots side by side, 400 px wide each, since jsdom lays nothing out. */
+    function placeSlots(body: HTMLElement): void {
+      ;['slotLeftId', 'slotRightId'].forEach((id, index) => {
+        const slot = body.querySelector(
+          `[data-testid="CanvasColumnSlot-${id}"]`
+        ) as HTMLElement
+        const left = index * 400
+        slot.getBoundingClientRect = () => ({
+          top: 0,
+          bottom: 100,
+          left,
+          right: left + 400,
+          width: 400,
+          height: 100,
+          x: left,
+          y: 0,
+          toJSON: () => ({})
+        })
+      })
+    }
+
+    it('renders the two slots, the section one holds and a placeholder for the empty one', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+
+      const left = body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotLeftId"]'
+      )!
+      const right = body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotRightId"]'
+      )!
+      expect(
+        left.querySelector('[data-testid="CanvasSection-slotRichTextId"]')
+      ).not.toBeNull()
+      expect(left.textContent).toContain('Our story')
+      expect(left.textContent).toContain('First.')
+      expect(
+        right.querySelector('[data-testid="CanvasEmptyColumn-slotRightId"]')
+      ).not.toBeNull()
+      // Only a page section has a drag handle; each slot has its own.
+      expect(
+        body.querySelector('[data-testid="CanvasSectionDragHandle-columnsId"]')
+      ).not.toBeNull()
+      expect(
+        body.querySelector(
+          '[data-testid="CanvasSectionDragHandle-slotRichTextId"]'
+        )
+      ).toBeNull()
+      expect(
+        body.querySelector('[data-testid="CanvasColumnDragHandle-slotLeftId"]')
+      ).toHaveAttribute('aria-label', 'Drag column')
+    })
+
+    it('selects an empty slot, the section in a slot and the Columns section on click', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+
+      fireEvent.click(
+        body.querySelector('[data-testid="CanvasColumnSlot-slotRightId"]')!
+      )
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('slot')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'slotRightId'
+      )
+
+      fireEvent.click(
+        body.querySelector('[data-testid="CanvasSection-slotRichTextId"]')!
+      )
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('column')
+      await waitFor(() =>
+        expect(body.querySelector('textarea[name="title"]')).toHaveValue(
+          'Our story'
+        )
+      )
+      expect(
+        body.querySelector('textarea[name="richTextContent"]')
+      ).toHaveValue('First.\n\nSecond.')
+
+      fireEvent.click(
+        body.querySelector('[data-testid="CanvasSection-columnsId"]')!
+      )
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+    })
+
+    it('swaps the slots when one is dragged by its handle onto the other, as one Command', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+      placeSlots(body)
+      const frameDocument = body.ownerDocument
+      const handle = body.querySelector(
+        '[data-testid="CanvasColumnDragHandle-slotLeftId"]'
+      )!
+
+      fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+      fireEvent.mouseMove(frameDocument, { clientX: 40, clientY: 50 })
+      fireEvent.mouseMove(frameDocument, { clientX: 600, clientY: 50 })
+      fireEvent.mouseUp(frameDocument, { clientX: 600, clientY: 50 })
+
+      await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+      // The slot's section stays selected through the swap.
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'slotRichTextId'
+      )
+    })
+
+    it('does nothing when a slot is dropped back on itself', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+      placeSlots(body)
+      const frameDocument = body.ownerDocument
+      const handle = body.querySelector(
+        '[data-testid="CanvasColumnDragHandle-slotLeftId"]'
+      )!
+
+      fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+      fireEvent.mouseMove(frameDocument, { clientX: 40, clientY: 50 })
+      fireEvent.mouseMove(frameDocument, { clientX: 100, clientY: 50 })
+      fireEvent.mouseUp(frameDocument, { clientX: 100, clientY: 50 })
+
+      expect(swapMock.result).not.toHaveBeenCalled()
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    })
   })
 })

@@ -2,8 +2,9 @@ import { gql } from '@apollo/client'
 
 /**
  * Every Campaign Block field the public page reads, as one flat-list item.
- * The three per-type `variant` fields are aliased because they return
- * different enums and GraphQL forbids one response name with two shapes.
+ * The three per-type `variant` fields and the rich text `content` are
+ * aliased because they return different types and GraphQL forbids one
+ * response name with two shapes.
  */
 export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
   fragment CampaignPublicBlockFields on CampaignBlock {
@@ -59,6 +60,13 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignRegionShareBlock {
       title
       intro
+    }
+    ... on CampaignRichTextBlock {
+      title
+      richTextContent: content
+    }
+    ... on CampaignColumnsBlock {
+      ratio
     }
     ... on CampaignHeaderBlock {
       logoBlockId

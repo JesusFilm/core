@@ -3,11 +3,30 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignColumnsRatio, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockRestore
 // ====================================================
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+}
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
@@ -376,6 +395,89 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBl
   intro: string | null;
 }
 
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -484,7 +586,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock {
   action: CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock_action | null;
 }
 
-export type CampaignBlockRestore_campaignBlockRestore = CampaignBlockRestore_campaignBlockRestore_CampaignHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignFooterBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionSwitcherBlock | CampaignBlockRestore_campaignBlockRestore_CampaignVideoCarouselBlock | CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock | CampaignBlockRestore_campaignBlockRestore_CampaignAnalyticsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBlock | CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock | CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock;
+export type CampaignBlockRestore_campaignBlockRestore = CampaignBlockRestore_campaignBlockRestore_CampaignColumnBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignFooterBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionSwitcherBlock | CampaignBlockRestore_campaignBlockRestore_CampaignVideoCarouselBlock | CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock | CampaignBlockRestore_campaignBlockRestore_CampaignAnalyticsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock | CampaignBlockRestore_campaignBlockRestore_CampaignColumnsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock | CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock;
 
 export interface CampaignBlockRestore {
   /**
