@@ -1,4 +1,5 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
+import { useApolloClient } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -20,7 +21,10 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignStatus } from '../../../../__generated__/globalTypes'
-import { useCampaignDeleteMutation } from '../../../libs/useCampaignDeleteMutation'
+import {
+  evictCampaignFromCache,
+  useCampaignDeleteMutation
+} from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import {
   campaignPermanentAddress,
@@ -68,9 +72,7 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
     {}
   )
   const [campaignUpdate] = useCampaignUpdateMutation()
-  // The mutation defers its cache evict past this component's redirect, so
-  // the unmounted `GetCampaign` can not refetch the deleted campaign and
-  // flash "Campaign not found".
+  const { cache } = useApolloClient()
   const [campaignDelete, { loading: deleting }] = useCampaignDeleteMutation()
 
   // While a save is in flight, or a field error describes a rejected value,
@@ -143,6 +145,8 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
         { variant: 'error', preventDuplicate: true }
       )
       setFieldError(field, undefined)
+    } finally {
+      setSaving((previous) => ({ ...previous, [field]: false }))
     }
   }
 
@@ -163,6 +167,10 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
       await campaignDelete({ variables: { id: campaign.id } })
       setDeleteOpen(false)
       await router.push('/campaigns')
+      // Evict only once the redirect has resolved: until then this page is
+      // still mounted and its `GetCampaign` would refetch the deleted
+      // campaign and flash "Campaign not found".
+      evictCampaignFromCache(cache, campaign.id)
     } catch (error) {
       setDeleteOpen(false)
       enqueueSnackbar(

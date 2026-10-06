@@ -211,10 +211,10 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   eyebrow: string | null;
-  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_eyebrowTranslations[];
   title: string | null;
-  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_titleTranslations[];
   showMap: boolean;
+  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_eyebrowTranslations[];
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_titleTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_eyebrowTranslations {
@@ -280,11 +280,8 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   eyebrow: string | null;
-  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_eyebrowTranslations[];
   title: string | null;
-  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_titleTranslations[];
   lede: string | null;
-  ledeTranslations: CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_ledeTranslations[];
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -293,6 +290,9 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock {
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_eyebrowTranslations[];
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_titleTranslations[];
+  ledeTranslations: CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_ledeTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_eyebrowTranslations {
@@ -358,12 +358,12 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   eyebrow: string | null;
-  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_eyebrowTranslations[];
   title: string | null;
-  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_titleTranslations[];
   lede: string | null;
-  ledeTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_ledeTranslations[];
   display: CampaignJourneyListDisplay;
+  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_eyebrowTranslations[];
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_titleTranslations[];
+  ledeTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_ledeTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock_introTranslations {
@@ -468,8 +468,8 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   title: string | null;
-  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_titleTranslations[];
   intro: string | null;
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_titleTranslations[];
   introTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_introTranslations[];
 }
 
@@ -518,8 +518,8 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBloc
   buttonTextColor: string | null;
   accentColor: string | null;
   title: string | null;
-  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock_titleTranslations[];
   switcherVariant: CampaignSwitcherVariant;
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock_titleTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_eyebrowTranslations {
@@ -576,14 +576,14 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock
   buttonTextColor: string | null;
   accentColor: string | null;
   eyebrow: string | null;
-  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_eyebrowTranslations[];
   title: string | null;
-  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_titleTranslations[];
   /**
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
   videoVariantLanguageId: string | null;
+  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_eyebrowTranslations[];
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_titleTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock_contentTranslations {
@@ -613,7 +613,6 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock {
    */
   parentOrder: number | null;
   content: string;
-  contentTranslations: CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock_contentTranslations[];
   /**
    * Null means body1.
    */
@@ -630,15 +629,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock {
    * Which side of the Section Body this Extra renders on; null on a Region Line.
    */
   placement: CampaignChildPlacement | null;
-}
-
-export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_labelTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
+  contentTranslations: CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock_contentTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action_CampaignLinkAction {
@@ -671,6 +662,15 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action
 
 export type CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action = CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action_CampaignLinkAction | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
 
+export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_labelTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
   __typename: "CampaignButtonBlock";
   id: string;
@@ -689,7 +689,6 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
    */
   parentOrder: number | null;
   label: string;
-  labelTranslations: CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_labelTranslations[];
   /**
    * Null means contained.
    */
@@ -712,6 +711,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
   labelColor: string | null;
   placement: CampaignChildPlacement | null;
   action: CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_action | null;
+  labelTranslations: CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_labelTranslations[];
 }
 
 export type CampaignCreate_campaignCreate_blocks = CampaignCreate_campaignCreate_blocks_CampaignHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignFooterBlock | CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock | CampaignCreate_campaignCreate_blocks_CampaignHeroBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock | CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock;

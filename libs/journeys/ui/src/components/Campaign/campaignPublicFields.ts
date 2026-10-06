@@ -27,104 +27,44 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     }
     ... on CampaignHeroBlock {
       eyebrow
-      eyebrowTranslations {
-        languageId
-        value
-      }
       title
-      titleTranslations {
-        languageId
-        value
-      }
       lede
-      ledeTranslations {
-        languageId
-        value
-      }
       align
       mediaBlockId
     }
     ... on CampaignRegionSwitcherBlock {
       title
-      titleTranslations {
-        languageId
-        value
-      }
       switcherVariant: variant
     }
     ... on CampaignVideoCarouselBlock {
       eyebrow
-      eyebrowTranslations {
-        languageId
-        value
-      }
       title
-      titleTranslations {
-        languageId
-        value
-      }
       videoId
       videoVariantLanguageId
     }
     ... on CampaignJourneyListBlock {
       eyebrow
-      eyebrowTranslations {
-        languageId
-        value
-      }
       title
-      titleTranslations {
-        languageId
-        value
-      }
       lede
-      ledeTranslations {
-        languageId
-        value
-      }
       display
     }
     ... on CampaignAnalyticsBlock {
       eyebrow
-      eyebrowTranslations {
-        languageId
-        value
-      }
       title
-      titleTranslations {
-        languageId
-        value
-      }
       showMap
     }
     ... on CampaignRegionHeaderBlock {
       intro
-      introTranslations {
-        languageId
-        value
-      }
     }
     ... on CampaignRegionShareBlock {
       title
-      titleTranslations {
-        languageId
-        value
-      }
       intro
-      introTranslations {
-        languageId
-        value
-      }
     }
     ... on CampaignHeaderBlock {
       logoBlockId
     }
     ... on CampaignTypographyBlock {
       content
-      contentTranslations {
-        languageId
-        value
-      }
       typographyVariant: variant
       align
       color
@@ -132,10 +72,6 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     }
     ... on CampaignButtonBlock {
       label
-      labelTranslations {
-        languageId
-        value
-      }
       buttonVariant: variant
       size
       align
