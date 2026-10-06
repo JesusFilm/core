@@ -351,8 +351,12 @@ _Avoid_: video block (bare, where the Journey VideoBlock could be meant), clip, 
 The one owned block a hero or Featured Media section shows beside its text — a **Campaign Video** or a **Campaign Image**, named by the section's `mediaBlockId`. Zero or one per section; filling it replaces (soft-deletes) the block it held, and pointing it back at that block restores it, which is how undo works. A Watch Video with children shows as a poster card linking to Watch; any other video plays inline.
 _Avoid_: hero video, featured video (the slot may hold an image)
 
+**Video Carousel**:
+The section that shows a shelf of video cards, in one of two modes decided by its nullable `videoId` alone (there is no mode column). Set, it is a **Watch expansion** of that Video, whatever its label: the Video's children as cards in Watch's order — the first 12, then a "See all on Watch" card — or the Video itself when it has none; the join is the gateway's, through the carousel's federated `video`. Null, its cards are its explicit items: ordered **Campaign Video** children, unbounded, reordered like any sibling. A YouTube playlist paste imports the playlist's first 12 videos as explicit items in one bulk create.
+_Avoid_: collection carousel, playlist carousel, YouTube carousel (one typename takes every source)
+
 **Media paste**:
-The only way media enters a Campaign: paste a Watch or YouTube link, or upload an image or video. There is no browsing or searching; the editor shows what a link resolved to before it is kept, and the server resolves it again on save.
+The only way media enters a Campaign: paste a Watch link, a YouTube video or playlist link, or upload an image or video. There is no browsing or searching; the editor shows what a link resolved to before it is kept, and the server resolves it again on save.
 _Avoid_: picker (implies browsing), library, search
 
 **Campaign Public Page**:

@@ -92,3 +92,30 @@ export async function fetchWatchVideoBySlug(
     throw error
   }
 }
+
+/**
+ * Resolve a Watch Video by its database id through api-media's
+ * `video(id, idType: databaseId)`, which serves published videos only;
+ * `null` when the id resolves to nothing.
+ */
+export async function fetchWatchVideoById(
+  id: string
+): Promise<GatewayWatchVideo | null> {
+  const query = `
+    query CampaignWatchVideoById($id: ID!) {
+      video(id: $id, idType: databaseId) {
+        id
+        label
+        childrenCount
+      }
+    }
+  `
+  try {
+    const data = await graphqlRequest(query, { id })
+    const video = data.video as GatewayWatchVideo | null | undefined
+    return video ?? null
+  } catch (error) {
+    if (error instanceof GraphQLError) return null
+    throw error
+  }
+}

@@ -54,7 +54,11 @@ export {
 } from './CampaignSeo'
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideo } from './CampaignVideo'
-export { CampaignVideoCarousel } from './CampaignVideoCarousel'
+export {
+  CampaignVideoCarousel,
+  carouselCards,
+  hasCarouselCards
+} from './CampaignVideoCarousel'
 export {
   campaignFontsHref,
   CAMPAIGN_DEFAULT_FONTS
@@ -85,6 +89,10 @@ export type {
   CampaignTreeOf
 } from './types'
 export type { CampaignChromeTrees } from './CampaignPage'
+export type {
+  CampaignCarouselCard,
+  CampaignCarouselVideoCard
+} from './CampaignVideoCarousel'
 export type { CampaignSeoOptions } from './CampaignSeo'
 export type { CampaignImageSource } from './libs/campaignImageSource'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'

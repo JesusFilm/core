@@ -8,6 +8,9 @@ import {
 import userEvent from '@testing-library/user-event'
 import { v4 as uuidv4 } from 'uuid'
 
+import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
+
+import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
@@ -21,7 +24,7 @@ import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
-import { SelectionProbe, StaticEditor } from '../testing'
+import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
 
 import { BottomBar } from './BottomBar'
@@ -487,6 +490,189 @@ describe('BottomBar', () => {
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'landingJourneyListId'
+    )
+  })
+})
+
+describe('BottomBar for a Video Carousel and its cards', () => {
+  function carouselItem(
+    id: string,
+    parentOrder: number
+  ): GetCampaign_campaign_blocks {
+    return {
+      ...youTubeVideoBlock,
+      id,
+      videoId: `${id}YouTube`,
+      parentBlockId: 'carouselId',
+      parentOrder
+    }
+  }
+
+  const carouselCampaign = {
+    ...campaign,
+    blocks: [
+      ...campaign.blocks,
+      carouselItem('firstItemId', 0),
+      carouselItem('secondItemId', 1),
+      carouselItem('thirdItemId', 2)
+    ]
+  }
+
+  const moveRightMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+      variables: { id: 'firstItemId', parentOrder: 1 }
+    },
+    result: vi.fn(() => ({
+      data: {
+        campaignBlockOrderUpdate: [
+          {
+            __typename: 'CampaignVideoBlock',
+            id: 'secondItemId',
+            parentOrder: 0
+          },
+          {
+            __typename: 'CampaignVideoBlock',
+            id: 'firstItemId',
+            parentOrder: 1
+          },
+          {
+            __typename: 'CampaignVideoBlock',
+            id: 'thirdItemId',
+            parentOrder: 2
+          }
+        ]
+      }
+    }))
+  }
+
+  const moveLeftMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+      variables: { id: 'thirdItemId', parentOrder: 1 }
+    },
+    result: vi.fn(() => ({ data: { campaignBlockOrderUpdate: [] } }))
+  }
+
+  const cardDeleteMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_DELETE,
+      variables: { id: 'secondItemId' }
+    },
+    result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+  }
+
+  function renderCarouselBar(
+    selectedBlockId: string
+  ): ReturnType<typeof render> {
+    return render(
+      <StaticEditor
+        campaignProp={carouselCampaign}
+        initialState={{ selectedBlockId }}
+        mocks={[moveRightMock, moveLeftMock, cardDeleteMock]}
+      >
+        <Hotkeys />
+        <SelectionProbe />
+        <CommandProbe />
+        <BottomBar onSettingsClick={vi.fn()} />
+      </StaticEditor>
+    )
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('shows Edit, ← → arrows and bin for a selected card, under its carousel in the breadcrumb', () => {
+    renderCarouselBar('secondItemId')
+
+    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+      'data-selection',
+      'card'
+    )
+    expect(buttonNames()).toEqual([
+      'Campaign',
+      'Video carousel',
+      'Edit',
+      'Move left',
+      'Move right',
+      'Delete'
+    ])
+    expect(screen.getByRole('button', { name: 'Move left' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Move right' })).toBeEnabled()
+  })
+
+  it('disables ← on the first card and → on the last', () => {
+    const { unmount } = renderCarouselBar('firstItemId')
+    expect(screen.getByRole('button', { name: 'Move left' })).toBeDisabled()
+    unmount()
+
+    renderCarouselBar('thirdItemId')
+    expect(screen.getByRole('button', { name: 'Move right' })).toBeDisabled()
+  })
+
+  it('moves a card right past its neighbour as one order Command', async () => {
+    renderCarouselBar('firstItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move right' }))
+
+    await waitFor(() => expect(moveRightMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'firstItemId'
+    )
+  })
+
+  it('moves a card left to its neighbour’s position as one order Command', async () => {
+    renderCarouselBar('thirdItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move left' }))
+
+    await waitFor(() => expect(moveLeftMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('deletes a card from the bin as one Command, with no confirmation', async () => {
+    renderCarouselBar('secondItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(() => expect(cardDeleteMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'carouselId'
+    )
+  })
+
+  it('opens the card editor from a card’s Edit', async () => {
+    renderCarouselBar('secondItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(
+      await screen.findByTestId('CampaignCarouselCardEdit')
+    ).toHaveAttribute('data-block-id', 'secondItemId')
+  })
+
+  it('opens the carousel editor from the carousel’s Edit', async () => {
+    renderCarouselBar('carouselId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(await screen.findByTestId('CampaignCarouselEdit')).toHaveAttribute(
+      'data-block-id',
+      'carouselId'
+    )
+  })
+
+  it('steps up from a card to its carousel on Escape', async () => {
+    renderCarouselBar('secondItemId')
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'carouselId'
     )
   })
 })

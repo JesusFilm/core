@@ -220,11 +220,11 @@ describe('campaignVideoBlockCreate', () => {
 
     it('refuses a section without a Media Slot (BAD_USER_INPUT, mediaBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'carouselId')!
+        fixture.blocks.find((block) => block.id === 'landingJourneyListId')!
       )
 
       const result = await create({
-        parentBlockId: 'carouselId',
+        parentBlockId: 'landingJourneyListId',
         source: 'youTube',
         videoId: YOUTUBE_ID
       })
@@ -235,6 +235,42 @@ describe('campaignVideoBlockCreate', () => {
       })
       expect(fetchFieldsFromYouTube).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
+
+    it('appends an explicit item to a Video Carousel: parentOrder after its children, no slot written', async () => {
+      const carousel = fixture.blocks.find(
+        (block) => block.id === 'carouselId'
+      )!
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+      prismaMock.campaignBlock.findMany.mockResolvedValue([
+        {
+          ...carousel,
+          id: 'firstItemId',
+          typename: 'CampaignVideoBlock',
+          parentBlockId: 'carouselId',
+          parentOrder: 0
+        }
+      ])
+
+      const result = await create({
+        id: 'itemId',
+        parentBlockId: 'carouselId',
+        source: 'youTube',
+        videoId: YOUTUBE_ID
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.campaignVideoBlockCreate).toMatchObject({
+        id: 'itemId',
+        parentBlockId: 'carouselId',
+        parentOrder: 1,
+        source: 'youTube',
+        title: 'YouTube title',
+        duration: 120
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'carouselId' } })
+      )
     })
 
     it('refuses an Extra or a missing parent (BAD_USER_INPUT, parentBlockId)', async () => {

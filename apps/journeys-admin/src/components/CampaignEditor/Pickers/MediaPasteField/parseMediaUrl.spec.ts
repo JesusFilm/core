@@ -1,6 +1,6 @@
 import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 
-import { parseMediaUrl } from './parseMediaUrl'
+import { parseMediaUrl, parsePlaylistUrl } from './parseMediaUrl'
 
 describe('parseMediaUrl', () => {
   it('reads a Watch address to its variant slug', () => {
@@ -64,5 +64,30 @@ describe('parseMediaUrl', () => {
     expect(
       parseMediaUrl('https://www.youtube.com/playlist?list=PL123')
     ).toBeNull()
+  })
+})
+
+describe('parsePlaylistUrl', () => {
+  const LIST = 'PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG'
+
+  it.each([
+    `https://www.youtube.com/playlist?list=${LIST}`,
+    `https://youtube.com/playlist?list=${LIST}`,
+    `https://m.youtube.com/playlist/?list=${LIST}`
+  ])('reads %s as a playlist', (url) => {
+    expect(parsePlaylistUrl(` ${url} `)).toEqual({
+      source: 'youTubePlaylist',
+      url,
+      playlistId: LIST
+    })
+  })
+
+  it.each([
+    `https://www.youtube.com/watch?v=jQaeIJOA6J0&list=${LIST}`,
+    'https://www.youtube.com/playlist',
+    `https://example.com/playlist?list=${LIST}`,
+    'not a link'
+  ])('refuses %s', (url) => {
+    expect(parsePlaylistUrl(url)).toBeNull()
   })
 })

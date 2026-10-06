@@ -83,7 +83,8 @@ export function newSectionBlock(
         eyebrow: null,
         title: null,
         videoId: null,
-        videoVariantLanguageId: null
+        videoVariantLanguageId: null,
+        video: null
       }
     case 'CampaignJourneyListBlock':
       return {

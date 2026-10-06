@@ -23,6 +23,7 @@ import {
   createTopLevelBlock,
   getSiblings,
   removeBlock,
+  reorderBlock,
   restoreBlock,
   sectionStyleColumns,
   swapMediaSlot,
@@ -223,6 +224,134 @@ describe('campaign block service', () => {
         field: 'typename'
       })
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('Video Carousel items', () => {
+    const carousel = fixture.blocks.find((block) => block.id === 'carouselId')!
+    function item(id: string, parentOrder: number): any {
+      return {
+        ...carousel,
+        id,
+        typename: 'CampaignVideoBlock',
+        parentBlockId: 'carouselId',
+        parentOrder,
+        source: 'youTube',
+        videoId: id,
+        action: null
+      }
+    }
+
+    it('takes a CampaignVideoBlock as an ordered child of a carousel', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+
+      await expect(
+        validateParentBlock('carouselId', 'campaignId', 'CampaignVideoBlock')
+      ).resolves.toBe(carousel)
+    })
+
+    it('still takes Extras on a carousel', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+
+      await expect(
+        validateParentBlock('carouselId', 'campaignId', 'CampaignButtonBlock')
+      ).resolves.toBe(carousel)
+    })
+
+    it.each([
+      'CampaignImageBlock',
+      'CampaignJourneyBlock',
+      'CampaignHeroBlock'
+    ])(
+      'refuses %s as a child of a carousel (BAD_USER_INPUT, typename)',
+      async (typename) => {
+        prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
+
+        const error = await errorOf(
+          validateParentBlock('carouselId', 'campaignId', typename)
+        )
+
+        expect(error.extensions).toMatchObject({
+          code: 'BAD_USER_INPUT',
+          field: 'typename'
+        })
+      }
+    )
+
+    it('refuses a CampaignVideoBlock item under any section but a carousel (BAD_USER_INPUT, typename)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+
+      const error = await errorOf(
+        validateParentBlock('heroId', 'campaignId', 'CampaignVideoBlock')
+      )
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'typename'
+      })
+    })
+
+    it('appends a new item after the carousel’s children by parentOrder', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([
+        item('firstId', 0),
+        item('secondId', 1)
+      ])
+      prismaMock.campaignBlock.create.mockImplementation((async ({
+        data
+      }: any) => ({ ...data, action: null })) as never)
+
+      const created = await createChildBlock(prismaMock, carousel, {
+        typename: 'CampaignVideoBlock',
+        source: 'youTube',
+        videoId: 'thirdId'
+      })
+
+      expect(created).toMatchObject({
+        parentBlockId: 'carouselId',
+        parentOrder: 2,
+        pageId: 'landingPageId'
+      })
+    })
+
+    it('reorders an item among the carousel’s children, as campaignBlockOrderUpdate does', async () => {
+      const items = [
+        item('firstId', 0),
+        item('secondId', 1),
+        item('thirdId', 2)
+      ]
+      prismaMock.campaignBlock.findMany.mockResolvedValue(items)
+      prismaMock.campaignBlock.update.mockImplementation((async ({
+        where,
+        data
+      }: any) => ({
+        ...items.find((candidate) => candidate.id === where.id),
+        ...data
+      })) as never)
+
+      const siblings = await reorderBlock(items[2], 1)
+
+      expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ parentBlockId: 'carouselId' }),
+          orderBy: { parentOrder: 'asc' }
+        })
+      )
+      expect(
+        siblings.map((sibling) => [sibling.id, sibling.parentOrder])
+      ).toEqual([
+        ['firstId', 0],
+        ['thirdId', 1],
+        ['secondId', 2]
+      ])
+    })
+
+    it('refuses a placement on an item (BAD_USER_INPUT, placement)', async () => {
+      const error = await errorOf(reorderBlock(item('firstId', 0), 1, 'above'))
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'placement'
+      })
     })
   })
 

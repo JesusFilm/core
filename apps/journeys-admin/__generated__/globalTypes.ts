@@ -885,7 +885,7 @@ export interface CampaignUpdateInput {
 }
 
 /**
- * A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`); it replaces the block the slot held and gets `parentOrder: null`. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
+ * A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`), replacing the block the slot held with `parentOrder: null`, or the next explicit item of a Video Carousel. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
  */
 export interface CampaignVideoBlockCreateInput {
   id?: string | null;
@@ -894,6 +894,14 @@ export interface CampaignVideoBlockCreateInput {
   source: VideoBlockSource;
   videoId?: string | null;
   url?: string | null;
+  title?: string | null;
+  description?: string | null;
+}
+
+/**
+ * The author’s default-language overrides. Null (or empty) falls back to the source text: read live for a Watch video, re-read from YouTube or Mux otherwise.
+ */
+export interface CampaignVideoBlockUpdateInput {
   title?: string | null;
   description?: string | null;
 }
@@ -910,6 +918,9 @@ export interface CampaignVideoCarouselBlockCreateInput {
 export interface CampaignVideoCarouselBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
+  url?: string | null;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;
