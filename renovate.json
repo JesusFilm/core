@@ -11,9 +11,10 @@
       "infrastructure/kube/argocd/applications/.+\\.ya?ml$"
     ]
   },
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["^infrastructure/kube/argocd/deploy\\.sh$"],
+      "customType": "regex",
+      "managerFilePatterns": ["/^infrastructure/kube/argocd/deploy\\.sh$/"],
       "matchStrings": [
         "ARGOCD_VERSION=\\\"\\$\\{ARGOCD_VERSION:-?(?<currentValue>v\\d+\\.\\d+\\.\\d+)\\}\\\""
       ],
