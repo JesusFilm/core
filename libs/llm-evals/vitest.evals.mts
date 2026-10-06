@@ -8,7 +8,7 @@ export default defineConfig({
     setupFiles: ['./setupEvals.ts'],
     reporters: ['verbose'],
     passWithNoTests: false,
-    testTimeout: 120_000,
+    testTimeout: 300_000,
     hookTimeout: 60_000,
     retry: 0
   }

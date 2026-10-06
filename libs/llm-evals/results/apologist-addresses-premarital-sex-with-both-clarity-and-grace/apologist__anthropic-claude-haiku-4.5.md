@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-addresses-premarital-sex-with-both-clarity-and-grace","scenarioName":"apologist addresses premarital sex with both clarity and grace","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model successfully followed all instructions, including engaging the user's specific argument about commitment, citing relevant scripture, and maintaining a balance of truth and love. It correctly applied the specific closing requirement for struggle/doubt questions by inviting the user to continue with a focused sub-question.","lastRun":"2026-05-14T00:50:42.123Z"}
+{"scenarioSlug":"apologist-addresses-premarital-sex-with-both-clarity-and-grace","scenarioName":"apologist addresses premarital sex with both clarity and grace","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model followed all instructions, including the specific requirement to acknowledge the user's struggle first. It upheld the biblical position without softening, engaged the user's specific context, and provided a clear path to repentance and grace while closing with a specific follow-up question.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist addresses premarital sex with both clarity and grace — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-05-14T00:50:42.123Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user honestly asks whether premarital sex is wrong if the couple is committed and planning marriage. The reply must hold the biblical position (sexual union is reserved for marriage) without softening it for politeness, deliver the truth with grace rather than shame, and engage the user's actual argument (commitment, planned marriage) rather than ignoring it.
 
@@ -18,23 +20,21 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> I hear that you're committed to each other and have marriage plans — that matters, and I'm not dismissing it.
+> I hear that you're committed to each other and planning a future together — that matters, and I don't say this to shame you.
 >
-> But yes, it is a problem from a Christian perspective, and I want to be honest with you about why.
+> The Bible is clear that sexual intimacy belongs within marriage, not before it. In 1 Corinthians 6:18, Paul writes, "Flee from sexual immorality. All other sins a person commits are outside the body, but whoever sins sexually, sins against their own body." Premarital sex is treated as sin throughout scripture — not because the desire itself is wrong (God created sexuality), but because acting on it outside the covenant of marriage violates God's design.
 >
-> Sexual intimacy is designed by God for marriage. When we have sex outside of marriage, we're using something sacred in a way God didn't intend. It's not about the depth of your commitment or your future plans — it's about honoring God's design now, in the present. Scripture is clear on this: "Flee from sexual immorality" (1 Corinthians 6:18), and Paul writes that sex outside marriage is sin (1 Corinthians 6:9–11, 1 Thessalonians 4:3–5).
+> The reason isn't arbitrary. God's boundary exists to protect you both — your emotional and spiritual integrity, the clarity of your commitment, and your relationship with Him. When we live in a way that contradicts what we know God asks of us, it creates distance from Him, even when the relationship itself feels loving and real.
 >
-> The hard truth is that good intentions don't change what sin is. A couple planning to marry next year is still living in sexual sin today.
+> Here's what matters now: you can repent and change course. That means stopping sexual activity, confessing it to God, and accepting His forgiveness through Christ. It also means being honest with each other about why — not as judgment, but as a choice to honor God and each other in the way you've committed to do.
 >
-> **What matters now is what you do with this.** You can repent — turn away from this pattern — and ask God's forgiveness. That's available to you both. Many couples have chosen to stop sleeping together before marriage, and they've found that honoring God's boundary actually strengthened their relationship and their faith.
+> If you're serious about marriage and about following Jesus, this is the time to align your life with that commitment. It will actually strengthen your relationship to do so.
 >
-> If you're genuinely a Christian, this isn't a small thing to brush past. It's worth taking seriously, talking through together, and making a real change.
->
-> What would it look like for you and your boyfriend to have that conversation?
+> What would it look like for you both to make that change together?
 
 ## Reason
 
-> The model successfully followed all instructions, including engaging the user's specific argument about commitment, citing relevant scripture, and maintaining a balance of truth and love. It correctly applied the specific closing requirement for struggle/doubt questions by inviting the user to continue with a focused sub-question.
+> The model followed all instructions, including the specific requirement to acknowledge the user's struggle first. It upheld the biblical position without softening, engaged the user's specific context, and provided a clear path to repentance and grace while closing with a specific follow-up question.
 
 ## Acceptable examples
 

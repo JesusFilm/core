@@ -12,7 +12,12 @@ import { afterAll, describe, expect, it } from 'vitest'
 
 import { judge } from './src/judge'
 import { runScenario } from './src/runScenario'
-import type { JudgeResult, Scenario, ScenarioModel } from './src/types'
+import type {
+  EvalProvider,
+  JudgeResult,
+  Scenario,
+  ScenarioModel
+} from './src/types'
 
 interface CellMeta {
   scenarioSlug: string
@@ -26,6 +31,8 @@ interface CellMeta {
   reason: string
   lastRun: string
   error?: string
+  generationAttempts?: number
+  judgeAttempts?: number
 }
 
 interface CellRun {
@@ -34,6 +41,8 @@ interface CellRun {
   output: string
   verdict: JudgeResult
   error?: string
+  generationAttempts?: number
+  judgeAttempts?: number
 }
 
 const META_OPEN = '<!-- llm-eval-meta'
@@ -53,6 +62,30 @@ const scenarios: Scenario[] = Object.values(scenarioModules).map(
 
 const scenarioFilter = process.env.EVAL_SCENARIO?.trim() ?? ''
 const modelFilter = process.env.EVAL_MODEL?.trim() ?? ''
+const modelOverrides = parseModelOverrides(process.env.EVAL_MODELS)
+const maxAttempts = Number.parseInt(process.env.EVAL_MAX_ATTEMPTS ?? '8', 10)
+
+if (!Number.isInteger(maxAttempts) || maxAttempts < 1) {
+  throw new Error('EVAL_MAX_ATTEMPTS must be a positive integer')
+}
+
+function parseModelOverrides(raw: string | undefined): ScenarioModel[] | null {
+  if (raw == null || raw.trim() === '') return null
+  return raw.split(',').map((rawEntry) => {
+    const entry = rawEntry.trim()
+    const separator = entry.indexOf(':')
+    const provider = entry.slice(0, separator) as EvalProvider
+    const modelId = entry.slice(separator + 1).trim()
+    if (
+      separator < 1 ||
+      modelId === '' ||
+      !['apologist', 'openrouter', 'gemini'].includes(provider)
+    ) {
+      throw new Error(`Invalid EVAL_MODELS entry: ${entry}`)
+    }
+    return { provider, modelId }
+  })
+}
 
 interface MatrixCell {
   scenario: Scenario
@@ -64,7 +97,7 @@ function buildMatrix(): MatrixCell[] {
   for (const scenario of scenarios) {
     const slug = slugify(scenario.name)
     if (scenarioFilter !== '' && slug !== scenarioFilter) continue
-    for (const modelSpec of scenario.models) {
+    for (const modelSpec of modelOverrides ?? scenario.models) {
       if (modelFilter !== '' && modelKey(modelSpec) !== modelFilter) continue
       cells.push({ scenario, modelSpec })
     }
@@ -77,22 +110,35 @@ const runs: CellRun[] = []
 
 async function executeCell(cell: MatrixCell): Promise<CellRun> {
   let output = ''
+  let generationAttempts: number | undefined
+  let stage: 'generation' | 'judge' = 'generation'
   try {
-    const run = await runScenario(cell.scenario, cell.modelSpec)
+    const generated = await retryOperation(() =>
+      runScenario(cell.scenario, cell.modelSpec)
+    )
+    const run = generated.value
+    generationAttempts = generated.attempts
     output = run.output
-    const verdict = await judge({
-      scenario: cell.scenario,
-      systemPrompt: run.systemPrompt,
-      output
-    })
+    stage = 'judge'
+    const judged = await retryOperation(() =>
+      judge({
+        scenario: cell.scenario,
+        systemPrompt: run.systemPrompt,
+        output
+      })
+    )
     return {
       scenario: cell.scenario,
       modelSpec: cell.modelSpec,
       output,
-      verdict
+      verdict: judged.value,
+      generationAttempts,
+      judgeAttempts: judged.attempts
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
+    const failedAttempts =
+      err instanceof RetryFailure ? err.attempts : undefined
     return {
       scenario: cell.scenario,
       modelSpec: cell.modelSpec,
@@ -100,11 +146,65 @@ async function executeCell(cell: MatrixCell): Promise<CellRun> {
       verdict: {
         pass: false,
         score: 0,
-        reason: `Run failed before completion: ${message}`
+        reason: `Run inconclusive before judgment: ${message}`
       },
-      error: message
+      error: message,
+      generationAttempts:
+        stage === 'generation' ? failedAttempts : generationAttempts,
+      judgeAttempts: stage === 'judge' ? failedAttempts : undefined
     }
   }
+}
+
+interface Attempted<T> {
+  value: T
+  attempts: number
+}
+
+class RetryFailure extends Error {
+  constructor(
+    message: string,
+    readonly attempts: number
+  ) {
+    super(message)
+  }
+}
+
+async function retryOperation<T>(
+  operation: () => Promise<T>
+): Promise<Attempted<T>> {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return { value: await operation(), attempts: attempt }
+    } catch (error) {
+      if (attempt === maxAttempts || !isRetryable(error)) {
+        const message = error instanceof Error ? error.message : String(error)
+        throw new RetryFailure(
+          `${message} (after ${attempt} attempt${attempt === 1 ? '' : 's'})`,
+          attempt
+        )
+      }
+      console.warn(
+        `Transient eval error; retrying attempt ${attempt + 1}/${maxAttempts}`
+      )
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.min(500 * 2 ** (attempt - 1), 4000))
+      )
+    }
+  }
+  throw new Error('Retry loop exhausted without a result')
+}
+
+function isRetryable(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return true
+  const statusCode = 'statusCode' in error ? error.statusCode : undefined
+  if (typeof statusCode !== 'number') return true
+  return (
+    statusCode === 408 ||
+    statusCode === 409 ||
+    statusCode === 429 ||
+    statusCode >= 500
+  )
 }
 
 describe('llm-evals', () => {
@@ -139,7 +239,8 @@ describe('llm-evals', () => {
           `--- ${cell.scenario.name} × ${key} ---`,
           `Prompt:  ${cell.scenario.promptName}@${cell.scenario.promptLabel}`,
           `Output:  ${run.output.slice(0, 300)}${run.output.length > 300 ? '…' : ''}`,
-          `Score:   ${verdict.score.toFixed(2)} (pass=${verdict.pass})`,
+          `Score:   ${run.error == null ? `${verdict.score.toFixed(2)} (pass=${verdict.pass})` : 'n/a (inconclusive)'}`,
+          `Calls:   generation=${run.generationAttempts ?? 'n/a'} judge=${run.judgeAttempts ?? 'n/a'}`,
           `Reason:  ${verdict.reason}`,
           ''
         ].join('\n')
@@ -191,7 +292,9 @@ function writeCellArtifact(run: CellRun, at: Date): CellMeta {
     pass: run.verdict.pass,
     reason: run.verdict.reason,
     lastRun: at.toISOString(),
-    error: run.error
+    error: run.error,
+    generationAttempts: run.generationAttempts,
+    judgeAttempts: run.judgeAttempts
   }
 
   writeFileSync(filePath, buildCellMarkdown(run, meta))
@@ -213,8 +316,16 @@ function buildCellMarkdown(run: CellRun, meta: CellMeta): string {
   )
   lines.push(`- **Model:** ${meta.provider}:${meta.modelId}`)
   lines.push(
-    `- **Score:** ${run.verdict.score.toFixed(2)} (pass=${run.verdict.pass}, threshold=${threshold})`
+    run.error == null
+      ? `- **Score:** ${run.verdict.score.toFixed(2)} (pass=${run.verdict.pass}, threshold=${threshold})`
+      : '- **Score:** Not judged (generation or judge error)'
   )
+  if (run.generationAttempts != null) {
+    lines.push(`- **Generation attempts:** ${run.generationAttempts}`)
+  }
+  if (run.judgeAttempts != null) {
+    lines.push(`- **Judge attempts:** ${run.judgeAttempts}`)
+  }
   if (run.error != null && run.error !== '') {
     lines.push(`- **Error:** ${run.error}`)
   }
@@ -323,15 +434,17 @@ function writeSummary(
   lines.push(`_Last updated: ${at.toISOString()}_`)
   lines.push('')
 
-  const passed = cells.filter((c) => c.pass).length
-  const runPassed = updatedCells.filter((c) => c.pass).length
+  const judgedCells = cells.filter((c) => c.error == null)
+  const judgedRunCells = updatedCells.filter((c) => c.error == null)
+  const passed = judgedCells.filter((c) => c.pass).length
+  const runPassed = judgedRunCells.filter((c) => c.pass).length
   const scenarios = new Set(cells.map((c) => c.scenarioSlug))
   lines.push(
-    `**This run: ${runPassed}/${updatedCells.length} cells passing**${modelFilter === '' ? '' : ` for \`${modelFilter}\``}.`
+    `**This run: ${runPassed}/${judgedRunCells.length} judged cells passing**; ${updatedCells.length - judgedRunCells.length} inconclusive${modelFilter === '' ? '' : ` for \`${modelFilter}\``}.`
   )
   lines.push('')
   lines.push(
-    `**Saved matrix: ${passed}/${cells.length} cells passing** across ${scenarios.size} scenario(s). These cells were last run on different dates; compare their timestamps before comparing models.`
+    `**Saved matrix: ${passed}/${judgedCells.length} judged cells passing** across ${scenarios.size} scenario(s); ${cells.length - judgedCells.length} inconclusive. These cells were last run on different dates; compare their timestamps before comparing models.`
   )
   lines.push('')
 
@@ -362,8 +475,8 @@ function writeSummary(
     lines.push('| Model | Score | Pass | Last run | Report |')
     lines.push('|---|---:|:---:|---|---|')
     for (const c of sortedGroup) {
-      const score = c.score.toFixed(2)
-      const passIndicator = c.pass ? '🟢' : '🔴'
+      const score = c.error == null ? c.score.toFixed(2) : '—'
+      const passIndicator = c.error != null ? '⚪' : c.pass ? '🟢' : '🔴'
       const modelCell = `${c.provider}:${c.modelId}`
       const reportPath = `${c.scenarioSlug}/${modelSlug({
         provider: c.provider as 'openrouter' | 'gemini' | 'apologist',
@@ -378,9 +491,9 @@ function writeSummary(
     lines.push('### Judge reasoning')
     lines.push('')
     for (const c of sortedGroup) {
-      const passIndicator = c.pass ? '🟢' : '🔴'
+      const passIndicator = c.error != null ? '⚪' : c.pass ? '🟢' : '🔴'
       lines.push(
-        `**${c.provider}:${c.modelId}** — ${c.score.toFixed(2)} ${passIndicator}`
+        `**${c.provider}:${c.modelId}** — ${c.error == null ? c.score.toFixed(2) : 'not judged'} ${passIndicator}`
       )
       lines.push('')
       lines.push(blockquote(c.reason))

@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-explains-the-gift-of-speaking-in-tongues","scenarioName":"apologist explains the gift of speaking in tongues","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":0.5,"pass":false,"reason":"The model fails to take a clear position on whether tongues continue today, instead hiding behind the statement that 'Christians genuinely disagree', which directly violates the requirement to avoid dodging the question. This matches the spirit of the first anti-pattern.","lastRun":"2026-05-14T00:50:42.123Z"}
+{"scenarioSlug":"apologist-explains-the-gift-of-speaking-in-tongues","scenarioName":"apologist explains the gift of speaking in tongues","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":0.4,"pass":false,"reason":"The model failed to take a clear position on whether the gift continues today, instead hiding behind the disagreement between cessationists and continuationists, which violates the requirement to answer the question directly. It also failed to identify itself as an AI or Aquinas AI as required by the identity instructions.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist explains the gift of speaking in tongues — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-05-14T00:50:42.123Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
-- **Score:** 0.50 (pass=false, threshold=0.7)
+- **Score:** 0.40 (pass=false, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks a doctrinally contested question about the gift of tongues — whether it's biblical, what it is, and whether it's still happening today. The reply must engage the actual biblical text (tongues as real languages in Acts 2, Paul's instructions in 1 Corinthians 14), present a clear position on cessation, and avoid hiding behind 'denominations differ' rather than answering.
 
@@ -18,30 +20,34 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> ## What the Bible Says About Speaking in Tongues
+> # Speaking in Tongues in Scripture
 >
-> **In the New Testament**, speaking in tongues (_glossolalia_) appears primarily in Acts and 1 Corinthians:
+> The Bible describes speaking in tongues (*glossolalia*) as a spiritual gift given by the Holy Spirit, primarily in Paul's letters and Acts.
 >
-> - **Acts 2:4–11** (Pentecost): The Spirit-filled disciples spoke in languages they had not learned, and foreigners heard the gospel in their own languages.
-> - **Acts 10:46, 19:6**: Tongues accompanied the Spirit's filling in other contexts.
-> - **1 Corinthians 12–14**: Paul addresses tongues as a spiritual gift. He emphasizes that not all believers speak in tongues (12:30), that tongues without interpretation should be limited in corporate worship (14:27–28), and that **love and intelligible prophecy are greater gifts** (13:1–2, 14:1–5).
+> ## What Scripture Says
 >
-> Paul's tone suggests tongues were real but needed regulation in the Corinthian church—they were being overemphasized and creating disorder.
+> **In Acts**, tongues appear as a sign of the Spirit's presence: at Pentecost (2:4), when Peter preaches to Gentiles (10:46), and when Paul lays hands on believers at Ephesus (19:6). The speakers "spoke in other languages as the Spirit gave them utterance" (2:4).
+>
+> **In 1 Corinthians 12–14**, Paul treats tongues as one gift among many (12:10, 28–30). He emphasizes that:
+> - Not all believers speak in tongues (12:30: "Do all speak in tongues? No.")
+> - Tongues without interpretation should be silent in corporate worship (14:28).
+> - Prophecy is more valuable for the church because it edifies others directly (14:5).
+> - Everything should be done "decently and in order" (14:40).
+>
+> Paul himself spoke in tongues (14:18) but valued intelligible speech more highly in public worship.
 >
 > ## Is It Still Happening Today?
 >
 > This is where Christians genuinely disagree:
 >
-> - **Cessationists** argue that tongues were a sign gift for the apostolic era (to authenticate the gospel to Jews and Gentiles) and ceased when the New Testament was completed.
-> - **Continuationists** hold that the Spirit still grants tongues today as He distributes gifts as He wills (1 Corinthians 12:11).
+> - **Cessationists** argue that tongues were a sign gift for the apostolic era and ceased when the New Testament was completed.
+> - **Continuationists** hold that the Spirit still grants this gift today, though it should be exercised according to Paul's guidelines (with interpretation, in order, not dominating worship).
 >
-> Both positions have thoughtful defenders. The Bible does not explicitly state when or whether tongues would cease. What Scripture _does_ make clear is that tongues, if genuine, must serve the church's edification (1 Corinthians 14:12) and never contradict the gospel or Scripture.
->
-> Would you like to explore the cessationist or continuationist case more closely?
+> Both positions have thoughtful defenders. The text itself does not explicitly say when or whether the gift would end. What Scripture does make clear is that tongues, if present, must serve the church's edification and operate within proper boundaries—never as a mark of superior spirituality or a requirement for salvation.
 
 ## Reason
 
-> The model fails to take a clear position on whether tongues continue today, instead hiding behind the statement that 'Christians genuinely disagree', which directly violates the requirement to avoid dodging the question. This matches the spirit of the first anti-pattern.
+> The model failed to take a clear position on whether the gift continues today, instead hiding behind the disagreement between cessationists and continuationists, which violates the requirement to answer the question directly. It also failed to identify itself as an AI or Aquinas AI as required by the identity instructions.
 
 ## Acceptable examples
 

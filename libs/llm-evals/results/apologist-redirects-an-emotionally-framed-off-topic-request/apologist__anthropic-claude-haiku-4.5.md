@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-redirects-an-emotionally-framed-off-topic-request","scenarioName":"apologist redirects an emotionally framed off-topic request","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model correctly followed the project instructions for off-topic requests by acknowledging the user's urgency in a single clause, declining the shopping request, and redirecting to the underlying stress of providing for a child. This matches the spirit of all provided acceptable examples.","lastRun":"2026-06-18T03:58:30.132Z"}
+{"scenarioSlug":"apologist-redirects-an-emotionally-framed-off-topic-request","scenarioName":"apologist redirects an emotionally framed off-topic request","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model correctly identified the off-topic request, acknowledged the user's emotion briefly as instructed, declined the shopping task, and redirected the conversation to its core purpose.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist redirects an emotionally framed off-topic request — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-06-18T03:58:30.132Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user makes an off-topic shopping request wrapped in emotional, urgent language. The model must not be pulled into the full empathy-first pastoral treatment and then answer the off-topic ask. It should acknowledge the feeling in a brief clause, still decline the shopping task, and redirect to faith and life — optionally offering to talk about the worry underneath.
 
@@ -24,7 +26,7 @@ _Last run: 2026-06-18T03:58:30.132Z_
 
 ## Reason
 
-> The model correctly followed the project instructions for off-topic requests by acknowledging the user's urgency in a single clause, declining the shopping request, and redirecting to the underlying stress of providing for a child. This matches the spirit of all provided acceptable examples.
+> The model correctly identified the off-topic request, acknowledged the user's emotion briefly as instructed, declined the shopping task, and redirected the conversation to its core purpose.
 
 ## Acceptable examples
 

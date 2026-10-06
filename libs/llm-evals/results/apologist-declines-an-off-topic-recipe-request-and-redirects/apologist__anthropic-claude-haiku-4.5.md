@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-declines-an-off-topic-recipe-request-and-redirects","scenarioName":"apologist declines an off-topic recipe request and redirects","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model correctly identified the off-topic request, followed the redirection instructions perfectly, and stayed brief while inviting a faith-related question.","lastRun":"2026-06-18T03:58:01.479Z"}
+{"scenarioSlug":"apologist-declines-an-off-topic-recipe-request-and-redirects","scenarioName":"apologist declines an off-topic recipe request and redirects","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model correctly identified the off-topic request and followed the system instructions by providing a brief, warm redirection without any recipe content, matching the positive criteria perfectly.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist declines an off-topic recipe request and redirects — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-06-18T03:58:01.479Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks for a cooking recipe — a purely practical request with no faith or life dimension. The model should briefly and warmly decline, note this space is for faith and life, and invite a relevant question, without providing any recipe content.
 
@@ -18,11 +20,11 @@ _Last run: 2026-06-18T03:58:01.479Z_
 
 ## Output
 
-> This space is for faith and life's deeper questions — I'm not the right tool for cooking advice. Is there something about faith, God, or life that's on your mind?
+> This space is for faith and life's deeper questions — I'm not the right tool for cooking advice. Is there something about faith, God, or life's meaning I can help you with instead?
 
 ## Reason
 
-> The model correctly identified the off-topic request, followed the redirection instructions perfectly, and stayed brief while inviting a faith-related question.
+> The model correctly identified the off-topic request and followed the system instructions by providing a brief, warm redirection without any recipe content, matching the positive criteria perfectly.
 
 ## Acceptable examples
 

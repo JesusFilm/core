@@ -19,7 +19,7 @@ pnpm exec nx run llm-evals:eval
 
 ## How it works
 
-Each scenario declares one or more **models** it wants to be tested against. A run executes every `(scenario, model)` cell in the matrix and writes one canonical file per cell — the artifact for that combination at the moment of its last run.
+Each scenario declares one or more **models** it wants to be tested against. A run executes every `(scenario, model)` cell in the matrix and writes one canonical file per cell — the artifact for that combination at the moment of its last run. `EVAL_MODELS` can replace every scenario's model list for a one-off comparison.
 
 ```
                 ┌────────────────────────┐
@@ -82,7 +82,7 @@ Runs every scenario × model cell declared across `scenarios/**/*.eval.ts`. For 
 3. Calls the judge model (independently configured) with the system prompt, scenario, query, actual output, `acceptableExamples`, and `unacceptableExamples` — getting back `{ pass, score, reason }`.
 4. Asserts `pass === true`.
 
-Live eval calls are never served from the Nx cache. An empty model response fails as a generation error before the judge runs, so gateway filtering cannot be mistaken for a low-quality answer.
+Live eval calls are never served from the Nx cache. Empty model responses and transient API errors are retried before the judge runs (eight attempts by default, configurable with `EVAL_MAX_ATTEMPTS`). A cell that still cannot be generated or judged is marked **inconclusive** and excluded from the scored pass rate. A substantive answer that the judge scores below the threshold is never retried just to obtain a passing answer.
 
 #### Results layout — one file per (scenario, model) cell, no timestamps
 
@@ -107,10 +107,12 @@ The `results/` directory **is tracked**, so the current matrix state and per-cel
 
 By default, every scenario × model cell runs. Two env vars narrow the matrix:
 
-| Env var         | Effect                                                                                          |
-| --------------- | ----------------------------------------------------------------------------------------------- |
-| `EVAL_SCENARIO` | Slug of a single scenario (lowercase, dash-separated form of `scenario.name`).                  |
-| `EVAL_MODEL`    | All matching cells, in `provider:modelId` form. It can be used with or without `EVAL_SCENARIO`. |
+| Env var             | Effect                                                                                          |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| `EVAL_SCENARIO`     | Slug of a single scenario (lowercase, dash-separated form of `scenario.name`).                  |
+| `EVAL_MODEL`        | All matching cells, in `provider:modelId` form. It can be used with or without `EVAL_SCENARIO`. |
+| `EVAL_MODELS`       | Comma-separated `provider:modelId` list that replaces each scenario's declared models.          |
+| `EVAL_MAX_ATTEMPTS` | Maximum attempts for empty responses and transient errors (default `8`).                        |
 
 ```bash
 # Just one scenario, all its models

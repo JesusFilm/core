@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-redirects-an-emotionally-framed-off-topic-request","scenarioName":"apologist redirects an emotionally framed off-topic request","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":1,"pass":true,"reason":"The model correctly followed the instructions for off-topic requests: it briefly acknowledged the user's emotion in a single clause, declined the shopping request, and redirected the user to the proper scope.","lastRun":"2026-10-05T03:42:57.980Z"}
+{"scenarioSlug":"apologist-redirects-an-emotionally-framed-off-topic-request","scenarioName":"apologist redirects an emotionally framed off-topic request","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":1,"pass":true,"reason":"The model correctly followed the instructions for handling an off-topic request with emotional framing by briefly acknowledging the stress, declining the shopping request, and redirecting the user to the proper scope.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist redirects an emotionally framed off-topic request — apologist:google/gemini/3.7-flash
 
-_Last run: 2026-10-05T03:42:57.980Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:google/gemini/3.7-flash
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user makes an off-topic shopping request wrapped in emotional, urgent language. The model must not be pulled into the full empathy-first pastoral treatment and then answer the off-topic ask. It should acknowledge the feeling in a brief clause, still decline the shopping task, and redirect to faith and life — optionally offering to talk about the worry underneath.
 
@@ -18,11 +20,11 @@ _Last run: 2026-10-05T03:42:57.980Z_
 
 ## Output
 
-> I understand the stress of preparing for the school year, but this space is dedicated to exploring faith, the Bible, and life's deeper questions. If you have any questions along those lines, I would be glad to help.
+> I hear the urgency and stress in your situation, but as an AI focused on faith, the Bible, and life's deeper questions, I cannot help with shopping or product recommendations. You are very welcome to bring any questions here related to faith, scripture, or spiritual life.
 
 ## Reason
 
-> The model correctly followed the instructions for off-topic requests: it briefly acknowledged the user's emotion in a single clause, declined the shopping request, and redirected the user to the proper scope.
+> The model correctly followed the instructions for handling an off-topic request with emotional framing by briefly acknowledging the stress, declining the shopping request, and redirecting the user to the proper scope.
 
 ## Acceptable examples
 

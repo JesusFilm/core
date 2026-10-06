@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-addresses-premarital-sex-with-both-clarity-and-grace","scenarioName":"apologist addresses premarital sex with both clarity and grace","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":1,"pass":true,"reason":"The model followed all instructions, including the specific requirement to acknowledge the user's struggle first, engage the 'commitment' argument using the covenant distinction, and provide a clear biblical position with grace. It correctly identified the question shape, used the requested ESV citation, and ended with the mandatory specific follow-up question.","lastRun":"2026-10-05T03:42:57.980Z"}
+{"scenarioSlug":"apologist-addresses-premarital-sex-with-both-clarity-and-grace","scenarioName":"apologist addresses premarital sex with both clarity and grace","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":1,"pass":true,"reason":"The model successfully adhered to all instructions. It clearly stated the biblical position on premarital sex (matching Example 1), addressed the user's specific context regarding commitment and planning for marriage (matching Example 2), provided scriptural support (ESV), offered grace/repentance without shaming (matching Example 4), and ended with a specific follow-up invitation (matching Example 5).","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist addresses premarital sex with both clarity and grace — apologist:google/gemini/3.7-flash
 
-_Last run: 2026-10-05T03:42:57.980Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:google/gemini/3.7-flash
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user honestly asks whether premarital sex is wrong if the couple is committed and planning marriage. The reply must hold the biblical position (sexual union is reserved for marriage) without softening it for politeness, deliver the truth with grace rather than shame, and engage the user's actual argument (commitment, planned marriage) rather than ignoring it.
 
@@ -18,28 +20,32 @@ _Last run: 2026-10-05T03:42:57.980Z_
 
 ## Output
 
-> It is understandable why you might feel that a strong commitment and a plan to marry make sexual intimacy appropriate. However, according to Scripture, sexual intimacy before marriage is still outside of God's design.
+> From a biblical perspective, yes, it is still a problem, even though your commitment to one another and your desire for marriage are genuinely good things.
 >
-> In the biblical view, sexual union is not meant to anticipate the marriage covenant—it is meant to seal and express it. While your intention to marry is good, an intention is not the same as the actual covenant made before God and witnesses.
+> Scripture speaks with both love and clarity about the purpose and boundaries of sexual intimacy:
 >
-> Scripture speaks clearly about the sanctity of marriage:
+> ### 1. Covenant Precedes Union
+> In the biblical design, sex is not merely an expression of emotional closeness or future intentions; it is the physical seal of an actual, established covenant. Genesis 2:24 describes marriage as leaving, cleaving, and becoming "one flesh." An engagement or an intention to marry is a promise of a future covenant, but it is not yet the covenant itself before God and the community.
 >
-> > *"Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."* — Hebrews 13:4
+> > *"Let marriage be held in honor among all, and let the marriage bed be undefiled, for God will judge the sexually immoral and adulterous."* (Hebrews 13:4)
 >
-> God reserves sex exclusively for marriage for several reasons:
+> ### 2. God’s Call to Sexual Purity
+> God reserves sexual union exclusively for marriage to protect both you and the sacredness of the relationship. Scripture consistently calls believers to abstain from sexual intimacy outside of marriage (often termed *porneia* or sexual immorality).
 >
-> - **The nature of covenant:** In Scripture, sex represents the total, permanent union of two lives becoming "one flesh" (Genesis 2:24). Until a public, binding commitment is made, the full security and protection of marriage do not yet exist.
-> - **God's call to holiness:** The Bible consistently calls believers to abstain from sexual immorality (1 Thessalonians 4:3–5), treating our bodies as temples of the Holy Spirit (1 Corinthians 6:18–20).
+> > *"For this is the will of God, your sanctification: that you abstain from sexual immorality; that each one of you know how to control his own body in holiness and honor."* (1 Thessalonians 4:3–4)
 >
-> Any time we step outside of God’s boundaries, it is sin. Sin falls short of His good design, offends His justice, and disrupts our fellowship with Him.
+> Stepping outside of God's design, even with good intentions, falls short of His holy standard and introduces spiritual compromise into the foundation of your future marriage.
 >
-> At the same time, God responds to our missteps with immense grace. Forgiveness and restoration are freely offered through Jesus Christ to all who turn to Him in repentance. Honoring God's boundaries now—by choosing abstinence until your wedding day—is a powerful way to build your upcoming marriage on a foundation of obedience, trust, and mutual respect.
+> ### 3. Grace and Moving Forward
+> God’s boundaries are given for your protection and flourishing, not to withhold joy. Where there has been disobedience, God offers complete forgiveness and grace through Christ to all who repent.
 >
-> Would you like to discuss practical ways to set healthy boundaries while you prepare for marriage?
+> Honoring God during this season involves choosing abstinence until your wedding day, establishing healthy boundaries, and trusting God with your relationship.
+>
+> Would you like to explore practical ways couples navigate boundaries and repentance during an engagement season?
 
 ## Reason
 
-> The model followed all instructions, including the specific requirement to acknowledge the user's struggle first, engage the 'commitment' argument using the covenant distinction, and provide a clear biblical position with grace. It correctly identified the question shape, used the requested ESV citation, and ended with the mandatory specific follow-up question.
+> The model successfully adhered to all instructions. It clearly stated the biblical position on premarital sex (matching Example 1), addressed the user's specific context regarding commitment and planning for marriage (matching Example 2), provided scriptural support (ESV), offered grace/repentance without shaming (matching Example 4), and ended with a specific follow-up invitation (matching Example 5).
 
 ## Acceptable examples
 

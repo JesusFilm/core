@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-answers-a-factual-question-about-cain-s-wife","scenarioName":"apologist answers a factual question about Cain's wife","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":0.9,"pass":true,"reason":"The model followed the instructions for factual/list queries by answering directly and acknowledging what is not explicitly stated in Scripture. It correctly avoided an empathetic opener and matched the register of the user's query.","lastRun":"2026-05-14T00:50:42.123Z"}
+{"scenarioSlug":"apologist-answers-a-factual-question-about-cain-s-wife","scenarioName":"apologist answers a factual question about Cain's wife","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model followed all instructions, providing a direct answer to the factual question without unnecessary empathetic padding or sermons. It correctly identified the uncertainty regarding the name, cited Scripture appropriately, and matched the user's register.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist answers a factual question about Cain's wife — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-05-14T00:50:42.123Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
-- **Score:** 0.90 (pass=true, threshold=0.7)
+- **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks a factual / list-shaped question about a Bible character. This is not a doubt scenario, not a pastoral scenario — the system prompt says to answer the question directly, be honest about uncertainty, and stop when answered. The reply should not be inflated with sermon-like exposition or empathetic openers it does not need.
 
@@ -18,21 +20,15 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> The Bible does not name Cain's wife or explicitly explain where she came from.
+> The Bible does not name Cain's wife or explicitly explain her origin. Genesis simply states that "Cain knew his wife, and she conceived and bore Enoch" (Genesis 4:17), without introducing her beforehand.
 >
-> Genesis 4:17 simply states that "Cain knew his wife, and she conceived and bore Enoch," but gives no account of her origin. The text does not say whether she was:
+> The most straightforward interpretation is that Cain married one of his sisters. In the early generations after Adam and Eve, when the human population was tiny, God permitted marriages between siblings that would later be forbidden under the Mosaic Law (Leviticus 18:6–18). This was necessary for humanity to multiply. Adam and Eve had other children besides Cain and Abel (Genesis 5:4 mentions they had "other sons and daughters"), so Cain's wife was likely among them.
 >
-> - A daughter of Adam and Eve (not mentioned in the genealogy)
-> - A descendant of Adam through an unrecorded line
-> - Created separately by God
->
-> This silence has prompted centuries of theological speculation. Some early church fathers and Jewish commentators proposed that Cain married a sister (since Adam and Eve were the only humans alive). Others have suggested she came from a separate creation or population, though this reading finds no explicit support in scripture.
->
-> The most straightforward reading is that the early genealogies in Genesis are selective rather than exhaustive — they record the line of promise (Adam → Seth → Noah) but do not name every descendant. Cain's wife likely came from the broader human population descended from Adam, but Genesis simply does not tell us her name or the details of how Cain found her.
+> Some ancient sources outside the Bible (like the Book of Jubilees) name her as Awan, Cain's sister, but this is not part of the biblical text itself.
 
 ## Reason
 
-> The model followed the instructions for factual/list queries by answering directly and acknowledging what is not explicitly stated in Scripture. It correctly avoided an empathetic opener and matched the register of the user's query.
+> The model followed all instructions, providing a direct answer to the factual question without unnecessary empathetic padding or sermons. It correctly identified the uncertainty regarding the name, cited Scripture appropriately, and matched the user's register.
 
 ## Acceptable examples
 

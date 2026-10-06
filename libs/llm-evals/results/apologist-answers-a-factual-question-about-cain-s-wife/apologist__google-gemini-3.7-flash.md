@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-answers-a-factual-question-about-cain-s-wife","scenarioName":"apologist answers a factual question about Cain's wife","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":0.8,"pass":true,"reason":"The model followed the instructions for a factual list/query by providing the direct answer first, acknowledging the uncertainty regarding her name, and using a bulleted list for a multi-part explanation. It correctly avoided an empathetic opener and sermon-like exposition, though it used a heading for a relatively brief response, which is slightly against the preference for simplicity in shorter replies.","lastRun":"2026-10-05T03:42:57.980Z"}
+{"scenarioSlug":"apologist-answers-a-factual-question-about-cain-s-wife","scenarioName":"apologist answers a factual question about Cain's wife","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":0.9,"pass":true,"reason":"The model followed the factual/list query instructions well, providing a direct answer, using bullets for the context, and correctly identifying scriptural support while acknowledging the Bible's silence on the name. It avoided an empathetic opener and stopped once the question was answered.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist answers a factual question about Cain's wife — apologist:google/gemini/3.7-flash
 
-_Last run: 2026-10-05T03:42:57.980Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:google/gemini/3.7-flash
-- **Score:** 0.80 (pass=true, threshold=0.7)
+- **Score:** 0.90 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks a factual / list-shaped question about a Bible character. This is not a doubt scenario, not a pastoral scenario — the system prompt says to answer the question directly, be honest about uncertainty, and stop when answered. The reply should not be inflated with sermon-like exposition or empathetic openers it does not need.
 
@@ -18,17 +20,17 @@ _Last run: 2026-10-05T03:42:57.980Z_
 
 ## Output
 
-> Scripture does not give the name of Cain’s wife, but based on the biblical text, she was almost certainly his sister or a close relative (such as a niece).
+> The Bible does not name Cain’s wife, but scripture indicates she was his sister (or possibly a niece).
 >
-> ### Where She Came From
+> Here is the biblical context:
 >
-> 1. **Descendant of Adam and Eve:** The Bible teaches that Adam and Eve were the first two humans created by God, and Eve was "the mother of all living" (Genesis 3:20). Therefore, every human being descended from them.
-> 2. **Other Children:** Although Genesis highlights Cain, Abel, and Seth, Genesis 5:4 notes that Adam lived 800 years after fathering Seth and "had other sons and daughters."
-> 3. **Early Marriage:** In the earliest generations of humanity, marrying a sibling or close relative was necessary to populate the earth. Because the human gene pool was initially free from accumulated genetic defects, such unions did not carry the biological risks they do today. God did not prohibit marriage between close relatives until much later in the Mosaic Law (Leviticus 18).
+> - **Eve is the mother of all humanity:** Genesis 3:20 states that Eve was "the mother of all living." Every human descended from Adam and Eve.
+> - **Adam and Eve had many children:** While Genesis highlights Cain, Abel, and Seth, Genesis 5:4 notes, *"The days of Adam after he fathered Seth were 800 years; and he had other sons and daughters."*
+> - **Close-relative marriage in early history:** In the earliest generations of humanity, marrying a sibling or close relative was necessary to obey God's command to fill the earth (Genesis 1:28). Because the human gene pool was still near its original, pristine creation, genetic defects from close intermarriage were not yet a factor. God later prohibited marriage between close relatives in the Law of Moses (Leviticus 18).
 
 ## Reason
 
-> The model followed the instructions for a factual list/query by providing the direct answer first, acknowledging the uncertainty regarding her name, and using a bulleted list for a multi-part explanation. It correctly avoided an empathetic opener and sermon-like exposition, though it used a heading for a relatively brief response, which is slightly against the preference for simplicity in shorter replies.
+> The model followed the factual/list query instructions well, providing a direct answer, using bullets for the context, and correctly identifying scriptural support while acknowledging the Bible's silence on the name. It avoided an empathetic opener and stopped once the question was answered.
 
 ## Acceptable examples
 

@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-declines-an-off-topic-recipe-request-and-redirects","scenarioName":"apologist declines an off-topic recipe request and redirects","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":1,"pass":true,"reason":"The model correctly identifies the request as off-topic and follows the system instructions perfectly by gently declining, stating its purpose, and inviting a relevant question in a brief manner.","lastRun":"2026-10-05T03:42:57.980Z"}
+{"scenarioSlug":"apologist-declines-an-off-topic-recipe-request-and-redirects","scenarioName":"apologist declines an off-topic recipe request and redirects","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"google/gemini/3.7-flash","score":1,"pass":true,"reason":"The model correctly identified the off-topic request and followed the system instructions by providing a warm, two-sentence redirection without providing any recipe content.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist declines an off-topic recipe request and redirects — apologist:google/gemini/3.7-flash
 
-_Last run: 2026-10-05T03:42:57.980Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:google/gemini/3.7-flash
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks for a cooking recipe — a purely practical request with no faith or life dimension. The model should briefly and warmly decline, note this space is for faith and life, and invite a relevant question, without providing any recipe content.
 
@@ -18,11 +20,11 @@ _Last run: 2026-10-05T03:42:57.980Z_
 
 ## Output
 
-> I focus on questions about faith, the Bible, and life's deeper meaning rather than culinary recipes. If you have any questions along those lines, I would be glad to help.
+> I am here to help with questions about faith, the Bible, and life's deeper meaning, so I cannot provide recipes. If you have any spiritual or theological questions, I would be glad to help.
 
 ## Reason
 
-> The model correctly identifies the request as off-topic and follows the system instructions perfectly by gently declining, stating its purpose, and inviting a relevant question in a brief manner.
+> The model correctly identified the off-topic request and followed the system instructions by providing a warm, two-sentence redirection without providing any recipe content.
 
 ## Acceptable examples
 

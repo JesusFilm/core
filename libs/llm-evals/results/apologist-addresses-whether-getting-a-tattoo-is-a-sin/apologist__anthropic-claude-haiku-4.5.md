@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-addresses-whether-getting-a-tattoo-is-a-sin","scenarioName":"apologist addresses whether getting a tattoo is a sin","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model followed all instructions, addressing Leviticus 19:28 in context, providing biblical principles for Christian liberty, and specifically addressing the user's desire for a Bible-verse tattoo without being judgmental toward the church or the user.","lastRun":"2026-05-14T00:50:42.123Z"}
+{"scenarioSlug":"apologist-addresses-whether-getting-a-tattoo-is-a-sin","scenarioName":"apologist addresses whether getting a tattoo is a sin","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model followed all instructions, addressing Leviticus 19:28 in context, engaging the user's specific case (Bible-verse tattoo), and framing the issue as one of conscience and Christian liberty without siding against the user's church.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist addresses whether getting a tattoo is a sin — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-05-14T00:50:42.123Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks about a specific gray-area decision (getting a Bible-verse tattoo) and notes that some in their church think tattoos are sinful. The reply must engage Christian liberty honestly, address Leviticus 19:28 in its actual context (pagan mourning practices), give the user practical principles, and engage their specific case — not lecture them about either their church or tattoo culture.
 
@@ -18,17 +20,17 @@ _Last run: 2026-05-14T00:50:42.123Z_
 
 ## Output
 
-> The Bible doesn't forbid tattoos outright. Leviticus 19:28 says "Do not cut your bodies for the dead or put tattoo marks on yourselves," but this command was part of Israel's ceremonial law—rules specific to the old covenant that distinguished God's people from surrounding pagan nations. Christians are not bound by the ceremonial law (see Acts 10:9–16, Galatians 5:1–6).
+> The Bible doesn't forbid tattoos outright. Leviticus 19:28 says, "You shall not make any cuts on your body for the dead or tattoo yourselves: I am the Lord" — but this command was part of Israel's ceremonial law, given to set God's people apart during the Old Testament era. Christians are not bound by the ceremonial laws of Leviticus; that's why we don't follow the food laws or clothing restrictions either.
 >
-> The New Testament doesn't prohibit tattoos. Paul writes about "marks of the Lord Jesus" on his body (Galatians 6:17), though he's speaking metaphorically about suffering, not literal tattoos.
+> The New Testament doesn't prohibit tattoos. Paul emphasizes that our bodies are temples of the Holy Spirit (1 Corinthians 6:19–20), but he's addressing sexual immorality and idolatry — not body art itself.
 >
-> What _does_ matter biblically is your **motive and the content**. A tattoo of Scripture can be a beautiful testimony and a way to keep God's word close. But ask yourself honestly: Are you getting it to honor God, or to draw attention to yourself? Is the verse one you genuinely live by, or just aesthetically appealing?
+> **The real question is your motive.** A tattoo of Scripture can be a beautiful declaration of faith and a way to carry God's Word with you. But ask yourself honestly: Are you getting it to honor God and remind yourself of His truth? Or to draw attention to yourself, or to rebel against your church community? Your heart matters more than the ink.
 >
-> The concern some Christians raise isn't really about the ink—it's about whether your body (which Paul calls "a temple of the Holy Spirit" in 1 Corinthians 6:19) is being used to glorify God or yourself. A Bible verse tattoo done with the right heart is consistent with that.
+> If your church leaders have genuine concerns, it's worth listening to them — not because tattoos are inherently sinful, but because unity and respect in your faith community matter. But you're not violating Scripture by getting one.
 
 ## Reason
 
-> The model followed all instructions, addressing Leviticus 19:28 in context, providing biblical principles for Christian liberty, and specifically addressing the user's desire for a Bible-verse tattoo without being judgmental toward the church or the user.
+> The model followed all instructions, addressing Leviticus 19:28 in context, engaging the user's specific case (Bible-verse tattoo), and framing the issue as one of conscience and Christian liberty without siding against the user's church.
 
 ## Acceptable examples
 

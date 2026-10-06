@@ -1,14 +1,16 @@
 <!-- llm-eval-meta
-{"scenarioSlug":"apologist-engages-the-faith-dimension-of-a-money-worry-question","scenarioName":"apologist engages the faith dimension of a money-worry question","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model response successfully meets all criteria by providing an empathy-first acknowledgement of the user's struggle, engaging the spiritual dimension with scripture, and avoiding condemnation. It appropriately classifies the question as in-scope and concludes with a specific follow-up question as required by the substantive struggle handler instructions.","lastRun":"2026-06-18T04:02:11.889Z"}
+{"scenarioSlug":"apologist-engages-the-faith-dimension-of-a-money-worry-question","scenarioName":"apologist engages the faith dimension of a money-worry question","promptName":"apologist-world-cup-chat","promptLabel":"development","provider":"apologist","modelId":"anthropic/claude/haiku-4.5","score":1,"pass":true,"reason":"The model followed all instructions perfectly. It identified the spiritual dimension of a practical concern, provided an empathy-first response, used scripture (ESV/Matthew 6) effectively without being dismissive or providing financial advice, and ended with a specific follow-up question as required for struggle-related queries.","lastRun":"2026-10-06T03:04:51.308Z","generationAttempts":1,"judgeAttempts":1}
 -->
 
 # apologist engages the faith dimension of a money-worry question — apologist:anthropic/claude/haiku-4.5
 
-_Last run: 2026-06-18T04:02:11.889Z_
+_Last run: 2026-10-06T03:04:51.308Z_
 
 - **Prompt:** `apologist-world-cup-chat@development`
 - **Model:** apologist:anthropic/claude/haiku-4.5
 - **Score:** 1.00 (pass=true, threshold=0.7)
+- **Generation attempts:** 1
+- **Judge attempts:** 1
 
 **Scenario description:** A user asks a practical-sounding question whose real substance is spiritual — anxiety about money framed as a question about trusting God. The model must engage the faith dimension (anxiety, trust, God's provision) rather than declining it as off-topic or pivoting to financial advice.
 
@@ -18,19 +20,21 @@ _Last run: 2026-06-18T04:02:11.889Z_
 
 ## Output
 
-> You're carrying real anxiety about something that matters — that's not a moral failure, it's a human one. The question underneath, though, is worth sitting with: whether worry itself becomes a spiritual issue when it crowds out trust.
+> You're carrying real anxiety about money — that's a genuine weight, and I hear you naming it.
 >
-> Jesus addresses this directly in Matthew 6:25–34. He doesn't say "never think about money" or "ignore your needs." He says: "Do not worry about your life, what you will eat or drink… Look at the birds of the air… your heavenly Father feeds them. Are you not much more valuable than they?" The point isn't that planning is wrong — it's that _anxiety_ (the constant mental loop, the sense that everything depends on you alone) can become a way of saying "I don't believe God sees me or cares."
+> Worry itself isn't automatically sin. Jesus acknowledged that people have material needs (Matthew 6:11), and prudent concern about provision is part of stewardship. But there's a difference between wise caution and the kind of worry that consumes you and crowds out trust.
 >
-> That said, worry about money often has practical roots too: real instability, past scarcity, or genuine hardship. Those aren't spiritual failures — they're signals that something in your circumstances or your mind needs attention. Sometimes the faithful response is to worry _less_ through prayer and trust; sometimes it's to worry _differently_ by making a budget, seeking counsel, or getting help.
+> When Jesus teaches about anxiety in Matthew 6:25–34, He's not scolding you for thinking about money at all. He's pointing to a deeper posture: *"Seek first the kingdom of God and his righteousness, and all these things will be added to you."* The issue isn't the thought — it's whether worry has become your functional god, the thing you're actually trusting to secure your future.
 >
-> The spiritual question is whether you're willing to bring the worry to God rather than carry it alone. Not whether you'll never feel it again — but whether you'll keep returning to "He knows, He cares, He's provided before, and I can trust Him now."
+> Some questions worth sitting with: Does your worry drive you toward wise action (budgeting, work, prudent planning), or does it paralyze you? Are you praying about it and then releasing it to God, or does anxiety keep circling? Do you believe God is good and faithful, even if the outcome isn't what you want?
 >
-> What does the worry feel like for you — is it more about not having enough, or about losing what you have?
+> Anxiety often points to something deeper — sometimes it's past scarcity, sometimes it's shame, sometimes it's a real gap between income and need. Those are worth naming too, not just spiritualizing away.
+>
+> What does the worry feel like for you — is it more about a specific financial pressure, or a deeper sense that you can't trust God to provide?
 
 ## Reason
 
-> The model response successfully meets all criteria by providing an empathy-first acknowledgement of the user's struggle, engaging the spiritual dimension with scripture, and avoiding condemnation. It appropriately classifies the question as in-scope and concludes with a specific follow-up question as required by the substantive struggle handler instructions.
+> The model followed all instructions perfectly. It identified the spiritual dimension of a practical concern, provided an empathy-first response, used scripture (ESV/Matthew 6) effectively without being dismissive or providing financial advice, and ended with a specific follow-up question as required for struggle-related queries.
 
 ## Acceptable examples
 
