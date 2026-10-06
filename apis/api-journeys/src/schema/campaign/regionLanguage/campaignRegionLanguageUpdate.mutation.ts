@@ -4,6 +4,7 @@ import { builder } from '../../builder'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import { JourneyWithPublicUrl } from '../getJourneyPublicUrl'
+import { resolveJourneyId, resolveJourneyLink } from '../journeyLink'
 import { TEXT_CAPS, assertLengthOrNull } from '../validation'
 
 import { CampaignRegionLanguageUpdateInput } from './inputs'
@@ -11,8 +12,6 @@ import {
   authorizeRegionLanguageUpdate,
   createRegionLanguageQrCode,
   deleteQrCodes,
-  resolveJourneyId,
-  resolveJourneyLink,
   retargetRegionLanguageQrCode
 } from './service'
 

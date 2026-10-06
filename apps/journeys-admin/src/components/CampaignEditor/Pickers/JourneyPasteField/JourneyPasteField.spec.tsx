@@ -12,6 +12,7 @@ const journey = {
   __typename: 'Journey',
   id: 'journeyId',
   title: 'Christmas in Europe',
+  description: 'A short journey.',
   slug: 'christmas-europe',
   status: JourneyStatus.published
 }

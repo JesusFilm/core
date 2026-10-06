@@ -48,6 +48,17 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       lede
       display
     }
+    ... on CampaignJourneyBlock {
+      journeyId
+      title
+      description
+      journeyStatus
+      journeyUrl
+      journeyImage {
+        src
+        alt
+      }
+    }
     ... on CampaignAnalyticsBlock {
       eyebrow
       title

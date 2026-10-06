@@ -5,7 +5,7 @@ export {
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignHero } from './CampaignHero'
-export { CampaignJourneyList } from './CampaignJourneyList'
+export { CampaignJourneyList, liveJourneyCards } from './CampaignJourneyList'
 export { CampaignPage, shouldRenderSection } from './CampaignPage'
 export {
   CampaignProvider,

@@ -82,6 +82,35 @@ type ButtonBlock = Extract<
   { __typename: 'CampaignButtonBlock' }
 >
 
+type JourneyBlock = Extract<
+  CampaignPublicBlockFields,
+  { __typename: 'CampaignJourneyBlock' }
+>
+
+/** A journey-list item: a live-published journey with its snapshot and primary image. */
+export function journeyCard(
+  row: Pick<JourneyBlock, 'id' | 'parentBlockId'> & Partial<JourneyBlock>
+): JourneyBlock {
+  return {
+    __typename: 'CampaignJourneyBlock',
+    campaignId: CAMPAIGN_ID,
+    pageId: null,
+    regionId: null,
+    parentOrder: 0,
+    journeyId: `${row.id}-journeyId`,
+    title: 'The Christmas story',
+    description: 'A short journey through the nativity.',
+    journeyStatus: JourneyStatus.published,
+    journeyUrl: 'https://your.nextstep.is/christmas-story',
+    journeyImage: {
+      __typename: 'CampaignJourneyImage',
+      src: 'https://imagedelivery.net/christmas-story/public',
+      alt: 'A manger under a star'
+    },
+    ...row
+  }
+}
+
 function typography(
   row: Pick<TypographyBlock, 'id' | 'content'> & Partial<TypographyBlock>
 ): TypographyBlock {
@@ -324,6 +353,23 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     content: 'New this season',
     typographyVariant: TypographyVariant.overline,
     placement: CampaignChildPlacement.above
+  }),
+  journeyCard({
+    id: 'landingJourneyId',
+    pageId: LANDING_PAGE_ID,
+    parentBlockId: 'landingJourneyListId',
+    parentOrder: 1
+  }),
+  journeyCard({
+    id: 'landingDraftJourneyId',
+    pageId: LANDING_PAGE_ID,
+    parentBlockId: 'landingJourneyListId',
+    parentOrder: 2,
+    title: 'A journey still in draft',
+    description: null,
+    journeyStatus: JourneyStatus.draft,
+    journeyUrl: null,
+    journeyImage: null
   }),
   section('CampaignAnalyticsBlock', {
     id: 'landingAnalyticsId',

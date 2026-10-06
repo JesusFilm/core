@@ -626,6 +626,11 @@ export interface CampaignHeroBlockUpdateInput {
   align?: TypographyAlign | null;
 }
 
+export interface CampaignJourneyBlockUpdateInput {
+  title?: string | null;
+  description?: string | null;
+}
+
 export interface CampaignJourneyListBlockCreateInput {
   id?: string | null;
   campaignId: string;

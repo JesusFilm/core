@@ -70,6 +70,43 @@ const deleteMock = {
   result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
 }
 
+const cardDeleteMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_DELETE,
+    variables: { id: 'landingJourneyId' }
+  },
+  result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+}
+
+const cardMoveLeftMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+    variables: { id: 'landingDraftJourneyId', parentOrder: 1 }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockOrderUpdate: [
+        {
+          __typename: 'CampaignTypographyBlock',
+          id: 'journeyListNoteId',
+          parentOrder: 0,
+          placement: 'above'
+        },
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'landingDraftJourneyId',
+          parentOrder: 1
+        },
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'landingJourneyId',
+          parentOrder: 2
+        }
+      ]
+    }
+  }))
+}
+
 const heroBelowMock = {
   request: {
     query: CAMPAIGN_HERO_BLOCK_CREATE,
@@ -207,6 +244,8 @@ function renderBar(
       mocks={[
         createMock,
         deleteMock,
+        cardDeleteMock,
+        cardMoveLeftMock,
         heroBelowMock,
         regionShareAppendMock,
         moveUpMock,
@@ -544,6 +583,71 @@ describe('BottomBar', () => {
 
     await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
+  })
+
+  describe('journey card', () => {
+    it('shows Edit, the arrows, Refresh from journey and the bin, under the list in the breadcrumb', () => {
+      renderBar({ selectedBlockId: 'landingJourneyId' })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('journey')
+      expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+        'Campaign›Journey list›Journey'
+      )
+      expect(buttonNames()).toEqual([
+        'Campaign',
+        'Journey list',
+        'Edit',
+        'Move left',
+        'Move right',
+        'Refresh from journey',
+        'Delete'
+      ])
+    })
+
+    it('disables Move left on the first card and Move right on the last, counting only cards', () => {
+      const { unmount } = renderBar({ selectedBlockId: 'landingJourneyId' })
+      expect(screen.getByRole('button', { name: 'Move left' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Move right' })).toBeEnabled()
+      unmount()
+
+      renderBar({ selectedBlockId: 'landingDraftJourneyId' })
+      expect(screen.getByRole('button', { name: 'Move left' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Move right' })).toBeDisabled()
+    })
+
+    it('moves a card past its neighbour card as one order update', async () => {
+      renderBar({ selectedBlockId: 'landingDraftJourneyId' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Move left' }))
+
+      await waitFor(() => expect(cardMoveLeftMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingDraftJourneyId'
+      )
+    })
+
+    it('bins a card without confirmation and selects its list', async () => {
+      renderBar({ selectedBlockId: 'landingJourneyId' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      await waitFor(() => expect(cardDeleteMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyListId'
+      )
+    })
+
+    it('goes up to the list on Escape', () => {
+      renderBar({ selectedBlockId: 'landingJourneyId' })
+
+      fireEvent.keyDown(document, { key: 'Escape' })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyListId'
+      )
+    })
   })
 
   it('deletes an Extra from the bin without confirmation', async () => {

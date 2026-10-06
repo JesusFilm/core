@@ -1,4 +1,5 @@
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { liveJourneyCards } from '../CampaignJourneyList'
 import { listedRegions } from '../CampaignRegionSwitcher'
 import { hasText } from '../types'
 import type { CampaignRegion, CampaignSectionTree } from '../types'
@@ -53,6 +54,7 @@ export function shouldRenderSection(
       )
     case 'CampaignJourneyListBlock':
       return (
+        liveJourneyCards(section).length > 0 ||
         hasText(section.eyebrow) ||
         hasText(section.title) ||
         hasText(section.lede) ||

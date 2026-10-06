@@ -36,6 +36,7 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { InlineText } from '../InlineText'
@@ -285,7 +286,8 @@ export function CanvasSection({
   const band = useMemo(() => {
     if (
       block.__typename === 'CampaignTypographyBlock' ||
-      block.__typename === 'CampaignButtonBlock'
+      block.__typename === 'CampaignButtonBlock' ||
+      block.__typename === 'CampaignJourneyBlock'
     )
       return null
     return resolveBand(block, theme)
@@ -323,9 +325,9 @@ export function CanvasSection({
     selectBlock(block.id)
   }
 
-  function selectExtra(child: CanvasBlock, field: CampaignTextField): void {
+  function selectChild(childId: string, field: CampaignTextField): void {
     setFocusField(field)
-    selectBlock(child.id)
+    selectBlock(childId)
   }
 
   function renderExtra(child: CanvasBlock): ReactElement | null {
@@ -336,7 +338,7 @@ export function CanvasSection({
         key={child.id}
         block={child}
         selected={selectedId === child.id}
-        onSelect={() => selectExtra(child, field)}
+        onSelect={() => selectChild(child.id, field)}
         focusField={focusField}
       />
     )
@@ -430,6 +432,18 @@ export function CanvasSection({
           )}
           {block.__typename === 'CampaignRegionShareBlock' && (
             <ShareSectionEdit block={block} />
+          )}
+          {block.__typename === 'CampaignJourneyListBlock' && (
+            <JourneyListEdit
+              block={block}
+              active={
+                sectionSelected ||
+                (selection.kind === 'journey' &&
+                  selection.host?.id === block.id)
+              }
+              focusField={focusField}
+              onSelectCard={selectChild}
+            />
           )}
           {below.map(renderExtra)}
         </Stack>

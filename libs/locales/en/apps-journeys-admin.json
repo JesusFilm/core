@@ -1472,5 +1472,18 @@
   "Journey link": "Journey link",
   "Paste the journey’s admin link or its public address.": "Paste the journey’s admin link or its public address.",
   "Looking up journey…": "Looking up journey…",
-  "Use this journey": "Use this journey"
+  "Use this journey": "Use this journey",
+  "Journey deleted": "Journey deleted",
+  "Journey title": "Journey title",
+  "Journey description": "Journey description",
+  "Add a journey": "Add a journey",
+  "Select this section to add a journey.": "Select this section to add a journey.",
+  "Move left": "Move left",
+  "Move right": "Move right",
+  "Refresh from journey": "Refresh from journey",
+  "Could not refresh from journey": "Could not refresh from journey",
+  "Already matches the journey": "Already matches the journey",
+  "Replace this card’s text?": "Replace this card’s text?",
+  "Refresh": "Refresh",
+  "The title or description differs from the journey’s. Refreshing replaces both with what the journey says now; your translations are kept.": "The title or description differs from the journey’s. Refreshing replaces both with what the journey says now; your translations are kept."
 }
