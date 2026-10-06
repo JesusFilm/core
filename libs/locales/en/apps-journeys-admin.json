@@ -1436,5 +1436,15 @@
   "You can undo this afterwards.": "You can undo this afterwards.",
   "Section above": "Section above",
   "Section below": "Section below",
-  "Drag section": "Drag section"
+  "Drag section": "Drag section",
+  "Rich text": "Rich text",
+  "Columns": "Columns",
+  "Column": "Column",
+  "Empty column?": "Empty column?",
+  "This removes the section from the column; the column stays.": "This removes the section from the column; the column stays.",
+  "Swap columns": "Swap columns",
+  "Change type": "Change type",
+  "Empty column": "Empty column",
+  "Choose type": "Choose type",
+  "Drag column": "Drag column"
 }

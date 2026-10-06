@@ -1,6 +1,7 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
+  CampaignColumnsRatio,
   CampaignJourneyListDisplay,
   CampaignPageKind,
   CampaignSwitcherVariant
@@ -28,11 +29,28 @@ export function sectionTypesForPage(
   )
 }
 
+/** Sections that never sit in a Column Slot: no nesting, and the share panel reads a whole page. */
+export const SLOT_DISALLOWED_TYPENAMES: readonly CampaignSectionTypename[] = [
+  'CampaignColumnsBlock',
+  'CampaignRegionShareBlock'
+]
+
+/** The section types a Column Slot's type picker offers on a page, in menu order. */
+export function sectionTypesForSlot(
+  pageKind: CampaignPageKind
+): CampaignSectionTypename[] {
+  return sectionTypesForPage(pageKind).filter(
+    (typename) => !SLOT_DISALLOWED_TYPENAMES.includes(typename)
+  )
+}
+
 interface NewSectionBase {
   id: string
   campaignId: string
   pageId: string
   parentOrder: number
+  /** The Column Slot the section sits in; omitted for a top-level section. */
+  parentBlockId?: string
 }
 
 /**
@@ -46,7 +64,7 @@ export function newSectionBlock(
   const shared = {
     ...base,
     regionId: null,
-    parentBlockId: null,
+    parentBlockId: base.parentBlockId ?? null,
     backgroundKind: CampaignBackgroundKind.none,
     backgroundColor: null,
     coverBlockId: null,
@@ -105,7 +123,75 @@ export function newSectionBlock(
       return { __typename: typename, ...shared, intro: null }
     case 'CampaignRegionShareBlock':
       return { __typename: typename, ...shared, title: null, intro: null }
+    case 'CampaignRichTextBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        title: null,
+        richTextContent: null
+      }
+    case 'CampaignColumnsBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        ratio: CampaignColumnsRatio.equal
+      }
   }
+}
+
+type ColumnSlotBlock = Extract<
+  CampaignBlock,
+  { __typename: 'CampaignColumnBlock' }
+>
+
+/** The two empty Column Slots a new Columns section is created with, at parentOrder 0 and 1. */
+export function newColumnSlots(
+  columns: Pick<CampaignBlock, 'id' | 'campaignId' | 'pageId' | 'regionId'>,
+  slotIds: [string, string]
+): ColumnSlotBlock[] {
+  return slotIds.map((id, parentOrder) => ({
+    __typename: 'CampaignColumnBlock',
+    id,
+    campaignId: columns.campaignId,
+    pageId: columns.pageId,
+    regionId: columns.regionId,
+    parentBlockId: columns.id,
+    parentOrder
+  }))
+}
+
+/** A Columns section's live slots in order. */
+export function columnSlots(
+  blocks: CampaignBlock[],
+  columnsId: string
+): CampaignBlock[] {
+  return blocks
+    .filter(
+      (block) =>
+        block.__typename === 'CampaignColumnBlock' &&
+        block.parentBlockId === columnsId
+    )
+    .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+}
+
+/** The one section a Column Slot holds, if any. */
+export function slotSection(
+  blocks: CampaignBlock[],
+  slotId: string
+): CampaignBlock | undefined {
+  return blocks.find((block) => block.parentBlockId === slotId)
+}
+
+/** True for a section that sits in a Column Slot. */
+export function isInColumnSlot(
+  blocks: CampaignBlock[],
+  block: CampaignBlock
+): boolean {
+  if (block.parentBlockId == null) return false
+  return (
+    blocks.find((candidate) => candidate.id === block.parentBlockId)
+      ?.__typename === 'CampaignColumnBlock'
+  )
 }
 
 /** The ordered sections of one page: top-level blocks with that `pageId`. */

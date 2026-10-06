@@ -8,6 +8,7 @@ import { CampaignJourneyListBlockUpdateText } from '../../../__generated__/Campa
 import { CampaignRegionHeaderBlockUpdateText } from '../../../__generated__/CampaignRegionHeaderBlockUpdateText'
 import { CampaignRegionShareBlockUpdateText } from '../../../__generated__/CampaignRegionShareBlockUpdateText'
 import { CampaignRegionSwitcherBlockUpdateText } from '../../../__generated__/CampaignRegionSwitcherBlockUpdateText'
+import { CampaignRichTextBlockUpdateText } from '../../../__generated__/CampaignRichTextBlockUpdateText'
 import { CampaignTypographyBlockUpdateContent } from '../../../__generated__/CampaignTypographyBlockUpdateContent'
 import { CampaignVideoCarouselBlockUpdateText } from '../../../__generated__/CampaignVideoCarouselBlockUpdateText'
 
@@ -15,7 +16,8 @@ import {
   CAMPAIGN_TEXT_FIELDS,
   CampaignTextBlock,
   CampaignTextField,
-  CampaignTextTypename
+  CampaignTextTypename,
+  campaignTextInputKey
 } from './campaignTextFields'
 
 /**
@@ -138,6 +140,19 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT = gql`
   }
 `
 
+export const CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_TEXT = gql`
+  mutation CampaignRichTextBlockUpdateText(
+    $id: ID!
+    $input: CampaignRichTextBlockUpdateInput!
+  ) {
+    campaignRichTextBlockUpdate(id: $id, input: $input) {
+      id
+      title
+      richTextContent: content
+    }
+  }
+`
+
 interface TextOperation {
   document: ReturnType<typeof gql>
   operation: string
@@ -179,6 +194,10 @@ const TEXT_OPERATIONS: Record<CampaignTextTypename, TextOperation> = {
   CampaignRegionShareBlock: {
     document: CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT,
     operation: 'campaignRegionShareBlockUpdate'
+  },
+  CampaignRichTextBlock: {
+    document: CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_TEXT,
+    operation: 'campaignRichTextBlockUpdate'
   }
 }
 
@@ -192,6 +211,7 @@ type CampaignTextResult =
   | CampaignAnalyticsBlockUpdateText
   | CampaignRegionHeaderBlockUpdateText
   | CampaignRegionShareBlockUpdateText
+  | CampaignRichTextBlockUpdateText
 
 interface CampaignTextVariables {
   id: string
@@ -271,6 +291,11 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignTextVariables
   >(CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT)[0]
 
+  const richText = useMutation<
+    CampaignRichTextBlockUpdateText,
+    CampaignTextVariables
+  >(CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_TEXT)[0]
+
   const mutations = {
     CampaignTypographyBlock: typography,
     CampaignButtonBlock: button,
@@ -280,7 +305,8 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignJourneyListBlock: journeyList,
     CampaignAnalyticsBlock: analytics,
     CampaignRegionHeaderBlock: regionHeader,
-    CampaignRegionShareBlock: regionShare
+    CampaignRegionShareBlock: regionShare,
+    CampaignRichTextBlock: richText
   } as const
 
   return async function mutate(block, field, value, context = {}) {
@@ -290,7 +316,10 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
       context: Record<string, unknown>
     }) => Promise<ApolloLink.Result<CampaignTextResult>>
     return await run({
-      variables: { id: block.id, input: { [field]: value } },
+      variables: {
+        id: block.id,
+        input: { [campaignTextInputKey(field)]: value }
+      },
       optimisticResponse: campaignTextOptimisticResponse(block, field, value),
       context
     })

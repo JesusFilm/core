@@ -38,7 +38,7 @@ export const REGION_PAGE_ID = 'regionPageId'
 
 type SectionTypename = Exclude<
   CampaignPublicBlockFields['__typename'],
-  'CampaignTypographyBlock' | 'CampaignButtonBlock'
+  'CampaignTypographyBlock' | 'CampaignButtonBlock' | 'CampaignColumnBlock'
 >
 
 const SECTION_DEFAULTS = {
@@ -58,7 +58,7 @@ const SECTION_DEFAULTS = {
   accentColor: null as string | null
 }
 
-function section<T extends SectionTypename>(
+export function section<T extends SectionTypename>(
   typename: T,
   row: Omit<
     Extract<CampaignPublicBlockFields, { __typename: T }>,
@@ -71,6 +71,25 @@ function section<T extends SectionTypename>(
     ...SECTION_DEFAULTS,
     ...row
   } as unknown as Extract<CampaignPublicBlockFields, { __typename: T }>
+}
+
+type ColumnBlock = Extract<
+  CampaignPublicBlockFields,
+  { __typename: 'CampaignColumnBlock' }
+>
+
+/** A Column Slot of a Columns section: the two fixed cells at parentOrder 0 and 1. */
+export function columnSlot(
+  row: Pick<ColumnBlock, 'id' | 'parentBlockId' | 'parentOrder'> &
+    Partial<ColumnBlock>
+): ColumnBlock {
+  return {
+    __typename: 'CampaignColumnBlock',
+    campaignId: CAMPAIGN_ID,
+    pageId: LANDING_PAGE_ID,
+    regionId: null,
+    ...row
+  }
 }
 
 type TypographyBlock = Extract<

@@ -28,7 +28,9 @@ import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetC
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
+import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
+import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
 import { CanvasSection } from './CanvasSection'
 
@@ -70,10 +72,33 @@ export function dropParentOrder(
   return to === from ? undefined : to
 }
 
-/** The section under the pointer, falling back to the nearest centre at the page's edges. */
+/** The drag data a Column Slot carries, set by `CanvasColumnSlot`. */
+interface SlotDragData {
+  slot?: boolean
+  columnsId?: string | null
+}
+
+function slotDataOf(
+  data: { current?: SlotDragData } | undefined
+): SlotDragData {
+  return data?.current ?? {}
+}
+
+/**
+ * The section under the pointer, falling back to the nearest centre at the
+ * page's edges. A section only collides with sections; a Column Slot only
+ * with the other slot of its own Columns section.
+ */
 const collisionDetection: CollisionDetection = (args) => {
-  const within = pointerWithin(args)
-  return within.length > 0 ? within : closestCenter(args)
+  const active = slotDataOf(args.active?.data)
+  const droppableContainers = args.droppableContainers.filter((container) => {
+    const candidate = slotDataOf(container.data)
+    if (active.slot !== true) return candidate.slot !== true
+    return candidate.slot === true && candidate.columnsId === active.columnsId
+  })
+  const scoped = { ...args, droppableContainers }
+  const within = pointerWithin(scoped)
+  return within.length > 0 ? within : closestCenter(scoped)
 }
 
 function pointerYOf(event: DragMoveEvent | DragEndEvent): number | undefined {
@@ -130,6 +155,7 @@ export function Canvas({
   const { t } = useTranslation('apps-journeys-admin')
   const { selectBlock } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
+  const { addColumnSwap } = useColumnSwapCommand()
   const [dropTarget, setDropTarget] = useState<DropTarget>()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const pageId = page?.id
@@ -179,11 +205,27 @@ export function Canvas({
   )
 
   function handleDragMove(event: DragMoveEvent): void {
+    if (slotDataOf(event.active.data).slot === true) return
     setDropTarget(dropTargetOf(event))
+  }
+
+  /** A slot dropped on the other slot of its Columns section swaps the two. */
+  function handleSlotDragEnd(event: DragEndEvent): void {
+    const overId = event.collisions?.[0]?.id
+    if (overId == null || overId === event.active.id) return
+    const slot = campaign.blocks.find(
+      (candidate) => candidate.id === String(event.active.id)
+    )
+    if (slot == null) return
+    addColumnSwap(slot, slotSection(campaign.blocks, slot.id)?.id)
   }
 
   function handleDragEnd(event: DragEndEvent): void {
     setDropTarget(undefined)
+    if (slotDataOf(event.active.data).slot === true) {
+      handleSlotDragEnd(event)
+      return
+    }
     const target = dropTargetOf(event)
     if (target == null) return
     const activeId = String(event.active.id)

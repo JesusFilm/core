@@ -14,6 +14,7 @@ import {
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { isInColumnSlot } from '../sectionTypes'
 
 export interface CampaignEditorState {
   /** The page the canvas shows; a view choice, never a Command. */
@@ -76,12 +77,17 @@ export type CampaignSelectionKind =
   | 'chrome'
   | 'text'
   | 'button'
+  | 'slot'
+  | 'column'
 
 export interface CampaignSelection {
   kind: CampaignSelectionKind
   /** The selected block; undefined on the campaign row. */
   block?: CampaignBlock
-  /** The section or chrome block hosting the selection; the block itself when one is selected. */
+  /**
+   * The section or chrome block hosting the selection; the block itself when
+   * one is selected, and the Columns section for a selected Column Slot.
+   */
   host?: CampaignBlock
 }
 
@@ -102,6 +108,12 @@ export function resolveSelection(
   if (selectedBlockId == null) return CAMPAIGN_SELECTION
   const block = blocks.find((candidate) => candidate.id === selectedBlockId)
   if (block == null) return CAMPAIGN_SELECTION
+  if (block.__typename === 'CampaignColumnBlock')
+    return {
+      kind: 'slot',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
   if (
     block.__typename === 'CampaignTypographyBlock' ||
     block.__typename === 'CampaignButtonBlock'
@@ -115,6 +127,8 @@ export function resolveSelection(
       host
     }
   }
+  if (isInColumnSlot(blocks, block))
+    return { kind: 'column', block, host: block }
   return { kind: isChrome(block) ? 'chrome' : 'section', block, host: block }
 }
 
@@ -125,7 +139,10 @@ export interface CampaignEditorContextValue {
   selection: CampaignSelection
   /** Select a block, or the campaign row when no id is given. */
   selectBlock: (blockId?: string) => void
-  /** Escape: an Extra steps up to its section, a section or chrome block to the campaign row. */
+  /**
+   * Escape: an Extra steps up to its section, a Column Slot or the section in
+   * one to its Columns section, a section or chrome block to the campaign row.
+   */
   escape: () => void
   /** The page a block sits on; undefined for chrome, which every page shows. */
   pageKindOf: (
@@ -173,8 +190,19 @@ export function CampaignEditorProvider({
       selectBlock(selection.host?.id)
       return
     }
+    if (selection.kind === 'slot') {
+      selectBlock(selection.host?.id)
+      return
+    }
+    if (selection.kind === 'column') {
+      const slot = campaign.blocks.find(
+        (candidate) => candidate.id === selection.block?.parentBlockId
+      )
+      selectBlock(slot?.parentBlockId ?? undefined)
+      return
+    }
     selectBlock(undefined)
-  }, [selection, selectBlock])
+  }, [selection, selectBlock, campaign.blocks])
   const pageKindOf = useCallback(
     (block: Pick<CampaignBlock, 'pageId'>) =>
       campaign.pages.find((page) => page.id === block.pageId)?.kind,

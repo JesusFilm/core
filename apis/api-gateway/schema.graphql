@@ -324,6 +324,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -349,6 +350,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `title` / `variant`): the value fails its rule.
   """
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -374,6 +376,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -398,6 +401,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -423,6 +427,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -447,6 +452,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `pageId`): the landing page.
   - BAD_USER_INPUT (field: `intro`): over 500 characters.
   """
@@ -472,6 +478,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `pageId`): the landing page.
   - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
   """
@@ -487,6 +494,57 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
   """
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a rich text section to a page, last among its sections or at `parentOrder` with the later sections renumbered. Text is empty when omitted.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `title` / `content`): over 150 / 5000 characters.
+  """
+  campaignRichTextBlockCreate(input: CampaignRichTextBlockCreateInput!) : CampaignRichTextBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the rich text section’s default-language title or content. Only the given fields change; empty text is allowed and not rendered.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRichTextBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title` / `content`): over 150 / 5000 characters.
+  """
+  campaignRichTextBlockUpdate(id: ID!, input: CampaignRichTextBlockUpdateInput!) : CampaignRichTextBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a two-column section to a page, last among its sections or at `parentOrder` with the later sections renumbered. The two empty CampaignColumnBlock slots are created with it, in the same transaction, at parentOrder 0 and 1.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `ratio`): not equal, wideLeft or wideRight.
+  - BAD_USER_INPUT (field: `slotIds`): given with other than two ids.
+  """
+  campaignColumnsBlockCreate(input: CampaignColumnsBlockCreateInput!) : CampaignColumnsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the Columns section’s width ratio. Only the given fields change; the slots and what they hold are untouched.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignColumnsBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `ratio`): not equal, wideLeft or wideRight.
+  """
+  campaignColumnsBlockUpdate(id: ID!, input: CampaignColumnsBlockUpdateInput!) : CampaignColumnsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Children keep their rows and fall out of the tree with the parent, so `campaignBlockRestore` is how undo of a delete works.
   
@@ -1196,6 +1254,70 @@ type CampaignButtonBlock implements CampaignBlock @join__type(graph: API_JOURNEY
 }
 
 """
+A Column Slot: one of the two fixed cells of a CampaignColumnsBlock. It holds at most one section as its only child; it is created with its Columns section, swapped by an order update, and never deleted or reparented on its own. It carries no fields beyond CampaignBlock.
+"""
+type CampaignColumnBlock implements CampaignBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  {
+  id: ID!
+  campaignId: ID!
+  """
+  The Campaign Page this block sits on, if page-scoped.
+  """
+  pageId: ID
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+}
+
+"""
+A two-column section: always exactly two CampaignColumnBlock children (the Column Slots) at parentOrder 0 and 1, each holding at most one section. Extras are children after the slots.
+"""
+type CampaignColumnsBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
+  id: ID!
+  campaignId: ID!
+  """
+  The Campaign Page this block sits on, if page-scoped.
+  """
+  pageId: ID
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+  """
+  Read only when backgroundKind is `custom`. `#RRGGBB`.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+  """
+  Read only when backgroundKind is `image`; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  """
+  Width of the two slots at `md` and up; defaults to equal.
+  """
+  ratio: CampaignColumnsRatio!
+}
+
+"""
 Campaign Chrome: the one footer every page shares. pageId and regionId are both null. Typography children are the footer lines, button children the footer links. Never deletable, movable or duplicable.
 """
 type CampaignFooterBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
@@ -1722,6 +1844,52 @@ type CampaignRegionSwitcherBlock implements CampaignBlock & CampaignSectionBlock
   title: String
   titleTranslations: [TranslatedValue!]!
   variant: CampaignSwitcherVariant!
+}
+
+"""
+A title and one content column. `content` is one text column; the viewer splits it on blank lines into paragraphs.
+"""
+type CampaignRichTextBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
+  id: ID!
+  campaignId: ID!
+  """
+  The Campaign Page this block sits on, if page-scoped.
+  """
+  pageId: ID
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+  """
+  Read only when backgroundKind is `custom`. `#RRGGBB`.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+  """
+  Read only when backgroundKind is `image`; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  """
+  Paragraphs separated by blank lines.
+  """
+  content: String
+  contentTranslations: [TranslatedValue!]!
 }
 
 """
@@ -5496,6 +5664,10 @@ input CampaignAnalyticsBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN) 
   """
   pageId: ID!
   """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
+  """
   Position among the page’s sections; appended when omitted or past the end.
   """
   parentOrder: Int
@@ -5583,6 +5755,35 @@ input CampaignButtonBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   placement: CampaignChildPlacement
 }
 
+input CampaignColumnsBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page. A Columns section never sits in a slot, so a value here is always refused.
+  """
+  parentBlockId: ID
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  Defaults to equal.
+  """
+  ratio: CampaignColumnsRatio
+  """
+  Client-chosen ids for the two Column Slots, in order, so the editor can show them before the response arrives; exactly two when given.
+  """
+  slotIds: [ID!]
+}
+
+input CampaignColumnsBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  ratio: CampaignColumnsRatio
+}
+
 """
 Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
 """
@@ -5608,6 +5809,10 @@ input CampaignHeroBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   A page of the campaign.
   """
   pageId: ID!
+  """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
   """
   Position among the page’s sections; appended when omitted or past the end.
   """
@@ -5650,6 +5855,10 @@ input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN
   A page of the campaign.
   """
   pageId: ID!
+  """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
   """
   Position among the page’s sections; appended when omitted or past the end.
   """
@@ -5696,6 +5905,10 @@ input CampaignRegionHeaderBlockCreateInput @join__type(graph: API_JOURNEYS_MODER
   """
   pageId: ID!
   """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
+  """
   Position among the page’s sections; appended when omitted or past the end.
   """
   parentOrder: Int
@@ -5719,6 +5932,10 @@ input CampaignRegionShareBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN
   The Region Page; refused on the landing page.
   """
   pageId: ID!
+  """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
   """
   Position among the page’s sections; appended when omitted or past the end.
   """
@@ -5752,6 +5969,10 @@ input CampaignRegionSwitcherBlockCreateInput @join__type(graph: API_JOURNEYS_MOD
   """
   pageId: ID!
   """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
+  """
   Position among the page’s sections; appended when omitted or past the end.
   """
   parentOrder: Int
@@ -5771,6 +5992,42 @@ input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MOD
   """
   title: String
   variant: CampaignSwitcherVariant
+}
+
+input CampaignRichTextBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign.
+  """
+  pageId: ID!
+  """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 5000 characters; paragraphs separated by blank lines.
+  """
+  content: String
+}
+
+input CampaignRichTextBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  At most 150 characters.
+  """
+  title: String
+  """
+  At most 5000 characters; paragraphs separated by blank lines.
+  """
+  content: String
 }
 
 input CampaignTypographyBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5834,6 +6091,10 @@ input CampaignVideoCarouselBlockCreateInput @join__type(graph: API_JOURNEYS_MODE
   A page of the campaign.
   """
   pageId: ID!
+  """
+  A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.
+  """
+  parentBlockId: ID
   """
   Position among the page’s sections; appended when omitted or past the end.
   """

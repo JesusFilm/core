@@ -14,6 +14,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Layout1Icon from '@core/shared/ui/icons/Layout1'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -34,16 +35,25 @@ import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import {
+  columnSlots,
+  newColumnSlots,
   newSectionBlock,
   pageSections,
-  sectionTypesForPage
+  sectionTypesForPage,
+  sectionTypesForSlot,
+  slotSection
 } from '../sectionTypes'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
+import { useChangeTypeCommand } from '../utils/useChangeTypeCommand'
+import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
 import { Breadcrumb } from './Breadcrumb'
+
+/** The ⇄ glyph of the column swap control; a symbol, not copy to translate. */
+const SWAP_GLYPH = '\u21c4'
 
 /** The label a new button Extra is born with (PRD §14); campaign content, not UI copy. */
 export const NEW_BUTTON_LABEL = 'Button'
@@ -80,10 +90,14 @@ function BarButton({
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
-/** Where "+Add section" puts the new section: a page and a position among its sections. */
+/**
+ * Where a new section goes: a page and a position among its sections, or a
+ * Column Slot, whose one section is always at position 0.
+ */
 interface SectionInsert {
   pageId: string
   parentOrder: number
+  parentBlockId?: string
 }
 
 /**
@@ -91,8 +105,11 @@ interface SectionInsert {
  * is selected. Campaign row: Settings, Theme, Translations, +Add section.
  * Section: Edit, Style, +Add (an Extra, or a section above or below), move
  * up/down, duplicate, bin behind a confirmation. Chrome: Edit, Style, +Add
- * only. Text Extra: size, align, colour, Style, bin. Button Extra adds the
- * link chip and variant/size/colours. Controls that belong to later tickets
+ * only. Column child (the section in a Column Slot): Edit, Style, Change
+ * type, +Add (Extras only), ⇄ swap the two slots, bin behind a confirmation
+ * that empties the column. Column Slot: a type picker while empty, ⇄ swap.
+ * Text Extra: size, align, colour, Style, bin. Button Extra adds the link
+ * chip and variant/size/colours. Controls that belong to later tickets
  * render disabled.
  */
 export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
@@ -108,6 +125,8 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   const { addBlockDelete } = useCampaignBlockDeleteCommand()
   const { addBlockDuplicate } = useCampaignBlockDuplicateCommand()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
+  const { addColumnSwap } = useColumnSwapCommand()
+  const { addChangeType } = useChangeTypeCommand()
   const [typographyCreate] = useCampaignTypographyBlockCreateMutation(
     campaign.id
   )
@@ -118,6 +137,9 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
     anchor: HTMLElement
     insert: SectionInsert
   } | null>(null)
+  const [changeTypeAnchor, setChangeTypeAnchor] = useState<HTMLElement | null>(
+    null
+  )
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   const selectedSection =
@@ -129,6 +151,22 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   const sectionIndex = sectionSiblings.findIndex(
     (candidate) => candidate.id === selectedSection?.id
   )
+
+  const selectedSlot =
+    selection.kind === 'slot'
+      ? selection.block
+      : selection.kind === 'column'
+        ? campaign.blocks.find(
+            (candidate) => candidate.id === selection.block?.parentBlockId
+          )
+        : undefined
+  const slotIsEmpty =
+    selectedSlot != null &&
+    slotSection(campaign.blocks, selectedSlot.id) == null
+  const columnsSlotCount =
+    selectedSlot?.parentBlockId != null
+      ? columnSlots(campaign.blocks, selectedSlot.parentBlockId).length
+      : 0
 
   function handleEdit(): void {
     dispatch({ type: 'RequestEditAction' })
@@ -242,12 +280,45 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       campaignId: campaign.id,
       ...insert
     })
+    const slotIds: [string, string] | undefined =
+      typename === 'CampaignColumnsBlock' ? [uuidv4(), uuidv4()] : undefined
+    const input = {
+      id,
+      campaignId: campaign.id,
+      ...insert,
+      ...(slotIds != null ? { slotIds } : {})
+    }
+    const slots = slotIds != null ? newColumnSlots(block, slotIds) : []
     addBlock({
       block,
       execute() {
-        void sectionCreate(block, { id, campaignId: campaign.id, ...insert })
+        void sectionCreate(block, input, slots)
       }
     })
+  }
+
+  /** An empty slot's "Choose type": the picked section is the slot's only child. */
+  function handleChooseSlotType(event: MouseEvent<HTMLButtonElement>): void {
+    if (selectedSlot?.pageId == null) return
+    setSectionMenu({
+      anchor: event.currentTarget,
+      insert: {
+        pageId: selectedSlot.pageId,
+        parentBlockId: selectedSlot.id,
+        parentOrder: 0
+      }
+    })
+  }
+
+  function handleChangeType(typename: CampaignSectionTypename): void {
+    setChangeTypeAnchor(null)
+    if (selection.block == null) return
+    addChangeType(selection.block, typename)
+  }
+
+  function handleSwap(): void {
+    if (selectedSlot == null) return
+    addColumnSwap(selectedSlot, selection.block?.id)
   }
 
   function handleMove(step: -1 | 1): void {
@@ -347,12 +418,46 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       data-testid="CampaignSectionTypeMenu"
     >
-      {sectionTypesForPage(sectionMenuPageKind).map((typename) => (
+      {(sectionMenu?.insert.parentBlockId != null
+        ? sectionTypesForSlot(sectionMenuPageKind)
+        : sectionTypesForPage(sectionMenuPageKind)
+      ).map((typename) => (
         <MenuItem key={typename} onClick={() => handleAddSection(typename)}>
           {blockLabel(t, typename)}
         </MenuItem>
       ))}
     </Menu>
+  )
+
+  const changeTypeMenu = (
+    <Menu
+      anchorEl={changeTypeAnchor}
+      open={changeTypeAnchor != null}
+      onClose={() => setChangeTypeAnchor(null)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      data-testid="CampaignChangeTypeMenu"
+    >
+      {sectionTypesForSlot(
+        pageKindOf(selection.block ?? { pageId: null }) ?? pageKind
+      )
+        .filter((typename) => typename !== selection.block?.__typename)
+        .map((typename) => (
+          <MenuItem key={typename} onClick={() => handleChangeType(typename)}>
+            {blockLabel(t, typename)}
+          </MenuItem>
+        ))}
+    </Menu>
+  )
+
+  const swapButton = (
+    <IconButton
+      aria-label={t('Swap columns')}
+      disabled={columnsSlotCount < 2}
+      onClick={handleSwap}
+    >
+      {SWAP_GLYPH}
+    </IconButton>
   )
 
   const styleButton = (
@@ -425,6 +530,43 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
             </IconButton>
           </>
         )
+      case 'column':
+        return (
+          <>
+            <BarButton
+              label={t('Edit')}
+              icon={<Edit2Icon />}
+              onClick={handleEdit}
+            />
+            {styleButton}
+            <BarButton
+              label={t('Change type')}
+              icon={<Layout1Icon />}
+              onClick={(event) => setChangeTypeAnchor(event.currentTarget)}
+            />
+            {addButton}
+            {swapButton}
+            <IconButton
+              aria-label={t('Empty column')}
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2Icon />
+            </IconButton>
+          </>
+        )
+      case 'slot':
+        return (
+          <>
+            {slotIsEmpty && (
+              <BarButton
+                label={t('Choose type')}
+                icon={<Plus2Icon />}
+                onClick={handleChooseSlotType}
+              />
+            )}
+            {swapButton}
+          </>
+        )
       case 'chrome':
         return (
           <>
@@ -485,11 +627,13 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       <Divider orientation="vertical" flexItem />
       {renderControls()}
       {sectionTypeMenu}
+      {changeTypeMenu}
       <SectionDeleteDialog
-        open={deleteOpen && selectedSection != null}
+        open={deleteOpen && selection.block != null}
+        variant={selection.kind === 'column' ? 'column' : 'section'}
         pageKind={
-          selectedSection != null
-            ? (pageKindOf(selectedSection) ?? pageKind)
+          selection.block != null
+            ? (pageKindOf(selection.block) ?? pageKind)
             : pageKind
         }
         onClose={() => setDeleteOpen(false)}

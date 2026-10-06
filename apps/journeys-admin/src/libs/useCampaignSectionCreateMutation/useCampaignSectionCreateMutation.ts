@@ -5,9 +5,12 @@ import { useCallback } from 'react'
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
-import { campaignBlockInsertUpdate } from '../campaignBlockCache'
+import {
+  campaignBlockInsertUpdate,
+  campaignBlocksAdd
+} from '../campaignBlockCache'
 
-/** The seeded section typenames: what "+Add section" offers today. */
+/** Every section typename: what "+Add section" offers. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -15,7 +18,9 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignJourneyListBlock',
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock'
 ] as const
 
 export type CampaignSectionTypename =
@@ -26,12 +31,16 @@ export type CampaignSectionBlock = Extract<
   { __typename: CampaignSectionTypename }
 >
 
-/** The four fields every section create input shares; the body starts empty. */
+/** The fields every section create input shares; the body starts empty. */
 export interface CampaignSectionCreateInput {
   id: string
   campaignId: string
   pageId: string
   parentOrder: number
+  /** A Column Slot to create the section in rather than at the page's top level. */
+  parentBlockId?: string
+  /** Columns sections only: the ids the two slots are created under. */
+  slotIds?: string[]
 }
 
 export const CAMPAIGN_HERO_BLOCK_CREATE = gql`
@@ -109,6 +118,28 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_CREATE = gql`
   }
 `
 
+export const CAMPAIGN_RICH_TEXT_BLOCK_CREATE = gql`
+  ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  mutation CampaignRichTextBlockCreate(
+    $input: CampaignRichTextBlockCreateInput!
+  ) {
+    campaignRichTextBlockCreate(input: $input) {
+      ...CampaignPublicBlockFields
+    }
+  }
+`
+
+export const CAMPAIGN_COLUMNS_BLOCK_CREATE = gql`
+  ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  mutation CampaignColumnsBlockCreate(
+    $input: CampaignColumnsBlockCreateInput!
+  ) {
+    campaignColumnsBlockCreate(input: $input) {
+      ...CampaignPublicBlockFields
+    }
+  }
+`
+
 interface SectionCreateOperation {
   document: DocumentNode
   operation: string
@@ -146,6 +177,14 @@ export const SECTION_CREATE_OPERATIONS: Record<
   CampaignRegionShareBlock: {
     document: CAMPAIGN_REGION_SHARE_BLOCK_CREATE,
     operation: 'campaignRegionShareBlockCreate'
+  },
+  CampaignRichTextBlock: {
+    document: CAMPAIGN_RICH_TEXT_BLOCK_CREATE,
+    operation: 'campaignRichTextBlockCreate'
+  },
+  CampaignColumnsBlock: {
+    document: CAMPAIGN_COLUMNS_BLOCK_CREATE,
+    operation: 'campaignColumnsBlockCreate'
   }
 }
 
@@ -153,20 +192,25 @@ type SectionCreateResult = Record<string, CampaignBlock | null | undefined>
 
 export type CampaignSectionCreate = (
   block: CampaignSectionBlock,
-  input: CampaignSectionCreateInput
+  input: CampaignSectionCreateInput,
+  /** A Columns section's two slot rows, written to the cache with it. */
+  slots?: CampaignBlock[]
 ) => Promise<ApolloLink.Result<SectionCreateResult>>
 
 /**
- * Create a section of any seeded typename through its own create mutation,
- * shown optimistically as `block`, and insert it into the campaign's cached
- * block list at its `parentOrder` with the later sections shifted down.
+ * Create a section of any typename through its own create mutation, shown
+ * optimistically as `block`, and insert it into the campaign's cached block
+ * list at its `parentOrder` with the later sections shifted down. A Columns
+ * section's slots are created by the API under the ids the input names; the
+ * response carries only the section, so the slot rows are written from
+ * `slots`.
  */
 export function useCampaignSectionCreateMutation(
   campaignId: string
 ): CampaignSectionCreate {
   const client = useApolloClient()
   return useCallback(
-    async (block, input) => {
+    async (block, input, slots = []) => {
       const { document, operation } =
         SECTION_CREATE_OPERATIONS[block.__typename]
       return await client.mutate<SectionCreateResult>({
@@ -175,6 +219,15 @@ export function useCampaignSectionCreateMutation(
         optimisticResponse: { [operation]: block },
         update(cache, { data }) {
           campaignBlockInsertUpdate(cache, campaignId, data?.[operation])
+          if (slots.length === 0) return
+          for (const slot of slots)
+            cache.writeFragment({
+              id: cache.identify({ __typename: slot.__typename, id: slot.id }),
+              fragment: CAMPAIGN_PUBLIC_BLOCK_FIELDS,
+              fragmentName: 'CampaignPublicBlockFields',
+              data: slot
+            })
+          campaignBlocksAdd(cache, campaignId, slots)
         }
       })
     },
