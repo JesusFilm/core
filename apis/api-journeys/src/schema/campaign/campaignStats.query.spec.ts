@@ -130,7 +130,7 @@ describe('campaignStats', () => {
     mockStatsCache.get.mockResolvedValue(null)
     mockStatsCache.set.mockResolvedValue(undefined)
     mockAxios.get.mockImplementation(
-      plausibleCountryRowsBySite(rowsByJourney) as never
+      plausibleCountryRowsBySite(rowsByJourney)
     )
   })
 
@@ -473,7 +473,7 @@ describe('campaignStats', () => {
         .mockRejectedValueOnce(new Error('timeout'))
         .mockRejectedValueOnce(new Error('timeout'))
         .mockRejectedValueOnce(new Error('timeout'))
-        .mockImplementation(plausibleCountryRowsBySite(rowsByJourney) as never)
+        .mockImplementation(plausibleCountryRowsBySite(rowsByJourney))
 
       await publicClient({
         document: CAMPAIGN_STATS,
