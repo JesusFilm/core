@@ -108,6 +108,7 @@ const journey = {
   __typename: 'Journey',
   id: 'frJourneyId',
   title: 'Noël en Europe',
+  description: null,
   slug: 'noel-europe',
   status: JourneyStatus.published
 }

@@ -16,6 +16,8 @@ export function blockLabel(
       return t('Video carousel')
     case 'CampaignJourneyListBlock':
       return t('Journey list')
+    case 'CampaignJourneyBlock':
+      return t('Journey')
     case 'CampaignAnalyticsBlock':
       return t('Analytics')
     case 'CampaignRegionHeaderBlock':

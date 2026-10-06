@@ -4,9 +4,9 @@ import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react'
 
 import {
-  CAMPAIGN_TEXT_CAPS,
   CampaignTextBlock,
-  CampaignTextField
+  CampaignTextField,
+  campaignTextCap
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
@@ -54,7 +54,7 @@ export function InlineText({
   variantMapping
 }: InlineTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const max = CAMPAIGN_TEXT_CAPS[field]
+  const max = campaignTextCap(block.__typename, field)
   const { value, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand({ block, field })
   const [overLength, setOverLength] = useState(false)

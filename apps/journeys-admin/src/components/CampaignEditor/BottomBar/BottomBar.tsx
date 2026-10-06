@@ -10,7 +10,10 @@ import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
+import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
+import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
@@ -52,6 +55,7 @@ import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCo
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
+import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
 
 import { Breadcrumb } from './Breadcrumb'
 
@@ -104,7 +108,8 @@ interface SectionInsert {
  * Section: Edit, Style, +Add (an Extra, or a section above or below), move
  * up/down, duplicate, bin behind a confirmation. Chrome: Edit, Style, +Add
  * only. Text Extra: size, align, colour, Style, bin. Button Extra adds the
- * link chip and variant/size/colours. Region card: Open page, +Add line,
+ * link chip and variant/size/colours. Journey card: Edit, ← → among the list's
+ * cards, Refresh from journey, bin. Region card: Open page, +Add line,
  * Settings, list/unlist and move. On an Orphan Page the campaign row adds
  * the orphan page bar. Controls that belong to later tickets render disabled.
  */
@@ -126,6 +131,7 @@ export function BottomBar({
   const { addBlockDelete } = useCampaignBlockDeleteCommand()
   const { addBlockDuplicate } = useCampaignBlockDuplicateCommand()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
+  const { refreshSnapshot, confirmDialog } = useSnapshotRefreshCommand()
   const [typographyCreate] = useCampaignTypographyBlockCreateMutation(
     campaign.id
   )
@@ -147,6 +153,33 @@ export function BottomBar({
   const sectionIndex = sectionSiblings.findIndex(
     (candidate) => candidate.id === selectedSection?.id
   )
+
+  const selectedCard =
+    selection.kind === 'journey' &&
+    selection.block?.__typename === 'CampaignJourneyBlock'
+      ? selection.block
+      : undefined
+  const cardSiblings =
+    selectedCard != null
+      ? campaign.blocks
+          .filter(
+            (candidate) =>
+              candidate.__typename === 'CampaignJourneyBlock' &&
+              candidate.parentBlockId === selectedCard.parentBlockId &&
+              candidate.parentOrder != null
+          )
+          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+      : []
+  const cardIndex = cardSiblings.findIndex(
+    (candidate) => candidate.id === selectedCard?.id
+  )
+
+  /** ← → move a card among the list's cards, past any Extras between them. */
+  function handleMoveCard(step: -1 | 1): void {
+    const target = cardSiblings[cardIndex + step]
+    if (selectedCard == null || target?.parentOrder == null) return
+    addBlockOrder(selectedCard, target.parentOrder)
+  }
 
   function handleEdit(): void {
     dispatch({ type: 'RequestEditAction' })
@@ -550,6 +583,38 @@ export function BottomBar({
             </IconButton>
           </>
         )
+      case 'journey':
+        return selectedCard == null ? null : (
+          <>
+            <BarButton
+              label={t('Edit')}
+              icon={<Edit2Icon />}
+              onClick={handleEdit}
+            />
+            <IconButton
+              aria-label={t('Move left')}
+              disabled={cardIndex <= 0}
+              onClick={() => handleMoveCard(-1)}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+            <IconButton
+              aria-label={t('Move right')}
+              disabled={cardIndex < 0 || cardIndex >= cardSiblings.length - 1}
+              onClick={() => handleMoveCard(1)}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+            <BarButton
+              label={t('Refresh from journey')}
+              icon={<ArrowRefresh6Icon />}
+              onClick={() => {
+                void refreshSnapshot(selectedCard)
+              }}
+            />
+            {binButton}
+          </>
+        )
       case 'text':
         return (
           <>
@@ -598,6 +663,7 @@ export function BottomBar({
       <Divider orientation="vertical" flexItem />
       {renderControls()}
       {sectionTypeMenu}
+      {confirmDialog}
       <SectionDeleteDialog
         open={deleteOpen && selectedSection != null}
         pageKind={

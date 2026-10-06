@@ -21,6 +21,7 @@ export const GET_CAMPAIGN_JOURNEY_BY_LINK = gql`
     ) {
       id
       title
+      description
       slug
       status
     }

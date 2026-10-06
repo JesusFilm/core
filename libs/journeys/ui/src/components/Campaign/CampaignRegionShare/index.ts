@@ -1,1 +1,1 @@
-export { CampaignRegionShare } from './CampaignRegionShare'
+export { CampaignRegionShare, campaignString } from './CampaignRegionShare'

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, JourneyStatus, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignPublicBlockFields
@@ -376,6 +376,55 @@ export interface CampaignPublicBlockFields_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicBlockFields_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicBlockFields_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is live-published.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicBlockFields_CampaignJourneyBlock_journeyImage | null;
+}
+
 export interface CampaignPublicBlockFields_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -484,4 +533,4 @@ export interface CampaignPublicBlockFields_CampaignButtonBlock {
   action: CampaignPublicBlockFields_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicBlockFields = CampaignPublicBlockFields_CampaignHeaderBlock | CampaignPublicBlockFields_CampaignFooterBlock | CampaignPublicBlockFields_CampaignHeroBlock | CampaignPublicBlockFields_CampaignRegionSwitcherBlock | CampaignPublicBlockFields_CampaignVideoCarouselBlock | CampaignPublicBlockFields_CampaignJourneyListBlock | CampaignPublicBlockFields_CampaignAnalyticsBlock | CampaignPublicBlockFields_CampaignRegionHeaderBlock | CampaignPublicBlockFields_CampaignRegionShareBlock | CampaignPublicBlockFields_CampaignTypographyBlock | CampaignPublicBlockFields_CampaignButtonBlock;
+export type CampaignPublicBlockFields = CampaignPublicBlockFields_CampaignHeaderBlock | CampaignPublicBlockFields_CampaignFooterBlock | CampaignPublicBlockFields_CampaignHeroBlock | CampaignPublicBlockFields_CampaignRegionSwitcherBlock | CampaignPublicBlockFields_CampaignVideoCarouselBlock | CampaignPublicBlockFields_CampaignJourneyListBlock | CampaignPublicBlockFields_CampaignAnalyticsBlock | CampaignPublicBlockFields_CampaignRegionHeaderBlock | CampaignPublicBlockFields_CampaignRegionShareBlock | CampaignPublicBlockFields_CampaignJourneyBlock | CampaignPublicBlockFields_CampaignTypographyBlock | CampaignPublicBlockFields_CampaignButtonBlock;

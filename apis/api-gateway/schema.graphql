@@ -415,6 +415,53 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: parentBlockId does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
+  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or unpublished).
+  """
+  campaignJourneyBlockCreate(
+    """
+    A client-chosen id for the new item.
+    """
+    id: ID
+    """
+    The journey list the card is added to.
+    """
+    parentBlockId: ID!
+    """
+    The journey’s admin link or public URL on any domain.
+    """
+    url: String!
+  ): CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+  """
+  campaignJourneyBlockUpdate(id: ID!, input: CampaignJourneyBlockUpdateInput!) : CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): "Journey not found or not published" — the journey is gone or no longer published.
+  """
+  campaignJourneyBlockSnapshotRefresh(id: ID!) : CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Add an analytics section to a page, last among its sections or at `parentOrder` with the later sections renumbered. Its scope follows the page it sits on.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -1444,6 +1491,64 @@ type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock @join__ty
   The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
   """
   mediaBlockId: ID
+}
+
+"""
+A journey-list item: one published journey of any team shown as a card. `title` and `description` are an editable snapshot taken when the journey was picked (the default-language values, translatable); the status, address and image are read live from the journey, with no snapshot of its tag.
+"""
+type CampaignJourneyBlock implements CampaignBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  {
+  id: ID!
+  campaignId: ID!
+  """
+  The Campaign Page this block sits on, if page-scoped.
+  """
+  pageId: ID
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  """
+  The linked journey. Null only if the row predates the link; never exposes the journey itself.
+  """
+  journeyId: ID
+  """
+  Snapshot of the journey's title, editable; the default-language value.
+  """
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  """
+  Snapshot of the journey's description, editable; the default-language value.
+  """
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
+  """
+  The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published`.
+  """
+  journeyStatus: JourneyStatus
+  """
+  The journey's public address, decided by its own team's domains; null unless the journey is live-published.
+  """
+  journeyUrl: String
+  """
+  The journey's primary image, read live; null when it has none.
+  """
+  journeyImage: CampaignJourneyImage
+}
+
+"""
+The primary image of a journey as a journey-list card shows it: the address and the size and placeholder hints, nothing that leads back to the journey.
+"""
+type CampaignJourneyImage @join__type(graph: API_JOURNEYS_MODERN)  {
+  src: String!
+  alt: String
+  width: Int
+  height: Int
+  blurhash: String
 }
 
 """
@@ -4912,6 +5017,14 @@ enum CampaignColumnsRatio @join__type(graph: API_JOURNEYS_MODERN)  {
   wideRight @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
+enum JourneyStatus @join__type(graph: API_JOURNEYS_MODERN)  {
+  archived @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  deleted @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  trashed @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
 """
 How a Journey List renders its items: a card grid or a list.
 """
@@ -4944,14 +5057,6 @@ enum CampaignRadius @join__type(graph: API_JOURNEYS_MODERN)  {
   slight @join__enumValue(graph: API_JOURNEYS_MODERN) 
   rounded @join__enumValue(graph: API_JOURNEYS_MODERN) 
   veryRounded @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
-enum JourneyStatus @join__type(graph: API_JOURNEYS_MODERN)  {
-  archived @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  deleted @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  draft @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  published @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  trashed @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -5769,6 +5874,17 @@ input CampaignHeroBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   lede: String
   align: TypographyAlign
+}
+
+input CampaignJourneyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Default-language title. At most 200 characters.
+  """
+  title: String
+  """
+  Default-language description. At most 1000 characters.
+  """
+  description: String
 }
 
 input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
