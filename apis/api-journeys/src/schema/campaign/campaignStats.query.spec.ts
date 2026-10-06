@@ -129,9 +129,7 @@ describe('campaignStats', () => {
     })
     mockStatsCache.get.mockResolvedValue(null)
     mockStatsCache.set.mockResolvedValue(undefined)
-    mockAxios.get.mockImplementation(
-      plausibleCountryRowsBySite(rowsByJourney)
-    )
+    mockAxios.get.mockImplementation(plausibleCountryRowsBySite(rowsByJourney))
   })
 
   it('makes one visitors-only country breakdown per distinct linked journey on its own site', async () => {
@@ -233,13 +231,14 @@ describe('campaignStats', () => {
 
   it('counts an orphan region and a journey from another team like any other', async () => {
     const campaign = publishedCampaign()
-    prismaMock.campaign.findUnique.mockResolvedValue({
+    const withOrphanRegion = {
       ...campaign,
       regions: campaign.regions.map((region) => ({
         ...region,
         listed: region.id !== 'afrRegionId'
       }))
-    })
+    }
+    prismaMock.campaign.findUnique.mockResolvedValue(withOrphanRegion)
 
     const result = (await publicClient({
       document: CAMPAIGN_STATS,
