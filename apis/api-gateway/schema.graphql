@@ -1312,6 +1312,14 @@ type CampaignButtonBlock implements CampaignBlock @join__type(graph: API_JOURNEY
 }
 
 """
+Visitors from one country. Codes are ISO alpha-2 exactly as Plausible reports them (so non-ISO codes such as `XK` and `A1` can appear); no names, the viewer labels with `Intl.DisplayNames`.
+"""
+type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
+  countryCode: String!
+  visitors: Int!
+}
+
+"""
 Campaign Chrome: the one footer every page shares. pageId and regionId are both null. Typography children are the footer lines, button children the footer links. Never deletable, movable or duplicable.
 """
 type CampaignFooterBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
@@ -1811,6 +1819,18 @@ type CampaignRegionShareBlock implements CampaignBlock & CampaignSectionBlock @j
 }
 
 """
+Campaign Stats summed over one Campaign Region.
+"""
+type CampaignRegionStats @join__type(graph: API_JOURNEYS_MODERN)  {
+  regionId: ID!
+  totalVisitors: Int!
+  """
+  Every known country by visitors, highest first.
+  """
+  countries: [CampaignCountryStat!]!
+}
+
+"""
 Lists the listed Campaign Regions by order. Holds no items of its own: it reads CampaignRegion rows live.
 """
 type CampaignRegionSwitcherBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
@@ -1862,6 +1882,39 @@ type CampaignScrollToBlockAction implements CampaignAction @join__type(graph: AP
   parentBlockId: ID!
   parentBlock: CampaignBlock!
   blockId: String!
+}
+
+"""
+The visitor numbers a Campaign shows: each linked journey's unique visitors by country from the campaign's first publish to now, summed by the campaign's region and language structure.
+"""
+type CampaignStats @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The start of the stats window: the first publish (creation for a draft).
+  """
+  from: DateTimeISO!
+  """
+  When the cached sweep was taken.
+  """
+  to: DateTimeISO!
+  all: CampaignStatsScope!
+  """
+  Every region, listed and orphan alike, in region order.
+  """
+  regions: [CampaignRegionStats!]!
+}
+
+"""
+Campaign Stats summed over a scope: the whole campaign (landing, the ALL tab).
+"""
+type CampaignStatsScope @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Sum of per-journey unique visitors; includes visitors whose country is unknown.
+  """
+  totalVisitors: Int!
+  """
+  Every known country by visitors, highest first.
+  """
+  countries: [CampaignCountryStat!]!
 }
 
 """
@@ -2700,6 +2753,16 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     """
     languageId: ID
   ): CampaignPublic! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  The Campaign's visitor stats from one cached Plausible sweep over every linked journey, summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
+  
+  Auth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.
+  - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served.
+  """
+  campaignStats(id: ID!) : CampaignStats! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 

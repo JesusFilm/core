@@ -491,6 +491,14 @@ enum CampaignColumnsRatio {
 }
 
 """
+Visitors from one country. Codes are ISO alpha-2 exactly as Plausible reports them (so non-ISO codes such as `XK` and `A1` can appear); no names, the viewer labels with `Intl.DisplayNames`.
+"""
+type CampaignCountryStat {
+  countryCode: String!
+  visitors: Int!
+}
+
+"""
 Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
 """
 input CampaignCreateInput {
@@ -1168,6 +1176,15 @@ input CampaignRegionShareBlockUpdateInput {
   intro: String
 }
 
+"""Campaign Stats summed over one Campaign Region."""
+type CampaignRegionStats {
+  regionId: ID!
+  totalVisitors: Int!
+
+  """Every known country by visitors, highest first."""
+  countries: [CampaignCountryStat!]!
+}
+
 """
 Lists the listed Campaign Regions by order. Holds no items of its own: it reads CampaignRegion rows live.
 """
@@ -1299,6 +1316,36 @@ interface CampaignSectionBlock {
   buttonColor: String
   buttonTextColor: String
   accentColor: String
+}
+
+"""
+The visitor numbers a Campaign shows: each linked journey's unique visitors by country from the campaign's first publish to now, summed by the campaign's region and language structure.
+"""
+type CampaignStats {
+  """
+  The start of the stats window: the first publish (creation for a draft).
+  """
+  from: DateTimeISO!
+
+  """When the cached sweep was taken."""
+  to: DateTimeISO!
+  all: CampaignStatsScope!
+
+  """Every region, listed and orphan alike, in region order."""
+  regions: [CampaignRegionStats!]!
+}
+
+"""
+Campaign Stats summed over a scope: the whole campaign (landing, the ALL tab).
+"""
+type CampaignStatsScope {
+  """
+  Sum of per-journey unique visitors; includes visitors whose country is unknown.
+  """
+  totalVisitors: Int!
+
+  """Every known country by visitors, highest first."""
+  countries: [CampaignCountryStat!]!
 }
 
 """
@@ -4039,6 +4086,17 @@ type Query {
     """
     languageId: ID
   ): CampaignPublic!
+
+  """
+  The Campaign's visitor stats from one cached Plausible sweep over every linked journey, summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
+  
+  Auth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.
+  - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served.
+  """
+  campaignStats(id: ID!): CampaignStats!
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
