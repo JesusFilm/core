@@ -43,6 +43,42 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       title
       videoId
       videoVariantLanguageId
+      video {
+        __typename
+        id
+        slug
+        childrenCount
+        title(languageId: $languageId, primary: true) {
+          value
+          primary
+          language {
+            id
+          }
+        }
+        images(aspectRatio: banner) {
+          mobileCinematicHigh
+        }
+        children {
+          __typename
+          id
+          slug
+          title(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          variant {
+            id
+            slug
+            duration
+          }
+          images(aspectRatio: banner) {
+            mobileCinematicHigh
+          }
+        }
+      }
     }
     ... on CampaignJourneyListBlock {
       eyebrow

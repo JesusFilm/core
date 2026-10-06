@@ -18,7 +18,11 @@ import {
   VideoLabel
 } from '../../../__generated__/globalTypes'
 
-import type { CampaignPublicBlockFields } from './__generated__/CampaignPublicBlockFields'
+import type {
+  CampaignPublicBlockFields,
+  CampaignPublicBlockFields_CampaignVideoCarouselBlock_video as CarouselVideo,
+  CampaignPublicBlockFields_CampaignVideoCarouselBlock_video_children as CarouselVideoChild
+} from './__generated__/CampaignPublicBlockFields'
 import type {
   CampaignPublicFields,
   CampaignPublicFields_regions,
@@ -300,6 +304,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     title: 'Films for the season',
     videoId: null,
     videoVariantLanguageId: null,
+    video: null,
     backgroundKind: CampaignBackgroundKind.surface
   }),
   section('CampaignJourneyListBlock', {
@@ -504,6 +509,88 @@ export const muxVideoBlock = video({
     playbackId: 'muxPlaybackId'
   }
 })
+
+function carouselWatchVideo(
+  id: string,
+  slug: string,
+  childrenCount: number,
+  children: CarouselVideoChild[]
+): CarouselVideo {
+  return {
+    __typename: 'Video',
+    id,
+    slug,
+    childrenCount,
+    title: [
+      {
+        __typename: 'VideoTitle',
+        value: 'Christmas in the stable',
+        primary: true,
+        language: { __typename: 'Language', id: '529' }
+      }
+    ],
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh: `https://imagedelivery.net/accountHash/${id}/mobileCinematicHigh`
+      }
+    ],
+    children
+  }
+}
+
+export function carouselChild(
+  id: string,
+  slug: string,
+  title: string,
+  duration: number
+): CarouselVideoChild {
+  return {
+    __typename: 'Video',
+    id,
+    slug,
+    title: [
+      {
+        __typename: 'VideoTitle',
+        value: title,
+        primary: true,
+        language: { __typename: 'Language', id: '529' }
+      }
+    ],
+    images: [
+      {
+        __typename: 'CloudflareImage',
+        mobileCinematicHigh: `https://imagedelivery.net/accountHash/${id}/mobileCinematicHigh`
+      }
+    ],
+    variant: {
+      __typename: 'VideoVariant',
+      id: `${id}-529`,
+      slug: `${slug}/english`,
+      duration
+    }
+  }
+}
+
+/** A carousel video whose expansion renders its children as cards. */
+export const expandedCarouselVideo = carouselWatchVideo(
+  'expansionVideoId',
+  'jesus',
+  61,
+  [
+    carouselChild('child1Id', 'the-birth', 'The birth', 180),
+    carouselChild('child2Id', 'the-visit', 'The visit', 240),
+    carouselChild('child3Id', 'the-journey', 'The journey', 300)
+  ]
+)
+
+/** A carousel video with no children: it is one card. */
+export const singleCarouselVideo = carouselWatchVideo(
+  'singleVideoId',
+  'the-nativity',
+  0,
+  []
+)
 
 /**
  * A Featured Media section (not in `landingBlocks`): text and bullets with
