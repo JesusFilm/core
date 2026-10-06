@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, VideoLabel, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetCampaign
@@ -244,6 +244,95 @@ export interface GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock {
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_title[];
+  images: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_images[];
+  variant: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_title[];
+  images: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_images[];
+  variant: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_variant | null;
+  children: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -285,7 +374,14 @@ export interface GetCampaign_campaign_blocks_CampaignVideoCarouselBlock {
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: GetCampaign_campaign_blocks_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface GetCampaign_campaign_blocks_CampaignJourneyListBlock {

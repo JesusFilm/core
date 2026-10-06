@@ -1,5 +1,6 @@
 export {
   CampaignEditorProvider,
+  isCarouselItem,
   resolveSelection,
   useCampaignEditor
 } from './CampaignEditorProvider'

@@ -123,3 +123,53 @@ export function useCampaignVideoBlockCreateMutation(
     [client, campaignId]
   )
 }
+
+export interface CreateCarouselItemOptions {
+  id: string
+  carousel: CampaignVideoOwner
+  pick: CampaignVideoPick
+  /** Where the item lands: after the carousel's children. */
+  parentOrder: number
+}
+
+export type CreateCarouselItem = (
+  options: CreateCarouselItemOptions
+) => Promise<ApolloLink.Result<CampaignVideoBlockCreate>>
+
+/**
+ * Add an explicit item to a Video Carousel through `campaignVideoBlockCreate`
+ * with the carousel as parent: the server appends it after the carousel's
+ * children. The optimistic item (the owned video's empty shape at the end
+ * of the carousel) joins the campaign's block list at once.
+ */
+export function useCampaignCarouselItemCreateMutation(
+  campaignId: string
+): CreateCarouselItem {
+  const client = useApolloClient()
+  return useCallback(
+    async ({ id, carousel, pick, parentOrder }) =>
+      await client.mutate<
+        CampaignVideoBlockCreate,
+        CampaignVideoBlockCreateVariables
+      >({
+        mutation: CAMPAIGN_VIDEO_BLOCK_CREATE,
+        variables: {
+          input: { id, campaignId, parentBlockId: carousel.id, ...pick }
+        },
+        optimisticResponse: {
+          campaignVideoBlockCreate: {
+            ...newOwnedVideoBlock(id, carousel, pick),
+            parentOrder
+          }
+        },
+        update(cache, { data }) {
+          campaignBlockCreateUpdate(
+            cache,
+            campaignId,
+            data?.campaignVideoBlockCreate
+          )
+        }
+      }),
+    [client, campaignId]
+  )
+}
