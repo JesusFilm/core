@@ -23,6 +23,8 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
+  /** The preview-language value to show instead; it is read-only because the canvas edits the default language. */
+  translation?: string
   /** Clicking the text selects its block and names the field clicked. */
   onSelect?: (field: CampaignTextField) => void
   variantMapping?: TypographyProps['variantMapping']
@@ -46,6 +48,7 @@ export function InlineText({
   placeholder,
   editing,
   autoFocus = false,
+  translation,
   onSelect,
   variant,
   component,
@@ -60,6 +63,8 @@ export function InlineText({
   const [overLength, setOverLength] = useState(false)
   const length = textLength(value)
   const testId = `InlineText-${field}`
+  const showInput = editing && translation == null
+  const displayed = translation ?? value
 
   function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>): void {
     const next = event.target.value
@@ -76,7 +81,7 @@ export function InlineText({
     onSelect?.(field)
   }
 
-  if (!editing)
+  if (!showInput)
     return (
       <Typography
         variant={variant}
@@ -89,11 +94,11 @@ export function InlineText({
           cursor: 'text',
           whiteSpace: 'pre-line',
           wordBreak: 'break-word',
-          ...(value === '' ? { opacity: 0.5 } : {}),
+          ...(displayed === '' ? { opacity: 0.5 } : {}),
           ...sx
         }}
       >
-        {value === '' ? placeholder : value}
+        {displayed === '' ? placeholder : displayed}
       </Typography>
     )
 

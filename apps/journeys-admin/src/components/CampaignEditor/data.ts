@@ -17,6 +17,57 @@ import {
 
 export const CURRENT_USER_ID = 'userId'
 
+type Block = Campaign['blocks'][number]
+type Translation = {
+  __typename: 'TranslatedValue'
+  languageId: string
+  value: string
+}
+type TranslatedField =
+  | 'eyebrow'
+  | 'title'
+  | 'lede'
+  | 'intro'
+  | 'content'
+  | 'label'
+
+function frenchValue(value: string): Translation {
+  return { __typename: 'TranslatedValue', languageId: '496', value }
+}
+
+/** French copy by block id, for the fields the canvas can preview in another language. */
+const frenchCopy: Record<string, Partial<Record<TranslatedField, string>>> = {
+  heroId: {
+    eyebrow: 'Noël 2026',
+    title: 'Partagez l’histoire de Noël',
+    lede: 'Choisissez votre région pour trouver un parcours dans votre langue, prêt à partager.'
+  },
+  heroButtonId: { label: 'Choisissez votre région' },
+  landingSwitcherId: { title: 'Choisissez votre région' },
+  carouselId: { eyebrow: 'Regarder', title: 'Films de la saison' }
+}
+
+const TRANSLATED_FIELDS: TranslatedField[] = [
+  'eyebrow',
+  'title',
+  'lede',
+  'intro',
+  'content',
+  'label'
+]
+
+/** The test blocks as `campaign(id)` returns them: each text field with its per-language values (none where the copy has no French). */
+function withTranslations(block: Block): Block {
+  const translations: Record<string, Translation[]> = {}
+  for (const field of TRANSLATED_FIELDS) {
+    if (!(field in block)) continue
+    const french = frenchCopy[block.id]?.[field]
+    translations[`${field}Translations`] =
+      french == null ? [] : [frenchValue(french)]
+  }
+  return { ...block, ...translations }
+}
+
 /** The seeded campaign as `campaign(id)` returns it to a manager, drawn from the shared viewer test data. */
 export const campaign: Campaign = {
   __typename: 'Campaign',
@@ -80,7 +131,9 @@ export const campaign: Campaign = {
       kind: CampaignPageKind.regionTemplate
     }
   ],
-  blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks],
+  blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks].map(
+    withTranslations
+  ),
   regions: []
 }
 
