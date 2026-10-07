@@ -5,7 +5,6 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
-
 import type { Mock } from 'vitest'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
