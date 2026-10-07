@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import {
   CampaignTextBlock,
@@ -44,7 +45,7 @@ export function textDebounceKey(
 
 /** The prefix shared by the debounce keys of every field of one block. */
 export function textDebounceKeyPrefix(
-  block: Pick<CampaignTextBlock, '__typename' | 'id'>
+  block: Pick<CampaignBlock, '__typename' | 'id'>
 ): string {
   return `${block.__typename}:${block.id}:`
 }
@@ -89,7 +90,7 @@ export function useCampaignTextCommand({
 
   // The value an undo or redo of this field just wrote: the cache has not
   // caught up when the effect below runs, so it is the field's new baseline.
-  const appliedValue = useRef<string>()
+  const appliedValue = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     const applied = appliedValue.current
