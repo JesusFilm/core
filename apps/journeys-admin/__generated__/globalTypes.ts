@@ -189,6 +189,26 @@ export enum CampaignTextSource {
   machine = "machine",
 }
 
+/**
+ * Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+ */
+export enum CampaignTranslationFilter {
+  all = "all",
+  edited = "edited",
+  missing = "missing",
+  needsReview = "needsReview",
+}
+
+/**
+ * The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+ */
+export enum CampaignTranslationGroup {
+  interface = "interface",
+  landing = "landing",
+  region = "region",
+  regions = "regions",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -577,10 +597,28 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CampaignAnalyticsBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  showMap?: boolean | null;
+}
+
 export interface CampaignAnalyticsBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   showMap?: boolean | null;
+}
+
+/**
+ * A client-chosen id for one block of the copy, so the editor can show the duplicate before the response arrives.
+ */
+export interface CampaignBlockDuplicateIdMapInput {
+  oldId: string;
+  newId: string;
 }
 
 export interface CampaignButtonBlockCreateInput {
@@ -615,11 +653,33 @@ export interface CampaignCreateInput {
   defaultLanguageId: string;
 }
 
+export interface CampaignHeroBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  align?: TypographyAlign | null;
+}
+
 export interface CampaignHeroBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   lede?: string | null;
   align?: TypographyAlign | null;
+}
+
+export interface CampaignJourneyListBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  display?: CampaignJourneyListDisplay | null;
 }
 
 export interface CampaignJourneyListBlockUpdateInput {
@@ -638,13 +698,39 @@ export interface CampaignNavigateToRegionActionInput {
   regionId: string;
 }
 
+export interface CampaignRegionHeaderBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  intro?: string | null;
+}
+
 export interface CampaignRegionHeaderBlockUpdateInput {
+  intro?: string | null;
+}
+
+export interface CampaignRegionShareBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  title?: string | null;
   intro?: string | null;
 }
 
 export interface CampaignRegionShareBlockUpdateInput {
   title?: string | null;
   intro?: string | null;
+}
+
+export interface CampaignRegionSwitcherBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  title?: string | null;
+  variant?: CampaignSwitcherVariant | null;
 }
 
 export interface CampaignRegionSwitcherBlockUpdateInput {
@@ -701,6 +787,15 @@ export interface CampaignTypographyBlockUpdateInput {
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
+}
+
+export interface CampaignVideoCarouselBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
 }
 
 export interface CampaignVideoCarouselBlockUpdateInput {

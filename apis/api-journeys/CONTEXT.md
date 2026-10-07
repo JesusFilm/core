@@ -207,6 +207,10 @@ _Avoid_: addon, child block (too broad), inline block
 Which side of the Section Body an Extra renders on: `above` or `below`. Sibling order is still one sequence across both sides.
 _Avoid_: position, slot, side
 
+**Protected Block**:
+A Campaign Block the structural mutations refuse with `CONFLICT`: the header and footer (a campaign has exactly one of each, so a second is refused on create too), a **Column Slot**, and the two Campaign Pages themselves. A protected block is edited and styled like any other but is never deleted, moved or duplicated. Every other section and Extra is added, moved (`campaignBlockOrderUpdate`), duplicated with its subtree (`campaignBlockDuplicate`), soft-deleted and restored by the editor's structural Commands.
+_Avoid_: locked, fixed block, system block
+
 **Campaign Typography**:
 The campaign text block. Size, display-versus-body font and weight are not separate settings: the typography **variant** (core's h1 … overline ladder) decides all three through the theme, with an optional alignment and hex colour.
 _Avoid_: text block (bare), heading, paragraph, label
@@ -326,6 +330,10 @@ _Avoid_: UI string, i18n string, interface key
 **Machine Translation**:
 The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote. "Needs review" is simply every translation still marked as machine-made.
 _Avoid_: auto-translate (as a feature name), AI translate, sync
+
+**Campaign Translations**:
+The read behind the Translations view, `campaignTranslations(campaignId, languageId, filter)`: one row per Translated Field that has default-language text (an empty field has nothing to translate), carrying the target to write it through, the default wording, the wording in the chosen campaign language and who wrote it. `needsReview` is the machine's, `edited` a person's, `missing` has no entry (an empty stored value counts as missing); the default language is refused, its text being the field. Rows come in view order and each names its section: Interface (the campaign title, Campaign Strings, header and footer text), Landing page, Region Page, Regions (each region's name then its Region Lines).
+_Avoid_: translation report, review queue
 
 **Campaign Chrome**:
 The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section and holding the same text and button children, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section.

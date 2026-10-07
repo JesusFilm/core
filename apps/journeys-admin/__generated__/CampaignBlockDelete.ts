@@ -18,14 +18,14 @@ export interface CampaignBlockDelete_campaignBlockDelete {
 
 export interface CampaignBlockDelete {
   /**
-   * Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. The row keeps everything, so `campaignBlockRestore` is how undo of a delete works.
+   * Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Its live descendants and owned blocks are stamped with the same `deletedAt`, so `campaignBlockRestore` brings back exactly what was deleted with it.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve to a live block.
    * - FORBIDDEN: caller is not in the team.
-   * - CONFLICT (field: `id`): the header or footer; chrome is never deleted.
+   * - CONFLICT (field: `id`): the header, the footer, a column slot or a page; protected rows are never deleted.
    */
   campaignBlockDelete: CampaignBlockDelete_campaignBlockDelete[];
 }

@@ -304,6 +304,28 @@ type CampaignAnalyticsBlock implements CampaignBlock & CampaignSectionBlock {
   showMap: Boolean!
 }
 
+input CampaignAnalyticsBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """Defaults to false."""
+  showMap: Boolean
+}
+
 input CampaignAnalyticsBlockUpdateInput {
   """At most 80 characters."""
   eyebrow: String
@@ -354,6 +376,14 @@ interface CampaignBlock {
   Order among siblings. Null on an owned block (a cover, logo or media slot).
   """
   parentOrder: Int
+}
+
+"""
+A client-chosen id for one block of the copy, so the editor can show the duplicate before the response arrives.
+"""
+input CampaignBlockDuplicateIdMapInput {
+  oldId: ID!
+  newId: ID!
 }
 
 """
@@ -610,6 +640,29 @@ type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock {
   mediaBlockId: ID
 }
 
+input CampaignHeroBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  lede: String
+  align: TypographyAlign
+}
+
 input CampaignHeroBlockUpdateInput {
   """At most 80 characters."""
   eyebrow: String
@@ -666,6 +719,31 @@ type CampaignJourneyListBlock implements CampaignBlock & CampaignSectionBlock {
   lede: String
   ledeTranslations: [TranslatedValue!]!
   display: CampaignJourneyListDisplay!
+}
+
+input CampaignJourneyListBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  lede: String
+
+  """Defaults to grid."""
+  display: CampaignJourneyListDisplay
 }
 
 input CampaignJourneyListBlockUpdateInput {
@@ -908,6 +986,22 @@ type CampaignRegionHeaderBlock implements CampaignBlock & CampaignSectionBlock {
   introTranslations: [TranslatedValue!]!
 }
 
+input CampaignRegionHeaderBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """The Region Page; refused on the landing page."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 500 characters."""
+  intro: String
+}
+
 input CampaignRegionHeaderBlockUpdateInput {
   """At most 500 characters."""
   intro: String
@@ -1027,6 +1121,25 @@ type CampaignRegionShareBlock implements CampaignBlock & CampaignSectionBlock {
   introTranslations: [TranslatedValue!]!
 }
 
+input CampaignRegionShareBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """The Region Page; refused on the landing page."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  intro: String
+}
+
 input CampaignRegionShareBlockUpdateInput {
   """At most 150 characters."""
   title: String
@@ -1075,6 +1188,25 @@ type CampaignRegionSwitcherBlock implements CampaignBlock & CampaignSectionBlock
   title: String
   titleTranslations: [TranslatedValue!]!
   variant: CampaignSwitcherVariant!
+}
+
+input CampaignRegionSwitcherBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 150 characters."""
+  title: String
+
+  """Defaults to cards."""
+  variant: CampaignSwitcherVariant
 }
 
 input CampaignRegionSwitcherBlockUpdateInput {
@@ -1238,6 +1370,49 @@ type CampaignTheme {
 }
 
 """
+One line of the Translations view: a Translated Field, its default-language text and its text in the requested language.
+"""
+type CampaignTranslation {
+  target: CampaignTranslationTarget!
+  group: CampaignTranslationGroup!
+  field: CampaignTextField!
+
+  """The field’s cap on this target, in characters."""
+  maxLength: Int!
+
+  """The text in the campaign’s default language."""
+  defaultValue: String!
+
+  """The text in the requested language; null when missing."""
+  value: String
+
+  """
+  Who wrote `value`: a person (`human`) or the machine; null when missing.
+  """
+  source: CampaignTextSource
+}
+
+"""
+Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+"""
+enum CampaignTranslationFilter {
+  all
+  needsReview
+  missing
+  edited
+}
+
+"""
+The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+"""
+enum CampaignTranslationGroup {
+  interface
+  landing
+  region
+  regions
+}
+
+"""
 One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
 """
 input CampaignTranslationSetInput {
@@ -1245,6 +1420,20 @@ input CampaignTranslationSetInput {
   field: CampaignTextField!
   languageId: ID!
   value: String!
+}
+
+"""
+The row a Translated Field belongs to, in the shape `campaignTranslationSet` takes: exactly one of `blockId`, `regionId`, `stringId` or `campaignId` is set.
+"""
+type CampaignTranslationTarget {
+  """
+  The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
+  """
+  typename: String!
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
 }
 
 """
@@ -1387,6 +1576,25 @@ type CampaignVideoCarouselBlock implements CampaignBlock & CampaignSectionBlock 
   """The Watch Video to expand; null for explicit children."""
   videoId: ID
   videoVariantLanguageId: ID
+}
+
+input CampaignVideoCarouselBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A page of the campaign."""
+  pageId: ID!
+
+  """
+  Position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
 }
 
 input CampaignVideoCarouselBlockUpdateInput {
@@ -2849,6 +3057,20 @@ type Mutation {
   campaignButtonBlockUpdate(id: ID!, input: CampaignButtonBlockUpdateInput!): CampaignButtonBlock!
 
   """
+  Add a hero section to a page, last among its sections or at `parentOrder` with the later sections renumbered. Text is empty when omitted.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+  """
+  campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!): CampaignHeroBlock!
+
+  """
   Update the hero’s default-language eyebrow, title, lede or alignment. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -2860,6 +3082,20 @@ type Mutation {
   - BAD_USER_INPUT (field: `align`): not left, center or right.
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!): CampaignHeroBlock!
+
+  """
+  Add a region switcher section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the campaign’s listed regions; nothing is stored but the title and variant.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `title` / `variant`): the value fails its rule.
+  """
+  campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!): CampaignRegionSwitcherBlock!
 
   """
   Update the region switcher’s default-language title or its variant (cards, list, pills). Only the given fields change.
@@ -2875,6 +3111,20 @@ type Mutation {
   campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!): CampaignRegionSwitcherBlock!
 
   """
+  Add a video carousel section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It starts with no video and no items.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!): CampaignVideoCarouselBlock!
+
+  """
   Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -2885,6 +3135,20 @@ type Mutation {
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!): CampaignVideoCarouselBlock!
+
+  """
+  Add a journey list section to a page, last among its sections or at `parentOrder` with the later sections renumbered. It starts with no items.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
+  """
+  campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!): CampaignJourneyListBlock!
 
   """
   Update the journey list’s default-language eyebrow, title or lede, or its display (grid, list). Only the given fields change.
@@ -2900,6 +3164,20 @@ type Mutation {
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!): CampaignJourneyListBlock!
 
   """
+  Add an analytics section to a page, last among its sections or at `parentOrder` with the later sections renumbered. Its scope follows the page it sits on.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!): CampaignAnalyticsBlock!
+
+  """
   Update the analytics section’s default-language eyebrow or title, or whether the world map shows. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -2910,6 +3188,21 @@ type Mutation {
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!): CampaignAnalyticsBlock!
+
+  """
+  Add a region header section to the Region Page, last among its sections or at `parentOrder` with the later sections renumbered. It renders the region being viewed, so the landing page refuses it.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `pageId`): the landing page.
+  - BAD_USER_INPUT (field: `intro`): over 500 characters.
+  """
+  campaignRegionHeaderBlockCreate(input: CampaignRegionHeaderBlockCreateInput!): CampaignRegionHeaderBlock!
 
   """
   Update the region header’s default-language intro.
@@ -2924,6 +3217,21 @@ type Mutation {
   campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!): CampaignRegionHeaderBlock!
 
   """
+  Add a region share section to the Region Page, last among its sections or at `parentOrder` with the later sections renumbered. It reads the region’s Share Languages, so the landing page refuses it.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `pageId`): the landing page.
+  - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
+  """
+  campaignRegionShareBlockCreate(input: CampaignRegionShareBlockCreateInput!): CampaignRegionShareBlock!
+
+  """
   Update the region share panel’s default-language title or intro. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -2936,19 +3244,19 @@ type Mutation {
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
 
   """
-  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. The row keeps everything, so `campaignBlockRestore` is how undo of a delete works.
+  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Its live descendants and owned blocks are stamped with the same `deletedAt`, so `campaignBlockRestore` brings back exactly what was deleted with it.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
-  - CONFLICT (field: `id`): the header or footer; chrome is never deleted.
+  - CONFLICT (field: `id`): the header, the footer, a column slot or a page; protected rows are never deleted.
   """
   campaignBlockDelete(id: ID!): [CampaignBlock!]!
 
   """
-  Restore a soft-deleted campaign block: clear `deletedAt` and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
+  Restore a soft-deleted campaign block: clear `deletedAt` on it and on the rows deleted with it (same timestamp), and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -2957,6 +3265,38 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   """
   campaignBlockRestore(id: ID!): [CampaignBlock!]!
+
+  """
+  Move a campaign block among its siblings to `parentOrder` (a position past the end moves it last) and renumber them contiguously. An Extra may change `placement` in the same move: crossing the Section Body updates the column, moving among neighbours is an order update only. Returns the renumbered siblings.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block with no order.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `placement`): not above or below, or given for a block that is not a section child.
+  """
+  campaignBlockOrderUpdate(
+    id: ID!
+    parentOrder: Int!
+
+    """For an Extra moving across the Section Body; omitted keeps its side."""
+    placement: CampaignChildPlacement
+  ): [CampaignBlock!]!
+
+  """
+  Deep-copy a campaign block with its children, owned blocks and actions under new ids (`idMap` fixes any of them; the rest are fresh), remapping slot columns and action targets that point inside the copy, and insert the copy directly after the original. Returns the renumbered siblings with the copy among them, followed by the copied descendants.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block.
+  """
+  campaignBlockDuplicate(id: ID!, idMap: [CampaignBlockDuplicateIdMapInput!]): [CampaignBlock!]!
 
   """
   Point a button at a web address (a journey, a video or any https page). The button’s one action becomes this link; any scroll or region target it had is cleared.
@@ -3724,6 +4064,18 @@ type Query {
     """
     languageId: ID
   ): CampaignPublic!
+
+  """
+  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+  
+  Auth: campaign Read — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
+  """
+  campaignTranslations(campaignId: ID!, languageId: ID!, filter: CampaignTranslationFilter = all): [CampaignTranslation!]!
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
