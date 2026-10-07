@@ -72,6 +72,7 @@ function renderEditor(
   return render(
     <StaticEditor initialState={initialState} mocks={[deleteMock]}>
       <Hotkeys />
+      <input aria-label="Shell field" />
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
@@ -226,6 +227,18 @@ describe('CampaignEditorProvider', () => {
 
     await userEvent.keyboard('{Meta>}{Shift>}z{/Shift}{/Meta}')
     expect(onUndo).toHaveBeenCalledTimes(1)
+  })
+
+  it('leaves ⌘Z to a focused field in the shell, which is not a Command', async () => {
+    const onUndo = vi.fn()
+    const { baseElement } = renderEditor({ selectedBlockId: 'heroId' }, onUndo)
+    await frameBody(baseElement, 'CanvasSection-heroId')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit region intro' }))
+
+    screen.getByRole('textbox', { name: 'Shell field' }).focus()
+    await userEvent.keyboard('{Meta>}z{/Meta}')
+
+    expect(onUndo).not.toHaveBeenCalled()
   })
 
   it('has no other shortcuts: Delete and Backspace leave a selected Extra alone', async () => {

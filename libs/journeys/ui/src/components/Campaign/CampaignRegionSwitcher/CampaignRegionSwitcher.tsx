@@ -49,7 +49,7 @@ export function CampaignRegionSwitcher({
             key={region.id}
             href={campaignPageHref(
               `${basePath}/${region.slug}`,
-              campaign.language.bcp47
+              campaign
             )}
             data-testid={`CampaignRegionCard-${region.id}`}
             sx={{

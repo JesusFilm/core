@@ -63,7 +63,11 @@ export async function revalidatePaths(
       path
     })
     try {
-      await fetch(`${env.JOURNEYS_URL}/api/revalidate?${params.toString()}`)
+      const response = await fetch(
+        `${env.JOURNEYS_URL}/api/revalidate?${params.toString()}`
+      )
+      if (!response.ok)
+        logger?.error(`Failed to revalidate ${path}: HTTP ${response.status}`)
     } catch (error) {
       logger?.error(`Failed to revalidate ${path}: ${error as Error}`)
     }

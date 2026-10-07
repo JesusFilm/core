@@ -123,6 +123,7 @@ export function Canvas({
                     key={section.id}
                     block={section}
                     theme={campaign.theme}
+                    previewLanguageId={previewLanguageId}
                   />
                 ))}
               </Box>

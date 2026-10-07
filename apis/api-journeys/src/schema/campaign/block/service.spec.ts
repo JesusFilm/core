@@ -240,7 +240,7 @@ describe('campaign block service', () => {
           parentOrder: { not: null },
           deletedAt: null
         },
-        orderBy: { parentOrder: 'asc' },
+        orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
         include: { action: true }
       })
     })

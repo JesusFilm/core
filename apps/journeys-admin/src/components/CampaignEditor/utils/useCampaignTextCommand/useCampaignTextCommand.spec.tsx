@@ -211,6 +211,53 @@ describe('useCampaignTextCommand', () => {
     expect(screen.getByTestId('UndoCommandId')).not.toHaveTextContent(undone)
   })
 
+  it('keeps what was typed when the API returns the trimmed text', async () => {
+    const mocks = [
+      {
+        ...heroMock('Hello'),
+        request: {
+          query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
+          variables: { id: 'heroId', input: { title: 'Hello ' } }
+        }
+      }
+    ]
+    renderField(mocks)
+    const input = await screen.findByRole('textbox', { name: 'title' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Hello ' } })
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+
+    await waitFor(() => expect(input).toHaveValue('Hello '))
+  })
+
+  it('undoes to the value the field held before the last undo, not the one typed after it', async () => {
+    const mocks = [
+      { ...heroMock('A'), maxUsageCount: 2 },
+      heroMock('AB'),
+      heroMock('AC')
+    ]
+    const cache = campaignCache()
+    renderField(mocks, { cache })
+    const input = await screen.findByRole('textbox', { name: 'title' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'A' } })
+    fireEvent.blur(input)
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'AB' } })
+    await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(input).toHaveValue('A'))
+    fireEvent.change(input, { target: { value: 'AC' } })
+    await waitFor(() => expect(mocks[2].result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(input).toHaveValue('A'))
+    expect(readTitle(cache)).toBe('A')
+  })
+
   it('redoes the change through the same mutation', async () => {
     const mocks = [
       { ...heroMock('New title'), maxUsageCount: 2 },
