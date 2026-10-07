@@ -13,7 +13,7 @@ import {
 import { useCampaignEditor } from './CampaignEditorProvider'
 import { campaign } from './data'
 
-export interface StyleMock {
+export type StyleMock = {
   request: Record<string, unknown>
   result: ReturnType<typeof vi.fn>
   delay?: number
