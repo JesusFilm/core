@@ -57,6 +57,14 @@ export enum ButtonVariant {
 }
 
 /**
+ * What a machine-translation run writes: `missing` fills only the texts the language has no entry for; `all` also replaces the machine’s earlier translations. A person’s are never replaced.
+ */
+export enum CampaignAiTranslateMode {
+  all = "all",
+  missing = "missing",
+}
+
+/**
  * What a Campaign Section sits on. Named kinds are theme-slot references; `custom` reads the section backgroundColor; `image` reads the owned cover block.
  */
 export enum CampaignBackgroundKind {
@@ -149,6 +157,14 @@ export enum CampaignSwitcherVariant {
   cards = "cards",
   list = "list",
   pills = "pills",
+}
+
+/**
+ * Who wrote a translation: a person or the machine-translation sweep.
+ */
+export enum CampaignTextSource {
+  human = "human",
+  machine = "machine",
 }
 
 export enum ContactActionType {

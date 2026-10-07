@@ -8,6 +8,8 @@ import {
 } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 
+import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
+
 import { CampaignTranslations_campaignTranslations as Row } from '../../../../__generated__/CampaignTranslations'
 import {
   CampaignTextField,
@@ -375,5 +377,152 @@ describe('TranslationsView', () => {
       )
     ).toBeInTheDocument()
     expect(screen.queryByRole('combobox')).toBeNull()
+  })
+
+  describe('Machine-translate missing', () => {
+    function sweepMock(
+      languageId: string,
+      outcome: 'complete' | 'error' = 'complete'
+    ): Record<string, unknown> & { result: ReturnType<typeof vi.fn> } {
+      return {
+        request: {
+          query: CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,
+          variables: { campaignId: campaign.id, languageId, mode: 'missing' }
+        },
+        delay: 20,
+        ...(outcome === 'error'
+          ? { error: new Error('Translation failed') }
+          : {}),
+        result: vi.fn(() => ({
+          data: {
+            campaignAiTranslateSubscription: {
+              __typename: 'CampaignAiTranslateProgress',
+              progress: 100,
+              message: 'Translation completed!',
+              campaign: {
+                __typename: 'Campaign',
+                id: campaign.id,
+                titleTranslations: []
+              }
+            }
+          }
+        }))
+      }
+    }
+
+    it('runs the subscription in mode missing for the selected language, shows progress and reads the result', async () => {
+      const sweep = sweepMock(FRENCH)
+      const translated = {
+        ...heroEyebrow,
+        value: 'Noël 2026',
+        source: CampaignTextSource.machine
+      }
+      renderView([listMock(FRENCH), sweep, listMock(FRENCH, [translated])])
+      await screen.findByTestId('TranslationGroup-interface')
+      expect(sweep.result).not.toHaveBeenCalled()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Machine-translate missing' })
+      )
+
+      expect(
+        await screen.findByTestId('TranslationsProgress')
+      ).toHaveTextContent('Starting translation...')
+      expect(
+        screen.getByRole('button', { name: 'Machine-translate missing' })
+      ).toBeDisabled()
+      await waitFor(() => expect(sweep.result).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(screen.queryByTestId('TranslationsProgress')).toBeNull()
+      )
+      await waitFor(() =>
+        expect(
+          screen.getByRole('textbox', { name: 'Hero · Eyebrow' })
+        ).toHaveValue('Noël 2026')
+      )
+      expect(
+        screen.getByRole('button', { name: 'Machine-translate missing' })
+      ).toBeEnabled()
+    })
+
+    it('does not run again after an edit', async () => {
+      const sweep = sweepMock(FRENCH)
+      const write = setMock(heroTitle, FRENCH, 'Partagez Noël', [
+        { languageId: FRENCH, value: 'Partagez Noël' }
+      ])
+      renderView([listMock(FRENCH), sweep, listMock(FRENCH), write])
+      await screen.findByTestId('TranslationGroup-interface')
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Machine-translate missing' })
+      )
+      await waitFor(() => expect(sweep.result).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(screen.queryByTestId('TranslationsProgress')).toBeNull()
+      )
+
+      const field = await screen.findByRole('textbox', { name: 'Hero · Title' })
+      fireEvent.change(field, { target: { value: 'Partagez Noël' } })
+      fireEvent.blur(field)
+
+      await waitFor(() => expect(write.result).toHaveBeenCalled())
+      expect(sweep.result).toHaveBeenCalledTimes(1)
+      expect(screen.queryByTestId('TranslationsProgress')).toBeNull()
+    })
+
+    it('shows the failure and lets the author try again', async () => {
+      renderView([listMock(FRENCH), sweepMock(FRENCH, 'error')])
+      await screen.findByTestId('TranslationGroup-interface')
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Machine-translate missing' })
+      )
+
+      expect(
+        await screen.findByTestId('TranslationsTranslateError')
+      ).toHaveTextContent('Translation failed')
+      expect(screen.queryByTestId('TranslationsProgress')).toBeNull()
+      expect(
+        screen.getByRole('button', { name: 'Machine-translate missing' })
+      ).toBeEnabled()
+    })
+
+    it('marks a language the model does not support manual only, with no button', async () => {
+      const manualOnly = {
+        ...campaign,
+        languages: [
+          ...campaign.languages,
+          {
+            __typename: 'CampaignLanguage' as const,
+            id: 'campaignLanguageManualId',
+            languageId: '9999999',
+            order: 2,
+            language: {
+              __typename: 'Language' as const,
+              id: '9999999',
+              bcp47: null,
+              name: [
+                {
+                  __typename: 'LanguageName' as const,
+                  value: 'Rare',
+                  primary: true
+                }
+              ]
+            }
+          }
+        ]
+      }
+      render(
+        <MockedProvider mocks={[listMock('9999999')] as never}>
+          <TranslationsView campaign={manualOnly} initialLanguageId="9999999" />
+        </MockedProvider>
+      )
+
+      expect(
+        await screen.findByTestId('TranslationsManualOnly')
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Machine-translate missing' })
+      ).toBeNull()
+    })
   })
 })

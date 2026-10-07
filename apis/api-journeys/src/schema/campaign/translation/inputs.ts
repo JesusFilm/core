@@ -29,3 +29,25 @@ export const CampaignTranslationSetInput = builder.inputType(
     })
   }
 )
+
+export const CampaignAiTranslateMode = builder.enumType(
+  'CampaignAiTranslateMode',
+  {
+    values: ['all', 'missing'] as const,
+    description:
+      'What a machine-translation run writes: `missing` fills only the texts the language has no entry for; `all` also replaces the machine’s earlier translations. A person’s are never replaced.'
+  }
+)
+
+export const CampaignAiTranslateInput = builder.inputType(
+  'CampaignAiTranslateInput',
+  {
+    description:
+      'One machine-translation run: the campaign, the campaign language to write into (never the default) and the mode.',
+    fields: (t) => ({
+      campaignId: t.id({ required: true }),
+      languageId: t.id({ required: true }),
+      mode: t.field({ type: CampaignAiTranslateMode, required: true })
+    })
+  }
+)

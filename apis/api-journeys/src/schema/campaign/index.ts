@@ -26,6 +26,7 @@ import './language/campaignLanguageRemove.mutation'
 import './translation/campaignTextField'
 import './translation/campaignTranslationSet.mutation'
 import './translation/campaignTranslations.query'
+import './translation/campaignAiTranslate'
 
 export { CampaignRef } from './campaign'
 export { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'

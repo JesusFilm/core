@@ -1,4 +1,5 @@
 import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Divider from '@mui/material/Divider'
@@ -8,6 +9,13 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
+
+import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
+import {
+  CampaignAiTranslateVariables,
+  isMachineTranslatable,
+  useCampaignAiTranslateSubscription
+} from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
@@ -39,7 +47,10 @@ interface TranslationsViewProps {
  * The list is read once with every row and filtered here, so a row an author
  * edits turns Edited and leaves a Needs review or Missing filter as soon as
  * the write lands. Only languages other than the default are listed: the
- * default's text is the field itself.
+ * default's text is the field itself. "Machine-translate missing" fills the
+ * language's gaps with progress, never touching a line a person wrote; it
+ * runs only when pressed, not after edits. A language the model does not
+ * support is manual only and has no such button.
  */
 export function TranslationsView({
   campaign,
@@ -57,6 +68,16 @@ export function TranslationsView({
   )
   const [chosenLanguageId, setChosenLanguageId] = useState(initialLanguageId)
   const [filter, setFilter] = useState<TranslationFilter>('all')
+  const [translating, setTranslating] = useState<CampaignAiTranslateVariables>()
+  const [translateError, setTranslateError] = useState<string>()
+  const { data: progressData } = useCampaignAiTranslateSubscription({
+    variables: translating,
+    onError: (error) => {
+      setTranslateError(error.message)
+      setTranslating(undefined)
+    },
+    onComplete: () => setTranslating(undefined)
+  })
   const languageId = languages.some(
     (language) => language.languageId === chosenLanguageId
   )
@@ -103,6 +124,13 @@ export function TranslationsView({
   const rows = (data?.campaignTranslations ?? []).filter((row) =>
     matchesFilter(row, filter)
   )
+  const manualOnly = !isMachineTranslatable(languageId)
+
+  function handleMachineTranslateMissing(): void {
+    if (languageId == null) return
+    setTranslateError(undefined)
+    setTranslating({ campaignId: campaign.id, languageId, mode: 'missing' })
+  }
 
   return (
     <Stack spacing={3} data-testid="TranslationsView" sx={{ p: 4, width: 640 }}>
@@ -119,6 +147,7 @@ export function TranslationsView({
         size="small"
         label={t('Language')}
         value={languageId}
+        disabled={translating != null}
         onChange={(event) => setChosenLanguageId(event.target.value)}
       >
         {languages.map((language) => {
@@ -130,6 +159,45 @@ export function TranslationsView({
           )
         })}
       </TextField>
+      {manualOnly ? (
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          data-testid="TranslationsManualOnly"
+        >
+          {t(
+            'Manual only: machine translation does not cover this language, so write each line yourself.'
+          )}
+        </Typography>
+      ) : (
+        <Button
+          variant="outlined"
+          size="small"
+          disabled={translating != null}
+          onClick={handleMachineTranslateMissing}
+          sx={{ alignSelf: 'flex-start' }}
+        >
+          {t('Machine-translate missing')}
+        </Button>
+      )}
+      {translating != null && (
+        <Stack data-testid="TranslationsProgress">
+          <TranslationProgressBar
+            progress={
+              progressData?.campaignAiTranslateSubscription.progress ?? 0
+            }
+            message={
+              progressData?.campaignAiTranslateSubscription.message ??
+              t('Starting translation...')
+            }
+          />
+        </Stack>
+      )}
+      {translateError != null && (
+        <Alert severity="error" data-testid="TranslationsTranslateError">
+          {translateError}
+        </Alert>
+      )}
       <Stack
         direction="row"
         role="group"
