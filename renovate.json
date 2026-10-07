@@ -6,6 +6,9 @@
   "assignees": ["mikeallisonJS"],
   "prConcurrentLimit": 4,
   "rangeStrategy": "auto",
+  "toolSettings": {
+    "nodeMaxMemory": 2048
+  },
   "argocd": {
     "managerFilePatterns": [
       "/^infrastructure/kube/argocd/applications/.+\\.ya?ml$/"
