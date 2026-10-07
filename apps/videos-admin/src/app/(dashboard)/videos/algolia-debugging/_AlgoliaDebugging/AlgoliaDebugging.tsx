@@ -621,7 +621,7 @@ export function AlgoliaDebugging(): ReactElement {
         />
       </Box>
 
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
         Results are kept in this browser tab.
       </Typography>
     </Stack>
