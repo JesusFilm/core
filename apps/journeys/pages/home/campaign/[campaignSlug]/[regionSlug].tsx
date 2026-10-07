@@ -67,7 +67,10 @@ export const getServerSideProps: GetServerSideProps<
   }
   context.res.setHeader(
     'Cache-Control',
-    campaignPageCacheControl(result.language)
+    campaignPageCacheControl(
+      result.language,
+      result.campaign.languages.length
+    )
   )
   return {
     props: {

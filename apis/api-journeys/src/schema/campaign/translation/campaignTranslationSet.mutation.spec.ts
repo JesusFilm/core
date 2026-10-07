@@ -78,13 +78,17 @@ describe('campaignTranslationSet', () => {
     prismaMock.$transaction.mockImplementation(
       async (callback: any) => await callback(prismaMock)
     )
-    prismaMock.campaignBlock.findFirst.mockResolvedValue({
+    const heroWithSpanish = {
       ...hero,
       titleTranslations: {
         '21028': { value: 'Comparte la historia', source: 'machine' }
       },
       campaign: fixture
-    } as any)
+    }
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(heroWithSpanish as any)
+    prismaMock.campaignBlock.findUnique.mockResolvedValue(
+      heroWithSpanish as any
+    )
     prismaMock.campaignRegion.findUnique.mockResolvedValue({
       ...region,
       campaign: fixture
@@ -134,6 +138,37 @@ describe('campaignTranslationSet', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'campaignId' } })
     )
+  })
+
+  it('merges into the translations read under the row lock, not the earlier read', async () => {
+    prismaMock.campaignBlock.findUnique.mockResolvedValue({
+      titleTranslations: {
+        '21028': { value: 'Comparte la historia', source: 'machine' },
+        '529': { value: 'Share the story', source: 'human' }
+      }
+    } as any)
+
+    await set({
+      target: { blockId: 'heroId' },
+      field: 'title',
+      value: 'Partagez'
+    })
+
+    const lockSql = (
+      prismaMock.$queryRaw.mock.calls[0][0] as unknown as readonly string[]
+    ).join(' ')
+    expect(lockSql).toContain('"CampaignBlock"')
+    expect(lockSql).toContain('FOR UPDATE')
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'heroId' },
+      data: {
+        titleTranslations: {
+          '21028': { value: 'Comparte la historia', source: 'machine' },
+          '529': { value: 'Share the story', source: 'human' },
+          [FRENCH]: { value: 'Partagez', source: 'human' }
+        }
+      }
+    })
   })
 
   it('clears the entry on an empty value without tripping required', async () => {

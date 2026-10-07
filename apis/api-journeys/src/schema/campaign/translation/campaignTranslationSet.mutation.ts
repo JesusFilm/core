@@ -42,8 +42,6 @@ interface TranslationTarget {
   }
   /** The target's translatable fields and their caps. */
   caps: CampaignTextFieldCaps
-  /** The target's current `<field>Translations` JSON columns. */
-  translations: Record<string, unknown>
 }
 
 const INCLUDE_TARGET_CAMPAIGN = {
@@ -99,8 +97,7 @@ async function loadTarget(
         kind,
         id,
         campaign: block.campaign,
-        caps: CAMPAIGN_BLOCK_TEXT_FIELDS[block.typename] ?? {},
-        translations: block as unknown as Record<string, unknown>
+        caps: CAMPAIGN_BLOCK_TEXT_FIELDS[block.typename] ?? {}
       }
     }
     case 'region': {
@@ -113,8 +110,7 @@ async function loadTarget(
         kind,
         id,
         campaign: region.campaign,
-        caps: CAMPAIGN_REGION_TEXT_FIELDS,
-        translations: region
+        caps: CAMPAIGN_REGION_TEXT_FIELDS
       }
     }
     case 'string': {
@@ -127,8 +123,7 @@ async function loadTarget(
         kind,
         id,
         campaign: string.campaign,
-        caps: CAMPAIGN_STRING_TEXT_FIELDS,
-        translations: string
+        caps: CAMPAIGN_STRING_TEXT_FIELDS
       }
     }
     case 'campaign': {
@@ -141,8 +136,7 @@ async function loadTarget(
         kind,
         id,
         campaign,
-        caps: CAMPAIGN_TITLE_TEXT_FIELDS,
-        translations: campaign
+        caps: CAMPAIGN_TITLE_TEXT_FIELDS
       }
     }
   }
@@ -169,12 +163,53 @@ export function withTranslation(
   return json
 }
 
-async function writeTranslations(
+/**
+ * Lock the target row, read its current `<column>` JSON and write the merged
+ * entry back in one transaction. The read happens under the lock, not in
+ * `loadTarget`, so two writes to the same field in different languages
+ * serialize instead of overwriting each other's JSON.
+ */
+async function writeTranslation(
   target: TranslationTarget,
   column: string,
-  json: TranslationsJson
-): Promise<void> {
-  await prisma.$transaction(async (tx) => {
+  languageId: string,
+  value: string
+): Promise<TranslationsJson> {
+  return await prisma.$transaction(async (tx) => {
+    const select = { [column]: true }
+    let current: Record<string, unknown> | null
+    switch (target.kind) {
+      case 'block':
+        await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE id = ${target.id} FOR UPDATE`
+        current = await tx.campaignBlock.findUnique({
+          where: { id: target.id },
+          select
+        })
+        break
+      case 'region':
+        await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ${target.id} FOR UPDATE`
+        current = await tx.campaignRegion.findUnique({
+          where: { id: target.id },
+          select
+        })
+        break
+      case 'string':
+        await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE id = ${target.id} FOR UPDATE`
+        current = await tx.campaignString.findUnique({
+          where: { id: target.id },
+          select
+        })
+        break
+      case 'campaign':
+        await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ${target.id} FOR UPDATE`
+        current = await tx.campaign.findUnique({
+          where: { id: target.id },
+          select
+        })
+        break
+    }
+    if (current == null) throw notFound(`${target.kind} not found`)
+    const json = withTranslation(current[column], languageId, value)
     const data = { [column]: json }
     switch (target.kind) {
       case 'block':
@@ -191,6 +226,7 @@ async function writeTranslations(
         break
     }
     if (target.kind !== 'campaign') await touchCampaign(tx, target.campaign.id)
+    return json
   })
 }
 
@@ -235,8 +271,7 @@ export async function setCampaignTranslation(
 
   const value = assertLength(input.value, input.field, cap)
   const column = translationsColumn(input.field)
-  const json = withTranslation(target.translations[column], languageId, value)
-  await writeTranslations(target, column, json)
+  const json = await writeTranslation(target, column, languageId, value)
   return toTranslatedValues(json)
 }
 

@@ -118,17 +118,20 @@ export async function fetchCampaignPublicInPageLanguage(
 }
 
 /**
- * The `Cache-Control` a campaign page answers with: shared caching only when
- * the `lang` param decided the language, so the response is a function of
- * the URL alone. Every other outcome depends on the visitor's cookie or
- * `Accept-Language` (a default-language answer included: the next visitor at
- * the same URL may carry a cookie), so it is private. Every in-campaign link
- * and the header select carry the param, so only a first visit is uncached.
+ * The `Cache-Control` a campaign page answers with: shared caching when the
+ * response is a function of the URL alone — the `lang` param decided the
+ * language, or the campaign has one language so nothing can vary. Every
+ * other outcome depends on the visitor's cookie or `Accept-Language` (a
+ * default-language answer included: the next visitor at the same URL may
+ * carry a cookie), so it is private. Every in-campaign link and the header
+ * select carry the param on a multi-language campaign, so only a first
+ * visit there is uncached.
  */
 export function campaignPageCacheControl(
-  language: ResolvedPageLanguage
+  language: ResolvedPageLanguage,
+  campaignLanguageCount: number
 ): string {
-  return language.source === 'param'
+  return language.source === 'param' || campaignLanguageCount <= 1
     ? 'public, s-maxage=60, stale-while-revalidate=300'
     : 'private, no-cache'
 }

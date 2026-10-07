@@ -160,19 +160,30 @@ interface CampaignEditorProviderProps {
  * The campaign editor's selection reducer: which page the canvas shows and
  * which block is selected. The selection resolves against the campaign's
  * block list, so a block that leaves the cache (deleted, undone) falls back
- * to the campaign row without a dispatch.
+ * to the campaign row without a dispatch. The Preview Language is clamped the
+ * same way: when its language leaves `campaign.languages` (removed in the
+ * Languages panel) the preview falls back to the campaign default.
  */
 export function CampaignEditorProvider({
   campaign,
   initialState,
   children
 }: CampaignEditorProviderProps): ReactElement {
-  const [state, dispatch] = useReducer(reducer, {
+  const [rawState, dispatch] = useReducer(reducer, {
     pageKind: CampaignPageKind.landing,
     previewLanguageId: campaign.defaultLanguageId,
     editRequest: 0,
     ...initialState
   })
+  const previewLanguageId = campaign.languages.some(
+    (language) => language.languageId === rawState.previewLanguageId
+  )
+    ? rawState.previewLanguageId
+    : campaign.defaultLanguageId
+  const state = useMemo(
+    () => ({ ...rawState, previewLanguageId }),
+    [rawState, previewLanguageId]
+  )
   const selection = useMemo(
     () => resolveSelection(campaign.blocks, state.selectedBlockId),
     [campaign.blocks, state.selectedBlockId]

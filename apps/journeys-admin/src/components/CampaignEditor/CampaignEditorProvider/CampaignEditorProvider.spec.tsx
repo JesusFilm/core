@@ -256,6 +256,39 @@ describe('CampaignEditorProvider', () => {
     )
   })
 
+  it('falls back to the default language when the previewed language is removed', () => {
+    function PreviewProbe(): ReactElement {
+      const {
+        state: { previewLanguageId }
+      } = useCampaignEditor()
+      return <span data-testid="PreviewLanguage">{previewLanguageId}</span>
+    }
+    const withoutFrench = {
+      ...campaign,
+      languages: campaign.languages.filter(
+        (language) => language.languageId !== '496'
+      )
+    }
+    const { rerender } = render(
+      <StaticEditor initialState={{ previewLanguageId: '496' }}>
+        <PreviewProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+
+    rerender(
+      <StaticEditor
+        initialState={{ previewLanguageId: '496' }}
+        campaignProp={withoutFrench}
+      >
+        <PreviewProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent(
+      campaign.defaultLanguageId
+    )
+  })
+
   it('throws outside the provider', () => {
     function Bare(): ReactElement {
       useCampaignEditor()
