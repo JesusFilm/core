@@ -85,9 +85,9 @@ describe('campaignTranslationSet', () => {
       },
       campaign: fixture
     }
-    prismaMock.campaignBlock.findFirst.mockResolvedValue(heroWithSpanish as any)
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(heroWithSpanish)
     prismaMock.campaignBlock.findUnique.mockResolvedValue(
-      heroWithSpanish as any
+      heroWithSpanish
     )
     prismaMock.campaignRegion.findUnique.mockResolvedValue({
       ...region,
