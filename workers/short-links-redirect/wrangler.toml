@@ -106,7 +106,7 @@ CLICKHOUSE_DATABASE = "redirects"
 # Global namespace.
 [[env.stage.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
-id = "REPLACE_ME_BEFORE_DEPLOY"
+id = "114fb558eb2b40939d6ef28b8721adf9"
 
 # Per-domain namespaces (created with `wrangler kv namespace create`).
 [[env.stage.kv_namespaces]]
