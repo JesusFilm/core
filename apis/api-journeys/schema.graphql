@@ -261,6 +261,39 @@ interface CampaignAction {
 }
 
 """
+One machine-translation run: the campaign, the campaign language to write into (never the default) and the mode.
+"""
+input CampaignAiTranslateInput {
+  campaignId: ID!
+  languageId: ID!
+  mode: CampaignAiTranslateMode!
+}
+
+"""
+What a machine-translation run writes: `missing` fills only the texts the language has no entry for; `all` also replaces the machine’s earlier translations. A person’s are never replaced.
+"""
+enum CampaignAiTranslateMode {
+  all
+  missing
+}
+
+"""
+One progress report of a machine-translation run; `campaign` is present only on the final report.
+"""
+type CampaignAiTranslateProgress {
+  """Translation progress as a percentage (0-100)"""
+  progress: Float
+
+  """Current translation step message"""
+  message: String
+
+  """
+  The campaign with its translations written (only present when complete)
+  """
+  campaign: Campaign
+}
+
+"""
 Shows Campaign Stats: visitor tiles, a ranked country list and optionally the world map. Scope (whole campaign on the landing page, one region on the Region Page) is derived from the page, not stored.
 """
 type CampaignAnalyticsBlock implements CampaignBlock & CampaignSectionBlock {
@@ -4167,6 +4200,17 @@ input StepViewEventCreateInput {
 }
 
 type Subscription {
+  """
+  Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.
+  """
+  campaignAiTranslateSubscription(input: CampaignAiTranslateInput!): CampaignAiTranslateProgress!
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
 
