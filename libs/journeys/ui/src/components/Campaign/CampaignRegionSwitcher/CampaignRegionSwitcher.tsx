@@ -47,10 +47,7 @@ export function CampaignRegionSwitcher({
         {regions.map((region) => (
           <ButtonBase
             key={region.id}
-            href={campaignPageHref(
-              `${basePath}/${region.slug}`,
-              campaign
-            )}
+            href={campaignPageHref(`${basePath}/${region.slug}`, campaign)}
             data-testid={`CampaignRegionCard-${region.id}`}
             sx={{
               display: 'flex',
