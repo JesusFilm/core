@@ -80,6 +80,7 @@ interface CanvasExtraProps {
   selected: boolean
   onSelect: () => void
   focusField?: CampaignTextField
+  focusRequest: number
   previewLanguageId: string | null
 }
 
@@ -89,6 +90,7 @@ function CanvasExtra({
   selected,
   onSelect,
   focusField,
+  focusRequest,
   previewLanguageId
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
@@ -121,6 +123,7 @@ function CanvasExtra({
             placeholder={t('Your text')}
             editing={selected}
             autoFocus={selected && focusField === 'content'}
+            focusRequest={focusRequest}
             onSelect={onSelect}
             variant={block.typographyVariant ?? TypographyVariant.body1}
             variantMapping={{ overline: 'p', caption: 'p' }}
@@ -178,6 +181,7 @@ function CanvasExtra({
               placeholder={t('Button')}
               editing={selected}
               autoFocus={selected && focusField === 'label'}
+              focusRequest={focusRequest}
               onSelect={onSelect}
               variant="inherit"
               component="span"
@@ -196,6 +200,7 @@ interface SectionTextProps {
   field: CampaignTextField
   editing: boolean
   focusField?: CampaignTextField
+  focusRequest: number
   onSelect: (field: CampaignTextField) => void
   titleVariant: 'h1' | 'h2'
   previewLanguageId: string | null
@@ -225,6 +230,7 @@ function SectionText({
   field,
   editing,
   focusField,
+  focusRequest,
   onSelect,
   titleVariant,
   previewLanguageId
@@ -261,6 +267,7 @@ function SectionText({
       placeholder={sectionFieldPlaceholder(t, field)}
       editing={editing}
       autoFocus={editing && focusField === field}
+      focusRequest={focusRequest}
       onSelect={onSelect}
       variant={styles.variant}
       sx={styles.sx}
@@ -285,6 +292,7 @@ export function CanvasSection({
     state: { editRequest }
   } = useCampaignEditor()
   const [focusField, setFocusField] = useState<CampaignTextField>()
+  const [focusRequest, setFocusRequest] = useState(0)
   const seenEditRequest = useRef(editRequest)
   const selectedId = selection.block?.id
   const sectionSelected = selectedId === block.id
@@ -306,6 +314,7 @@ export function CanvasSection({
       target.id === block.id || target.parentBlockId === block.id
     if (!inSection) return
     setFocusField(primaryTextField(target.__typename))
+    setFocusRequest((request) => request + 1)
   }, [editRequest, selection.block, block.id])
 
   if (band == null) return null
@@ -344,6 +353,7 @@ export function CanvasSection({
         selected={selectedId === child.id}
         onSelect={() => selectExtra(child, field)}
         focusField={focusField}
+        focusRequest={focusRequest}
         previewLanguageId={previewLanguageId}
       />
     )
@@ -381,6 +391,7 @@ export function CanvasSection({
                 field={field}
                 editing={sectionSelected}
                 focusField={focusField}
+                focusRequest={focusRequest}
                 onSelect={handleSelectField}
                 titleVariant={titleVariant}
                 previewLanguageId={previewLanguageId}

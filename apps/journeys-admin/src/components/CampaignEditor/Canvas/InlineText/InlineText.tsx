@@ -1,7 +1,14 @@
 import Box from '@mui/material/Box'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react'
+import {
+  ChangeEvent,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import {
   CAMPAIGN_TEXT_CAPS,
@@ -23,6 +30,8 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
+  /** Bumped by the Edit action; focuses an input that is already mounted. */
+  focusRequest?: number
   /** The preview-language value to show instead; it is read-only because the canvas edits the default language. */
   translation?: string
   /** Clicking the text selects its block and names the field clicked. */
@@ -48,6 +57,7 @@ export function InlineText({
   placeholder,
   editing,
   autoFocus = false,
+  focusRequest = 0,
   translation,
   onSelect,
   variant,
@@ -61,10 +71,17 @@ export function InlineText({
   const { value, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand({ block, field })
   const [overLength, setOverLength] = useState(false)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const length = textLength(value)
   const testId = `InlineText-${field}`
   const showInput = editing && translation == null
   const displayed = translation ?? value
+
+  useEffect(() => {
+    if (focusRequest === 0 || !autoFocus) return
+    inputRef.current?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRequest])
 
   function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>): void {
     const next = event.target.value
@@ -128,12 +145,13 @@ export function InlineText({
           fullWidth
           multiline
           autoFocus={autoFocus}
+          inputRef={inputRef}
           value={value}
           placeholder={placeholder}
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          inputProps={{ 'aria-label': placeholder, maxLength: max + 1 }}
+          inputProps={{ 'aria-label': placeholder }}
         />
       </Typography>
       {helper != null && (
