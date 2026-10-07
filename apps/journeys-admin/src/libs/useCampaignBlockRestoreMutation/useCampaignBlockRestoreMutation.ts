@@ -7,13 +7,16 @@ import {
   CampaignBlockRestore,
   CampaignBlockRestoreVariables
 } from '../../../__generated__/CampaignBlockRestore'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 import { campaignBlockRestoreUpdate } from '../campaignBlockCache'
 
 export const CAMPAIGN_BLOCK_RESTORE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignBlockRestore($id: ID!) {
     campaignBlockRestore(id: $id) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `

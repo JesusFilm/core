@@ -7,13 +7,16 @@ import {
   CampaignButtonBlockCreate,
   CampaignButtonBlockCreateVariables
 } from '../../../__generated__/CampaignButtonBlockCreate'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 import { campaignBlockCreateUpdate } from '../campaignBlockCache'
 
 export const CAMPAIGN_BUTTON_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignButtonBlockCreate($input: CampaignButtonBlockCreateInput!) {
     campaignButtonBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `
