@@ -23,7 +23,8 @@ const journeyView: JourneyViewEvent = {
     name: [
       {
         __typename: 'LanguageName',
-        value: 'Hobbitish'
+        value: 'Hobbitish',
+        primary: true
       }
     ]
   },
@@ -274,7 +275,8 @@ const journey2ViewEvent: JourneyViewEvent = {
     name: [
       {
         value: 'Hobbitish',
-        __typename: 'LanguageName'
+        __typename: 'LanguageName',
+        primary: true
       }
     ]
   }
@@ -331,7 +333,9 @@ export const getJourneysMock = {
 
 export const journey: JourneyWithEvents = {
   id: journeyView.journeyId,
-  subtitle: journeyView.language?.name[0].value,
+  subtitle:
+    journeyView.language?.name.find(({ primary }) => !primary)?.value ??
+    journeyView.language?.name[0].value,
   title: journeyView.label,
   createdAt: journeyView.createdAt,
   events
