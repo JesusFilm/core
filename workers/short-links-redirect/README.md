@@ -5,7 +5,7 @@ stg.arc.gt and the YouTube domain) from the edge store api-media publishes to.
 It is the redirect plane of the short-link service; the contract it implements
 is [`prds/short-links/TECH-DESIGN.md`](../../prds/short-links/TECH-DESIGN.md)
 and the product context is [`prds/short-links/README.md`](../../prds/short-links/README.md).
-Domain vocabulary lives in [`CONTEXT.md`](./CONTEXT.md).
+Domain vocabulary lives in [`GLOSSARY.md`](./GLOSSARY.md).
 
 ## How it works
 
