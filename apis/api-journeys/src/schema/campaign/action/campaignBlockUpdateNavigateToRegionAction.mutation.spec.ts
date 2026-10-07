@@ -50,7 +50,7 @@ describe('campaignBlockUpdateNavigateToRegionAction', () => {
   it('replaces the button’s scroll with a navigation to a region of the same campaign', async () => {
     prismaMock.campaignRegion.findFirst.mockResolvedValue({
       id: 'eurRegionId'
-    })
+    } as never)
 
     const result = await update('eurRegionId')
 
