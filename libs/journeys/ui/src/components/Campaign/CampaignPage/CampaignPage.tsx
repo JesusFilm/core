@@ -3,6 +3,7 @@ import GlobalStyles from '@mui/material/GlobalStyles'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import type { WorldMapShapes } from '../CampaignAnalytics/WorldMap'
 import { CampaignProvider } from '../CampaignProvider'
 import { CampaignRenderer } from '../CampaignRenderer'
 import { transformCampaignBlocks } from '../libs/transformer'
@@ -22,6 +23,8 @@ interface CampaignPageProps {
   region?: CampaignRegion | null
   /** Where the landing page is served; defaults to `/campaign/<slug>`. */
   basePath?: string
+  /** The projected world map, built once on the server from the viewer's `countries-110m.json`. */
+  worldMap?: WorldMapShapes | null
   /** The Campaign Chrome header, filled by the chrome ticket. */
   headerSlot?: ReactNode
   /** The Campaign Chrome footer, filled by the chrome ticket. */
@@ -39,6 +42,7 @@ export function CampaignPage({
   pageKind,
   region = null,
   basePath,
+  worldMap = null,
   headerSlot,
   footerSlot
 }: CampaignPageProps): ReactElement {
@@ -57,7 +61,9 @@ export function CampaignPage({
   }, [campaign, pageKind, region])
 
   return (
-    <CampaignProvider value={{ campaign, pageKind, region, basePath }}>
+    <CampaignProvider
+      value={{ campaign, pageKind, region, basePath, worldMap }}
+    >
       <GlobalStyles styles={{ html: { scrollBehavior: 'smooth' } }} />
       <Box
         data-testid="CampaignPage"

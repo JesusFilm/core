@@ -149,5 +149,7 @@
   "Top country": "Top country",
   "0 visitors": "0 visitors",
   "since {{date}}": "since {{date}}",
-  "No visits yet": "No visits yet"
+  "No visits yet": "No visits yet",
+  "Visitors by country": "Visitors by country",
+  "{{visitors}} visitors": "{{visitors}} visitors"
 }

@@ -7,6 +7,7 @@ export {
   CampaignAnalyticsPanel,
   GET_CAMPAIGN_STATS
 } from './CampaignAnalytics'
+export { buildWorldMap } from './CampaignAnalytics/WorldMap'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignHero } from './CampaignHero'
 export { CampaignJourneyList } from './CampaignJourneyList'
@@ -53,6 +54,10 @@ export type {
   CampaignTreeOf
 } from './types'
 export type { CampaignAnalyticsRegion } from './CampaignAnalytics'
+export type {
+  WorldAtlasTopology,
+  WorldMapShapes
+} from './CampaignAnalytics/WorldMap'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
 export type { ResolvedBand } from './libs/resolveBand'
 export type { CampaignTreeBlock } from './libs/transformer'

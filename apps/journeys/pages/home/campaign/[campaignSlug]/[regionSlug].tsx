@@ -2,6 +2,8 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import type { WorldMapShapes } from '@core/journeys/ui/Campaign'
+
 import {
   GetCampaignPublic_campaignPublic as CampaignPublic,
   GetCampaignPublic_campaignPublic_regions as CampaignRegion
@@ -12,19 +14,23 @@ import { CampaignPageWrapper } from '../../../../src/components/CampaignPageWrap
 import { createApolloClient } from '../../../../src/libs/apolloClient'
 import { fetchCampaignPublic } from '../../../../src/libs/getCampaignPublic'
 import { getFlags } from '../../../../src/libs/getFlags'
+import { getWorldMap } from '../../../../src/libs/getWorldMap'
 
 interface CampaignRegionPageProps {
   campaign: CampaignPublic
+  worldMap: WorldMapShapes
   region: CampaignRegion
 }
 
 function CampaignRegionPage({
   campaign,
-  region
+  region,
+  worldMap
 }: CampaignRegionPageProps): ReactElement {
   return (
     <CampaignPageWrapper
       campaign={campaign}
+      worldMap={worldMap}
       pageKind={CampaignPageKind.regionTemplate}
       region={region}
     />
@@ -52,7 +58,13 @@ export const getStaticProps: GetStaticProps<CampaignRegionPageProps> = async (
     return { props: { ...translations }, notFound: true, revalidate: 1 }
   }
   return {
-    props: { flags: await getFlags(), ...translations, campaign, region },
+    props: {
+      flags: await getFlags(),
+      ...translations,
+      campaign,
+      region,
+      worldMap: await getWorldMap()
+    },
     revalidate: 60
   }
 }
