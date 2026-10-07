@@ -38,6 +38,9 @@ interface TranslationsViewProps {
   campaign: Campaign
   /** The language to open on; the first non-default campaign language when absent or the default. */
   initialLanguageId?: string
+  /** Shown once after the default language changed: promoted machine values lost their flag. */
+  showPromotionNotice?: boolean
+  onPromotionNoticeClose?: () => void
 }
 
 /**
@@ -54,7 +57,9 @@ interface TranslationsViewProps {
  */
 export function TranslationsView({
   campaign,
-  initialLanguageId
+  initialLanguageId,
+  showPromotionNotice = false,
+  onPromotionNoticeClose
 }: TranslationsViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const languages = useMemo(
@@ -142,6 +147,17 @@ export function TranslationsView({
           )}
         </Typography>
       </Stack>
+      {showPromotionNotice && (
+        <Alert
+          severity="info"
+          onClose={onPromotionNoticeClose}
+          data-testid="TranslationsPromotionNotice"
+        >
+          {t(
+            'The default language changed. Texts that were machine-translated into the new default are now your own text and are no longer marked as machine-translated.'
+          )}
+        </Alert>
+      )}
       <TextField
         select
         size="small"

@@ -55,6 +55,7 @@ function CampaignEditorShell({
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [languagesOpen, setLanguagesOpen] = useState(false)
   const [translationsOpen, setTranslationsOpen] = useState(false)
+  const [promotionNoticeShown, setPromotionNoticeShown] = useState(false)
 
   function handlePageKindChange(nextPageKind: CampaignPageKind): void {
     dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind })
@@ -92,7 +93,11 @@ function CampaignEditorShell({
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
       >
-        <Settings campaign={campaign} isManager={isManager} />
+        <Settings
+          campaign={campaign}
+          isManager={isManager}
+          onDefaultLanguageChanged={() => setPromotionNoticeShown(true)}
+        />
       </Drawer>
       <Drawer
         anchor="right"
@@ -104,11 +109,16 @@ function CampaignEditorShell({
       <Drawer
         anchor="right"
         open={translationsOpen}
-        onClose={() => setTranslationsOpen(false)}
+        onClose={() => {
+          setTranslationsOpen(false)
+          setPromotionNoticeShown(false)
+        }}
       >
         <TranslationsView
           campaign={campaign}
           initialLanguageId={previewLanguageId}
+          showPromotionNotice={promotionNoticeShown}
+          onPromotionNoticeClose={() => setPromotionNoticeShown(false)}
         />
       </Drawer>
     </Stack>
