@@ -1690,6 +1690,10 @@ export interface CampaignPublicFields {
    * The Page Language every text field was resolved to: the requested campaign language, else the default.
    */
   languageId: string;
+  /**
+   * Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+   */
+  customDomainNames: string[];
   publishedAt: any | null;
   language: CampaignPublicFields_language;
   /**

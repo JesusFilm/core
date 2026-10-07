@@ -98,6 +98,12 @@ export const CampaignRef = builder.prismaObject('Campaign', {
       nullable: false,
       description: 'The seventeen Campaign Strings.',
       query: { orderBy: { key: 'asc' } }
+    }),
+    customDomains: t.relation('customDomains', {
+      nullable: false,
+      description:
+        'Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.',
+      query: { orderBy: { name: 'asc' } }
     })
   })
 })

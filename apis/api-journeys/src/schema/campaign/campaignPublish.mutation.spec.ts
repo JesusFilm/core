@@ -138,6 +138,31 @@ describe('campaignPublish', () => {
     ])
   })
 
+  it('also revalidates the domain form of every attached Campaign Root domain', async () => {
+    const draft = campaignFactory({ role: 'manager' }).withRegion('EUR').build()
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...draft,
+      customDomains: [{ name: 'christmas.example.org' }]
+    } as any)
+    prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
+      ...draft,
+      status: 'published'
+    })
+
+    await authClient({
+      document: CAMPAIGN_PUBLISH,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(mockQueueAdd.mock.calls).toEqual([
+      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
+      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
+      ['revalidate', { paths: ['/christmas.example.org'] }],
+      ['revalidate', { paths: ['/christmas.example.org/eur'] }]
+    ])
+  })
+
   it('queues nothing when the publish race is lost', async () => {
     const draft = campaignFactory({ role: 'manager' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue(draft)

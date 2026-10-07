@@ -13,6 +13,7 @@ import { Dialog } from '@core/shared/ui/Dialog/Dialog'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
+import Layout1Icon from '@core/shared/ui/icons/Layout1'
 import Lightning2Icon from '@core/shared/ui/icons/Lightning2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
@@ -20,6 +21,7 @@ import { UserTeamRole } from '../../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery'
 import { useCustomDomainsQuery } from '../../../libs/useCustomDomainsQuery'
 
+import { CampaignRootForm } from './CampaignRootForm'
 import { CustomDomainDialogTitle } from './CustomDomainDialogTitle'
 import { DefaultJourneyForm } from './DefaultJourneyForm'
 import { DNSConfigSection } from './DNSConfigSection'
@@ -121,6 +123,12 @@ export function CustomDomainDialog({
                 currentUserTeamRole={currentUserTeamRole}
               />
             </Stack>
+            {currentUserTeamRole === UserTeamRole.manager && (
+              <Stack spacing={4} direction="row">
+                <Layout1Icon sx={{ color: 'secondary.light' }} />
+                <CampaignRootForm customDomain={customDomain} />
+              </Stack>
+            )}
             {currentUserTeamRole === UserTeamRole.manager &&
               currentUserTeamRole != null && (
                 <>

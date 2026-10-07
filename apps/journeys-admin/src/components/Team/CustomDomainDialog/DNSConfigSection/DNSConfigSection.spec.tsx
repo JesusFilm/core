@@ -59,6 +59,7 @@ describe('DNSConfigSection', () => {
     apexName: 'example.com',
     id: 'customDomainId',
     routeAllTeamJourneys: false,
+    campaignId: null,
     journeyCollection: null
   }
 
@@ -68,6 +69,7 @@ describe('DNSConfigSection', () => {
     apexName: 'example.com',
     id: 'customDomainId',
     routeAllTeamJourneys: false,
+    campaignId: null,
     journeyCollection: null
   }
 

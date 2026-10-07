@@ -14,6 +14,7 @@ const customDomains: CustomDomain[] = [
     apexName: 'example.com',
     id: 'customDomainId',
     routeAllTeamJourneys: false,
+    campaignId: null,
     journeyCollection: {
       __typename: 'JourneyCollection',
       id: 'journeyCollectionId',

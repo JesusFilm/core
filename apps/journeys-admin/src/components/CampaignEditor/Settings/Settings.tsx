@@ -163,7 +163,10 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
 
   const published = campaign.status === CampaignStatus.published
   const permanentAddress = campaignPermanentAddress(campaign.slug)
-  const publicAddress = campaignPublicAddress(campaign.slug, null)
+  const publicAddress = campaignPublicAddress(
+    campaign.slug,
+    campaign.customDomains[0]?.name ?? null
+  )
 
   return (
     <Stack spacing={5} sx={{ p: 6, width: 400 }} data-testid="CampaignSettings">

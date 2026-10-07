@@ -1454,5 +1454,11 @@
   "This permanently removes the region with its share languages, their QR codes, its countries and its lines. The linked journeys keep working at their own URLs.": "This permanently removes the region with its share languages, their QR codes, its countries and its lines. The linked journeys keep working at their own URLs.",
   "This cannot be undone.": "This cannot be undone.",
   "Add line": "Add line",
-  "Unlist": "Unlist"
+  "Unlist": "Unlist",
+  "Campaign root cleared": "Campaign root cleared",
+  "Campaign root set": "Campaign root set",
+  "Could not save campaign root": "Could not save campaign root",
+  "Campaign Root": "Campaign Root",
+  "Clear campaign root": "Clear campaign root",
+  "The campaign will be available at {{ customDomain }}, with its regions beside your journeys": "The campaign will be available at {{ customDomain }}, with its regions beside your journeys"
 }

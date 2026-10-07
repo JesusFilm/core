@@ -459,6 +459,7 @@ export const campaignPublic: CampaignPublicFields = {
   title: 'Christmas 2026',
   defaultLanguageId: '529',
   languageId: '529',
+  customDomainNames: [],
   publishedAt: '2026-10-05T00:00:00.000Z',
   language: { __typename: 'Language', id: '529', bcp47: 'en' },
   languages: [

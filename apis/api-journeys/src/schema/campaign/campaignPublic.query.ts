@@ -38,7 +38,8 @@ const INCLUDE_CAMPAIGN_PUBLIC = {
       countries: { orderBy: { order: 'asc' } }
     }
   },
-  strings: { orderBy: { key: 'asc' } }
+  strings: { orderBy: { key: 'asc' } },
+  customDomains: { orderBy: { name: 'asc' }, select: { name: true } }
 } satisfies Prisma.CampaignInclude
 
 type CampaignPublicRow = Prisma.CampaignGetPayload<{
@@ -158,6 +159,7 @@ export function toCampaignPublic(
       valueTranslations: {}
     })),
     regions,
+    customDomainNames: campaign.customDomains.map(({ name }) => name),
     header,
     footer,
     chrome,
@@ -170,13 +172,13 @@ export function toCampaignPublic(
 }
 
 // Public, unauthenticated query mirroring `templateGalleryPageBySlug`: no
-// `withAuth`, and `status: published` is the only gate. The `hostname` key is
-// accepted now; it resolves through a Custom Domain's Campaign Root once that
-// column lands (Campaign Root ticket) and is NOT_FOUND until then.
+// `withAuth`, and `status: published` is the only gate. The `hostname` key
+// resolves through a Custom Domain's Campaign Root; a draft root or no root is
+// NOT_FOUND, which the route reads as "fall through to journey behaviour".
 builder.queryField('campaignPublic', (t) =>
   t.field({
     description:
-      'Public, unauthenticated read of a published Campaign for the public page: exactly one of `slug` (the root-domain address) or `hostname` (a Custom Domain whose Campaign Root it is), plus the Page Language to resolve every text field to (null = the campaign default). `status: published` is the only gate.\n\nErrors:\n- BAD_USER_INPUT: both or neither of `slug` and `hostname` given.\n- NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).',
+      'Public, unauthenticated read of a published Campaign for the public page: exactly one of `slug` (the root-domain address) or `hostname` (a Custom Domain whose Campaign Root it is), plus the Page Language to resolve every text field to (null = the campaign default). `status: published` is the only gate.\n\nErrors:\n- BAD_USER_INPUT: both or neither of `slug` and `hostname` given.\n- NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a hostname with no Campaign Root or a draft one).',
     type: CampaignPublicRef,
     nullable: false,
     args: {
@@ -205,22 +207,28 @@ builder.queryField('campaignPublic', (t) =>
           { extensions: { code: 'BAD_USER_INPUT' } }
         )
 
-      if (slug != null) {
-        // Reject malformed slugs before the database, as the gallery does.
-        if (!SLUG_PATTERN.test(slug) || slug.length > SLUG_MAX_LENGTH)
-          throw notFound()
-        const campaign = await prisma.campaign.findFirst({
-          where: { slug, status: 'published' },
-          include: INCLUDE_CAMPAIGN_PUBLIC
-        })
-        if (campaign == null) throw notFound()
-        return toCampaignPublic(
-          campaign,
-          args.languageId == null ? null : String(args.languageId)
-        )
-      }
+      // Reject malformed slugs before the database, as the gallery does.
+      if (
+        slug != null &&
+        (!SLUG_PATTERN.test(slug) || slug.length > SLUG_MAX_LENGTH)
+      )
+        throw notFound()
 
-      throw notFound()
+      const campaign = await prisma.campaign.findFirst({
+        where:
+          slug != null
+            ? { slug, status: 'published' }
+            : {
+                status: 'published',
+                customDomains: { some: { name: hostname ?? '' } }
+              },
+        include: INCLUDE_CAMPAIGN_PUBLIC
+      })
+      if (campaign == null) throw notFound()
+      return toCampaignPublic(
+        campaign,
+        args.languageId == null ? null : String(args.languageId)
+      )
     }
   })
 )

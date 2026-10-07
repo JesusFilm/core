@@ -39,6 +39,22 @@ function isNotFound(error: unknown): boolean {
   return networkError?.statusCode === 400
 }
 
+async function queryCampaignPublic(
+  apolloClient: ApolloClient,
+  variables: GetCampaignPublicVariables
+): Promise<CampaignPublic | null> {
+  try {
+    const { data } = await apolloClient.query<
+      GetCampaignPublic,
+      GetCampaignPublicVariables
+    >({ query: GET_CAMPAIGN_PUBLIC, variables })
+    return data?.campaignPublic ?? null
+  } catch (error) {
+    if (isNotFound(error)) return null
+    throw error
+  }
+}
+
 /**
  * Read a published campaign for the public page. Null for a draft, unknown
  * or malformed slug (the route answers not found with `revalidate: 1`);
@@ -50,17 +66,25 @@ export async function fetchCampaignPublic(
   languageId?: string | null
 ): Promise<CampaignPublic | null> {
   if (!isValidCampaignSlug(slug)) return null
-  try {
-    const { data } = await apolloClient.query<
-      GetCampaignPublic,
-      GetCampaignPublicVariables
-    >({
-      query: GET_CAMPAIGN_PUBLIC,
-      variables: { slug, languageId: languageId ?? null }
-    })
-    return data?.campaignPublic ?? null
-  } catch (error) {
-    if (isNotFound(error)) return null
-    throw error
-  }
+  return await queryCampaignPublic(apolloClient, {
+    slug,
+    languageId: languageId ?? null
+  })
+}
+
+/**
+ * Read the published Campaign Root of a custom domain. Null when the domain
+ * has no root campaign or it is a draft, which the route reads as "serve
+ * today's journey behaviour"; any other failure is rethrown.
+ */
+export async function fetchCampaignPublicByHostname(
+  apolloClient: ApolloClient,
+  hostname: string,
+  languageId?: string | null
+): Promise<CampaignPublic | null> {
+  if (hostname === '') return null
+  return await queryCampaignPublic(apolloClient, {
+    hostname,
+    languageId: languageId ?? null
+  })
 }

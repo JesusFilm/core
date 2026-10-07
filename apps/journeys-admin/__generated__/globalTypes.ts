@@ -799,6 +799,7 @@ export interface CustomDomainCreateInput {
 export interface CustomDomainUpdateInput {
   journeyCollectionId?: string | null;
   routeAllTeamJourneys?: boolean | null;
+  campaignId?: string | null;
 }
 
 export interface DateTimeFilter {

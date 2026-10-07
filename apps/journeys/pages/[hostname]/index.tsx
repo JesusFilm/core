@@ -2,6 +2,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import type { CampaignPublic } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -10,26 +11,39 @@ import {
   GetJourneysSummary,
   GetJourneysSummaryVariables
 } from '../../__generated__/GetJourneysSummary'
-import { IdType } from '../../__generated__/globalTypes'
+import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
+import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { fetchCampaignPublicByHostname } from '../../src/libs/getCampaignPublic'
 import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
-import HostJourneyPage from './[journeySlug]'
+import { HostJourneyPage } from './[journeySlug]'
 
 interface HostJourneysPageProps {
   host?: string
   journeys: GetJourneysSummary['journeys']
   journey?: GetJourney['journey']
+  campaign?: CampaignPublic
 }
 
 function HostJourneysPage({
   journeys,
   journey,
+  campaign,
   host
 }: HostJourneysPageProps): ReactElement {
+  if (campaign != null)
+    return (
+      <CampaignPageWrapper
+        campaign={campaign}
+        pageKind={CampaignPageKind.landing}
+        basePath=""
+      />
+    )
+
   if (journey == null) return <JourneysPage journeys={journeys} />
 
   const { rtl, locale } = getJourneyRTL(journey)
@@ -47,6 +61,29 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
+
+  // Campaign Root first: a published root campaign owns `/`, else today's
+  // collection logic below runs unchanged.
+  const campaign = await fetchCampaignPublicByHostname(
+    apolloClient,
+    context.params?.hostname as string
+  )
+  if (campaign != null) {
+    return {
+      props: {
+        flags: await getFlags(),
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        )),
+        journeys: [],
+        campaign
+      },
+      revalidate: 60
+    }
+  }
+
   const { data } = await apolloClient.query<
     GetJourneysSummary,
     GetJourneysSummaryVariables

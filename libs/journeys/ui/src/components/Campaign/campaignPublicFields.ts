@@ -111,6 +111,7 @@ export const CAMPAIGN_PUBLIC_FIELDS = gql`
     title
     defaultLanguageId
     languageId
+    customDomainNames
     publishedAt
     language {
       id

@@ -54,6 +54,10 @@ export const CAMPAIGN_FIELDS = gql`
     publishedAt
     createdAt
     updatedAt
+    customDomains {
+      id
+      name
+    }
     team {
       id
       userTeams {

@@ -24,6 +24,7 @@ const customDomain: CustomDomain = {
   apexName: 'example.com',
   id: 'customDomainId',
   routeAllTeamJourneys: false,
+  campaignId: null,
   journeyCollection: null
 }
 
@@ -33,6 +34,7 @@ const customSubdomain: CustomDomain = {
   apexName: 'example.com',
   id: 'customDomainId',
   routeAllTeamJourneys: false,
+  campaignId: null,
   journeyCollection: null
 }
 

@@ -9,6 +9,12 @@ import { CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButton
 // GraphQL query operation: GetCampaign
 // ====================================================
 
+export interface GetCampaign_campaign_customDomains {
+  __typename: "CustomDomain";
+  id: string;
+  name: string;
+}
+
 export interface GetCampaign_campaign_team_userTeams_user {
   __typename: "AuthenticatedUser" | "AnonymousUser";
   id: string;
@@ -629,6 +635,10 @@ export interface GetCampaign_campaign {
   publishedAt: any | null;
   createdAt: any;
   updatedAt: any;
+  /**
+   * Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.
+   */
+  customDomains: GetCampaign_campaign_customDomains[];
   /**
    * Owning team; the campaign is hard-deleted with it.
    */

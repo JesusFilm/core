@@ -249,6 +249,11 @@ type Campaign {
 
   """The seventeen Campaign Strings."""
   strings: [CampaignString!]!
+
+  """
+  Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.
+  """
+  customDomains: [CustomDomain!]!
 }
 
 """
@@ -867,6 +872,11 @@ type CampaignPublic {
 
   """Every Campaign Region, listed and orphan, in switcher order."""
   regions: [CampaignRegionPublic!]!
+
+  """
+  Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+  """
+  customDomainNames: [String!]!
   header: CampaignHeaderBlock!
   footer: CampaignFooterBlock!
 
@@ -1689,6 +1699,11 @@ type CustomDomain
   routeAllTeamJourneys: Boolean!
   team: Team!
   journeyCollection: JourneyCollection
+
+  """
+  Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none.
+  """
+  campaignId: ID
 }
 
 type CustomDomainCheck
@@ -1711,6 +1726,11 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+
+  """
+  Campaign Root: the team's campaign this domain serves at `/` and `/<regionSlug>`; null clears it. Omit to leave it unchanged. Independent of `routeAllTeamJourneys` and `journeyCollectionId`.
+  """
+  campaignId: ID
 }
 
 type CustomDomainVerification
@@ -3945,7 +3965,7 @@ type Query {
   
   Errors:
   - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
-  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).
+  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a hostname with no Campaign Root or a draft one).
   """
   campaignPublic(
     """
