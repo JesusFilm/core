@@ -1,6 +1,7 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import MenuItem from '@mui/material/MenuItem'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -26,6 +27,9 @@ import {
   campaignPermanentAddress,
   campaignPublicAddress
 } from '../campaignAddress'
+import { languageNames } from '../LanguagesPanel/LanguagesPanel'
+
+import { DefaultLanguageDialog } from './DefaultLanguageDialog'
 
 const TITLE_MAX_LENGTH = 100
 const SLUG_MAX_LENGTH = 200
@@ -36,6 +40,8 @@ interface SettingsProps {
   campaign: Campaign
   /** Delete campaign is campaign Delete: offered to a manager of the team only. */
   isManager: boolean
+  /** The default language was swapped; the Translations view tells the author about promoted machine values. */
+  onDefaultLanguageChanged?: () => void
 }
 
 /** The gallery's client-side slug shaping: what the API will accept, minus the trailing dash kept while typing. */
@@ -49,12 +55,18 @@ export function shapeSlug(value: string): string {
 
 /**
  * Campaign settings: title and slug saved through `campaignUpdate` as each
- * field commits (never Commands, so undo does not touch them), the status
- * copy, the address hint and, for managers, Delete campaign. There is no
+ * field commits (never Commands, so undo does not touch them), the default
+ * language (confirmed in a dialog that offers machine translation when texts
+ * are missing), the status copy, the address hint and, for managers, Delete
+ * campaign. There is no
  * Save button: an optimistic response shows the edit at once and a failed
  * save rolls it back behind the error snackbar.
  */
-export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
+export function Settings({
+  campaign,
+  isManager,
+  onDefaultLanguageChanged
+}: SettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
@@ -64,6 +76,7 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
     {}
   )
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [nextDefaultLanguageId, setNextDefaultLanguageId] = useState<string>()
   const [campaignUpdate] = useCampaignUpdateMutation()
   const [campaignDelete, { loading: deleting }] = useCampaignDeleteMutation()
 
@@ -218,6 +231,28 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
       />
+      <TextField
+        select
+        label={t('Default language')}
+        value={campaign.defaultLanguageId}
+        onChange={(event) => {
+          if (event.target.value !== campaign.defaultLanguageId)
+            setNextDefaultLanguageId(event.target.value)
+        }}
+        helperText={t(
+          'The language you write in. Changing it needs every text translated first.'
+        )}
+        fullWidth
+        slotProps={{ htmlInput: { 'aria-label': t('Default language') } }}
+      >
+        {[...campaign.languages]
+          .sort((a, b) => a.order - b.order)
+          .map((language) => (
+            <MenuItem key={language.id} value={language.languageId}>
+              {languageNames(language).autonym}
+            </MenuItem>
+          ))}
+      </TextField>
       {isManager && (
         <Box>
           <Button
@@ -230,6 +265,15 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
           </Button>
         </Box>
       )}
+      <DefaultLanguageDialog
+        campaign={campaign}
+        languageId={nextDefaultLanguageId}
+        onClose={() => setNextDefaultLanguageId(undefined)}
+        onChanged={() => {
+          setNextDefaultLanguageId(undefined)
+          onDefaultLanguageChanged?.()
+        }}
+      />
       <Dialog
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
