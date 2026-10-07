@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionHeaderBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRegionHeaderBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionHeaderBlockCreate
@@ -16,6 +16,7 @@ export interface CampaignRegionHeaderBlockCreate_campaignRegionHeaderBlockCreate
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignRegionHeaderBlockCreate_campaignRegionHeaderBlockCreate {

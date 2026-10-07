@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignAnalyticsBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignAnalyticsBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignAnalyticsBlockCreate
@@ -16,6 +16,7 @@ export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_eyebr
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_titleTranslations {
@@ -25,6 +26,7 @@ export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_title
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate {

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignHeroBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignHeroBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignHeroBlockCreate
@@ -16,6 +16,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslat
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations {
@@ -25,6 +26,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslatio
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations {
@@ -34,6 +36,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslation
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {

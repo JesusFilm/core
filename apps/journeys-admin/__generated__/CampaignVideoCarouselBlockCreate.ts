@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoCarouselBlockCreate
@@ -16,6 +16,7 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations {
@@ -25,6 +26,7 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate {

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBlockDuplicateIdMapInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignBlockDuplicateIdMapInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockDuplicate
@@ -94,6 +94,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_titleTranslations {
@@ -103,6 +104,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_ledeTranslations {
@@ -112,6 +114,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock {
@@ -172,6 +175,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwi
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock {
@@ -221,6 +225,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCaro
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock_titleTranslations {
@@ -230,6 +235,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCaro
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock {
@@ -285,6 +291,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyLi
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_titleTranslations {
@@ -294,6 +301,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyLi
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_ledeTranslations {
@@ -303,6 +311,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyLi
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock {
@@ -356,6 +365,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalytics
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_titleTranslations {
@@ -365,6 +375,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalytics
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock {
@@ -416,6 +427,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHea
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock {
@@ -464,6 +476,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSha
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_introTranslations {
@@ -473,6 +486,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSha
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock {
@@ -523,6 +537,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypograph
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypographyBlock {
@@ -599,6 +614,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlo
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock {
