@@ -167,6 +167,10 @@ module "redis" {
   vpc_id            = module.prod.vpc.id
 }
 
+# Short-link scan events: prod gets its own ClickHouse Cloud service once the
+# stage one (environments/stage/main.tf, module "short_links_clickhouse") has
+# proven the setup. Add the same module call here with idle_scaling = false.
+
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"

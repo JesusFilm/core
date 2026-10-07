@@ -1,0 +1,180 @@
+# short-links-redirect: the edge redirect Worker for every short-link domain.
+# Contract: prds/short-links/TECH-DESIGN.md.
+#
+# BEFORE THE FIRST DEPLOY to an environment, replace the
+# `REPLACE_ME_BEFORE_DEPLOY` below with the real namespace id:
+#
+#   wrangler kv namespace create short-links-stage   -> kv_namespaces[].id (SHORT_LINKS_KV)
+#   wrangler queues create short-links-events-stage
+#   wrangler queues create short-links-events-dlq-stage
+#   wrangler secret put CLICKHOUSE_USER --env=stage
+#   wrangler secret put CLICKHOUSE_PASSWORD --env=stage
+#
+# (and the same with `-prod` / `--env=prod`). Queues are referenced by name, so
+# they need no id here. The placeholder is deliberately invalid so a deploy
+# with an unfilled id fails at the Cloudflare API instead of silently binding to
+# nothing. The top-level (dev) environment is what `wrangler dev` and the vitest
+# Workers pool use; miniflare provisions local KV / Queues regardless of the
+# ids.
+#
+# PER DOMAIN, by hand (full runbook: README.md, "Setting up a domain"):
+#
+#   wrangler kv namespace create short-links-stage-stage-jesus-film
+#     -> add [[env.stage.kv_namespaces]] binding = "KV_STAGE_JESUS_FILM" with that id
+#   add the route under [env.stage] (zone route for a path-prefixed domain,
+#     custom domain for a root domain), deploy, then set the namespace id and
+#     binding on the domain in the admin app (superAdmin).
+#
+# Routes: everything routed to this Worker must be declared here. A deploy
+# replaces the Worker's whole route set with what this file says, so a route
+# added in the dashboard is deleted by the next deploy.
+#
+# Rollout: stage serves `stage.jesus.film/s/*` and `stage.jesus.movie/s/*`,
+# prod `jesus.film/s/*` and `jesus.movie/s/*`. nxstp.is and arc.gt stay on the
+# legacy Vercel app until their cutover. wrangler warns on every deploy that
+# the dev-only bindings below (`KV_NXSTP_IS`, ...) are not declared for stage
+# or prod; that is expected until those domains are cut over.
+
+name = "short-links-redirect-dev"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+main = "src/index.ts"
+
+[vars]
+CORE_GRAPHQL_ENDPOINT = "http://localhost:4000"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+# Global namespace: domain records (`domain:<hostname>`) and global links
+# (`link:<pathname>`). Dev (top-level) ids are local-only names: miniflare keys
+# local namespaces by id, so each binding needs a distinct one or they alias.
+[[kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "short-links-dev"
+
+# One namespace per domain, bound under the name in the domain record's
+# `kvBinding`; holds that domain's routing records keyed by bare slug. Adding
+# a domain means creating its namespace and declaring its binding under the
+# environment it is served in (see the top comment). The dev ones below are
+# what the tests and `wrangler dev` use.
+[[kv_namespaces]]
+binding = "KV_JESUS_FILM"
+id = "short-links-dev-jesus-film"
+
+[[kv_namespaces]]
+binding = "KV_NXSTP_IS"
+id = "short-links-dev-nxstp-is"
+
+[[kv_namespaces]]
+binding = "KV_ARC_GT"
+id = "short-links-dev-arc-gt"
+
+[[kv_namespaces]]
+binding = "KV_STG_ARC_GT"
+id = "short-links-dev-stg-arc-gt"
+
+[[queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-dev"
+
+[[queues.consumers]]
+queue = "short-links-events-dev"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-dev"
+
+# ---------------------------------------------------------------------------
+# stage
+# ---------------------------------------------------------------------------
+
+[env.stage]
+name = "short-links-redirect-stage"
+logpush = true
+# One route per cut-over hostname. Uncomment when the hostname has its proxied
+# DNS record and its zone is in the account; a deploy applies it.
+# routes = [
+#   { pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" },
+#   { pattern = "stage.jesus.movie/s/*", zone_name = "jesus.movie" }
+# ]
+
+[env.stage.vars]
+CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+# Global namespace.
+[[env.stage.kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+# Per-domain namespaces (created with `wrangler kv namespace create`).
+[[env.stage.kv_namespaces]]
+binding = "KV_STAGE_JESUS_FILM"
+id = "307a5a4baba8439abeeea94b2a59eed4"
+
+[[env.stage.kv_namespaces]]
+binding = "KV_STAGE_JESUS_MOVIE"
+id = "de33cd1e7e95484ca47539efb99f1445"
+
+[[env.stage.queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-stage"
+
+[[env.stage.queues.consumers]]
+queue = "short-links-events-stage"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-stage"
+
+[env.stage.observability.logs]
+enabled = true
+
+# ---------------------------------------------------------------------------
+# prod
+# ---------------------------------------------------------------------------
+
+[env.prod]
+name = "short-links-redirect-prod"
+logpush = true
+# One route per cut-over hostname. Uncomment at cutover; a deploy applies it.
+# Root domains (nxstp.is, arc.gt) become custom domains:
+#   { pattern = "nxstp.is", custom_domain = true }
+# routes = [
+#   { pattern = "jesus.film/s/*", zone_name = "jesus.film" },
+#   { pattern = "jesus.movie/s/*", zone_name = "jesus.movie" }
+# ]
+
+[env.prod.vars]
+CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
+CLICKHOUSE_URL = ""
+CLICKHOUSE_DATABASE = "redirects"
+
+# Global namespace.
+[[env.prod.kv_namespaces]]
+binding = "SHORT_LINKS_KV"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+# Per-domain namespaces (created with `wrangler kv namespace create`).
+[[env.prod.kv_namespaces]]
+binding = "KV_JESUS_FILM"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.kv_namespaces]]
+binding = "KV_JESUS_MOVIE"
+id = "REPLACE_ME_BEFORE_DEPLOY"
+
+[[env.prod.queues.producers]]
+binding = "SHORT_LINKS_EVENTS"
+queue = "short-links-events-prod"
+
+[[env.prod.queues.consumers]]
+queue = "short-links-events-prod"
+max_batch_size = 100
+max_batch_timeout = 5
+max_retries = 3
+dead_letter_queue = "short-links-events-dlq-prod"
+
+[env.prod.observability.logs]
+enabled = true

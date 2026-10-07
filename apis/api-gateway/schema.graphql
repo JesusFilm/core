@@ -602,29 +602,53 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   playlistItemRemove(playlistId: ID!, itemId: ID!) : MutationPlaylistItemRemoveResult @join__field(graph: API_MEDIA) 
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!) : MutationPlaylistItemsReorderResult @join__field(graph: API_MEDIA) 
   """
-  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  create a short link campaign
+  """
+  shortLinkCampaignCreate(input: MutationShortLinkCampaignCreateInput!) : ShortLinkCampaign! @join__field(graph: API_MEDIA) 
+  """
+  update a short link campaign
+  """
+  shortLinkCampaignUpdate(input: MutationShortLinkCampaignUpdateInput!) : MutationShortLinkCampaignUpdateResult! @join__field(graph: API_MEDIA) 
+  """
+  delete a short link campaign; its links are detached, not deleted
+  """
+  shortLinkCampaignDelete(id: String!) : MutationShortLinkCampaignDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
   """
-  Update services that can use this short link domain
+  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
   """
-  delete an existing short link domain (all related short links must be deleted first)
+  delete an existing short link domain (superAdmin only; all related short links must be deleted first)
   """
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
+  """
+  shortLinkDomainPublish(id: String!) : MutationShortLinkDomainPublishResult! @join__field(graph: API_MEDIA) 
   """
   create a new short link
   """
   shortLinkCreate(input: MutationShortLinkCreateInput!) : MutationShortLinkCreateResult! @join__field(graph: API_MEDIA) 
   """
-  update an existing short link
+  update an existing short link (the pathname is immutable). Changing `to` on a permanent or videoEmbedded link needs a short link admin; videoEmbedded also needs a note
   """
   shortLinkUpdate(input: MutationShortLinkUpdateInput!) : MutationShortLinkUpdateResult! @join__field(graph: API_MEDIA) 
   """
-  delete an existing short link
+  soft delete an existing short link: it stops resolving and its pathname is never reissued. Permanent and videoEmbedded links need a short link admin
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  pause, resume, retag or re-campaign several short links at once; every link is republished to the edge
+  """
+  shortLinkBulkUpdate(input: MutationShortLinkBulkUpdateInput!) : MutationShortLinkBulkUpdateResult! @join__field(graph: API_MEDIA) 
+  """
+  republish one short link routing record to the edge store (publish-gap repair)
+  """
+  shortLinkPublish(id: String!) : MutationShortLinkPublishResult! @join__field(graph: API_MEDIA) 
   userMediaProfileUpdate(input: UserMediaProfileUpdateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
   videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
@@ -1608,6 +1632,23 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   playlists: [Playlist!] @join__field(graph: API_MEDIA) 
   playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
+  list short link campaigns, optionally filtered by name
+  """
+  shortLinkCampaigns(
+    """
+    case-insensitive match against the campaign name
+    """
+    search: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkCampaignsConnection! @join__field(graph: API_MEDIA) 
+  """
+  find a short link campaign by id
+  """
+  shortLinkCampaign(id: String!) : QueryShortLinkCampaignResult! @join__field(graph: API_MEDIA) 
+  """
   List of short link domains that can be used for short links
   """
   shortLinkDomains(
@@ -1621,11 +1662,20 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     last: Int
   ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
   """
+  find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host
+  """
+  shortLinkDomainByHostname(
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String!
+  ): QueryShortLinkDomainByHostnameResult! @join__field(graph: API_MEDIA) 
+  """
   Find a short link domain by id
   """
   shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
   """
-  find a short link by path and hostname
+  find a live short link by path and hostname (deleted and retired links are not found; paused links are)
   """
   shortLinkByPath(
     """
@@ -1642,18 +1692,33 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   """
   shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
   """
-  find all short links with optional hostname filter
+  find all short links with optional hostname filter (soft-deleted links are excluded unless filter.includeDeleted is set)
   """
   shortLinks(
     """
     the hostname including subdomain, domain, and TLD, but excluding port
     """
     hostname: String
+    filter: ShortLinksFilter
     before: String
     after: String
     first: Int
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  """
+  what the edge Worker would answer for this hostname and pathname (Test Redirect); mirrors the Worker lookup order
+  """
+  shortLinkResolve(
+    hostname: String!
+    """
+    path with or without the leading slash
+    """
+    pathname: String!
+  ): ShortLinkResolution! @join__field(graph: API_MEDIA) 
+  """
+  redirect counts from the edge analytics store for a date range (zeros when analytics is not configured)
+  """
+  shortLinkStats(filter: ShortLinkStatsFilter!) : ShortLinkStats! @join__field(graph: API_MEDIA) 
   userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
   videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   videoSubtitlesCount(where: VideoSubtitlesFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -1773,6 +1838,68 @@ type ShortLink @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: tru
   a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
   """
   sourceRef: String @join__field(graph: API_MEDIA) 
+  """
+  human label shown in the admin app
+  """
+  name: String @join__field(graph: API_MEDIA) 
+  description: String @join__field(graph: API_MEDIA) 
+  """
+  drives the protection rules: permanent and videoEmbedded links need a short link admin to change their destination or be deleted
+  """
+  assetClass: ShortLinkAssetClass! @join__field(graph: API_MEDIA) 
+  status: ShortLinkStatus! @join__field(graph: API_MEDIA) 
+  """
+  per-link override of the domain redirect status
+  """
+  redirectStatus: Int @join__field(graph: API_MEDIA) 
+  """
+  per-link override of the domain fallbackTo, used while paused
+  """
+  fallbackTo: String @join__field(graph: API_MEDIA) 
+  placement: ShortLinkPlacement @join__field(graph: API_MEDIA) 
+  """
+  BCP-47 language tag
+  """
+  language: String @join__field(graph: API_MEDIA) 
+  tags: [String!]! @join__field(graph: API_MEDIA) 
+  """
+  core Video this link belongs to
+  """
+  videoId: String @join__field(graph: API_MEDIA) 
+  """
+  YouTube video id the link is placed in
+  """
+  youtubeVideoId: String @join__field(graph: API_MEDIA) 
+  campaigns: [ShortLinkCampaign!]! @join__field(graph: API_MEDIA) 
+  """
+  every change to `to`, newest first
+  """
+  destinationHistory: [ShortLinkDestinationHistory!]! @join__field(graph: API_MEDIA) 
+  """
+  the user that created this short link (empty when created by a subgraph)
+  """
+  userId: String @join__field(graph: API_MEDIA) 
+  createdAt: DateTime! @join__field(graph: API_MEDIA) 
+  updatedAt: DateTime! @join__field(graph: API_MEDIA) 
+  deletedAt: DateTime @join__field(graph: API_MEDIA) 
+  """
+  when the routing record was last written to the edge store
+  """
+  edgePublishedAt: DateTime @join__field(graph: API_MEDIA) 
+  healthStatus: ShortLinkHealth @join__field(graph: API_MEDIA) 
+  healthCheckedAt: DateTime @join__field(graph: API_MEDIA) 
+  """
+  when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued
+  """
+  global: Boolean! @join__field(graph: API_MEDIA) 
+  """
+  https://<hostname>/<pathname>, or https://<hostname>/<pathPrefix>/<pathname> when the domain has a path prefix
+  """
+  shortUrl: String! @join__field(graph: API_MEDIA) 
+  """
+  shortUrl + ?qr=1 — what QR images encode
+  """
+  qrUrl: String! @join__field(graph: API_MEDIA) 
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -2762,6 +2889,18 @@ type MutationPlaylistUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: Playlist!
 }
 
+type MutationShortLinkBulkUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: [ShortLink!]!
+}
+
+type MutationShortLinkCampaignDeleteSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkCampaign!
+}
+
+type MutationShortLinkCampaignUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkCampaign!
+}
+
 type MutationShortLinkCreateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
@@ -2778,8 +2917,16 @@ type MutationShortLinkDomainDeleteSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
 
+type MutationShortLinkDomainPublishSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
 type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
+}
+
+type MutationShortLinkPublishSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLink!
 }
 
 type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
@@ -2868,6 +3015,25 @@ type QueryShortLinkByPathSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
+type QueryShortLinkCampaignSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkCampaign!
+}
+
+type QueryShortLinkCampaignsConnection @join__type(graph: API_MEDIA)  {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinkCampaignsConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinkCampaignsConnectionEdge @join__type(graph: API_MEDIA)  {
+  node: ShortLinkCampaign
+  cursor: String!
+}
+
+type QueryShortLinkDomainByHostnameSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
 type QueryShortLinkDomainSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
@@ -2903,6 +3069,45 @@ type QueryYoutubeClosedCaptionLanguagesSuccess @join__type(graph: API_MEDIA)  {
 }
 
 """
+A named group of short links (a YouTube push, a season, a partner) with an optional date range and owner
+"""
+type ShortLinkCampaign @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String!
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]!
+  """
+  user id of the campaign owner
+  """
+  ownerId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  """
+  live (not soft-deleted) links in this campaign
+  """
+  shortLinks: [ShortLink!]!
+  linkCount: Int!
+}
+
+"""
+A change to a short link destination — the accountability record for links embedded in published assets
+"""
+type ShortLinkDestinationHistory @join__type(graph: API_MEDIA)  {
+  id: ID!
+  shortLinkId: String!
+  from: String!
+  to: String!
+  """
+  user id (or calling service name) that made the change
+  """
+  changedBy: String
+  changedAt: DateTime!
+  note: String
+}
+
+"""
 A domain that can be used for short links
 """
 type ShortLinkDomain @join__type(graph: API_MEDIA)  {
@@ -2919,6 +3124,57 @@ type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   check status of the domain
   """
   check: ShortLinkDomainCheck!
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty means the root of the hostname
+  """
+  pathPrefix: String!
+  """
+  HTTP status the edge redirects with (301, 302, 307, 308) unless a link overrides it
+  """
+  redirectStatus: Int!
+  """
+  regex character-class body describing the characters a pathname may use
+  """
+  slugAllowedChars: String!
+  slugMinLength: Int!
+  slugMaxLength: Int!
+  """
+  when false, pathnames are lower-cased on create and matched case-insensitively at the edge
+  """
+  slugCaseSensitive: Boolean!
+  """
+  first path segments that are never minted as short links
+  """
+  reservedPaths: [String!]!
+  """
+  where unresolved traffic goes when notFound is fallback, and where paused links go unless they override it
+  """
+  fallbackTo: String
+  notFound: ShortLinkNotFound!
+  """
+  origin that receives unresolved requests with their path and query intact when notFound is passthrough
+  """
+  passthroughOrigin: String
+  """
+  when true, a failing destination health check pauses the link (never for videoEmbedded)
+  """
+  autoFailover: Boolean!
+  """
+  when the domain record was last written to the edge store
+  """
+  edgePublishedAt: DateTime
+  """
+  id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge
+  """
+  kvNamespaceId: String
+  """
+  name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)
+  """
+  kvBinding: String
+  """
+  live (not soft-deleted) links on this domain
+  """
+  linkCount: Int!
 }
 
 type ShortLinkDomainCheck @join__type(graph: API_MEDIA)  {
@@ -2953,6 +3209,64 @@ type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
   Reason for the verification
   """
   reason: String!
+}
+
+"""
+What the edge Worker would answer for a hostname + pathname, computed from the control-plane data (Test Redirect)
+"""
+type ShortLinkResolution @join__type(graph: API_MEDIA)  {
+  """
+  true when a live short link answered
+  """
+  found: Boolean!
+  """
+  redirect target; null for the lost page
+  """
+  location: String
+  """
+  HTTP status the edge responds with (404 for the lost page)
+  """
+  status: Int!
+  source: ShortLinkResolutionSource!
+  shortLink: ShortLink
+}
+
+"""
+Redirect counts for a date range, with breakdowns
+"""
+type ShortLinkStats @join__type(graph: API_MEDIA)  {
+  total: Int!
+  qr: Int!
+  direct: Int!
+  """
+  key = YYYY-MM-DD (UTC)
+  """
+  byDay: [ShortLinkStatsPoint!]!
+  """
+  key = short link id
+  """
+  byLink: [ShortLinkStatsPoint!]!
+  """
+  key = campaign id
+  """
+  byCampaign: [ShortLinkStatsPoint!]!
+  byCountry: [ShortLinkStatsPoint!]!
+  byDeviceClass: [ShortLinkStatsPoint!]!
+  byPlacement: [ShortLinkStatsPoint!]!
+  byReferrerHost: [ShortLinkStatsPoint!]!
+  byAttribution: [ShortLinkStatsPoint!]!
+}
+
+"""
+One bucket of a short link scan breakdown
+"""
+type ShortLinkStatsPoint @join__type(graph: API_MEDIA)  {
+  key: String!
+  count: Int!
+  """
+  the subset of count attributed to a QR scan
+  """
+  qrCount: Int!
 }
 
 type TagName @join__type(graph: API_MEDIA)  {
@@ -3437,6 +3751,12 @@ union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__u
 
 union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
 
+union MutationShortLinkBulkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkBulkUpdateSuccess")  = NotFoundError | MutationShortLinkBulkUpdateSuccess
+
+union MutationShortLinkCampaignDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCampaignDeleteSuccess")  = NotFoundError | MutationShortLinkCampaignDeleteSuccess
+
+union MutationShortLinkCampaignUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCampaignUpdateSuccess")  = NotFoundError | MutationShortLinkCampaignUpdateSuccess
+
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
@@ -3445,7 +3765,11 @@ union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
-union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainPublishSuccess")  = NotFoundError | MutationShortLinkDomainPublishSuccess
+
+union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+
+union MutationShortLinkPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkPublishSuccess")  = NotFoundError | MutationShortLinkPublishSuccess
 
 union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
 
@@ -3454,6 +3778,10 @@ union QueryGetMyGeneratedMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @
 union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
 union QueryShortLinkByPathResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkByPathSuccess")  = NotFoundError | QueryShortLinkByPathSuccess
+
+union QueryShortLinkCampaignResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkCampaignSuccess")  = NotFoundError | QueryShortLinkCampaignSuccess
+
+union QueryShortLinkDomainByHostnameResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainByHostnameSuccess")  = NotFoundError | QueryShortLinkDomainByHostnameSuccess
 
 union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = NotFoundError | QueryShortLinkDomainSuccess
 
@@ -3892,6 +4220,8 @@ enum DefaultPlatform @join__type(graph: API_MEDIA)  {
 enum MediaRole @join__type(graph: API_MEDIA)  {
   publisher @join__enumValue(graph: API_MEDIA) 
   youtubeAdmin @join__enumValue(graph: API_MEDIA) 
+  shortLinkEditor @join__enumValue(graph: API_MEDIA) 
+  shortLinkAdmin @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
@@ -3919,6 +4249,12 @@ enum VideoPublishMode @join__type(graph: API_MEDIA)  {
   parentVariantsOnly @join__enumValue(graph: API_MEDIA) 
 }
 
+enum ShortLinkStatus @join__type(graph: API_MEDIA)  {
+  active @join__enumValue(graph: API_MEDIA) 
+  paused @join__enumValue(graph: API_MEDIA) 
+  retired @join__enumValue(graph: API_MEDIA) 
+}
+
 enum Service @join__type(graph: API_MEDIA)  {
   apiJourneys @join__enumValue(graph: API_MEDIA) 
   apiLanguages @join__enumValue(graph: API_MEDIA) 
@@ -3934,6 +4270,27 @@ enum RedirectType @join__type(graph: API_MEDIA)  {
   dl @join__enumValue(graph: API_MEDIA) 
   dh @join__enumValue(graph: API_MEDIA) 
   s @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkAssetClass @join__type(graph: API_MEDIA)  {
+  standard @join__enumValue(graph: API_MEDIA) 
+  permanent @join__enumValue(graph: API_MEDIA) 
+  videoEmbedded @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkPlacement @join__type(graph: API_MEDIA)  {
+  description @join__enumValue(graph: API_MEDIA) 
+  endScreen @join__enumValue(graph: API_MEDIA) 
+  card @join__enumValue(graph: API_MEDIA) 
+  communityPost @join__enumValue(graph: API_MEDIA) 
+  inVideoQr @join__enumValue(graph: API_MEDIA) 
+  other @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkNotFound @join__type(graph: API_MEDIA)  {
+  lostPage @join__enumValue(graph: API_MEDIA) 
+  fallback @join__enumValue(graph: API_MEDIA) 
+  passthrough @join__enumValue(graph: API_MEDIA) 
 }
 
 enum Platform @join__type(graph: API_MEDIA)  {
@@ -3986,6 +4343,29 @@ enum VideoVariantProcessingStage @join__type(graph: API_MEDIA)  {
   downloads @join__enumValue(graph: API_MEDIA) 
   algoliaVideo @join__enumValue(graph: API_MEDIA) 
   algoliaVariant @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkHealth @join__type(graph: API_MEDIA)  {
+  ok @join__enumValue(graph: API_MEDIA) 
+  notFound @join__enumValue(graph: API_MEDIA) 
+  serverError @join__enumValue(graph: API_MEDIA) 
+  timeout @join__enumValue(graph: API_MEDIA) 
+  dns @join__enumValue(graph: API_MEDIA) 
+  tls @join__enumValue(graph: API_MEDIA) 
+  redirectLoop @join__enumValue(graph: API_MEDIA) 
+  unknown @join__enumValue(graph: API_MEDIA) 
+}
+
+"""
+Which rule produced a short link resolution: the link itself, its fallback, the domain fallback, a passthrough to the domain origin, the lost page, or a reserved path
+"""
+enum ShortLinkResolutionSource @join__type(graph: API_MEDIA)  {
+  link @join__enumValue(graph: API_MEDIA) 
+  linkFallback @join__enumValue(graph: API_MEDIA) 
+  domainFallback @join__enumValue(graph: API_MEDIA) 
+  passthrough @join__enumValue(graph: API_MEDIA) 
+  lostPage @join__enumValue(graph: API_MEDIA) 
+  reserved @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoLabel @join__type(graph: API_MEDIA)  {
@@ -5387,13 +5767,39 @@ input MutationBibleCitationUpdateInput @join__type(graph: API_MEDIA)  {
   order: Int
 }
 
+input MutationShortLinkBulkUpdateInput @join__type(graph: API_MEDIA)  {
+  ids: [String!]!
+  status: ShortLinkStatus
+  addTags: [String!]
+  removeTags: [String!]
+  addCampaignIds: [String!]
+  removeCampaignIds: [String!]
+}
+
+input MutationShortLinkCampaignCreateInput @join__type(graph: API_MEDIA)  {
+  name: String!
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]
+}
+
+input MutationShortLinkCampaignUpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
+  name: String
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]
+}
+
 input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
   the unique identifier for the short link (will generate if not given)
   """
   id: String
   """
-  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
+  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly). Must satisfy the domain slug grammar and must not be a reserved path
   """
   pathname: String
   """
@@ -5401,7 +5807,7 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
   to: String!
   """
-  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  the hostname including subdomain, domain, and TLD, but excluding port
   """
   hostname: String!
   """
@@ -5424,6 +5830,37 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
   """
   sourceRef: String
+  name: String
+  description: String
+  """
+  defaults to standard
+  """
+  assetClass: ShortLinkAssetClass
+  """
+  defaults to active
+  """
+  status: ShortLinkStatus
+  """
+  per-link override of the domain redirect status
+  """
+  redirectStatus: Int
+  """
+  per-link override of the domain fallbackTo, used while paused
+  """
+  fallbackTo: String
+  placement: ShortLinkPlacement
+  """
+  BCP-47 language tag
+  """
+  language: String
+  tags: [String!]
+  videoId: String
+  youtubeVideoId: String
+  campaignIds: [String!]
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case
+  """
+  global: Boolean
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
@@ -5435,6 +5872,56 @@ input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); defaults to empty (root of the hostname)
+  """
+  pathPrefix: String
+  """
+  defaults to 307
+  """
+  redirectStatus: Int
+  """
+  defaults to A-Za-z0-9_-
+  """
+  slugAllowedChars: String
+  """
+  defaults to 1
+  """
+  slugMinLength: Int
+  """
+  defaults to 64
+  """
+  slugMaxLength: Int
+  """
+  defaults to true
+  """
+  slugCaseSensitive: Boolean
+  reservedPaths: [String!]
+  fallbackTo: String
+  """
+  defaults to lostPage
+  """
+  notFound: ShortLinkNotFound
+  """
+  required when notFound is passthrough
+  """
+  passthroughOrigin: String
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+  """
+  defaults to false
+  """
+  autoFailover: Boolean
+  """
+  register the hostname on the legacy Vercel short links project; defaults to true. Pass false for a domain served by the redirect Worker
+  """
+  vercel: Boolean
 }
 
 input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
@@ -5443,6 +5930,31 @@ input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]!
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty serves links at the root of the hostname
+  """
+  pathPrefix: String
+  redirectStatus: Int
+  slugAllowedChars: String
+  slugMinLength: Int
+  slugMaxLength: Int
+  slugCaseSensitive: Boolean
+  reservedPaths: [String!]
+  fallbackTo: String
+  notFound: ShortLinkNotFound
+  """
+  required when notFound is passthrough
+  """
+  passthroughOrigin: String
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+  autoFailover: Boolean
 }
 
 input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
@@ -5463,6 +5975,41 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   bitrate of the video variant download
   """
   bitrate: Int
+  name: String
+  description: String
+  """
+  changing a permanent or videoEmbedded link to another class needs a short link admin
+  """
+  assetClass: ShortLinkAssetClass
+  status: ShortLinkStatus
+  """
+  per-link override of the domain redirect status
+  """
+  redirectStatus: Int
+  """
+  per-link override of the domain fallbackTo, used while paused
+  """
+  fallbackTo: String
+  placement: ShortLinkPlacement
+  """
+  BCP-47 language tag
+  """
+  language: String
+  tags: [String!]
+  videoId: String
+  youtubeVideoId: String
+  """
+  replaces the campaign membership when given
+  """
+  campaignIds: [String!]
+  """
+  recorded on the destination history row when `to` changes; required for videoEmbedded links
+  """
+  note: String
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case. Clearing it releases the global pathname
+  """
+  global: Boolean
 }
 
 input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {
@@ -5504,6 +6051,49 @@ input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
   note: String
   noteSharedAt: DateTime
   sharedAt: DateTime
+}
+
+input ShortLinkStatsFilter @join__type(graph: API_MEDIA)  {
+  linkId: String
+  campaignId: String
+  hostname: String
+  videoId: String
+  youtubeVideoId: String
+  """
+  inclusive start of the range
+  """
+  from: DateTime!
+  """
+  exclusive end of the range
+  """
+  to: DateTime!
+}
+
+input ShortLinksFilter @join__type(graph: API_MEDIA)  {
+  """
+  the hostname including subdomain, domain, and TLD, but excluding port
+  """
+  hostname: String
+  """
+  case-insensitive match against pathname, destination, name, description and youtubeVideoId
+  """
+  search: String
+  status: ShortLinkStatus
+  assetClass: ShortLinkAssetClass
+  campaignId: String
+  placement: ShortLinkPlacement
+  videoId: String
+  youtubeVideoId: String
+  tag: String
+  service: Service
+  """
+  only global links (true) or only domain-scoped links (false)
+  """
+  global: Boolean
+  """
+  include soft-deleted links (default false)
+  """
+  includeDeleted: Boolean
 }
 
 input UserMediaProfileUpdateInput @join__type(graph: API_MEDIA)  {

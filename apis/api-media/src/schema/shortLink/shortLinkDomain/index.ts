@@ -1,1 +1,2 @@
 import './shortLinkDomain'
+import './shortLinkDomainPublish'

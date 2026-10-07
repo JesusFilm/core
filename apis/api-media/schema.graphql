@@ -368,6 +368,8 @@ enum MaxResolutionTier {
 enum MediaRole {
   publisher
   youtubeAdmin
+  shortLinkEditor
+  shortLinkAdmin
 }
 
 type Mutation {
@@ -407,27 +409,57 @@ type Mutation {
   playlistItemRemove(playlistId: ID!, itemId: ID!): MutationPlaylistItemRemoveResult
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!): MutationPlaylistItemsReorderResult
 
+  """create a short link campaign"""
+  shortLinkCampaignCreate(input: MutationShortLinkCampaignCreateInput!): ShortLinkCampaign!
+
+  """update a short link campaign"""
+  shortLinkCampaignUpdate(input: MutationShortLinkCampaignUpdateInput!): MutationShortLinkCampaignUpdateResult!
+
+  """delete a short link campaign; its links are detached, not deleted"""
+  shortLinkCampaignDelete(id: String!): MutationShortLinkCampaignDeleteResult!
+
   """
-  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
 
-  """Update services that can use this short link domain"""
+  """
+  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
+  """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
 
   """
-  delete an existing short link domain (all related short links must be deleted first)
+  delete an existing short link domain (superAdmin only; all related short links must be deleted first)
   """
   shortLinkDomainDelete(id: String!): MutationShortLinkDomainDeleteResult!
+
+  """
+  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
+  """
+  shortLinkDomainPublish(id: String!): MutationShortLinkDomainPublishResult!
 
   """create a new short link"""
   shortLinkCreate(input: MutationShortLinkCreateInput!): MutationShortLinkCreateResult!
 
-  """update an existing short link"""
+  """
+  update an existing short link (the pathname is immutable). Changing `to` on a permanent or videoEmbedded link needs a short link admin; videoEmbedded also needs a note
+  """
   shortLinkUpdate(input: MutationShortLinkUpdateInput!): MutationShortLinkUpdateResult!
 
-  """delete an existing short link"""
+  """
+  soft delete an existing short link: it stops resolving and its pathname is never reissued. Permanent and videoEmbedded links need a short link admin
+  """
   shortLinkDelete(id: String!): MutationShortLinkDeleteResult!
+
+  """
+  pause, resume, retag or re-campaign several short links at once; every link is republished to the edge
+  """
+  shortLinkBulkUpdate(input: MutationShortLinkBulkUpdateInput!): MutationShortLinkBulkUpdateResult!
+
+  """
+  republish one short link routing record to the edge store (publish-gap repair)
+  """
+  shortLinkPublish(id: String!): MutationShortLinkPublishResult!
   userMediaProfileUpdate(input: UserMediaProfileUpdateInput!): UserMediaProfile!
   videoSubtitleCreate(input: VideoSubtitleCreateInput!): VideoSubtitle!
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!): VideoSubtitle!
@@ -548,12 +580,56 @@ type MutationPlaylistUpdateSuccess {
   data: Playlist!
 }
 
+input MutationShortLinkBulkUpdateInput {
+  ids: [String!]!
+  status: ShortLinkStatus
+  addTags: [String!]
+  removeTags: [String!]
+  addCampaignIds: [String!]
+  removeCampaignIds: [String!]
+}
+
+union MutationShortLinkBulkUpdateResult = NotFoundError | MutationShortLinkBulkUpdateSuccess
+
+type MutationShortLinkBulkUpdateSuccess {
+  data: [ShortLink!]!
+}
+
+input MutationShortLinkCampaignCreateInput {
+  name: String!
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]
+}
+
+union MutationShortLinkCampaignDeleteResult = NotFoundError | MutationShortLinkCampaignDeleteSuccess
+
+type MutationShortLinkCampaignDeleteSuccess {
+  data: ShortLinkCampaign!
+}
+
+input MutationShortLinkCampaignUpdateInput {
+  id: String!
+  name: String
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]
+}
+
+union MutationShortLinkCampaignUpdateResult = NotFoundError | MutationShortLinkCampaignUpdateSuccess
+
+type MutationShortLinkCampaignUpdateSuccess {
+  data: ShortLinkCampaign!
+}
+
 input MutationShortLinkCreateInput {
   """the unique identifier for the short link (will generate if not given)"""
   id: String
 
   """
-  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
+  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly). Must satisfy the domain slug grammar and must not be a reserved path
   """
   pathname: String
 
@@ -562,9 +638,7 @@ input MutationShortLinkCreateInput {
   """
   to: String!
 
-  """
-  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
-  """
+  """the hostname including subdomain, domain, and TLD, but excluding port"""
   hostname: String!
 
   """the service that created this short link"""
@@ -583,6 +657,33 @@ input MutationShortLinkCreateInput {
   a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
   """
   sourceRef: String
+  name: String
+  description: String
+
+  """defaults to standard"""
+  assetClass: ShortLinkAssetClass
+
+  """defaults to active"""
+  status: ShortLinkStatus
+
+  """per-link override of the domain redirect status"""
+  redirectStatus: Int
+
+  """per-link override of the domain fallbackTo, used while paused"""
+  fallbackTo: String
+  placement: ShortLinkPlacement
+
+  """BCP-47 language tag"""
+  language: String
+  tags: [String!]
+  videoId: String
+  youtubeVideoId: String
+  campaignIds: [String!]
+
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case
+  """
+  global: Boolean
 }
 
 union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
@@ -605,6 +706,52 @@ input MutationShortLinkDomainCreateInput {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]
+
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); defaults to empty (root of the hostname)
+  """
+  pathPrefix: String
+
+  """defaults to 307"""
+  redirectStatus: Int
+
+  """defaults to A-Za-z0-9_-"""
+  slugAllowedChars: String
+
+  """defaults to 1"""
+  slugMinLength: Int
+
+  """defaults to 64"""
+  slugMaxLength: Int
+
+  """defaults to true"""
+  slugCaseSensitive: Boolean
+  reservedPaths: [String!]
+  fallbackTo: String
+
+  """defaults to lostPage"""
+  notFound: ShortLinkNotFound
+
+  """required when notFound is passthrough"""
+  passthroughOrigin: String
+
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+
+  """defaults to false"""
+  autoFailover: Boolean
+
+  """
+  register the hostname on the legacy Vercel short links project; defaults to true. Pass false for a domain served by the redirect Worker
+  """
+  vercel: Boolean
 }
 
 union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
@@ -619,6 +766,12 @@ type MutationShortLinkDomainDeleteSuccess {
   data: ShortLinkDomain!
 }
 
+union MutationShortLinkDomainPublishResult = NotFoundError | MutationShortLinkDomainPublishSuccess
+
+type MutationShortLinkDomainPublishSuccess {
+  data: ShortLinkDomain!
+}
+
 input MutationShortLinkDomainUpdateInput {
   id: String!
 
@@ -626,12 +779,45 @@ input MutationShortLinkDomainUpdateInput {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]!
+
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty serves links at the root of the hostname
+  """
+  pathPrefix: String
+  redirectStatus: Int
+  slugAllowedChars: String
+  slugMinLength: Int
+  slugMaxLength: Int
+  slugCaseSensitive: Boolean
+  reservedPaths: [String!]
+  fallbackTo: String
+  notFound: ShortLinkNotFound
+
+  """required when notFound is passthrough"""
+  passthroughOrigin: String
+
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+  autoFailover: Boolean
 }
 
-union MutationShortLinkDomainUpdateResult = NotFoundError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
 
 type MutationShortLinkDomainUpdateSuccess {
   data: ShortLinkDomain!
+}
+
+union MutationShortLinkPublishResult = NotFoundError | MutationShortLinkPublishSuccess
+
+type MutationShortLinkPublishSuccess {
+  data: ShortLink!
 }
 
 input MutationShortLinkUpdateInput {
@@ -650,6 +836,40 @@ input MutationShortLinkUpdateInput {
 
   """bitrate of the video variant download"""
   bitrate: Int
+  name: String
+  description: String
+
+  """
+  changing a permanent or videoEmbedded link to another class needs a short link admin
+  """
+  assetClass: ShortLinkAssetClass
+  status: ShortLinkStatus
+
+  """per-link override of the domain redirect status"""
+  redirectStatus: Int
+
+  """per-link override of the domain fallbackTo, used while paused"""
+  fallbackTo: String
+  placement: ShortLinkPlacement
+
+  """BCP-47 language tag"""
+  language: String
+  tags: [String!]
+  videoId: String
+  youtubeVideoId: String
+
+  """replaces the campaign membership when given"""
+  campaignIds: [String!]
+
+  """
+  recorded on the destination history row when `to` changes; required for videoEmbedded links
+  """
+  note: String
+
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case. Clearing it releases the global pathname
+  """
+  global: Boolean
 }
 
 union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
@@ -815,6 +1035,19 @@ type Query {
   playlists: [Playlist!]
   playlist(id: ID!, idType: IdType! = databaseId): QueryPlaylistResult
 
+  """list short link campaigns, optionally filtered by name"""
+  shortLinkCampaigns(
+    """case-insensitive match against the campaign name"""
+    search: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkCampaignsConnection!
+
+  """find a short link campaign by id"""
+  shortLinkCampaign(id: String!): QueryShortLinkCampaignResult!
+
   """List of short link domains that can be used for short links"""
   shortLinkDomains(
     """Filter by service (including domains with no services set)"""
@@ -825,10 +1058,20 @@ type Query {
     last: Int
   ): QueryShortLinkDomainsConnection!
 
+  """
+  find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host
+  """
+  shortLinkDomainByHostname(
+    """the hostname including subdomain, domain, and TLD, but excluding port"""
+    hostname: String!
+  ): QueryShortLinkDomainByHostnameResult!
+
   """Find a short link domain by id"""
   shortLinkDomain(id: String!): QueryShortLinkDomainResult!
 
-  """find a short link by path and hostname"""
+  """
+  find a live short link by path and hostname (deleted and retired links are not found; paused links are)
+  """
   shortLinkByPath(
     """short link path not including the leading slash"""
     pathname: String!
@@ -840,15 +1083,33 @@ type Query {
   """find a short link by id"""
   shortLink(id: String!): QueryShortLinkResult!
 
-  """find all short links with optional hostname filter"""
+  """
+  find all short links with optional hostname filter (soft-deleted links are excluded unless filter.includeDeleted is set)
+  """
   shortLinks(
     """the hostname including subdomain, domain, and TLD, but excluding port"""
     hostname: String
+    filter: ShortLinksFilter
     before: String
     after: String
     first: Int
     last: Int
   ): QueryShortLinksConnection!
+
+  """
+  what the edge Worker would answer for this hostname and pathname (Test Redirect); mirrors the Worker lookup order
+  """
+  shortLinkResolve(
+    hostname: String!
+
+    """path with or without the leading slash"""
+    pathname: String!
+  ): ShortLinkResolution!
+
+  """
+  redirect counts from the edge analytics store for a date range (zeros when analytics is not configured)
+  """
+  shortLinkStats(filter: ShortLinkStatsFilter!): ShortLinkStats!
   userMediaProfile: UserMediaProfile
   videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int): [VideoSubtitle!]!
   videoSubtitlesCount(where: VideoSubtitlesFilter): Int!
@@ -914,6 +1175,29 @@ union QueryShortLinkByPathResult = NotFoundError | QueryShortLinkByPathSuccess
 
 type QueryShortLinkByPathSuccess {
   data: ShortLink!
+}
+
+union QueryShortLinkCampaignResult = NotFoundError | QueryShortLinkCampaignSuccess
+
+type QueryShortLinkCampaignSuccess {
+  data: ShortLinkCampaign!
+}
+
+type QueryShortLinkCampaignsConnection {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinkCampaignsConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinkCampaignsConnectionEdge {
+  node: ShortLinkCampaign
+  cursor: String!
+}
+
+union QueryShortLinkDomainByHostnameResult = NotFoundError | QueryShortLinkDomainByHostnameSuccess
+
+type QueryShortLinkDomainByHostnameSuccess {
+  data: ShortLinkDomain!
 }
 
 union QueryShortLinkDomainResult = NotFoundError | QueryShortLinkDomainSuccess
@@ -1011,6 +1295,105 @@ type ShortLink
   a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
   """
   sourceRef: String
+
+  """human label shown in the admin app"""
+  name: String
+  description: String
+
+  """
+  drives the protection rules: permanent and videoEmbedded links need a short link admin to change their destination or be deleted
+  """
+  assetClass: ShortLinkAssetClass!
+  status: ShortLinkStatus!
+
+  """per-link override of the domain redirect status"""
+  redirectStatus: Int
+
+  """per-link override of the domain fallbackTo, used while paused"""
+  fallbackTo: String
+  placement: ShortLinkPlacement
+
+  """BCP-47 language tag"""
+  language: String
+  tags: [String!]!
+
+  """core Video this link belongs to"""
+  videoId: String
+
+  """YouTube video id the link is placed in"""
+  youtubeVideoId: String
+  campaigns: [ShortLinkCampaign!]!
+
+  """every change to `to`, newest first"""
+  destinationHistory: [ShortLinkDestinationHistory!]!
+
+  """
+  the user that created this short link (empty when created by a subgraph)
+  """
+  userId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+
+  """when the routing record was last written to the edge store"""
+  edgePublishedAt: DateTime
+  healthStatus: ShortLinkHealth
+  healthCheckedAt: DateTime
+
+  """
+  when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued
+  """
+  global: Boolean!
+
+  """
+  https://<hostname>/<pathname>, or https://<hostname>/<pathPrefix>/<pathname> when the domain has a path prefix
+  """
+  shortUrl: String!
+
+  """shortUrl + ?qr=1 — what QR images encode"""
+  qrUrl: String!
+}
+
+enum ShortLinkAssetClass {
+  standard
+  permanent
+  videoEmbedded
+}
+
+"""
+A named group of short links (a YouTube push, a season, a partner) with an optional date range and owner
+"""
+type ShortLinkCampaign {
+  id: ID!
+  name: String!
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]!
+
+  """user id of the campaign owner"""
+  ownerId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+
+  """live (not soft-deleted) links in this campaign"""
+  shortLinks: [ShortLink!]!
+  linkCount: Int!
+}
+
+"""
+A change to a short link destination — the accountability record for links embedded in published assets
+"""
+type ShortLinkDestinationHistory {
+  id: ID!
+  shortLinkId: String!
+  from: String!
+  to: String!
+
+  """user id (or calling service name) that made the change"""
+  changedBy: String
+  changedAt: DateTime!
+  note: String
 }
 
 """A domain that can be used for short links"""
@@ -1028,6 +1411,61 @@ type ShortLinkDomain {
 
   """check status of the domain"""
   check: ShortLinkDomainCheck!
+
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty means the root of the hostname
+  """
+  pathPrefix: String!
+
+  """
+  HTTP status the edge redirects with (301, 302, 307, 308) unless a link overrides it
+  """
+  redirectStatus: Int!
+
+  """
+  regex character-class body describing the characters a pathname may use
+  """
+  slugAllowedChars: String!
+  slugMinLength: Int!
+  slugMaxLength: Int!
+
+  """
+  when false, pathnames are lower-cased on create and matched case-insensitively at the edge
+  """
+  slugCaseSensitive: Boolean!
+
+  """first path segments that are never minted as short links"""
+  reservedPaths: [String!]!
+
+  """
+  where unresolved traffic goes when notFound is fallback, and where paused links go unless they override it
+  """
+  fallbackTo: String
+  notFound: ShortLinkNotFound!
+
+  """
+  origin that receives unresolved requests with their path and query intact when notFound is passthrough
+  """
+  passthroughOrigin: String
+
+  """
+  when true, a failing destination health check pauses the link (never for videoEmbedded)
+  """
+  autoFailover: Boolean!
+
+  """when the domain record was last written to the edge store"""
+  edgePublishedAt: DateTime
+
+  """
+  id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge
+  """
+  kvNamespaceId: String
+
+  """name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)"""
+  kvBinding: String
+
+  """live (not soft-deleted) links on this domain"""
+  linkCount: Int!
 }
 
 type ShortLinkDomainCheck {
@@ -1057,6 +1495,134 @@ type ShortLinkDomainVerfication {
 
   """Reason for the verification"""
   reason: String!
+}
+
+enum ShortLinkHealth {
+  ok
+  notFound
+  serverError
+  timeout
+  dns
+  tls
+  redirectLoop
+  unknown
+}
+
+enum ShortLinkNotFound {
+  lostPage
+  fallback
+  passthrough
+}
+
+enum ShortLinkPlacement {
+  description
+  endScreen
+  card
+  communityPost
+  inVideoQr
+  other
+}
+
+"""
+What the edge Worker would answer for a hostname + pathname, computed from the control-plane data (Test Redirect)
+"""
+type ShortLinkResolution {
+  """true when a live short link answered"""
+  found: Boolean!
+
+  """redirect target; null for the lost page"""
+  location: String
+
+  """HTTP status the edge responds with (404 for the lost page)"""
+  status: Int!
+  source: ShortLinkResolutionSource!
+  shortLink: ShortLink
+}
+
+"""
+Which rule produced a short link resolution: the link itself, its fallback, the domain fallback, a passthrough to the domain origin, the lost page, or a reserved path
+"""
+enum ShortLinkResolutionSource {
+  link
+  linkFallback
+  domainFallback
+  passthrough
+  lostPage
+  reserved
+}
+
+"""Redirect counts for a date range, with breakdowns"""
+type ShortLinkStats {
+  total: Int!
+  qr: Int!
+  direct: Int!
+
+  """key = YYYY-MM-DD (UTC)"""
+  byDay: [ShortLinkStatsPoint!]!
+
+  """key = short link id"""
+  byLink: [ShortLinkStatsPoint!]!
+
+  """key = campaign id"""
+  byCampaign: [ShortLinkStatsPoint!]!
+  byCountry: [ShortLinkStatsPoint!]!
+  byDeviceClass: [ShortLinkStatsPoint!]!
+  byPlacement: [ShortLinkStatsPoint!]!
+  byReferrerHost: [ShortLinkStatsPoint!]!
+  byAttribution: [ShortLinkStatsPoint!]!
+}
+
+input ShortLinkStatsFilter {
+  linkId: String
+  campaignId: String
+  hostname: String
+  videoId: String
+  youtubeVideoId: String
+
+  """inclusive start of the range"""
+  from: DateTime!
+
+  """exclusive end of the range"""
+  to: DateTime!
+}
+
+"""One bucket of a short link scan breakdown"""
+type ShortLinkStatsPoint {
+  key: String!
+  count: Int!
+
+  """the subset of count attributed to a QR scan"""
+  qrCount: Int!
+}
+
+enum ShortLinkStatus {
+  active
+  paused
+  retired
+}
+
+input ShortLinksFilter {
+  """the hostname including subdomain, domain, and TLD, but excluding port"""
+  hostname: String
+
+  """
+  case-insensitive match against pathname, destination, name, description and youtubeVideoId
+  """
+  search: String
+  status: ShortLinkStatus
+  assetClass: ShortLinkAssetClass
+  campaignId: String
+  placement: ShortLinkPlacement
+  videoId: String
+  youtubeVideoId: String
+  tag: String
+  service: Service
+
+  """only global links (true) or only domain-scoped links (false)"""
+  global: Boolean
+
+  """include soft-deleted links (default false)"""
+  includeDeleted: Boolean
 }
 
 type Tag

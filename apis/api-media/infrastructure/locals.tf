@@ -1,5 +1,15 @@
 locals {
   port = 4005
+  # Every key here must exist in the api-media Doppler config of each
+  # environment (it becomes an SSM parameter, and AWS rejects an empty value).
+  # Short-link settings that have no value yet are left out, and api-media
+  # treats each as switched off. Add them back as the values arrive:
+  #   CLOUDFLARE_SHORT_LINKS_API_TOKEN, CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID
+  #     -> edge publishing (the Worker serves through api-media until then)
+  #   SHORT_LINKS_CLICKHOUSE_URL, _USER, _PASSWORD, _DATABASE
+  #     -> scan statistics (zeros until then)
+  #   SLACK_SHORT_LINKS_BOT_TOKEN, SLACK_SHORT_LINKS_CHANNEL_ID
+  #     -> destination health alerts (logged only until then)
   environment_variables = [
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
@@ -34,6 +44,7 @@ locals {
     "PG_DATABASE_URL_MEDIA",
     "PG_DATABASE_URL_LANGUAGES",
     "PG_DATABASE_URL_JOURNEYS",
+    "PG_DATABASE_URL_USERS",
     "REDIS_PORT",
     "REDIS_URL",
     "SLACK_DATA_LANGS_CHANNEL_ID",
