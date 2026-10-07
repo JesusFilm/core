@@ -1456,5 +1456,16 @@
   "Manual only: machine translation does not cover this language, so write each line yourself.": "Manual only: machine translation does not cover this language, so write each line yourself.",
   "Machine-translate missing": "Machine-translate missing",
   "Starting translation...": "Starting translation...",
-  "Manual only": "Manual only"
+  "Manual only": "Manual only",
+  "The default language changed. Texts that were machine-translated into the new default are now your own text and are no longer marked as machine-translated.": "The default language changed. Texts that were machine-translated into the new default are now your own text and are no longer marked as machine-translated.",
+  "Default language": "Default language",
+  "The language you write in. Changing it needs every text translated first.": "The language you write in. Changing it needs every text translated first.",
+  "Could not change the default language": "Could not change the default language",
+  "Change default language?": "Change default language?",
+  "Change": "Change",
+  "Every text moves to {{current}} as its translation, and {{language}} becomes the language you write in. Machine translations that become the default lose their machine-translated mark.": "Every text moves to {{current}} as its translation, and {{language}} becomes the language you write in. Machine translations that become the default lose their machine-translated mark.",
+  "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._one": "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._one",
+  "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other",
+  "Machine translation does not cover this language. Write the missing lines in the Translations view, then try again.": "Machine translation does not cover this language. Write the missing lines in the Translations view, then try again.",
+  "Machine-translate missing into {{language}}": "Machine-translate missing into {{language}}"
 }

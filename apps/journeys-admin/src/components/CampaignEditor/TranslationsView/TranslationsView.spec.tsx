@@ -198,9 +198,7 @@ describe('TranslationsView', () => {
     })
 
     const notice = screen.getByTestId('TranslationsPromotionNotice')
-    expect(notice).toHaveTextContent(
-      'no longer marked as machine-translated'
-    )
+    expect(notice).toHaveTextContent('no longer marked as machine-translated')
     fireEvent.click(within(notice).getByRole('button', { name: 'Close' }))
     expect(onPromotionNoticeClose).toHaveBeenCalled()
     await screen.findByTestId('TranslationGroup-interface')
