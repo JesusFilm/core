@@ -10,6 +10,12 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
+import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
+import {
+  CampaignAiTranslateVariables,
+  isMachineTranslatable,
+  useCampaignAiTranslateSubscription
+} from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -55,18 +61,29 @@ function messageOf(error: unknown): string {
  * Remove on each (the default language cannot be removed; the API's
  * `CONFLICT` message is shown verbatim when a removal is refused), and the
  * shared language autocomplete (autonym plus English name) to add one
- * through `campaignLanguageAdd`. Neither is a Command. The machine
- * translation of a newly added language arrives with the Translations view.
+ * through `campaignLanguageAdd`. Neither is a Command. Adding a language
+ * machine-translates the whole campaign into it, with progress; a language
+ * the model does not support is marked "manual only" and is added without
+ * that run.
  */
 export function LanguagesPanel({
   campaign
 }: LanguagesPanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [error, setError] = useState<string>()
+  const [sweep, setSweep] = useState<CampaignAiTranslateVariables>()
   const [languageAdd, { loading: adding }] = useCampaignLanguageAddMutation()
   const [languageRemove, { loading: removing }] =
     useCampaignLanguageRemoveMutation()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
+  const { data: sweepData } = useCampaignAiTranslateSubscription({
+    variables: sweep,
+    onError: (sweepError) => {
+      setError(sweepError.message)
+      setSweep(undefined)
+    },
+    onComplete: () => setSweep(undefined)
+  })
 
   const languages = useMemo(
     () => [...campaign.languages].sort((a, b) => a.order - b.order),
@@ -84,6 +101,12 @@ export function LanguagesPanel({
       await languageAdd({
         variables: { campaignId: campaign.id, languageId: option.id }
       })
+      if (isMachineTranslatable(option.id))
+        setSweep({
+          campaignId: campaign.id,
+          languageId: option.id,
+          mode: 'missing'
+        })
     } catch (addError) {
       setError(messageOf(addError))
     }
@@ -118,6 +141,8 @@ export function LanguagesPanel({
         {languages.map((language) => {
           const isDefault = language.languageId === campaign.defaultLanguageId
           const { autonym, localName } = languageNames(language)
+          const manualOnly =
+            !isDefault && !isMachineTranslatable(language.languageId)
           const removeButton = (
             <IconButton
               edge="end"
@@ -145,7 +170,11 @@ export function LanguagesPanel({
             >
               <ListItemText
                 primary={autonym}
-                secondary={[localName, isDefault ? t('Default') : undefined]
+                secondary={[
+                  localName,
+                  isDefault ? t('Default') : undefined,
+                  manualOnly ? t('Manual only') : undefined
+                ]
                   .filter((part) => part != null)
                   .join(' · ')}
               />
@@ -158,9 +187,20 @@ export function LanguagesPanel({
         value={undefined}
         languages={options}
         loading={loading || adding}
-        disabled={adding}
+        disabled={adding || sweep != null}
         helperText={t('Add a language')}
       />
+      {sweep != null && (
+        <Stack data-testid="CampaignLanguageSweep">
+          <TranslationProgressBar
+            progress={sweepData?.campaignAiTranslateSubscription.progress ?? 0}
+            message={
+              sweepData?.campaignAiTranslateSubscription.message ??
+              t('Starting translation...')
+            }
+          />
+        </Stack>
+      )}
       {error != null && (
         <Alert severity="error" data-testid="CampaignLanguagesError">
           {error}

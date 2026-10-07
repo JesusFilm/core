@@ -1452,5 +1452,9 @@
   "Interface phrase": "Interface phrase",
   "Region": "Region",
   "Featured media": "Featured media",
-  "Rich text": "Rich text"
+  "Rich text": "Rich text",
+  "Manual only: machine translation does not cover this language, so write each line yourself.": "Manual only: machine translation does not cover this language, so write each line yourself.",
+  "Machine-translate missing": "Machine-translate missing",
+  "Starting translation...": "Starting translation...",
+  "Manual only": "Manual only"
 }

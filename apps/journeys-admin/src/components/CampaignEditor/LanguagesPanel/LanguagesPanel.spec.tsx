@@ -10,6 +10,7 @@ import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
 import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
+import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
@@ -20,6 +21,7 @@ import { campaign } from '../data'
 import { LanguagesPanel, languageNames } from './LanguagesPanel'
 
 const SPANISH = '21028'
+const MANUAL_ONLY = '9999999'
 
 const languagesMock = {
   request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
@@ -51,6 +53,12 @@ const languagesMock = {
             { __typename: 'LanguageName', value: 'Español', primary: true },
             { __typename: 'LanguageName', value: 'Spanish', primary: false }
           ]
+        },
+        {
+          __typename: 'Language',
+          id: MANUAL_ONLY,
+          slug: 'rare',
+          name: [{ __typename: 'LanguageName', value: 'Rare', primary: true }]
         }
       ]
     }
@@ -121,6 +129,34 @@ function removeMock(languageId: string, error?: string) {
   }
 }
 
+function sweepMock(languageId: string): {
+  request: Record<string, unknown>
+  delay: number
+  result: ReturnType<typeof vi.fn>
+} {
+  return {
+    request: {
+      query: CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,
+      variables: { campaignId: campaign.id, languageId, mode: 'missing' }
+    },
+    delay: 20,
+    result: vi.fn(() => ({
+      data: {
+        campaignAiTranslateSubscription: {
+          __typename: 'CampaignAiTranslateProgress',
+          progress: 100,
+          message: 'Translation completed!',
+          campaign: {
+            __typename: 'Campaign',
+            id: campaign.id,
+            titleTranslations: []
+          }
+        }
+      }
+    }))
+  }
+}
+
 function CommandProbe(): ReactElement {
   const { state } = useCommand()
   return <span data-testid="CommandCount">{state.commands.length}</span>
@@ -171,7 +207,7 @@ describe('LanguagesPanel', () => {
   })
 
   it('adds a language through the language autocomplete with campaignLanguageAdd, offering only languages the campaign lacks, and adds no Command', async () => {
-    renderPanel([addMock])
+    renderPanel([addMock, sweepMock(SPANISH)])
     const input = await screen.findByRole('combobox')
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: 'Span' } })
@@ -207,5 +243,107 @@ describe('LanguagesPanel', () => {
     expect(
       await screen.findByTestId('CampaignLanguagesError')
     ).toHaveTextContent(message)
+  })
+
+  describe('machine translation of a new language', () => {
+    const manualOnlyRow = {
+      __typename: 'CampaignLanguage' as const,
+      id: 'campaignLanguageRareId',
+      languageId: MANUAL_ONLY,
+      order: 2,
+      language: {
+        __typename: 'Language' as const,
+        id: MANUAL_ONLY,
+        bcp47: null,
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            value: 'Rare',
+            primary: true
+          }
+        ]
+      }
+    }
+
+    async function addLanguage(name: string): Promise<void> {
+      const input = await screen.findByRole('combobox')
+      fireEvent.focus(input)
+      fireEvent.change(input, { target: { value: name } })
+      fireEvent.click(await screen.findByRole('option'))
+    }
+
+    it('runs the missing sweep for an added language, with progress', async () => {
+      const sweep = sweepMock(SPANISH)
+      renderPanel([addMock, sweep])
+
+      await addLanguage('Span')
+
+      expect(
+        await screen.findByTestId('CampaignLanguageSweep')
+      ).toHaveTextContent('Starting translation...')
+      await waitFor(() => expect(sweep.result).toHaveBeenCalledTimes(1))
+      await waitFor(() =>
+        expect(screen.queryByTestId('CampaignLanguageSweep')).toBeNull()
+      )
+      expect(screen.queryByTestId('CampaignLanguagesError')).toBeNull()
+    })
+
+    it('shows a failed sweep and keeps the language', async () => {
+      renderPanel([
+        addMock,
+        {
+          ...sweepMock(SPANISH),
+          result: undefined,
+          error: new Error('Translation failed')
+        }
+      ])
+
+      await addLanguage('Span')
+
+      expect(
+        await screen.findByTestId('CampaignLanguagesError')
+      ).toHaveTextContent('Translation failed')
+      expect(screen.queryByTestId('CampaignLanguageSweep')).toBeNull()
+    })
+
+    it('adds a language the model does not support without a sweep, marked manual only', async () => {
+      const rareAdd = {
+        request: {
+          query: CAMPAIGN_LANGUAGE_ADD,
+          variables: { campaignId: campaign.id, languageId: MANUAL_ONLY }
+        },
+        result: vi.fn(() => ({
+          data: {
+            campaignLanguageAdd: {
+              __typename: 'Campaign',
+              id: campaign.id,
+              languages: [...campaign.languages, manualOnlyRow]
+            }
+          }
+        }))
+      }
+      const sweep = sweepMock(MANUAL_ONLY)
+      renderPanel([rareAdd, sweep])
+
+      await addLanguage('Rare')
+
+      await waitFor(() => expect(rareAdd.result).toHaveBeenCalled())
+      expect(screen.queryByTestId('CampaignLanguageSweep')).toBeNull()
+      expect(sweep.result).not.toHaveBeenCalled()
+    })
+
+    it('marks listed languages the model does not support as manual only', () => {
+      renderPanel([], {
+        ...campaign,
+        languages: [...campaign.languages, manualOnlyRow]
+      })
+
+      expect(
+        screen.getByTestId(`CampaignLanguage-${MANUAL_ONLY}`)
+      ).toHaveTextContent('RareManual only')
+      expect(screen.getByTestId('CampaignLanguage-496')).not.toHaveTextContent(
+        'Manual only'
+      )
+    })
   })
 })
