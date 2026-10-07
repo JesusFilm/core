@@ -78,6 +78,14 @@ _Avoid_: toolbar (that is the Top Bar), properties panel
 The Campaign Editor's header: the Page Selector (landing page, Region Page), the **Preview Language** select over the campaign's languages, Desktop/Phone, undo/redo, Open page (the root-domain `/campaign/<slug>` in a new tab), Publish (no confirmation) or Unpublish (confirms, stating that the linked journeys and their QR codes keep working), and the status chip. Publish and unpublish are explicit actions, never Commands.
 _Avoid_: toolbar, app bar
 
+**Languages Panel**:
+The drawer the Campaign Row's Languages button opens: the campaign's Page Languages in selector order (autonym, with the English name beside it, the default marked) with Remove on each, and the shared language autocomplete to add one. Add and remove go straight to the API and are never Commands; the default or last language cannot be removed and the API's refusal is shown verbatim. The machine-translation run for a new language belongs to the Translations view.
+_Avoid_: language settings, locale picker
+
+**Preview Language**:
+The Top Bar select that decides which campaign language the Campaign Canvas renders in: translations where they exist, the default-language text as a marked fallback where they do not, text direction from the language's bcp47. Editing any text, including a Campaign String, while the Preview Language is not the default writes a human translation for that language as one Command; in the default language the same edit writes the field itself.
+_Avoid_: canvas language, view language, locale
+
 **First-run Hint**:
 The one dismissible hint shown above the Campaign Canvas the first time a campaign opens — "Click any text to edit it. Add your regions in the region switcher." — recorded per campaign in `localStorage` like the Editor's other one-time tours. No wizard, no modal.
 _Avoid_: tour, onboarding (that is the dashboard flow), tooltip

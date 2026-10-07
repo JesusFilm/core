@@ -3,11 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignCreateInput, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignCreate
 // ====================================================
+
+export interface CampaignCreate_campaignCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignCreate_campaignCreate_team_userTeams_user {
   __typename: "AuthenticatedUser" | "AnonymousUser";
@@ -164,6 +174,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_eyebrowT
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_titleTranslations {
@@ -173,6 +184,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_titleTra
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_ledeTranslations {
@@ -182,6 +194,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock_ledeTran
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignHeroBlock {
@@ -242,6 +255,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBloc
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock {
@@ -291,6 +305,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_titleTranslations {
@@ -300,6 +315,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock {
@@ -355,6 +371,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_e
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_titleTranslations {
@@ -364,6 +381,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_t
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_ledeTranslations {
@@ -373,6 +391,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock_l
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock {
@@ -426,6 +445,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_eye
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_titleTranslations {
@@ -435,6 +455,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock_tit
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock {
@@ -486,6 +507,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock_
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock {
@@ -534,6 +556,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_t
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_introTranslations {
@@ -543,6 +566,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_i
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock {
@@ -593,6 +617,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock_co
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock {
@@ -669,6 +694,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_labelT
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
@@ -734,6 +760,27 @@ export interface CampaignCreate_campaignCreate_regions {
   listed: boolean;
 }
 
+export interface CampaignCreate_campaignCreate_strings_valueTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_strings {
+  __typename: "CampaignString";
+  id: string;
+  key: CampaignStringKey;
+  /**
+   * Default-language wording, at most 200 characters.
+   */
+  value: string;
+  valueTranslations: CampaignCreate_campaignCreate_strings_valueTranslations[];
+}
+
 export interface CampaignCreate_campaignCreate {
   __typename: "Campaign";
   id: string;
@@ -742,6 +789,7 @@ export interface CampaignCreate_campaignCreate {
    * Default-language title; also the public page title. Required, at most 100 characters.
    */
   title: string;
+  titleTranslations: CampaignCreate_campaignCreate_titleTranslations[];
   /**
    * Globally unique. The permanent Campaign Address is `/campaign/<slug>` on the root domain. Generated from the title; author-editable.
    */
@@ -781,6 +829,10 @@ export interface CampaignCreate_campaignCreate {
    * Every Campaign Region, listed and orphan, in switcher order.
    */
   regions: CampaignCreate_campaignCreate_regions[];
+  /**
+   * The seventeen Campaign Strings.
+   */
+  strings: CampaignCreate_campaignCreate_strings[];
 }
 
 export interface CampaignCreate {

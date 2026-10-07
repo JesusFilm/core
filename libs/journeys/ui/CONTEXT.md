@@ -34,7 +34,10 @@ The campaign counterpart of the Block Renderer, under `components/Campaign`: one
 _Avoid_: block renderer (the journey one), wrapper (there are none here)
 
 **Campaign Page**:
-One of a campaign's two pages built from the `CampaignPublic` payload, a page kind and (for the Region Page) a region: the page's flat block list is treed, each section is kept or skipped by the empty-state matrix (`shouldRenderSection`), and the survivors render through the Campaign Renderer between the chrome slots.
+One of a campaign's two pages built from the `CampaignPublic` payload, a page kind and (for the Region Page) a region: the page's flat block list is treed, each section is kept or skipped by the empty-state matrix (`shouldRenderSection`), and the survivors render through the Campaign Renderer between the chrome slots. It also stamps the document's `lang` (the Page Language's bcp47) and `dir` (the RTL lookup on it, `ltr` otherwise).
+
+**Page Language resolution**:
+The pure `resolvePageLanguage` helper under `components/Campaign/libs`: `?lang=<bcp47>` naming a campaign language, then the `campaign-lang` cookie the header's language select writes, then an `Accept-Language` match (exact, then primary subtag) against the campaign languages, then the campaign default. The viewer routes call it before the one page query; `campaignPageHref` then carries the `lang` param on every in-campaign link (brand mark, back chip, switcher cards, region buttons) whenever the campaign has more than one language, so the choice survives every region switch.
 
 **Section Band**:
 The one wrapper every campaign section renders through (`CampaignSectionBand`): it resolves the band table (`backgroundKind` × theme plus the section's colour overrides) into CSS variables on a `<section id={block.id}>`, and orders the Extras placed above, the typed body, then the Extras placed below. Typography and buttons inside read their colours and alignment from its context.
