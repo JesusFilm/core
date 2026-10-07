@@ -1701,6 +1701,45 @@ type CampaignTheme @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
+One line of the Translations view: a Translated Field, its default-language text and its text in the requested language.
+"""
+type CampaignTranslation @join__type(graph: API_JOURNEYS_MODERN)  {
+  target: CampaignTranslationTarget!
+  group: CampaignTranslationGroup!
+  field: CampaignTextField!
+  """
+  The field’s cap on this target, in characters.
+  """
+  maxLength: Int!
+  """
+  The text in the campaign’s default language.
+  """
+  defaultValue: String!
+  """
+  The text in the requested language; null when missing.
+  """
+  value: String
+  """
+  Who wrote `value`: a person (`human`) or the machine; null when missing.
+  """
+  source: CampaignTextSource
+}
+
+"""
+The row a Translated Field belongs to, in the shape `campaignTranslationSet` takes: exactly one of `blockId`, `regionId`, `stringId` or `campaignId` is set.
+"""
+type CampaignTranslationTarget @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
+  """
+  typename: String!
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
+}
+
+"""
 The campaign text block: an Extra of a section or chrome block, or a Region Line when regionId is set. The variant decides size, weight and font family through the Campaign Theme.
 """
 type CampaignTypographyBlock implements CampaignBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  {
@@ -2479,6 +2518,17 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     """
     languageId: ID
   ): CampaignPublic! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+  
+  Auth: campaign Read — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
+  """
+  campaignTranslations(campaignId: ID!, languageId: ID!, filter: CampaignTranslationFilter = all) : [CampaignTranslation!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
@@ -4809,6 +4859,26 @@ enum CampaignTextSource @join__type(graph: API_JOURNEYS_MODERN)  {
 enum ThemeMode @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS_MODERN) 
   light @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+"""
+enum CampaignTranslationGroup @join__type(graph: API_JOURNEYS_MODERN)  {
+  interface @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  landing @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  region @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  regions @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+"""
+enum CampaignTranslationFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  all @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  needsReview @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  missing @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  edited @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum TypographyVariant @join__type(graph: API_JOURNEYS_MODERN)  {

@@ -1436,5 +1436,21 @@
   "Remove {{language}}": "Remove {{language}}",
   "The default language cannot be removed": "The default language cannot be removed",
   "Add a language": "Add a language",
-  "Campaign strings": "Campaign strings"
+  "Campaign strings": "Campaign strings",
+  "Interface": "Interface",
+  "Regions": "Regions",
+  "Needs review": "Needs review",
+  "Machine-translated": "Machine-translated",
+  "Missing": "Missing",
+  "Edited": "Edited",
+  "Add a language to the campaign to start translating it.": "Add a language to the campaign to start translating it.",
+  "Review each line in a language. Editing a line saves it as your own wording.": "Review each line in a language. Editing a line saves it as your own wording.",
+  "Nothing to show here.": "Nothing to show here.",
+  "Bullets": "Bullets",
+  "Alt text": "Alt text",
+  "Wording": "Wording",
+  "Interface phrase": "Interface phrase",
+  "Region": "Region",
+  "Featured media": "Featured media",
+  "Rich text": "Rich text"
 }
