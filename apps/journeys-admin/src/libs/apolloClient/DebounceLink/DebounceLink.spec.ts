@@ -104,6 +104,22 @@ describe('DebounceLink', () => {
     expect(downstream.forwarded()).toEqual(['a'])
   })
 
+  it('forwards pending operations under a prefix before the flushing operation', async () => {
+    const downstream = createRecordingLink()
+    const link = ApolloLink.from([new DebounceLink(500), downstream.link])
+
+    void execute(link, 'label', { debounceKey: 'Block:1:label' })
+    void execute(link, 'other', { debounceKey: 'Block:2:label' })
+    void execute(link, 'delete', { debounceFlushPrefix: 'Block:1:' })
+
+    expect(downstream.forwarded()).toEqual(['label', 'delete'])
+
+    // The flushed key is not forwarded again when its timer would have fired.
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(downstream.forwarded()).toEqual(['label', 'delete', 'other'])
+  })
+
   it('forwards operations without a debounce key immediately', async () => {
     const downstream = createRecordingLink()
     const link = ApolloLink.from([new DebounceLink(500), downstream.link])

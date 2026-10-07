@@ -13,6 +13,8 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { useCampaignEditor } from '../CampaignEditorProvider'
+import { Hotkeys } from '../Hotkeys'
 
 import { CanvasSection } from './CanvasSection'
 
@@ -31,7 +33,9 @@ interface CanvasProps {
 /**
  * The campaign canvas: the chosen page rendered inside a FramePortal iframe
  * with the editor's own section components under the campaign's theme.
- * Desktop/Phone is a view toggle held by the shell, never a Command.
+ * Desktop/Phone is a view toggle held by the shell, never a Command. The
+ * frame carries its own Hotkeys, since its key events never leave it, and
+ * a click on the empty frame returns to the campaign row.
  */
 export function Canvas({
   campaign,
@@ -40,6 +44,7 @@ export function Canvas({
   view
 }: CanvasProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { selectBlock } = useCampaignEditor()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const pageId = page?.id
   const sections = useMemo(
@@ -99,26 +104,31 @@ export function Canvas({
           title={t('Campaign preview')}
           data-testid="CampaignCanvasFrame"
         >
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Box
-              sx={{
-                height: '100%',
-                overflowY: 'auto',
-                bgcolor: 'background.default',
-                color: 'text.primary'
-              }}
-            >
-              {sections.map((section) => (
-                <CanvasSection
-                  key={section.id}
-                  block={section}
-                  theme={campaign.theme}
-                  previewLanguageId={previewLanguageId}
-                />
-              ))}
-            </Box>
-          </ThemeProvider>
+          {({ document }) => (
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Hotkeys document={document} />
+              <Box
+                data-testid="CampaignCanvasPage"
+                onClick={() => selectBlock(undefined)}
+                sx={{
+                  height: '100%',
+                  overflowY: 'auto',
+                  bgcolor: 'background.default',
+                  color: 'text.primary'
+                }}
+              >
+                {sections.map((section) => (
+                  <CanvasSection
+                    key={section.id}
+                    block={section}
+                    theme={campaign.theme}
+                    previewLanguageId={previewLanguageId}
+                  />
+                ))}
+              </Box>
+            </ThemeProvider>
+          )}
         </FramePortal>
       </Box>
     </Box>
