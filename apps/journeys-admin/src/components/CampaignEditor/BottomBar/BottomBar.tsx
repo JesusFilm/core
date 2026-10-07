@@ -166,6 +166,7 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
         __typename: 'CampaignTypographyBlock',
         ...base,
         content: '',
+        contentTranslations: [],
         typographyVariant: null,
         align: null,
         color: null
@@ -185,6 +186,7 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       __typename: 'CampaignButtonBlock',
       ...base,
       label: NEW_BUTTON_LABEL,
+      labelTranslations: [],
       buttonVariant: null,
       size: null,
       align: null,

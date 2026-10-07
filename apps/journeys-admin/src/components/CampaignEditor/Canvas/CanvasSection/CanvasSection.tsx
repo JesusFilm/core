@@ -43,6 +43,8 @@ export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 interface CanvasSectionProps {
   block: CanvasBlock
   theme: CampaignTheme
+  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
+  previewLanguageId: string | null
   /** A page section moves by its drag handle; chrome never does. */
   draggable?: boolean
   /** The drop indicator to show while another section is dragged over this one. */
@@ -54,6 +56,22 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 const SELECTED_OUTLINE = {
   outline: `2px solid ${adminPrimary.main}`,
   outlineOffset: -2
+}
+
+type TranslationValue = { languageId: string; value: string }
+
+/** The preview-language value of a text field, when the block has one; the default-language field is what the canvas edits. */
+function previewTranslation(
+  block: CampaignTextBlock,
+  field: CampaignTextField,
+  previewLanguageId: string | null
+): string | undefined {
+  if (previewLanguageId == null) return undefined
+  const translations = (
+    block as unknown as Record<string, TranslationValue[] | undefined>
+  )[`${field}Translations`]
+  return translations?.find((entry) => entry.languageId === previewLanguageId)
+    ?.value
 }
 
 function isAbove(child: CanvasBlock): boolean {
@@ -69,6 +87,8 @@ interface CanvasExtraProps {
   selected: boolean
   onSelect: () => void
   focusField?: CampaignTextField
+  focusRequest: number
+  previewLanguageId: string | null
 }
 
 /** A text or button Extra: click to select, edit its one text field in place. */
@@ -76,7 +96,9 @@ function CanvasExtra({
   block,
   selected,
   onSelect,
-  focusField
+  focusField,
+  focusRequest,
+  previewLanguageId
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -100,9 +122,15 @@ function CanvasExtra({
           <InlineText
             block={block}
             field="content"
+            translation={previewTranslation(
+              block,
+              'content',
+              previewLanguageId
+            )}
             placeholder={t('Your text')}
             editing={selected}
             autoFocus={selected && focusField === 'content'}
+            focusRequest={focusRequest}
             onSelect={onSelect}
             variant={block.typographyVariant ?? TypographyVariant.body1}
             variantMapping={{ overline: 'p', caption: 'p' }}
@@ -152,9 +180,15 @@ function CanvasExtra({
             <InlineText
               block={block}
               field="label"
+              translation={previewTranslation(
+                block,
+                'label',
+                previewLanguageId
+              )}
               placeholder={t('Button')}
               editing={selected}
               autoFocus={selected && focusField === 'label'}
+              focusRequest={focusRequest}
               onSelect={onSelect}
               variant="inherit"
               component="span"
@@ -173,8 +207,10 @@ interface SectionTextProps {
   field: CampaignTextField
   editing: boolean
   focusField?: CampaignTextField
+  focusRequest: number
   onSelect: (field: CampaignTextField) => void
   titleVariant: 'h1' | 'h2'
+  previewLanguageId: string | null
 }
 
 function sectionFieldPlaceholder(
@@ -201,11 +237,15 @@ function SectionText({
   field,
   editing,
   focusField,
+  focusRequest,
   onSelect,
-  titleVariant
+  titleVariant,
+  previewLanguageId
 }: SectionTextProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const value = (block as unknown as Record<string, string | null>)[field]
+  const translation = previewTranslation(block, field, previewLanguageId)
+  const value =
+    translation ?? (block as unknown as Record<string, string | null>)[field]
   if (!editing && (value == null || value.trim() === '')) return null
   const styles = {
     eyebrow: {
@@ -230,9 +270,11 @@ function SectionText({
     <InlineText
       block={block}
       field={field}
+      translation={translation}
       placeholder={sectionFieldPlaceholder(t, field)}
       editing={editing}
       autoFocus={editing && focusField === field}
+      focusRequest={focusRequest}
       onSelect={onSelect}
       variant={styles.variant}
       sx={styles.sx}
@@ -249,6 +291,7 @@ function SectionText({
 export function CanvasSection({
   block,
   theme,
+  previewLanguageId,
   draggable = false,
   dropEdge
 }: CanvasSectionProps): ReactElement | null {
@@ -259,6 +302,7 @@ export function CanvasSection({
     state: { editRequest }
   } = useCampaignEditor()
   const [focusField, setFocusField] = useState<CampaignTextField>()
+  const [focusRequest, setFocusRequest] = useState(0)
   const seenEditRequest = useRef(editRequest)
   const selectedId = selection.block?.id
   const sectionSelected = selectedId === block.id
@@ -298,6 +342,7 @@ export function CanvasSection({
       target.id === block.id || target.parentBlockId === block.id
     if (!inSection) return
     setFocusField(primaryTextField(target.__typename))
+    setFocusRequest((request) => request + 1)
   }, [editRequest, selection.block, block.id])
 
   if (band == null) return null
@@ -336,6 +381,8 @@ export function CanvasSection({
         selected={selectedId === child.id}
         onSelect={() => selectExtra(child, field)}
         focusField={focusField}
+        focusRequest={focusRequest}
+        previewLanguageId={previewLanguageId}
       />
     )
   }
@@ -419,8 +466,10 @@ export function CanvasSection({
                 field={field}
                 editing={sectionSelected}
                 focusField={focusField}
+                focusRequest={focusRequest}
                 onSelect={handleSelectField}
                 titleVariant={titleVariant}
+                previewLanguageId={previewLanguageId}
               />
             ))}
           {below.map(renderExtra)}

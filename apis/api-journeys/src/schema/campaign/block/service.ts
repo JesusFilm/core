@@ -274,7 +274,7 @@ export async function getSiblings(
       deletedAt: null,
       ...where
     },
-    orderBy: { parentOrder: 'asc' },
+    orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
     include: { action: true }
   })
 }

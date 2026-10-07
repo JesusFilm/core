@@ -1,9 +1,10 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import {
   CampaignTextBlock,
@@ -39,7 +40,14 @@ export function textDebounceKey(
   block: Pick<CampaignTextBlock, '__typename' | 'id'>,
   field: CampaignTextField
 ): string {
-  return `${block.__typename}:${block.id}:${field}`
+  return `${textDebounceKeyPrefix(block)}${field}`
+}
+
+/** The prefix shared by the debounce keys of every field of one block. */
+export function textDebounceKeyPrefix(
+  block: Pick<CampaignBlock, '__typename' | 'id'>
+): string {
+  return `${block.__typename}:${block.id}:`
 }
 
 function messageOf(error: unknown): string {
@@ -80,14 +88,22 @@ export function useCampaignTextCommand({
   } = useCampaignEditor()
   const mutate = useCampaignBlockTextMutation()
 
+  // The value an undo or redo of this field just wrote: the cache has not
+  // caught up when the effect below runs, so it is the field's new baseline.
+  const appliedValue = useRef<string | undefined>(undefined)
+
   useEffect(() => {
+    const applied = appliedValue.current
+    appliedValue.current = undefined
     if (undo == null || undo.id === commandInput.id) return
-    setCommandInput({ id: uuidv4(), value })
+    setCommandInput({ id: uuidv4(), value: applied ?? committed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(committed)
+    // The API trims what it stores, so a save that only trimmed what was
+    // typed must not rewrite the field while the user is still typing.
+    setValue((typed) => (typed.trim() === committed ? typed : committed))
   }, [committed])
 
   function resetCommandInput(): void {
@@ -121,12 +137,14 @@ export function useCampaignTextCommand({
         }
       },
       execute({ value: nextValue, context, pageKind: targetPageKind, focus }) {
-        if (focus)
+        if (focus) {
+          appliedValue.current = nextValue
           dispatch({
             type: 'SetEditorFocusAction',
             pageKind: targetPageKind,
             selectedBlockId: block.id
           })
+        }
         void mutate(block, field, nextValue, {
           debounceKey: textDebounceKey(block, field),
           ...context
