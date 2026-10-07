@@ -7,8 +7,8 @@ import {
   CampaignBlockRestore,
   CampaignBlockRestoreVariables
 } from '../../../__generated__/CampaignBlockRestore'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 import { campaignBlockRestoreUpdate } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export const CAMPAIGN_BLOCK_RESTORE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
