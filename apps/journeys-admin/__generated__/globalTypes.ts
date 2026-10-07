@@ -61,6 +61,109 @@ export enum ButtonVariant {
   text = "text",
 }
 
+/**
+ * What a Campaign Section sits on. Named kinds are theme-slot references; `custom` reads the section backgroundColor; `image` reads the owned cover block.
+ */
+export enum CampaignBackgroundKind {
+  contrast = "contrast",
+  custom = "custom",
+  image = "image",
+  none = "none",
+  primary = "primary",
+  surface = "surface",
+}
+
+/**
+ * Overlay strength over an image Section Background: light 0.3, medium 0.55, heavy 0.75. Null means medium.
+ */
+export enum CampaignBackgroundOverlay {
+  heavy = "heavy",
+  light = "light",
+  medium = "medium",
+}
+
+/**
+ * Button corner shape of the Campaign Theme.
+ */
+export enum CampaignButtonRadius {
+  pill = "pill",
+  rounded = "rounded",
+}
+
+/**
+ * Which side of the Section Body an Extra renders on.
+ */
+export enum CampaignChildPlacement {
+  above = "above",
+  below = "below",
+}
+
+/**
+ * How a Journey List renders its items: a card grid or a list.
+ */
+export enum CampaignJourneyListDisplay {
+  grid = "grid",
+  list = "list",
+}
+
+/**
+ * One of the two pages every Campaign has: the landing page, or the Region Page that every Campaign Region renders.
+ */
+export enum CampaignPageKind {
+  landing = "landing",
+  regionTemplate = "regionTemplate",
+}
+
+/**
+ * Corner radius of the Campaign Theme: square 0, slight 6, rounded 14, veryRounded 24 px.
+ */
+export enum CampaignRadius {
+  rounded = "rounded",
+  slight = "slight",
+  square = "square",
+  veryRounded = "veryRounded",
+}
+
+/**
+ * Lifecycle state of a Campaign. Status is the only public gate: a draft is never served, a published campaign is served as it is right now.
+ */
+export enum CampaignStatus {
+  draft = "draft",
+  published = "published",
+}
+
+/**
+ * The fixed interface phrases every Campaign carries as Campaign Strings.
+ */
+export enum CampaignStringKey {
+  allRegions = "allRegions",
+  copied = "copied",
+  copy = "copy",
+  downloadQr = "downloadQr",
+  open = "open",
+  openTemplate = "openTemplate",
+  seeAllOnWatch = "seeAllOnWatch",
+  step1 = "step1",
+  step2 = "step2",
+  step2help = "step2help",
+  step3 = "step3",
+  step4 = "step4",
+  topCountry = "topCountry",
+  totalVisitors = "totalVisitors",
+  videos = "videos",
+  watch = "watch",
+  youtube = "youtube",
+}
+
+/**
+ * How a Region Switcher lists the regions: cards, a list, or pills.
+ */
+export enum CampaignSwitcherVariant {
+  cards = "cards",
+  list = "list",
+  pills = "pills",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -447,6 +550,104 @@ export interface ButtonClickEventCreateInput {
   value?: string | null;
   action?: ButtonAction | null;
   actionValue?: string | null;
+}
+
+export interface CampaignAnalyticsBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  showMap?: boolean | null;
+}
+
+export interface CampaignButtonBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  parentBlockId: string;
+  label?: string | null;
+  variant?: ButtonVariant | null;
+  size?: ButtonSize | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  labelColor?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
+export interface CampaignButtonBlockUpdateInput {
+  label?: string | null;
+  variant?: ButtonVariant | null;
+  size?: ButtonSize | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  labelColor?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
+/**
+ * Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
+ */
+export interface CampaignCreateInput {
+  teamId: string;
+  title: string;
+  defaultLanguageId: string;
+}
+
+export interface CampaignHeroBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  align?: TypographyAlign | null;
+}
+
+export interface CampaignJourneyListBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  display?: CampaignJourneyListDisplay | null;
+}
+
+export interface CampaignRegionHeaderBlockUpdateInput {
+  intro?: string | null;
+}
+
+export interface CampaignRegionShareBlockUpdateInput {
+  title?: string | null;
+  intro?: string | null;
+}
+
+export interface CampaignRegionSwitcherBlockUpdateInput {
+  title?: string | null;
+  variant?: CampaignSwitcherVariant | null;
+}
+
+export interface CampaignTypographyBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  parentBlockId: string;
+  content?: string | null;
+  variant?: TypographyVariant | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
+export interface CampaignTypographyBlockUpdateInput {
+  content?: string | null;
+  variant?: TypographyVariant | null;
+  align?: TypographyAlign | null;
+  color?: string | null;
+  placement?: CampaignChildPlacement | null;
+}
+
+/**
+ * Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+ */
+export interface CampaignUpdateInput {
+  title?: string | null;
+  slug?: string | null;
+}
+
+export interface CampaignVideoCarouselBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
 }
 
 export interface CardBlockCreateInput {

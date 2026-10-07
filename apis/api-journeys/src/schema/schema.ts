@@ -4,6 +4,7 @@
 import './visitor'
 import './action'
 import './block'
+import './campaign'
 import './chatButton'
 import './customDomain'
 import './event'

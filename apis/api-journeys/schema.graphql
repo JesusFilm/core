@@ -190,6 +190,1156 @@ enum ButtonVariant {
   outlined
 }
 
+"""
+A team-owned seasonal campaign site: a landing page plus one Region Page every Campaign Region renders, built from Campaign Blocks and pointing visitors at published Journeys. Draft or published like a Template Gallery Page; edited live in place.
+"""
+type Campaign {
+  id: ID!
+  teamId: ID!
+
+  """Owning team; the campaign is hard-deleted with it."""
+  team: Team!
+
+  """
+  Default-language title; also the public page title. Required, at most 100 characters.
+  """
+  title: String!
+  titleTranslations: [TranslatedValue!]!
+
+  """
+  Globally unique. The permanent Campaign Address is `/campaign/<slug>` on the root domain. Generated from the title; author-editable.
+  """
+  slug: String!
+  status: CampaignStatus!
+
+  """
+  api-languages Language id; always one of `languages`. The default-language value of every Translated Field sits on the field itself.
+  """
+  defaultLanguageId: ID!
+  defaultLanguage: Language!
+
+  """
+  The eight most recently used picker colours, newest first, `#RRGGBB` uppercase, no duplicates. Picker convenience; never read by the public page.
+  """
+  palette: [String!]!
+
+  """
+  First publish; never cleared by unpublish. Means "first went live", not "currently live".
+  """
+  publishedAt: DateTimeISO
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+
+  """Page Languages in selector order."""
+  languages: [CampaignLanguage!]!
+
+  """The one Campaign Theme row; created with the campaign."""
+  theme: CampaignTheme!
+
+  """Exactly the landing page and the Region Page."""
+  pages: [CampaignPage!]!
+
+  """
+  Every live Campaign Block of the campaign as one flat list (both pages, chrome, Region Lines, owned blocks), ordered by parentOrder; the client trees it by parentBlockId and partitions it by pageId / regionId.
+  """
+  blocks: [CampaignBlock!]!
+
+  """Every Campaign Region, listed and orphan, in switcher order."""
+  regions: [CampaignRegion!]!
+
+  """The seventeen Campaign Strings."""
+  strings: [CampaignString!]!
+}
+
+"""
+What a CampaignButtonBlock does when pressed: a web link, a scroll to a block on the same page, or a navigation to a Campaign Region. One row per button, resolved by the populated column. Typenames are Campaign-prefixed so they never collide with the journeys Action kinds.
+"""
+interface CampaignAction {
+  """The CampaignButtonBlock this action belongs to."""
+  parentBlockId: ID!
+  parentBlock: CampaignBlock!
+}
+
+"""
+Shows Campaign Stats: visitor tiles, a ranked country list and optionally the world map. Scope (whole campaign on the landing page, one region on the Region Page) is derived from the page, not stored.
+"""
+type CampaignAnalyticsBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  eyebrow: String
+  eyebrowTranslations: [TranslatedValue!]!
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  showMap: Boolean!
+}
+
+input CampaignAnalyticsBlockUpdateInput {
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+  showMap: Boolean
+}
+
+"""
+What a Campaign Section sits on. Named kinds are theme-slot references; `custom` reads the section backgroundColor; `image` reads the owned cover block.
+"""
+enum CampaignBackgroundKind {
+  none
+  surface
+  contrast
+  primary
+  custom
+  image
+}
+
+"""
+Overlay strength over an image Section Background: light 0.3, medium 0.55, heavy 0.75. Null means medium.
+"""
+enum CampaignBackgroundOverlay {
+  light
+  medium
+  heavy
+}
+
+"""
+A node in a Campaign content tree. One table discriminated by typename; every row is scoped to its Campaign and to at most one of a Campaign Page or a Campaign Region (neither set means Campaign Chrome). Children copy the parent scoping down.
+"""
+interface CampaignBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+}
+
+"""
+The campaign call-to-action block: a translated label, core button variant and size, optional alignment and two hex colours, and at most one CampaignAction. Corner shape belongs to the Campaign Theme.
+"""
+type CampaignButtonBlock implements CampaignBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  label: String!
+  labelTranslations: [TranslatedValue!]!
+
+  """Null means contained."""
+  variant: ButtonVariant
+
+  """Null means medium."""
+  size: ButtonSize
+
+  """Null means follow the section."""
+  align: TypographyAlign
+
+  """
+  Fill (contained) or border and label (outlined). Null means the section buttonColor, then the theme primary.
+  """
+  color: String
+
+  """
+  Label colour for contained. Null means the section buttonTextColor, then on-primary.
+  """
+  labelColor: String
+  placement: CampaignChildPlacement
+  action: CampaignAction
+}
+
+input CampaignButtonBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A section or chrome block of the campaign."""
+  parentBlockId: ID!
+
+  """Default-language label; "Button" when omitted. At most 60 characters."""
+  label: String
+  variant: ButtonVariant
+  size: ButtonSize
+
+  """Null follows the section."""
+  align: TypographyAlign
+
+  """`#RRGGBB` or null."""
+  color: String
+
+  """`#RRGGBB` or null."""
+  labelColor: String
+
+  """Defaults to `below`."""
+  placement: CampaignChildPlacement
+}
+
+input CampaignButtonBlockUpdateInput {
+  """Default-language label. At most 60 characters."""
+  label: String
+  variant: ButtonVariant
+  size: ButtonSize
+  align: TypographyAlign
+
+  """`#RRGGBB` or null."""
+  color: String
+
+  """`#RRGGBB` or null."""
+  labelColor: String
+  placement: CampaignChildPlacement
+}
+
+"""Button corner shape of the Campaign Theme."""
+enum CampaignButtonRadius {
+  rounded
+  pill
+}
+
+"""Which side of the Section Body an Extra renders on."""
+enum CampaignChildPlacement {
+  above
+  below
+}
+
+"""The width ratio of the two Column Slots of a Columns section."""
+enum CampaignColumnsRatio {
+  equal
+  wideLeft
+  wideRight
+}
+
+"""
+Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
+"""
+input CampaignCreateInput {
+  """Owning team. Caller must be a member or manager."""
+  teamId: ID!
+
+  """
+  Default-language title, required, at most 100 characters. Drives slug generation.
+  """
+  title: String!
+
+  """
+  api-languages Language id; must exist. Becomes the single Page Language and the default of every Translated Field.
+  """
+  defaultLanguageId: ID!
+}
+
+"""
+Campaign Chrome: the one footer every page shares. pageId and regionId are both null. Typography children are the footer lines, button children the footer links. Never deletable, movable or duplicable.
+"""
+type CampaignFooterBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+}
+
+"""
+Campaign Chrome: the one header every page shares. pageId and regionId are both null. Button children are the nav links; the brand mark and language select are fixed renderer elements, not blocks. Never deletable, movable or duplicable.
+"""
+type CampaignHeaderBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+
+  """The owned CampaignImageBlock shown as the brand mark."""
+  logoBlockId: ID
+}
+
+"""
+The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
+"""
+type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  eyebrow: String
+  eyebrowTranslations: [TranslatedValue!]!
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  lede: String
+  ledeTranslations: [TranslatedValue!]!
+
+  """Alignment of the Section Body; the editor offers left and center."""
+  align: TypographyAlign
+
+  """The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot."""
+  mediaBlockId: ID
+}
+
+input CampaignHeroBlockUpdateInput {
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  lede: String
+  align: TypographyAlign
+}
+
+"""
+Ready-made journeys as cards. Items are the ordered CampaignJourneyBlock children.
+"""
+type CampaignJourneyListBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  eyebrow: String
+  eyebrowTranslations: [TranslatedValue!]!
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  lede: String
+  ledeTranslations: [TranslatedValue!]!
+  display: CampaignJourneyListDisplay!
+}
+
+input CampaignJourneyListBlockUpdateInput {
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  lede: String
+  display: CampaignJourneyListDisplay
+}
+
+"""How a Journey List renders its items: a card grid or a list."""
+enum CampaignJourneyListDisplay {
+  grid
+  list
+}
+
+"""
+One Page Language of a Campaign. The campaign default is always among them; removing the default or the last language is refused.
+"""
+type CampaignLanguage {
+  id: ID!
+  campaignId: ID!
+
+  """api-languages Language id."""
+  languageId: ID!
+  language: Language!
+  order: Int!
+}
+
+"""
+A web link: a journey, video or any https address. The url is validated as https and at most 2048 characters.
+"""
+type CampaignLinkAction implements CampaignAction {
+  """The CampaignButtonBlock this action belongs to."""
+  parentBlockId: ID!
+  parentBlock: CampaignBlock!
+  url: String!
+  target: String
+}
+
+"""Which side of a Featured Media section the Media Slot renders on."""
+enum CampaignMediaSide {
+  left
+  right
+}
+
+"""
+Navigate to a Campaign Region's page, carrying the visitor's Page Language. The target is set null when the region is deleted.
+"""
+type CampaignNavigateToRegionAction implements CampaignAction {
+  """The CampaignButtonBlock this action belongs to."""
+  parentBlockId: ID!
+  parentBlock: CampaignBlock!
+  regionId: String!
+}
+
+"""
+One of the two pages a Campaign has: the landing page or the Region Page every Campaign Region renders. Created with the campaign, never deletable.
+"""
+type CampaignPage {
+  id: ID!
+  campaignId: ID!
+  kind: CampaignPageKind!
+}
+
+"""
+One of the two pages every Campaign has: the landing page, or the Region Page that every Campaign Region renders.
+"""
+enum CampaignPageKind {
+  landing
+  regionTemplate
+}
+
+"""
+One of the two campaign pages with its live blocks as a flat list (sections, their Extras and owned blocks) that the viewer trees by parentBlockId and parentOrder.
+"""
+type CampaignPagePublic {
+  id: ID!
+  kind: CampaignPageKind!
+
+  """
+  Every live block scoped to this page, ordered by parentOrder; every text field resolved to the requested language.
+  """
+  blocks: [CampaignBlock!]!
+}
+
+"""
+The narrowed read of a published Campaign served to anonymous visitors by `campaignPublic`. Every Translated Field arrives resolved to the requested language (translation lists are empty); blocks come as flat lists per page plus the chrome. Nothing here leads to the team, its members or linked-journey internals; the admin `Campaign` type keeps the full shape behind campaign Read.
+"""
+type CampaignPublic {
+  id: ID!
+
+  """
+  Owning team id, so page views reach the team's existing Plausible site. An opaque id; the team itself is not reachable from here.
+  """
+  teamId: ID!
+  slug: String!
+
+  """Resolved to the requested language; the public page title."""
+  title: String!
+  defaultLanguageId: ID!
+  defaultLanguage: Language!
+
+  """
+  The Page Language every text field was resolved to: the requested campaign language, else the default.
+  """
+  languageId: ID!
+  language: Language!
+  publishedAt: DateTimeISO
+
+  """Page Languages in selector order."""
+  languages: [CampaignLanguage!]!
+  theme: CampaignTheme!
+
+  """The seventeen Campaign Strings, values resolved."""
+  strings: [CampaignString!]!
+
+  """Every Campaign Region, listed and orphan, in switcher order."""
+  regions: [CampaignRegionPublic!]!
+  header: CampaignHeaderBlock!
+  footer: CampaignFooterBlock!
+
+  """
+  The Campaign Chrome as a flat list: the header, the footer, their children and the header logo, ordered by parentOrder.
+  """
+  chrome: [CampaignBlock!]!
+
+  """The landing page and the Region Page, each with its blocks."""
+  pages: [CampaignPagePublic!]!
+}
+
+"""
+Corner radius of the Campaign Theme: square 0, slight 6, rounded 14, veryRounded 24 px.
+"""
+enum CampaignRadius {
+  square
+  slight
+  rounded
+  veryRounded
+}
+
+"""
+A Campaign's regional subdivision, shown on the shared Region Page at its own slug. The translated name is its identity everywhere; the slug is only its address. Unlisted regions keep an Orphan Page.
+"""
+type CampaignRegion {
+  id: ID!
+  campaignId: ID!
+
+  """Required, at most 60 characters."""
+  name: String!
+  nameTranslations: [TranslatedValue!]!
+
+  """
+  Unique within the campaign. Changing it breaks links already shared to the region page.
+  """
+  slug: String!
+  order: Int!
+
+  """Whether the region appears on the Region Switcher."""
+  listed: Boolean!
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+
+  """Share Languages in selector order."""
+  languages: [CampaignRegionLanguage!]!
+
+  """Region Countries in chip order."""
+  countries: [CampaignRegionCountry!]!
+}
+
+"""
+One country chip on a Campaign Region's card, referenced by its api-languages Country id so flag and translated name come from the owner. Presentation, not identity.
+"""
+type CampaignRegionCountry {
+  id: ID!
+  regionId: ID!
+
+  """api-languages Country id."""
+  countryId: ID!
+  order: Int!
+}
+
+"""
+Region Page only. Renders the rendered region's name, its Region Lines and this intro.
+"""
+type CampaignRegionHeaderBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  intro: String
+  introTranslations: [TranslatedValue!]!
+}
+
+input CampaignRegionHeaderBlockUpdateInput {
+  """At most 500 characters."""
+  intro: String
+}
+
+"""
+A Share Language of a Campaign Region: which journey the region hands out in that language, with the Campaign QR Code created the moment a journey is linked. An Unlinked Language has no journey yet.
+"""
+type CampaignRegionLanguage {
+  id: ID!
+  regionId: ID!
+
+  """api-languages Language id."""
+  languageId: ID!
+  language: Language!
+  journeyId: ID
+  journey: Journey
+
+  """
+  Snapshot of the linked journey's title; the journey's own language, not translated.
+  """
+  title: String
+  description: String
+  qrCodeId: ID
+  order: Int!
+}
+
+"""
+A Share Language of a Campaign Region as the public page reads it: the language, whether its linked journey is live, and the journey's resolved public and embed addresses. Nothing here leads to the journey row itself.
+"""
+type CampaignRegionLanguagePublic {
+  id: ID!
+
+  """api-languages Language id."""
+  languageId: ID!
+  language: Language!
+  order: Int!
+
+  """
+  The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.
+  """
+  journeyStatus: JourneyStatus
+
+  """
+  The linked journey's public address, decided by its own team's domains; null unless the journey is live-published.
+  """
+  journeyUrl: String
+
+  """
+  The root-domain embed route for the linked journey; null unless the journey is live-published.
+  """
+  embedUrl: String
+}
+
+"""
+A Campaign Region as the public page reads it: listed and orphan regions alike, name resolved to the requested language, with its countries, Share Languages and Region Lines.
+"""
+type CampaignRegionPublic {
+  id: ID!
+  slug: String!
+
+  """Resolved to the requested language."""
+  name: String!
+  listed: Boolean!
+  order: Int!
+  countries: [CampaignRegionCountry!]!
+
+  """Share Languages in selector order."""
+  languages: [CampaignRegionLanguagePublic!]!
+
+  """
+  The Region Lines: CampaignTypographyBlock rows scoped to the region, in order, text resolved.
+  """
+  lines: [CampaignBlock!]!
+}
+
+"""
+Region Page only. The share panel: the region's Share Languages, the linked journey preview, the Share Link and QR Code, read live from CampaignRegionLanguage.
+"""
+type CampaignRegionShareBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  intro: String
+  introTranslations: [TranslatedValue!]!
+}
+
+input CampaignRegionShareBlockUpdateInput {
+  """At most 150 characters."""
+  title: String
+
+  """At most 500 characters."""
+  intro: String
+}
+
+"""
+Lists the listed Campaign Regions by order. Holds no items of its own: it reads CampaignRegion rows live.
+"""
+type CampaignRegionSwitcherBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  title: String
+  titleTranslations: [TranslatedValue!]!
+  variant: CampaignSwitcherVariant!
+}
+
+input CampaignRegionSwitcherBlockUpdateInput {
+  """At most 150 characters."""
+  title: String
+  variant: CampaignSwitcherVariant
+}
+
+"""
+Scroll to a Campaign Section on the same page. The renderer links to `#<blockId>`; a target on another page renders inert.
+"""
+type CampaignScrollToBlockAction implements CampaignAction {
+  """The CampaignButtonBlock this action belongs to."""
+  parentBlockId: ID!
+  parentBlock: CampaignBlock!
+  blockId: String!
+}
+
+"""
+A Campaign Block that renders as a full-width band: every Campaign Section and the two Campaign Chrome blocks. Carries the CampaignBlock fields plus the Section Background and the five colour overrides (null = inherit from the background cascade). Every implementor also implements CampaignBlock.
+"""
+interface CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+}
+
+"""
+Lifecycle state of a Campaign. Status is the only public gate: a draft is never served, a published campaign is served as it is right now.
+"""
+enum CampaignStatus {
+  draft
+  published
+}
+
+"""
+One of the fixed interface phrases of a Campaign ("Copy link", "All regions", …): a Translated Field keyed by a fixed name, seeded with every campaign and shown in the Page Language.
+"""
+type CampaignString {
+  id: ID!
+  campaignId: ID!
+  key: CampaignStringKey!
+
+  """Default-language wording, at most 200 characters."""
+  value: String!
+  valueTranslations: [TranslatedValue!]!
+}
+
+"""
+The fixed interface phrases every Campaign carries as Campaign Strings.
+"""
+enum CampaignStringKey {
+  allRegions
+  step1
+  step2
+  step2help
+  step3
+  step4
+  copy
+  copied
+  downloadQr
+  open
+  watch
+  openTemplate
+  youtube
+  totalVisitors
+  topCountry
+  seeAllOnWatch
+  videos
+}
+
+"""How a Region Switcher lists the regions: cards, a list, or pills."""
+enum CampaignSwitcherVariant {
+  cards
+  list
+  pills
+}
+
+"""Who wrote a translation: a person or the machine-translation sweep."""
+enum CampaignTextSource {
+  human
+  machine
+}
+
+"""
+The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button shape. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
+"""
+type CampaignTheme {
+  id: ID!
+  campaignId: ID!
+  themeMode: ThemeMode!
+
+  """Google Fonts family; null = the base theme default."""
+  headerFont: String
+  bodyFont: String
+  labelFont: String
+  primaryColor: String!
+  accentColor: String!
+  backgroundColor: String!
+  surfaceColor: String!
+  textColor: String!
+  mutedColor: String!
+  contrastBackgroundColor: String!
+  contrastTextColor: String!
+  radius: CampaignRadius!
+  buttonRadius: CampaignButtonRadius!
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
+}
+
+"""
+The campaign text block: an Extra of a section or chrome block, or a Region Line when regionId is set. The variant decides size, weight and font family through the Campaign Theme.
+"""
+type CampaignTypographyBlock implements CampaignBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  content: String!
+  contentTranslations: [TranslatedValue!]!
+
+  """Null means body1."""
+  variant: TypographyVariant
+
+  """Null means inherit from the section."""
+  align: TypographyAlign
+
+  """`#RRGGBB`; null means the section override, then the theme."""
+  color: String
+
+  """
+  Which side of the Section Body this Extra renders on; null on a Region Line.
+  """
+  placement: CampaignChildPlacement
+}
+
+input CampaignTypographyBlockCreateInput {
+  id: ID
+  campaignId: ID!
+
+  """A section or chrome block of the campaign."""
+  parentBlockId: ID!
+
+  """Default-language text; empty when omitted. At most 2000 characters."""
+  content: String
+  variant: TypographyVariant
+
+  """Null follows the section."""
+  align: TypographyAlign
+
+  """`#RRGGBB` or null."""
+  color: String
+
+  """Defaults to `below`."""
+  placement: CampaignChildPlacement
+}
+
+input CampaignTypographyBlockUpdateInput {
+  """Default-language text. At most 2000 characters."""
+  content: String
+  variant: TypographyVariant
+  align: TypographyAlign
+
+  """`#RRGGBB` or null."""
+  color: String
+  placement: CampaignChildPlacement
+}
+
+"""
+Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+"""
+input CampaignUpdateInput {
+  """
+  Default-language title, required when given, at most 100 characters. Changing it never regenerates the slug.
+  """
+  title: String
+
+  """
+  Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.
+  """
+  slug: String
+}
+
+"""
+A shelf of video cards. `videoId` set means Watch expansion of that Video at read time and explicit children are ignored; null means the ordered CampaignVideoBlock children are the items.
+"""
+type CampaignVideoCarouselBlock implements CampaignBlock & CampaignSectionBlock {
+  id: ID!
+  campaignId: ID!
+
+  """The Campaign Page this block sits on, if page-scoped."""
+  pageId: ID
+
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+
+  """Read only when backgroundKind is `custom`. `#RRGGBB`."""
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+
+  """Read only when backgroundKind is `image`; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  eyebrow: String
+  eyebrowTranslations: [TranslatedValue!]!
+  title: String
+  titleTranslations: [TranslatedValue!]!
+
+  """The Watch Video to expand; null for explicit children."""
+  videoId: ID
+  videoVariantLanguageId: ID
+}
+
+input CampaignVideoCarouselBlockUpdateInput {
+  """At most 80 characters."""
+  eyebrow: String
+
+  """At most 150 characters."""
+  title: String
+}
+
 type CardBlock implements Block
   @shareable
 {
@@ -1588,6 +2738,228 @@ type Mutation {
   blockUpdateNavigateToBlockAction(id: ID!, input: NavigateToBlockActionInput!, journeyId: ID): NavigateToBlockAction!
   blockUpdatePhoneAction(id: ID!, input: PhoneActionInput!, journeyId: ID): PhoneAction!
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
+
+  """
+  Add a text Extra to a section or chrome block. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. Omitted content is empty; the editor shows the placeholder "Your text".
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
+  - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule.
+  """
+  campaignTypographyBlockCreate(input: CampaignTypographyBlockCreateInput!): CampaignTypographyBlock!
+
+  """
+  Update a text block’s default-language content, variant, alignment, colour or placement. Only the given fields change; translations are untouched.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignTypographyBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `content`): over 2000 characters.
+  - BAD_USER_INPUT (field: `variant`, `align`, `color`, `placement`): the value fails its rule.
+  """
+  campaignTypographyBlockUpdate(id: ID!, input: CampaignTypographyBlockUpdateInput!): CampaignTypographyBlock!
+
+  """
+  Add a button Extra to a section or chrome block, with no action. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. An omitted label is "Button".
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
+  - BAD_USER_INPUT (field: `label`, `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+  """
+  campaignButtonBlockCreate(input: CampaignButtonBlockCreateInput!): CampaignButtonBlock!
+
+  """
+  Update a button’s default-language label, variant, size, alignment, colours or placement. Only the given fields change; the action and translations are untouched.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignButtonBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `label`): over 60 characters.
+  - BAD_USER_INPUT (field: `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+  """
+  campaignButtonBlockUpdate(id: ID!, input: CampaignButtonBlockUpdateInput!): CampaignButtonBlock!
+
+  """
+  Update the hero’s default-language eyebrow, title, lede or alignment. Only the given fields change; empty text is allowed and not rendered.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignHeroBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `align`): not left, center or right.
+  """
+  campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!): CampaignHeroBlock!
+
+  """
+  Update the region switcher’s default-language title or its variant (cards, list, pills). Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRegionSwitcherBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title`): over 150 characters.
+  - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+  """
+  campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!): CampaignRegionSwitcherBlock!
+
+  """
+  Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!): CampaignVideoCarouselBlock!
+
+  """
+  Update the journey list’s default-language eyebrow, title or lede, or its display (grid, list). Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignJourneyListBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `display`): not grid or list.
+  """
+  campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!): CampaignJourneyListBlock!
+
+  """
+  Update the analytics section’s default-language eyebrow or title, or whether the world map shows. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignAnalyticsBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  """
+  campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!): CampaignAnalyticsBlock!
+
+  """
+  Update the region header’s default-language intro.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRegionHeaderBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `intro`): over 500 characters.
+  """
+  campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!): CampaignRegionHeaderBlock!
+
+  """
+  Update the region share panel’s default-language title or intro. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignRegionShareBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
+  """
+  campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
+
+  """
+  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. The row keeps everything, so `campaignBlockRestore` is how undo of a delete works.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `id`): the header or footer; chrome is never deleted.
+  """
+  campaignBlockDelete(id: ID!): [CampaignBlock!]!
+
+  """
+  Restore a soft-deleted campaign block: clear `deletedAt` and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  """
+  campaignBlockRestore(id: ID!): [CampaignBlock!]!
+
+  """
+  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
+  
+  Auth: campaign Create — any member or manager of `input.teamId`.
+  
+  Errors:
+  - FORBIDDEN: caller is not in the team.
+  - NOT_FOUND: the team does not exist.
+  - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
+  - BAD_USER_INPUT (field: `defaultLanguageId`): not an api-languages language.
+  - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
+  """
+  campaignCreate(input: CampaignCreateInput!): Campaign!
+
+  """
+  Update the campaign settings: the default-language title and the Campaign Address slug. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
+  - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
+  """
+  campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
+
+  """
+  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.
+  
+  Auth: campaign Delete — a manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not a manager of the team.
+  """
+  campaignDelete(id: ID!): Campaign!
+
+  """
+  Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
+  
+  Auth: campaign Manage — a manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not a manager of the team.
+  """
+  campaignPublish(id: ID!): Campaign!
+
+  """
+  Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
+  
+  Auth: campaign Manage — a manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not a manager of the team.
+  """
+  campaignUnpublish(id: ID!): Campaign!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
@@ -2149,6 +3521,50 @@ type Query {
   visitorsConnection(teamId: String, first: Int, after: String): VisitorsConnection!
   block(id: ID!): Block!
   blocks(where: BlocksFilter): [Block!]!
+
+  """
+  Read one Campaign by id in its full admin shape, draft or published.
+  
+  Auth: campaign Read — any member or manager of the campaign's team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  """
+  campaign(id: ID!): Campaign!
+
+  """
+  List a team's Campaigns, draft and published, newest first.
+  
+  Auth: campaign Read — any member or manager of the team.
+  
+  Errors:
+  - NOT_FOUND: the team does not exist.
+  - FORBIDDEN: caller is not in the team.
+  """
+  campaigns(teamId: ID!): [Campaign!]!
+
+  """
+  Public, unauthenticated read of a published Campaign for the public page: exactly one of `slug` (the root-domain address) or `hostname` (a Custom Domain whose Campaign Root it is), plus the Page Language to resolve every text field to (null = the campaign default). `status: published` is the only gate.
+  
+  Errors:
+  - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
+  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).
+  """
+  campaignPublic(
+    """
+    The campaign slug; must match `^[a-z0-9]+(-[a-z0-9]+)*$` and be at most 200 characters.
+    """
+    slug: String
+
+    """A Custom Domain name whose Campaign Root to read."""
+    hostname: String
+
+    """
+    api-languages Language id of the Page Language; a language the campaign does not have, or null, resolves to the default.
+    """
+    languageId: ID
+  ): CampaignPublic!
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node
@@ -3058,6 +4474,16 @@ enum ThemeMode {
 
 enum ThemeName {
   base
+}
+
+"""
+One translation of a Translated Field: the value in one campaign language other than the default, and whether a person or the machine wrote it. The default-language value is the field itself.
+"""
+type TranslatedValue {
+  """api-languages Language id."""
+  languageId: ID!
+  value: String!
+  source: CampaignTextSource!
 }
 
 enum TypographyAlign {

@@ -1,0 +1,405 @@
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
+import Stack from '@mui/material/Stack'
+import { SimplePaletteColorOptions } from '@mui/material/styles'
+import { useTranslation } from 'next-i18next/pages'
+import {
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
+
+import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
+import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
+
+import {
+  GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_theme as CampaignTheme
+} from '../../../../../__generated__/GetCampaign'
+import {
+  CampaignChildPlacement,
+  TypographyVariant
+} from '../../../../../__generated__/globalTypes'
+import {
+  CAMPAIGN_TEXT_FIELDS,
+  CampaignTextBlock,
+  CampaignTextField,
+  isCampaignTextBlock,
+  primaryTextField
+} from '../../../../libs/useCampaignBlockTextMutation'
+import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { InlineText } from '../InlineText'
+
+export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
+
+interface CanvasSectionProps {
+  block: CanvasBlock
+  theme: CampaignTheme
+  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
+  previewLanguageId: string | null
+}
+
+const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
+
+const SELECTED_OUTLINE = {
+  outline: `2px solid ${adminPrimary.main}`,
+  outlineOffset: -2
+}
+
+type TranslationValue = { languageId: string; value: string }
+
+/** The preview-language value of a text field, when the block has one; the default-language field is what the canvas edits. */
+function previewTranslation(
+  block: CampaignTextBlock,
+  field: CampaignTextField,
+  previewLanguageId: string | null
+): string | undefined {
+  if (previewLanguageId == null) return undefined
+  const translations = (
+    block as unknown as Record<string, TranslationValue[] | undefined>
+  )[`${field}Translations`]
+  return translations?.find((entry) => entry.languageId === previewLanguageId)
+    ?.value
+}
+
+function isAbove(child: CanvasBlock): boolean {
+  return (
+    (child.__typename === 'CampaignTypographyBlock' ||
+      child.__typename === 'CampaignButtonBlock') &&
+    child.placement === CampaignChildPlacement.above
+  )
+}
+
+interface CanvasExtraProps {
+  block: CanvasBlock
+  selected: boolean
+  onSelect: () => void
+  focusField?: CampaignTextField
+  focusRequest: number
+  previewLanguageId: string | null
+}
+
+/** A text or button Extra: click to select, edit its one text field in place. */
+function CanvasExtra({
+  block,
+  selected,
+  onSelect,
+  focusField,
+  focusRequest,
+  previewLanguageId
+}: CanvasExtraProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+
+  function handleClick(event: MouseEvent<HTMLElement>): void {
+    event.stopPropagation()
+    onSelect()
+  }
+
+  switch (block.__typename) {
+    case 'CampaignTypographyBlock':
+      return (
+        <Box
+          data-testid={`CanvasExtra-${block.id}`}
+          onClick={handleClick}
+          sx={{
+            width: '100%',
+            cursor: 'pointer',
+            ...(selected ? SELECTED_OUTLINE : {})
+          }}
+        >
+          <InlineText
+            block={block}
+            field="content"
+            translation={previewTranslation(
+              block,
+              'content',
+              previewLanguageId
+            )}
+            placeholder={t('Your text')}
+            editing={selected}
+            autoFocus={selected && focusField === 'content'}
+            focusRequest={focusRequest}
+            onSelect={onSelect}
+            variant={block.typographyVariant ?? TypographyVariant.body1}
+            variantMapping={{ overline: 'p', caption: 'p' }}
+            align={block.align ?? undefined}
+            sx={{ color: block.color ?? 'var(--campaign-band-text)' }}
+          />
+        </Box>
+      )
+    case 'CampaignButtonBlock': {
+      const buttonVariant = block.buttonVariant ?? 'contained'
+      return (
+        <Box
+          data-testid={`CanvasExtra-${block.id}`}
+          onClick={handleClick}
+          sx={{
+            display: 'flex',
+            cursor: 'pointer',
+            ...(selected ? SELECTED_OUTLINE : {}),
+            justifyContent:
+              block.align === 'center'
+                ? 'center'
+                : block.align === 'right'
+                  ? 'flex-end'
+                  : block.align === 'left'
+                    ? 'flex-start'
+                    : 'inherit'
+          }}
+        >
+          <Button
+            component="div"
+            variant={buttonVariant}
+            size={block.size ?? 'medium'}
+            data-testid="CanvasButton"
+            tabIndex={-1}
+            sx={{
+              bgcolor:
+                buttonVariant === 'contained'
+                  ? (block.color ?? 'var(--campaign-band-button)')
+                  : undefined,
+              color:
+                buttonVariant === 'contained'
+                  ? (block.labelColor ?? 'var(--campaign-band-button-label)')
+                  : (block.color ?? 'var(--campaign-band-button)'),
+              borderColor: block.color ?? 'var(--campaign-band-button)'
+            }}
+          >
+            <InlineText
+              block={block}
+              field="label"
+              translation={previewTranslation(
+                block,
+                'label',
+                previewLanguageId
+              )}
+              placeholder={t('Button')}
+              editing={selected}
+              autoFocus={selected && focusField === 'label'}
+              focusRequest={focusRequest}
+              onSelect={onSelect}
+              variant="inherit"
+              component="span"
+            />
+          </Button>
+        </Box>
+      )
+    }
+    default:
+      return null
+  }
+}
+
+interface SectionTextProps {
+  block: CampaignTextBlock
+  field: CampaignTextField
+  editing: boolean
+  focusField?: CampaignTextField
+  focusRequest: number
+  onSelect: (field: CampaignTextField) => void
+  titleVariant: 'h1' | 'h2'
+  previewLanguageId: string | null
+}
+
+function sectionFieldPlaceholder(
+  t: (key: string) => string,
+  field: CampaignTextField
+): string {
+  switch (field) {
+    case 'eyebrow':
+      return t('Eyebrow')
+    case 'title':
+      return t('Title')
+    case 'lede':
+      return t('Lede')
+    case 'intro':
+      return t('Intro')
+    default:
+      return t('Your text')
+  }
+}
+
+/** One of a section's typed text fields, styled as the public page styles it. */
+function SectionText({
+  block,
+  field,
+  editing,
+  focusField,
+  focusRequest,
+  onSelect,
+  titleVariant,
+  previewLanguageId
+}: SectionTextProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+  const translation = previewTranslation(block, field, previewLanguageId)
+  const value =
+    translation ?? (block as unknown as Record<string, string | null>)[field]
+  if (!editing && (value == null || value.trim() === '')) return null
+  const styles = {
+    eyebrow: {
+      variant: 'overline' as const,
+      sx: { color: 'var(--campaign-band-eyebrow)' }
+    },
+    title: {
+      variant: titleVariant,
+      sx: { color: 'var(--campaign-band-heading)' }
+    },
+    lede: {
+      variant: 'body1' as const,
+      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+    },
+    intro: {
+      variant: 'body1' as const,
+      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+    }
+  }[field as 'eyebrow' | 'title' | 'lede' | 'intro']
+
+  return (
+    <InlineText
+      block={block}
+      field={field}
+      translation={translation}
+      placeholder={sectionFieldPlaceholder(t, field)}
+      editing={editing}
+      autoFocus={editing && focusField === field}
+      focusRequest={focusRequest}
+      onSelect={onSelect}
+      variant={styles.variant}
+      sx={styles.sx}
+    />
+  )
+}
+
+/**
+ * One section on the editor canvas: the band from the shared resolution
+ * table, the Extras placed above, the section's typed text, then the Extras
+ * placed below. Clicking anywhere selects the section; clicking an Extra
+ * selects it. The selected block's text fields become inline inputs.
+ */
+export function CanvasSection({
+  block,
+  theme,
+  previewLanguageId
+}: CanvasSectionProps): ReactElement | null {
+  const {
+    selection,
+    selectBlock,
+    state: { editRequest }
+  } = useCampaignEditor()
+  const [focusField, setFocusField] = useState<CampaignTextField>()
+  const [focusRequest, setFocusRequest] = useState(0)
+  const seenEditRequest = useRef(editRequest)
+  const selectedId = selection.block?.id
+  const sectionSelected = selectedId === block.id
+  const band = useMemo(() => {
+    if (
+      block.__typename === 'CampaignTypographyBlock' ||
+      block.__typename === 'CampaignButtonBlock'
+    )
+      return null
+    return resolveBand(block, theme)
+  }, [block, theme])
+
+  useEffect(() => {
+    if (editRequest === seenEditRequest.current) return
+    seenEditRequest.current = editRequest
+    const target = selection.block
+    if (target == null || !isCampaignTextBlock(target)) return
+    const inSection =
+      target.id === block.id || target.parentBlockId === block.id
+    if (!inSection) return
+    setFocusField(primaryTextField(target.__typename))
+    setFocusRequest((request) => request + 1)
+  }, [editRequest, selection.block, block.id])
+
+  if (band == null) return null
+
+  const align = 'align' in block ? block.align : null
+  const titleVariant = block.__typename === 'CampaignHeroBlock' ? 'h1' : 'h2'
+  const above = block.children.filter(isAbove)
+  const below = block.children.filter((child) => !isAbove(child))
+  const alignItems =
+    align === 'center'
+      ? 'center'
+      : align === 'right'
+        ? 'flex-end'
+        : 'flex-start'
+  const textFields: readonly CampaignTextField[] = isCampaignTextBlock(block)
+    ? CAMPAIGN_TEXT_FIELDS[block.__typename]
+    : []
+
+  function handleSelectField(field: CampaignTextField): void {
+    setFocusField(field)
+    selectBlock(block.id)
+  }
+
+  function selectExtra(child: CanvasBlock, field: CampaignTextField): void {
+    setFocusField(field)
+    selectBlock(child.id)
+  }
+
+  function renderExtra(child: CanvasBlock): ReactElement | null {
+    const field: CampaignTextField =
+      child.__typename === 'CampaignButtonBlock' ? 'label' : 'content'
+    return (
+      <CanvasExtra
+        key={child.id}
+        block={child}
+        selected={selectedId === child.id}
+        onSelect={() => selectExtra(child, field)}
+        focusField={focusField}
+        focusRequest={focusRequest}
+        previewLanguageId={previewLanguageId}
+      />
+    )
+  }
+
+  return (
+    <Box
+      component="section"
+      id={block.id}
+      data-testid={`CanvasSection-${block.id}`}
+      data-selected={sectionSelected}
+      style={bandCssVariables(band)}
+      onClick={(event: MouseEvent<HTMLElement>) => {
+        event.stopPropagation()
+        setFocusField(undefined)
+        selectBlock(block.id)
+      }}
+      sx={{
+        backgroundColor: 'var(--campaign-band-background)',
+        color: 'var(--campaign-band-text)',
+        textAlign: align ?? undefined,
+        py: { xs: 6, md: 10 },
+        cursor: 'pointer',
+        ...(sectionSelected ? SELECTED_OUTLINE : {})
+      }}
+    >
+      <Container maxWidth="lg">
+        <Stack spacing={3} sx={{ alignItems }}>
+          {above.map(renderExtra)}
+          {isCampaignTextBlock(block) &&
+            textFields.map((field) => (
+              <SectionText
+                key={field}
+                block={block}
+                field={field}
+                editing={sectionSelected}
+                focusField={focusField}
+                focusRequest={focusRequest}
+                onSelect={handleSelectField}
+                titleVariant={titleVariant}
+                previewLanguageId={previewLanguageId}
+              />
+            ))}
+          {below.map(renderExtra)}
+        </Stack>
+      </Container>
+    </Box>
+  )
+}

@@ -62,6 +62,26 @@ _Avoid_: insights, stats view, analytics overlay (the overlay is what the mode s
 A traffic-source node shown in the JourneyFlow during Analytics Mode: where Visitors arrived from, feeding into the first Step.
 _Avoid_: source, channel
 
+**Campaign Editor**:
+The full-screen `/campaigns/[id]` editor for a **Campaign** (the Journeys context's seasonal site), behind the LaunchDarkly flag `campaignBuilder` together with the Campaigns nav item and the `/campaigns` list. Desktop only: below 980 px it shows an "open this on a larger screen" message and no canvas. One **CommandProvider** spans both Campaign Pages so the undo history survives the **Page Selector**; nothing replaces Save — no Save button, Unsaved chip or save indicator — because every edit is its own mutation (Live Editing) with an optimistic response, and a failed one surfaces as the error snackbar and rolls back.
+_Avoid_: campaign builder (the feature name, not the surface), site editor
+
+**Campaign Canvas**:
+The Campaign Editor's rendering of the selected Campaign Page inside a FramePortal iframe, painted with the editor's own section components under the campaign theme (shared with the public viewer are pure helpers only). **Desktop/Phone** is a view toggle that sets the frame to full width or 390 px; it is never a Command.
+_Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
+
+**Campaign Row**:
+The contextual bottom bar shown while nothing on the Campaign Canvas is selected: Settings, Theme, Translations and Add section. **Settings** holds the title, the slug with its address hint (the permanent root-domain address and the current public address), the status copy and, for team managers, Delete campaign; title and slug save through `campaignUpdate` and are not Commands.
+_Avoid_: toolbar (that is the Top Bar), properties panel
+
+**Top Bar**:
+The Campaign Editor's header: the Page Selector (landing page, Region Page), the **Preview Language** select over the campaign's languages, Desktop/Phone, undo/redo, Open page (the root-domain `/campaign/<slug>` in a new tab), Publish (no confirmation) or Unpublish (confirms, stating that the linked journeys and their QR codes keep working), and the status chip. Publish and unpublish are explicit actions, never Commands.
+_Avoid_: toolbar, app bar
+
+**First-run Hint**:
+The one dismissible hint shown above the Campaign Canvas the first time a campaign opens — "Click any text to edit it. Add your regions in the region switcher." — recorded per campaign in `localStorage` like the Editor's other one-time tours. No wizard, no modal.
+_Avoid_: tour, onboarding (that is the dashboard flow), tooltip
+
 ### Journey management
 
 **Status Tabs**:
