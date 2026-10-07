@@ -53,6 +53,8 @@ interface BottomBarProps {
   onSettingsClick: () => void
   /** Opens the Languages panel (add and remove campaign languages). */
   onLanguagesClick?: () => void
+  /** Opens the Translations view (review and edit translated text). */
+  onTranslationsClick?: () => void
 }
 
 interface BarButtonProps {
@@ -101,7 +103,8 @@ interface SectionInsert {
  */
 export function BottomBar({
   onSettingsClick,
-  onLanguagesClick
+  onLanguagesClick,
+  onTranslationsClick
 }: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -394,7 +397,8 @@ export function BottomBar({
             <BarButton
               label={t('Translations')}
               icon={<TranslateIcon />}
-              disabled
+              onClick={onTranslationsClick}
+              disabled={onTranslationsClick == null}
             />
             <BarButton
               label={t('Add section')}
