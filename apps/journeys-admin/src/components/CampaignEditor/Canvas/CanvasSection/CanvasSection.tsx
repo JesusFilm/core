@@ -115,7 +115,7 @@ function CanvasExtra({
             field="content"
             translation={previewTranslation(
               block,
-              "content",
+              'content',
               previewLanguageId
             )}
             placeholder={t('Your text')}
@@ -172,7 +172,7 @@ function CanvasExtra({
               field="label"
               translation={previewTranslation(
                 block,
-                "label",
+                'label',
                 previewLanguageId
               )}
               placeholder={t('Button')}
@@ -232,9 +232,8 @@ function SectionText({
   const { t } = useTranslation('apps-journeys-admin')
   const translation = previewTranslation(block, field, previewLanguageId)
   const value =
-    translation ??
-    (block as unknown as Record<string, string | null>)[field]
-  if (!editing && (value == null || value.trim() === "")) return null
+    translation ?? (block as unknown as Record<string, string | null>)[field]
+  if (!editing && (value == null || value.trim() === '')) return null
   const styles = {
     eyebrow: {
       variant: 'overline' as const,
