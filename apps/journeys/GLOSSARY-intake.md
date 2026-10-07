@@ -1,6 +1,6 @@
 ---
 area: journeys (published viewer)
-domain_ref: ./CONTEXT.md
+domain_ref: ./GLOSSARY.md
 code_paths:
   - apps/journeys/src/**
   - libs/journeys/ui/src/**
@@ -20,7 +20,7 @@ updated: 2026-08-13
 
 > Diagnosis layer for reported bugs in the **published journey viewer** (what the audience sees).
 > Read this when triaging or debugging a reported bug in a live/published journey — not for feature
-> work. Domain model: ./CONTEXT.md.
+> work. Domain model: ./GLOSSARY.md.
 > Note: most rendering and navigation lives in the shared kernel `libs/journeys/ui`, consumed by
 > both this viewer and the journeys-admin editor — so many "look first" pointers reach into that lib.
 > Failure types (T1–T11) reference the shared taxonomy in the repo-root AGENTS.md.

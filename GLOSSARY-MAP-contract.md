@@ -2,7 +2,7 @@
 
 The fixed structure that map consumers — the ENG-3707 accessor, its validator, and any future
 harness (intake, build, QA) — are written against. Audience: **map authors** (humans and agents
-editing the intake layer) and **consumer code**. This file is the contract; `CONTEXT-MAP-intake.md`
+editing the intake layer) and **consumer code**. This file is the contract; `GLOSSARY-MAP-intake.md`
 is the data. This file is _not_ always-in-context — only the INDEX is.
 
 Versioning: additive edits to the map need no contract change. A breaking change (see
@@ -10,13 +10,13 @@ Versioning: additive edits to the map need no contract change. A breaking change
 
 ## Files & discovery
 
-- The INDEX is `CONTEXT-MAP-intake.md` at the repo root. It is the **only** entry point.
-- Each area's intake file lives at `<area-dir>/CONTEXT-intake.md` and is reached **only** via the
-  index entry's `intake:` path. Consumers must not glob for `CONTEXT-intake.md` files — an intake
+- The INDEX is `GLOSSARY-MAP-intake.md` at the repo root. It is the **only** entry point.
+- Each area's intake file lives at `<area-dir>/GLOSSARY-intake.md` and is reached **only** via the
+  index entry's `intake:` path. Consumers must not glob for `GLOSSARY-intake.md` files — an intake
   file not listed in the index is not part of the map.
 - All paths in the index are repo-relative.
 
-## INDEX format (`CONTEXT-MAP-intake.md`)
+## INDEX format (`GLOSSARY-MAP-intake.md`)
 
 - Area entries are single-line bullets under the level-2 heading beginning `Areas` (today
   `## Areas (NextSteps)` — heading suffixes are free, the prefix is the anchor):
@@ -42,7 +42,7 @@ YAML frontmatter delimited by `---` lines, starting at byte 0 of the file. Requi
 | key               | shape                        | meaning                                                                                                |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `area`            | string                       | identity; must equal the index entry's `<area name>`                                                   |
-| `domain_ref`      | relative path                | the sibling domain `CONTEXT.md`                                                                        |
+| `domain_ref`      | relative path                | the sibling domain `GLOSSARY.md`                                                                        |
 | `code_paths`      | block list of glob strings   | where this area's code lives; each glob's fixed (pre-wildcard) directory prefix must exist in the repo |
 | `trigger_phrases` | block list of quoted strings | **authoritative** reporter vocabulary for this area                                                    |
 | `type_tags`       | inline list, e.g. `[T1, T4]` | the failure types this file covers                                                                     |
@@ -93,6 +93,6 @@ Authors may add further keys freely (additive); consumers must ignore unknown ke
 - changing or reordering the index field tokens (`| domain:`, `| intake:`, `| triggers:`), or
   splitting an area entry across lines
 - changing the `Areas` / `Failure-type taxonomy` heading prefixes (suffix text is free), or
-  moving/renaming `CONTEXT-MAP-intake.md` or an intake file without updating the index in the
+  moving/renaming `GLOSSARY-MAP-intake.md` or an intake file without updating the index in the
   same commit
 - repurposing the `Handoff:` label

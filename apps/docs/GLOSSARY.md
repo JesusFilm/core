@@ -20,4 +20,4 @@ The Docusaurus blog stream with named Authors (`blog/authors.yml`). Effectively 
 
 ## What this context deliberately does not own
 
-Definitions of platform concepts (Journey, Language, Supergraph, …) belong to their owning contexts' `CONTEXT.md` files. When docs prose drifts from an owning context's glossary, the glossary wins and the docs page is the thing to fix.
+Definitions of platform concepts (Journey, Language, Supergraph, …) belong to their owning contexts' `GLOSSARY.md` files. When docs prose drifts from an owning context's glossary, the glossary wins and the docs page is the thing to fix.
