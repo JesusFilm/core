@@ -2,6 +2,7 @@ import {
   CAMPAIGN_ID,
   LANDING_PAGE_ID,
   REGION_PAGE_ID,
+  campaignStrings,
   chromeBlocks,
   eurRegion as eurRegionPublic,
   landingBlocks,
@@ -87,6 +88,7 @@ export const campaign: Campaign = {
       kind: CampaignPageKind.regionTemplate
     }
   ],
+  strings: campaignStrings,
   blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks],
   regions: []
 }

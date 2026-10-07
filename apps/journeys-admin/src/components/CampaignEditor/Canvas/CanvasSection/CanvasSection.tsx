@@ -15,7 +15,11 @@ import {
   useState
 } from 'react'
 
-import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
+import {
+  CampaignAnalyticsPanel,
+  bandCssVariables,
+  resolveBand
+} from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -256,6 +260,8 @@ export function CanvasSection({
 }: CanvasSectionProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const {
+    campaign,
+    currentRegion,
     selection,
     selectBlock,
     state: { editRequest }
@@ -430,6 +436,14 @@ export function CanvasSection({
           )}
           {block.__typename === 'CampaignRegionShareBlock' && (
             <ShareSectionEdit block={block} />
+          )}
+          {block.__typename === 'CampaignAnalyticsBlock' && (
+            <CampaignAnalyticsPanel
+              campaignId={campaign.id}
+              regions={campaign.regions}
+              fixedRegion={currentRegion}
+              strings={campaign.strings}
+            />
           )}
           {below.map(renderExtra)}
         </Stack>

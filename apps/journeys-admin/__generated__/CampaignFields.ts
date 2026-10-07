@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus } from "./globalTypes";
+import { CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignFields
@@ -71,6 +71,16 @@ export interface CampaignFields_theme {
   contrastTextColor: string;
   radius: CampaignRadius;
   buttonRadius: CampaignButtonRadius;
+}
+
+export interface CampaignFields_strings {
+  __typename: "CampaignString";
+  id: string;
+  key: CampaignStringKey;
+  /**
+   * Default-language wording, at most 200 characters.
+   */
+  value: string;
 }
 
 export interface CampaignFields_pages {
@@ -710,6 +720,10 @@ export interface CampaignFields {
    * The one Campaign Theme row; created with the campaign.
    */
   theme: CampaignFields_theme;
+  /**
+   * The seventeen Campaign Strings.
+   */
+  strings: CampaignFields_strings[];
   /**
    * Exactly the landing page and the Region Page.
    */

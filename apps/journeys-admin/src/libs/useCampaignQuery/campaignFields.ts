@@ -140,6 +140,11 @@ export const CAMPAIGN_FIELDS = gql`
       radius
       buttonRadius
     }
+    strings {
+      id
+      key
+      value
+    }
     pages {
       id
       kind

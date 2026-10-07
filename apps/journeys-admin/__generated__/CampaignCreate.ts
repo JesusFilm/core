@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignCreateInput, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus } from "./globalTypes";
+import { CampaignCreateInput, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignCreate
@@ -71,6 +71,16 @@ export interface CampaignCreate_campaignCreate_theme {
   contrastTextColor: string;
   radius: CampaignRadius;
   buttonRadius: CampaignButtonRadius;
+}
+
+export interface CampaignCreate_campaignCreate_strings {
+  __typename: "CampaignString";
+  id: string;
+  key: CampaignStringKey;
+  /**
+   * Default-language wording, at most 200 characters.
+   */
+  value: string;
 }
 
 export interface CampaignCreate_campaignCreate_pages {
@@ -710,6 +720,10 @@ export interface CampaignCreate_campaignCreate {
    * The one Campaign Theme row; created with the campaign.
    */
   theme: CampaignCreate_campaignCreate_theme;
+  /**
+   * The seventeen Campaign Strings.
+   */
+  strings: CampaignCreate_campaignCreate_strings[];
   /**
    * Exactly the landing page and the Region Page.
    */

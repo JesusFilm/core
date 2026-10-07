@@ -140,5 +140,14 @@
   "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.": "This conversation's gotten long. Start a new one to keep chatting — this clears the current session.",
   "Start a new conversation": "Start a new conversation",
   "Gallery media": "Gallery media",
-  "Chat has been turned off for this part of the journey.": "Chat has been turned off for this part of the journey."
+  "Chat has been turned off for this part of the journey.": "Chat has been turned off for this part of the journey.",
+  "Regions": "Regions",
+  "All": "All",
+  "Visitor numbers are temporarily unavailable": "Visitor numbers are temporarily unavailable",
+  "Total visitors": "Total visitors",
+  "{{region}} visitors": "{{region}} visitors",
+  "Top country": "Top country",
+  "0 visitors": "0 visitors",
+  "since {{date}}": "since {{date}}",
+  "No visits yet": "No visits yet"
 }
