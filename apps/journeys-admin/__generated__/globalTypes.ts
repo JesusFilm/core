@@ -164,6 +164,31 @@ export enum CampaignSwitcherVariant {
   pills = "pills",
 }
 
+/**
+ * Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+ */
+export enum CampaignTextField {
+  alt = "alt",
+  bullets = "bullets",
+  content = "content",
+  description = "description",
+  eyebrow = "eyebrow",
+  intro = "intro",
+  label = "label",
+  lede = "lede",
+  name = "name",
+  title = "title",
+  value = "value",
+}
+
+/**
+ * Who wrote a translation: a person or the machine-translation sweep.
+ */
+export enum CampaignTextSource {
+  human = "human",
+  machine = "machine",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -629,6 +654,26 @@ export interface CampaignRegionSwitcherBlockUpdateInput {
 
 export interface CampaignScrollToBlockActionInput {
   blockId: string;
+}
+
+/**
+ * One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
+ */
+export interface CampaignTranslationSetInput {
+  target: CampaignTranslationTargetInput;
+  field: CampaignTextField;
+  languageId: string;
+  value: string;
+}
+
+/**
+ * The row a translation belongs to: exactly one of a live Campaign Block, a Campaign Region, a Campaign String or the Campaign itself (its title).
+ */
+export interface CampaignTranslationTargetInput {
+  blockId?: string | null;
+  regionId?: string | null;
+  stringId?: string | null;
+  campaignId?: string | null;
 }
 
 export interface CampaignTypographyBlockCreateInput {

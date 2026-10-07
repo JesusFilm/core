@@ -3,11 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignFields
 // ====================================================
+
+export interface CampaignFields_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignFields_team_userTeams_user {
   __typename: "AuthenticatedUser" | "AnonymousUser";
@@ -164,6 +174,7 @@ export interface CampaignFields_blocks_CampaignHeroBlock_eyebrowTranslations {
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignHeroBlock_titleTranslations {
@@ -173,6 +184,7 @@ export interface CampaignFields_blocks_CampaignHeroBlock_titleTranslations {
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignHeroBlock_ledeTranslations {
@@ -182,6 +194,7 @@ export interface CampaignFields_blocks_CampaignHeroBlock_ledeTranslations {
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignHeroBlock {
@@ -242,6 +255,7 @@ export interface CampaignFields_blocks_CampaignRegionSwitcherBlock_titleTranslat
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignRegionSwitcherBlock {
@@ -291,6 +305,7 @@ export interface CampaignFields_blocks_CampaignVideoCarouselBlock_eyebrowTransla
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignVideoCarouselBlock_titleTranslations {
@@ -300,6 +315,7 @@ export interface CampaignFields_blocks_CampaignVideoCarouselBlock_titleTranslati
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignVideoCarouselBlock {
@@ -355,6 +371,7 @@ export interface CampaignFields_blocks_CampaignJourneyListBlock_eyebrowTranslati
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignJourneyListBlock_titleTranslations {
@@ -364,6 +381,7 @@ export interface CampaignFields_blocks_CampaignJourneyListBlock_titleTranslation
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignJourneyListBlock_ledeTranslations {
@@ -373,6 +391,7 @@ export interface CampaignFields_blocks_CampaignJourneyListBlock_ledeTranslations
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignJourneyListBlock {
@@ -426,6 +445,7 @@ export interface CampaignFields_blocks_CampaignAnalyticsBlock_eyebrowTranslation
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignAnalyticsBlock_titleTranslations {
@@ -435,6 +455,7 @@ export interface CampaignFields_blocks_CampaignAnalyticsBlock_titleTranslations 
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignAnalyticsBlock {
@@ -486,6 +507,7 @@ export interface CampaignFields_blocks_CampaignRegionHeaderBlock_introTranslatio
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignRegionHeaderBlock {
@@ -534,6 +556,7 @@ export interface CampaignFields_blocks_CampaignRegionShareBlock_titleTranslation
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignRegionShareBlock_introTranslations {
@@ -543,6 +566,7 @@ export interface CampaignFields_blocks_CampaignRegionShareBlock_introTranslation
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignRegionShareBlock {
@@ -593,6 +617,7 @@ export interface CampaignFields_blocks_CampaignTypographyBlock_contentTranslatio
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignTypographyBlock {
@@ -672,6 +697,7 @@ export interface CampaignFields_blocks_CampaignButtonBlock_labelTranslations {
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignFields_blocks_CampaignButtonBlock {
@@ -737,6 +763,27 @@ export interface CampaignFields_regions {
   listed: boolean;
 }
 
+export interface CampaignFields_strings_valueTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFields_strings {
+  __typename: "CampaignString";
+  id: string;
+  key: CampaignStringKey;
+  /**
+   * Default-language wording, at most 200 characters.
+   */
+  value: string;
+  valueTranslations: CampaignFields_strings_valueTranslations[];
+}
+
 export interface CampaignFields {
   __typename: "Campaign";
   id: string;
@@ -745,6 +792,7 @@ export interface CampaignFields {
    * Default-language title; also the public page title. Required, at most 100 characters.
    */
   title: string;
+  titleTranslations: CampaignFields_titleTranslations[];
   /**
    * Globally unique. The permanent Campaign Address is `/campaign/<slug>` on the root domain. Generated from the title; author-editable.
    */
@@ -784,4 +832,8 @@ export interface CampaignFields {
    * Every Campaign Region, listed and orphan, in switcher order.
    */
   regions: CampaignFields_regions[];
+  /**
+   * The seventeen Campaign Strings.
+   */
+  strings: CampaignFields_strings[];
 }

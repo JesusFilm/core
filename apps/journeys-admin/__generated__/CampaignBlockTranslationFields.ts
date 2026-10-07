@@ -3,13 +3,14 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
+import { CampaignTextSource } from "./globalTypes";
+
 // ====================================================
 // GraphQL fragment: CampaignBlockTranslationFields
 // ====================================================
 
 export interface CampaignBlockTranslationFields_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock" | "CampaignFooterBlock";
-  id: string;
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations {
@@ -19,6 +20,7 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTransla
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslations {
@@ -28,6 +30,7 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslati
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslations {
@@ -37,11 +40,11 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslatio
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock {
   __typename: "CampaignHeroBlock";
-  id: string;
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslations[];
   ledeTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslations[];
@@ -54,11 +57,11 @@ export interface CampaignBlockTranslationFields_CampaignRegionSwitcherBlock_titl
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignRegionSwitcherBlock {
   __typename: "CampaignRegionSwitcherBlock";
-  id: string;
   titleTranslations: CampaignBlockTranslationFields_CampaignRegionSwitcherBlock_titleTranslations[];
 }
 
@@ -69,6 +72,7 @@ export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_eyebr
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_titleTranslations {
@@ -78,11 +82,11 @@ export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_title
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
-  id: string;
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_titleTranslations[];
 }
@@ -94,6 +98,7 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_eyebrow
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTranslations {
@@ -103,6 +108,7 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTr
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTranslations {
@@ -112,11 +118,11 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTra
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignJourneyListBlock {
   __typename: "CampaignJourneyListBlock";
-  id: string;
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTranslations[];
   ledeTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTranslations[];
@@ -129,6 +135,7 @@ export interface CampaignBlockTranslationFields_CampaignAnalyticsBlock_eyebrowTr
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignAnalyticsBlock_titleTranslations {
@@ -138,11 +145,11 @@ export interface CampaignBlockTranslationFields_CampaignAnalyticsBlock_titleTran
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignAnalyticsBlock {
   __typename: "CampaignAnalyticsBlock";
-  id: string;
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignAnalyticsBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignAnalyticsBlock_titleTranslations[];
 }
@@ -154,11 +161,11 @@ export interface CampaignBlockTranslationFields_CampaignRegionHeaderBlock_introT
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignRegionHeaderBlock {
   __typename: "CampaignRegionHeaderBlock";
-  id: string;
   introTranslations: CampaignBlockTranslationFields_CampaignRegionHeaderBlock_introTranslations[];
 }
 
@@ -169,6 +176,7 @@ export interface CampaignBlockTranslationFields_CampaignRegionShareBlock_titleTr
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignRegionShareBlock_introTranslations {
@@ -178,11 +186,11 @@ export interface CampaignBlockTranslationFields_CampaignRegionShareBlock_introTr
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignRegionShareBlock {
   __typename: "CampaignRegionShareBlock";
-  id: string;
   titleTranslations: CampaignBlockTranslationFields_CampaignRegionShareBlock_titleTranslations[];
   introTranslations: CampaignBlockTranslationFields_CampaignRegionShareBlock_introTranslations[];
 }
@@ -194,11 +202,11 @@ export interface CampaignBlockTranslationFields_CampaignTypographyBlock_contentT
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
-  id: string;
   contentTranslations: CampaignBlockTranslationFields_CampaignTypographyBlock_contentTranslations[];
 }
 
@@ -209,11 +217,11 @@ export interface CampaignBlockTranslationFields_CampaignButtonBlock_labelTransla
    */
   languageId: string;
   value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockTranslationFields_CampaignButtonBlock {
   __typename: "CampaignButtonBlock";
-  id: string;
   labelTranslations: CampaignBlockTranslationFields_CampaignButtonBlock_labelTranslations[];
 }
 

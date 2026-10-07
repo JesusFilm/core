@@ -1440,5 +1440,11 @@
   "Region": "Region",
   "No sections on this page": "No sections on this page",
   "No regions yet": "No regions yet",
-  "Remove link": "Remove link"
+  "Remove link": "Remove link",
+  "Languages": "Languages",
+  "Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.": "Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.",
+  "Remove {{language}}": "Remove {{language}}",
+  "The default language cannot be removed": "The default language cannot be removed",
+  "Add a language": "Add a language",
+  "Campaign strings": "Campaign strings"
 }

@@ -2,95 +2,86 @@ import { gql } from '@apollo/client'
 
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
 
+export const TRANSLATED_VALUE_FIELDS = gql`
+  fragment TranslatedValueFields on TranslatedValue {
+    languageId
+    value
+    source
+  }
+`
+
 /**
- * Every text field's per-language values, for the canvas preview language.
- * Admin only: the public page receives its text already resolved to the Page
- * Language, so it must not download every language's copy.
+ * The translation list beside every text field of a campaign block: what the
+ * canvas shows while previewing a non-default language and what
+ * `campaignTranslationSet` updates. Admin only; the public read omits them.
  */
 export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
+  ${TRANSLATED_VALUE_FIELDS}
   fragment CampaignBlockTranslationFields on CampaignBlock {
-    __typename
-    id
     ... on CampaignHeroBlock {
       eyebrowTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       titleTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       ledeTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignRegionSwitcherBlock {
       titleTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignVideoCarouselBlock {
       eyebrowTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       titleTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignJourneyListBlock {
       eyebrowTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       titleTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       ledeTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignAnalyticsBlock {
       eyebrowTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       titleTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignRegionHeaderBlock {
       introTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignRegionShareBlock {
       titleTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
       introTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignTypographyBlock {
       contentTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
     ... on CampaignButtonBlock {
       labelTranslations {
-        languageId
-        value
+        ...TranslatedValueFields
       }
     }
   }
@@ -98,9 +89,11 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
 
 /**
  * The admin shape of a Campaign the editor opens with: settings, the team
- * roles that decide Manage and Delete, the languages for the preview select,
- * the theme, both pages and every live block as one flat list (the block
- * fields are the ones the public page reads, shared with the viewer).
+ * roles that decide Manage and Delete, the languages for the preview select
+ * and the Languages panel (autonym plus the English name),
+ * the theme, both pages, every live block as one flat list (the block
+ * fields are the ones the public page reads, shared with the viewer, plus
+ * each text field's translations) and the seventeen Campaign Strings.
  */
 export const CAMPAIGN_FIELDS = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
@@ -110,6 +103,9 @@ export const CAMPAIGN_FIELDS = gql`
     id
     teamId
     title
+    titleTranslations {
+      ...TranslatedValueFields
+    }
     slug
     status
     defaultLanguageId
@@ -133,7 +129,7 @@ export const CAMPAIGN_FIELDS = gql`
       language {
         id
         bcp47
-        name(primary: true) {
+        name(languageId: "529", primary: true) {
           value
           primary
         }
@@ -170,6 +166,14 @@ export const CAMPAIGN_FIELDS = gql`
       slug
       order
       listed
+    }
+    strings {
+      id
+      key
+      value
+      valueTranslations {
+        ...TranslatedValueFields
+      }
     }
   }
 `

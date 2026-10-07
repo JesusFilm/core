@@ -25,6 +25,7 @@ import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
+import { LanguagesPanel } from './LanguagesPanel'
 import { Settings } from './Settings'
 import { TopBar } from './TopBar'
 
@@ -46,15 +47,22 @@ function CampaignEditorShell({
   isManager
 }: CampaignEditorShellProps): ReactElement {
   const {
-    state: { pageKind },
+    state: { pageKind, previewLanguageId },
     dispatch
   } = useCampaignEditor()
-  const [previewLanguageId, setPreviewLanguageId] = useState<string>()
   const [view, setView] = useState<CanvasView>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [languagesOpen, setLanguagesOpen] = useState(false)
 
   function handlePageKindChange(nextPageKind: CampaignPageKind): void {
     dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind })
+  }
+
+  function handlePreviewLanguageChange(languageId: string): void {
+    dispatch({
+      type: 'SetPreviewLanguageAction',
+      previewLanguageId: languageId
+    })
   }
 
   return (
@@ -64,26 +72,31 @@ function CampaignEditorShell({
         campaign={campaign}
         pageKind={pageKind}
         onPageKindChange={handlePageKindChange}
-        previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
-        onPreviewLanguageChange={setPreviewLanguageId}
+        previewLanguageId={previewLanguageId}
+        onPreviewLanguageChange={handlePreviewLanguageChange}
         view={view}
         onViewChange={setView}
         isManager={isManager}
       />
       <FirstRunHint campaignId={campaign.id} />
-      <Canvas
-        campaign={campaign}
-        pageKind={pageKind}
-        previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
-        view={view}
+      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
+      <BottomBar
+        onSettingsClick={() => setSettingsOpen(true)}
+        onLanguagesClick={() => setLanguagesOpen(true)}
       />
-      <BottomBar onSettingsClick={() => setSettingsOpen(true)} />
       <Drawer
         anchor="right"
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
       >
         <Settings campaign={campaign} isManager={isManager} />
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={languagesOpen}
+        onClose={() => setLanguagesOpen(false)}
+      >
+        <LanguagesPanel campaign={campaign} />
       </Drawer>
     </Stack>
   )
@@ -94,7 +107,8 @@ function CampaignEditorShell({
  * so the Command history survives switching page, the selection reducer,
  * the top bar, the first-run hint, the canvas and the contextual bottom
  * bar. First open after create shows the landing page, nothing selected,
- * Desktop view, the default language. Nothing replaces Save.
+ * Desktop view, the default language as the Preview Language. Nothing
+ * replaces Save.
  */
 export function CampaignEditor({
   campaign
