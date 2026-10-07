@@ -1,12 +1,26 @@
 const PRODUCTION_GATEWAY_URL = 'https://api-gateway.central.jesusfilm.org/'
+const STAGE_GATEWAY_HOSTNAME = 'api-gateway.stage.central.jesusfilm.org'
+
+function gatewayHostname(): string | null {
+  const gatewayUrl = process.env.NEXT_PUBLIC_GATEWAY_URL
+  if (gatewayUrl == null || gatewayUrl === '') return null
+  try {
+    return new URL(gatewayUrl).hostname
+  } catch {
+    return null
+  }
+}
 
 export function isProductionEnvironment(): boolean {
   return process.env.NEXT_PUBLIC_GATEWAY_URL === PRODUCTION_GATEWAY_URL
 }
 
 export function isStagingEnvironment(): boolean {
-  const gatewayUrl = process.env.NEXT_PUBLIC_GATEWAY_URL
-  return gatewayUrl?.includes('stage.central.jesusfilm.org') ?? false
+  const hostname = gatewayHostname()
+  return (
+    hostname === STAGE_GATEWAY_HOSTNAME ||
+    hostname?.endsWith('.stage.central.jesusfilm.org') === true
+  )
 }
 
 export function shouldShowEnvironmentBanner(): boolean {

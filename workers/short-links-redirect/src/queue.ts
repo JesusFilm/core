@@ -72,9 +72,16 @@ export function toRedirectEventRow(event: RedirectEvent): RedirectEventRow {
   }
 }
 
+/** Without trailing slashes; a loop rather than `/\/+$/`, which is quadratic on long runs of `/`. */
+function stripTrailingSlashes(value: string): string {
+  let end = value.length
+  while (end > 0 && value[end - 1] === '/') end -= 1
+  return value.slice(0, end)
+}
+
 export function insertUrl(clickhouseUrl: string, database: string): string {
   const query = `INSERT INTO ${database}.redirect_events FORMAT JSONEachRow`
-  return `${clickhouseUrl.replace(/\/+$/, '')}/?query=${encodeURIComponent(query)}`
+  return `${stripTrailingSlashes(clickhouseUrl)}/?query=${encodeURIComponent(query)}`
 }
 
 function basicAuthHeader(user: string, password: string): string {

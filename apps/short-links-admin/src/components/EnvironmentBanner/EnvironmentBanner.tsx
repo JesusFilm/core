@@ -2,16 +2,15 @@
 
 import { ReactElement } from 'react'
 
-import { shouldShowEnvironmentBanner } from '../../libs/environment'
+import {
+  isStagingEnvironment,
+  shouldShowEnvironmentBanner
+} from '../../libs/environment'
 
 export function EnvironmentBanner(): ReactElement | null {
-  const gatewayUrl = process.env.NEXT_PUBLIC_GATEWAY_URL
-
   if (!shouldShowEnvironmentBanner()) return null
 
-  const environmentName = gatewayUrl?.includes('stage.central.jesusfilm.org')
-    ? 'STAGE'
-    : 'NON-PRODUCTION'
+  const environmentName = isStagingEnvironment() ? 'STAGE' : 'NON-PRODUCTION'
 
   return (
     <div
