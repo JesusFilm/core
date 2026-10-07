@@ -339,17 +339,46 @@ describe('campaign block service', () => {
         id: where.id,
         ...data
       })) as never)
-      prismaMock.campaignBlock.findMany.mockResolvedValue([first, third])
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([first, heroButton, third])
+        .mockResolvedValueOnce([first, third])
 
       const result = await removeBlock({ ...heroButton, parentOrder: 1 })
 
-      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-        where: { id: 'heroButtonId' },
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['heroButtonId'] } },
         data: { deletedAt: expect.any(Date) }
       })
       expect(result.map((block) => [block.id, block.parentOrder])).toEqual([
         ['firstId', 0],
         ['thirdId', 1]
+      ])
+    })
+
+    it('stamps the live descendants and owned blocks in the same write', async () => {
+      const child = { ...heroButton, id: 'childId', parentBlockId: 'heroId' }
+      const owned = { ...heroButton, id: 'ownedId', parentOrder: null }
+      const unrelated = {
+        ...heroButton,
+        id: 'unrelatedId',
+        parentBlockId: 'otherId'
+      }
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([
+          { ...hero, coverBlockId: 'ownedId' },
+          child,
+          owned,
+          unrelated
+        ])
+        .mockResolvedValueOnce([])
+
+      await removeBlock({ ...hero, parentOrder: 0 })
+
+      const { where } = prismaMock.campaignBlock.updateMany.mock.calls[0][0]
+      expect((where!.id as { in: string[] }).in.sort()).toEqual([
+        'childId',
+        'heroId',
+        'ownedId'
       ])
     })
   })
@@ -387,6 +416,32 @@ describe('campaign block service', () => {
         ['heroButtonId', 1],
         ['thirdId', 2]
       ])
+    })
+
+    it('clears deletedAt on the rows deleted with the block, matched by timestamp', async () => {
+      const deletedAt = new Date('2026-10-01T00:00:00.000Z')
+      prismaMock.campaignBlock.update.mockImplementation((async ({
+        where,
+        data
+      }: any) => ({
+        ...hero,
+        id: where.id,
+        ...data
+      })) as never)
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+
+      await restoreBlock({ ...hero, deletedAt })
+
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: {
+          campaignId: hero.campaignId,
+          deletedAt,
+          id: { not: 'heroId' }
+        },
+        data: { deletedAt: null }
+      })
     })
 
     it('returns the restored block’s live descendants after its siblings', async () => {
