@@ -9,6 +9,24 @@ import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBa
 // GraphQL mutation operation: CampaignRegionShareBlockCreate
 // ====================================================
 
+export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
+export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate {
   __typename: "CampaignRegionShareBlock";
   id: string;
@@ -46,6 +64,8 @@ export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate {
   accentColor: string | null;
   title: string | null;
   intro: string | null;
+  titleTranslations: CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_titleTranslations[];
+  introTranslations: CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_introTranslations[];
 }
 
 export interface CampaignRegionShareBlockCreate {

@@ -9,6 +9,24 @@ import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, Campaign
 // GraphQL mutation operation: CampaignVideoCarouselBlockCreate
 // ====================================================
 
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -51,6 +69,8 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
    */
   videoId: string | null;
   videoVariantLanguageId: string | null;
+  eyebrowTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations[];
 }
 
 export interface CampaignVideoCarouselBlockCreate {

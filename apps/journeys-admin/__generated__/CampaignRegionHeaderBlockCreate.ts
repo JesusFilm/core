@@ -9,6 +9,15 @@ import { CampaignRegionHeaderBlockCreateInput, CampaignBackgroundKind, CampaignB
 // GraphQL mutation operation: CampaignRegionHeaderBlockCreate
 // ====================================================
 
+export interface CampaignRegionHeaderBlockCreate_campaignRegionHeaderBlockCreate_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignRegionHeaderBlockCreate_campaignRegionHeaderBlockCreate {
   __typename: "CampaignRegionHeaderBlock";
   id: string;
@@ -45,6 +54,7 @@ export interface CampaignRegionHeaderBlockCreate_campaignRegionHeaderBlockCreate
   buttonTextColor: string | null;
   accentColor: string | null;
   intro: string | null;
+  introTranslations: CampaignRegionHeaderBlockCreate_campaignRegionHeaderBlockCreate_introTranslations[];
 }
 
 export interface CampaignRegionHeaderBlockCreate {

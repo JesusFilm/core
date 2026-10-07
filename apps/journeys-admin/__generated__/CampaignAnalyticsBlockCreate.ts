@@ -9,6 +9,24 @@ import { CampaignAnalyticsBlockCreateInput, CampaignBackgroundKind, CampaignBack
 // GraphQL mutation operation: CampaignAnalyticsBlockCreate
 // ====================================================
 
+export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
+export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate {
   __typename: "CampaignAnalyticsBlock";
   id: string;
@@ -47,6 +65,8 @@ export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate {
   eyebrow: string | null;
   title: string | null;
   showMap: boolean;
+  eyebrowTranslations: CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_titleTranslations[];
 }
 
 export interface CampaignAnalyticsBlockCreate {

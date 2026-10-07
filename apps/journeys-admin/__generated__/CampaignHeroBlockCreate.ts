@@ -9,6 +9,33 @@ import { CampaignHeroBlockCreateInput, CampaignBackgroundKind, CampaignBackgroun
 // GraphQL mutation operation: CampaignHeroBlockCreate
 // ====================================================
 
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
   __typename: "CampaignHeroBlock";
   id: string;
@@ -55,6 +82,9 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations[];
+  ledeTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations[];
 }
 
 export interface CampaignHeroBlockCreate {
