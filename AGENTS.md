@@ -25,7 +25,7 @@ Selected NextSteps areas add a `GLOSSARY-intake.md` beside their `GLOSSARY.md` �
 - Read `GLOSSARY.md` to understand or build in an area.
 - Read `GLOSSARY-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
 
-Start from the intake index (`GLOSSARY-MAP-intake.md`): match the reporter's words to an area's `trigger_phrases`, then open that area's `GLOSSARY-intake.md`.
+Start from the intake index (`GLOSSARY-MAP-intake.md`): match the reporter's words to an area's `triggers`, then open that area's `GLOSSARY-intake.md`.
 
 ## Conventions
 
@@ -89,7 +89,7 @@ The remaining steps cannot produce a commit at all: `subgraph-check` only report
 
 ### Documented Solutions
 
-The glossary map (`GLOSSARY.md`, and `GLOSSARY-intake.md` when diagnosing) is the primary knowledge source — rely on it by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
+The domain glossaries (`GLOSSARY-MAP.md` and each workspace's `GLOSSARY.md`, plus `GLOSSARY-intake.md` when diagnosing) are the primary knowledge source — rely on them by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
 
 Do **not** read solution docs by default. Their filenames are self-describing — if, while working, one looks relevant to the task, **surface it and ask the user before opening it** (e.g. "There may be a relevant solution doc: `<title>` — want me to read it?"). Only read the contents once the user confirms.
 
