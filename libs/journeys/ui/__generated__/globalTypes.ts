@@ -167,6 +167,16 @@ export enum CampaignTextSource {
   machine = "machine",
 }
 
+/**
+ * The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+ */
+export enum CampaignTranslationGroup {
+  interface = "interface",
+  landing = "landing",
+  region = "region",
+  regions = "regions",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
