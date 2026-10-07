@@ -15,11 +15,7 @@ import {
   useState
 } from 'react'
 
-import {
-  CampaignAnalyticsPanel,
-  bandCssVariables,
-  resolveBand
-} from '@core/journeys/ui/Campaign'
+import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -39,6 +35,7 @@ import {
   isCampaignTextBlock,
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
+import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
@@ -260,8 +257,6 @@ export function CanvasSection({
 }: CanvasSectionProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    campaign,
-    currentRegion,
     selection,
     selectBlock,
     state: { editRequest }
@@ -438,12 +433,7 @@ export function CanvasSection({
             <ShareSectionEdit block={block} />
           )}
           {block.__typename === 'CampaignAnalyticsBlock' && (
-            <CampaignAnalyticsPanel
-              campaignId={campaign.id}
-              regions={campaign.regions}
-              fixedRegion={currentRegion}
-              strings={campaign.strings}
-            />
+            <AnalyticsEdit block={block} />
           )}
           {below.map(renderExtra)}
         </Stack>

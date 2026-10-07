@@ -31,3 +31,6 @@ pnpm-lock.yaml
 # Kubernetes manifests: managed by upstream charts/tools and often intentionally not Prettier-formatted
 /infrastructure/kube/**/*.yaml
 /infrastructure/kube/**/*.yml
+
+# vendored world-atlas@2.0.2 topology, kept minified as published
+apps/journeys/public/countries-110m.json

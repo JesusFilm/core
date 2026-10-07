@@ -1,3 +1,6 @@
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+
 import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider } from '@mui/material/styles'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -22,8 +25,41 @@ import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
 import type { GetCampaignStats_campaignStats as CampaignStats } from './__generated__/GetCampaignStats'
 import { CampaignAnalytics } from './CampaignAnalytics'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
+import { WorldAtlasTopology, WorldMapShapes, buildWorldMap } from './WorldMap'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
+
+const worldMap = buildWorldMap(
+  JSON.parse(
+    readFileSync(
+      resolve(
+        __dirname,
+        '../../../../../../../apps/journeys/public/countries-110m.json'
+      ),
+      'utf8'
+    )
+  ) as WorldAtlasTopology
+)
+
+const WORLD_TRANSFORM = 'translate(0.0px, 0.0px) scale(1.000)'
+
+const nigeria = {
+  __typename: 'CampaignRegionCountry' as const,
+  id: 'afrCountry-NG',
+  countryId: 'NG',
+  order: 0,
+  country: {
+    __typename: 'Country' as const,
+    id: 'NG',
+    flagPngSrc: null,
+    name: [{ __typename: 'CountryName' as const, value: 'Nigeria' }]
+  }
+}
+
+const mappedCampaign: CampaignPublic = {
+  ...campaignPublic,
+  regions: [eurRegion, { ...afrRegion, countries: [nigeria] }]
+}
 
 function analyticsBlock(
   pageKind: CampaignPageKind
@@ -80,6 +116,8 @@ interface RenderOptions {
   region?: CampaignRegion | null
   campaign?: CampaignPublic
   language?: string
+  showMap?: boolean
+  worldMap?: WorldMapShapes | null
 }
 
 async function renderAnalytics({
@@ -87,15 +125,21 @@ async function renderAnalytics({
   pageKind = CampaignPageKind.landing,
   region = null,
   campaign = campaignPublic,
-  language = 'en'
+  language = 'en',
+  showMap = true,
+  worldMap: shapes = worldMap
 }: RenderOptions = {}): Promise<ReturnType<typeof render>> {
   const i18n = await translations(language)
   const view = (): ReactElement => (
     <I18nContext.Provider value={{ i18n }}>
       <MockedProvider mocks={mocks as never}>
         <ThemeProvider theme={theme}>
-          <CampaignProvider value={{ campaign, pageKind, region }}>
-            <CampaignAnalytics block={analyticsBlock(pageKind)} />
+          <CampaignProvider
+            value={{ campaign, pageKind, region, worldMap: shapes }}
+          >
+            <CampaignAnalytics
+              block={{ ...analyticsBlock(pageKind), showMap }}
+            />
           </CampaignProvider>
         </ThemeProvider>
       </MockedProvider>
@@ -118,6 +162,14 @@ function withCountries(count: number): CampaignStats {
       countries
     }
   }
+}
+
+function viewportTransform(): string {
+  return screen.getByTestId('WorldMapViewport').style.transform
+}
+
+function scaleOf(transform: string): number {
+  return Number(/scale\(([\d.]+)\)/.exec(transform)?.[1])
 }
 
 describe('CampaignAnalytics', () => {
@@ -351,5 +403,111 @@ describe('CampaignAnalytics', () => {
     await renderAnalytics({ mocks: [mock] })
     await screen.findByTestId('CampaignAnalyticsVisitors')
     expect(mock.result).toHaveBeenCalledTimes(1)
+  })
+
+  describe('world map', () => {
+    it('renders the map only when showMap is true', async () => {
+      const { unmount } = await renderAnalytics()
+      await screen.findByTestId('CampaignAnalyticsStats')
+      expect(screen.getByTestId('WorldMap')).toBeInTheDocument()
+      unmount()
+
+      await renderAnalytics({ showMap: false })
+      await screen.findByTestId('CampaignAnalyticsStats')
+      expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+    })
+
+    it('skips the map while the page carries no world map', async () => {
+      await renderAnalytics({ worldMap: null })
+      await screen.findByTestId('CampaignAnalyticsStats')
+      expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+    })
+
+    it('draws the outline at once in the loading state, with no countries coloured', async () => {
+      await renderAnalytics({ campaign: mappedCampaign })
+      expect(
+        screen.getByTestId('CampaignAnalyticsSkeleton')
+      ).toBeInTheDocument()
+      expect(screen.getByTestId('WorldMap')).toBeInTheDocument()
+      expect(screen.getAllByTestId(/^WorldMapCountry-/).length).toBeGreaterThan(
+        100
+      )
+      expect(
+        document.querySelector('[data-testid^="WorldMapCountry-"][data-step]')
+      ).toBeNull()
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('CampaignAnalyticsSkeleton')
+        ).not.toBeInTheDocument()
+      )
+    })
+
+    it('does not draw the map when the stats are unavailable', async () => {
+      await renderAnalytics({ mocks: [failingMock()] })
+      await screen.findByText('Visitor numbers are temporarily unavailable')
+      expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+    })
+
+    it("colours the union of all regions' countries on ALL, and no other country", async () => {
+      await renderAnalytics({ campaign: mappedCampaign })
+      await screen.findByTestId('CampaignAnalyticsStats')
+      expect(screen.getByTestId('WorldMapCountry-250')).toHaveAttribute(
+        'data-step',
+        '3'
+      )
+      expect(screen.getByTestId('WorldMapCountry-566')).toHaveAttribute(
+        'data-step'
+      )
+      expect(screen.getByTestId('WorldMapCountry-840')).not.toHaveAttribute(
+        'data-step'
+      )
+      expect(viewportTransform()).toBe(WORLD_TRANSFORM)
+    })
+
+    it("colours and zooms to the selected region's countries on its tab", async () => {
+      await renderAnalytics({ campaign: mappedCampaign })
+      fireEvent.click(await screen.findByRole('tab', { name: 'Europe' }))
+      expect(screen.getByTestId('WorldMapCountry-250')).toHaveAttribute(
+        'data-step',
+        '3'
+      )
+      expect(screen.getByTestId('WorldMapCountry-566')).not.toHaveAttribute(
+        'data-step'
+      )
+      const europe = viewportTransform()
+      expect(europe).not.toBe(WORLD_TRANSFORM)
+      expect(scaleOf(europe)).toBeGreaterThan(1)
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
+      expect(screen.getByTestId('WorldMapCountry-566')).toHaveAttribute(
+        'data-step'
+      )
+      expect(screen.getByTestId('WorldMapCountry-250')).not.toHaveAttribute(
+        'data-step'
+      )
+      expect(viewportTransform()).not.toBe(europe)
+
+      fireEvent.click(screen.getByRole('tab', { name: 'All regions' }))
+      expect(viewportTransform()).toBe(WORLD_TRANSFORM)
+    })
+
+    it('shows the world for a region with no countries', async () => {
+      await renderAnalytics()
+      fireEvent.click(await screen.findByRole('tab', { name: 'Africa' }))
+      expect(viewportTransform()).toBe(WORLD_TRANSFORM)
+    })
+
+    it('zooms a Region Page to its own region', async () => {
+      await renderAnalytics({
+        campaign: mappedCampaign,
+        pageKind: CampaignPageKind.regionTemplate,
+        region: mappedCampaign.regions[0]
+      })
+      await screen.findByTestId('CampaignAnalyticsStats')
+      expect(scaleOf(viewportTransform())).toBeGreaterThan(1)
+      expect(screen.getByTestId('WorldMapCountry-566')).not.toHaveAttribute(
+        'data-step'
+      )
+    })
   })
 })

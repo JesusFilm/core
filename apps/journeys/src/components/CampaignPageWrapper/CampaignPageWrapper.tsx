@@ -12,7 +12,11 @@ import {
   createCampaignTheme,
   hasText
 } from '@core/journeys/ui/Campaign'
-import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
+import type {
+  CampaignPublic,
+  CampaignRegion,
+  WorldMapShapes
+} from '@core/journeys/ui/Campaign'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
@@ -23,6 +27,7 @@ interface CampaignPageWrapperProps {
   campaign: CampaignPublic
   pageKind: CampaignPageKind
   region?: CampaignRegion | null
+  worldMap?: WorldMapShapes | null
   children?: ReactNode
 }
 
@@ -51,6 +56,7 @@ export function CampaignPageWrapper({
   campaign,
   pageKind,
   region = null,
+  worldMap = null,
   children
 }: CampaignPageWrapperProps): ReactElement {
   const rtl = getLocaleRTL(campaign.language.bcp47 ?? '')
@@ -94,6 +100,7 @@ export function CampaignPageWrapper({
           pageKind={pageKind}
           region={region}
           basePath={basePath}
+          worldMap={worldMap}
         />
         {children}
       </ThemeProvider>

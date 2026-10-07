@@ -18,32 +18,32 @@ import type {
 } from './__generated__/GetCampaignStats'
 import {
   ALL_REGIONS,
+  CampaignCountryStat,
   CampaignStatsView,
+  countriesForTab,
   countryName,
   formatSince,
   statsForTab
 } from './campaignStatsScope'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
+import { MOTION_MS, REDUCED_MOTION } from './motion'
+import { WorldMap, WorldMapShapes } from './WorldMap'
 
 const ROW_HEIGHT = 40
-const MOTION_MS = 500
 
 const rowEnter = keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
 `
 
-const REDUCED_MOTION = {
-  '@media (prefers-reduced-motion: reduce)': {
-    transition: 'none',
-    animation: 'none'
-  }
-}
+type CampaignAnalyticsCountries = ReadonlyArray<CampaignCountryStat>
 
 export type CampaignAnalyticsRegion = Pick<
   CampaignRegion,
   'id' | 'name' | 'listed' | 'order'
->
+> & {
+  countries?: ReadonlyArray<{ countryId: string }>
+}
 
 interface CampaignAnalyticsPanelProps {
   campaignId: string
@@ -53,6 +53,12 @@ interface CampaignAnalyticsPanelProps {
   fixedRegion?: CampaignAnalyticsRegion | null
   /** The campaign's interface strings; only `allRegions`, `totalVisitors` and `topCountry` are read. */
   strings: ReadonlyArray<{ key: CampaignStringKey; value: string }>
+  /** The Analytics block's `showMap`: draw the world map under the tiles. */
+  showMap?: boolean
+  /** The projected map; the map is skipped until it is known. */
+  worldMap?: WorldMapShapes | null
+  /** The theme accent (`#RRGGBB`) the map shades in. */
+  accentColor?: string
 }
 
 function stringValue(
@@ -229,7 +235,10 @@ export function CampaignAnalyticsPanel({
   campaignId,
   regions,
   fixedRegion = null,
-  strings
+  strings,
+  showMap = false,
+  worldMap = null,
+  accentColor = '#000000'
 }: CampaignAnalyticsPanelProps): ReactElement {
   const { t, i18n } = useTranslation('libs-journeys-ui')
   const locale = i18n?.language ?? 'en'
@@ -281,10 +290,29 @@ export function CampaignAnalyticsPanel({
     </Tabs>
   )
 
+  const mapRegions = activeRegion != null ? [activeRegion] : regions
+  const highlightedCodes = mapRegions.flatMap((region) =>
+    (region.countries ?? []).map((country) => country.countryId)
+  )
+  const mapFor = (
+    visitors?: CampaignAnalyticsCountries
+  ): ReactElement | null =>
+    showMap && worldMap != null ? (
+      <WorldMap
+        shapes={worldMap}
+        highlightedCodes={highlightedCodes}
+        zoomToHighlighted={activeRegion != null}
+        visitors={visitors}
+        accentColor={accentColor}
+        locale={locale}
+      />
+    ) : null
+
   if (data == null && loading)
     return (
       <Stack spacing={2}>
         {tabs}
+        {mapFor()}
         <LoadingState />
       </Stack>
     )
@@ -349,6 +377,7 @@ export function CampaignAnalyticsPanel({
           })}
         />
       </Box>
+      {mapFor(countriesForTab(stats, activeTab))}
       {view.totalVisitors === 0 ? (
         <Typography
           variant="body2"

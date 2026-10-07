@@ -111,7 +111,18 @@ function stackSections(body: HTMLElement): void {
 }
 
 describe('Canvas', () => {
-  beforeEach(() => vi.clearAllMocks())
+  beforeEach(() => {
+    vi.clearAllMocks()
+    // The Analytics section asks the viewer for its world map atlas.
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.reject(new Error('offline')))
+    )
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
 
   describe('dropEdgeFor', () => {
     it('decides before or after by the midpoint of the section under the pointer', () => {
