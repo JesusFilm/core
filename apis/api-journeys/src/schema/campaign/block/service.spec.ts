@@ -598,7 +598,7 @@ describe('campaign block service', () => {
       async (typename) => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue({
           id: typename === 'CampaignHeaderBlock' ? 'headerId' : 'footerId'
-        } as never)
+        })
 
         const error = await errorOf(
           createTopLevelBlock(
