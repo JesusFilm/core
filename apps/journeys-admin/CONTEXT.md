@@ -86,6 +86,10 @@ _Avoid_: language settings, locale picker
 The Top Bar select that decides which campaign language the Campaign Canvas renders in: translations where they exist, the default-language text as a marked fallback where they do not, text direction from the language's bcp47. Editing any text, including a Campaign String, while the Preview Language is not the default writes a human translation for that language as one Command; in the default language the same edit writes the field itself.
 _Avoid_: canvas language, view language, locale
 
+**Translations View**:
+The drawer the Campaign Row's Translations button opens: one non-default campaign language at a time, every Translated Field grouped Interface, Landing page, Region page and Regions, filtered All, Needs review, Machine-translated, Missing or Edited (Needs review and Machine-translated list the same lines). Each line shows what the text is, the default wording and an editable field with its character counter; leaving the field writes a human translation (an emptied field clears it) and the line turns Edited at once, in the list and in the editor's own copy. It is not a Command: undo belongs to the canvas.
+_Avoid_: translation manager, review queue
+
 **First-run Hint**:
 The one dismissible hint shown above the Campaign Canvas the first time a campaign opens — "Click any text to edit it. Add your regions in the region switcher." — recorded per campaign in `localStorage` like the Editor's other one-time tours. No wizard, no modal.
 _Avoid_: tour, onboarding (that is the dashboard flow), tooltip
