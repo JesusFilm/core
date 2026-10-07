@@ -36,7 +36,9 @@ export const CAMPAIGN_TRANSLATIONS = gql`
 
 /**
  * Every Translated Field of a campaign in one language, for the Translations
- * view. Skipped until both the campaign and a language are chosen.
+ * view. Skipped until both the campaign and a language are chosen. Rows have
+ * no ids to normalise on, so each open also asks the network: canvas edits and
+ * new sections would otherwise leave a cached list stale.
  */
 export function useCampaignTranslationsQuery(
   variables?: CampaignTranslationsVariables
@@ -48,6 +50,8 @@ export function useCampaignTranslationsQuery(
 > {
   return useQuery<CampaignTranslations, CampaignTranslationsVariables>(
     CAMPAIGN_TRANSLATIONS,
-    variables == null ? skipToken : { variables }
+    variables == null
+      ? skipToken
+      : { variables, fetchPolicy: 'cache-and-network' }
   )
 }

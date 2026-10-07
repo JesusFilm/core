@@ -366,6 +366,23 @@ describe('TranslationsView', () => {
     expect(visibleRows()).toHaveLength(1)
   })
 
+  it('sets the field language and reading direction from the selected language', async () => {
+    const withArabic = {
+      ...campaign,
+      languages: campaign.languages.map((language) =>
+        language.languageId === FRENCH
+          ? { ...language, language: { ...language.language, bcp47: 'ar' } }
+          : language
+      )
+    }
+    renderView([listMock(FRENCH)], withArabic)
+    await screen.findByTestId('TranslationGroup-interface')
+
+    const field = screen.getByRole('textbox', { name: 'Region · Name' })
+    expect(field).toHaveAttribute('dir', 'rtl')
+    expect(field).toHaveAttribute('lang', 'ar')
+  })
+
   it('offers the default language nothing and asks for a language first', () => {
     renderView([], { ...campaign, languages: [campaign.languages[0]] })
 
