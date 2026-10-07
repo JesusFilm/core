@@ -7,6 +7,7 @@ import {
   within
 } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
+import { ComponentProps } from 'react'
 
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
@@ -168,11 +169,16 @@ function setMock(
 
 function renderView(
   mocks: Array<Record<string, unknown>>,
-  campaignProp = campaign
+  campaignProp = campaign,
+  viewProps: Partial<ComponentProps<typeof TranslationsView>> = {}
 ): ReturnType<typeof render> {
   return render(
     <MockedProvider mocks={mocks as never}>
-      <TranslationsView campaign={campaignProp} initialLanguageId={FRENCH} />
+      <TranslationsView
+        campaign={campaignProp}
+        initialLanguageId={FRENCH}
+        {...viewProps}
+      />
     </MockedProvider>
   )
 }
@@ -184,6 +190,31 @@ function visibleRows(): string[] {
 }
 
 describe('TranslationsView', () => {
+  it('shows the one-time notice that promoted machine values lost their flag, and closes it', async () => {
+    const onPromotionNoticeClose = vi.fn()
+    renderView([listMock(FRENCH)], campaign, {
+      showPromotionNotice: true,
+      onPromotionNoticeClose
+    })
+
+    const notice = screen.getByTestId('TranslationsPromotionNotice')
+    expect(notice).toHaveTextContent(
+      'no longer marked as machine-translated'
+    )
+    fireEvent.click(within(notice).getByRole('button', { name: 'Close' }))
+    expect(onPromotionNoticeClose).toHaveBeenCalled()
+    await screen.findByTestId('TranslationGroup-interface')
+  })
+
+  it('shows no notice by default', async () => {
+    renderView([listMock(FRENCH)])
+
+    await screen.findByTestId('TranslationGroup-interface')
+    expect(
+      screen.queryByTestId('TranslationsPromotionNotice')
+    ).not.toBeInTheDocument()
+  })
+
   it('groups every line Interface, Landing page, Region page and Regions', async () => {
     renderView([listMock(FRENCH)])
 

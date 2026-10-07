@@ -13,9 +13,11 @@ import { ReactElement } from 'react'
 import { type MockedFunction } from 'vitest'
 
 import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
+import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CAMPAIGN_DELETE } from '../../../libs/useCampaignDeleteMutation'
+import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'
 import { campaign, publishedCampaign } from '../data'
 
@@ -37,19 +39,25 @@ interface RenderOptions {
   campaign?: Campaign
   isManager?: boolean
   mocks?: Array<Record<string, unknown>>
+  onDefaultLanguageChanged?: () => void
 }
 
 function renderSettings({
   campaign: campaignProp = campaign,
   isManager = true,
-  mocks = []
+  mocks = [],
+  onDefaultLanguageChanged
 }: RenderOptions = {}): void {
   render(
     <MockedProvider mocks={mocks as never}>
       <SnackbarProvider>
         <CommandProvider>
           <CommandCount />
-          <Settings campaign={campaignProp} isManager={isManager} />
+          <Settings
+            campaign={campaignProp}
+            isManager={isManager}
+            onDefaultLanguageChanged={onDefaultLanguageChanged}
+          />
         </CommandProvider>
       </SnackbarProvider>
     </MockedProvider>
@@ -235,6 +243,181 @@ describe('Settings', () => {
     expect(
       screen.queryByRole('button', { name: 'Delete campaign' })
     ).not.toBeInTheDocument()
+  })
+
+  describe('default language', () => {
+    const FRENCH = '496'
+
+    function pickFrench(): void {
+      fireEvent.mouseDown(screen.getByRole('combobox'))
+      fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+    }
+
+    function updateMock(
+      result: Record<string, unknown>
+    ): Record<string, unknown> {
+      return {
+        request: {
+          query: CAMPAIGN_UPDATE,
+          variables: { id: 'campaignId', input: { defaultLanguageId: FRENCH } }
+        },
+        ...result
+      }
+    }
+
+    const swapped = vi.fn(() => ({
+      data: {
+        campaignUpdate: {
+          __typename: 'Campaign',
+          id: 'campaignId',
+          title: 'Christmas 2026',
+          slug: 'christmas-2026'
+        }
+      }
+    }))
+    const refetched = vi.fn(() => ({
+      data: { campaign: { ...campaign, defaultLanguageId: FRENCH } }
+    }))
+    const refetchMock = {
+      request: { query: GET_CAMPAIGN, variables: { id: 'campaignId' } },
+      result: refetched
+    }
+
+    it('lists the campaign languages with the default selected', () => {
+      renderSettings()
+
+      expect(screen.getByRole('combobox')).toHaveTextContent('English')
+    })
+
+    it('confirms before changing, then swaps, refetches the campaign and tells the editor, without adding a Command', async () => {
+      const onDefaultLanguageChanged = vi.fn()
+      renderSettings({
+        mocks: [updateMock({ result: swapped }), refetchMock],
+        onDefaultLanguageChanged
+      })
+
+      pickFrench()
+      const dialog = screen.getByTestId('CampaignDefaultLanguageDialog')
+      expect(swapped).not.toHaveBeenCalled()
+
+      fireEvent.click(within(dialog).getByRole('button', { name: 'Change' }))
+
+      await waitFor(() => expect(onDefaultLanguageChanged).toHaveBeenCalled())
+      expect(swapped).toHaveBeenCalled()
+      expect(refetched).toHaveBeenCalled()
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    })
+
+    it('does nothing when the confirmation is cancelled', () => {
+      renderSettings({ mocks: [updateMock({ result: swapped })] })
+
+      pickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      expect(swapped).not.toHaveBeenCalled()
+    })
+
+    it('on CONFLICT offers to machine-translate the missing texts first, then changes the default', async () => {
+      const onDefaultLanguageChanged = vi.fn()
+      const sweep = vi.fn(() => ({
+        data: {
+          campaignAiTranslateSubscription: {
+            __typename: 'CampaignAiTranslateProgress',
+            progress: 100,
+            message: 'Translation completed!',
+            campaign: {
+              __typename: 'Campaign',
+              id: 'campaignId',
+              titleTranslations: []
+            }
+          }
+        }
+      }))
+      renderSettings({
+        mocks: [
+          updateMock({
+            result: {
+              errors: [
+                new GraphQLError('3 texts have no translation', {
+                  extensions: {
+                    code: 'CONFLICT',
+                    field: 'defaultLanguageId',
+                    count: 3
+                  }
+                })
+              ]
+            }
+          }),
+          {
+            request: {
+              query: CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION,
+              variables: {
+                campaignId: 'campaignId',
+                languageId: FRENCH,
+                mode: 'missing'
+              }
+            },
+            delay: 20,
+            result: sweep
+          },
+          updateMock({ result: swapped }),
+          refetchMock
+        ],
+        onDefaultLanguageChanged
+      })
+
+      pickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Change' }))
+
+      const conflict = await screen.findByTestId(
+        'CampaignDefaultLanguageConflict'
+      )
+      expect(conflict).toHaveTextContent(
+        '3 texts have no translation in Français yet'
+      )
+      expect(onDefaultLanguageChanged).not.toHaveBeenCalled()
+
+      fireEvent.click(
+        within(conflict).getByRole('button', {
+          name: 'Machine-translate missing into Français'
+        })
+      )
+
+      await waitFor(() => expect(onDefaultLanguageChanged).toHaveBeenCalled())
+      expect(sweep).toHaveBeenCalled()
+      expect(swapped).toHaveBeenCalled()
+    })
+
+    it('shows the API error when the change is refused for another reason', async () => {
+      renderSettings({
+        mocks: [
+          updateMock({
+            result: {
+              errors: [
+                new GraphQLError(
+                  'defaultLanguageId must be one of the campaign languages',
+                  {
+                    extensions: {
+                      code: 'BAD_USER_INPUT',
+                      field: 'defaultLanguageId'
+                    }
+                  }
+                )
+              ]
+            }
+          })
+        ]
+      })
+
+      pickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Change' }))
+
+      expect(
+        await screen.findByTestId('CampaignDefaultLanguageError')
+      ).toHaveTextContent(
+        'defaultLanguageId must be one of the campaign languages'
+      )
+    })
   })
 
   describe('shapeSlug', () => {

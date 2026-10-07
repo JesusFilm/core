@@ -711,11 +711,12 @@ export interface CampaignTypographyBlockUpdateInput {
 }
 
 /**
- * Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+ * Campaign settings. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.
  */
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
+  defaultLanguageId?: string | null;
 }
 
 export interface CampaignVideoCarouselBlockUpdateInput {
