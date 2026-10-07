@@ -96,6 +96,22 @@ describe('BottomBar', () => {
     expect(onSettingsClick).toHaveBeenCalled()
   })
 
+  it('opens the Translations view from the campaign row', () => {
+    const onTranslationsClick = vi.fn()
+    render(
+      <StaticEditor mocks={[createMock, deleteMock]}>
+        <BottomBar
+          onSettingsClick={vi.fn()}
+          onTranslationsClick={onTranslationsClick}
+        />
+      </StaticEditor>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
+
+    expect(onTranslationsClick).toHaveBeenCalled()
+  })
+
   it('shows Edit, Style, Add, move, duplicate and bin for a section', () => {
     renderBar({ selectedBlockId: 'heroId' })
 
