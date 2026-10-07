@@ -280,6 +280,28 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignCreate(input: CampaignCreateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
+  Update the campaign settings: the default-language title and the Campaign Address slug. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
+  - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
+  """
+  campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.
+  
+  Auth: campaign Delete — a manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not a manager of the team.
+  """
+  campaignDelete(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
   Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
   
   Auth: campaign Manage — a manager of the campaign’s team.
@@ -5209,6 +5231,20 @@ input CampaignCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   api-languages Language id; must exist. Becomes the single Page Language and the default of every Translated Field.
   """
   defaultLanguageId: ID!
+}
+
+"""
+Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+"""
+input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  Default-language title, required when given, at most 100 characters. Changing it never regenerates the slug.
+  """
+  title: String
+  """
+  Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.
+  """
+  slug: String
 }
 
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

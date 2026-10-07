@@ -227,6 +227,10 @@ _Avoid_: live/offline (use published/draft), visibility, state
 How a Campaign is edited: every edit saves in place as its own mutation, with no working copy, snapshot or Save step, so a published Campaign changes under its visitors as the author works, within the public page's refresh window. Undo is the Editor's in-memory **Command** history, not a saved version.
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
 
+**Campaign Settings**:
+The two fields of a Campaign that are not content: the default-language title and the slug, written by `campaignUpdate` (campaign Update) outside the Editor's Command history. The slug is validated as an author slug (pattern, 200 characters, the reserved list, global uniqueness) and never follows a title change. `campaignDelete` (campaign Delete, managers only) hard-deletes the row and lets the database cascade take the blocks, actions, pages, languages, theme, strings and regions; a Custom Domain naming it as Campaign Root is released, and the linked Journeys and their QR codes are untouched.
+_Avoid_: metadata, properties, campaign info
+
 **Campaign Region**:
 A Campaign's regional subdivision (for example AFR, EUR), shown on the shared **Region Page** at its own address, with a required translated **name**, a slug unique within the Campaign, an ordered set of **Region Countries**, and per language a linked Journey to share. The name is its identity everywhere (page selector, breadcrumbs, translations, share copy, analytics scope); the slug is only its address. A region is **listed** when it appears on the Region Switcher; an unlisted region keeps an **Orphan Page**. Regions are hard-deleted with everything they own, and only once unlisted.
 _Avoid_: country, market, locale, key (for the slug)

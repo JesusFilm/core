@@ -125,6 +125,14 @@ export enum CampaignRadius {
 }
 
 /**
+ * Lifecycle state of a Campaign. Status is the only public gate: a draft is never served, a published campaign is served as it is right now.
+ */
+export enum CampaignStatus {
+  draft = "draft",
+  published = "published",
+}
+
+/**
  * The fixed interface phrases every Campaign carries as Campaign Strings.
  */
 export enum CampaignStringKey {
@@ -542,6 +550,23 @@ export interface ButtonClickEventCreateInput {
   value?: string | null;
   action?: ButtonAction | null;
   actionValue?: string | null;
+}
+
+/**
+ * Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
+ */
+export interface CampaignCreateInput {
+  teamId: string;
+  title: string;
+  defaultLanguageId: string;
+}
+
+/**
+ * Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+ */
+export interface CampaignUpdateInput {
+  title?: string | null;
+  slug?: string | null;
 }
 
 export interface CardBlockCreateInput {
