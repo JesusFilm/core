@@ -22,6 +22,10 @@ import type {
   CampaignPublicFields_strings,
   CampaignPublicFields_theme
 } from './__generated__/CampaignPublicFields'
+import type {
+  GetCampaignStats_campaignStats,
+  GetCampaignStats_campaignStats_all_countries
+} from './CampaignAnalytics/__generated__/GetCampaignStats'
 
 /**
  * One published `CampaignPublic` payload as `campaignPublic` returns it, after
@@ -497,6 +501,49 @@ export const campaignPublic: CampaignPublicFields = {
       id: REGION_PAGE_ID,
       kind: CampaignPageKind.regionTemplate,
       blocks: regionPageBlocks
+    }
+  ]
+}
+
+function countryStat(
+  countryCode: string,
+  visitors: number
+): GetCampaignStats_campaignStats_all_countries {
+  return { __typename: 'CampaignCountryStat', countryCode, visitors }
+}
+
+/** What `campaignStats` returns for the seeded campaign: Europe and Africa, with microstate and non-ISO codes. */
+export const campaignStatsFixture: GetCampaignStats_campaignStats = {
+  __typename: 'CampaignStats',
+  from: '2026-10-05T00:00:00.000Z',
+  to: '2026-10-06T12:00:00.000Z',
+  all: {
+    __typename: 'CampaignStatsScope',
+    totalVisitors: 66,
+    countries: [
+      countryStat('FR', 30),
+      countryStat('NG', 20),
+      countryStat('US', 5),
+      countryStat('XK', 5),
+      countryStat('A1', 3)
+    ]
+  },
+  regions: [
+    {
+      __typename: 'CampaignRegionStats',
+      regionId: 'eurRegionId',
+      totalVisitors: 40,
+      countries: [
+        countryStat('FR', 30),
+        countryStat('XK', 5),
+        countryStat('A1', 3)
+      ]
+    },
+    {
+      __typename: 'CampaignRegionStats',
+      regionId: 'afrRegionId',
+      totalVisitors: 25,
+      countries: [countryStat('NG', 20), countryStat('US', 5)]
     }
   ]
 }

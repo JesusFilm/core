@@ -24,7 +24,7 @@ function copyIds(): () => string {
 const expected = duplicateBlocks(campaign.blocks, hero, copyIds())
 
 const duplicateMock = {
-  delay: 200,
+  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_DUPLICATE,
     variables: { id: 'heroId', idMap: expected.idMap }
@@ -40,7 +40,7 @@ const duplicateMock = {
 }
 
 const deleteMock = {
-  delay: 200,
+  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'heroCopyId' } },
   result: vi.fn(() => ({
     data: {
@@ -61,7 +61,7 @@ const deleteMock = {
 }
 
 const restoreMock = {
-  delay: 200,
+  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'heroCopyId' } },
   result: vi.fn(() => ({
     data: {

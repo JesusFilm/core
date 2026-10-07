@@ -43,6 +43,9 @@ _Avoid_: section wrapper, card (a card sits inside a band)
 **Inert button**:
 A campaign button whose action target is missing (a scroll target on another page, a deleted region, no action at all): rendered static with the same look, no `href`, `aria-disabled` and no pointer effect — never hidden.
 
+**Analytics Panel**:
+The body of the Analytics section (`CampaignAnalyticsPanel`), shared by the public page and the editor canvas so both read the same `campaignStats` query and cache. It fetches client-side after render (never in the page payload), then shows the Top country and visitors tiles and a ranked top-10 country list; the landing page gets region tabs (ALL first), a Region Page is fixed to its region. Country labels come from `Intl.DisplayNames` in the viewer locale; `totalVisitors`, `topCountry` and `allRegions` are Campaign Strings, the state copy ("No visits yet", "Visitor numbers are temporarily unavailable") is i18next.
+
 ### Playback (viewer-side)
 
 **Block History**:

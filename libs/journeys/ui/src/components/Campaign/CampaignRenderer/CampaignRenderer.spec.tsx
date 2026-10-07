@@ -1,3 +1,4 @@
+import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
 
@@ -22,18 +23,20 @@ function renderBlock(
   pageKind = CampaignPageKind.landing
 ): ReturnType<typeof render> {
   return render(
-    <ThemeProvider theme={theme}>
-      <CampaignProvider
-        value={{
-          campaign: campaignPublic,
-          pageKind,
-          region:
-            pageKind === CampaignPageKind.regionTemplate ? eurRegion : null
-        }}
-      >
-        <CampaignRenderer block={block} />
-      </CampaignProvider>
-    </ThemeProvider>
+    <MockedProvider>
+      <ThemeProvider theme={theme}>
+        <CampaignProvider
+          value={{
+            campaign: campaignPublic,
+            pageKind,
+            region:
+              pageKind === CampaignPageKind.regionTemplate ? eurRegion : null
+          }}
+        >
+          <CampaignRenderer block={block} />
+        </CampaignProvider>
+      </ThemeProvider>
+    </MockedProvider>
   )
 }
 

@@ -33,7 +33,7 @@ function sectionRows(order: string[]): Array<Record<string, unknown>> {
 }
 
 const moveUpMock = {
-  delay: 200,
+  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'landingSwitcherId', parentOrder: 0 }
@@ -52,7 +52,7 @@ const moveUpMock = {
 }
 
 const moveBackMock = {
-  delay: 200,
+  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'landingSwitcherId', parentOrder: 1 }
@@ -71,7 +71,7 @@ const moveBackMock = {
 }
 
 const crossBodyMock = {
-  delay: 200,
+  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_ORDER_UPDATE,
     variables: { id: 'footerPrivacyId', parentOrder: 0, placement: 'above' }
