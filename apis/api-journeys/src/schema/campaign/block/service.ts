@@ -881,11 +881,13 @@ export function sectionStyleColumns(
 /**
  * The shared section style helper every section and chrome update runs:
  * the pure rules above, then a given cover resolved to a live
- * CampaignImageBlock of the same campaign (`BAD_USER_INPUT` / `coverBlockId`).
+ * CampaignImageBlock owned by this section (`BAD_USER_INPUT` /
+ * `coverBlockId`). Ownership keeps the unique `coverBlockId` slot from
+ * colliding with another section's cover.
  */
 export async function validateSectionStyle(
   input: SectionStyleInput,
-  block: Pick<CampaignBlock, 'campaignId'>
+  block: Pick<CampaignBlock, 'id' | 'campaignId'>
 ): Promise<SectionStyleColumns> {
   const data = sectionStyleColumns(input)
   if (data.coverBlockId == null) return data
@@ -893,6 +895,7 @@ export async function validateSectionStyle(
     where: {
       id: data.coverBlockId,
       campaignId: block.campaignId,
+      parentBlockId: block.id,
       typename: CAMPAIGN_IMAGE_TYPENAME,
       deletedAt: null
     },
@@ -900,7 +903,7 @@ export async function validateSectionStyle(
   })
   if (cover == null)
     throw badUserInput(
-      'coverBlockId must be a live image block of this campaign',
+      'coverBlockId must be a live image block of this section',
       'coverBlockId'
     )
   return data

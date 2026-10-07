@@ -816,7 +816,7 @@ describe('campaign block service', () => {
 })
 
 describe('section style (the nine shared section fields)', () => {
-  const block = { campaignId: 'campaignId' }
+  const block = { id: 'sectionId', campaignId: 'campaignId' }
 
   describe('sectionStyleColumns', () => {
     it('writes the kind exactly as given and never derives it from the populated columns', () => {
@@ -905,7 +905,7 @@ describe('section style (the nine shared section fields)', () => {
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
     })
 
-    it('resolves a given cover to a live image block of the same campaign', async () => {
+    it('resolves a given cover to a live image block owned by the section', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         id: 'coverId'
       } as never)
@@ -920,6 +920,7 @@ describe('section style (the nine shared section fields)', () => {
         where: {
           id: 'coverId',
           campaignId: 'campaignId',
+          parentBlockId: 'sectionId',
           typename: 'CampaignImageBlock',
           deletedAt: null
         },
@@ -927,7 +928,7 @@ describe('section style (the nine shared section fields)', () => {
       })
     })
 
-    it('rejects a cover that is not a live image block of the campaign (BAD_USER_INPUT, coverBlockId)', async () => {
+    it('rejects a cover that is not a live image block owned by the section (BAD_USER_INPUT, coverBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
       const error = await errorOf(
