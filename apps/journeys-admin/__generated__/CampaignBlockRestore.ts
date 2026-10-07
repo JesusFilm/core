@@ -664,7 +664,7 @@ export type CampaignBlockRestore_campaignBlockRestore = CampaignBlockRestore_cam
 
 export interface CampaignBlockRestore {
   /**
-   * Restore a soft-deleted campaign block: clear `deletedAt` and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
+   * Restore a soft-deleted campaign block: clear `deletedAt` on it and on the rows deleted with it (same timestamp), and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 

@@ -1,3 +1,4 @@
+import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
@@ -8,6 +9,7 @@ import { useTranslation } from 'next-i18next/pages'
 import {
   MouseEvent,
   ReactElement,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -16,6 +18,7 @@ import {
 
 import { bandCssVariables, resolveBand } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
@@ -43,6 +46,12 @@ export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 interface CanvasSectionProps {
   block: CanvasBlock
   theme: CampaignTheme
+  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
+  previewLanguageId: string | null
+  /** A page section moves by its drag handle; chrome never does. */
+  draggable?: boolean
+  /** The drop indicator to show while another section is dragged over this one. */
+  dropEdge?: 'before' | 'after'
 }
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -328,8 +337,12 @@ function CanvasStrings({
  */
 export function CanvasSection({
   block,
-  theme
+  theme,
+  previewLanguageId,
+  draggable = false,
+  dropEdge
 }: CanvasSectionProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
     selection,
@@ -341,6 +354,24 @@ export function CanvasSection({
   const seenEditRequest = useRef(editRequest)
   const selectedId = selection.block?.id
   const sectionSelected = selectedId === block.id
+  const { setNodeRef: setDroppableRef } = useDroppable({
+    id: block.id,
+    disabled: !draggable
+  })
+  const {
+    setNodeRef: setDraggableRef,
+    setActivatorNodeRef,
+    listeners,
+    attributes,
+    isDragging
+  } = useDraggable({ id: block.id, disabled: !draggable })
+  const setSectionRef = useCallback(
+    (node: HTMLElement | null) => {
+      setDroppableRef(node)
+      setDraggableRef(node)
+    },
+    [setDroppableRef, setDraggableRef]
+  )
   const band = useMemo(() => {
     if (
       block.__typename === 'CampaignTypographyBlock' ||
@@ -409,6 +440,7 @@ export function CanvasSection({
 
   return (
     <Box
+      ref={setSectionRef}
       component="section"
       id={block.id}
       data-testid={`CanvasSection-${block.id}`}
@@ -420,14 +452,60 @@ export function CanvasSection({
         selectBlock(block.id)
       }}
       sx={{
+        position: 'relative',
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
         py: { xs: 6, md: 10 },
         cursor: 'pointer',
+        opacity: isDragging ? 0.6 : 1,
         ...(sectionSelected ? SELECTED_OUTLINE : {})
       }}
     >
+      {draggable && (
+        <Box
+          ref={setActivatorNodeRef}
+          {...listeners}
+          {...attributes}
+          aria-label={t('Drag section')}
+          data-testid={`CanvasSectionDragHandle-${block.id}`}
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: 8,
+            transform: 'translateY(-50%)',
+            display: 'flex',
+            p: 0.5,
+            borderRadius: 1,
+            bgcolor: 'background.paper',
+            color: adminPrimary.main,
+            boxShadow: 1,
+            cursor: isDragging ? 'grabbing' : 'grab',
+            touchAction: 'none',
+            opacity: sectionSelected ? 1 : 0,
+            'section:hover > &, &:focus-visible': { opacity: 1 }
+          }}
+        >
+          <DragIcon fontSize="small" />
+        </Box>
+      )}
+      {dropEdge != null && (
+        <Box
+          data-testid="CanvasDropIndicator"
+          data-edge={dropEdge}
+          sx={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            height: 3,
+            bgcolor: adminPrimary.main,
+            top: dropEdge === 'before' ? 0 : 'auto',
+            bottom: dropEdge === 'after' ? 0 : 'auto',
+            pointerEvents: 'none',
+            zIndex: 1
+          }}
+        />
+      )}
       <Container maxWidth="lg">
         <Stack spacing={3} sx={{ alignItems }}>
           {above.map(renderExtra)}

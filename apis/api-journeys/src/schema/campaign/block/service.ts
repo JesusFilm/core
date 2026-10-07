@@ -1,8 +1,10 @@
 import { GraphQLError } from 'graphql'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   CampaignAction,
   CampaignBlock,
+  CampaignPage,
   Prisma,
   prisma
 } from '@core/prisma/journeys/client'
@@ -62,6 +64,28 @@ export const CAMPAIGN_CHROME_TYPENAMES = [
   'CampaignFooterBlock'
 ] as const
 
+/** The seeded section typenames: what "+Add section" offers today. */
+export const CAMPAIGN_SECTION_TYPENAMES = [
+  'CampaignHeroBlock',
+  'CampaignRegionSwitcherBlock',
+  'CampaignVideoCarouselBlock',
+  'CampaignJourneyListBlock',
+  'CampaignAnalyticsBlock',
+  'CampaignRegionHeaderBlock',
+  'CampaignRegionShareBlock'
+] as const
+export type CampaignSectionTypename =
+  (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
+
+/** Sections that read the region being rendered: refused on the landing page. */
+export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
+  'CampaignRegionHeaderBlock',
+  'CampaignRegionShareBlock'
+] as const
+
+/** Column slots are created with their Columns section and never touched on their own. */
+export const CAMPAIGN_SLOT_TYPENAMES = ['CampaignColumnBlock'] as const
+
 export const CAMPAIGN_CHILD_PLACEMENTS = ['above', 'below'] as const
 
 export function isCampaignChildTypename(
@@ -78,12 +102,29 @@ export function isCampaignChromeTypename(typename: string): boolean {
   return (CAMPAIGN_CHROME_TYPENAMES as readonly string[]).includes(typename)
 }
 
+export function isCampaignRegionOnlyTypename(typename: string): boolean {
+  return (CAMPAIGN_REGION_ONLY_TYPENAMES as readonly string[]).includes(
+    typename
+  )
+}
+
+export function isCampaignSlotTypename(typename: string): boolean {
+  return (CAMPAIGN_SLOT_TYPENAMES as readonly string[]).includes(typename)
+}
+
 function notFound(message: string): GraphQLError {
   return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
 }
 
 function forbidden(message: string): GraphQLError {
   return new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } })
+}
+
+/** A well-formed request refused by the current state (PRD §15). */
+export function conflict(message: string, field: string): GraphQLError {
+  return new GraphQLError(message, {
+    extensions: { code: 'CONFLICT', field }
+  })
 }
 
 /** Block create is campaign Update on the campaign the block will belong to. */
@@ -111,16 +152,57 @@ export async function authorizeBlockUpdate(
   user: User,
   options: { includeDeleted?: boolean } = {}
 ): Promise<CampaignBlockWithCampaignAcl> {
-  const block = await prisma.campaignBlock.findFirst({
-    where: {
-      id: blockId,
-      ...(options.includeDeleted === true ? {} : { deletedAt: null })
-    },
-    include: INCLUDE_CAMPAIGN_BLOCK_ACL
-  })
+  const block = await findBlockWithAcl(blockId, options.includeDeleted === true)
   if (block == null) throw notFound('block not found')
   if (!campaignAcl(Action.Update, block.campaign, user))
     throw forbidden('user is not allowed to update block')
+  return block
+}
+
+async function findBlockWithAcl(
+  blockId: string,
+  includeDeleted: boolean
+): Promise<CampaignBlockWithCampaignAcl | null> {
+  return await prisma.campaignBlock.findFirst({
+    where: {
+      id: blockId,
+      ...(includeDeleted ? {} : { deletedAt: null })
+    },
+    include: INCLUDE_CAMPAIGN_BLOCK_ACL
+  })
+}
+
+export type StructuralVerb = 'deleted' | 'moved' | 'duplicated'
+
+/**
+ * Delete, move and duplicate share one gate: campaign Update on the block's
+ * campaign, then the protected rows refused with `CONFLICT` / `id` — the
+ * header and footer, a column slot, and the landing or Region Page itself.
+ * A page id is not a block id, but the editor's structural controls may
+ * still address one, so a page is told apart from an unknown id.
+ */
+export async function authorizeStructuralBlock(
+  blockId: string,
+  user: User,
+  verb: StructuralVerb
+): Promise<CampaignBlockWithCampaignAcl> {
+  const block = await findBlockWithAcl(blockId, false)
+  if (block == null) {
+    const page = await prisma.campaignPage.findUnique({
+      where: { id: blockId },
+      include: { campaign: { include: INCLUDE_CAMPAIGN_ACL } }
+    })
+    if (page == null) throw notFound('block not found')
+    if (!campaignAcl(Action.Update, page.campaign, user))
+      throw forbidden('user is not allowed to update block')
+    throw conflict(`the landing and region pages cannot be ${verb}`, 'id')
+  }
+  if (!campaignAcl(Action.Update, block.campaign, user))
+    throw forbidden('user is not allowed to update block')
+  if (isCampaignChromeTypename(block.typename))
+    throw conflict(`the header and footer cannot be ${verb}`, 'id')
+  if (isCampaignSlotTypename(block.typename))
+    throw conflict(`a column slot cannot be ${verb}`, 'id')
   return block
 }
 
@@ -276,17 +358,26 @@ export async function updateBlock(
 }
 
 /**
- * Soft-delete a block: stamp `deletedAt` and renumber the remaining siblings
- * contiguously. Children keep their rows and fall out of the tree with the
- * parent, so restore brings them back untouched. Returns the renumbered
+ * Soft-delete a block: stamp `deletedAt` on it and on everything it owns
+ * (live descendants and owned blocks) with one shared timestamp, then
+ * renumber the remaining siblings contiguously. Restore matches that
+ * timestamp, so rows deleted earlier stay deleted. Returns the renumbered
  * siblings.
  */
 export async function removeBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
-    await tx.campaignBlock.update({
-      where: { id: block.id },
+    const live = await tx.campaignBlock.findMany({
+      where: { campaignId: block.campaignId, deletedAt: null },
+      include: { action: true }
+    })
+    const subtreeIds = [
+      block.id,
+      ...collectSubtree(block.id, live).map((row) => row.id)
+    ]
+    await tx.campaignBlock.updateMany({
+      where: { id: { in: [...new Set(subtreeIds)] } },
       data: { deletedAt: new Date() }
     })
     const siblings =
@@ -311,15 +402,25 @@ function getDescendants(
 }
 
 /**
- * Restore a soft-deleted block: clear `deletedAt` and re-insert it among its
- * siblings at its own `parentOrder`, renumbering again. Returns the restored
- * block with its siblings and its live descendants, so the editor cache can
- * take the whole subtree back in one write.
+ * Restore a soft-deleted block: clear `deletedAt` on it and on the rows
+ * deleted with it (same timestamp), and re-insert it among its siblings at
+ * its own `parentOrder`, renumbering again. Returns the restored block with
+ * its siblings and its live descendants, so the editor cache can take the
+ * whole subtree back in one write.
  */
 export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    if (block.deletedAt != null)
+      await tx.campaignBlock.updateMany({
+        where: {
+          campaignId: block.campaignId,
+          deletedAt: block.deletedAt,
+          id: { not: block.id }
+        },
+        data: { deletedAt: null }
+      })
     const restored = await tx.campaignBlock.update({
       where: { id: block.id },
       data: { deletedAt: null },
@@ -358,4 +459,333 @@ export async function authorizeTypedBlockUpdate(
   const block = await authorizeBlockUpdate(blockId, user)
   if (block.typename !== typename) throw notFound('block not found')
   return block
+}
+
+// ---------------------------------------------------------------------------
+// Sections: top-level create with an insertion position, reorder, duplicate.
+// ---------------------------------------------------------------------------
+
+/** The scoping columns of a top-level row: a page, a region, or neither (chrome). */
+export type CampaignTopLevelScope = Pick<
+  CampaignBlock,
+  'campaignId' | 'pageId' | 'regionId'
+>
+
+export type CampaignBlockCreateData = CampaignChildCreateData
+
+/**
+ * The scoping rule (PRD §1, §12): a top-level row has at most one of
+ * `pageId` / `regionId`, and the header and footer have neither.
+ * `BAD_USER_INPUT` / `pageId` either way.
+ */
+export function assertTopLevelScope(
+  typename: string,
+  scope: Pick<CampaignBlock, 'pageId' | 'regionId'>
+): void {
+  if (isCampaignChromeTypename(typename)) {
+    if (scope.pageId != null || scope.regionId != null)
+      throw badUserInput(
+        'the header and footer belong to the campaign, not to a page or region',
+        'pageId'
+      )
+    return
+  }
+  if (scope.pageId != null && scope.regionId != null)
+    throw badUserInput(
+      'a top-level block sits on a page or in a region, not both',
+      'pageId'
+    )
+  if (scope.pageId == null && scope.regionId == null)
+    throw badUserInput(
+      'a top-level block needs a pageId or a regionId',
+      'pageId'
+    )
+}
+
+/** A campaign has exactly one header and one footer: a second is `CONFLICT` / `typename`. */
+export async function assertChromeSingleton(
+  tx: Prisma.TransactionClient,
+  campaignId: string,
+  typename: string
+): Promise<void> {
+  const existing = await tx.campaignBlock.findFirst({
+    where: { campaignId, typename, deletedAt: null },
+    select: { id: true }
+  })
+  if (existing != null)
+    throw conflict(
+      `a campaign has exactly one ${typename === 'CampaignHeaderBlock' ? 'header' : 'footer'}`,
+      'typename'
+    )
+}
+
+/**
+ * A section's page is a page of the same campaign (`BAD_USER_INPUT` /
+ * `pageId`), and the two region-only sections are refused on the landing
+ * page with the same code and field.
+ */
+export async function validateSectionPage(
+  campaignId: string,
+  pageId: string,
+  typename: string
+): Promise<CampaignPage> {
+  const page = await prisma.campaignPage.findFirst({
+    where: { id: pageId, campaignId }
+  })
+  if (page == null)
+    throw badUserInput('pageId must be a page of this campaign', 'pageId')
+  if (page.kind === 'landing' && isCampaignRegionOnlyTypename(typename))
+    throw badUserInput(
+      `${typename} can only be added to the Region Page`,
+      'pageId'
+    )
+  return page
+}
+
+function assertParentOrder(parentOrder: number | null | undefined): void {
+  if (parentOrder != null && parentOrder < 0)
+    throw badUserInput('parentOrder must be zero or more', 'parentOrder')
+}
+
+/**
+ * Create a top-level block inside `tx`: the scoping rule, the chrome
+ * singleton, then `parentOrder = siblings.length`, or the requested position
+ * with the later siblings renumbered contiguously. A position past the end
+ * appends. Returns the created row with its final `parentOrder`.
+ */
+export async function createTopLevelBlock(
+  tx: Prisma.TransactionClient,
+  scope: CampaignTopLevelScope,
+  data: CampaignBlockCreateData,
+  parentOrder?: number | null
+): Promise<CampaignBlockWithAction> {
+  assertTopLevelScope(data.typename, scope)
+  assertParentOrder(parentOrder)
+  if (isCampaignChromeTypename(data.typename))
+    await assertChromeSingleton(tx, scope.campaignId, data.typename)
+  const siblings = await getSiblings({ ...scope, parentBlockId: null }, tx)
+  const created = await tx.campaignBlock.create({
+    data: {
+      ...data,
+      campaignId: scope.campaignId,
+      pageId: scope.pageId,
+      regionId: scope.regionId,
+      parentBlockId: null,
+      parentOrder: siblings.length
+    },
+    include: { action: true }
+  })
+  let block = created
+  if (parentOrder != null && parentOrder < siblings.length) {
+    siblings.splice(parentOrder, 0, created)
+    block = (await reorderSiblings(siblings, tx))[parentOrder]
+  }
+  await touchCampaign(tx, scope.campaignId)
+  return block
+}
+
+/** Create a section on `page`: `createTopLevelBlock` with the page's scope. */
+export async function createSectionBlock(
+  tx: Prisma.TransactionClient,
+  page: CampaignPage,
+  data: CampaignBlockCreateData,
+  parentOrder?: number | null
+): Promise<CampaignBlockWithAction> {
+  return await createTopLevelBlock(
+    tx,
+    { campaignId: page.campaignId, pageId: page.id, regionId: null },
+    data,
+    parentOrder
+  )
+}
+
+/**
+ * Move a block among its siblings to `parentOrder` (clamped to the end) and
+ * renumber contiguously. An Extra may change `placement` in the same move:
+ * crossing the Section Body updates the column, moving among neighbours is
+ * an order update only. Returns the renumbered siblings.
+ */
+export async function reorderBlock(
+  block: CampaignBlock,
+  parentOrder: number,
+  placement?: string | null
+): Promise<CampaignBlockWithAction[]> {
+  if (block.parentOrder == null)
+    throw conflict('an owned block has no order to change', 'id')
+  assertParentOrder(parentOrder)
+  const nextPlacement =
+    placement == null ? undefined : assertPlacement(placement)
+  if (nextPlacement != null && !isCampaignChildTypename(block.typename))
+    throw badUserInput(
+      'placement applies to section children only',
+      'placement'
+    )
+  return await prisma.$transaction(async (tx) => {
+    if (nextPlacement != null && nextPlacement !== block.placement)
+      await tx.campaignBlock.update({
+        where: { id: block.id },
+        data: { placement: nextPlacement }
+      })
+    const all = await getSiblings(block, tx)
+    const self = all.find((candidate) => candidate.id === block.id)
+    const others = all.filter((candidate) => candidate.id !== block.id)
+    others.splice(Math.min(parentOrder, others.length), 0, {
+      ...(self ?? { ...block, action: null }),
+      placement: nextPlacement ?? block.placement
+    })
+    const siblings = await reorderSiblings(others, tx)
+    await touchCampaign(tx, block.campaignId)
+    return siblings
+  })
+}
+
+export interface CampaignBlockIdMap {
+  oldId: string
+  newId: string
+}
+
+/**
+ * A block and everything it owns, parents before children: descendants by
+ * `parentBlockId` and owned blocks through the slot columns, from the live
+ * block list.
+ */
+export function collectSubtree(
+  rootId: string,
+  live: CampaignBlockWithAction[]
+): CampaignBlockWithAction[] {
+  const byId = new Map(live.map((row) => [row.id, row]))
+  const result: CampaignBlockWithAction[] = []
+  const seen = new Set<string>()
+  const queue = [rootId]
+  while (queue.length > 0) {
+    const id = queue.shift() as string
+    if (seen.has(id)) continue
+    const row = byId.get(id)
+    if (row == null) continue
+    seen.add(id)
+    result.push(row)
+    for (const owned of [row.coverBlockId, row.mediaBlockId, row.logoBlockId])
+      if (owned != null) queue.push(owned)
+    for (const child of live)
+      if (child.parentBlockId === id) queue.push(child.id)
+  }
+  return result
+}
+
+const SLOT_COLUMNS = ['coverBlockId', 'mediaBlockId', 'logoBlockId'] as const
+
+/** A copied row's columns: everything but identity, timestamps, slots and the action. */
+function copyColumns(
+  row: CampaignBlockWithAction
+): Omit<
+  Prisma.CampaignBlockUncheckedCreateInput,
+  'id' | 'parentBlockId' | 'parentOrder'
+> {
+  const data: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(row)) {
+    if (
+      key === 'id' ||
+      key === 'parentBlockId' ||
+      key === 'parentOrder' ||
+      key === 'updatedAt' ||
+      key === 'deletedAt' ||
+      key === 'action' ||
+      (SLOT_COLUMNS as readonly string[]).includes(key)
+    )
+      continue
+    data[key] =
+      key.endsWith('Translations') && value === null ? Prisma.DbNull : value
+  }
+  return data as Omit<
+    Prisma.CampaignBlockUncheckedCreateInput,
+    'id' | 'parentBlockId' | 'parentOrder'
+  >
+}
+
+/**
+ * Deep-copy a block with its children, owned blocks and actions under new
+ * ids (`idMap` fixes any of them; the rest are fresh UUIDs), remapping slot
+ * columns and action targets that point inside the copy, and insert the
+ * copy directly after the original. Returns the renumbered siblings (the
+ * copy among them) followed by the copied descendants, so the editor cache
+ * can take the whole subtree in one write.
+ */
+export async function duplicateBlock(
+  block: CampaignBlock,
+  idMap: CampaignBlockIdMap[] = []
+): Promise<CampaignBlockWithAction[]> {
+  if (block.parentOrder == null)
+    throw conflict('an owned block cannot be duplicated on its own', 'id')
+  return await prisma.$transaction(async (tx) => {
+    const live = await tx.campaignBlock.findMany({
+      where: { campaignId: block.campaignId, deletedAt: null },
+      orderBy: { parentOrder: 'asc' },
+      include: { action: true }
+    })
+    const subtree = collectSubtree(block.id, live)
+    const ids = new Map<string, string>()
+    for (const row of subtree)
+      ids.set(
+        row.id,
+        idMap.find((entry) => entry.oldId === row.id)?.newId ?? uuidv4()
+      )
+    const remap = (id: string | null): string | null =>
+      id == null ? null : (ids.get(id) ?? id)
+    const remapSlot = (id: string | null): string | null =>
+      id == null ? null : (ids.get(id) ?? null)
+    const siblings = await getSiblings(block, tx)
+
+    const copies: CampaignBlockWithAction[] = []
+    for (const row of subtree) {
+      copies.push(
+        await tx.campaignBlock.create({
+          data: {
+            ...copyColumns(row),
+            id: ids.get(row.id),
+            parentBlockId:
+              row.id === block.id
+                ? block.parentBlockId
+                : remap(row.parentBlockId),
+            parentOrder: row.id === block.id ? siblings.length : row.parentOrder
+          },
+          include: { action: true }
+        })
+      )
+    }
+    for (const [index, row] of subtree.entries()) {
+      const slots: Partial<Record<(typeof SLOT_COLUMNS)[number], string>> = {}
+      for (const column of SLOT_COLUMNS) {
+        const target = remapSlot(row[column])
+        if (target != null) slots[column] = target
+      }
+      if (Object.keys(slots).length === 0 && row.action == null) continue
+      copies[index] = await tx.campaignBlock.update({
+        where: { id: ids.get(row.id) },
+        data: {
+          ...slots,
+          ...(row.action != null
+            ? {
+                action: {
+                  create: {
+                    blockId: remap(row.action.blockId),
+                    regionId: row.action.regionId,
+                    url: row.action.url,
+                    target: row.action.target
+                  }
+                }
+              }
+            : {})
+        },
+        include: { action: true }
+      })
+    }
+
+    const copy = copies[0]
+    const others = siblings.filter((candidate) => candidate.id !== copy.id)
+    const original = others.findIndex((candidate) => candidate.id === block.id)
+    others.splice(original + 1, 0, copy)
+    const reordered = await reorderSiblings(others, tx)
+    await touchCampaign(tx, block.campaignId)
+    return [...reordered, ...copies.slice(1)]
+  })
 }

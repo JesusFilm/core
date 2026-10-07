@@ -207,6 +207,10 @@ _Avoid_: addon, child block (too broad), inline block
 Which side of the Section Body an Extra renders on: `above` or `below`. Sibling order is still one sequence across both sides.
 _Avoid_: position, slot, side
 
+**Protected Block**:
+A Campaign Block the structural mutations refuse with `CONFLICT`: the header and footer (a campaign has exactly one of each, so a second is refused on create too), a **Column Slot**, and the two Campaign Pages themselves. A protected block is edited and styled like any other but is never deleted, moved or duplicated. Every other section and Extra is added, moved (`campaignBlockOrderUpdate`), duplicated with its subtree (`campaignBlockDuplicate`), soft-deleted and restored by the editor's structural Commands.
+_Avoid_: locked, fixed block, system block
+
 **Campaign Typography**:
 The campaign text block. Size, display-versus-body font and weight are not separate settings: the typography **variant** (core's h1 … overline ladder) decides all three through the theme, with an optional alignment and hex colour.
 _Avoid_: text block (bare), heading, paragraph, label

@@ -45,12 +45,14 @@ describe('campaignBlockDelete', () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'footerTermsId')
     )
-    prismaMock.campaignBlock.findMany.mockResolvedValue(
-      fixture.blocks.filter(
-        (block) =>
-          block.parentBlockId === 'footerId' && block.id !== 'footerTermsId'
+    prismaMock.campaignBlock.findMany
+      .mockResolvedValueOnce(fixture.blocks)
+      .mockResolvedValueOnce(
+        fixture.blocks.filter(
+          (block) =>
+            block.parentBlockId === 'footerId' && block.id !== 'footerTermsId'
+        )
       )
-    )
 
     const result = await remove('footerTermsId')
 
@@ -62,8 +64,8 @@ describe('campaignBlockDelete', () => {
         ]
       }
     })
-    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'footerTermsId' },
+    expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ['footerTermsId'] } },
       data: { deletedAt: expect.any(Date) }
     })
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
@@ -118,4 +120,88 @@ describe('campaignBlockDelete', () => {
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
+
+  it('soft-deletes a section with its descendants under one timestamp and renumbers the page’s sections', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'landingSwitcherId')
+    )
+    prismaMock.campaignBlock.findMany
+      .mockResolvedValueOnce(fixture.blocks)
+      .mockResolvedValueOnce(
+        fixture.blocks.filter(
+          (block) =>
+            block.pageId === 'landingPageId' &&
+            block.parentBlockId == null &&
+            block.id !== 'landingSwitcherId'
+        )
+      )
+
+    const result = await remove('landingSwitcherId')
+
+    expect(result.data.campaignBlockDelete).toEqual([
+      { id: 'heroId', parentOrder: 0 },
+      { id: 'carouselId', parentOrder: 1 },
+      { id: 'landingJourneyListId', parentOrder: 2 },
+      { id: 'landingAnalyticsId', parentOrder: 3 }
+    ])
+    expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: expect.arrayContaining(['landingSwitcherId']) } },
+      data: { deletedAt: expect.any(Date) }
+    })
+    expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          parentBlockId: null,
+          pageId: 'landingPageId',
+          regionId: null
+        })
+      })
+    )
+  })
+
+  it('refuses to delete a column slot (CONFLICT, id)', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', {
+        id: 'slotId',
+        typename: 'CampaignColumnBlock'
+      })
+    )
+
+    const result = await remove('slotId')
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'CONFLICT',
+      field: 'id'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it.each(['landingPageId', 'regionPageId'])(
+    'refuses to delete the page %s (CONFLICT, id)',
+    async (id) => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+      const {
+        team,
+        languages,
+        theme,
+        pages,
+        blocks,
+        regions,
+        strings,
+        ...row
+      } = fixture
+      prismaMock.campaignPage.findUnique.mockResolvedValue({
+        ...pages.find((page) => page.id === id)!,
+        campaign: { ...row, team }
+      } as never)
+
+      const result = await remove(id)
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'id'
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    }
+  )
 })
