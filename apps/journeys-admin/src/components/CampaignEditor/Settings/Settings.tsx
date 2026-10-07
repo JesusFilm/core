@@ -1,4 +1,5 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
+import { useApolloClient } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -20,7 +21,10 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignStatus } from '../../../../__generated__/globalTypes'
-import { useCampaignDeleteMutation } from '../../../libs/useCampaignDeleteMutation'
+import {
+  evictCampaignFromCache,
+  useCampaignDeleteMutation
+} from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import {
   campaignPermanentAddress,
@@ -64,15 +68,24 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
     {}
   )
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [saving, setSaving] = useState<Partial<Record<SettingsField, boolean>>>(
+    {}
+  )
   const [campaignUpdate] = useCampaignUpdateMutation()
+  const { cache } = useApolloClient()
   const [campaignDelete, { loading: deleting }] = useCampaignDeleteMutation()
 
+  // While a save is in flight, or a field error describes a rejected value,
+  // the fields hold what the user is reading about, so skip the sync; after a
+  // failed save they adopt the rolled-back value from `campaign` again.
+  const titleBlocked = (saving.title ?? false) || errors.title != null
+  const slugBlocked = (saving.slug ?? false) || errors.slug != null
   useEffect(() => {
-    setTitle(campaign.title)
-  }, [campaign.title])
+    if (!titleBlocked) setTitle(campaign.title)
+  }, [campaign.title, titleBlocked])
   useEffect(() => {
-    setSlug(campaign.slug)
-  }, [campaign.slug])
+    if (!slugBlocked) setSlug(campaign.slug)
+  }, [campaign.slug, slugBlocked])
 
   function setFieldError(field: SettingsField, message?: string): void {
     setErrors((previous) => ({ ...previous, [field]: message }))
@@ -103,6 +116,7 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
       setFieldError(field, message)
       return
     }
+    setSaving((previous) => ({ ...previous, [field]: true }))
     try {
       await campaignUpdate({
         variables: { id: campaign.id, input: { [field]: value } },
@@ -130,8 +144,9 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
         error instanceof Error ? error.message : t('Could not save campaign'),
         { variant: 'error', preventDuplicate: true }
       )
-      if (field === 'title') setTitle(campaign.title)
-      if (field === 'slug') setSlug(campaign.slug)
+      setFieldError(field, undefined)
+    } finally {
+      setSaving((previous) => ({ ...previous, [field]: false }))
     }
   }
 
@@ -152,6 +167,10 @@ export function Settings({ campaign, isManager }: SettingsProps): ReactElement {
       await campaignDelete({ variables: { id: campaign.id } })
       setDeleteOpen(false)
       await router.push('/campaigns')
+      // Evict only once the redirect has resolved: until then this page is
+      // still mounted and its `GetCampaign` would refetch the deleted
+      // campaign and flash "Campaign not found".
+      evictCampaignFromCache(cache, campaign.id)
     } catch (error) {
       setDeleteOpen(false)
       enqueueSnackbar(

@@ -228,6 +228,25 @@ describe('CampaignButton', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
+  it('renders a LinkAction with a non-https url static', () => {
+    renderButton(
+      <CampaignButton
+        block={{
+          ...heroButton,
+          action: {
+            __typename: 'CampaignLinkAction',
+            parentBlockId: heroButton.id,
+            url: 'javascript:alert(1)',
+            target: null
+          }
+        }}
+      />
+    )
+    const button = screen.getByTestId('CampaignButton')
+    expect(button).not.toHaveAttribute('href')
+    expect(button).toHaveAttribute('aria-disabled', 'true')
+  })
+
   it('renders a button with no action static', () => {
     renderButton(<CampaignButton block={{ ...heroButton, action: null }} />)
     expect(screen.getByTestId('CampaignButton')).toHaveAttribute(

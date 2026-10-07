@@ -14,6 +14,8 @@ import { Observable, Observer, Subscription } from 'rxjs'
  *
  * Pass `{ context: { debounceKey, debounceTimeout? } }` to debounce an
  * operation; operations without a `debounceKey` are forwarded untouched.
+ * Pass `debounceFlushPrefix` to forward every pending request whose key starts
+ * with it before the operation itself, so it cannot overtake them.
  */
 
 type ResultObserver = Observer<ApolloLink.Result>
@@ -45,7 +47,11 @@ export class DebounceLink extends ApolloLink {
     operation: ApolloLink.Operation,
     forward: ApolloLink.ForwardFunction
   ): Observable<ApolloLink.Result> {
-    const { debounceKey, debounceTimeout } = operation.getContext()
+    const { debounceKey, debounceTimeout, debounceFlushPrefix } =
+      operation.getContext()
+
+    if (debounceFlushPrefix != null)
+      this.flushPrefix(debounceFlushPrefix as string)
 
     if (debounceKey == null) return forward(operation)
 
@@ -121,9 +127,17 @@ export class DebounceLink extends ApolloLink {
     }
   }
 
+  private flushPrefix(prefix: string): void {
+    Object.keys(this.debounceInfo)
+      .filter((debounceKey) => debounceKey.startsWith(prefix))
+      .forEach((debounceKey) => this.flush(debounceKey))
+  }
+
   /** Forwards the last queued request and fans its result out to the queue. */
   private flush(debounceKey: string): void {
     const info = this.debounceInfo[debounceKey]
+    if (info == null) return
+    if (info.timeout != null) clearTimeout(info.timeout)
     if (info.queuedObservers.length === 0 || info.lastRequest == null) return
 
     const { operation, forward } = info.lastRequest

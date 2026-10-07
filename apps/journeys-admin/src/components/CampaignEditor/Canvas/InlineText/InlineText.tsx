@@ -1,7 +1,14 @@
 import Box from '@mui/material/Box'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ChangeEvent, MouseEvent, ReactElement, useState } from 'react'
+import {
+  ChangeEvent,
+  MouseEvent,
+  ReactElement,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { CAMPAIGN_TEXT_CAPS } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
@@ -23,6 +30,8 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
+  /** Bumped by the Edit action; focuses an input that is already mounted. */
+  focusRequest?: number
   /** Clicking the text selects its block. */
   onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
@@ -54,6 +63,7 @@ export function InlineText({
   placeholder,
   editing,
   autoFocus = false,
+  focusRequest = 0,
   onSelect,
   variant,
   component,
@@ -69,9 +79,16 @@ export function InlineText({
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
   const length = textLength(value)
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
+
+  useEffect(() => {
+    if (focusRequest === 0 || !autoFocus) return
+    inputRef.current?.focus()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRequest])
 
   function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>): void {
     const next = event.target.value
@@ -137,12 +154,13 @@ export function InlineText({
           fullWidth
           multiline
           autoFocus={autoFocus}
+          inputRef={inputRef}
           value={value}
           placeholder={fallback !== '' ? fallback : placeholder}
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          inputProps={{ 'aria-label': placeholder, maxLength: max + 1 }}
+          inputProps={{ 'aria-label': placeholder }}
         />
       </Typography>
       {helper != null && (
