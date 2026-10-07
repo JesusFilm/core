@@ -42,6 +42,15 @@ export interface CampaignButtonBlockCreate_campaignButtonBlockCreate_action_Camp
 
 export type CampaignButtonBlockCreate_campaignButtonBlockCreate_action = CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignLinkAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignScrollToBlockAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignNavigateToRegionAction;
 
+export interface CampaignButtonBlockCreate_campaignButtonBlockCreate_labelTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignButtonBlockCreate_campaignButtonBlockCreate {
   __typename: "CampaignButtonBlock";
   id: string;
@@ -82,6 +91,7 @@ export interface CampaignButtonBlockCreate_campaignButtonBlockCreate {
   labelColor: string | null;
   placement: CampaignChildPlacement | null;
   action: CampaignButtonBlockCreate_campaignButtonBlockCreate_action | null;
+  labelTranslations: CampaignButtonBlockCreate_campaignButtonBlockCreate_labelTranslations[];
 }
 
 export interface CampaignButtonBlockCreate {

@@ -9,6 +9,15 @@ import { CampaignTypographyBlockCreateInput, CampaignBackgroundKind, CampaignBac
 // GraphQL mutation operation: CampaignTypographyBlockCreate
 // ====================================================
 
+export interface CampaignTypographyBlockCreate_campaignTypographyBlockCreate_contentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+}
+
 export interface CampaignTypographyBlockCreate_campaignTypographyBlockCreate {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -43,6 +52,7 @@ export interface CampaignTypographyBlockCreate_campaignTypographyBlockCreate {
    * Which side of the Section Body this Extra renders on; null on a Region Line.
    */
   placement: CampaignChildPlacement | null;
+  contentTranslations: CampaignTypographyBlockCreate_campaignTypographyBlockCreate_contentTranslations[];
 }
 
 export interface CampaignTypographyBlockCreate {
