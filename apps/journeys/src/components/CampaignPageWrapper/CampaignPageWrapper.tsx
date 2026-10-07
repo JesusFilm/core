@@ -2,11 +2,11 @@ import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import Head from 'next/head'
 import PlausibleProvider from 'next-plausible'
-import { NextSeo } from 'next-seo'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import {
   CampaignPage,
+  CampaignSeo,
   campaignBasePath,
   campaignFontsHref,
   createCampaignTheme,
@@ -23,6 +23,11 @@ interface CampaignPageWrapperProps {
   campaign: CampaignPublic
   pageKind: CampaignPageKind
   region?: CampaignRegion | null
+  /**
+   * Where region links point: the root-domain `/campaign/<slug>` path by
+   * default, `''` on a Campaign Root domain where regions sit at `/<slug>`.
+   */
+  basePath?: string
   children?: ReactNode
 }
 
@@ -51,6 +56,7 @@ export function CampaignPageWrapper({
   campaign,
   pageKind,
   region = null,
+  basePath = campaignBasePath(campaign.slug),
   children
 }: CampaignPageWrapperProps): ReactElement {
   const rtl = getLocaleRTL(campaign.language.bcp47 ?? '')
@@ -58,11 +64,6 @@ export function CampaignPageWrapper({
     () => createCampaignTheme(campaign.theme, rtl),
     [campaign.theme, rtl]
   )
-  const basePath = campaignBasePath(campaign.slug)
-  const canonicalPath = region == null ? basePath : `${basePath}/${region.slug}`
-  const title =
-    region == null ? campaign.title : `${region.name} · ${campaign.title}`
-
   return (
     <PlausibleProvider
       enabled
@@ -74,18 +75,11 @@ export function CampaignPageWrapper({
       <Head>
         <link rel="stylesheet" href={campaignFontsHref(campaign.theme)} />
       </Head>
-      <NextSeo
-        title={title}
+      <CampaignSeo
+        campaign={campaign}
+        region={region}
         description={heroDescription(campaign, pageKind)}
-        canonical={`https://${ROOT_DOMAIN}${canonicalPath}`}
-        openGraph={{
-          type: 'website',
-          title,
-          description: heroDescription(campaign, pageKind),
-          url: `https://${ROOT_DOMAIN}${canonicalPath}`,
-          site_name: campaign.title
-        }}
-        twitter={{ site: '@YourNextStepIs', cardType: 'summary_large_image' }}
+        rootDomain={ROOT_DOMAIN}
       />
       <ThemeProvider theme={theme}>
         <CssBaseline />

@@ -10,6 +10,11 @@ export const CustomDomainRef = builder.prismaObject('CustomDomain', {
       nullable: false
     }),
     team: t.relation('team', { nullable: false }),
-    journeyCollection: t.relation('journeyCollection', { nullable: true })
+    journeyCollection: t.relation('journeyCollection', { nullable: true }),
+    campaignId: t.exposeID('campaignId', {
+      nullable: true,
+      description:
+        'Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none.'
+    })
   })
 })

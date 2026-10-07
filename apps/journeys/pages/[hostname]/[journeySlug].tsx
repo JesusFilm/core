@@ -5,6 +5,8 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { matchRegionSlug } from '@core/journeys/ui/Campaign'
+import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -13,11 +15,13 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { IdType } from '../../__generated__/globalTypes'
+import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
+import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { fetchCampaignPublicByHostname } from '../../src/libs/getCampaignPublic'
 import { getFlags } from '../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
@@ -29,7 +33,16 @@ interface HostJourneyPageProps {
   rtl: boolean
 }
 
-function HostJourneyPage({
+interface HostSlugPageProps {
+  host: string
+  journey?: Journey
+  locale?: string
+  rtl?: boolean
+  campaign?: CampaignPublic
+  region?: CampaignRegion
+}
+
+export function HostJourneyPage({
   host,
   journey,
   locale,
@@ -86,10 +99,71 @@ function HostJourneyPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
+// `/<segment>` on a domain is a region of its Campaign Root first, then a
+// journey slug (a region outranks a journey with the same spelling).
+function HostSlugPage({
+  campaign,
+  region,
+  journey,
+  host,
+  locale,
+  rtl
+}: HostSlugPageProps): ReactElement {
+  if (campaign != null && region != null)
+    return (
+      <CampaignPageWrapper
+        campaign={campaign}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={region}
+        basePath=""
+      />
+    )
+
+  if (journey == null) return <></>
+
+  return (
+    <HostJourneyPage
+      host={host}
+      journey={journey}
+      locale={locale ?? 'en'}
+      rtl={rtl ?? false}
+    />
+  )
+}
+
+export const getStaticProps: GetStaticProps<HostSlugPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
+
+  const campaign = await fetchCampaignPublicByHostname(
+    apolloClient,
+    context.params?.hostname?.toString() ?? ''
+  )
+  const region =
+    campaign == null
+      ? null
+      : matchRegionSlug(
+          context.params?.journeySlug?.toString(),
+          campaign.regions
+        )
+  if (campaign != null && region != null) {
+    return {
+      props: {
+        flags: await getFlags(),
+        host: context.params?.host?.toString() ?? '',
+        ...(await serverSideTranslations(
+          context.locale ?? 'en',
+          ['apps-journeys', 'libs-journeys-ui'],
+          i18nConfig
+        )),
+        campaign,
+        region
+      },
+      revalidate: 60
+    }
+  }
+
   try {
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
@@ -149,4 +223,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export default HostJourneyPage
+export default HostSlugPage

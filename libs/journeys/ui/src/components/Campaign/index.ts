@@ -25,6 +25,7 @@ export {
 export { CampaignRenderer } from './CampaignRenderer'
 export { CampaignSectionBand, useCampaignSection } from './CampaignSectionBand'
 export { CampaignSectionHeading } from './CampaignSectionHeading'
+export { CampaignSeo, campaignPreferredUrl } from './CampaignSeo'
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideoCarousel } from './CampaignVideoCarousel'
 export {
@@ -35,6 +36,7 @@ export {
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
+export { VIEWER_OWNED_SEGMENTS, matchRegionSlug } from './libs/matchRegionSlug'
 export { bandCssVariables, contrastText, resolveBand } from './libs/resolveBand'
 export { transformCampaignBlocks } from './libs/transformer'
 export { hasText, isCampaignSection } from './types'

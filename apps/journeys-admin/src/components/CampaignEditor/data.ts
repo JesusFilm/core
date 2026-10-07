@@ -34,6 +34,7 @@ export const campaign: Campaign = {
   publishedAt: null,
   createdAt: '2026-10-05T00:00:00.000Z',
   updatedAt: '2026-10-05T00:00:00.000Z',
+  customDomains: [],
   team: {
     __typename: 'Team',
     id: 'teamId',

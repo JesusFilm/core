@@ -26,6 +26,7 @@ export const getCustomDomainMock: MockLink.MockedResponse<
           apexName: 'example.com',
           id: 'customDomainId',
           routeAllTeamJourneys: false,
+          campaignId: null,
           journeyCollection: {
             __typename: 'JourneyCollection',
             id: 'journeyCollectionId',

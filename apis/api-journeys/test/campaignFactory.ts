@@ -9,6 +9,7 @@ import {
   CampaignRegionLanguage,
   CampaignString,
   CampaignTheme,
+  CustomDomain,
   Journey,
   Team,
   UserTeam
@@ -36,6 +37,7 @@ export interface CampaignFixture extends Campaign {
   blocks: CampaignBlockRow[]
   regions: CampaignRegionRow[]
   strings: CampaignString[]
+  customDomains: CustomDomain[]
 }
 
 export const CAMPAIGN_FIXTURE_DATE = new Date('2026-10-05T00:00:00.000Z')
@@ -544,6 +546,7 @@ export function campaignFactory(
     ],
     blocks: seededBlocks(id, createdAt.getUTCFullYear()),
     regions: [],
+    customDomains: [],
     strings: CAMPAIGN_STRING_SEED.map(([key, value]) => ({
       id: `string-${key}`,
       campaignId: id,

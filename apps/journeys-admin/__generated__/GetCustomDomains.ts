@@ -28,6 +28,10 @@ export interface GetCustomDomains_customDomains {
   apexName: string;
   name: string;
   routeAllTeamJourneys: boolean;
+  /**
+   * Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none.
+   */
+  campaignId: string | null;
   journeyCollection: GetCustomDomains_customDomains_journeyCollection | null;
 }
 

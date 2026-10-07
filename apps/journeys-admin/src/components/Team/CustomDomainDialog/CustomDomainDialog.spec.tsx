@@ -1,6 +1,12 @@
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
 import { TeamProvider } from '@core/journeys/ui/TeamProvider'
@@ -10,9 +16,14 @@ import {
 } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
 
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
+import { GetCampaigns } from '../../../../__generated__/GetCampaigns'
+import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
+import { CampaignStatus } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGNS } from '../../../libs/useCampaignsQuery/useCampaignsQuery'
 import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
 import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
+import { CUSTOM_DOMAIN_CAMPAIGN_UPDATE } from './CampaignRootForm'
 import { CustomDomainDialog } from './CustomDomainDialog'
 import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
@@ -41,6 +52,27 @@ const checkCustomDomainMockConfiguredAndVerified: MockLink.MockedResponse<CheckC
       }
     }
   }
+
+const campaignsMock: MockLink.MockedResponse<GetCampaigns> = {
+  request: { query: GET_CAMPAIGNS, variables: { teamId: 'teamId' } },
+  result: {
+    data: {
+      campaigns: [
+        {
+          __typename: 'Campaign',
+          id: 'campaignId',
+          teamId: 'teamId',
+          title: 'Christmas 2026',
+          slug: 'christmas-2026',
+          status: CampaignStatus.published,
+          publishedAt: '2026-10-05T00:00:00.000Z',
+          createdAt: '2026-10-05T00:00:00.000Z',
+          updatedAt: '2026-10-05T00:00:00.000Z'
+        }
+      ]
+    }
+  }
+}
 
 describe('CustomDomainDialog', () => {
   it('creates should show dns config if there is a custom domain', async () => {
@@ -134,5 +166,139 @@ describe('CustomDomainDialog', () => {
       'target',
       '_blank'
     )
+  })
+
+  describe('Campaign Root', () => {
+    it('lets a manager pick the team campaign and saves it through customDomainUpdate', async () => {
+      const updateResult = vi.fn().mockReturnValue({
+        data: {
+          customDomainUpdate: {
+            __typename: 'CustomDomain',
+            id: 'customDomainId',
+            campaignId: 'campaignId'
+          }
+        }
+      })
+      render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            getCustomDomainMock,
+            campaignsMock,
+            mockUseCurrentUserLazyQuery,
+            checkCustomDomainMockConfiguredAndVerified,
+            {
+              request: {
+                query: CUSTOM_DOMAIN_CAMPAIGN_UPDATE,
+                variables: { id: 'customDomainId', campaignId: 'campaignId' }
+              },
+              result: updateResult
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <CustomDomainDialog open />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      expect(await screen.findByText('Campaign Root')).toBeInTheDocument()
+      const select = screen.getByRole('combobox', { name: 'Campaign Root' })
+      fireEvent.focus(select)
+      fireEvent.keyDown(select, { key: 'ArrowDown' })
+      fireEvent.click(
+        await within(await screen.findByRole('listbox')).findByText(
+          'Christmas 2026'
+        )
+      )
+
+      await waitFor(() => expect(updateResult).toHaveBeenCalled())
+    })
+
+    it('clears the Campaign Root with null', async () => {
+      const clearResult = vi.fn().mockReturnValue({
+        data: {
+          customDomainUpdate: {
+            __typename: 'CustomDomain',
+            id: 'customDomainId',
+            campaignId: null
+          }
+        }
+      })
+      const attachedDomain: MockLink.MockedResponse<GetCustomDomains> = {
+        request: getCustomDomainMock.request,
+        result: {
+          data: {
+            customDomains: [
+              {
+                __typename: 'CustomDomain',
+                id: 'customDomainId',
+                apexName: 'example.com',
+                name: 'example.com',
+                routeAllTeamJourneys: false,
+                campaignId: 'campaignId',
+                journeyCollection: null
+              }
+            ]
+          }
+        }
+      }
+      render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            attachedDomain,
+            campaignsMock,
+            mockUseCurrentUserLazyQuery,
+            checkCustomDomainMockConfiguredAndVerified,
+            {
+              request: {
+                query: CUSTOM_DOMAIN_CAMPAIGN_UPDATE,
+                variables: { id: 'customDomainId', campaignId: null }
+              },
+              result: clearResult
+            }
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <CustomDomainDialog open />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      const select = await screen.findByRole('combobox', {
+        name: 'Campaign Root'
+      })
+      await waitFor(() => expect(select).toHaveValue('Christmas 2026'))
+      fireEvent.click(screen.getByLabelText('Clear campaign root'))
+
+      await waitFor(() => expect(clearResult).toHaveBeenCalled())
+    })
+
+    it('is not offered to a team member', async () => {
+      render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMockTeamMember,
+            getCustomDomainMock,
+            campaignsMock,
+            mockUseCurrentUserLazyQuery
+          ]}
+        >
+          <SnackbarProvider>
+            <TeamProvider>
+              <CustomDomainDialog open />
+            </TeamProvider>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      await screen.findByText('Default Journey')
+      expect(screen.queryByText('Campaign Root')).not.toBeInTheDocument()
+    })
   })
 })

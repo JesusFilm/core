@@ -74,6 +74,25 @@ describe('campaignDelete', () => {
     expect(prismaMock.campaignPage.deleteMany).not.toHaveBeenCalled()
   })
 
+  it('leaves an attached Custom Domain to the SetNull foreign key: no domain row is written', async () => {
+    const campaign = campaignFactory({ role: 'manager' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...campaign,
+      customDomains: [{ id: 'customDomainId', name: 'christmas.example.org' }]
+    } as any)
+    prismaMock.campaign.delete.mockResolvedValue(campaign)
+
+    await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(prismaMock.campaign.delete).toHaveBeenCalledTimes(1)
+    expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
+    expect(prismaMock.customDomain.updateMany).not.toHaveBeenCalled()
+    expect(prismaMock.customDomain.delete).not.toHaveBeenCalled()
+  })
+
   it('throws FORBIDDEN for a member', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(
       campaignFactory({ role: 'member' }).build()

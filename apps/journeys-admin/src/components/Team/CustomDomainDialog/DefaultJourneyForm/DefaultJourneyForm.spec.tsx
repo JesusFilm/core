@@ -189,6 +189,7 @@ describe('DefaultJourneyForm', () => {
     name: 'example.com',
     apexName: 'example.com',
     routeAllTeamJourneys: false,
+    campaignId: null,
     journeyCollection: null
   }
 

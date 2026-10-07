@@ -57,6 +57,7 @@ const getCustomDomainsMock = {
           name: 'custom.domain.com',
           apexName: 'custom.domain.com',
           routeAllTeamJourneys: false,
+          campaignId: null,
           journeyCollection: null
         }
       ]

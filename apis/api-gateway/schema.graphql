@@ -1176,6 +1176,10 @@ type Campaign @join__type(graph: API_JOURNEYS_MODERN)  {
   The seventeen Campaign Strings.
   """
   strings: [CampaignString!]!
+  """
+  Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.
+  """
+  customDomains: [CustomDomain!]!
 }
 
 """
@@ -1543,6 +1547,10 @@ type CampaignPublic @join__type(graph: API_JOURNEYS_MODERN)  {
   Every Campaign Region, listed and orphan, in switcher order.
   """
   regions: [CampaignRegionPublic!]!
+  """
+  Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+  """
+  customDomainNames: [String!]!
   header: CampaignHeaderBlock!
   footer: CampaignFooterBlock!
   """
@@ -2035,6 +2043,10 @@ type CustomDomain @join__type(graph: API_JOURNEYS_MODERN)  {
   routeAllTeamJourneys: Boolean!
   team: Team!
   journeyCollection: JourneyCollection
+  """
+  Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none.
+  """
+  campaignId: ID
 }
 
 type CustomDomainCheck @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -2632,7 +2644,7 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   
   Errors:
   - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
-  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).
+  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a hostname with no Campaign Root or a draft one).
   """
   campaignPublic(
     """
@@ -6033,6 +6045,10 @@ input CustomDomainCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
 input CustomDomainUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+  """
+  Campaign Root: the team's campaign this domain serves at `/` and `/<regionSlug>`; null clears it. Omit to leave it unchanged. Independent of `routeAllTeamJourneys` and `journeyCollectionId`.
+  """
+  campaignId: ID
 }
 
 input EmailActionInput @join__type(graph: API_JOURNEYS_MODERN)  {

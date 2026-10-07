@@ -162,6 +162,7 @@ describe('campaignPublic', () => {
           id
         }
         languageId
+        customDomainNames
         publishedAt
         languages {
           id
@@ -528,14 +529,44 @@ describe('campaignPublic', () => {
     expect(prismaMock.campaign.findFirst).not.toHaveBeenCalled()
   })
 
-  it('accepts the hostname key, which is NOT_FOUND until a Campaign Root can be set', async () => {
+  it("returns the domain's published Campaign Root for a hostname", async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue({
+      ...publishedFixture(),
+      customDomains: [
+        { name: 'christmas.example.org' },
+        { name: 'z.example.org' }
+      ]
+    } as any)
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC,
+      variables: { hostname: 'christmas.example.org' }
+    })) as any
+
+    expect(result.data.campaignPublic).toMatchObject({
+      id: 'campaignId',
+      slug: 'christmas-2026',
+      customDomainNames: ['christmas.example.org', 'z.example.org']
+    })
+    expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          status: 'published',
+          customDomains: { some: { name: 'christmas.example.org' } }
+        }
+      })
+    )
+  })
+
+  it('is NOT_FOUND for a hostname with no Campaign Root or a draft one, so the route falls through', async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue(null)
+
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { hostname: 'christmas.example.org' }
     })) as any
 
     expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
-    expect(prismaMock.campaign.findFirst).not.toHaveBeenCalled()
   })
 
   it('is BAD_USER_INPUT when both or neither of slug and hostname are given', async () => {
