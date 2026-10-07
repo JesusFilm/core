@@ -3,11 +3,31 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionShareBlockCreate
 // ====================================================
+
+export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate {
   __typename: "CampaignRegionShareBlock";
@@ -46,6 +66,8 @@ export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate {
   accentColor: string | null;
   title: string | null;
   intro: string | null;
+  titleTranslations: CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_titleTranslations[];
+  introTranslations: CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_introTranslations[];
 }
 
 export interface CampaignRegionShareBlockCreate {

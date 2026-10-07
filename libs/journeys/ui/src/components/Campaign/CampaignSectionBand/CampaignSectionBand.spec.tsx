@@ -18,6 +18,7 @@ import { transformCampaignBlocks } from '../libs/transformer'
 import { campaignPublic, landingBlocks } from '../testData'
 import type { CampaignSectionTree } from '../types'
 
+import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
 import { CampaignSectionBand } from './CampaignSectionBand'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
@@ -179,6 +180,50 @@ describe('CampaignSectionBand', () => {
       'Below button',
       'Below text'
     ])
+  })
+
+  it('offsets every band by the sticky header height so a ScrollToBlockAction target is not covered', () => {
+    renderBand(sectionWithExtras())
+    expect(CAMPAIGN_HEADER_HEIGHT).toBe(64)
+    expect(screen.getByTestId('CampaignSectionBand-heroId')).toHaveStyle({
+      scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`
+    })
+  })
+
+  it('renders the image kind cover and overlay behind the content', () => {
+    const section = sectionWithExtras()
+    const cover = {
+      __typename: 'CampaignImageBlock',
+      id: 'coverId',
+      campaignId: 'campaignId',
+      pageId: null,
+      regionId: null,
+      parentBlockId: 'heroId',
+      parentOrder: null,
+      src: 'https://images.example.org/cover.jpg',
+      alt: null,
+      width: 1600,
+      height: 900,
+      children: [],
+      cover: null,
+      media: null,
+      logo: null
+    } as unknown as CampaignSectionTree['cover']
+    renderBand({
+      ...section,
+      backgroundKind: CampaignBackgroundKind.image,
+      coverBlockId: 'coverId',
+      backgroundOverlay: null,
+      cover
+    })
+    expect(screen.getByTestId('CampaignBandCover')).toHaveAttribute(
+      'src',
+      'https://images.example.org/cover.jpg'
+    )
+    expect(screen.getByTestId('CampaignBandOverlay')).toHaveStyle({
+      backgroundColor: 'rgba(0, 0, 0, 0.55)'
+    })
+    expect(screen.getByTestId('Body')).toBeInTheDocument()
   })
 
   it('applies the body alignment to the band', () => {

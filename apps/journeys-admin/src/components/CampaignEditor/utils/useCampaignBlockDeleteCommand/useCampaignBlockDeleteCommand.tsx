@@ -6,6 +6,7 @@ import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__g
 import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
 
 /** A block's live, ordered siblings, excluding itself. */
 export function siblingsOf(
@@ -64,7 +65,8 @@ export function useCampaignBlockDeleteCommand(): {
         })
         void blockDelete({
           variables: { id: block.id },
-          optimisticResponse: { campaignBlockDelete: siblingsAfter }
+          optimisticResponse: { campaignBlockDelete: siblingsAfter },
+          context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
         })
       },
       undo() {

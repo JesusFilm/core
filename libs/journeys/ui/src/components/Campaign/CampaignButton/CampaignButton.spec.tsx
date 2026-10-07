@@ -180,14 +180,14 @@ describe('CampaignButton', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
   })
 
-  it('renders a NavigateToRegionAction as a relative link to the region page, static when the region is gone', () => {
+  it('renders a NavigateToRegionAction as a relative link to the region page in the page language, static when the region is gone', () => {
     const navigate = landingBlocks.find(
       (block) => block.id === 'switcherEuropeButtonId'
     ) as CampaignBlockOf<'CampaignButtonBlock'>
     const { unmount } = renderButton(<CampaignButton block={navigate} />)
     expect(
       screen.getByRole('link', { name: 'Start with Europe' })
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=en')
     unmount()
 
     renderButton(
@@ -226,6 +226,25 @@ describe('CampaignButton', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/')
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('renders a LinkAction with a non-https url static', () => {
+    renderButton(
+      <CampaignButton
+        block={{
+          ...heroButton,
+          action: {
+            __typename: 'CampaignLinkAction',
+            parentBlockId: heroButton.id,
+            url: 'javascript:alert(1)',
+            target: null
+          }
+        }}
+      />
+    )
+    const button = screen.getByTestId('CampaignButton')
+    expect(button).not.toHaveAttribute('href')
+    expect(button).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('renders a button with no action static', () => {

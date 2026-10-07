@@ -1,3 +1,4 @@
+import { InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -37,15 +38,17 @@ interface RenderOptions {
   campaign?: Campaign
   isManager?: boolean
   mocks?: Array<Record<string, unknown>>
+  cache?: InMemoryCache
 }
 
 function renderSettings({
   campaign: campaignProp = campaign,
   isManager = true,
-  mocks = []
+  mocks = [],
+  cache
 }: RenderOptions = {}): void {
   render(
-    <MockedProvider mocks={mocks as never}>
+    <MockedProvider mocks={mocks as never} cache={cache}>
       <SnackbarProvider>
         <CommandProvider>
           <CommandCount />
@@ -187,6 +190,58 @@ describe('Settings', () => {
     ).toBeInTheDocument()
   })
 
+  it('keeps the field on the rejected value while the API error is shown', async () => {
+    renderSettings({
+      mocks: [
+        {
+          request: {
+            query: CAMPAIGN_UPDATE,
+            variables: { id: 'campaignId', input: { slug: 'campaign' } }
+          },
+          result: {
+            errors: [
+              new GraphQLError('slug "campaign" is reserved', {
+                extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
+              })
+            ]
+          }
+        }
+      ]
+    })
+
+    const slug = screen.getByLabelText('Slug')
+    fireEvent.change(slug, { target: { value: 'campaign' } })
+    fireEvent.blur(slug)
+
+    // The optimistic value rolled back in the cache, but the field still shows
+    // what the error describes.
+    expect(
+      await screen.findByText('slug "campaign" is reserved')
+    ).toBeInTheDocument()
+    expect(slug).toHaveValue('campaign')
+  })
+
+  it('releases the field to the rolled-back value after a failure with no field error', async () => {
+    renderSettings({
+      mocks: [
+        {
+          request: {
+            query: CAMPAIGN_UPDATE,
+            variables: { id: 'campaignId', input: { title: 'Easter 2027' } }
+          },
+          error: new Error('Network down')
+        }
+      ]
+    })
+
+    const title = screen.getByLabelText('Title')
+    fireEvent.change(title, { target: { value: 'Easter 2027' } })
+    fireEvent.blur(title)
+
+    expect(await screen.findByText('Network down')).toBeInTheDocument()
+    await waitFor(() => expect(title).toHaveValue('Christmas 2026'))
+  })
+
   it('rejects an empty title before calling the API', () => {
     renderSettings()
 
@@ -227,6 +282,43 @@ describe('Settings', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
     await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/campaigns'))
+  })
+
+  it('evicts the campaign from the cache only after the redirect resolves', async () => {
+    let finishRedirect: (value: boolean) => void = () => undefined
+    mockPush.mockReturnValue(
+      new Promise<boolean>((resolve) => {
+        finishRedirect = resolve
+      })
+    )
+    const cache = new InMemoryCache()
+    const evict = vi.spyOn(cache, 'evict')
+    renderSettings({
+      cache,
+      mocks: [
+        {
+          request: { query: CAMPAIGN_DELETE, variables: { id: 'campaignId' } },
+          result: {
+            data: {
+              campaignDelete: { __typename: 'Campaign', id: 'campaignId' }
+            }
+          }
+        }
+      ]
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete campaign' }))
+    fireEvent.click(
+      within(screen.getByTestId('CampaignDeleteDialog')).getByRole('button', {
+        name: 'Delete'
+      })
+    )
+
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/campaigns'))
+    expect(evict).not.toHaveBeenCalled()
+
+    finishRedirect(true)
+    await waitFor(() => expect(evict).toHaveBeenCalled())
   })
 
   it('does not offer Delete campaign to members', () => {
