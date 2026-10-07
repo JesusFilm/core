@@ -42,7 +42,7 @@ YAML frontmatter delimited by `---` lines, starting at byte 0 of the file. Requi
 | key               | shape                        | meaning                                                                                                |
 | ----------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `area`            | string                       | identity; must equal the index entry's `<area name>`                                                   |
-| `domain_ref`      | relative path                | the sibling domain `GLOSSARY.md`                                                                        |
+| `domain_ref`      | relative path                | the sibling domain `GLOSSARY.md`                                                                       |
 | `code_paths`      | block list of glob strings   | where this area's code lives; each glob's fixed (pre-wildcard) directory prefix must exist in the repo |
 | `trigger_phrases` | block list of quoted strings | **authoritative** reporter vocabulary for this area                                                    |
 | `type_tags`       | inline list, e.g. `[T1, T4]` | the failure types this file covers                                                                     |
