@@ -91,12 +91,12 @@ dead_letter_queue = "short-links-events-dlq-dev"
 [env.stage]
 name = "short-links-redirect-stage"
 logpush = true
-# One route per cut-over hostname. Uncomment when the hostname has its proxied
-# DNS record and its zone is in the account; a deploy applies it.
-# routes = [
-#   { pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" },
-#   { pattern = "stage.jesus.movie/s/*", zone_name = "jesus.movie" }
-# ]
+# One route per cut-over hostname; each needs a proxied DNS record for the
+# hostname and its zone in the account. A deploy applies the set below.
+routes = [
+  { pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" },
+  { pattern = "stage.jesus.movie/s/*", zone_name = "jesus.movie" }
+]
 
 [env.stage.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
