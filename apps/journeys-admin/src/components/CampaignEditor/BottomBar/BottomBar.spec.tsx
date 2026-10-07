@@ -278,6 +278,7 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])
