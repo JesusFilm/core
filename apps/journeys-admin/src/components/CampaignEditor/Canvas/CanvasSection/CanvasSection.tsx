@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import {
   MouseEvent,
@@ -19,10 +20,12 @@ import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_strings as CampaignString,
   GetCampaign_campaign_theme as CampaignTheme
 } from '../../../../../__generated__/GetCampaign'
 import {
   CampaignChildPlacement,
+  CampaignStringKey,
   TypographyVariant
 } from '../../../../../__generated__/globalTypes'
 import {
@@ -40,8 +43,6 @@ export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 interface CanvasSectionProps {
   block: CanvasBlock
   theme: CampaignTheme
-  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
-  previewLanguageId: string | null
 }
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -49,22 +50,6 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 const SELECTED_OUTLINE = {
   outline: `2px solid ${adminPrimary.main}`,
   outlineOffset: -2
-}
-
-type TranslationValue = { languageId: string; value: string }
-
-/** The preview-language value of a text field, when the block has one; the default-language field is what the canvas edits. */
-function previewTranslation(
-  block: CampaignTextBlock,
-  field: CampaignTextField,
-  previewLanguageId: string | null
-): string | undefined {
-  if (previewLanguageId == null) return undefined
-  const translations = (
-    block as unknown as Record<string, TranslationValue[] | undefined>
-  )[`${field}Translations`]
-  return translations?.find((entry) => entry.languageId === previewLanguageId)
-    ?.value
 }
 
 function isAbove(child: CanvasBlock): boolean {
@@ -81,7 +66,6 @@ interface CanvasExtraProps {
   onSelect: () => void
   focusField?: CampaignTextField
   focusRequest: number
-  previewLanguageId: string | null
 }
 
 /** A text or button Extra: click to select, edit its one text field in place. */
@@ -90,8 +74,7 @@ function CanvasExtra({
   selected,
   onSelect,
   focusField,
-  focusRequest,
-  previewLanguageId
+  focusRequest
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -113,13 +96,7 @@ function CanvasExtra({
           }}
         >
           <InlineText
-            block={block}
-            field="content"
-            translation={previewTranslation(
-              block,
-              'content',
-              previewLanguageId
-            )}
+            target={{ block, field: 'content' }}
             placeholder={t('Your text')}
             editing={selected}
             autoFocus={selected && focusField === 'content'}
@@ -171,13 +148,7 @@ function CanvasExtra({
             }}
           >
             <InlineText
-              block={block}
-              field="label"
-              translation={previewTranslation(
-                block,
-                'label',
-                previewLanguageId
-              )}
+              target={{ block, field: 'label' }}
               placeholder={t('Button')}
               editing={selected}
               autoFocus={selected && focusField === 'label'}
@@ -203,7 +174,6 @@ interface SectionTextProps {
   focusRequest: number
   onSelect: (field: CampaignTextField) => void
   titleVariant: 'h1' | 'h2'
-  previewLanguageId: string | null
 }
 
 function sectionFieldPlaceholder(
@@ -232,13 +202,10 @@ function SectionText({
   focusField,
   focusRequest,
   onSelect,
-  titleVariant,
-  previewLanguageId
+  titleVariant
 }: SectionTextProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
-  const translation = previewTranslation(block, field, previewLanguageId)
-  const value =
-    translation ?? (block as unknown as Record<string, string | null>)[field]
+  const value = (block as unknown as Record<string, string | null>)[field]
   if (!editing && (value == null || value.trim() === '')) return null
   const styles = {
     eyebrow: {
@@ -261,14 +228,12 @@ function SectionText({
 
   return (
     <InlineText
-      block={block}
-      field={field}
-      translation={translation}
+      target={{ block, field }}
       placeholder={sectionFieldPlaceholder(t, field)}
       editing={editing}
       autoFocus={editing && focusField === field}
       focusRequest={focusRequest}
-      onSelect={onSelect}
+      onSelect={() => onSelect(field)}
       variant={styles.variant}
       sx={styles.sx}
     />
@@ -276,17 +241,97 @@ function SectionText({
 }
 
 /**
+ * The Campaign Strings each section's public rendering reads (PRD §2): the
+ * share steps and buttons on the Region Share section, the back chip on the
+ * Region Header, the carousel's Watch wording, the journey card's button and
+ * the Analytics tile labels. Until each section's own canvas body lands they
+ * render as one editable list under the section's text.
+ */
+export const CAMPAIGN_SECTION_STRING_KEYS: Partial<
+  Record<CampaignBlock['__typename'], readonly CampaignStringKey[]>
+> = {
+  CampaignRegionHeaderBlock: [CampaignStringKey.allRegions],
+  CampaignRegionShareBlock: [
+    CampaignStringKey.step1,
+    CampaignStringKey.step2,
+    CampaignStringKey.step2help,
+    CampaignStringKey.step3,
+    CampaignStringKey.step4,
+    CampaignStringKey.copy,
+    CampaignStringKey.copied,
+    CampaignStringKey.downloadQr,
+    CampaignStringKey.open
+  ],
+  CampaignVideoCarouselBlock: [
+    CampaignStringKey.watch,
+    CampaignStringKey.youtube,
+    CampaignStringKey.seeAllOnWatch,
+    CampaignStringKey.videos
+  ],
+  CampaignJourneyListBlock: [CampaignStringKey.openTemplate],
+  CampaignAnalyticsBlock: [
+    CampaignStringKey.totalVisitors,
+    CampaignStringKey.topCountry
+  ]
+}
+
+interface CanvasStringsProps {
+  strings: CampaignString[]
+  editing: boolean
+  onSelect: () => void
+}
+
+/** A section's Campaign Strings, each inline-editable like any other text. */
+function CanvasStrings({
+  strings,
+  editing,
+  onSelect
+}: CanvasStringsProps): ReactElement | null {
+  const { t } = useTranslation('apps-journeys-admin')
+  if (strings.length === 0) return null
+  return (
+    <Stack
+      spacing={1}
+      data-testid="CanvasStrings"
+      sx={{ width: '100%', maxWidth: 720, alignItems: 'inherit' }}
+    >
+      {editing && (
+        <Typography
+          variant="overline"
+          component="p"
+          sx={{ color: 'var(--campaign-band-muted)' }}
+        >
+          {t('Campaign strings')}
+        </Typography>
+      )}
+      {strings.map((string) => (
+        <InlineText
+          key={string.id}
+          target={{ string }}
+          placeholder={string.key}
+          editing={editing}
+          onSelect={onSelect}
+          variant="body2"
+          sx={{ color: 'var(--campaign-band-text)' }}
+        />
+      ))}
+    </Stack>
+  )
+}
+
+/**
  * One section on the editor canvas: the band from the shared resolution
- * table, the Extras placed above, the section's typed text, then the Extras
- * placed below. Clicking anywhere selects the section; clicking an Extra
- * selects it. The selected block's text fields become inline inputs.
+ * table, the Extras placed above, the section's typed text, the Campaign
+ * Strings its public rendering reads, then the Extras placed below. Clicking
+ * anywhere selects the section; clicking an Extra selects it. The selected
+ * block's text fields and strings become inline inputs.
  */
 export function CanvasSection({
   block,
-  theme,
-  previewLanguageId
+  theme
 }: CanvasSectionProps): ReactElement | null {
   const {
+    campaign,
     selection,
     selectBlock,
     state: { editRequest }
@@ -332,6 +377,10 @@ export function CanvasSection({
   const textFields: readonly CampaignTextField[] = isCampaignTextBlock(block)
     ? CAMPAIGN_TEXT_FIELDS[block.__typename]
     : []
+  const stringKeys = CAMPAIGN_SECTION_STRING_KEYS[block.__typename] ?? []
+  const strings = stringKeys.flatMap((key) =>
+    campaign.strings.filter((string) => string.key === key)
+  )
 
   function handleSelectField(field: CampaignTextField): void {
     setFocusField(field)
@@ -354,7 +403,6 @@ export function CanvasSection({
         onSelect={() => selectExtra(child, field)}
         focusField={focusField}
         focusRequest={focusRequest}
-        previewLanguageId={previewLanguageId}
       />
     )
   }
@@ -394,9 +442,16 @@ export function CanvasSection({
                 focusRequest={focusRequest}
                 onSelect={handleSelectField}
                 titleVariant={titleVariant}
-                previewLanguageId={previewLanguageId}
               />
             ))}
+          <CanvasStrings
+            strings={strings}
+            editing={sectionSelected}
+            onSelect={() => {
+              setFocusField(undefined)
+              selectBlock(block.id)
+            }}
+          />
           {below.map(renderExtra)}
         </Stack>
       </Container>

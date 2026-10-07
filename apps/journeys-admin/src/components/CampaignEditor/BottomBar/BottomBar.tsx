@@ -14,6 +14,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -37,6 +38,8 @@ export const NEW_BUTTON_LABEL = 'Button'
 
 interface BottomBarProps {
   onSettingsClick: () => void
+  /** Opens the Languages panel (add and remove campaign languages). */
+  onLanguagesClick?: () => void
 }
 
 interface BarButtonProps {
@@ -69,13 +72,17 @@ type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
 /**
  * The one contextual bottom bar: the breadcrumb, then the controls for what
- * is selected. Campaign row: Settings, Theme, Translations, +Add section.
+ * is selected. Campaign row: Settings, Theme, Languages, Translations, +Add
+ * section.
  * Section: Edit, Style, +Add, move/duplicate, bin. Chrome: Edit, Style, +Add.
  * Text Extra: size, align, colour, Style, bin. Button Extra adds the link
  * chip and variant/size/colours. Controls that belong to later tickets
  * render disabled.
  */
-export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
+export function BottomBar({
+  onSettingsClick,
+  onLanguagesClick
+}: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign, selection, dispatch } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
@@ -239,6 +246,12 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
               onClick={onSettingsClick}
             />
             <BarButton label={t('Theme')} icon={<PaletteIcon />} disabled />
+            <BarButton
+              label={t('Languages')}
+              icon={<Globe1Icon />}
+              onClick={onLanguagesClick}
+              disabled={onLanguagesClick == null}
+            />
             <BarButton
               label={t('Translations')}
               icon={<TranslateIcon />}

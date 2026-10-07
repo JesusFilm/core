@@ -10,21 +10,21 @@ import {
   useState
 } from 'react'
 
-import {
-  CAMPAIGN_TEXT_CAPS,
-  CampaignTextBlock,
-  CampaignTextField
-} from '../../../../libs/useCampaignBlockTextMutation'
+import { CAMPAIGN_TEXT_CAPS } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
+import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
 /** Show the character counter once this share of the cap is used. */
 const COUNTER_THRESHOLD = 0.8
 
+/** `CampaignString.value` cap (PRD §15). */
+export const CAMPAIGN_STRING_CAP = 200
+
 interface InlineTextProps
   extends Pick<TypographyProps, 'variant' | 'component' | 'align' | 'sx'> {
-  block: CampaignTextBlock
-  field: CampaignTextField
+  /** The block field or Campaign String this text edits. */
+  target: CampaignTextTarget
   placeholder: string
   /** Render as an input (the block is selected) rather than as text. */
   editing: boolean
@@ -32,10 +32,8 @@ interface InlineTextProps
   autoFocus?: boolean
   /** Bumped by the Edit action; focuses an input that is already mounted. */
   focusRequest?: number
-  /** The preview-language value to show instead; it is read-only because the canvas edits the default language. */
-  translation?: string
-  /** Clicking the text selects its block and names the field clicked. */
-  onSelect?: (field: CampaignTextField) => void
+  /** Clicking the text selects its block. */
+  onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
 }
 
@@ -44,21 +42,28 @@ export function textLength(value: string): number {
   return [...value.trim()].length
 }
 
+export function inlineTextTestId(target: CampaignTextTarget): string {
+  return target.string != null
+    ? `InlineText-string-${target.string.key}`
+    : `InlineText-${target.field}`
+}
+
 /**
- * One inline-editable text field on the canvas. Unselected it renders as
- * the public page does (empty text shows the placeholder, muted); selected it
- * is an input inheriting the same typography. The only pre-validation is the
- * pure length rule with a character counter; the API re-checks everything
- * and its message is shown verbatim under the field when a save fails.
+ * One inline-editable text on the canvas: a block's text field or a Campaign
+ * String. Unselected it renders as the public page does (empty text shows
+ * the placeholder, muted); selected it is an input inheriting the same
+ * typography. While previewing a non-default language an untranslated text
+ * shows the default-language fallback, marked, and the input's placeholder is
+ * that fallback. The only pre-validation is the pure length rule with a
+ * character counter; the API re-checks everything and its message is shown
+ * verbatim under the field when a save fails.
  */
 export function InlineText({
-  block,
-  field,
+  target,
   placeholder,
   editing,
   autoFocus = false,
   focusRequest = 0,
-  translation,
   onSelect,
   variant,
   component,
@@ -67,15 +72,17 @@ export function InlineText({
   variantMapping
 }: InlineTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const max = CAMPAIGN_TEXT_CAPS[field]
-  const { value, error, handleChange, handleFocus, handleBlur } =
-    useCampaignTextCommand({ block, field })
+  const max =
+    target.string != null
+      ? CAMPAIGN_STRING_CAP
+      : CAMPAIGN_TEXT_CAPS[target.field]
+  const { value, fallback, error, handleChange, handleFocus, handleBlur } =
+    useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const length = textLength(value)
-  const testId = `InlineText-${field}`
-  const showInput = editing && translation == null
-  const displayed = translation ?? value
+  const testId = inlineTextTestId(target)
+  const showingFallback = value === '' && fallback !== ''
 
   useEffect(() => {
     if (focusRequest === 0 || !autoFocus) return
@@ -95,10 +102,10 @@ export function InlineText({
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
-    onSelect?.(field)
+    onSelect?.()
   }
 
-  if (!showInput)
+  if (!editing)
     return (
       <Typography
         variant={variant}
@@ -106,16 +113,18 @@ export function InlineText({
         align={align}
         variantMapping={variantMapping}
         data-testid={testId}
+        data-fallback={showingFallback ? 'true' : undefined}
         onClick={handleClick}
         sx={{
           cursor: 'text',
           whiteSpace: 'pre-line',
           wordBreak: 'break-word',
-          ...(displayed === '' ? { opacity: 0.5 } : {}),
+          ...(value === '' && !showingFallback ? { opacity: 0.5 } : {}),
+          ...(showingFallback ? { opacity: 0.7 } : {}),
           ...sx
         }}
       >
-        {displayed === '' ? placeholder : displayed}
+        {value === '' ? (showingFallback ? fallback : placeholder) : value}
       </Typography>
     )
 
@@ -141,13 +150,13 @@ export function InlineText({
         sx={{ color: 'inherit' }}
       >
         <InlineEditInput
-          name={field}
+          name={target.string != null ? target.string.key : target.field}
           fullWidth
           multiline
           autoFocus={autoFocus}
           inputRef={inputRef}
           value={value}
-          placeholder={placeholder}
+          placeholder={fallback !== '' ? fallback : placeholder}
           onChange={handleInputChange}
           onFocus={handleFocus}
           onBlur={handleBlur}

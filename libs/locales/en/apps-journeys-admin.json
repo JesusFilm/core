@@ -1430,5 +1430,11 @@
   "Your text": "Your text",
   "Eyebrow": "Eyebrow",
   "Lede": "Lede",
-  "Intro": "Intro"
+  "Intro": "Intro",
+  "Languages": "Languages",
+  "Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.": "Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.",
+  "Remove {{language}}": "Remove {{language}}",
+  "The default language cannot be removed": "The default language cannot be removed",
+  "Add a language": "Add a language",
+  "Campaign strings": "Campaign strings"
 }
