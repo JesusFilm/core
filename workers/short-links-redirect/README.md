@@ -386,15 +386,80 @@ every stage and prod deploy that the dev-only bindings (`KV_NXSTP_IS`, ...)
 are not declared for that environment; that is expected until those domains
 are cut over.
 
+## Setting up ClickHouse
+
+Scan events go to one ClickHouse Cloud service per environment
+(`jfp-short-links-<env>`), managed by Terraform
+(`infrastructure/modules/clickhouse/service`, called from each environment's
+`main.tf`; stage first, prod once stage is proven). Terraform manages the service only; the apply publishes two values
+into the `core` Doppler project (`stg` / `prd`):
+
+| Doppler key                             | Value                                   |
+| --------------------------------------- | --------------------------------------- |
+| `SHORT_LINKS_CLICKHOUSE_URL`            | `https://<host>:8443`                   |
+| `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD` | the `default` user's generated password |
+
+Everything inside the service is created by hand, once per environment, as
+the `default` user. Use the SQL console in the ClickHouse Cloud UI, or
+`clickhouse client` (the HTTP interface runs one statement per request, so
+`curl` would need the file split up):
+
+```bash
+clickhouse client --host <host> --port 9440 --secure --user default \
+  --password "$SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD" \
+  --queries-file clickhouse/0001_init.sql
+```
+
+Then create the two users. Generate two passwords (12+ characters with upper,
+lower, digit and symbol; `openssl rand -base64 24` does) and run:
+
+```sql
+-- the Worker: insert only, batched server-side
+CREATE USER short_links_writer IDENTIFIED WITH sha256_password BY '<writer password>'
+  SETTINGS async_insert = 1, wait_for_async_insert = 1;
+GRANT INSERT ON redirects.redirect_events TO short_links_writer;
+
+-- api-media: read only
+CREATE USER short_links_reader IDENTIFIED WITH sha256_password BY '<reader password>';
+GRANT SELECT ON redirects.* TO short_links_reader;
+```
+
+Wire them in:
+
+1. **Worker.** Set `CLICKHOUSE_URL = "https://<host>:8443"` under the
+   environment's `[vars]` in `wrangler.toml` (a PR; it is `""` until the service
+   exists) and the writer as secrets:
+
+   ```bash
+   cd workers/short-links-redirect
+   pnpm exec wrangler secret put CLICKHOUSE_USER --env=stage      # short_links_writer
+   pnpm exec wrangler secret put CLICKHOUSE_PASSWORD --env=stage
+   ```
+
+   While `CLICKHOUSE_URL` is empty the queue consumer acknowledges and drops
+   every event (logged as `clickhouse_unconfigured`).
+
+2. **api-media.** In its Doppler config set `SHORT_LINKS_CLICKHOUSE_URL`
+   (same value), `SHORT_LINKS_CLICKHOUSE_USER` (`short_links_reader`),
+   `SHORT_LINKS_CLICKHOUSE_PASSWORD` and `SHORT_LINKS_CLICKHOUSE_DATABASE`
+   (`redirects`), then add the four keys back to
+   `apis/api-media/infrastructure/locals.tf` so they reach the container. Until
+   then the admin's stats show zeros.
+
+The service accepts connections from anywhere: Cloudflare Workers have no
+fixed egress addresses, so there is nothing to allow-list. Protection is TLS,
+the generated passwords and the two users' narrow grants. Stage idles after 15
+quiet minutes (storage only is billed while paused); prod is always on.
+
 ## Cutover per domain
 
 [Setting up a domain](#setting-up-a-domain) is the per-domain procedure; this
 is the order across environments.
 
 1. Once per environment: the global KV namespace, the queue and its
-   dead-letter queue, the ClickHouse database/table (`clickhouse/0001_init.sql`),
-   `CLICKHOUSE_USER` / `CLICKHOUSE_PASSWORD` with `wrangler secret put`; fill
-   the namespace id into `wrangler.toml`; deploy.
+   dead-letter queue; fill the namespace id into `wrangler.toml`; deploy. Then
+   [Setting up ClickHouse](#setting-up-clickhouse) once the Terraform apply has
+   created the service.
 2. Set api-media's `CLOUDFLARE_SHORT_LINKS_*` variables (Doppler).
 3. Stage first: set `stage.jesus.film` and `stage.jesus.movie` up and prove the
    redirects, link edits and the `publish_gap` log there.

@@ -228,6 +228,8 @@ CREATE TABLE IF NOT EXISTS redirects.redirect_events (
   utm_medium       Nullable(String),
   utm_campaign     Nullable(String),
   resolved_from    LowCardinality(String)
+  global           UInt8,
+  owner_hostname   LowCardinality(String)
 )
 ENGINE = MergeTree
 PARTITION BY toYYYYMM(ts)
@@ -529,3 +531,9 @@ What changed:
 - **Domain settings now fall back to api-media.** They used to be read from KV, then D1, with no api-media fallback. `shortLinkDomainByHostname(hostname)` is a new public query; on a KV miss the Worker calls it, writes the record back to `domain:<host>` and logs `publish_gap`. A host neither knows is remembered as unknown for 10 s per isolate, so it costs at most one api-media call in that time.
 
 What is given up: during a KV-only outage every redirect goes through api-media (2 s timeout, 1 to 3 tasks). That is acceptable at the first rollout's volume; revisit before nxstp.is or arc.gt traffic moves onto the Worker.
+
+## ClickHouse Cloud in Terraform (2026-10-05)
+
+Decision: the scan-event store is one ClickHouse Cloud service per environment, provisioned by Terraform (`infrastructure/modules/clickhouse/service`, called from each environment's `main.tf`), billed through the AWS Marketplace subscription. Stage comes first and idles after 15 quiet minutes (scans lost while it wakes only affect stage); prod is added once stage is proven and is always on. Stage and prod are separate services on purpose: stage secrets are visible to developers, and on a shared service they would sit next to prod data and prod capacity. Terraform manages the **service only** and publishes `SHORT_LINKS_CLICKHOUSE_URL` and `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD` into the `core` Doppler project (`stg` / `prd`); the database, table and the two limited users (`short_links_writer`: INSERT on `redirects.redirect_events`; `short_links_reader`: SELECT on `redirects.*`) are created by hand from the runbook in `workers/short-links-redirect/README.md`, "Setting up ClickHouse". The service accepts connections from anywhere (`0.0.0.0/0`) because Cloudflare Workers have no fixed egress addresses; protection is TLS, strong passwords and the two users.
+
+Prerequisites: a ClickHouse Cloud organisation on the Basic tier, an Admin API key, and the SSM parameters `/terraform/prd/CLICKHOUSE_ORG_ID`, `/terraform/prd/CLICKHOUSE_CLOUD_API_KEY`, `/terraform/prd/CLICKHOUSE_CLOUD_API_SECRET`. Smallest service is 1 × 8 GiB; the always-on list price is about $160/month (us-east-1 list, us-east-2 assumed equal). The table above gains `global UInt8` and `owner_hostname LowCardinality(String)`, which `clickhouse/0001_init.sql` and the Worker already had.
