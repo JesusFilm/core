@@ -26,9 +26,9 @@ import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
 export const CURRENT_USER_ID = 'userId'
 
 /** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field. */
-export function withEmptyTranslations(
-  block: (typeof landingBlocks)[number]
-): CampaignBlock {
+export function withEmptyTranslations(block: {
+  __typename: string
+}): CampaignBlock {
   const fields: readonly string[] =
     block.__typename in CAMPAIGN_TEXT_FIELDS
       ? CAMPAIGN_TEXT_FIELDS[
@@ -183,7 +183,9 @@ export const afrRegion: CampaignRegion = {
 }
 
 /** The Region Line of `eurRegion`, as the flat block list carries it. */
-export const eurLine: CampaignBlock = eurRegionPublic.lines[0]
+export const eurLine: CampaignBlock = withEmptyTranslations(
+  eurRegionPublic.lines[0]
+)
 
 /** The seeded campaign with two regions: Europe (listed, one line, one country) and Africa (unlisted). */
 export const campaignWithRegions: Campaign = {

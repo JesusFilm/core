@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
@@ -35,8 +36,8 @@ import { isCampaignStyledBlock } from '../../../libs/useCampaignSectionStyleMuta
 import { useCampaignTypographyBlockCreateMutation } from '../../../libs/useCampaignTypographyBlockCreateMutation'
 import { BarButton } from '../BarButton'
 import { blockLabel } from '../blockLabel'
-import { campaignPermanentAddress } from '../campaignAddress'
 import { ButtonControls } from '../ButtonControls'
+import { campaignPermanentAddress } from '../campaignAddress'
 import {
   regionLines,
   sortedRegions,
@@ -280,6 +281,7 @@ export function BottomBar({
       parentBlockId: null,
       parentOrder: regionLines(campaign.blocks, region.id).length,
       content: '',
+      contentTranslations: [],
       typographyVariant: null,
       align: null,
       color: null,
