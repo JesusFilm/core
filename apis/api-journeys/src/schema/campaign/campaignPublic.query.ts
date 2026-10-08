@@ -18,6 +18,7 @@ import {
   getJourneyPublicUrl
 } from './getJourneyPublicUrl'
 import { resolveText } from './resolveText'
+import { CAMPAIGN_BLOCK_TEXT_COLUMNS } from './translation/campaignTextField'
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './validation'
 
 const INCLUDE_CAMPAIGN_PUBLIC = {
@@ -90,18 +91,8 @@ export async function resolveShortLinkUrls(
   return urls
 }
 
-/** Every translatable text column of CampaignBlock and its translations sibling. */
-const BLOCK_TEXT_FIELDS = [
-  ['eyebrow', 'eyebrowTranslations'],
-  ['title', 'titleTranslations'],
-  ['lede', 'ledeTranslations'],
-  ['bullets', 'bulletsTranslations'],
-  ['content', 'contentTranslations'],
-  ['intro', 'introTranslations'],
-  ['label', 'labelTranslations'],
-  ['alt', 'altTranslations'],
-  ['description', 'descriptionTranslations']
-] as const
+/** Every translatable text column of CampaignBlock and its translations sibling, from the `CampaignTextField` map. */
+const BLOCK_TEXT_FIELDS = CAMPAIGN_BLOCK_TEXT_COLUMNS
 
 function notFound(): GraphQLError {
   return new GraphQLError('campaign not found', {

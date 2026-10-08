@@ -167,10 +167,30 @@ describe('useCampaignRegionCommand', () => {
       ])
     })
 
-    it('treats a region with lines or countries as no longer empty', () => {
-      expect(isEmptyRegion(campaignWithRegions, 'eurRegionId')).toBe(false)
-      expect(isEmptyRegion(campaignWithRegions, 'afrRegionId')).toBe(true)
-      expect(isEmptyRegion(campaignWithRegions, 'missing')).toBe(false)
+    it('treats a region with lines, countries or an edited name or slug as no longer empty', () => {
+      const afr = campaignWithRegions.regions.find(
+        (region) => region.id === 'afrRegionId'
+      )
+      if (afr == null) throw new Error('fixture needs afrRegionId')
+      const born = { name: afr.name, slug: afr.slug }
+      const renamed = (patch: { name?: string; slug?: string }) => ({
+        ...campaignWithRegions,
+        regions: campaignWithRegions.regions.map((region) =>
+          region.id === 'afrRegionId' ? { ...region, ...patch } : region
+        )
+      })
+
+      expect(isEmptyRegion(campaignWithRegions, 'eurRegionId', born)).toBe(
+        false
+      )
+      expect(isEmptyRegion(campaignWithRegions, 'afrRegionId', born)).toBe(true)
+      expect(isEmptyRegion(campaignWithRegions, 'missing', born)).toBe(false)
+      expect(
+        isEmptyRegion(renamed({ name: 'Europe' }), 'afrRegionId', born)
+      ).toBe(false)
+      expect(isEmptyRegion(renamed({ slug: 'eur' }), 'afrRegionId', born)).toBe(
+        false
+      )
     })
   })
 })

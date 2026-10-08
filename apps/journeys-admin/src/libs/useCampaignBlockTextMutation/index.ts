@@ -15,11 +15,15 @@ export type { CampaignTextMutate } from './useCampaignBlockTextMutation'
 export {
   CAMPAIGN_TEXT_CAPS,
   CAMPAIGN_TEXT_FIELDS,
+  blockTranslations,
   isCampaignTextBlock,
-  primaryTextField
+  primaryTextField,
+  translationValue,
+  withTranslationValue
 } from './campaignTextFields'
 export type {
   CampaignTextBlock,
   CampaignTextField,
-  CampaignTextTypename
+  CampaignTextTypename,
+  CampaignTranslatedValue
 } from './campaignTextFields'

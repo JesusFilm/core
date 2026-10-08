@@ -25,9 +25,12 @@ import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
+import { LanguagesPanel } from './LanguagesPanel'
 import { RegionSettings } from './RegionSettings'
 import { Settings } from './Settings'
+import { ThemePanel } from './ThemePanel'
 import { TopBar } from './TopBar'
+import { TranslationsView } from './TranslationsView'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
 export const EDITOR_MIN_WIDTH = 980
@@ -47,23 +50,32 @@ function CampaignEditorShell({
   isManager
 }: CampaignEditorShellProps): ReactElement {
   const {
-    state: { pageKind },
+    state: { pageKind, previewLanguageId },
     currentRegion,
     selection,
     dispatch
   } = useCampaignEditor()
-  const [previewLanguageId, setPreviewLanguageId] = useState<string>()
   const [view, setView] = useState<CanvasView>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [themeOpen, setThemeOpen] = useState(false)
+  const [languagesOpen, setLanguagesOpen] = useState(false)
   const [regionSettingsOpen, setRegionSettingsOpen] = useState(false)
   const settingsRegion =
     selection.kind === 'region' ? selection.region : undefined
+  const [translationsOpen, setTranslationsOpen] = useState(false)
 
   function handlePageKindChange(
     nextPageKind: CampaignPageKind,
     regionId?: string
   ): void {
     dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind, regionId })
+  }
+
+  function handlePreviewLanguageChange(languageId: string): void {
+    dispatch({
+      type: 'SetPreviewLanguageAction',
+      previewLanguageId: languageId
+    })
   }
 
   return (
@@ -74,22 +86,20 @@ function CampaignEditorShell({
         pageKind={pageKind}
         regionId={currentRegion?.id}
         onPageKindChange={handlePageKindChange}
-        previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
-        onPreviewLanguageChange={setPreviewLanguageId}
+        previewLanguageId={previewLanguageId}
+        onPreviewLanguageChange={handlePreviewLanguageChange}
         view={view}
         onViewChange={setView}
         isManager={isManager}
       />
       <FirstRunHint campaignId={campaign.id} />
-      <Canvas
-        campaign={campaign}
-        pageKind={pageKind}
-        previewLanguageId={previewLanguageId ?? campaign.defaultLanguageId}
-        view={view}
-      />
+      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
       <BottomBar
         onSettingsClick={() => setSettingsOpen(true)}
+        onThemeClick={() => setThemeOpen(true)}
+        onLanguagesClick={() => setLanguagesOpen(true)}
         onRegionSettingsClick={() => setRegionSettingsOpen(true)}
+        onTranslationsClick={() => setTranslationsOpen(true)}
       />
       <Drawer
         anchor="right"
@@ -105,6 +115,30 @@ function CampaignEditorShell({
       >
         {settingsRegion != null && <RegionSettings region={settingsRegion} />}
       </Drawer>
+      <Drawer
+        anchor="right"
+        open={themeOpen}
+        onClose={() => setThemeOpen(false)}
+      >
+        <ThemePanel onClose={() => setThemeOpen(false)} />
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={languagesOpen}
+        onClose={() => setLanguagesOpen(false)}
+      >
+        <LanguagesPanel campaign={campaign} />
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={translationsOpen}
+        onClose={() => setTranslationsOpen(false)}
+      >
+        <TranslationsView
+          campaign={campaign}
+          initialLanguageId={previewLanguageId}
+        />
+      </Drawer>
     </Stack>
   )
 }
@@ -114,7 +148,8 @@ function CampaignEditorShell({
  * so the Command history survives switching page, the selection reducer,
  * the top bar, the first-run hint, the canvas and the contextual bottom
  * bar. First open after create shows the landing page, nothing selected,
- * Desktop view, the default language. Nothing replaces Save.
+ * Desktop view, the default language as the Preview Language. Nothing
+ * replaces Save.
  */
 export function CampaignEditor({
   campaign

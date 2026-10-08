@@ -20,6 +20,14 @@ vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
   deleteShortLink: vi.fn()
 }))
 
+const { mockQueueAdd } = vi.hoisted(() => ({ mockQueueAdd: vi.fn() }))
+
+vi.mock('bullmq', () => ({
+  Queue: vi.fn(function () {
+    return { add: mockQueueAdd }
+  })
+}))
+
 describe('campaignRegionDelete', () => {
   const DELETE = graphql(`
     mutation CampaignRegionDelete($id: ID!) {
@@ -34,6 +42,7 @@ describe('campaignRegionDelete', () => {
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    mockQueueAdd.mockResolvedValue(undefined)
     fixture = campaignFactory().withRegion('EUR').withRegion('AFR').build()
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
@@ -152,5 +161,30 @@ describe('campaignRegionDelete', () => {
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
+  })
+
+  it('revalidates the landing page and the deleted path of a published campaign', async () => {
+    const published = campaignFactory()
+      .withRegion('EUR')
+      .withRegion('AFR')
+      .published()
+      .build()
+    prismaMock.campaignRegion.findUnique.mockResolvedValue(
+      campaignRegionWithAcl(published, 'eurRegionId', { listed: false })
+    )
+
+    await remove()
+
+    const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
+    expect(paths).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur'
+    ])
+  })
+
+  it('queues no revalidation for a draft campaign', async () => {
+    await remove()
+
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 })

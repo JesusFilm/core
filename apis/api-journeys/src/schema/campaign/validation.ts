@@ -3,6 +3,7 @@ import slugify from 'slugify'
 import type { ZodType } from 'zod'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { FONT_FAMILIES } from '@core/shared/ui/fontFamilies'
 
 import { assertHttpsUrl } from '../templateGalleryPage/assertHttpsUrl'
 import {
@@ -56,6 +57,23 @@ export function assertHexOrNull<T extends string | null | undefined>(
 ): T extends string ? string : T {
   if (value == null) return value as T extends string ? string : T
   return assertHex(value, field) as T extends string ? string : T
+}
+
+/**
+ * A Campaign Theme font: null means the base theme default; a name must be
+ * in the shared curated `FontFamily` list (PRD §4, §15). Never `""`.
+ */
+export function assertFontFamily<T extends string | null>(
+  value: T,
+  field: string
+): T {
+  if (value === null) return value
+  if (!FONT_FAMILIES.includes(value))
+    throw badUserInput(
+      `${field} must be one of the offered fonts: ${FONT_FAMILIES.join(', ')}`,
+      field
+    )
+  return value
 }
 
 export const TEXT_CAPS = {

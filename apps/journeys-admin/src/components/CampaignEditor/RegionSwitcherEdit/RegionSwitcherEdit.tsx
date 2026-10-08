@@ -101,8 +101,7 @@ function RegionCardEdit({
             }}
           >
             <InlineText
-              block={line}
-              field="content"
+              target={{ block: line, field: 'content' }}
               placeholder={t('Your text')}
               editing={selection.block?.id === line.id}
               autoFocus={selection.block?.id === line.id}

@@ -2,7 +2,10 @@ import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignTextSource
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
 import { campaign } from '../data'
 import {
@@ -14,6 +17,10 @@ import {
 
 import { Canvas, dropEdgeFor, dropParentOrder } from './Canvas'
 import type { CanvasView } from './Canvas'
+
+const mockWebFontLoader = { load: vi.fn() }
+
+vi.mock('webfontloader', () => mockWebFontLoader)
 
 const LANDING_SECTION_IDS = [
   'heroId',
@@ -53,7 +60,6 @@ function ViewHarness(): ReactElement {
       <Canvas
         campaign={campaign}
         pageKind={CampaignPageKind.landing}
-        previewLanguageId="529"
         view={view}
       />
     </StaticEditor>
@@ -68,12 +74,7 @@ function renderCanvas(
     <StaticEditor mocks={[orderMock]}>
       <SelectionProbe />
       <CommandProbe />
-      <Canvas
-        campaign={campaign}
-        pageKind={pageKind}
-        previewLanguageId="529"
-        view={view}
-      />
+      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
     </StaticEditor>
   )
 }
@@ -195,6 +196,45 @@ describe('Canvas', () => {
     expect(
       body.querySelector('[data-testid="CanvasSection-heroId"]')
     ).toBeNull()
+  })
+
+  it('feeds the theme’s three fonts to the FontLoader so the frame renders them', async () => {
+    render(
+      <StaticEditor>
+        <Canvas
+          campaign={{
+            ...campaign,
+            theme: {
+              ...campaign.theme,
+              headerFont: 'Oswald',
+              bodyFont: 'Nunito',
+              labelFont: 'Inter'
+            }
+          }}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+
+    await waitFor(() =>
+      expect(mockWebFontLoader.load).toHaveBeenCalledWith({
+        google: {
+          families: [
+            'Inter:400,500,600,700,800',
+            'Nunito:400,500,600,700,800',
+            'Oswald:400,500,600,700,800'
+          ]
+        }
+      })
+    )
+  })
+
+  it('loads no fonts while the three theme fonts are null', async () => {
+    renderCanvas()
+
+    await frameBody(document.body, 'CampaignCanvasPage')
+    expect(mockWebFontLoader.load).not.toHaveBeenCalled()
   })
 
   it('sets the frame to 390 px in Phone view', () => {
@@ -354,5 +394,91 @@ describe('Canvas', () => {
     expect(body.querySelector('[data-testid="CanvasDropIndicator"]')).toBeNull()
     expect(orderMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+})
+
+describe('Canvas preview language', () => {
+  const translated: typeof campaign = {
+    ...campaign,
+    blocks: campaign.blocks.map((block) =>
+      block.__typename === 'CampaignHeroBlock'
+        ? {
+            ...block,
+            titleTranslations: [
+              {
+                __typename: 'TranslatedValue',
+                languageId: '496',
+                value: "Partagez l'histoire de Noël",
+                source: CampaignTextSource.human
+              }
+            ]
+          }
+        : block
+    )
+  }
+
+  it('renders the campaign text in the preview language the top bar chose, falling back to the default where no translation exists', async () => {
+    const { baseElement } = render(
+      <StaticEditor
+        campaignProp={translated}
+        initialState={{ previewLanguageId: '496' }}
+      >
+        <Canvas
+          campaign={translated}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const hero = body.querySelector('[data-testid="CanvasSection-heroId"]')
+    expect(hero?.textContent).toContain("Partagez l'histoire de Noël")
+    expect(hero?.textContent).not.toContain('Share the story of Christmas')
+    // The untranslated eyebrow shows the default-language fallback, marked.
+    const eyebrow = hero?.querySelector('[data-testid="InlineText-eyebrow"]')
+    expect(eyebrow).toHaveTextContent('Christmas 2026')
+    expect(eyebrow).toHaveAttribute('data-fallback', 'true')
+  })
+
+  it('sets the frame direction from the preview language', async () => {
+    const arabic: typeof campaign = {
+      ...campaign,
+      languages: [
+        ...campaign.languages,
+        {
+          __typename: 'CampaignLanguage',
+          id: 'campaignLanguageArId',
+          languageId: '22658',
+          order: 2,
+          language: {
+            __typename: 'Language',
+            id: '22658',
+            bcp47: 'ar',
+            name: [
+              { __typename: 'LanguageName', value: 'العربية', primary: true }
+            ]
+          }
+        }
+      ]
+    }
+    const { baseElement } = render(
+      <StaticEditor
+        campaignProp={arabic}
+        initialState={{ previewLanguageId: '22658' }}
+      >
+        <Canvas
+          campaign={arabic}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    await frameBody(baseElement, 'CanvasSection-heroId')
+    const iframe = baseElement.getElementsByTagName('iframe')[0]
+    expect(iframe.contentDocument?.documentElement).toHaveAttribute(
+      'dir',
+      'rtl'
+    )
   })
 })
