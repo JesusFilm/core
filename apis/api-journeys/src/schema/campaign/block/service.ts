@@ -7,6 +7,7 @@ import {
   CampaignBackgroundOverlay,
   CampaignBlock,
   CampaignPage,
+  CampaignRegion,
   Prisma,
   prisma
 } from '@core/prisma/journeys/client'
@@ -603,6 +604,40 @@ export async function createSectionBlock(
     { campaignId: page.campaignId, pageId: page.id, regionId: null },
     data,
     parentOrder
+  )
+}
+
+/**
+ * A Region Line's region is a region of the same campaign
+ * (`BAD_USER_INPUT` / `regionId`). Returns the region so create can scope
+ * the line to it.
+ */
+export async function validateRegion(
+  regionId: string,
+  campaignId: string
+): Promise<CampaignRegion> {
+  const region = await prisma.campaignRegion.findFirst({
+    where: { id: regionId, campaignId }
+  })
+  if (region == null)
+    throw badUserInput('regionId must be a region of this campaign', 'regionId')
+  return region
+}
+
+/**
+ * Create a Region Line: exactly a Typography block scoped to the region
+ * (`regionId` set; `pageId`, `parentBlockId` and `placement` null), appended
+ * last among the region's lines so `parentOrder` is the line order.
+ */
+export async function createRegionLine(
+  tx: Prisma.TransactionClient,
+  region: CampaignRegion,
+  data: CampaignBlockCreateData
+): Promise<CampaignBlockWithAction> {
+  return await createTopLevelBlock(
+    tx,
+    { campaignId: region.campaignId, pageId: null, regionId: region.id },
+    { ...data, typename: 'CampaignTypographyBlock', placement: null }
   )
 }
 

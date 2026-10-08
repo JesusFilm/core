@@ -29,7 +29,13 @@ export {
 } from './CampaignProvider'
 export { CampaignRegionHeader } from './CampaignRegionHeader'
 export { CampaignRegionShare } from './CampaignRegionShare'
-export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
+export {
+  CampaignRegionCountries,
+  CampaignRegionSwitcher,
+  countryLabel,
+  listedRegions,
+  switcherRegions
+} from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
 export {
   CAMPAIGN_HEADER_HEIGHT,

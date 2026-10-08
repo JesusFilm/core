@@ -39,6 +39,7 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { InlineText } from '../InlineText'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
@@ -522,6 +523,9 @@ export function CanvasSection({
                 titleVariant={titleVariant}
               />
             ))}
+          {block.__typename === 'CampaignRegionSwitcherBlock' && (
+            <RegionSwitcherEdit block={block} />
+          )}
           <CanvasStrings
             strings={strings}
             editing={sectionSelected}

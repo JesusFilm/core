@@ -822,6 +822,12 @@ export interface CampaignRegionSwitcherBlockUpdateInput {
   accentColor?: string | null;
 }
 
+export interface CampaignRegionUpdateInput {
+  name?: string | null;
+  slug?: string | null;
+  listed?: boolean | null;
+}
+
 export interface CampaignScrollToBlockActionInput {
   blockId: string;
 }
@@ -869,7 +875,8 @@ export interface CampaignTranslationTargetInput {
 export interface CampaignTypographyBlockCreateInput {
   id?: string | null;
   campaignId: string;
-  parentBlockId: string;
+  parentBlockId?: string | null;
+  regionId?: string | null;
   content?: string | null;
   variant?: TypographyVariant | null;
   align?: TypographyAlign | null;
