@@ -118,7 +118,7 @@ function renderEditor(): ReturnType<typeof render> {
       <SelectionProbe />
       <BlocksProbe />
       <PageCanvas />
-      <BottomBar onSettingsClick={vi.fn()} />
+      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </QueriedEditor>
   )
 }
@@ -170,23 +170,23 @@ describe('useCampaignBlockCreateCommand', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
     // Optimistic: the Extra is gone before the delete request returns.
+    expect(deleteMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
     await waitFor(() =>
       expect(screen.queryByTestId('Block-newId')).not.toBeInTheDocument()
     )
-    expect(deleteMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
 
+    expect(restoreTextMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
     await waitFor(() =>
       expect(screen.getByTestId('Block-newId')).toHaveTextContent(
         'CampaignTypographyBlock|heroId|1|above|""||null|'
       )
     )
-    expect(restoreTextMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(restoreTextMock.result).toHaveBeenCalled())
   })
 
@@ -260,7 +260,7 @@ describe('useCampaignBlockCreateCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <BottomBar onSettingsClick={vi.fn()} />
+          <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
         </QueriedEditor>
       )
     }

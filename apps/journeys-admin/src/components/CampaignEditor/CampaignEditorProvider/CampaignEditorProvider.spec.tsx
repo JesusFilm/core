@@ -69,7 +69,7 @@ function renderEditor(
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
-      <BottomBar onSettingsClick={vi.fn()} />
+      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </StaticEditor>
   )
 }
