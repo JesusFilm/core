@@ -1045,7 +1045,12 @@ describe('section style (the nine shared section fields)', () => {
       } as never)
 
       await expect(
-        validateImageSlotTarget('logoId', 'campaignId', 'logoBlockId', 'headerId')
+        validateImageSlotTarget(
+          'logoId',
+          'campaignId',
+          'logoBlockId',
+          'headerId'
+        )
       ).resolves.toBe('logoId')
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
         where: {
@@ -1063,7 +1068,12 @@ describe('section style (the nine shared section fields)', () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
       const error = await errorOf(
-        validateImageSlotTarget('heroId', 'campaignId', 'logoBlockId', 'headerId')
+        validateImageSlotTarget(
+          'heroId',
+          'campaignId',
+          'logoBlockId',
+          'headerId'
+        )
       )
 
       expect(error.extensions).toEqual({
