@@ -331,6 +331,22 @@ describe('BottomBar', () => {
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
   })
 
+  it('opens the Translations view from the campaign row', () => {
+    const onTranslationsClick = vi.fn()
+    render(
+      <StaticEditor mocks={[createMock, deleteMock]}>
+        <BottomBar
+          onSettingsClick={vi.fn()}
+          onTranslationsClick={onTranslationsClick}
+        />
+      </StaticEditor>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
+
+    expect(onTranslationsClick).toHaveBeenCalled()
+  })
+
   it('shows Edit, Style, Add, move, duplicate and bin for a section', () => {
     renderBar({ selectedBlockId: 'heroId' })
 
@@ -344,7 +360,7 @@ describe('BottomBar', () => {
       'Duplicate',
       'Delete'
     ])
-    expect(screen.getByRole('button', { name: 'Style' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
     // The hero is first on the page, so only Move down applies.
     expect(screen.getByRole('button', { name: 'Move up' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Move down' })).toBeEnabled()
@@ -403,7 +419,21 @@ describe('BottomBar', () => {
       'Delete'
     ])
     expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Size' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Size' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
+  })
+
+  it('opens the Style panel for the selected section, and for an Extra’s host section', () => {
+    renderBar({ selectedBlockId: 'journeyListNoteId' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Style' }))
+
+    expect(screen.getByTestId('CampaignStylePanel')).toHaveAttribute(
+      'data-block-id',
+      'landingJourneyListId'
+    )
+    expect(screen.getByRole('tab', { name: 'Background' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Colours' })).toBeInTheDocument()
   })
 
   it('adds the link chip and variant, size and colours for a button Extra', () => {
