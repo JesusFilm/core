@@ -212,7 +212,6 @@ describe('Canvas', () => {
             }
           }}
           pageKind={CampaignPageKind.landing}
-          previewLanguageId="529"
           view="desktop"
         />
       </StaticEditor>

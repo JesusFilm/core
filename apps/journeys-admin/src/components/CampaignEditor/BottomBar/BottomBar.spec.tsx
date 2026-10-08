@@ -245,6 +245,7 @@ describe('BottomBar', () => {
       <StaticEditor mocks={[createMock, deleteMock]}>
         <BottomBar
           onSettingsClick={vi.fn()}
+          onThemeClick={vi.fn()}
           onTranslationsClick={onTranslationsClick}
         />
       </StaticEditor>
