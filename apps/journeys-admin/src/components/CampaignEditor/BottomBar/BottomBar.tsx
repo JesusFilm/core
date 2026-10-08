@@ -65,6 +65,7 @@ export const NEW_BUTTON_LABEL = 'Button'
 
 interface BottomBarProps {
   onSettingsClick: () => void
+  onThemeClick: () => void
   /** Opens the Languages panel (add and remove campaign languages). */
   onLanguagesClick?: () => void
   /** Opens the Translations view (review and edit translated text). */
@@ -94,6 +95,7 @@ interface SectionInsert {
  */
 export function BottomBar({
   onSettingsClick,
+  onThemeClick,
   onLanguagesClick,
   onTranslationsClick,
   onRegionSettingsClick
@@ -441,7 +443,11 @@ export function BottomBar({
               icon={<SettingsIcon />}
               onClick={onSettingsClick}
             />
-            <BarButton label={t('Theme')} icon={<PaletteIcon />} disabled />
+            <BarButton
+              label={t('Theme')}
+              icon={<PaletteIcon />}
+              onClick={onThemeClick}
+            />
             <BarButton
               label={t('Languages')}
               icon={<Globe1Icon />}

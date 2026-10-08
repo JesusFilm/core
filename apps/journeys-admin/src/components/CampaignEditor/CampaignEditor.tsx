@@ -28,6 +28,7 @@ import { Hotkeys } from './Hotkeys'
 import { LanguagesPanel } from './LanguagesPanel'
 import { RegionSettings } from './RegionSettings'
 import { Settings } from './Settings'
+import { ThemePanel } from './ThemePanel'
 import { TopBar } from './TopBar'
 import { TranslationsView } from './TranslationsView'
 
@@ -56,6 +57,7 @@ function CampaignEditorShell({
   } = useCampaignEditor()
   const [view, setView] = useState<CanvasView>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [themeOpen, setThemeOpen] = useState(false)
   const [languagesOpen, setLanguagesOpen] = useState(false)
   const [regionSettingsOpen, setRegionSettingsOpen] = useState(false)
   const settingsRegion =
@@ -94,6 +96,7 @@ function CampaignEditorShell({
       <Canvas campaign={campaign} pageKind={pageKind} view={view} />
       <BottomBar
         onSettingsClick={() => setSettingsOpen(true)}
+        onThemeClick={() => setThemeOpen(true)}
         onLanguagesClick={() => setLanguagesOpen(true)}
         onRegionSettingsClick={() => setRegionSettingsOpen(true)}
         onTranslationsClick={() => setTranslationsOpen(true)}
@@ -111,6 +114,13 @@ function CampaignEditorShell({
         onClose={() => setRegionSettingsOpen(false)}
       >
         {settingsRegion != null && <RegionSettings region={settingsRegion} />}
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={themeOpen}
+        onClose={() => setThemeOpen(false)}
+      >
+        <ThemePanel onClose={() => setThemeOpen(false)} />
       </Drawer>
       <Drawer
         anchor="right"

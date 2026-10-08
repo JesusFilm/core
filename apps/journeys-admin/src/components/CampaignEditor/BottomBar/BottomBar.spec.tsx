@@ -199,7 +199,8 @@ function renderBar(
   initialState?: Partial<CampaignEditorState>,
   onSettingsClick = vi.fn(),
   campaignProp = campaign,
-  onRegionSettingsClick = vi.fn()
+  onRegionSettingsClick = vi.fn(),
+  onThemeClick = vi.fn()
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
@@ -221,6 +222,7 @@ function renderBar(
       <BottomBar
         onSettingsClick={onSettingsClick}
         onRegionSettingsClick={onRegionSettingsClick}
+        onThemeClick={onThemeClick}
       />
     </StaticEditor>
   )
@@ -245,7 +247,8 @@ describe('BottomBar', () => {
 
   it('shows Settings, Theme, Languages, Translations and Add section on the campaign row', () => {
     const onSettingsClick = vi.fn()
-    renderBar(undefined, onSettingsClick)
+    const onThemeClick = vi.fn()
+    renderBar(undefined, onSettingsClick, campaign, vi.fn(), onThemeClick)
 
     expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
       'data-selection',
@@ -258,12 +261,14 @@ describe('BottomBar', () => {
       'Translations',
       'Add section'
     ])
-    expect(screen.getByRole('button', { name: 'Theme' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Theme' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Translations' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Add section' })).toBeEnabled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
     expect(onSettingsClick).toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
+    expect(onThemeClick).toHaveBeenCalled()
   })
 
   it('shows Open page, Add line, Settings, Unlist and move for a selected region card', () => {
@@ -337,6 +342,7 @@ describe('BottomBar', () => {
       <StaticEditor mocks={[createMock, deleteMock]}>
         <BottomBar
           onSettingsClick={vi.fn()}
+          onThemeClick={vi.fn()}
           onTranslationsClick={onTranslationsClick}
         />
       </StaticEditor>
