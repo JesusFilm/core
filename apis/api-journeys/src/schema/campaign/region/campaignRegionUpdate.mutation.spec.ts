@@ -16,6 +16,14 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
+const { mockQueueAdd } = vi.hoisted(() => ({ mockQueueAdd: vi.fn() }))
+
+vi.mock('bullmq', () => ({
+  Queue: vi.fn(function () {
+    return { add: mockQueueAdd }
+  })
+}))
+
 describe('campaignRegionUpdate', () => {
   const UPDATE = graphql(`
     mutation CampaignRegionUpdate(
@@ -41,6 +49,8 @@ describe('campaignRegionUpdate', () => {
     )
     prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
     prismaMock.journey.findFirst.mockResolvedValue(null)
+    prismaMock.campaignRegion.findMany.mockResolvedValue(fixture.regions)
+    mockQueueAdd.mockResolvedValue(undefined)
     prismaMock.campaignRegion.update.mockImplementation((async ({
       where,
       data
@@ -148,7 +158,7 @@ describe('campaignRegionUpdate', () => {
   it('rejects a slug another region of the campaign already has', async () => {
     prismaMock.campaignRegion.findFirst.mockResolvedValue({
       id: 'afrRegionId'
-    } as never)
+    })
 
     const result = await update({ slug: 'afr' })
 
@@ -163,7 +173,7 @@ describe('campaignRegionUpdate', () => {
     prismaMock.journey.findFirst.mockResolvedValue({
       id: 'journeyId',
       title: 'Christmas Europe'
-    } as never)
+    })
 
     const result = await update({ slug: 'christmas-europe' })
 
@@ -219,5 +229,53 @@ describe('campaignRegionUpdate', () => {
     const result = await update({ name: 'Europe' }, 'missing')
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+  })
+
+  describe('revalidation', () => {
+    function publishedFixture(): void {
+      const published = campaignFactory()
+        .withRegion('EUR')
+        .withRegion('AFR')
+        .published()
+        .build()
+      prismaMock.campaignRegion.findUnique.mockResolvedValue(
+        campaignRegionWithAcl(published, 'eurRegionId')
+      )
+    }
+
+    it('revalidates the previous and new region paths when the slug of a published campaign moves', async () => {
+      publishedFixture()
+
+      await update({ slug: 'europe' })
+
+      const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
+      expect(paths).toEqual(
+        expect.arrayContaining([
+          '/home/campaign/christmas-2026',
+          '/home/campaign/christmas-2026/eur',
+          '/home/campaign/christmas-2026/afr'
+        ])
+      )
+    })
+
+    it('revalidates when listing changes on a published campaign', async () => {
+      publishedFixture()
+
+      await update({ listed: false })
+
+      expect(mockQueueAdd).toHaveBeenCalled()
+    })
+
+    it('queues nothing for a rename, an unchanged slug or a draft campaign', async () => {
+      publishedFixture()
+      await update({ name: 'Europe', slug: 'eur', listed: true })
+      expect(mockQueueAdd).not.toHaveBeenCalled()
+
+      prismaMock.campaignRegion.findUnique.mockResolvedValue(
+        campaignRegionWithAcl(fixture, 'eurRegionId')
+      )
+      await update({ slug: 'europe' })
+      expect(mockQueueAdd).not.toHaveBeenCalled()
+    })
   })
 })

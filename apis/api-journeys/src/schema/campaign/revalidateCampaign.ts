@@ -30,7 +30,8 @@ export function campaignPagePaths(campaign: {
 /**
  * Queue on-demand revalidation of a campaign's pages: exactly one job per
  * affected path through the revalidate worker's `paths[]` job variant. Only
- * `campaignPublish`, `campaignUnpublish` and a Campaign Root change call this;
+ * `campaignPublish`, `campaignUnpublish`, a Campaign Root change and a region
+ * slug, listing or delete change of a published campaign call this; other
  * content mutations rely on the 60 s ISR window and queue nothing. A queue
  * failure is logged, not thrown: the page still refreshes at the next ISR
  * regeneration.
@@ -50,5 +51,24 @@ export async function enqueueCampaignRevalidation(
             )
           })
     )
+  )
+}
+
+/**
+ * After a region's slug, listing or deletion changes on a published campaign,
+ * revalidate the landing page and the given region paths, including the
+ * region's previous path, so the old URL stops resolving and the switchers
+ * refresh. A draft campaign serves nothing, so nothing is queued.
+ */
+export async function enqueueRegionRevalidation(
+  campaign: { slug: string; status: string },
+  regionSlugs: string[]
+): Promise<void> {
+  if (campaign.status !== 'published') return
+  await enqueueCampaignRevalidation(
+    campaignPagePaths({
+      slug: campaign.slug,
+      regions: [...new Set(regionSlugs)].map((slug) => ({ slug }))
+    })
   )
 }
