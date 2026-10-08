@@ -10,7 +10,7 @@ locals {
   #     -> edge publishing (the Worker serves through api-media until then);
   #        stage only below until the prod namespace and token exist
   #   SHORT_LINKS_CLICKHOUSE_URL, _USER, _PASSWORD, _DATABASE
-  #     -> scan statistics (zeros until then)
+  #     -> scan statistics (zeros until then); stage only below
   #   SLACK_SHORT_LINKS_BOT_TOKEN, SLACK_SHORT_LINKS_CHANNEL_ID
   #     -> destination health alerts (logged only until then)
   environment_variables = concat([
@@ -62,7 +62,11 @@ locals {
     "WATCH_URL"
     ], var.env == "stage" ? [
     "CLOUDFLARE_SHORT_LINKS_API_TOKEN",
-    "CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID"
+    "CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID",
+    "SHORT_LINKS_CLICKHOUSE_DATABASE",
+    "SHORT_LINKS_CLICKHOUSE_PASSWORD",
+    "SHORT_LINKS_CLICKHOUSE_URL",
+    "SHORT_LINKS_CLICKHOUSE_USER"
   ] : [])
   service_config = {
     name                              = "api-media"
