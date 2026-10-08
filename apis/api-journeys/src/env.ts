@@ -11,6 +11,16 @@ export const env = createEnv({
     throw new Error('Invalid environment variables')
   },
   server: {
+    // AI journey builder (ENG-3766). Optional: api-journeys starts without
+    // them, and only the builder subscription reports that it isn't set up.
+    AI_GATEWAY_URL: z.string().trim().min(1).optional(),
+    AI_GATEWAY_API_KEY: z.string().trim().min(1).optional(),
+    AI_GATEWAY_MODEL: z.string().trim().min(1).default('coding'),
+    AI_JOURNEY_BUILDER_TIMEOUT_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(5 * 60 * 1000),
     CLOUDFLARE_UPLOAD_KEY: z.string().trim().min(1),
     FACEBOOK_APP_ID: z.string().trim().min(1),
     FACEBOOK_APP_SECRET: z.string().trim().min(1),
