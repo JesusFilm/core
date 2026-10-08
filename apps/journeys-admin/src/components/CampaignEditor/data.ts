@@ -140,28 +140,7 @@ export const campaign: Campaign = {
   blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks].map(
     withEmptyTranslations
   ),
-  regions: [
-    {
-      __typename: 'CampaignRegion',
-      id: 'eurRegionId',
-      campaignId: CAMPAIGN_ID,
-      name: 'Europe',
-      slug: 'eur',
-      order: 0,
-      listed: true,
-      countries: []
-    },
-    {
-      __typename: 'CampaignRegion',
-      id: 'afrRegionId',
-      campaignId: CAMPAIGN_ID,
-      name: 'Africa',
-      slug: 'afr',
-      order: 1,
-      listed: true,
-      countries: []
-    }
-  ],
+  regions: [],
   strings: campaignStrings
 }
 

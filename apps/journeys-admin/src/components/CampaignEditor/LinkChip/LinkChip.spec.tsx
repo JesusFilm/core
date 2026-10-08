@@ -12,7 +12,7 @@ import {
 } from '../../../libs/useCampaignBlockActionMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { campaign } from '../data'
+import { campaignWithRegions as campaign } from '../data'
 import {
   BlocksProbe,
   CommandProbe,
@@ -162,6 +162,7 @@ const deleteMock = {
 function renderQueried(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
+      campaignProp={campaign}
       initialState={{ selectedBlockId: 'heroButtonId' }}
       mocks={[
         scrollToCarouselMock,
