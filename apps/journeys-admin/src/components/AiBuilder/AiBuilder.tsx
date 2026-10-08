@@ -3,7 +3,10 @@ import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { use100vh } from 'react-div-100vh'
 import { v4 as uuidv4 } from 'uuid'
+
+import { usePageWrapperStyles } from '../PageWrapper/utils/usePageWrapperStyles'
 
 import { AiBuilderChat, type QueuedMessage } from './AiBuilderChat'
 import { AiBuilderDraftList } from './AiBuilderDraftList'
@@ -30,6 +33,8 @@ export function AiBuilder(): ReactElement {
   } = useAiBuilderDrafts()
   const { running, status, start, stop } = useAiBuilderRun(updateDraft)
   const [queued, setQueued] = useState<QueuedMessage[]>([])
+  const viewportHeight = use100vh()
+  const { toolbar } = usePageWrapperStyles()
 
   const sendNow = useCallback(
     (draft: AiBuilderDraft, content: string) => {
@@ -67,7 +72,15 @@ export function AiBuilder(): ReactElement {
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}
-      sx={{ height: 'calc(100vh - 48px)', minHeight: 0 }}
+      // On desktop, exactly the space under PageWrapper's main header, so the
+      // chat and preview scroll inside their own panes. A flex fill would let
+      // a long chat stretch the page body instead. On mobile the panes stack
+      // and the page body scrolls.
+      sx={{
+        height: {
+          md: `calc(${viewportHeight != null ? `${viewportHeight}px` : '100vh'} - ${toolbar.height})`
+        }
+      }}
     >
       <Box
         sx={{

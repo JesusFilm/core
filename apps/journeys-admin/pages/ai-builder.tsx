@@ -20,7 +20,11 @@ export default function AiBuilderPage(): ReactElement {
   return (
     <>
       <NextSeo title={t('AI Builder')} />
-      <PageWrapper title={t('AI Builder')} user={user ?? undefined}>
+      <PageWrapper
+        title={t('AI Builder')}
+        user={user ?? undefined}
+        mainBodyPadding={false}
+      >
         <AiBuilder />
       </PageWrapper>
     </>
