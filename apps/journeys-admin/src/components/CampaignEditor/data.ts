@@ -144,18 +144,22 @@ export const campaign: Campaign = {
     {
       __typename: 'CampaignRegion',
       id: 'eurRegionId',
+      campaignId: CAMPAIGN_ID,
       name: 'Europe',
       slug: 'eur',
       order: 0,
-      listed: true
+      listed: true,
+      countries: []
     },
     {
       __typename: 'CampaignRegion',
       id: 'afrRegionId',
+      campaignId: CAMPAIGN_ID,
       name: 'Africa',
       slug: 'afr',
       order: 1,
-      listed: true
+      listed: true,
+      countries: []
     }
   ],
   strings: campaignStrings
