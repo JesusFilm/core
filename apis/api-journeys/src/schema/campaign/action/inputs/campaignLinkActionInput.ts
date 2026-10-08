@@ -10,7 +10,7 @@ export const CampaignLinkActionInput = builder.inputType(
       }),
       target: t.string({
         required: false,
-        description: '`_blank` to open in a new tab; null for the same tab.'
+        description: '`_blank` to open in a new tab; null for the same tab. Any other value is rejected.'
       })
     })
   }

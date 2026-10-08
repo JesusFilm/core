@@ -112,6 +112,19 @@ describe('campaignBlockUpdateLinkAction', () => {
     )
   })
 
+  it.each(['promo', '_top', '_self', ''])(
+    'rejects the target %j: only _blank or null (BAD_USER_INPUT, target)',
+    async (target) => {
+      const result = await update({ url: 'https://example.com', target })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'target'
+      })
+      expect(prismaMock.campaignAction.upsert).not.toHaveBeenCalled()
+    }
+  )
+
   it.each(['http://example.com', 'example.com', 'javascript:alert(1)'])(
     'rejects %s: the url must be https (BAD_USER_INPUT, url), no blocklist',
     async (url) => {

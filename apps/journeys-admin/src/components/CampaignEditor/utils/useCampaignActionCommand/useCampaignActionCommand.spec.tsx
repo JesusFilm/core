@@ -39,9 +39,11 @@ const badLinkAction: CampaignButtonAction = {
 
 /** One button that writes `action` onto the hero button as a Command. */
 function Harness({
-  action
+  action,
+  undoAction
 }: {
   action: CampaignButtonAction | null
+  undoAction?: CampaignButtonAction | null
 }): ReactElement | null {
   const { campaign: current } = useCampaignEditor()
   const { addAction } = useCampaignActionCommand()
@@ -57,7 +59,7 @@ function Harness({
           addAction({
             block,
             action,
-            undoAction: block.action,
+            undoAction: undoAction === undefined ? block.action : undoAction,
             onError: setError
           })
         }
@@ -128,7 +130,8 @@ const errorMock = {
 }
 
 function renderHarness(
-  action: CampaignButtonAction | null
+  action: CampaignButtonAction | null,
+  undoAction?: CampaignButtonAction | null
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
@@ -140,7 +143,7 @@ function renderHarness(
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <Harness action={action} />
+      <Harness action={action} undoAction={undoAction} />
     </QueriedEditor>
   )
 }
@@ -212,6 +215,23 @@ describe('useCampaignActionCommand', () => {
       expect(buttonActionText()).toMatch(/\|CampaignScrollToBlockAction$/)
     )
     await waitFor(() => expect(scrollMock.result).toHaveBeenCalled())
+  })
+
+  it('removes the action on undo when the previous action was a region action whose region is gone', async () => {
+    renderHarness(linkAction, {
+      __typename: 'CampaignNavigateToRegionAction',
+      parentBlockId: 'heroButtonId',
+      regionId: null
+    })
+    await screen.findByTestId('Block-heroButtonId')
+    fireEvent.click(screen.getByRole('button', { name: 'Change link' }))
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(buttonActionText()).toMatch(/\|null$/))
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it("reports the API's message verbatim when the write fails", async () => {

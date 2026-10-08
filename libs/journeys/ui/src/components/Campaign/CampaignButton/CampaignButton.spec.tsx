@@ -239,6 +239,25 @@ describe('CampaignButton', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
+  it('sets rel on a LinkAction with any target, not only _blank', () => {
+    renderButton(
+      <CampaignButton
+        block={{
+          ...heroButton,
+          action: {
+            __typename: 'CampaignLinkAction',
+            parentBlockId: heroButton.id,
+            url: 'https://example.com/',
+            target: 'promo'
+          }
+        }}
+      />
+    )
+    const link = screen.getByRole('link', { name: 'Choose your region' })
+    expect(link).toHaveAttribute('target', 'promo')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
   it('renders a LinkAction with a non-https url static', () => {
     renderButton(
       <CampaignButton

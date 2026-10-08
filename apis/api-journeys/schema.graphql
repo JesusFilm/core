@@ -967,7 +967,9 @@ input CampaignLinkActionInput {
   """An https address of at most 2048 characters."""
   url: String!
 
-  """`_blank` to open in a new tab; null for the same tab."""
+  """
+  `_blank` to open in a new tab; null for the same tab. Any other value is rejected.
+  """
   target: String
 }
 
@@ -3678,6 +3680,7 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
   - BAD_USER_INPUT (field: `url`): not an https address, or over 2048 characters.
+  - BAD_USER_INPUT (field: `target`): not `_blank` or null.
   """
   campaignBlockUpdateLinkAction(id: ID!, input: CampaignLinkActionInput!): CampaignLinkAction!
 

@@ -120,7 +120,8 @@ function writeAction(
 
 /**
  * Write a button's one action through the mutation for its kind, or remove
- * it, optimistically. The returned promise rejects with the API's error so
+ * it, optimistically. A region action with no region (its region was deleted)
+ * cannot be written back, so it removes the action instead. The returned promise rejects with the API's error so
  * the caller can show its message verbatim.
  */
 export function useCampaignBlockActionMutation(): CampaignActionMutate {
@@ -140,6 +141,21 @@ export function useCampaignBlockActionMutation(): CampaignActionMutate {
     CampaignBlockDeleteAction,
     CampaignBlockDeleteActionVariables
   >(CAMPAIGN_BLOCK_DELETE_ACTION)
+
+  async function removeAction(
+    block: Pick<CampaignButtonBlock, 'id'>
+  ): ReturnType<CampaignActionMutate> {
+    return await deleteAction({
+      variables: { id: block.id },
+      optimisticResponse: {
+        campaignBlockDeleteAction: {
+          __typename: 'CampaignButtonBlock',
+          id: block.id,
+          action: null
+        }
+      }
+    })
+  }
 
   return async function mutate(block, action) {
     switch (action?.__typename) {
@@ -169,8 +185,7 @@ export function useCampaignBlockActionMutation(): CampaignActionMutate {
           }
         })
       case 'CampaignNavigateToRegionAction':
-        if (action.regionId == null)
-          throw new Error('a NavigateToRegionAction needs a regionId')
+        if (action.regionId == null) return await removeAction(block)
         return await updateNavigateToRegion({
           variables: { id: block.id, input: { regionId: action.regionId } },
           optimisticResponse: {
@@ -185,16 +200,7 @@ export function useCampaignBlockActionMutation(): CampaignActionMutate {
           }
         })
       default:
-        return await deleteAction({
-          variables: { id: block.id },
-          optimisticResponse: {
-            campaignBlockDeleteAction: {
-              __typename: 'CampaignButtonBlock',
-              id: block.id,
-              action: null
-            }
-          }
-        })
+        return await removeAction(block)
     }
   }
 }
