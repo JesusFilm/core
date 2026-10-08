@@ -19,8 +19,8 @@ import {
 import {
   CampaignPageKind,
   CampaignStatus,
-  JourneyStatus,
   CampaignStringKey,
+  JourneyStatus,
   UserTeamRole
 } from '../../../__generated__/globalTypes'
 import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
