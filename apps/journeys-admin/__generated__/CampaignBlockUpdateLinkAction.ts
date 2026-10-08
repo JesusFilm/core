@@ -30,6 +30,7 @@ export interface CampaignBlockUpdateLinkAction {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
    * - BAD_USER_INPUT (field: `url`): not an https address, or over 2048 characters.
+   * - BAD_USER_INPUT (field: `target`): not `_blank` or null.
    */
   campaignBlockUpdateLinkAction: CampaignBlockUpdateLinkAction_campaignBlockUpdateLinkAction;
 }
