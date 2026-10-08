@@ -1,17 +1,35 @@
 {
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} যিশু চলচ্চিত্র প্রকল্প"
   },
   "RootIndexPage": {
     "pageTitle": "Watch",
-    "title": "Free Gospel Video <underline>Streaming</underline> Library.",
-    "description": "Watch, learn and share the gospel in over 2000 languages"
+    "title": "বিনামূল্যে গসপেল ভিডিও <underline>স্ট্রিমিং</underline> লাইব্রেরি।",
+    "description": "২০০০টিরও বেশি ভাষায় সুসমাচার দেখুন, শিখুন এবং শেয়ার করুন"
+  },
+  "ModernTestPage": {
+    "pageTitle": "আধুনিক পরীক্ষা",
+    "title": "আধুনিক পরীক্ষা পৃষ্ঠা",
+    "description": "এটি আধুনিক ঘড়ি অ্যাপ্লিকেশনের জন্য একটি পরীক্ষা পৃষ্ঠা। এটি নতুন রাউটিং এবং প্রক্সি কার্যকারিতা প্রদর্শন করে।",
+    "feature1": {
+      "title": "আধুনিক স্থাপত্য",
+      "description": "অপ্টিমাল পারফরম্যান্স এবং ডেভেলপার অভিজ্ঞতার জন্য Next.js App Router এবং আধুনিক React প্যাটার্ন ব্যবহার করে নির্মিত।"
+    },
+    "feature2": {
+      "title": "বুদ্ধিমান রাউটিং",
+      "description": "উন্নত প্রক্সি রাউটিং যা বুদ্ধিমত্তার সাথে ট্র্যাফিককে উপযুক্ত ব্যাকএন্ড সেবার কাছে নির্দেশ করে।"
+    },
+    "feature3": {
+      "title": "প্রতিক্রিয়াশীল ডিজাইন",
+      "description": "সম্পূর্ণ প্রতিক্রিয়াশীল ডিজাইন যা সব ডিভাইস এবং স্ক্রিন সাইজে নির্বিঘ্নে কাজ করে।"
+    },
+    "footer": "এই পৃষ্ঠাটি আধুনিক ওয়াচ অ্যাপ্লিকেশন দ্বারা বুদ্ধিমান প্রক্সি রাউটিংয়ের মাধ্যমে পরিবেশন করা হয়।"
   },
   "DatadogErrorBoundary": {
-    "somethingWentWrong": "Something went wrong",
-    "anErrorOccurred": "An error occurred while loading this page. Please try refreshing.",
-    "errorDetails": "Error details",
-    "tryAgain": "Try again",
-    "unknownError": "Unknown error"
+    "somethingWentWrong": "কিছু একটা ভুল হয়ে গেছে",
+    "anErrorOccurred": "এই পৃষ্ঠা লোড করার সময় একটি ত্রুটি ঘটেছে। অনুগ্রহ করে রিফ্রেশ করে দেখুন।",
+    "errorDetails": "ত্রুটির বিবরণ",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "unknownError": "অজানা ত্রুটি"
   }
 }
