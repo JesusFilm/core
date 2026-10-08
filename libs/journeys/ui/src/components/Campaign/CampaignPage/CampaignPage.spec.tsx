@@ -385,7 +385,7 @@ describe('CampaignPage page language', () => {
     document.documentElement.dir = ''
   })
 
-  it('carries the lang param on every in-campaign link: brand mark, back chip and the other regions\' switcher cards', () => {
+  it("carries the lang param on every in-campaign link: brand mark, back chip and the other regions' switcher cards", () => {
     renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
     expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
       'href',
