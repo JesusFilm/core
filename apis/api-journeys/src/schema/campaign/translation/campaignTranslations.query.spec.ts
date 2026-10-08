@@ -316,7 +316,7 @@ describe('campaignTranslations', () => {
           title: 'Orphaned title'
         }
       ]
-    })
+    } as never)
 
     const result = await translations()
 
@@ -371,7 +371,7 @@ describe('campaignTranslations', () => {
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...build(),
       team: { ...fixture.team, userTeams: [] }
-    })
+    } as never)
 
     const result = await translations()
 
