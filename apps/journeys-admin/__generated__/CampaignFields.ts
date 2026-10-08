@@ -682,7 +682,10 @@ export interface CampaignFields_blocks_CampaignButtonBlock_action_CampaignNaviga
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignFields_blocks_CampaignButtonBlock_action = CampaignFields_blocks_CampaignButtonBlock_action_CampaignLinkAction | CampaignFields_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignFields_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;

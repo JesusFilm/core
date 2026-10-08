@@ -746,6 +746,15 @@ export interface CampaignJourneyListBlockUpdateInput {
   accentColor?: string | null;
 }
 
+export interface CampaignLinkActionInput {
+  url: string;
+  target?: string | null;
+}
+
+export interface CampaignNavigateToRegionActionInput {
+  regionId: string;
+}
+
 export interface CampaignRegionHeaderBlockCreateInput {
   id?: string | null;
   campaignId: string;
@@ -817,6 +826,10 @@ export interface CampaignRegionUpdateInput {
   name?: string | null;
   slug?: string | null;
   listed?: boolean | null;
+}
+
+export interface CampaignScrollToBlockActionInput {
+  blockId: string;
 }
 
 /**

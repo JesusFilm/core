@@ -561,7 +561,10 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBl
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action = GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action_CampaignLinkAction | GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action_CampaignScrollToBlockAction | GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1137,7 +1140,10 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_act
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action = GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action_CampaignLinkAction | GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action_CampaignScrollToBlockAction | GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1614,7 +1620,10 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlo
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action = GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action_CampaignLinkAction | GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
