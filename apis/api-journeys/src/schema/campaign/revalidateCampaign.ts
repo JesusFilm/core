@@ -1,4 +1,5 @@
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
+import { logger } from '../logger'
 
 /**
  * Every Next.js page path a campaign is served from: the landing page and
@@ -30,7 +31,9 @@ export function campaignPagePaths(campaign: {
  * Queue on-demand revalidation of a campaign's pages: exactly one job per
  * affected path through the revalidate worker's `paths[]` job variant. Only
  * `campaignPublish`, `campaignUnpublish` and a Campaign Root change call this;
- * content mutations rely on the 60 s ISR window and queue nothing.
+ * content mutations rely on the 60 s ISR window and queue nothing. A queue
+ * failure is logged, not thrown: the page still refreshes at the next ISR
+ * regeneration.
  */
 export async function enqueueCampaignRevalidation(
   paths: string[]
@@ -40,7 +43,12 @@ export async function enqueueCampaignRevalidation(
       async (path) =>
         await revalidateQueue
           .add('revalidate', { paths: [path] })
-          .catch(() => undefined)
+          .catch((error: unknown) => {
+            logger.error(
+              { error, path },
+              'Failed to queue campaign revalidation'
+            )
+          })
     )
   )
 }

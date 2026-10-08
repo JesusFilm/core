@@ -50,14 +50,7 @@ function PageKindCanvas(): ReactElement {
   const {
     state: { pageKind }
   } = useCampaignEditor()
-  return (
-    <Canvas
-      campaign={campaign}
-      pageKind={pageKind}
-      previewLanguageId="529"
-      view="desktop"
-    />
-  )
+  return <Canvas campaign={campaign} pageKind={pageKind} view="desktop" />
 }
 
 const deleteMock = {
@@ -72,6 +65,7 @@ function renderEditor(
   return render(
     <StaticEditor initialState={initialState} mocks={[deleteMock]}>
       <Hotkeys />
+      <input aria-label="Shell field" />
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
@@ -114,9 +108,19 @@ describe('CampaignEditorProvider', () => {
   describe('reducer', () => {
     const state: CampaignEditorState = {
       pageKind: CampaignPageKind.landing,
+      previewLanguageId: '529',
       selectedBlockId: 'heroId',
       editRequest: 0
     }
+
+    it('changes the preview language without touching the selection', () => {
+      expect(
+        reducer(state, {
+          type: 'SetPreviewLanguageAction',
+          previewLanguageId: '496'
+        })
+      ).toEqual({ ...state, previewLanguageId: '496' })
+    })
 
     it('clears the selection when the page changes', () => {
       expect(
@@ -126,6 +130,7 @@ describe('CampaignEditorProvider', () => {
         })
       ).toEqual({
         pageKind: CampaignPageKind.regionTemplate,
+        previewLanguageId: '529',
         selectedBlockId: undefined,
         editRequest: 0
       })
@@ -228,6 +233,18 @@ describe('CampaignEditorProvider', () => {
     expect(onUndo).toHaveBeenCalledTimes(1)
   })
 
+  it('leaves ⌘Z to a focused field in the shell, which is not a Command', async () => {
+    const onUndo = vi.fn()
+    const { baseElement } = renderEditor({ selectedBlockId: 'heroId' }, onUndo)
+    await frameBody(baseElement, 'CanvasSection-heroId')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit region intro' }))
+
+    screen.getByRole('textbox', { name: 'Shell field' }).focus()
+    await userEvent.keyboard('{Meta>}z{/Meta}')
+
+    expect(onUndo).not.toHaveBeenCalled()
+  })
+
   it('has no other shortcuts: Delete and Backspace leave a selected Extra alone', async () => {
     renderEditor({ selectedBlockId: 'heroButtonId' })
 
@@ -236,6 +253,39 @@ describe('CampaignEditorProvider', () => {
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('button')
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'heroButtonId'
+    )
+  })
+
+  it('falls back to the default language when the previewed language is removed', () => {
+    function PreviewProbe(): ReactElement {
+      const {
+        state: { previewLanguageId }
+      } = useCampaignEditor()
+      return <span data-testid="PreviewLanguage">{previewLanguageId}</span>
+    }
+    const withoutFrench = {
+      ...campaign,
+      languages: campaign.languages.filter(
+        (language) => language.languageId !== '496'
+      )
+    }
+    const { rerender } = render(
+      <StaticEditor initialState={{ previewLanguageId: '496' }}>
+        <PreviewProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+
+    rerender(
+      <StaticEditor
+        initialState={{ previewLanguageId: '496' }}
+        campaignProp={withoutFrench}
+      >
+        <PreviewProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent(
+      campaign.defaultLanguageId
     )
   })
 

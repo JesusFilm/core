@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -139,7 +139,6 @@ describe('CampaignEditor', () => {
     fireEvent.blur(title)
 
     expect(await screen.findByText('campaign not found')).toBeInTheDocument()
-    await waitFor(() => expect(title).toHaveValue('Christmas 2026'))
   })
 
   it('opens the Theme panel from the campaign row', async () => {

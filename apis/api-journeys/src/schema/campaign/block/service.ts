@@ -281,7 +281,7 @@ export async function getSiblings(
       deletedAt: null,
       ...where
     },
-    orderBy: { parentOrder: 'asc' },
+    orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
     include: { action: true }
   })
 }
@@ -365,17 +365,26 @@ export async function updateBlock(
 }
 
 /**
- * Soft-delete a block: stamp `deletedAt` and renumber the remaining siblings
- * contiguously. Children keep their rows and fall out of the tree with the
- * parent, so restore brings them back untouched. Returns the renumbered
+ * Soft-delete a block: stamp `deletedAt` on it and on everything it owns
+ * (live descendants and owned blocks) with one shared timestamp, then
+ * renumber the remaining siblings contiguously. Restore matches that
+ * timestamp, so rows deleted earlier stay deleted. Returns the renumbered
  * siblings.
  */
 export async function removeBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
-    await tx.campaignBlock.update({
-      where: { id: block.id },
+    const live = await tx.campaignBlock.findMany({
+      where: { campaignId: block.campaignId, deletedAt: null },
+      include: { action: true }
+    })
+    const subtreeIds = [
+      block.id,
+      ...collectSubtree(block.id, live).map((row) => row.id)
+    ]
+    await tx.campaignBlock.updateMany({
+      where: { id: { in: [...new Set(subtreeIds)] } },
       data: { deletedAt: new Date() }
     })
     const siblings =
@@ -400,15 +409,25 @@ function getDescendants(
 }
 
 /**
- * Restore a soft-deleted block: clear `deletedAt` and re-insert it among its
- * siblings at its own `parentOrder`, renumbering again. Returns the restored
- * block with its siblings and its live descendants, so the editor cache can
- * take the whole subtree back in one write.
+ * Restore a soft-deleted block: clear `deletedAt` on it and on the rows
+ * deleted with it (same timestamp), and re-insert it among its siblings at
+ * its own `parentOrder`, renumbering again. Returns the restored block with
+ * its siblings and its live descendants, so the editor cache can take the
+ * whole subtree back in one write.
  */
 export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    if (block.deletedAt != null)
+      await tx.campaignBlock.updateMany({
+        where: {
+          campaignId: block.campaignId,
+          deletedAt: block.deletedAt,
+          id: { not: block.id }
+        },
+        data: { deletedAt: null }
+      })
     const restored = await tx.campaignBlock.update({
       where: { id: block.id },
       data: { deletedAt: null },
@@ -719,6 +738,8 @@ export async function duplicateBlock(
       )
     const remap = (id: string | null): string | null =>
       id == null ? null : (ids.get(id) ?? id)
+    const remapSlot = (id: string | null): string | null =>
+      id == null ? null : (ids.get(id) ?? null)
     const siblings = await getSiblings(block, tx)
 
     const copies: CampaignBlockWithAction[] = []
@@ -741,7 +762,7 @@ export async function duplicateBlock(
     for (const [index, row] of subtree.entries()) {
       const slots: Partial<Record<(typeof SLOT_COLUMNS)[number], string>> = {}
       for (const column of SLOT_COLUMNS) {
-        const target = remap(row[column])
+        const target = remapSlot(row[column])
         if (target != null) slots[column] = target
       }
       if (Object.keys(slots).length === 0 && row.action == null) continue
@@ -860,11 +881,13 @@ export function sectionStyleColumns(
 /**
  * The shared section style helper every section and chrome update runs:
  * the pure rules above, then a given cover resolved to a live
- * CampaignImageBlock of the same campaign (`BAD_USER_INPUT` / `coverBlockId`).
+ * CampaignImageBlock owned by this section (`BAD_USER_INPUT` /
+ * `coverBlockId`). Ownership keeps the unique `coverBlockId` slot from
+ * colliding with another section's cover.
  */
 export async function validateSectionStyle(
   input: SectionStyleInput,
-  block: Pick<CampaignBlock, 'campaignId'>
+  block: Pick<CampaignBlock, 'id' | 'campaignId'>
 ): Promise<SectionStyleColumns> {
   const data = sectionStyleColumns(input)
   if (data.coverBlockId == null) return data
@@ -872,6 +895,7 @@ export async function validateSectionStyle(
     where: {
       id: data.coverBlockId,
       campaignId: block.campaignId,
+      parentBlockId: block.id,
       typename: CAMPAIGN_IMAGE_TYPENAME,
       deletedAt: null
     },
@@ -879,7 +903,7 @@ export async function validateSectionStyle(
   })
   if (cover == null)
     throw badUserInput(
-      'coverBlockId must be a live image block of this campaign',
+      'coverBlockId must be a live image block of this section',
       'coverBlockId'
     )
   return data

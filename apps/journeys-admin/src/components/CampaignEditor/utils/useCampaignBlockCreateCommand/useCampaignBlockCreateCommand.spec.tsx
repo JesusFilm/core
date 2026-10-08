@@ -30,6 +30,7 @@ const newText = {
   parentBlockId: 'heroId',
   parentOrder: 1,
   content: '',
+  contentTranslations: [],
   typographyVariant: null,
   align: null,
   color: null,
@@ -45,6 +46,7 @@ const newButton = {
   parentBlockId: 'heroId',
   parentOrder: 1,
   label: 'Button',
+  labelTranslations: [],
   buttonVariant: null,
   size: null,
   align: null,
@@ -102,14 +104,7 @@ function PageCanvas(): ReactElement {
     campaign,
     state: { pageKind }
   } = useCampaignEditor()
-  return (
-    <Canvas
-      campaign={campaign}
-      pageKind={pageKind}
-      previewLanguageId="529"
-      view="desktop"
-    />
-  )
+  return <Canvas campaign={campaign} pageKind={pageKind} view="desktop" />
 }
 
 function renderEditor(): ReturnType<typeof render> {
