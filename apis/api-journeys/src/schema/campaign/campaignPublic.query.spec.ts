@@ -484,6 +484,23 @@ describe('campaignPublic', () => {
     })
   })
 
+  it('renders the page without Share Links when the gateway lookup fails', async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+    vi.mocked(fetchShortLink).mockRejectedValue(new Error('gateway down'))
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC,
+      variables: { slug: 'christmas-2026' }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignPublic.regions[0].languages[0]).toMatchObject({
+      journeyStatus: 'published',
+      shortLinkUrl: null,
+      journeyUrl: 'https://journeys.example.org/eur-journey'
+    })
+  })
+
   it('resolves to the default language when none is requested or the language is not a campaign language', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
 

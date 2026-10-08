@@ -11,9 +11,12 @@ import {
   authorizeRegionLanguageUpdate,
   createRegionLanguageQrCode,
   deleteQrCodes,
+  deleteShortLinks,
+  lockRegionLanguage,
   resolveJourneyId,
   resolveJourneyLink,
-  retargetRegionLanguageQrCode
+  retargetRegionLanguageQrCode,
+  runWithShortLinkStep
 } from './service'
 
 builder.mutationField('campaignRegionLanguageUpdate', (t) =>
@@ -56,41 +59,60 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
             ? null
             : await resolveJourneyId(String(input.journeyId))
 
-      return await prisma.$transaction(async (tx) => {
-        if (journey === null && regionLanguage.journeyId != null) {
-          // Unlink: the QR row and its short link go; a relink mints new ones.
-          if (regionLanguage.qrCode != null)
-            await deleteQrCodes(tx, [regionLanguage.qrCode])
-          data.journeyId = null
-          data.qrCodeId = null
-          data.title = null
-          data.description = null
-        } else if (journey != null) {
-          data.journeyId = journey.id
-          data.title = journey.title
-          data.description = journey.description
-          if (regionLanguage.qrCode == null)
-            data.qrCodeId = await createRegionLanguageQrCode(
-              tx,
-              campaign.teamId,
-              journey.id
-            )
-          else if (regionLanguage.qrCode.toJourneyId !== journey.id)
-            await retargetRegionLanguageQrCode(
-              tx,
-              regionLanguage.qrCode,
-              journey.id
-            )
-        }
+      let deletedShortLinkIds: string[] = []
+      const updated = await runWithShortLinkStep(
+        async (shortLinkStep) =>
+          await prisma.$transaction(async (tx) => {
+            // Decide from the row as locked, not as authorised: a concurrent
+            // call may already have linked or unlinked it.
+            await lockRegionLanguage(tx, id)
+            const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
+              where: { id },
+              include: { qrCode: true }
+            })
 
-        const updated = await tx.campaignRegionLanguage.update({
-          ...query,
-          where: { id },
-          data
-        })
-        await touchCampaign(tx, campaign.id)
-        return updated
-      })
+            if (journey === null && current.journeyId != null) {
+              // Unlink: the QR row goes now, its short link after commit; a relink mints new ones.
+              if (current.qrCode != null)
+                deletedShortLinkIds = await deleteQrCodes(tx, [current.qrCode])
+              data.journeyId = null
+              data.qrCodeId = null
+              data.title = null
+              data.description = null
+            } else if (journey != null) {
+              data.journeyId = journey.id
+              data.title = journey.title
+              data.description = journey.description
+              if (current.qrCode == null) {
+                const created = await createRegionLanguageQrCode(
+                  tx,
+                  campaign.teamId,
+                  journey.id
+                )
+                data.qrCodeId = created.qrCodeId
+                shortLinkStep.defer(created.step)
+              } else if (current.qrCode.toJourneyId !== journey.id)
+                shortLinkStep.defer(
+                  await retargetRegionLanguageQrCode(
+                    tx,
+                    current.qrCode,
+                    journey.id
+                  )
+                )
+            }
+
+            const updated = await tx.campaignRegionLanguage.update({
+              ...query,
+              where: { id },
+              data
+            })
+            await touchCampaign(tx, campaign.id)
+            await shortLinkStep.apply()
+            return updated
+          })
+      )
+      await deleteShortLinks(deletedShortLinkIds)
+      return updated
     }
   })
 )

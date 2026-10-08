@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
+import { logger } from '../logger'
 import { builder } from '../builder'
 
 import {
@@ -70,8 +71,8 @@ function isLivePublished(
 /**
  * Resolve the Share Link of every live-published region language through the
  * gateway's short-link lookup, in parallel; a link the gateway no longer
- * knows is left out, so the language renders without a Share Link rather
- * than failing the page.
+ * knows, or cannot be reached for, is left out, so the language renders
+ * without a Share Link rather than failing the page.
  */
 export async function resolveShortLinkUrls(
   campaign: CampaignPublicRow
@@ -83,7 +84,16 @@ export async function resolveShortLinkUrls(
         shortLinkIds.add(regionLanguage.qrCode.shortLinkId)
 
   const resolved = await Promise.all(
-    [...shortLinkIds].map(async (id) => [id, await fetchShortLink(id)] as const)
+    [...shortLinkIds].map(
+      async (id) =>
+        [
+          id,
+          await fetchShortLink(id).catch((error) => {
+            logger.error({ error, shortLinkId: id }, 'short link lookup failed')
+            return null
+          })
+        ] as const
+    )
   )
   const urls = new Map<string, string>()
   for (const [id, shortLink] of resolved)

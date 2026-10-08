@@ -7,6 +7,7 @@ import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import {
   authorizeRegionLanguageUpdate,
   deleteQrCodes,
+  deleteShortLinks,
   getRegionLanguages,
   reorderRegionLanguages
 } from './service'
@@ -25,9 +26,10 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
         String(id),
         context.user
       )
-      return await prisma.$transaction(async (tx) => {
+      let shortLinkIds: string[] = []
+      const deleted = await prisma.$transaction(async (tx) => {
         if (regionLanguage.qrCode != null)
-          await deleteQrCodes(tx, [regionLanguage.qrCode])
+          shortLinkIds = await deleteQrCodes(tx, [regionLanguage.qrCode])
         const deleted = await tx.campaignRegionLanguage.delete({
           where: { id: regionLanguage.id }
         })
@@ -38,6 +40,8 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
         await touchCampaign(tx, regionLanguage.region.campaignId)
         return deleted
       })
+      await deleteShortLinks(shortLinkIds)
+      return deleted
     }
   })
 )

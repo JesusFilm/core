@@ -3,7 +3,11 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { conflict, touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
-import { deleteQrCodes, findRegionQrCodes } from '../regionLanguage/service'
+import {
+  deleteQrCodes,
+  deleteShortLinks,
+  findRegionQrCodes
+} from '../regionLanguage/service'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'
 
 import { authorizeRegionUpdate, getRegions, reorderRegions } from './service'
@@ -24,8 +28,9 @@ builder.mutationField('campaignRegionDelete', (t) =>
           'a listed region cannot be deleted; unlist it first',
           'regionId'
         )
+      let shortLinkIds: string[] = []
       const deleted = await prisma.$transaction(async (tx) => {
-        await deleteQrCodes(
+        shortLinkIds = await deleteQrCodes(
           tx,
           await findRegionQrCodes(tx, { regionId: region.id })
         )
@@ -36,6 +41,7 @@ builder.mutationField('campaignRegionDelete', (t) =>
         await touchCampaign(tx, region.campaignId)
         return deleted
       })
+      await deleteShortLinks(shortLinkIds)
       await enqueueRegionRevalidation(region.campaign, [deleted.slug])
       return deleted
     }
