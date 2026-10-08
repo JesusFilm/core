@@ -135,8 +135,7 @@ export function newSectionBlock(
         src: null,
         alt: null,
         width: null,
-        height: null,
-        altTranslations: []
+        height: null
       }
   }
 }
