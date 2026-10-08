@@ -104,7 +104,9 @@ routes = [
 
 [env.stage.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.stage.central.jesusfilm.org/"
-CLICKHOUSE_URL = ""
+# jfp-short-links-stage (ClickHouse Cloud, Terraform-managed); the writer's
+# user and password are Worker secrets (README, "Setting up ClickHouse").
+CLICKHOUSE_URL = "https://vaewmvnvzl.us-east-2.aws.clickhouse.cloud:8443"
 CLICKHOUSE_DATABASE = "redirects"
 
 # Global namespace.
