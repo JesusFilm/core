@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -86,7 +85,7 @@ export function ThemePanel({ onClose }: ThemePanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const theme = campaign.theme
-  const { addTheme, error } = useCampaignThemeCommand()
+  const { addTheme } = useCampaignThemeCommand()
   const [colour, setColour] =
     useState<CampaignThemePresetColumn>('primaryColor')
   const active = activeThemePreset(theme)
@@ -182,11 +181,6 @@ export function ThemePanel({ onClose }: ThemePanelProps): ReactElement {
           </IconButton>
         )}
       </Stack>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
       <Stack spacing={2}>
         <Typography variant="subtitle2">{t('Theme preset')}</Typography>
         <ToggleButtonGroup

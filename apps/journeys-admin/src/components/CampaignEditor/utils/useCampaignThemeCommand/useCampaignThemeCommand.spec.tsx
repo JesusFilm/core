@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ReactElement } from 'react'
+import { SnackbarProvider } from 'notistack'
+import { ReactElement, useState } from 'react'
 
 import { DARK_PRESET, LIGHT_PRESET } from '@core/journeys/ui/Campaign'
 
@@ -18,7 +19,7 @@ const darkInput = { ...DARK_PRESET, themeMode: ThemeMode.dark }
 const lightInput = { ...LIGHT_PRESET, themeMode: ThemeMode.light }
 
 function Controls(): ReactElement {
-  const { addTheme, error } = useCampaignThemeCommand()
+  const { addTheme } = useCampaignThemeCommand()
   return (
     <>
       <button onClick={() => addTheme({ primaryColor: '#123456' })}>
@@ -29,7 +30,16 @@ function Controls(): ReactElement {
         Square
       </button>
       <button onClick={() => addTheme(darkInput)}>Dark</button>
-      {error != null && <span role="alert">{error}</span>}
+    </>
+  )
+}
+
+function ClosablePanel(): ReactElement {
+  const [open, setOpen] = useState(true)
+  return (
+    <>
+      <button onClick={() => setOpen(false)}>Close</button>
+      {open && <Controls />}
     </>
   )
 }
@@ -43,7 +53,9 @@ function renderControls(
       <CommandUndoItem variant="button" />
       <CommandRedoItem variant="button" />
       <CommandProbe />
-      <Controls />
+      <SnackbarProvider>
+        <Controls />
+      </SnackbarProvider>
     </QueriedEditor>
   )
 }
@@ -149,6 +161,33 @@ describe('useCampaignThemeCommand', () => {
     renderControls([failing])
 
     fireEvent.click(await screen.findByRole('button', { name: 'Primary' }))
+
+    expect(
+      await screen.findByText('primaryColor must be a hex colour like #RRGGBB')
+    ).toBeInTheDocument()
+  })
+
+  it('surfaces a failed undo after the panel that owned the hook has unmounted', async () => {
+    const failingUndo: StyleMock = {
+      ...themeMock({ primaryColor: '#C52D3A' }),
+      result: vi.fn(() => ({
+        errors: [{ message: 'primaryColor must be a hex colour like #RRGGBB' }]
+      }))
+    }
+    render(
+      <QueriedEditor mocks={[themeMock({ primaryColor: '#123456' }), failingUndo]}>
+        <CommandUndoItem variant="button" />
+        <SnackbarProvider>
+          <ClosablePanel />
+        </SnackbarProvider>
+      </QueriedEditor>
+    )
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Primary' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+    expect(screen.queryByRole('button', { name: 'Primary' })).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     expect(
       await screen.findByText('primaryColor must be a hex colour like #RRGGBB')

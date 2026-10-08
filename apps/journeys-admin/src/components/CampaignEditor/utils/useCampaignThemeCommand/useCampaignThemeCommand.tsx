@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react'
+import { useSnackbar } from 'notistack'
+import { useRef } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
@@ -12,9 +13,6 @@ import { messageOf, previousOf } from '../useCampaignStyleCommand'
 export interface CampaignThemeCommand {
   /** Write any Campaign Theme columns as one Command: a colour, a font, a radius, the mode, or a whole preset. */
   addTheme: (input: CampaignThemeUpdateInput) => void
-  /** The API's message, verbatim, when the last theme save failed. */
-  error?: string
-  clearError: () => void
 }
 
 /**
@@ -53,7 +51,9 @@ export function campaignThemeRow(
  * Every theme edit is one Command through `campaignThemeUpdate` with an
  * optimistic response: execute writes the given columns, undo writes the
  * values the theme had back through the same mutation, redo writes the
- * change again. A preset is the mode and the eight colours in one input, so
+ * change again. A failed save raises the API's message, verbatim, in the
+ * editor's error snackbar, which outlives the panel so an undo or redo from
+ * the top bar after the drawer closes still reports its failure. A preset is the mode and the eight colours in one input, so
  * one undo restores all nine. The optimistic row is built from the theme as
  * the cache holds it when the Command runs, so an undo never resurrects
  * columns changed since.
@@ -64,11 +64,9 @@ export function useCampaignThemeCommand(): CampaignThemeCommand {
   const [themeUpdate] = useCampaignThemeUpdateMutation()
   const themeRef = useRef(campaign.theme)
   themeRef.current = campaign.theme
-  const [error, setError] = useState<string>()
-  const clearError = useCallback(() => setError(undefined), [])
+  const { enqueueSnackbar } = useSnackbar()
 
   function addTheme(input: CampaignThemeUpdateInput): void {
-    setError(undefined)
     add<CampaignThemeUpdateInput>({
       parameters: {
         execute: input,
@@ -83,11 +81,14 @@ export function useCampaignThemeCommand(): CampaignThemeCommand {
             campaignThemeUpdate: campaignThemeRow(current, next)
           }
         }).catch((mutationError: unknown) => {
-          setError(messageOf(mutationError))
+          enqueueSnackbar(messageOf(mutationError), {
+            variant: 'error',
+            preventDuplicate: true
+          })
         })
       }
     })
   }
 
-  return { addTheme, error, clearError }
+  return { addTheme }
 }

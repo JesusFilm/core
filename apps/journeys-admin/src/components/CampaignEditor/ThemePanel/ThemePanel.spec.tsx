@@ -5,6 +5,7 @@ import {
   waitFor,
   within
 } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 
 import { DARK_PRESET, LIGHT_PRESET } from '@core/journeys/ui/Campaign'
 import {
@@ -37,7 +38,9 @@ function renderPanel(
     <QueriedEditor mocks={mocks} cache={cache}>
       <CommandUndoItem variant="button" />
       <CommandProbe />
-      <ThemePanel />
+      <SnackbarProvider>
+        <ThemePanel />
+      </SnackbarProvider>
     </QueriedEditor>
   )
 }
@@ -267,9 +270,9 @@ describe('ThemePanel', () => {
       await screen.findByTestId('ThemeColour-primaryColor')
       await pickHex('Primary hex', '#123456')
 
-      expect(await screen.findByRole('alert')).toHaveTextContent(
-        'primaryColor must be a hex colour like #RRGGBB'
-      )
+      expect(
+        await screen.findByText('primaryColor must be a hex colour like #RRGGBB')
+      ).toBeInTheDocument()
     })
   })
 
