@@ -18,6 +18,10 @@ import {
 import { Canvas, dropEdgeFor, dropParentOrder } from './Canvas'
 import type { CanvasView } from './Canvas'
 
+const mockWebFontLoader = { load: vi.fn() }
+
+vi.mock('webfontloader', () => mockWebFontLoader)
+
 const LANDING_SECTION_IDS = [
   'heroId',
   'landingSwitcherId',
@@ -192,6 +196,45 @@ describe('Canvas', () => {
     expect(
       body.querySelector('[data-testid="CanvasSection-heroId"]')
     ).toBeNull()
+  })
+
+  it('feeds the theme’s three fonts to the FontLoader so the frame renders them', async () => {
+    render(
+      <StaticEditor>
+        <Canvas
+          campaign={{
+            ...campaign,
+            theme: {
+              ...campaign.theme,
+              headerFont: 'Oswald',
+              bodyFont: 'Nunito',
+              labelFont: 'Inter'
+            }
+          }}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+
+    await waitFor(() =>
+      expect(mockWebFontLoader.load).toHaveBeenCalledWith({
+        google: {
+          families: [
+            'Inter:400,500,600,700,800',
+            'Nunito:400,500,600,700,800',
+            'Oswald:400,500,600,700,800'
+          ]
+        }
+      })
+    )
+  })
+
+  it('loads no fonts while the three theme fonts are null', async () => {
+    renderCanvas()
+
+    await frameBody(document.body, 'CampaignCanvasPage')
+    expect(mockWebFontLoader.load).not.toHaveBeenCalled()
   })
 
   it('sets the frame to 390 px in Phone view', () => {
