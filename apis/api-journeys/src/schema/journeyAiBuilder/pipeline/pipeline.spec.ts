@@ -15,6 +15,10 @@ import type { Plan } from '../stages/stageSchemas'
 import type { BuilderEvent } from './events'
 import { type PipelineInput, isBigPlan, runPipeline } from './pipeline'
 
+vi.mock('../../../logger', () => ({
+  logger: { warn: vi.fn(), error: vi.fn() }
+}))
+
 vi.mock('@core/shared/ai/prompts', () => ({
   hardenPrompt: (text: string) => `«${text}»`,
   preSystemPrompt: 'pre'

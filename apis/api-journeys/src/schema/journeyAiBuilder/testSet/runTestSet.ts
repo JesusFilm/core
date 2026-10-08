@@ -68,6 +68,8 @@ interface CaseResult {
   warnings: string[]
   errors: string[]
   replies: string[]
+  /** Plans shown for confirmation, in order. */
+  plans: Plan[]
   journey: Journey | null
   blocks: unknown[]
   base: Journey | null
@@ -164,6 +166,7 @@ async function runCase(
     warnings: [],
     errors: [],
     replies: [],
+    plans: [],
     journey: null,
     blocks: [],
     base
@@ -209,7 +212,10 @@ async function runCase(
         result.errors.push(event.text)
         return
       case 'content':
-        if (event.kind === 'plan') state.pendingPlan = event.payload as Plan
+        if (event.kind === 'plan') {
+          state.pendingPlan = event.payload as Plan
+          result.plans.push(state.pendingPlan)
+        }
         if (event.kind === 'journey') {
           const payload = event.payload as {
             journey: Journey

@@ -1,7 +1,7 @@
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
-import type { Journey } from '../journeySchema'
-import { shortJourney } from '../journeySchema/examples'
+import { type Journey, journeySchema } from '../journeySchema'
+import { mediaJourney } from '../journeySchema/examples'
 
 import type { Plan } from './stageSchemas'
 
@@ -24,13 +24,13 @@ const PRODUCT = `You help people build NextSteps journeys. A journey is a short 
 const CONTENT_TYPES = `Supported content on a card:
 - text: title, heading, subtitle, body or caption
 - button: goes to another step or opens a link; optional icon
-- image: a stock photo found by a search phrase
+- image: a stock photo from Unsplash, found by a search phrase
 - video: a YouTube video only (on its own card)
 - poll: a single-choice question; each option goes to a step or link
 - multiselect: a multiple-choice question, followed by a button
 - textResponse: a free text, name or email field, followed by a button
 - spacer: vertical space
-Cards can be light or dark, have a background colour, and a background image.`
+Cards can be light or dark, have a background colour, and a background image (a stock photo from Unsplash).`
 
 const UNSUPPORTED = `Not supported yet: Jesus Film library videos, video uploads, undo, translation or other languages, publishing or sharing, sign-up forms, email/phone/chat buttons, analytics, custom fonts.`
 
@@ -62,7 +62,7 @@ ${PRODUCT}
 
 You are the planner. Turn the brief into an exact plan.
 
-For create: list the steps in order. Each step has a stable lowercase-with-dashes name, a one-line purpose, its content types in order, and the step names it links to. Typical journeys have 4 to 8 steps. The first step welcomes; the last step closes with a next action. Give the journey a title.
+For create: list the steps in order. Each step has a stable lowercase-with-dashes name, a one-line purpose, its content types in order (list "background image" first when the card has one), and the step names it links to. Plan a background image for the first card and for most other cards, so the journey doesn't look bland; leave it off video cards. Typical journeys have 4 to 8 steps. The first step welcomes; the last step closes with a next action. Give the journey a title.
 
 For edit: list only the changes (add, update, remove, move), each naming the step it affects, and list every other existing step name in keep. Rules:
 1. Only plan what the brief asks for. "Make it shorter" may remove steps; it may not rewrite the steps that stay.
@@ -75,6 +75,12 @@ List what you guessed in assumptions. If a plan is waiting and the brief adjusts
 Only if the brief cannot be planned without guessing something important, return a question and no plan.
 
 ${CONTENT_TYPES}`
+
+// Parsed so its keys come out in the schema's order. The gateway holds the
+// output to that order, so an example in any other order teaches Qwen to
+// write a key too late, where the schema no longer allows it (it then drops
+// backgroundImage after writing fullscreen).
+const EXAMPLE_JOURNEY = journeySchema.parse(mediaJourney)
 
 export const BUILDER_INSTRUCTIONS = `${preSystemPrompt}
 
@@ -91,11 +97,13 @@ Rules:
 6. A video card holds only the video, and uses next to move on.
 7. A multiselect or textResponse must be followed by a button on the same card.
 8. For a new image write only search and alt. Never write src, width, height or blurhash yourself; keep them on images that already have them.
-9. Keep text short: cards are read on a phone. A title or heading, one or two short body lines, then the interaction.
-10. Use light and dark themes deliberately; keep a journey visually consistent.
+9. Make journeys look good. On a create, give the first card and most other cards a backgroundImage, unless the plan says otherwise. On an edit, add images only where the plan says. Never on a video card. On a card with a background image, use the dark theme and set fullscreen true so the text stays readable over the photo.
+10. Write image searches as concrete, visual scenes a stock photo would show, 2 to 5 words, such as "sunrise over empty hillside" or "teenagers laughing outdoors". Avoid abstract words like "hope" or "salvation", and avoid anything that would need text in the photo.
+11. Keep text short: cards are read on a phone. A title or heading, one or two short body lines, then the interaction.
+12. Use light and dark themes deliberately; keep a journey visually consistent.
 
-Example of a valid journey:
-${JSON.stringify(shortJourney)}`
+Example of a valid journey, with a background image and an inline image:
+${JSON.stringify(EXAMPLE_JOURNEY)}`
 
 export const SUMMARY_INSTRUCTIONS = `${preSystemPrompt}
 

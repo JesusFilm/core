@@ -1,6 +1,7 @@
 import type { LanguageModel } from 'ai'
 import type { z } from 'zod'
 
+import { logger } from '../../../logger'
 import { checkJourney } from '../checkJourney'
 import { type GenerateJsonResult, generateJson } from '../generateJson'
 import { type ImageDeps, resolveImages } from '../images/resolveImages'
@@ -201,6 +202,7 @@ export async function* runPipeline(
     let checked = checkOutput(first)
 
     if (checked.errors.length > 0) {
+      logBuildFailure('builder', first, checked.errors)
       yield { type: 'progress', stage: 'repair', status: 'started' }
       const second = yield* call(
         'repair',
@@ -209,6 +211,8 @@ export async function* runPipeline(
         journeySchema
       )
       checked = checkOutput(second)
+      if (checked.errors.length > 0)
+        logBuildFailure('repair', second, checked.errors)
     }
     if (checked.journey == null || checked.errors.length > 0) {
       yield {
@@ -249,6 +253,22 @@ export async function* runPipeline(
         text: `I also changed ${outOfScope.map((name) => `\`${name}\``).join(', ')}.`
       }
   }
+}
+
+function logBuildFailure(
+  stage: 'builder' | 'repair',
+  result: GenerateJsonResult<Journey>,
+  errors: string[]
+): void {
+  logger.warn(
+    {
+      stage,
+      errors,
+      outputLength: result.text.length,
+      outputEnd: result.text.slice(-300)
+    },
+    'AI journey builder produced an invalid journey'
+  )
 }
 
 function checkOutput(result: GenerateJsonResult<Journey>): {
