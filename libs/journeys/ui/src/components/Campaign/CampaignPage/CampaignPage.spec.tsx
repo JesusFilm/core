@@ -385,7 +385,7 @@ describe('CampaignPage page language', () => {
     document.documentElement.dir = ''
   })
 
-  it('carries the lang param on every in-campaign link: brand mark, back chip, switcher cards and region buttons', () => {
+  it('carries the lang param on every in-campaign link: brand mark, back chip and the other regions\' switcher cards', () => {
     renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
     expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
       'href',
@@ -396,8 +396,8 @@ describe('CampaignPage page language', () => {
       '/campaign/christmas-2026?lang=en'
     )
     expect(
-      screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=en')
+      screen.queryByTestId('CampaignRegionCard-eurRegionId')
+    ).not.toBeInTheDocument()
     expect(
       screen.getByTestId('CampaignRegionCard-afrRegionId')
     ).toHaveAttribute('href', '/campaign/christmas-2026/afr?lang=en')
