@@ -6,6 +6,8 @@ import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { type Mock, type MockedFunction } from 'vitest'
 
+import { CampaignTranslationFilter } from '../../../__generated__/globalTypes'
+import { CAMPAIGN_TRANSLATIONS } from '../../libs/useCampaignTranslationsQuery'
 import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 
@@ -89,6 +91,27 @@ describe('CampaignEditor', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
+  it('opens the Translations view from the campaign row', async () => {
+    renderEditor([
+      {
+        request: {
+          query: CAMPAIGN_TRANSLATIONS,
+          variables: {
+            campaignId: campaign.id,
+            languageId: '496',
+            filter: CampaignTranslationFilter.all
+          }
+        },
+        result: { data: { campaignTranslations: [] } }
+      }
+    ])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
+
+    expect(await screen.findByTestId('TranslationsView')).toBeInTheDocument()
+    expect(await screen.findByTestId('TranslationsEmpty')).toBeInTheDocument()
+  })
+
   it('shows the dismissible first-run hint once per campaign through localStorage', () => {
     const { unmount } = renderEditor()
 
@@ -139,6 +162,21 @@ describe('CampaignEditor', () => {
     fireEvent.blur(title)
 
     expect(await screen.findByText('campaign not found')).toBeInTheDocument()
+  })
+
+  it('opens the Theme panel from the campaign row', async () => {
+    renderEditor()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
+
+    expect(await screen.findByTestId('CampaignThemePanel')).toHaveAttribute(
+      'data-preset',
+      'light'
+    )
+    expect(screen.getByRole('button', { name: 'Light' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
   })
 
   it('offers Delete campaign to the manager', async () => {

@@ -1,3 +1,5 @@
+import { DARK_PRESET } from '../themePresets'
+
 import {
   CampaignThemeInput,
   PILL_RADIUS_PX,
@@ -42,6 +44,18 @@ describe('createCampaignTheme', () => {
     expect(
       createCampaignTheme({ ...light, themeMode: 'dark' }, false).palette.mode
     ).toBe('dark')
+  })
+
+  it('builds the Dark preset as palette mode dark with the Dark colours', () => {
+    const theme = createCampaignTheme({ ...light, ...DARK_PRESET }, false)
+    expect(theme.palette.mode).toBe('dark')
+    expect(theme.palette.primary.main).toBe('#E63946')
+    expect(theme.palette.secondary.main).toBe('#F2B544')
+    expect(theme.palette.background.default).toBe('#0E0E12')
+    expect(theme.palette.background.paper).toBe('#1A1A22')
+    expect(theme.palette.text.primary).toBe('#FFFFFF')
+    expect(theme.palette.text.secondary).toBe('#B9BAC6')
+    expect(theme.palette.primary.contrastText).toBe('#fff')
   })
 
   it('computes the on-primary and on-accent text by luminance', () => {

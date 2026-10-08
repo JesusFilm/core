@@ -170,7 +170,8 @@ const sectionDeleteMock = {
 
 function renderBar(
   initialState?: Partial<CampaignEditorState>,
-  onSettingsClick = vi.fn()
+  onSettingsClick = vi.fn(),
+  onThemeClick = vi.fn()
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
@@ -187,7 +188,10 @@ function renderBar(
     >
       <Hotkeys />
       <SelectionProbe />
-      <BottomBar onSettingsClick={onSettingsClick} />
+      <BottomBar
+        onSettingsClick={onSettingsClick}
+        onThemeClick={onThemeClick}
+      />
     </StaticEditor>
   )
 }
@@ -211,7 +215,8 @@ describe('BottomBar', () => {
 
   it('shows Settings, Theme, Languages, Translations and Add section on the campaign row', () => {
     const onSettingsClick = vi.fn()
-    renderBar(undefined, onSettingsClick)
+    const onThemeClick = vi.fn()
+    renderBar(undefined, onSettingsClick, onThemeClick)
 
     expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
       'data-selection',
@@ -224,12 +229,31 @@ describe('BottomBar', () => {
       'Translations',
       'Add section'
     ])
-    expect(screen.getByRole('button', { name: 'Theme' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Theme' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Translations' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Add section' })).toBeEnabled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
     expect(onSettingsClick).toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
+    expect(onThemeClick).toHaveBeenCalled()
+  })
+
+  it('opens the Translations view from the campaign row', () => {
+    const onTranslationsClick = vi.fn()
+    render(
+      <StaticEditor mocks={[createMock, deleteMock]}>
+        <BottomBar
+          onSettingsClick={vi.fn()}
+          onThemeClick={vi.fn()}
+          onTranslationsClick={onTranslationsClick}
+        />
+      </StaticEditor>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
+
+    expect(onTranslationsClick).toHaveBeenCalled()
   })
 
   it('shows Edit, Style, Add, move, duplicate and bin for a section', () => {

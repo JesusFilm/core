@@ -1766,6 +1766,102 @@ type CampaignTheme {
 }
 
 """
+The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+"""
+input CampaignThemeUpdateInput {
+  """The MUI palette mode the theme is built on."""
+  themeMode: ThemeMode
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  headerFont: String
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  bodyFont: String
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  labelFont: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  primaryColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  accentColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  backgroundColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  surfaceColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  textColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  mutedColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  contrastBackgroundColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  contrastTextColor: String
+
+  """Corner radius: square, slight, rounded or veryRounded."""
+  radius: CampaignRadius
+
+  """Button shape: rounded or pill."""
+  buttonRadius: CampaignButtonRadius
+}
+
+"""
+One line of the Translations view: a Translated Field, its default-language text and its text in the requested language.
+"""
+type CampaignTranslation {
+  target: CampaignTranslationTarget!
+  group: CampaignTranslationGroup!
+  field: CampaignTextField!
+
+  """The field’s cap on this target, in characters."""
+  maxLength: Int!
+
+  """The text in the campaign’s default language."""
+  defaultValue: String!
+
+  """The text in the requested language; null when missing."""
+  value: String
+
+  """
+  Who wrote `value`: a person (`human`) or the machine; null when missing.
+  """
+  source: CampaignTextSource
+}
+
+"""
+Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+"""
+enum CampaignTranslationFilter {
+  all
+  needsReview
+  missing
+  edited
+}
+
+"""
+The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+"""
+enum CampaignTranslationGroup {
+  interface
+  landing
+  region
+  regions
+}
+
+"""
 One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
 """
 input CampaignTranslationSetInput {
@@ -1773,6 +1869,20 @@ input CampaignTranslationSetInput {
   field: CampaignTextField!
   languageId: ID!
   value: String!
+}
+
+"""
+The row a Translated Field belongs to, in the shape `campaignTranslationSet` takes: exactly one of `blockId`, `regionId`, `stringId` or `campaignId` is set.
+"""
+type CampaignTranslationTarget {
+  """
+  The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
+  """
+  typename: String!
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
 }
 
 """
@@ -3798,6 +3908,24 @@ type Mutation {
   campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
 
   """
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a Campaign Theme.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: the colour column): a colour is null, empty or not a hex colour.
+  - BAD_USER_INPUT (field: `headerFont` / `bodyFont` / `labelFont`): a font name is not in the shared curated list.
+  - BAD_USER_INPUT (field: `themeMode` / `radius` / `buttonRadius`): null, or not one of the enum’s values.
+  """
+  campaignThemeUpdate(
+    """The Campaign Theme id (`campaign.theme.id`)."""
+    id: ID!
+    input: CampaignThemeUpdateInput!
+  ): CampaignTheme!
+
+  """
   Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.
   
   Auth: campaign Delete — a manager of the campaign’s team.
@@ -4485,6 +4613,18 @@ type Query {
     """
     languageId: ID
   ): CampaignPublic!
+
+  """
+  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+  
+  Auth: campaign Read — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
+  """
+  campaignTranslations(campaignId: ID!, languageId: ID!, filter: CampaignTranslationFilter = all): [CampaignTranslation!]!
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node

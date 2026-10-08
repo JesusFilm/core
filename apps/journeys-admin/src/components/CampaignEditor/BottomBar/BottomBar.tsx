@@ -56,8 +56,11 @@ export const NEW_BUTTON_LABEL = 'Button'
 
 interface BottomBarProps {
   onSettingsClick: () => void
+  onThemeClick: () => void
   /** Opens the Languages panel (add and remove campaign languages). */
   onLanguagesClick?: () => void
+  /** Opens the Translations view (review and edit translated text). */
+  onTranslationsClick?: () => void
 }
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
@@ -81,7 +84,9 @@ interface SectionInsert {
  */
 export function BottomBar({
   onSettingsClick,
-  onLanguagesClick
+  onThemeClick,
+  onLanguagesClick,
+  onTranslationsClick
 }: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -388,7 +393,11 @@ export function BottomBar({
               icon={<SettingsIcon />}
               onClick={onSettingsClick}
             />
-            <BarButton label={t('Theme')} icon={<PaletteIcon />} disabled />
+            <BarButton
+              label={t('Theme')}
+              icon={<PaletteIcon />}
+              onClick={onThemeClick}
+            />
             <BarButton
               label={t('Languages')}
               icon={<Globe1Icon />}
@@ -398,7 +407,8 @@ export function BottomBar({
             <BarButton
               label={t('Translations')}
               icon={<TranslateIcon />}
-              disabled
+              onClick={onTranslationsClick}
+              disabled={onTranslationsClick == null}
             />
             <BarButton
               label={t('Add section')}
