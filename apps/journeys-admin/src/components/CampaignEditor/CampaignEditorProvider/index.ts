@@ -1,6 +1,8 @@
 export {
   CampaignEditorProvider,
+  regionLines,
   resolveSelection,
+  sortedRegions,
   useCampaignEditor
 } from './CampaignEditorProvider'
 export type {

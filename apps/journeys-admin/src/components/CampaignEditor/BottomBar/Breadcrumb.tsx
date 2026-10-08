@@ -13,20 +13,33 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
  */
 export function Breadcrumb(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selection, selectBlock } = useCampaignEditor()
-  const crumbs: Array<{ label: string; blockId?: string }> = [
+  const { selection, selectBlock, selectRegion } = useCampaignEditor()
+  const crumbs: Array<{ label: string; onClick?: () => void }> = [
     { label: t('Campaign') }
   ]
-  if (selection.host != null)
+  if (selection.host != null) {
+    const hostId = selection.host.id
     crumbs.push({
       label: blockLabel(t, selection.host.__typename),
-      blockId: selection.host.id
+      onClick: () => selectBlock(hostId)
     })
-  if (selection.block != null && selection.block.id !== selection.host?.id)
+  }
+  // A region card sits in its switcher; a Region Line sits in its region.
+  if (selection.region != null) {
+    const regionId = selection.region.id
+    const hostId = selection.host?.id
+    crumbs.push({
+      label: selection.region.name,
+      onClick: () => selectRegion(regionId, hostId)
+    })
+  }
+  if (selection.block != null && selection.block.id !== selection.host?.id) {
+    const blockId = selection.block.id
     crumbs.push({
       label: blockLabel(t, selection.block.__typename),
-      blockId: selection.block.id
+      onClick: () => selectBlock(blockId)
     })
+  }
 
   return (
     <Breadcrumbs
@@ -47,7 +60,7 @@ export function Breadcrumb(): ReactElement {
             type="button"
             underline="hover"
             color="inherit"
-            onClick={() => selectBlock(crumb.blockId)}
+            onClick={crumb.onClick ?? (() => selectBlock(undefined))}
           >
             {crumb.label}
           </Link>

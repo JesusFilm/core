@@ -88,6 +88,38 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
 `
 
 /**
+ * A Campaign Region as the editor reads it: its settings and its country
+ * chips, each chip carrying the federated api-languages Country for the flag
+ * and name. Lines are not here: they are rows of `Campaign.blocks` with
+ * `regionId` set.
+ */
+export const CAMPAIGN_REGION_FIELDS = gql`
+  fragment CampaignRegionFields on CampaignRegion {
+    __typename
+    id
+    campaignId
+    name
+    slug
+    order
+    listed
+    countries {
+      __typename
+      id
+      regionId
+      countryId
+      order
+      country {
+        id
+        flagPngSrc
+        name(primary: true) {
+          value
+        }
+      }
+    }
+  }
+`
+
+/**
  * The admin shape of a Campaign the editor opens with: settings, the team
  * roles that decide Manage and Delete, the languages for the preview select
  * and the Languages panel (autonym plus the English name),
@@ -97,6 +129,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
  */
 export const CAMPAIGN_FIELDS = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_REGION_FIELDS}
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   fragment CampaignFields on Campaign {
     __typename
@@ -162,11 +195,7 @@ export const CAMPAIGN_FIELDS = gql`
       ...CampaignBlockTranslationFields
     }
     regions {
-      id
-      name
-      slug
-      order
-      listed
+      ...CampaignRegionFields
     }
     strings {
       id

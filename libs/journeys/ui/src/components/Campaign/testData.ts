@@ -197,7 +197,13 @@ export const eurRegion: CampaignPublicFields_regions = {
       __typename: 'CampaignRegionCountry',
       id: 'eurCountry-FR',
       countryId: 'FR',
-      order: 0
+      order: 0,
+      country: {
+        __typename: 'Country',
+        id: 'FR',
+        flagPngSrc: 'https://flags.example.org/fr.png',
+        name: [{ __typename: 'CountryName', value: 'France' }]
+      }
     }
   ],
   languages: [

@@ -98,6 +98,17 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
     ],
     regions: fixture.regions.map((region) => ({
       ...region,
+      countries:
+        region.id === 'eurRegionId'
+          ? [
+              {
+                id: 'eurCountry-FR',
+                regionId: 'eurRegionId',
+                countryId: 'FR',
+                order: 0
+              }
+            ]
+          : [],
       nameTranslations:
         region.id === 'eurRegionId'
           ? { [FRENCH]: { value: 'Europe', source: 'human' } }
@@ -178,6 +189,10 @@ describe('campaignPublic', () => {
           order
           countries {
             countryId
+            order
+            country {
+              id
+            }
           }
           languages {
             languageId
@@ -373,7 +388,7 @@ describe('campaignPublic', () => {
         name: 'Europe',
         listed: true,
         order: 0,
-        countries: [],
+        countries: [{ countryId: 'FR', order: 0, country: { id: 'FR' } }],
         languages: [
           {
             languageId: '529',

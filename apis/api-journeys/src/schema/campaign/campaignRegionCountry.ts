@@ -1,4 +1,5 @@
 import { builder } from '../builder'
+import { Country } from '../country'
 
 export const CampaignRegionCountryRef = builder.prismaObject(
   'CampaignRegionCountry',
@@ -11,6 +12,13 @@ export const CampaignRegionCountryRef = builder.prismaObject(
       countryId: t.exposeID('countryId', {
         nullable: false,
         description: 'api-languages Country id.'
+      }),
+      country: t.field({
+        type: Country,
+        nullable: false,
+        description:
+          'The api-languages Country, resolved through federation: flag and translated name live there.',
+        resolve: (regionCountry) => ({ id: regionCountry.countryId })
       }),
       order: t.exposeInt('order', { nullable: false })
     })
