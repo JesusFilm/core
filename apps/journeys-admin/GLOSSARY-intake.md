@@ -1,6 +1,6 @@
 ---
 area: journeys-admin
-domain_ref: ./CONTEXT.md
+domain_ref: ./GLOSSARY.md
 code_paths:
   - apps/journeys-admin/src/components/Editor/**
   - apps/journeys-admin/src/components/JourneyList/**
@@ -24,7 +24,7 @@ updated: 2026-08-13
 ---
 
 > Diagnosis layer for reported bugs in journeys-admin. Read this when triaging or debugging a
-> reported issue — not for feature work. Domain model: ./CONTEXT.md.
+> reported issue — not for feature work. Domain model: ./GLOSSARY.md.
 > Failure types (T1–T11) reference the shared taxonomy in the repo-root AGENTS.md.
 > Each entry: what it looks like → the question that localizes it (reporter can answer) →
 > the follow-up asks in order ("Then ask") → the readiness gate ("Ready when" — stop asking and
@@ -41,7 +41,7 @@ edit shows in the Editor but not on the journey preview; a newly-created block n
 - refresh fixes it → cache bug (the manual Apollo cache update on block-create was wrong)
 - refresh doesn't fix it, the change is gone → it genuinely didn't save
 - saved, correct in the Editor, wrong only in preview → rendering bug, not here — see
-  `apps/journeys/CONTEXT-intake.md`
+  `apps/journeys/GLOSSARY-intake.md`
   **Then ask (T4, stale view):** which exact edit/action went stale, and where the stale value shows
   — the Editor itself, the admin list, or the published page? Before fixing, enumerate **every**
   mutation that feeds the stale view (NES-1199: the template journey-count had nine feeding paths —

@@ -1,8 +1,8 @@
 # Journeys
 
-The authoring-and-delivery context. `api-journeys` owns the **Journey** — an interactive, multi-step experience built from a tree of visual blocks — from the editor that composes it to the public page that serves it. It is the source of truth for journeys, their block content, the teams that own them, and the templates they are cloned from. The audience-facing measurement side — who visits a published journey and what they do — is a separate bounded context that shares the same deployable and database: see [Journey Analytics](./CONTEXT-analytics.md). Journeys references users, languages, media, and short links by id only; those identities are owned elsewhere.
+The authoring-and-delivery context. `api-journeys` owns the **Journey** — an interactive, multi-step experience built from a tree of visual blocks — from the editor that composes it to the public page that serves it. It is the source of truth for journeys, their block content, the teams that own them, and the templates they are cloned from. The audience-facing measurement side — who visits a published journey and what they do — is a separate bounded context that shares the same deployable and database: see [Journey Analytics](./GLOSSARY-analytics.md). Journeys references users, languages, media, and short links by id only; those identities are owned elsewhere.
 
-> **Product framing.** Journeys are typically **gospel-presentation / evangelism funnels** (the NextSteps product). This is not incidental branding — it is baked into the domain vocabulary: the goal labels a creator tracks are `decisionForChrist`, `gospelPresentationStart/Complete`, `prayerRequest`, and `rsvp` (see **Event Label** in the sibling [Journey Analytics](./CONTEXT-analytics.md) context). Treat "ministry funnel" as the mental model for what a Journey is _for_.
+> **Product framing.** Journeys are typically **gospel-presentation / evangelism funnels** (the NextSteps product). This is not incidental branding — it is baked into the domain vocabulary: the goal labels a creator tracks are `decisionForChrist`, `gospelPresentationStart/Complete`, `prayerRequest`, and `rsvp` (see **Event Label** in the sibling [Journey Analytics](./GLOSSARY-analytics.md) context). Treat "ministry funnel" as the mental model for what a Journey is _for_.
 
 ## Language
 
@@ -152,7 +152,7 @@ A per-Journey contact CTA pairing a **Message Platform** with a destination `lin
 _Avoid_: social button, contact link
 
 **Message Platform**:
-The messaging channel a **Chat Button** or **ChatAction** points to (`facebook`, `telegram`, `whatsApp`, `instagram`, `line`, and many more, plus icon-only values). Shared vocabulary — the [Journey Analytics](./CONTEXT-analytics.md) context reuses it for a Visitor's reachable channel and `ChatOpenEvent`.
+The messaging channel a **Chat Button** or **ChatAction** points to (`facebook`, `telegram`, `whatsApp`, `instagram`, `line`, and many more, plus icon-only values). Shared vocabulary — the [Journey Analytics](./GLOSSARY-analytics.md) context reuses it for a Visitor's reachable channel and `ChatOpenEvent`.
 _Avoid_: channel, social network
 
 ### Distribution & routing

@@ -16,16 +16,16 @@ The five canonical triage roles use their default label strings verbatim: `needs
 
 ### Domain docs
 
-Multi-context: `CONTEXT-MAP.md` at the repo root points to per-workspace `CONTEXT.md` files (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
+Multi-context: `GLOSSARY-MAP.md` at the repo root points to per-workspace `GLOSSARY.md` files (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
 
 ### Bug-diagnosis layer
 
-Selected NextSteps areas add a `CONTEXT-intake.md` beside their `CONTEXT.md` — the diagnosis layer for reported bugs (failure signatures, the question that localizes a report, where to look first, tagged by failure type T1–T11).
+Selected NextSteps areas add a `GLOSSARY-intake.md` beside their `GLOSSARY.md` — the diagnosis layer for reported bugs (failure signatures, the question that localizes a report, where to look first, tagged by failure type T1–T11).
 
-- Read `CONTEXT.md` to understand or build in an area.
-- Read `CONTEXT-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
+- Read `GLOSSARY.md` to understand or build in an area.
+- Read `GLOSSARY-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
 
-Start from the intake index (`CONTEXT-MAP-intake.md`): match the reporter's words to an area's `trigger_phrases`, then open that area's `CONTEXT-intake.md`.
+Start from the intake index (`GLOSSARY-MAP-intake.md`): match the reporter's words to an area's `triggers`, then open that area's `GLOSSARY-intake.md`.
 
 ## Conventions
 
@@ -89,7 +89,7 @@ The remaining steps cannot produce a commit at all: `subgraph-check` only report
 
 ### Documented Solutions
 
-The context map (`CONTEXT.md`, and `CONTEXT-intake.md` when diagnosing) is the primary knowledge source — rely on it by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
+The domain glossaries (`GLOSSARY-MAP.md` and each workspace's `GLOSSARY.md`, plus `GLOSSARY-intake.md` when diagnosing) are the primary knowledge source — rely on them by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
 
 Do **not** read solution docs by default. Their filenames are self-describing — if, while working, one looks relevant to the task, **surface it and ask the user before opening it** (e.g. "There may be a relevant solution doc: `<title>` — want me to read it?"). Only read the contents once the user confirms.
 

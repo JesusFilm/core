@@ -1,19 +1,19 @@
 # Intake INDEX — bug-diagnosis retrieval entry point
 
 Always-in-context index for **diagnosing reported bugs** (distinct from the domain map in
-`CONTEXT-MAP.md`). One line per area: its domain file, its intake file, and the reporter
+`GLOSSARY-MAP.md`). One line per area: its domain file, its intake file, and the reporter
 trigger-phrases that route a report to it. The ENG-3707 accessor fetches an area's
-`CONTEXT-intake.md` on demand using this index; agents match a report's wording against
+`GLOSSARY-intake.md` on demand using this index; agents match a report's wording against
 `triggers`, then open that area's intake file.
 
 **Line format:** `area | domain: <path> | intake: <path> | triggers: …`
 
-**Structure contract** (map authors + accessor code): `CONTEXT-MAP-contract.md` — not always-in-context.
+**Structure contract** (map authors + accessor code): `GLOSSARY-MAP-contract.md` — not always-in-context.
 
 ## Areas (NextSteps)
 
-- **journeys-admin** (creator/editor surface) | domain: `apps/journeys-admin/CONTEXT.md` | intake: `apps/journeys-admin/CONTEXT-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh to see it", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared", "can't log in", "name shows Unknown", "works in incognito", "invite email never arrived", "I can see another team's data"
-- **journeys (published viewer)** (audience surface) | domain: `apps/journeys/CONTEXT.md` | intake: `apps/journeys/CONTEXT-intake.md` | triggers: "button doesn't go to the next card", "goes to the wrong card", "video won't load", "video is slow to load", "video plays the wrong language", "image is cropped / wrong fit", "can't click / can't type on the card", "looks wrong when published", "custom domain / embed not working"
+- **journeys-admin** (creator/editor surface) | domain: `apps/journeys-admin/GLOSSARY.md` | intake: `apps/journeys-admin/GLOSSARY-intake.md` | triggers: "block won't save", "changes not showing in preview", "have to refresh to see it", "can't translate into <language>", "template won't let me customize", "transfer ownership", "analytics numbers are wrong", "historical data disappeared", "can't log in", "name shows Unknown", "works in incognito", "invite email never arrived", "I can see another team's data"
+- **journeys (published viewer)** (audience surface) | domain: `apps/journeys/GLOSSARY.md` | intake: `apps/journeys/GLOSSARY-intake.md` | triggers: "button doesn't go to the next card", "goes to the wrong card", "video won't load", "video is slow to load", "video plays the wrong language", "image is cropped / wrong fit", "can't click / can't type on the card", "looks wrong when published", "custom domain / embed not working"
 
 _The two intake surfaces are where bugs are **reported** (creator editor, audience viewer). The
 backend (`api-journeys`) and shared kernel (`libs/journeys/ui`) are reached via each surface's

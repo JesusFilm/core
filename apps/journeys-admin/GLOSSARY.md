@@ -1,6 +1,6 @@
 # Journeys Admin
 
-The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/CONTEXT.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/CONTEXT-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces.
+The creator-facing authoring surface (`apps/journeys-admin`): where a signed-in creator builds, manages, shares, and measures Journeys, and where Publishers curate the template library. It owns no content or measurement entities — **Journey**, **Block**, **Step**, **Card**, **Team**, **Template**, and the role vocabularies belong to [Journeys](../../apis/api-journeys/GLOSSARY.md), and **Visitor**/**Event** data belongs to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _authoring experience_: the Editor's spatial model, the journey-list lifecycle actions, the sharing/adoption flows, and the report surfaces.
 
 ## Language
 
