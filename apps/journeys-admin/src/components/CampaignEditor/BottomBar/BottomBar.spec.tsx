@@ -261,7 +261,7 @@ describe('BottomBar', () => {
       'Duplicate',
       'Delete'
     ])
-    expect(screen.getByRole('button', { name: 'Style' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
     // The hero is first on the page, so only Move down applies.
     expect(screen.getByRole('button', { name: 'Move up' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Move down' })).toBeEnabled()
@@ -320,7 +320,21 @@ describe('BottomBar', () => {
       'Delete'
     ])
     expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Size' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Size' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
+  })
+
+  it('opens the Style panel for the selected section, and for an Extra’s host section', () => {
+    renderBar({ selectedBlockId: 'journeyListNoteId' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Style' }))
+
+    expect(screen.getByTestId('CampaignStylePanel')).toHaveAttribute(
+      'data-block-id',
+      'landingJourneyListId'
+    )
+    expect(screen.getByRole('tab', { name: 'Background' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Colours' })).toBeInTheDocument()
   })
 
   it('adds the link chip and variant, size and colours for a button Extra', () => {

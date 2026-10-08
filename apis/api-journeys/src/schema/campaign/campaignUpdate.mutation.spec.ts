@@ -37,6 +37,7 @@ describe('campaignUpdate', () => {
         id
         title
         slug
+        palette
       }
     }
   `)
@@ -44,6 +45,7 @@ describe('campaignUpdate', () => {
   async function update(input: {
     title?: string
     slug?: string
+    palette?: string[]
   }): Promise<any> {
     return await authClient({
       document: CAMPAIGN_UPDATE,
@@ -77,7 +79,8 @@ describe('campaignUpdate', () => {
         campaignUpdate: {
           id: 'campaignId',
           title: 'Easter 2027',
-          slug: 'christmas-2026'
+          slug: 'christmas-2026',
+          palette: campaign.palette
         }
       }
     })
@@ -208,6 +211,59 @@ describe('campaignUpdate', () => {
     expect(prismaMock.campaign.findMany).not.toHaveBeenCalled()
     const { data } = prismaMock.campaign.update.mock.calls[0][0]
     expect(data).not.toHaveProperty('slug')
+  })
+
+  it('normalises, deduplicates and caps the palette at eight, newest first', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.update.mockImplementation((async ({ data }: any) => ({
+      ...campaign,
+      ...data
+    })) as never)
+
+    const result = await update({
+      palette: [
+        ' #abc ',
+        '#aabbcc',
+        '#111111',
+        '#222222',
+        '#333333',
+        '#444444',
+        '#555555',
+        '#666666',
+        '#777777',
+        '#888888'
+      ]
+    })
+
+    const palette = [
+      '#AABBCC',
+      '#111111',
+      '#222222',
+      '#333333',
+      '#444444',
+      '#555555',
+      '#666666',
+      '#777777'
+    ]
+    expect(result.data.campaignUpdate.palette).toEqual(palette)
+    expect(prismaMock.campaign.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { palette } })
+    )
+  })
+
+  it('rejects a palette entry that is not a hex colour (BAD_USER_INPUT, field palette)', async () => {
+    prismaMock.campaign.findUnique.mockResolvedValue(
+      campaignFactory({ role: 'member' }).build()
+    )
+
+    const result = await update({ palette: ['#AABBCC', 'red'] })
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'palette'
+    })
+    expect(prismaMock.campaign.update).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN for a user outside the team', async () => {

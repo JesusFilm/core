@@ -803,6 +803,10 @@ export interface GetCampaign_campaign {
    * First publish; never cleared by unpublish. Means "first went live", not "currently live".
    */
   publishedAt: any | null;
+  /**
+   * The eight most recently used picker colours, newest first, `#RRGGBB` uppercase, no duplicates. Picker convenience; never read by the public page.
+   */
+  palette: string[];
   createdAt: any;
   updatedAt: any;
   /**
