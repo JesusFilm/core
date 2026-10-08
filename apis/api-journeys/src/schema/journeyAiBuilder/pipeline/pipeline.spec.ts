@@ -209,6 +209,35 @@ describe('runPipeline', () => {
     ).toBe(false)
   })
 
+  it('plans from the user message when the guide leaves the brief blank', async () => {
+    const generate = fakeGenerate({
+      guide: [
+        {
+          ok: true,
+          value: {
+            route: 'change',
+            reply: 'Creating it.',
+            brief: '',
+            kind: 'create'
+          }
+        }
+      ],
+      planner: [{ ok: true, value: { question: 'What audience?' } }]
+    })
+
+    await collect(
+      input({ message: 'Introduce Jesus to students in 4 cards' }),
+      generate
+    )
+
+    expect(generate.prompts.planner[0]).toContain(
+      'Brief (create): «Introduce Jesus to students in 4 cards»'
+    )
+    expect(generate.prompts.planner[0]).toContain(
+      'Latest user message: «Introduce Jesus to students in 4 cards»'
+    )
+  })
+
   it('builds a small edit straight away and sends the journey with its blocks', async () => {
     const generate = fakeGenerate({
       guide: [

@@ -123,10 +123,12 @@ export function guidePrompt(context: StageContext, message: string): string {
 export function plannerPrompt(
   context: StageContext,
   brief: string,
+  message: string,
   kind: 'create' | 'edit'
 ): string {
   return [
     contextBlock(context, { messages: true }),
+    `Latest user message: ${hardenPrompt(message)}`,
     `Brief (${kind}): ${hardenPrompt(brief)}`
   ].join('\n\n')
 }

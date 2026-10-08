@@ -152,7 +152,14 @@ export async function* runPipeline(
       const planner = yield* callWithRetry(
         'planner',
         PLANNER_INSTRUCTIONS,
-        plannerPrompt(context, guide.brief ?? input.message, kind),
+        plannerPrompt(
+          context,
+          // The gateway's schema hold makes Qwen write optional strings as
+          // "" rather than leave them out, so a blank brief means no brief.
+          guide.brief?.trim() || input.message,
+          input.message,
+          kind
+        ),
         plannerOutputSchema
       )
       if (planner == null) {
@@ -162,7 +169,7 @@ export async function* runPipeline(
       if (planner.plan == null) {
         yield {
           type: 'message',
-          text: planner.question ?? 'Could you tell me a bit more?'
+          text: planner.question?.trim() || 'Could you tell me a bit more?'
         }
         break
       }
