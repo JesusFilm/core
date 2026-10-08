@@ -122,7 +122,7 @@ describe('campaignRegionCreate', () => {
         ...campaignFactory().withRegion('New region').build().regions[0],
         id: 'clientId',
         campaignId: 'campaignId'
-      } as never)
+      })
 
       const result = await create('clientId')
 
@@ -137,7 +137,7 @@ describe('campaignRegionCreate', () => {
       prismaMock.campaignRegion.findUnique.mockResolvedValue({
         id: 'clientId',
         campaignId: 'otherCampaignId'
-      })
+      } as never)
 
       const taken = await create('clientId')
       const raced = await create()

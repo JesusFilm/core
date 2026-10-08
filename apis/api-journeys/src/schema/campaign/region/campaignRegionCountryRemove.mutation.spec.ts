@@ -34,7 +34,7 @@ describe('campaignRegionCountryRemove', () => {
     prismaMock.campaignRegionCountry.findUnique.mockResolvedValue({
       ...row,
       region: campaignRegionWithAcl(fixture, 'eurRegionId')
-    })
+    } as never)
     prismaMock.campaignRegionCountry.delete.mockResolvedValue(row)
     prismaMock.campaignRegionCountry.findMany.mockResolvedValue([
       { ...row, id: 'eurCountry-DE', countryId: 'DE', order: 1 }
@@ -74,7 +74,7 @@ describe('campaignRegionCountryRemove', () => {
         campaignFactory({ userId: 'someoneElse' }).withRegion('EUR').build(),
         'eurRegionId'
       )
-    })
+    } as never)
 
     const result = await remove()
 
