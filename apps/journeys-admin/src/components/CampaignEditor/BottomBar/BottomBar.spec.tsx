@@ -53,6 +53,7 @@ const createMock = {
         parentBlockId: 'headerId',
         parentOrder: 2,
         content: '',
+        contentTranslations: [],
         typographyVariant: null,
         align: null,
         color: null,
@@ -208,7 +209,7 @@ describe('BottomBar', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
-  it('shows Settings, Theme, Translations and Add section on the campaign row', () => {
+  it('shows Settings, Theme, Languages, Translations and Add section on the campaign row', () => {
     const onSettingsClick = vi.fn()
     renderBar(undefined, onSettingsClick)
 
@@ -219,6 +220,7 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])
@@ -276,6 +278,7 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])

@@ -321,3 +321,89 @@ describe('CampaignPage', () => {
     })
   })
 })
+
+describe('CampaignPage page language', () => {
+  const arabic: CampaignPublic['languages'][number] = {
+    __typename: 'CampaignLanguage',
+    id: 'campaignLanguageArId',
+    languageId: '22658',
+    order: 2,
+    language: {
+      __typename: 'Language',
+      id: '22658',
+      bcp47: 'ar',
+      name: [{ __typename: 'LanguageName', value: 'العربية', primary: true }]
+    }
+  }
+
+  afterEach(() => {
+    document.documentElement.lang = ''
+    document.documentElement.dir = ''
+  })
+
+  it('carries the lang param on every in-campaign link: brand mark, back chip, switcher cards and region buttons', () => {
+    renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
+    expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
+      'href',
+      '/campaign/christmas-2026?lang=en'
+    )
+    expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
+      'href',
+      '/campaign/christmas-2026?lang=en'
+    )
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=en')
+    expect(
+      screen.getByTestId('CampaignRegionCard-afrRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/afr?lang=en')
+  })
+
+  it('keeps the chosen language, not the default, across a region switch', () => {
+    renderPage({
+      ...campaignPublic,
+      languageId: '496',
+      language: { __typename: 'Language', id: '496', bcp47: 'fr' }
+    })
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    expect(
+      screen.getByRole('link', { name: 'Start with Europe' })
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
+      'href',
+      '/campaign/christmas-2026?lang=fr'
+    )
+  })
+
+  it('drops the lang param on a single-language campaign', () => {
+    renderPage({
+      ...campaignPublic,
+      languages: [campaignPublic.languages[0]]
+    })
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
+  })
+
+  it('sets html lang to the resolved bcp47 and dir to ltr when the language is not right-to-left', () => {
+    renderPage(campaignPublic)
+    expect(document.documentElement).toHaveAttribute('lang', 'en')
+    expect(document.documentElement).toHaveAttribute('dir', 'ltr')
+  })
+
+  it('sets dir to rtl for a right-to-left page language', () => {
+    renderPage({
+      ...campaignPublic,
+      languageId: '22658',
+      language: { __typename: 'Language', id: '22658', bcp47: 'ar' },
+      languages: [...campaignPublic.languages, arabic]
+    })
+    expect(document.documentElement).toHaveAttribute('lang', 'ar')
+    expect(document.documentElement).toHaveAttribute('dir', 'rtl')
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=ar')
+  })
+})

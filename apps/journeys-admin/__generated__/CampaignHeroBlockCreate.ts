@@ -3,11 +3,41 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignHeroBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignHeroBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignHeroBlockCreate
 // ====================================================
+
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
   __typename: "CampaignHeroBlock";
@@ -55,6 +85,9 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations[];
+  ledeTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations[];
 }
 
 export interface CampaignHeroBlockCreate {

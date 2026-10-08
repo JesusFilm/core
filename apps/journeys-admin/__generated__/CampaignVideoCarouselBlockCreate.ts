@@ -3,11 +3,31 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoCarouselBlockCreate
 // ====================================================
+
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate {
   __typename: "CampaignVideoCarouselBlock";
@@ -51,6 +71,8 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
    */
   videoId: string | null;
   videoVariantLanguageId: string | null;
+  eyebrowTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations[];
 }
 
 export interface CampaignVideoCarouselBlockCreate {

@@ -8,7 +8,9 @@ export { CampaignFooter } from './CampaignFooter'
 export {
   CampaignHeader,
   CampaignLanguageSelect,
-  languageAutonym
+  campaignLanguageUrl,
+  languageAutonym,
+  writeCampaignLanguageCookie
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
 export { CampaignImage } from './CampaignImage'
@@ -51,6 +53,12 @@ export {
 } from './libs/campaignFontsHref'
 export { campaignImageSource } from './libs/campaignImageSource'
 export {
+  CAMPAIGN_LANGUAGE_COOKIE,
+  CAMPAIGN_LANGUAGE_PARAM,
+  parseAcceptLanguage,
+  resolvePageLanguage
+} from './libs/resolvePageLanguage'
+export {
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
@@ -76,6 +84,12 @@ export type {
 export type { CampaignChromeTrees } from './CampaignPage'
 export type { CampaignSeoOptions } from './CampaignSeo'
 export type { CampaignImageSource } from './libs/campaignImageSource'
+export type {
+  PageLanguageCandidate,
+  PageLanguageSource,
+  ResolvePageLanguageInput,
+  ResolvedPageLanguage
+} from './libs/resolvePageLanguage'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
 export type { CampaignBandOverlay, ResolvedBand } from './libs/resolveBand'
 export type { CampaignTreeBlock } from './libs/transformer'

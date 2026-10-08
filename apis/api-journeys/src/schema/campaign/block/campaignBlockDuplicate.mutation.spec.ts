@@ -246,6 +246,25 @@ describe('campaignBlockDuplicate', () => {
     expect(ids).toContain('heroButtonCopyId')
   })
 
+  it('leaves a slot empty when its owned block is not live, instead of reusing the original’s id', async () => {
+    setLive(
+      fixture.blocks.map((block) =>
+        block.id === 'heroId'
+          ? { ...block, mediaBlockId: 'deletedMediaId' }
+          : block
+      )
+    )
+
+    await duplicate('heroId', [{ oldId: 'heroId', newId: 'heroCopyId' }])
+
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'heroCopyId' },
+        data: expect.objectContaining({ mediaBlockId: expect.anything() })
+      })
+    )
+  })
+
   it('generates ids for blocks the idMap leaves out', async () => {
     setLive(fixture.blocks)
 

@@ -7,9 +7,29 @@ import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
+import { getLocaleRTL } from '@core/shared/ui/rtl'
 import { getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+
+interface CampaignPageProps {
+  campaign?: { language?: { bcp47?: string | null } | null } | null
+}
+
+/**
+ * The document's `lang` and `dir` (PRD §2, §11): on a campaign page the
+ * resolved Page Language's bcp47 and the RTL lookup on it (`ltr` when there
+ * is none), read from the page props the route rendered with; every other
+ * page keeps the app default.
+ */
+export function documentLanguage(
+  pageProps: CampaignPageProps | undefined,
+  fallback: { rtl: boolean }
+): { lang: string; dir: string } {
+  const bcp47 = pageProps?.campaign?.language?.bcp47
+  if (bcp47 == null) return { lang: 'en', dir: fallback.rtl ? 'rtl' : '' }
+  return { lang: bcp47, dir: getLocaleRTL(bcp47) ? 'rtl' : 'ltr' }
+}
 
 export default class MyDocument extends Document<{
   emotionStyleTags: ReactElement[]
@@ -22,12 +42,12 @@ export default class MyDocument extends Document<{
   })
 
   render(): ReactElement {
+    const { lang, dir } = documentLanguage(
+      this.props.__NEXT_DATA__.props.pageProps as CampaignPageProps,
+      this.props
+    )
     return (
-      <Html
-        lang="en"
-        dir={this.props.rtl ? 'rtl' : ''}
-        style={{ overscrollBehaviorY: 'none' }}
-      >
+      <Html lang={lang} dir={dir} style={{ overscrollBehaviorY: 'none' }}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
