@@ -3,11 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionSwitcherBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRegionSwitcherBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionSwitcherBlockCreate
 // ====================================================
+
+export interface CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCreate {
   __typename: "CampaignRegionSwitcherBlock";
@@ -46,6 +56,7 @@ export interface CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCr
   accentColor: string | null;
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
+  titleTranslations: CampaignRegionSwitcherBlockCreate_campaignRegionSwitcherBlockCreate_titleTranslations[];
 }
 
 export interface CampaignRegionSwitcherBlockCreate {

@@ -12,15 +12,65 @@ import {
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_regions as CampaignRegion
+  GetCampaign_campaign_regions as CampaignRegion,
+  GetCampaign_campaign_strings as CampaignString
 } from '../../../__generated__/GetCampaign'
 import {
   CampaignPageKind,
   CampaignStatus,
+  CampaignStringKey,
   UserTeamRole
 } from '../../../__generated__/globalTypes'
+import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
 
 export const CURRENT_USER_ID = 'userId'
+
+/** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field. */
+export function withEmptyTranslations(
+  block: (typeof landingBlocks)[number]
+): CampaignBlock {
+  const fields: readonly string[] =
+    block.__typename in CAMPAIGN_TEXT_FIELDS
+      ? CAMPAIGN_TEXT_FIELDS[
+          block.__typename as keyof typeof CAMPAIGN_TEXT_FIELDS
+        ]
+      : []
+  const translations = Object.fromEntries(
+    fields.map((field) => [`${field}Translations`, []])
+  )
+  return { ...block, ...translations } as CampaignBlock
+}
+
+const STRING_SEED: Array<[CampaignStringKey, string]> = [
+  [CampaignStringKey.allRegions, 'All regions'],
+  [CampaignStringKey.step1, 'Pick a language your friend understands.'],
+  [CampaignStringKey.step2, 'Preview what they will see.'],
+  [CampaignStringKey.step2help, 'Tap through the preview like they would.'],
+  [CampaignStringKey.step3, 'Share this link with them.'],
+  [CampaignStringKey.step4, 'Or download a QR code for print.'],
+  [CampaignStringKey.copy, 'Copy link'],
+  [CampaignStringKey.copied, 'Link copied'],
+  [CampaignStringKey.downloadQr, 'Download QR code'],
+  [CampaignStringKey.open, 'Open'],
+  [CampaignStringKey.watch, 'Watch'],
+  [CampaignStringKey.openTemplate, 'Open journey'],
+  [CampaignStringKey.youtube, 'Watch on YouTube'],
+  [CampaignStringKey.totalVisitors, 'Total visitors'],
+  [CampaignStringKey.topCountry, 'Top country'],
+  [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
+  [CampaignStringKey.videos, 'videos']
+]
+
+/** The seventeen seeded Campaign Strings, untranslated. */
+export const campaignStrings: CampaignString[] = STRING_SEED.map(
+  ([key, value]) => ({
+    __typename: 'CampaignString',
+    id: `string-${key}`,
+    key,
+    value,
+    valueTranslations: []
+  })
+)
 
 /** The seeded campaign as `campaign(id)` returns it to a manager, drawn from the shared viewer test data. */
 export const campaign: Campaign = {
@@ -28,6 +78,7 @@ export const campaign: Campaign = {
   id: CAMPAIGN_ID,
   teamId: 'teamId',
   title: 'Christmas 2026',
+  titleTranslations: [],
   slug: 'christmas-2026',
   status: CampaignStatus.draft,
   defaultLanguageId: '529',
@@ -85,8 +136,11 @@ export const campaign: Campaign = {
       kind: CampaignPageKind.regionTemplate
     }
   ],
-  blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks],
-  regions: []
+  blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks].map(
+    withEmptyTranslations
+  ),
+  regions: [],
+  strings: campaignStrings
 }
 
 /** A listed region with one country chip and one Region Line (`eurLine`, in `campaignWithRegions.blocks`). */

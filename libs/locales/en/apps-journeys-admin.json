@@ -1454,5 +1454,11 @@
   "This permanently removes the region with its share languages, their QR codes, its countries and its lines. The linked journeys keep working at their own URLs.": "This permanently removes the region with its share languages, their QR codes, its countries and its lines. The linked journeys keep working at their own URLs.",
   "This cannot be undone.": "This cannot be undone.",
   "Add line": "Add line",
-  "Unlist": "Unlist"
+  "Unlist": "Unlist",
+  "Languages": "Languages",
+  "Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.": "Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.",
+  "Remove {{language}}": "Remove {{language}}",
+  "The default language cannot be removed": "The default language cannot be removed",
+  "Add a language": "Add a language",
+  "Campaign strings": "Campaign strings"
 }

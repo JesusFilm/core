@@ -3,11 +3,41 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignJourneyListBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignJourneyListBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignJourneyListBlockCreate
 // ====================================================
+
+export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate {
   __typename: "CampaignJourneyListBlock";
@@ -48,6 +78,9 @@ export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate {
   title: string | null;
   lede: string | null;
   display: CampaignJourneyListDisplay;
+  eyebrowTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_titleTranslations[];
+  ledeTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_ledeTranslations[];
 }
 
 export interface CampaignJourneyListBlockCreate {

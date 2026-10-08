@@ -1322,6 +1322,23 @@ enum CampaignSwitcherVariant {
   pills
 }
 
+"""
+Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+"""
+enum CampaignTextField {
+  eyebrow
+  title
+  lede
+  bullets
+  content
+  intro
+  label
+  alt
+  description
+  name
+  value
+}
+
 """Who wrote a translation: a person or the machine-translation sweep."""
 enum CampaignTextSource {
   human
@@ -1352,6 +1369,26 @@ type CampaignTheme {
   buttonRadius: CampaignButtonRadius!
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
+}
+
+"""
+One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
+"""
+input CampaignTranslationSetInput {
+  target: CampaignTranslationTargetInput!
+  field: CampaignTextField!
+  languageId: ID!
+  value: String!
+}
+
+"""
+The row a translation belongs to: exactly one of a live Campaign Block, a Campaign Region, a Campaign String or the Campaign itself (its title).
+"""
+input CampaignTranslationTargetInput {
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
 }
 
 """
@@ -3167,7 +3204,7 @@ type Mutation {
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
 
   """
-  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Children keep their rows and fall out of the tree with the parent, so `campaignBlockRestore` is how undo of a delete works.
+  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Its live descendants and owned blocks are stamped with the same `deletedAt`, so `campaignBlockRestore` brings back exactly what was deleted with it.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3179,7 +3216,7 @@ type Mutation {
   campaignBlockDelete(id: ID!): [CampaignBlock!]!
 
   """
-  Restore a soft-deleted campaign block: clear `deletedAt` and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
+  Restore a soft-deleted campaign block: clear `deletedAt` on it and on the rows deleted with it (same timestamp), and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3356,6 +3393,57 @@ type Mutation {
   - FORBIDDEN: caller is not a manager of the team.
   """
   campaignUnpublish(id: ID!): Campaign!
+
+  """
+  Update the default-language wording of one Campaign String. The seventeen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `value`): over 200 characters.
+  """
+  campaignStringUpdate(campaignId: ID!, key: CampaignStringKey!, value: String!): CampaignString!
+
+  """
+  Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The machine-translation run into the new language is a separate mutation (the Translations ticket).
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already a language of this campaign.
+  """
+  campaignLanguageAdd(campaignId: ID!, languageId: ID!): Campaign!
+
+  """
+  Remove a Page Language from a campaign and close the gap in the selector order. `Campaign.defaultLanguageId` is always one of its languages and a campaign always has at least one, so the default and the last language cannot be removed. Stored translations in that language are kept. Not a Command.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve, or the language is not one of its languages.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `languageId`): the language is the campaign default, or its last language.
+  """
+  campaignLanguageRemove(campaignId: ID!, languageId: ID!): Campaign!
+
+  """
+  Write one translation of one Translated Field: `{ value, source: human }` into the target’s `<field>Translations[languageId]`, or clear that entry when `value` is empty. The default-language value is the field itself and is edited through the target’s typed update mutation. Returns the field’s translations after the write.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: the target row does not exist or is not live.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `target`): not exactly one target id.
+  - BAD_USER_INPUT (field: `field`): the target has no such translatable field.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language.
+  - BAD_USER_INPUT (field: the text field): over the field’s cap.
+  """
+  campaignTranslationSet(input: CampaignTranslationSetInput!): [TranslatedValue!]!
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput): ChatButton!
   chatButtonRemove(id: ID!): ChatButton!
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!): ChatButton!
