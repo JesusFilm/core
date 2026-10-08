@@ -1364,5 +1364,22 @@
   "This will permanently delete all trashed Templates not in a collection.": "This will permanently delete all trashed Templates not in a collection.",
   "This will archive all active Templates not in a collection.": "This will archive all active Templates not in a collection.",
   "This will trash all active Templates not in a collection.": "This will trash all active Templates not in a collection.",
-  "All Templates": "All Templates"
+  "All Templates": "All Templates",
+  "AI Builder": "AI Builder",
+  "Some things need a look:": "Some things need a look:",
+  "Your journey preview will appear here.": "Your journey preview will appear here.",
+  "Previous card": "Previous card",
+  "Card {{current}} of {{total}}": "Card {{current}} of {{total}}",
+  "Next card": "Next card",
+  "New draft": "New draft",
+  "Delete draft": "Delete draft",
+  "Untitled draft": "Untitled draft",
+  "Describe the journey you want, for example \"A 5-step Easter journey for teens\". Then ask for changes.": "Describe the journey you want, for example \"A 5-step Easter journey for teens\". Then ask for changes.",
+  "Waiting": "Waiting",
+  "Remove waiting message": "Remove waiting message",
+  "Working": "Working",
+  "Message the journey builder": "Message the journey builder",
+  "Message": "Message",
+  "Stop": "Stop",
+  "Plan": "Plan"
 }
