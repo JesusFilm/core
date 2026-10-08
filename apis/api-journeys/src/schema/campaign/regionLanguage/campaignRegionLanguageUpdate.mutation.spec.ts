@@ -340,9 +340,7 @@ describe('campaignRegionLanguageUpdate', () => {
         prismaMock.campaignRegionLanguage.findUnique.mockResolvedValueOnce(
           campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529')
         )
-        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
-          linked()
-        )
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
         prismaMock.journey.findFirst.mockResolvedValue(
           journeyRow('otherJourneyId', 'noel-europe') as never
         )
@@ -385,9 +383,7 @@ describe('campaignRegionLanguageUpdate', () => {
       })
 
       it('points a retargeted short link back at the previous journey when the commit fails after the retarget', async () => {
-        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
-          linked()
-        )
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
         prismaMock.journey.findFirst.mockResolvedValue(
           journeyRow('otherJourneyId', 'noel-europe') as never
         )
@@ -411,9 +407,7 @@ describe('campaignRegionLanguageUpdate', () => {
       })
 
       it('deletes the short link only after the QR row is deleted and the transaction has committed, and a failed delete does not fail the unlink', async () => {
-        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
-          linked()
-        )
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
         let committed = false
         prismaMock.$transaction.mockImplementationOnce((async (
           callback: any

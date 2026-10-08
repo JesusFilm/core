@@ -2,8 +2,8 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
-import { logger } from '../logger'
 import { builder } from '../builder'
+import { logger } from '../logger'
 
 import {
   CampaignPublicBlock,

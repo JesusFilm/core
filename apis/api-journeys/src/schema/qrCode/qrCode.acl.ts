@@ -42,7 +42,10 @@ export function canManageQrCode(
       (ut.role === UserTeamRole.manager || ut.role === UserTeamRole.member)
   )
   if (isTeamManagerOrMember === true) return true
-  if (qrCode.campaignRegionLanguages != null && qrCode.campaignRegionLanguages.length > 0)
+  if (
+    qrCode.campaignRegionLanguages != null &&
+    qrCode.campaignRegionLanguages.length > 0
+  )
     return false
 
   const isJourneyOwnerOrEditor = qrCode.journey?.userJourneys?.some(

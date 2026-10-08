@@ -8,6 +8,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { logger } from '../../logger'
 import {
   createShortLink,
   deleteShortLink,
@@ -15,7 +16,6 @@ import {
   getTo,
   updateShortLink
 } from '../../qrCode/qrCode.service'
-import { logger } from '../../logger'
 import { touchCampaign } from '../block/service'
 import { Action, campaignAcl } from '../campaign.acl'
 import {
@@ -192,7 +192,12 @@ export async function createRegionLanguageQrCode(
  */
 export async function retargetRegionLanguageQrCode(
   tx: Prisma.TransactionClient,
-  qrCode: { id: string; teamId: string; shortLinkId: string; toJourneyId: string },
+  qrCode: {
+    id: string
+    teamId: string
+    shortLinkId: string
+    toJourneyId: string
+  },
   journeyId: string
 ): Promise<ShortLinkStep> {
   const to = await getTo({
