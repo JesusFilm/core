@@ -1,5 +1,5 @@
-import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -8,7 +8,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
@@ -19,7 +18,6 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
 import TranslateIcon from '@core/shared/ui/icons/Translate'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
-import Type1Icon from '@core/shared/ui/icons/Type1'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
@@ -28,8 +26,11 @@ import {
   CampaignSectionTypename,
   useCampaignSectionCreateMutation
 } from '../../../libs/useCampaignSectionCreateMutation'
+import { isCampaignStyledBlock } from '../../../libs/useCampaignSectionStyleMutation'
 import { useCampaignTypographyBlockCreateMutation } from '../../../libs/useCampaignTypographyBlockCreateMutation'
+import { BarButton } from '../BarButton'
 import { blockLabel } from '../blockLabel'
+import { ButtonControls } from '../ButtonControls'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { LinkChip } from '../LinkChip'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
@@ -38,6 +39,8 @@ import {
   pageSections,
   sectionTypesForPage
 } from '../sectionTypes'
+import { StylePanel } from '../StylePanel'
+import { TextControls } from '../TextControls'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
@@ -54,32 +57,6 @@ interface BottomBarProps {
   onLanguagesClick?: () => void
   /** Opens the Translations view (review and edit translated text). */
   onTranslationsClick?: () => void
-}
-
-interface BarButtonProps {
-  label: string
-  icon: ReactNode
-  onClick?: (event: MouseEvent<HTMLButtonElement>) => void
-  disabled?: boolean
-}
-
-function BarButton({
-  label,
-  icon,
-  onClick,
-  disabled = false
-}: BarButtonProps): ReactElement {
-  return (
-    <Button
-      variant="outlined"
-      color="secondary"
-      startIcon={icon}
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {label}
-    </Button>
-  )
 }
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
@@ -128,7 +105,13 @@ export function BottomBar({
     insert: SectionInsert
   } | null>(null)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [styleOpen, setStyleOpen] = useState(false)
 
+  /** The section or chrome block the Style panel edits: the selection's host. */
+  const styledHost =
+    selection.host != null && isCampaignStyledBlock(selection.host)
+      ? selection.host
+      : undefined
   const selectedSection =
     selection.kind === 'section' ? selection.block : undefined
   const sectionSiblings =
@@ -367,7 +350,13 @@ export function BottomBar({
   )
 
   const styleButton = (
-    <BarButton label={t('Style')} icon={<PaletteIcon />} disabled />
+    <BarButton
+      label={t('Style')}
+      icon={<PaletteIcon />}
+      onClick={() => setStyleOpen(true)}
+      disabled={styledHost == null}
+      active={styleOpen}
+    />
   )
 
   const binButton = (
@@ -458,9 +447,9 @@ export function BottomBar({
       case 'text':
         return (
           <>
-            <BarButton label={t('Size')} icon={<Type1Icon />} disabled />
-            <BarButton label={t('Align')} icon={<AlignCenterIcon />} disabled />
-            <BarButton label={t('Colour')} icon={<PaletteIcon />} disabled />
+            {selection.block?.__typename === 'CampaignTypographyBlock' && (
+              <TextControls block={selection.block} />
+            )}
             {styleButton}
             {binButton}
           </>
@@ -469,11 +458,11 @@ export function BottomBar({
         return (
           <>
             {selection.block?.__typename === 'CampaignButtonBlock' && (
-              <LinkChip block={selection.block} />
+              <>
+                <LinkChip block={selection.block} />
+                <ButtonControls block={selection.block} />
+              </>
             )}
-            <BarButton label={t('Variant')} icon={<Type1Icon />} disabled />
-            <BarButton label={t('Size')} icon={<Type1Icon />} disabled />
-            <BarButton label={t('Colours')} icon={<PaletteIcon />} disabled />
             {styleButton}
             {binButton}
           </>
@@ -510,6 +499,15 @@ export function BottomBar({
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleConfirmDelete}
       />
+      <Drawer
+        anchor="right"
+        open={styleOpen && styledHost != null}
+        onClose={() => setStyleOpen(false)}
+      >
+        {styledHost != null && (
+          <StylePanel block={styledHost} onClose={() => setStyleOpen(false)} />
+        )}
+      </Drawer>
     </Stack>
   )
 }

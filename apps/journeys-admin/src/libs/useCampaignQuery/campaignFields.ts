@@ -110,6 +110,7 @@ export const CAMPAIGN_FIELDS = gql`
     status
     defaultLanguageId
     publishedAt
+    palette
     createdAt
     updatedAt
     team {
