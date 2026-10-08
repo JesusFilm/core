@@ -7,7 +7,10 @@ import { builder } from '../builder'
 
 import { getGatewayModel } from './gateway'
 import { choosePhotos } from './images/choosePhotos'
-import { searchUnsplashPhotos, triggerUnsplashDownload } from './images/unsplash'
+import {
+  searchUnsplashPhotos,
+  triggerUnsplashDownload
+} from './images/unsplash'
 import { journeySchema } from './journeySchema'
 import type { BuilderEvent } from './pipeline/events'
 import { runPipeline } from './pipeline/pipeline'
@@ -70,7 +73,10 @@ const JourneyAiBuilderMessageInput = builder.inputType(
 
 const JourneyAiBuilderInput = builder.inputType('JourneyAiBuilderInput', {
   fields: (t) => ({
-    message: t.string({ required: true, description: "The user's new message" }),
+    message: t.string({
+      required: true,
+      description: "The user's new message"
+    }),
     summary: t.string({
       required: false,
       description: 'Running summary of older messages'
@@ -100,9 +106,7 @@ const JourneyAiBuilderInput = builder.inputType('JourneyAiBuilderInput', {
 })
 
 const messagesSchema = z
-  .array(
-    z.object({ role: z.enum(['user', 'assistant']), content: z.string() })
-  )
+  .array(z.object({ role: z.enum(['user', 'assistant']), content: z.string() }))
   .nullish()
   .transform((messages) => messages ?? [])
 

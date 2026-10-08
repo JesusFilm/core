@@ -3,7 +3,11 @@ import { vi } from 'vitest'
 import type { Journey } from '../journeySchema'
 import { mediaJourney } from '../journeySchema/examples'
 
-import { type ImageDeps, type PhotoCandidate, resolveImages } from './resolveImages'
+import {
+  type ImageDeps,
+  type PhotoCandidate,
+  resolveImages
+} from './resolveImages'
 
 function photo(n: number): PhotoCandidate {
   return {

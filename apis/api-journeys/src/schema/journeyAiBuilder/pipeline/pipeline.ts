@@ -147,8 +147,7 @@ export async function* runPipeline(
       break
     case 'change': {
       yield { type: 'message', text: guide.reply }
-      const kind =
-        input.journey == null ? 'create' : (guide.kind ?? 'edit')
+      const kind = input.journey == null ? 'create' : (guide.kind ?? 'edit')
       const planner = yield* callWithRetry(
         'planner',
         PLANNER_INSTRUCTIONS,
@@ -257,8 +256,7 @@ function checkOutput(result: GenerateJsonResult<Journey>): {
   errors: string[]
   warnings: string[]
 } {
-  if (!result.ok)
-    return { journey: null, errors: [result.error], warnings: [] }
+  if (!result.ok) return { journey: null, errors: [result.error], warnings: [] }
   const { errors, warnings } = checkJourney(result.value)
   return { journey: result.value, errors, warnings }
 }
@@ -273,30 +271,24 @@ async function* withStreamProgress<T>(
   run: (onDelta: (delta: string) => void) => Promise<T>
 ): AsyncGenerator<BuilderEvent, T> {
   let characters = 0
-  let wake: (() => void) | null = null
   const promise = run((delta) => {
     characters += delta.length
   })
-  const settled = promise.then(
-    () => undefined,
-    () => undefined
-  )
-
   let finished = false
-  void settled.then(() => {
-    finished = true
-    wake?.()
-  })
+  const settled = promise.then(
+    () => {
+      finished = true
+    },
+    () => {
+      finished = true
+    }
+  )
 
   let reported = 0
   while (!finished) {
-    let timer: ReturnType<typeof setTimeout> | undefined
-    await new Promise<void>((resolve) => {
-      wake = resolve
-      timer = setTimeout(resolve, STREAM_PROGRESS_INTERVAL_MS)
-    })
-    clearTimeout(timer)
-    wake = null
+    const tick = delay(STREAM_PROGRESS_INTERVAL_MS)
+    await Promise.race([settled, tick.promise])
+    tick.cancel()
     if (!finished && characters > reported) {
       reported = characters
       yield {
@@ -308,4 +300,12 @@ async function* withStreamProgress<T>(
     }
   }
   return await promise
+}
+
+function delay(ms: number): { promise: Promise<void>; cancel: () => void } {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const promise = new Promise<void>((resolve) => {
+    timer = setTimeout(resolve, ms)
+  })
+  return { promise, cancel: () => clearTimeout(timer) }
 }

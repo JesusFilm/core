@@ -41,8 +41,7 @@ export function journeyToBlocks(journey: Journey): PreviewBlock[] {
     })
 
     const card = step.card
-    const coverId =
-      card.backgroundImage != null ? `${card.name}:cover` : null
+    const coverId = card.backgroundImage != null ? `${card.name}:cover` : null
     blocks.push({
       __typename: 'CardBlock',
       id: card.name,
@@ -67,7 +66,10 @@ export function journeyToBlocks(journey: Journey): PreviewBlock[] {
     )
     card.content.forEach((item, order) => {
       blocks.push(
-        ...itemBlocks(item, card.name, order, { collectsInput, next: step.next })
+        ...itemBlocks(item, card.name, order, {
+          collectsInput,
+          next: step.next
+        })
       )
     })
   })

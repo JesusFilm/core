@@ -70,8 +70,8 @@ describe('parseJson', () => {
 
 describe('extractJson', () => {
   it('drops a think block and code fences', () => {
-    expect(
-      extractJson('<think>hmm</think>\n```json\n{"a":1}\n```')
-    ).toBe('{"a":1}')
+    expect(extractJson('<think>hmm</think>\n```json\n{"a":1}\n```')).toBe(
+      '{"a":1}'
+    )
   })
 })

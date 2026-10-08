@@ -198,7 +198,11 @@ describe('runPipeline', () => {
       type: 'message',
       text: "Here's the plan. Shall I build it?"
     })
-    expect(events.some((event) => event.type === 'progress' && event.stage === 'builder')).toBe(false)
+    expect(
+      events.some(
+        (event) => event.type === 'progress' && event.stage === 'builder'
+      )
+    ).toBe(false)
   })
 
   it('builds a small edit straight away and sends the journey with its blocks', async () => {
@@ -272,9 +276,7 @@ describe('runPipeline', () => {
       generate
     )
 
-    expect(generate.prompts.builder[1]).toContain(
-      "goTo `amen` doesn't exist"
-    )
+    expect(generate.prompts.builder[1]).toContain("goTo `amen` doesn't exist")
     expect(events).toContainEqual({
       type: 'progress',
       stage: 'repair',

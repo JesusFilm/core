@@ -1,9 +1,9 @@
+import type { Journey } from '../journeySchema'
 import {
   exampleJourneys,
   shortJourney,
   typicalJourney
 } from '../journeySchema/examples'
-import type { Journey } from '../journeySchema'
 
 import { checkJourney } from './checkJourney'
 import { youTubeId } from './youTubeId'

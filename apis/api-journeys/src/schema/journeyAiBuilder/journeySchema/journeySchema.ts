@@ -63,7 +63,9 @@ export const imageSchema = z
     src: z
       .string()
       .optional()
-      .describe('Filled in by the server. Copy it unchanged; never invent one.'),
+      .describe(
+        'Filled in by the server. Copy it unchanged; never invent one.'
+      ),
     width: z.number().optional().describe('Filled in by the server'),
     height: z.number().optional().describe('Filled in by the server'),
     blurhash: z.string().optional().describe('Filled in by the server')

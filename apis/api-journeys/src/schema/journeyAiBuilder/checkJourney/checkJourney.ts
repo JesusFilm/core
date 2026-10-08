@@ -78,7 +78,9 @@ export function checkJourney(journey: Journey): CheckResult {
       step.next != null ||
       content.some(
         (item) =>
-          item.type === 'button' || item.type === 'poll' || item.type === 'video'
+          item.type === 'button' ||
+          item.type === 'poll' ||
+          item.type === 'video'
       )
     if (!isLast && !hasWayForward)
       errors.push(

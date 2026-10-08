@@ -20,7 +20,9 @@ export const guideOutputSchema = z.object({
   kind: z
     .enum(['create', 'edit'])
     .optional()
-    .describe('Only for change: create when there is no journey yet, else edit'),
+    .describe(
+      'Only for change: create when there is no journey yet, else edit'
+    ),
   questions: z
     .array(z.string())
     .optional()
@@ -42,7 +44,9 @@ const plannedStepSchema = z.object({
 const plannedChangeSchema = z.object({
   op: z.enum(['add', 'update', 'remove', 'move']),
   step: nameSchema.describe('The step this change is in or affects'),
-  name: nameSchema.describe('The step or item being changed (new name for add)'),
+  name: nameSchema.describe(
+    'The step or item being changed (new name for add)'
+  ),
   detail: z
     .string()
     .describe('What to do, including the position for add and move')
