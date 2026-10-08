@@ -742,9 +742,37 @@ export interface GetCampaign_campaign_blocks_CampaignButtonBlock {
 
 export type GetCampaign_campaign_blocks = GetCampaign_campaign_blocks_CampaignHeaderBlock | GetCampaign_campaign_blocks_CampaignFooterBlock | GetCampaign_campaign_blocks_CampaignHeroBlock | GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock | GetCampaign_campaign_blocks_CampaignVideoCarouselBlock | GetCampaign_campaign_blocks_CampaignJourneyListBlock | GetCampaign_campaign_blocks_CampaignAnalyticsBlock | GetCampaign_campaign_blocks_CampaignRegionHeaderBlock | GetCampaign_campaign_blocks_CampaignRegionShareBlock | GetCampaign_campaign_blocks_CampaignTypographyBlock | GetCampaign_campaign_blocks_CampaignButtonBlock;
 
+export interface GetCampaign_campaign_regions_countries_country_name {
+  __typename: "CountryName";
+  value: string;
+}
+
+export interface GetCampaign_campaign_regions_countries_country {
+  __typename: "Country";
+  id: string;
+  flagPngSrc: string | null;
+  name: GetCampaign_campaign_regions_countries_country_name[];
+}
+
+export interface GetCampaign_campaign_regions_countries {
+  __typename: "CampaignRegionCountry";
+  id: string;
+  regionId: string;
+  /**
+   * api-languages Country id.
+   */
+  countryId: string;
+  order: number;
+  /**
+   * The api-languages Country, resolved through federation: flag and translated name live there.
+   */
+  country: GetCampaign_campaign_regions_countries_country;
+}
+
 export interface GetCampaign_campaign_regions {
   __typename: "CampaignRegion";
   id: string;
+  campaignId: string;
   /**
    * Required, at most 60 characters.
    */
@@ -758,6 +786,10 @@ export interface GetCampaign_campaign_regions {
    * Whether the region appears on the Region Switcher.
    */
   listed: boolean;
+  /**
+   * Region Countries in chip order.
+   */
+  countries: GetCampaign_campaign_regions_countries[];
 }
 
 export interface GetCampaign_campaign_strings_valueTranslations {
