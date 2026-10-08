@@ -14,7 +14,7 @@ export interface CampaignDelete_campaignDelete {
 
 export interface CampaignDelete {
   /**
-   * Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.
+   * Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
    * 
    * Auth: campaign Delete — a manager of the campaign’s team.
    * 

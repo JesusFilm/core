@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
+import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignFields
@@ -742,6 +742,71 @@ export interface CampaignFields_blocks_CampaignButtonBlock {
 
 export type CampaignFields_blocks = CampaignFields_blocks_CampaignHeaderBlock | CampaignFields_blocks_CampaignFooterBlock | CampaignFields_blocks_CampaignHeroBlock | CampaignFields_blocks_CampaignRegionSwitcherBlock | CampaignFields_blocks_CampaignVideoCarouselBlock | CampaignFields_blocks_CampaignJourneyListBlock | CampaignFields_blocks_CampaignAnalyticsBlock | CampaignFields_blocks_CampaignRegionHeaderBlock | CampaignFields_blocks_CampaignRegionShareBlock | CampaignFields_blocks_CampaignTypographyBlock | CampaignFields_blocks_CampaignButtonBlock;
 
+export interface CampaignFields_regions_languages_language_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface CampaignFields_regions_languages_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignFields_regions_languages_language_name[];
+}
+
+export interface CampaignFields_regions_languages_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+  status: JourneyStatus;
+}
+
+export interface CampaignFields_regions_languages_qrCode_shortLink_domain {
+  __typename: "ShortLinkDomain";
+  hostname: string;
+}
+
+export interface CampaignFields_regions_languages_qrCode_shortLink {
+  __typename: "ShortLink";
+  id: string;
+  /**
+   * short link path not including the leading slash
+   */
+  pathname: string;
+  domain: CampaignFields_regions_languages_qrCode_shortLink_domain;
+}
+
+export interface CampaignFields_regions_languages_qrCode {
+  __typename: "QrCode";
+  id: string;
+  shortLink: CampaignFields_regions_languages_qrCode_shortLink;
+}
+
+export interface CampaignFields_regions_languages {
+  __typename: "CampaignRegionLanguage";
+  id: string;
+  regionId: string;
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  journeyId: string | null;
+  /**
+   * Snapshot of the linked journey's title; the journey's own language, not translated.
+   */
+  title: string | null;
+  description: string | null;
+  qrCodeId: string | null;
+  order: number;
+  language: CampaignFields_regions_languages_language;
+  journey: CampaignFields_regions_languages_journey | null;
+  /**
+   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   */
+  qrCode: CampaignFields_regions_languages_qrCode | null;
+}
+
 export interface CampaignFields_regions_countries_country_name {
   __typename: "CountryName";
   value: string;
@@ -786,6 +851,10 @@ export interface CampaignFields_regions {
    * Whether the region appears on the Region Switcher.
    */
   listed: boolean;
+  /**
+   * Share Languages in selector order.
+   */
+  languages: CampaignFields_regions_languages[];
   /**
    * Region Countries in chip order.
    */

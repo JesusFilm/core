@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
+import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignCreate
@@ -742,6 +742,71 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
 
 export type CampaignCreate_campaignCreate_blocks = CampaignCreate_campaignCreate_blocks_CampaignHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignFooterBlock | CampaignCreate_campaignCreate_blocks_CampaignHeroBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock | CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock | CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock;
 
+export interface CampaignCreate_campaignCreate_regions_languages_language_name {
+  __typename: "LanguageName";
+  value: string;
+  primary: boolean;
+}
+
+export interface CampaignCreate_campaignCreate_regions_languages_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignCreate_campaignCreate_regions_languages_language_name[];
+}
+
+export interface CampaignCreate_campaignCreate_regions_languages_journey {
+  __typename: "Journey";
+  id: string;
+  slug: string;
+  status: JourneyStatus;
+}
+
+export interface CampaignCreate_campaignCreate_regions_languages_qrCode_shortLink_domain {
+  __typename: "ShortLinkDomain";
+  hostname: string;
+}
+
+export interface CampaignCreate_campaignCreate_regions_languages_qrCode_shortLink {
+  __typename: "ShortLink";
+  id: string;
+  /**
+   * short link path not including the leading slash
+   */
+  pathname: string;
+  domain: CampaignCreate_campaignCreate_regions_languages_qrCode_shortLink_domain;
+}
+
+export interface CampaignCreate_campaignCreate_regions_languages_qrCode {
+  __typename: "QrCode";
+  id: string;
+  shortLink: CampaignCreate_campaignCreate_regions_languages_qrCode_shortLink;
+}
+
+export interface CampaignCreate_campaignCreate_regions_languages {
+  __typename: "CampaignRegionLanguage";
+  id: string;
+  regionId: string;
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  journeyId: string | null;
+  /**
+   * Snapshot of the linked journey's title; the journey's own language, not translated.
+   */
+  title: string | null;
+  description: string | null;
+  qrCodeId: string | null;
+  order: number;
+  language: CampaignCreate_campaignCreate_regions_languages_language;
+  journey: CampaignCreate_campaignCreate_regions_languages_journey | null;
+  /**
+   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   */
+  qrCode: CampaignCreate_campaignCreate_regions_languages_qrCode | null;
+}
+
 export interface CampaignCreate_campaignCreate_regions_countries_country_name {
   __typename: "CountryName";
   value: string;
@@ -786,6 +851,10 @@ export interface CampaignCreate_campaignCreate_regions {
    * Whether the region appears on the Region Switcher.
    */
   listed: boolean;
+  /**
+   * Share Languages in selector order.
+   */
+  languages: CampaignCreate_campaignCreate_regions_languages[];
   /**
    * Region Countries in chip order.
    */

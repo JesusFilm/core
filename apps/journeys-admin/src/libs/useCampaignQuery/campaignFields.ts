@@ -88,12 +88,55 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
 `
 
 /**
- * A Campaign Region as the editor reads it: its settings and its country
- * chips, each chip carrying the federated api-languages Country for the flag
- * and name. Lines are not here: they are rows of `Campaign.blocks` with
- * `regionId` set.
+ * A Share Language as the editor reads it: the api-languages Language for
+ * its label, the linked journey's id and live status, the snapshot, and the
+ * Campaign QR Code whose short link is the Share Link.
+ */
+export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
+  fragment CampaignRegionLanguageFields on CampaignRegionLanguage {
+    __typename
+    id
+    regionId
+    languageId
+    journeyId
+    title
+    description
+    qrCodeId
+    order
+    language {
+      id
+      bcp47
+      name(primary: true) {
+        value
+        primary
+      }
+    }
+    journey {
+      id
+      slug
+      status
+    }
+    qrCode {
+      id
+      shortLink {
+        id
+        pathname
+        domain {
+          hostname
+        }
+      }
+    }
+  }
+`
+
+/**
+ * A Campaign Region as the editor reads it: its settings, its Share
+ * Languages in selector order and its country chips, each chip carrying the
+ * federated api-languages Country for the flag and name. Lines are not here:
+ * they are rows of `Campaign.blocks` with `regionId` set.
  */
 export const CAMPAIGN_REGION_FIELDS = gql`
+  ${CAMPAIGN_REGION_LANGUAGE_FIELDS}
   fragment CampaignRegionFields on CampaignRegion {
     __typename
     id
@@ -102,6 +145,9 @@ export const CAMPAIGN_REGION_FIELDS = gql`
     slug
     order
     listed
+    languages {
+      ...CampaignRegionLanguageFields
+    }
     countries {
       __typename
       id
