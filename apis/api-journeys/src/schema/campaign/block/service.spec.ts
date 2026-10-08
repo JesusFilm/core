@@ -655,7 +655,7 @@ describe('campaign block service', () => {
       async (typename) => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue({
           id: typename === 'CampaignHeaderBlock' ? 'headerId' : 'footerId'
-        } as never)
+        })
 
         const error = await errorOf(
           createTopLevelBlock(
@@ -908,7 +908,7 @@ describe('section style (the nine shared section fields)', () => {
     it('resolves a given cover to a live image block owned by the section', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         id: 'coverId'
-      } as never)
+      })
 
       await expect(
         validateSectionStyle(

@@ -271,7 +271,9 @@ describe('ThemePanel', () => {
       await pickHex('Primary hex', '#123456')
 
       expect(
-        await screen.findByText('primaryColor must be a hex colour like #RRGGBB')
+        await screen.findByText(
+          'primaryColor must be a hex colour like #RRGGBB'
+        )
       ).toBeInTheDocument()
     })
   })

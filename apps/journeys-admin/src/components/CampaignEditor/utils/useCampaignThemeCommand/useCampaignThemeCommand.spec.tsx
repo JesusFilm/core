@@ -175,7 +175,9 @@ describe('useCampaignThemeCommand', () => {
       }))
     }
     render(
-      <QueriedEditor mocks={[themeMock({ primaryColor: '#123456' }), failingUndo]}>
+      <QueriedEditor
+        mocks={[themeMock({ primaryColor: '#123456' }), failingUndo]}
+      >
         <CommandUndoItem variant="button" />
         <SnackbarProvider>
           <ClosablePanel />
