@@ -1007,6 +1007,33 @@ type Journey @join__type(graph: API_JOURNEYS_MODERN, key: "id")  {
   journeyCollections: [JourneyCollection!]!
 }
 
+"""
+One event of an AI journey builder run. Prototype (ENG-3768): fields are loose on purpose; read `type` first.
+"""
+type JourneyAiBuilderEvent @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  progress, message, content, summary, error or done
+  """
+  type: String!
+  """
+  For progress: guide, planner, builder, repair or images
+  """
+  stage: String
+  """
+  For progress: started, streaming or done
+  """
+  status: String
+  text: String
+  """
+  For content: journey or plan
+  """
+  kind: String
+  """
+  For content: the journey (with preview blocks) or the plan
+  """
+  payload: Json
+}
+
 type JourneyAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   Translation progress as a percentage (0-100)
@@ -1820,6 +1847,10 @@ type StepViewEvent implements Event @join__type(graph: API_JOURNEYS_MODERN)  @jo
 }
 
 type Subscription @join__type(graph: API_JOURNEYS_MODERN)  @join__type(graph: API_USERS)  {
+  """
+  Runs one AI journey builder chat message. Prototype (ENG-3768): stateless, the browser keeps the chat and journey.
+  """
+  journeyAiBuilderSubscription(input: JourneyAiBuilderInput!) : JourneyAiBuilderEvent! @join__field(graph: API_JOURNEYS_MODERN) 
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!) : JourneyAiTranslateProgress! @join__field(graph: API_JOURNEYS_MODERN) 
   userDeleteConfirm(
     idType: UserDeleteIdType!
@@ -4279,6 +4310,41 @@ input IntegrationGrowthSpacesCreateInput @join__type(graph: API_JOURNEYS_MODERN)
 input IntegrationGrowthSpacesUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   accessId: String!
   accessSecret: String!
+}
+
+input JourneyAiBuilderInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The user's new message
+  """
+  message: String!
+  """
+  Running summary of older messages
+  """
+  summary: String
+  """
+  Recent messages before this one, oldest first
+  """
+  messages: [JourneyAiBuilderMessageInput!]
+  """
+  Messages that fell out of the recent window and should be folded into the summary
+  """
+  toSummarise: [JourneyAiBuilderMessageInput!]
+  """
+  The current journey JSON, if there is one
+  """
+  journey: Json
+  """
+  A plan waiting for confirmation, if there is one
+  """
+  pendingPlan: Json
+}
+
+input JourneyAiBuilderMessageInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  user or assistant
+  """
+  role: String!
+  content: String!
 }
 
 input JourneyAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {

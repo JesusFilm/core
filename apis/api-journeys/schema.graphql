@@ -859,6 +859,55 @@ type Journey
   journeyCollections: [JourneyCollection!]!
 }
 
+"""
+One event of an AI journey builder run. Prototype (ENG-3768): fields are loose on purpose; read `type` first.
+"""
+type JourneyAiBuilderEvent {
+  """progress, message, content, summary, error or done"""
+  type: String!
+
+  """For progress: guide, planner, builder, repair or images"""
+  stage: String
+
+  """For progress: started, streaming or done"""
+  status: String
+  text: String
+
+  """For content: journey or plan"""
+  kind: String
+
+  """For content: the journey (with preview blocks) or the plan"""
+  payload: Json
+}
+
+input JourneyAiBuilderInput {
+  """The user's new message"""
+  message: String!
+
+  """Running summary of older messages"""
+  summary: String
+
+  """Recent messages before this one, oldest first"""
+  messages: [JourneyAiBuilderMessageInput!]
+
+  """
+  Messages that fell out of the recent window and should be folded into the summary
+  """
+  toSummarise: [JourneyAiBuilderMessageInput!]
+
+  """The current journey JSON, if there is one"""
+  journey: Json
+
+  """A plan waiting for confirmation, if there is one"""
+  pendingPlan: Json
+}
+
+input JourneyAiBuilderMessageInput {
+  """user or assistant"""
+  role: String!
+  content: String!
+}
+
 input JourneyAiTranslateInput {
   """The ID of the journey to translate"""
   journeyId: ID!
@@ -2594,6 +2643,10 @@ input StepViewEventCreateInput {
 }
 
 type Subscription {
+  """
+  Runs one AI journey builder chat message. Prototype (ENG-3768): stateless, the browser keeps the chat and journey.
+  """
+  journeyAiBuilderSubscription(input: JourneyAiBuilderInput!): JourneyAiBuilderEvent!
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
 

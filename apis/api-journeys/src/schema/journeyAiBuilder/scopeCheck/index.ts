@@ -1,0 +1,1 @@
+export { scopeCheck } from './scopeCheck'
