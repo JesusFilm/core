@@ -189,6 +189,26 @@ export enum CampaignTextSource {
   machine = "machine",
 }
 
+/**
+ * Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+ */
+export enum CampaignTranslationFilter {
+  all = "all",
+  edited = "edited",
+  missing = "missing",
+  needsReview = "needsReview",
+}
+
+/**
+ * The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+ */
+export enum CampaignTranslationGroup {
+  interface = "interface",
+  landing = "landing",
+  region = "region",
+  regions = "regions",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
