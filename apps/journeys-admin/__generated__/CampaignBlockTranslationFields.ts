@@ -10,7 +10,7 @@ import { CampaignTextSource } from "./globalTypes";
 // ====================================================
 
 export interface CampaignBlockTranslationFields_CampaignHeaderBlock {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock";
+  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignImageBlock";
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations {

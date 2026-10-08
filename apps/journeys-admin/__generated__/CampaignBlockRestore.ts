@@ -530,16 +530,6 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBl
   introTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBlock_introTranslations[];
 }
 
-export interface CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock_contentTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock {
   __typename: "CampaignImageBlock";
   id: string;
@@ -591,6 +581,16 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock_contentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock {
