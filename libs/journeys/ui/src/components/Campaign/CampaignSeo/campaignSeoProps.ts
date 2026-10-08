@@ -85,10 +85,16 @@ export function campaignPagePath(
  * The `NextSeo` props for a public campaign page (PRD §11): title from the
  * translated campaign title ("<region> · <title>" on a Region Page);
  * description from the page's hero lede, else its title, else none;
- * canonical in the preferred form; one `hreflang` per campaign language
- * with the `lang` param plus `x-default` for the default language; never
- * `noindex`. Open Graph and Twitter as a `website` with the social image
- * chain and `site_name` = the campaign title.
+ * canonical in the preferred form; never `noindex`. Open Graph and Twitter
+ * as a `website` with the social image chain and `site_name` = the campaign
+ * title.
+ *
+ * No `hreflang` alternates yet: the pages are ISR (`getStaticProps`) and
+ * never read the `lang` query param, and no mutation can add a second
+ * campaign language, so every alternate would point at an unserved
+ * `<canonical>?lang=<bcp47>` URL that conflicts with the canonical tag. The
+ * languages ticket serves `?lang` and adds languages; restore `hreflang`
+ * (one per language plus `x-default`) at that point.
  */
 export function campaignSeoProps(
   campaign: CampaignPublic,
@@ -102,34 +108,10 @@ export function campaignSeoProps(
   const canonical = `${origin}${campaignPagePath(basePath, region)}`
   const image = campaignSocialImage(campaign, pageKind)
 
-  const languages = [...campaign.languages].sort((a, b) => a.order - b.order)
-  const hrefFor = (bcp47: string): string =>
-    `${canonical}?lang=${encodeURIComponent(bcp47)}`
-  const defaultBcp47 = languages.find(
-    (language) => language.languageId === campaign.defaultLanguageId
-  )?.language.bcp47
-  const languageAlternates = [
-    ...languages.flatMap((language) =>
-      language.language.bcp47 == null
-        ? []
-        : [
-            {
-              hrefLang: language.language.bcp47,
-              href: hrefFor(language.language.bcp47)
-            }
-          ]
-    ),
-    {
-      hrefLang: 'x-default',
-      href: defaultBcp47 == null ? canonical : hrefFor(defaultBcp47)
-    }
-  ]
-
   return {
     title,
     description,
     canonical,
-    languageAlternates,
     openGraph: {
       type: 'website',
       title,
