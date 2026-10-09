@@ -160,16 +160,16 @@ CLICKHOUSE_DATABASE = "redirects"
 # Global namespace.
 [[env.prod.kv_namespaces]]
 binding = "SHORT_LINKS_KV"
-id = "REPLACE_ME_BEFORE_DEPLOY"
+id = "824c810e426140a1b15c73d24ba35039"
 
 # Per-domain namespaces (created with `wrangler kv namespace create`).
 [[env.prod.kv_namespaces]]
 binding = "KV_JESUS_FILM"
-id = "REPLACE_ME_BEFORE_DEPLOY"
+id = "58cb37cde7714ec6950e2b8f21cb4c1e"
 
 [[env.prod.kv_namespaces]]
 binding = "KV_JESUS_MOVIE"
-id = "REPLACE_ME_BEFORE_DEPLOY"
+id = "71de50b1ddb4426a8fd1baa9b65da9cf"
 
 [[env.prod.queues.producers]]
 binding = "SHORT_LINKS_EVENTS"

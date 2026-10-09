@@ -167,9 +167,13 @@ module "redis" {
   vpc_id            = module.prod.vpc.id
 }
 
-# Short-link scan events: prod gets its own ClickHouse Cloud service once the
-# stage one (environments/stage/main.tf, module "short_links_clickhouse") has
-# proven the setup. Add the same module call here with idle_scaling = false.
+# Short-link scan events (ClickHouse Cloud, always on; stage idles).
+module "short_links_clickhouse" {
+  source        = "../../modules/clickhouse/service"
+  env           = "prod"
+  idle_scaling  = false
+  doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
+}
 
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
