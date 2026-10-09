@@ -5,10 +5,7 @@ import { NotFoundError } from '../error'
 
 import { publishLink } from './edge'
 import { ShortLinkStatus } from './enums/shortLinkStatus'
-
-const editorScopes = {
-  $any: { isPublisher: true, isShortLinkEditor: true, isValidInterop: true }
-} as const
+import { editorScopes } from './lib/access'
 
 builder.mutationFields((t) => ({
   shortLinkBulkUpdate: t.withAuth(editorScopes).prismaFieldWithInput({

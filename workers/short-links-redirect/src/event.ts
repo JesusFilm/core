@@ -1,7 +1,7 @@
 import type { Placement, RoutingRecord } from './records'
 import type { ResolvedFrom } from './resolve'
 
-export type Attribution = 'qr' | 'direct' | 'unknown'
+export type Attribution = 'qr' | 'direct'
 
 /** The queue message (prds/short-links/TECH-DESIGN.md, "Queue message"). */
 export interface RedirectEvent {
@@ -73,7 +73,7 @@ export function buildRedirectEvent({
     placement: record.placement ?? null,
     destination,
     status,
-    attribution: attributionFor(searchParams, userAgent),
+    attribution: attributionFor(searchParams),
     country: country == null || country === '' ? null : country,
     userAgent,
     referrerHost: referrerHostFrom(referer),
@@ -87,13 +87,9 @@ export function buildRedirectEvent({
   }
 }
 
-function attributionFor(
-  searchParams: URLSearchParams,
-  userAgent: string
-): Attribution {
-  if (searchParams.has('qr')) return 'qr'
-  if (userAgent.trim() === '') return 'unknown'
-  return 'direct'
+/** `?qr=1` is the QR marker the admin encodes; any other value is a plain scan. */
+function attributionFor(searchParams: URLSearchParams): Attribution {
+  return searchParams.get('qr') === '1' ? 'qr' : 'direct'
 }
 
 export function referrerHostFrom(referer: string | null): string | null {

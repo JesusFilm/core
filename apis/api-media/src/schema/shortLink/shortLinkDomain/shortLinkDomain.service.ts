@@ -2,7 +2,17 @@ import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 import { z } from 'zod'
 
+import { type ShortLinksEnv, readShortLinksEnv } from '../lib/env'
+
 import { ShortLinkDomainCheckType } from './objects/shortLinkDomainCheck'
+
+/** The legacy Vercel project's settings; absent outside deployed environments. */
+function vercelEnv(): Pick<
+  ShortLinksEnv,
+  'VERCEL_SHORT_LINKS_PROJECT_ID' | 'VERCEL_TEAM_ID' | 'VERCEL_TOKEN'
+> {
+  return readShortLinksEnv()
+}
 
 const vercelErrorSchema = z.object({
   error: z.object({
@@ -67,7 +77,7 @@ export async function addVercelDomain(name: string): Promise<{
   verified: boolean
 }> {
   // Don't hit vercel outside of deployed environments
-  if (process.env.VERCEL_SHORT_LINKS_PROJECT_ID == null)
+  if (vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID == null)
     return {
       name,
       apexName: name,
@@ -75,11 +85,11 @@ export async function addVercelDomain(name: string): Promise<{
     }
 
   const response = await fetch(
-    `https://api.vercel.com/v10/projects/${process.env.VERCEL_SHORT_LINKS_PROJECT_ID}/domains?teamId=${process.env.VERCEL_TEAM_ID}`,
+    `https://api.vercel.com/v10/projects/${vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID}/domains?teamId=${vercelEnv().VERCEL_TEAM_ID}`,
     {
       body: JSON.stringify({ name }),
       headers: {
-        Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+        Authorization: `Bearer ${vercelEnv().VERCEL_TOKEN}`
       },
       method: 'POST'
     }
@@ -109,13 +119,13 @@ export async function addVercelDomain(name: string): Promise<{
 
 export async function removeVercelDomain(name: string): Promise<boolean> {
   // Don't hit vercel outside of deployed environments
-  if (process.env.VERCEL_SHORT_LINKS_PROJECT_ID == null) return true
+  if (vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID == null) return true
 
   const response = await fetch(
-    `https://api.vercel.com/v9/projects/${process.env.VERCEL_SHORT_LINKS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
+    `https://api.vercel.com/v9/projects/${vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID}/domains/${name}?teamId=${vercelEnv().VERCEL_TEAM_ID}`,
     {
       headers: {
-        Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+        Authorization: `Bearer ${vercelEnv().VERCEL_TOKEN}`
       },
       method: 'DELETE'
     }
@@ -132,7 +142,7 @@ export async function checkVercelDomain(
   name: string
 ): Promise<ShortLinkDomainCheckType> {
   // Don't hit vercel outside of deployed environments
-  if (process.env.VERCEL_SHORT_LINKS_PROJECT_ID == null)
+  if (vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID == null)
     return {
       configured: true,
       verified: true,
@@ -141,19 +151,19 @@ export async function checkVercelDomain(
 
   const [configResponse, domainResponse] = await Promise.all([
     fetch(
-      `https://api.vercel.com/v6/domains/${name}/config?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `https://api.vercel.com/v6/domains/${name}/config?teamId=${vercelEnv().VERCEL_TEAM_ID}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          Authorization: `Bearer ${vercelEnv().VERCEL_TOKEN}`
         },
         method: 'GET'
       }
     ),
     fetch(
-      `https://api.vercel.com/v9/projects/${process.env.VERCEL_SHORT_LINKS_PROJECT_ID}/domains/${name}?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `https://api.vercel.com/v9/projects/${vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID}/domains/${name}?teamId=${vercelEnv().VERCEL_TEAM_ID}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          Authorization: `Bearer ${vercelEnv().VERCEL_TOKEN}`
         },
         method: 'GET'
       }
@@ -180,10 +190,10 @@ export async function checkVercelDomain(
   let verifyData = null
   if ('verified' in domainData && !domainData.verified) {
     const verifyResponse = await fetch(
-      `https://api.vercel.com/v9/projects/${process.env.VERCEL_SHORT_LINKS_PROJECT_ID}/domains/${name}/verify?teamId=${process.env.VERCEL_TEAM_ID}`,
+      `https://api.vercel.com/v9/projects/${vercelEnv().VERCEL_SHORT_LINKS_PROJECT_ID}/domains/${name}/verify?teamId=${vercelEnv().VERCEL_TEAM_ID}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.VERCEL_TOKEN}`
+          Authorization: `Bearer ${vercelEnv().VERCEL_TOKEN}`
         },
         method: 'POST'
       }

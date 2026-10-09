@@ -118,7 +118,7 @@ export function parseQrParams(
 }
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
-  const tokens = await getTokens(request.cookies, authConfig)
+  const tokens = await getTokens(request.cookies, authConfig())
   if (tokens == null) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

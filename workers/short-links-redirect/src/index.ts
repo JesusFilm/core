@@ -4,7 +4,7 @@ import type { Env } from './env'
 import { buildRedirectEvent } from './event'
 import { lostPageResponse } from './lostPage'
 import { handleQueueBatch } from './queue'
-import { resolve } from './resolve'
+import { isRootAssetPath, resolve, rootAssetBehaviour } from './resolve'
 import { loadDomain, lookupLink, normaliseHost } from './store'
 
 export type { Env } from './env'
@@ -28,17 +28,26 @@ function redirectResponse(location: string, status: number): Response {
   })
 }
 
-// Never slugs: well-known probes and the files every browser asks for.
-// Hono dispatches HEAD through the GET handlers and strips the body.
+// Never slugs: well-known probes. Hono dispatches HEAD through the GET
+// handlers and strips the body.
 app.get('/.well-known/*', () => plainNotFound())
-app.get('/favicon.ico', () => plainNotFound())
-app.get('/robots.txt', () => plainNotFound())
 
 app.get('*', async (c) => {
   const url = new URL(c.req.url)
   const host = normaliseHost(url.host)
 
   const domain = await loadDomain(c.env, c.executionCtx, host)
+
+  // `/favicon.ico` and `/robots.txt` are never slugs either, but on a domain
+  // whose root redirects they follow the domain; no scan event.
+  if (isRootAssetPath(url.pathname)) {
+    if (domain == null) return plainNotFound()
+    const asset = rootAssetBehaviour(domain, url.pathname, url.search)
+    return asset.kind === 'lostPage'
+      ? plainNotFound()
+      : redirectResponse(asset.location, 302)
+  }
+
   if (domain == null) return lostPageResponse()
 
   const resolution = await resolve({

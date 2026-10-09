@@ -28,7 +28,7 @@ export type Resolution =
       location: string
       status: number
       source: RedirectSource
-      /** Present when a routing record backed the redirect (`link` / `linkFallback`). */
+      /** Present when a routing record was scanned, whichever fallback answered. */
       record?: RoutingRecord
       /** The pathname the record was looked up under (lower-cased when the domain is case-insensitive). */
       pathname?: string
@@ -86,11 +86,15 @@ export async function resolve({
       }
     }
     if (domain.fallbackTo != null && domain.fallbackTo !== '') {
+      // still a scan of this link: keep the record so the event is recorded
       return {
         kind: 'redirect',
         location: domain.fallbackTo,
         status: domain.redirectStatus ?? DEFAULT_REDIRECT_STATUS,
-        source: 'domainFallback'
+        source: 'domainFallback',
+        record,
+        pathname: slug,
+        resolvedFrom
       }
     }
     return notFoundBehaviour(domain, pathname, search)
@@ -184,6 +188,49 @@ export function notFoundBehaviour(
         kind: 'passthrough',
         location: `${domain.passthroughOrigin.replace(/\/+$/, '')}${pathname}${search}`
       }
+    case 'lostPage':
+    default:
+      return { kind: 'lostPage' }
+  }
+}
+
+/** The files every browser and crawler asks for at the root of a host. */
+export const ROOT_ASSET_PATHS = ['/favicon.ico', '/robots.txt'] as const
+
+export function isRootAssetPath(pathname: string): boolean {
+  return (ROOT_ASSET_PATHS as readonly string[]).includes(pathname)
+}
+
+/**
+ * `/favicon.ico` and `/robots.txt` are never slugs. On a domain whose root
+ * redirects they follow it: a `passthrough` domain forwards them to its origin
+ * like any other non-slug path, a `fallback` domain sends them to the same
+ * path on the fallback site (so the icon and crawl rules are the fallback
+ * site's), and a `lostPage` domain has nothing to offer (404).
+ */
+export function rootAssetBehaviour(
+  domain: DomainRecord,
+  pathname: string,
+  search: string
+): Resolution {
+  switch (domain.notFound) {
+    case 'passthrough':
+      return notFoundBehaviour(domain, pathname, search)
+    case 'fallback': {
+      if (
+        domain.fallbackTo == null ||
+        domain.fallbackTo === '' ||
+        !URL.canParse(domain.fallbackTo)
+      ) {
+        return { kind: 'lostPage' }
+      }
+      return {
+        kind: 'redirect',
+        location: new URL(pathname, domain.fallbackTo).href,
+        status: 302,
+        source: 'domainFallback'
+      }
+    }
     case 'lostPage':
     default:
       return { kind: 'lostPage' }

@@ -58,9 +58,12 @@ arc.gt is configured as `passthrough` to `https://api.arclight.org` with
 `reservedPaths = [s, hls, dl, dh, v2, api]`, so `arc.gt/s/1_jf-0-0/529?x=1`
 reaches the Arclight API untouched while keyword slugs redirect from the edge.
 
-Other routes: `/.well-known/*`, `/favicon.ico` and `/robots.txt` at the root of
-the host (never under a path prefix) are plain-text 404s and never treated as
-slugs. Anything other than `GET` / `HEAD` is a 405.
+Other routes: `/.well-known/*` is a plain-text 404. `/favicon.ico` and
+`/robots.txt` at the root of the host (never under a path prefix) are never
+slugs and follow the domain's not-found behaviour without recording a scan: a
+`passthrough` domain forwards them to its origin, a `fallback` domain redirects
+them to the same path on the fallback site, a `lostPage` domain answers 404.
+Anything other than `GET` / `HEAD` is a 405.
 
 ### Path prefix
 

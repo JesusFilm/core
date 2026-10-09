@@ -224,7 +224,7 @@ describe('short-links-redirect worker', () => {
         pathname: 'jesus',
         linkId: 'link-jesus',
         status: 307,
-        attribution: 'unknown',
+        attribution: 'direct',
         resolvedFrom: 'kv',
         global: false,
         ownerHostname: 'nxstp.is'
@@ -374,7 +374,14 @@ describe('short-links-redirect worker', () => {
       expect(response.headers.get('location')).toBe(
         'https://www.jesusfilm.org/'
       )
-      expect(sent).toHaveLength(0)
+      // still a scan of the link, recorded against the fallback destination
+      expect(sent).toHaveLength(1)
+      expect(sent[0]).toMatchObject({
+        hostname: 'fallback.example',
+        pathname: 'paused',
+        destination: 'https://www.jesusfilm.org/',
+        status: 301
+      })
     })
 
     it('serves the lost page for a paused link with no fallback anywhere', async () => {
@@ -462,8 +469,41 @@ describe('short-links-redirect worker', () => {
       '/.well-known/apple-app-site-association',
       '/favicon.ico',
       '/robots.txt'
-    ])('answers %s with a plain 404', async (path) => {
-      const { response } = await request(`https://nxstp.is${path}`)
+    ])('answers %s with a plain 404 on a lost-page domain', async (path) => {
+      const { response, sent } = await request(`https://nxstp.is${path}`)
+
+      expect(response.status).toBe(404)
+      expect(response.headers.get('content-type')).toContain('text/plain')
+      expect(sent).toEqual([])
+    })
+
+    it.each(['/favicon.ico', '/robots.txt'])(
+      'sends %s to the fallback site on a fallback domain, without a scan event',
+      async (path) => {
+        const { response, sent } = await request(
+          `https://fallback.example${path}`
+        )
+
+        expect(response.status).toBe(302)
+        expect(response.headers.get('location')).toBe(
+          `https://www.jesusfilm.org${path}`
+        )
+        expect(sent).toEqual([])
+      }
+    )
+
+    it('forwards /robots.txt to the origin on a passthrough domain', async () => {
+      const { response, sent } = await request('https://arc.gt/robots.txt')
+
+      expect(response.status).toBe(302)
+      expect(response.headers.get('location')).toBe(
+        'https://api.arclight.org/robots.txt'
+      )
+      expect(sent).toEqual([])
+    })
+
+    it('answers /favicon.ico with a plain 404 on an unknown host', async () => {
+      const { response } = await request('https://unknown.example/favicon.ico')
 
       expect(response.status).toBe(404)
       expect(response.headers.get('content-type')).toContain('text/plain')

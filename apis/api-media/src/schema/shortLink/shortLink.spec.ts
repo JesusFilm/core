@@ -575,6 +575,67 @@ describe('shortLink', () => {
         )
       })
 
+      describe('interop callers', () => {
+        const interopClient = getClient({
+          headers: { 'interop-token': 'test-token' }
+        })
+        const originalEnv = { ...process.env }
+
+        beforeEach(() => {
+          process.env.INTEROP_TOKEN = 'test-token'
+          process.env.NAT_ADDRESSES = '127.0.0.1'
+        })
+
+        afterEach(() => {
+          process.env = { ...originalEnv }
+        })
+
+        it('may not create a protected link', async () => {
+          const result = await interopClient({
+            document: SHORT_LINK_CREATE_MUTATION,
+            variables: {
+              input: {
+                pathname: 'testPath',
+                to: 'https://example.com',
+                hostname: 'example.com',
+                service: 'apiJourneys',
+                assetClass: 'permanent'
+              }
+            }
+          })
+
+          expect(result).toMatchObject({
+            errors: [
+              {
+                message:
+                  'interop callers may not create or set permanent links',
+                extensions: { code: 'FORBIDDEN' }
+              }
+            ]
+          })
+          expect(prismaMock.shortLink.create).not.toHaveBeenCalled()
+        })
+
+        it('creates a standard link', async () => {
+          const result = await interopClient({
+            document: SHORT_LINK_CREATE_MUTATION,
+            variables: {
+              input: {
+                pathname: 'testPath',
+                to: 'https://example.com',
+                hostname: 'example.com',
+                service: 'apiJourneys',
+                assetClass: 'standard'
+              }
+            }
+          })
+
+          expect(result).toMatchObject({
+            data: { shortLinkCreate: { data: { pathname: 'testPath' } } }
+          })
+        })
+      })
+
       it('should create a short link and publish it inside the transaction', async () => {
         const result = await authClient({
           document: SHORT_LINK_CREATE_MUTATION,

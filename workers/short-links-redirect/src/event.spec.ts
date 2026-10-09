@@ -74,13 +74,16 @@ describe('buildRedirectEvent', () => {
     expect(event.ownerHostname).toBe('arc.gt')
   })
 
-  it('attributes qr when the qr parameter is present, whatever its value', () => {
+  it('attributes qr only when the qr parameter is exactly 1', () => {
     expect(
       build({ searchParams: new URLSearchParams('qr=1') }).attribution
     ).toBe('qr')
     expect(
       build({ searchParams: new URLSearchParams('qr=') }).attribution
-    ).toBe('qr')
+    ).toBe('direct')
+    expect(
+      build({ searchParams: new URLSearchParams('qr=0') }).attribution
+    ).toBe('direct')
   })
 
   it('attributes qr even without a user agent', () => {
@@ -92,8 +95,8 @@ describe('buildRedirectEvent', () => {
     ).toBe('qr')
   })
 
-  it('attributes unknown when the user agent is empty', () => {
-    expect(build({ headers: new Headers() }).attribution).toBe('unknown')
+  it('attributes direct when the user agent is empty', () => {
+    expect(build({ headers: new Headers() }).attribution).toBe('direct')
     expect(build({ headers: new Headers() }).userAgent).toBe('')
   })
 

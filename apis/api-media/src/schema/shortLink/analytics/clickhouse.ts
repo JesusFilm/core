@@ -1,3 +1,5 @@
+import { readShortLinksEnv } from '../lib/env'
+
 /**
  * Minimal ClickHouse HTTP client for the redirect analytics database. Every
  * query is parameterised with ClickHouse `{name:Type}` placeholders whose
@@ -14,20 +16,16 @@ export interface ClickHouseConfig {
 
 export type ClickHouseParams = Record<string, string | number>
 
-function envValue(name: string): string | null {
-  const value = process.env[name]
-  return value == null || value === '' ? null : value
-}
-
 /** Null when `SHORT_LINKS_CLICKHOUSE_URL` is unset (stats return zeros). */
 export function getClickHouseConfig(): ClickHouseConfig | null {
-  const url = envValue('SHORT_LINKS_CLICKHOUSE_URL')
+  const env = readShortLinksEnv()
+  const url = env.SHORT_LINKS_CLICKHOUSE_URL
   if (url == null) return null
   return {
     url: url.replace(/\/+$/, ''),
-    database: envValue('SHORT_LINKS_CLICKHOUSE_DATABASE') ?? 'redirects',
-    user: envValue('SHORT_LINKS_CLICKHOUSE_USER'),
-    password: envValue('SHORT_LINKS_CLICKHOUSE_PASSWORD')
+    database: env.SHORT_LINKS_CLICKHOUSE_DATABASE,
+    user: env.SHORT_LINKS_CLICKHOUSE_USER ?? null,
+    password: env.SHORT_LINKS_CLICKHOUSE_PASSWORD ?? null
   }
 }
 
