@@ -4,9 +4,7 @@ type EnvironmentModule = typeof import('./environment')
 async function loadWithGateway(url: string): Promise<EnvironmentModule> {
   vi.resetModules()
   vi.stubEnv('NEXT_PUBLIC_GATEWAY_URL', url)
-  return await import(
-    /* webpackChunkName: "environment" */ './environment'
-  )
+  return await import(/* webpackChunkName: "environment" */ './environment')
 }
 
 describe('environment', () => {
