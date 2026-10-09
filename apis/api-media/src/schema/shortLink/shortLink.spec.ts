@@ -607,7 +607,8 @@ describe('shortLink', () => {
           expect(result).toMatchObject({
             errors: [
               {
-                message: 'interop callers may not create or set permanent links',
+                message:
+                  'interop callers may not create or set permanent links',
                 extensions: { code: 'FORBIDDEN' }
               }
             ]

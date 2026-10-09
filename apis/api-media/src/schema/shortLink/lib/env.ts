@@ -34,7 +34,11 @@ export function readShortLinksEnv() {
       CLOUDFLARE_SHORT_LINKS_API_BASE_URL: z.url().optional(),
       // scan statistics (ClickHouse, read side)
       SHORT_LINKS_CLICKHOUSE_URL: z.url().optional(),
-      SHORT_LINKS_CLICKHOUSE_DATABASE: z.string().trim().min(1).default('redirects'),
+      SHORT_LINKS_CLICKHOUSE_DATABASE: z
+        .string()
+        .trim()
+        .min(1)
+        .default('redirects'),
       SHORT_LINKS_CLICKHOUSE_USER: optionalString,
       SHORT_LINKS_CLICKHOUSE_PASSWORD: optionalString,
       // destination-health alerts

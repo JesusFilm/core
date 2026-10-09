@@ -2,8 +2,9 @@ import { GraphQLError } from 'graphql'
 import fetch from 'node-fetch'
 import { z } from 'zod'
 
-import { ShortLinkDomainCheckType } from './objects/shortLinkDomainCheck'
 import { type ShortLinksEnv, readShortLinksEnv } from '../lib/env'
+
+import { ShortLinkDomainCheckType } from './objects/shortLinkDomainCheck'
 
 /** The legacy Vercel project's settings; absent outside deployed environments. */
 function vercelEnv(): Pick<
@@ -12,7 +13,6 @@ function vercelEnv(): Pick<
 > {
   return readShortLinksEnv()
 }
-
 
 const vercelErrorSchema = z.object({
   error: z.object({

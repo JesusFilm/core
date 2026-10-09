@@ -14,7 +14,6 @@ export interface EdgeConfig {
   client: Cloudflare
 }
 
-
 let cachedClient: {
   apiToken: string
   baseURL: string | null

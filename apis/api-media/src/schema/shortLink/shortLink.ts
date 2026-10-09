@@ -51,7 +51,6 @@ const BLOCKLIST_MESSAGE =
 const GENERATED_PATHNAME_LENGTH = 11
 const GENERATED_PATHNAME_ATTEMPTS = 5
 
-
 export const ShortLink = builder.prismaObject('ShortLink', {
   description: 'A short link that redirects to a full URL',
   fields: (t) => ({

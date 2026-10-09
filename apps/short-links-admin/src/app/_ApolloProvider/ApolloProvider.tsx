@@ -33,8 +33,7 @@ const httpLink = new HttpLink({
   uri: env.NEXT_PUBLIC_GATEWAY_URL,
   headers: {
     'x-graphql-client-name': 'short-links-admin',
-    'x-graphql-client-version':
-      env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+    'x-graphql-client-version': env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
   }
 })
 

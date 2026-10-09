@@ -6,13 +6,13 @@ import {
 } from '@core/prisma/media/client'
 
 import { builder } from '../builder'
-import { editorScopes } from './lib/access'
 
 import { effectiveDestination, effectiveRedirectStatus } from './edge'
 import {
   ShortLinkResolutionSource,
   ShortLinkResolutionSourceValue
 } from './enums/shortLinkResolutionSource'
+import { editorScopes } from './lib/access'
 import {
   EDGE_PATH_PATTERN,
   isReservedPath,
@@ -189,21 +189,19 @@ export async function resolveShortLink(
 }
 
 builder.queryFields((t) => ({
-  shortLinkResolve: t
-    .withAuth(editorScopes)
-    .field({
-      type: ShortLinkResolution,
-      description:
-        'what the edge Worker would answer for this hostname and pathname (Test Redirect); mirrors the Worker lookup order',
-      nullable: false,
-      args: {
-        hostname: t.arg.string({ required: true }),
-        pathname: t.arg.string({
-          required: true,
-          description: 'path with or without the leading slash'
-        })
-      },
-      resolve: async (_, { hostname, pathname }) =>
-        await resolveShortLink(hostname, pathname)
-    })
+  shortLinkResolve: t.withAuth(editorScopes).field({
+    type: ShortLinkResolution,
+    description:
+      'what the edge Worker would answer for this hostname and pathname (Test Redirect); mirrors the Worker lookup order',
+    nullable: false,
+    args: {
+      hostname: t.arg.string({ required: true }),
+      pathname: t.arg.string({
+        required: true,
+        description: 'path with or without the leading slash'
+      })
+    },
+    resolve: async (_, { hostname, pathname }) =>
+      await resolveShortLink(hostname, pathname)
+  })
 }))

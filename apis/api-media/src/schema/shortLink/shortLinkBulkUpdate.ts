@@ -1,12 +1,11 @@
 import { prisma } from '@core/prisma/media/client'
 
 import { builder } from '../builder'
-import { editorScopes } from './lib/access'
 import { NotFoundError } from '../error'
 
 import { publishLink } from './edge'
 import { ShortLinkStatus } from './enums/shortLinkStatus'
-
+import { editorScopes } from './lib/access'
 
 builder.mutationFields((t) => ({
   shortLinkBulkUpdate: t.withAuth(editorScopes).prismaFieldWithInput({

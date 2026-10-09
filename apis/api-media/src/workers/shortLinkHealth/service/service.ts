@@ -10,11 +10,11 @@ import {
 import { slackChatPostMessage } from '../../../lib/slack'
 import type { SlackBotChannelConfig } from '../../../lib/slack'
 import { publishLink } from '../../../schema/shortLink/edge'
+import { readShortLinksEnv } from '../../../schema/shortLink/lib/env'
 import { buildShortUrl } from '../../../schema/shortLink/lib/shortUrl'
 import { logger as defaultLogger } from '../../lib/logger'
 
 import { checkDestination } from './checkDestination'
-import { readShortLinksEnv } from '../../../schema/shortLink/lib/env'
 
 const BATCH_SIZE = 100
 const CONCURRENCY = 10
@@ -30,10 +30,11 @@ interface CheckOutcome {
 
 /** Alerts are optional: without both env vars the check runs silently. */
 function getShortLinksSlackConfig(): SlackBotChannelConfig | null {
-  const { SLACK_SHORT_LINKS_BOT_TOKEN: token, SLACK_SHORT_LINKS_CHANNEL_ID: channelId } =
-    readShortLinksEnv()
-  if (token == null || channelId == null)
-    return null
+  const {
+    SLACK_SHORT_LINKS_BOT_TOKEN: token,
+    SLACK_SHORT_LINKS_CHANNEL_ID: channelId
+  } = readShortLinksEnv()
+  if (token == null || channelId == null) return null
   return { token, channelId }
 }
 

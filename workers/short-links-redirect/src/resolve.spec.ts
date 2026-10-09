@@ -1,10 +1,10 @@
 import { domainRecord, routingRecord } from '../test/fixtures'
 
 import {
+  type LinkLookup,
   isCandidateSlug,
   resolve,
-  rootAssetBehaviour,
-  type LinkLookup
+  rootAssetBehaviour
 } from './resolve'
 
 const missing: LinkLookup = async () => null
@@ -260,7 +260,11 @@ describe('rootAssetBehaviour', () => {
 
   it('has nothing to offer on a lost-page domain or a fallback domain without a usable URL', () => {
     expect(
-      rootAssetBehaviour(domainRecord({ hostname: 'nxstp.is' }), '/favicon.ico', '')
+      rootAssetBehaviour(
+        domainRecord({ hostname: 'nxstp.is' }),
+        '/favicon.ico',
+        ''
+      )
     ).toEqual({ kind: 'lostPage' })
     expect(
       rootAssetBehaviour(
