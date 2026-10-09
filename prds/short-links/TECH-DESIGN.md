@@ -168,9 +168,9 @@ Request flow for `GET`/`HEAD` `https://<host>/<path>?<query>`:
 5. Build the destination: parse `to`; append every incoming query parameter except `qr` (UTMs pass through; existing destination params are kept). Redirect with `status`. `Cache-Control: no-store`.
 6. `ctx.waitUntil(SHORT_LINKS_EVENTS.send(event))` after the response is built. Failures never affect the response.
 
-`?qr=1` on the short URL marks attribution `qr`; the QR images the admin app renders encode `https://<host>/<pathname>?qr=1`.
+`?qr=1` (exactly `1`) on the short URL marks attribution `qr`, anything else is `direct`; the QR images the admin app renders encode `https://<host>/<pathname>?qr=1`.
 
-Other routes: `/.well-known/*` → 404. Non-GET/HEAD → 405.
+Other routes: `/.well-known/*` → 404. `/favicon.ico` and `/robots.txt` at the root of a host are never slugs and follow the domain's not-found behaviour without recording a scan: `passthrough` forwards them to the origin, `fallback` redirects (302) to the same path on the fallback site, `lostPage` → 404. Non-GET/HEAD → 405.
 
 ### Queue message
 
@@ -492,7 +492,7 @@ Decisions: which short link domains exist, and how a domain is wired to the edge
 
 ### Rollout
 
-Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stage.jesus.film/s` and `stage.jesus.movie/s`, served by `short-links-redirect-stage`; the base domains are routed to `short-links-redirect-prod` only after that. The stage namespaces exist and are bound in `wrangler.toml`; the routes are declared there, commented out, until the hostnames have DNS records. nxstp.is and arc.gt are not in the first rollout.
+Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stage.jesus.film/s` and `stage.jesus.movie/s`, served by `short-links-redirect-stage`; the base domains are routed to `short-links-redirect-prod` only after that. The stage namespaces exist and are bound in `wrangler.toml`, and the stage routes are live (the hostnames have proxied DNS records); the prod routes stay commented out until cutover. nxstp.is and arc.gt are not in the first rollout.
 
 ### Permissions
 

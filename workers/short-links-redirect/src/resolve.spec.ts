@@ -1,6 +1,11 @@
 import { domainRecord, routingRecord } from '../test/fixtures'
 
-import { type LinkLookup, isCandidateSlug, resolve } from './resolve'
+import {
+  isCandidateSlug,
+  resolve,
+  rootAssetBehaviour,
+  type LinkLookup
+} from './resolve'
 
 const missing: LinkLookup = async () => null
 
@@ -135,7 +140,8 @@ describe('resolve', () => {
     })
   })
 
-  it('uses the domain fallback when a paused link has none', async () => {
+  it('uses the domain fallback when a paused link has none, keeping the record for the scan event', async () => {
+    const record = routingRecord({ paused: true })
     const resolution = await resolve({
       domain: domainRecord({
         hostname: 'nxstp.is',
@@ -144,14 +150,17 @@ describe('resolve', () => {
       }),
       pathname: '/abc',
       search: '',
-      lookup: hit(routingRecord({ paused: true }))
+      lookup: hit(record)
     })
 
     expect(resolution).toEqual({
       kind: 'redirect',
       location: 'https://domain.example/',
       status: 302,
-      source: 'domainFallback'
+      source: 'domainFallback',
+      record,
+      pathname: 'abc',
+      resolvedFrom: 'kv'
     })
   })
 
@@ -206,5 +215,63 @@ describe('resolve', () => {
       status: 308,
       source: 'domainFallback'
     })
+  })
+})
+
+describe('rootAssetBehaviour', () => {
+  it.each(['/favicon.ico', '/robots.txt'])(
+    'redirects %s to the same path on the fallback site',
+    (pathname) => {
+      expect(
+        rootAssetBehaviour(
+          domainRecord({
+            hostname: 'nxstp.is',
+            notFound: 'fallback',
+            fallbackTo: 'https://www.jesusfilm.org/watch?x=1'
+          }),
+          pathname,
+          ''
+        )
+      ).toEqual({
+        kind: 'redirect',
+        location: `https://www.jesusfilm.org${pathname}`,
+        status: 302,
+        source: 'domainFallback'
+      })
+    }
+  )
+
+  it('forwards to the origin on a passthrough domain', () => {
+    expect(
+      rootAssetBehaviour(
+        domainRecord({
+          hostname: 'arc.gt',
+          notFound: 'passthrough',
+          passthroughOrigin: 'https://api.arclight.org/'
+        }),
+        '/robots.txt',
+        '?v=2'
+      )
+    ).toEqual({
+      kind: 'passthrough',
+      location: 'https://api.arclight.org/robots.txt?v=2'
+    })
+  })
+
+  it('has nothing to offer on a lost-page domain or a fallback domain without a usable URL', () => {
+    expect(
+      rootAssetBehaviour(domainRecord({ hostname: 'nxstp.is' }), '/favicon.ico', '')
+    ).toEqual({ kind: 'lostPage' })
+    expect(
+      rootAssetBehaviour(
+        domainRecord({
+          hostname: 'nxstp.is',
+          notFound: 'fallback',
+          fallbackTo: 'not a url'
+        }),
+        '/favicon.ico',
+        ''
+      )
+    ).toEqual({ kind: 'lostPage' })
   })
 })
