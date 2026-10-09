@@ -7,8 +7,9 @@ import {
   ApolloNextAppProvider,
   InMemoryCache
 } from '@apollo/client-integration-nextjs'
-import { PropsWithChildren, ReactNode } from 'react'
+import { PropsWithChildren, ReactElement, ReactNode } from 'react'
 
+import { env } from '../../env'
 import { cache } from '../../libs/apollo/cache'
 import { User } from '../../libs/auth/authContext'
 
@@ -18,7 +19,7 @@ function UpdateAuth({
 }: {
   token?: string
   children: ReactNode
-}) {
+}): ReactElement {
   const apolloClient = useApolloClient()
 
   if (token != null) {
@@ -29,18 +30,18 @@ function UpdateAuth({
 }
 
 const httpLink = new HttpLink({
-  uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
+  uri: env.NEXT_PUBLIC_GATEWAY_URL,
   headers: {
     'x-graphql-client-name': 'short-links-admin',
     'x-graphql-client-version':
-      process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
+      env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? ''
   }
 })
 
 export function ApolloProvider({
   children,
   user
-}: PropsWithChildren & { user?: User | null }): ReactNode {
+}: PropsWithChildren & { user?: User | null }): ReactElement {
   const authLink = new SetContextLink(async ({ headers, token }) => {
     return {
       headers: {

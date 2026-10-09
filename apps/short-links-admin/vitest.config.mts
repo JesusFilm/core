@@ -17,6 +17,8 @@ export default defineConfig({
   ],
   test: {
     globals: true,
+    // `src/env.ts` validates at import; tests stub only what they need
+    env: { SKIP_ENV_VALIDATION: '1' },
     environment: 'jsdom',
     environmentOptions: {
       jsdom: {

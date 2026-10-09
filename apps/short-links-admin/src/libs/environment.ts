@@ -1,18 +1,16 @@
+import { env } from '../env'
+
 const PRODUCTION_GATEWAY_URL = 'https://api-gateway.central.jesusfilm.org/'
 const STAGE_GATEWAY_HOSTNAME = 'api-gateway.stage.central.jesusfilm.org'
 
 function gatewayHostname(): string | null {
-  const gatewayUrl = process.env.NEXT_PUBLIC_GATEWAY_URL
-  if (gatewayUrl == null || gatewayUrl === '') return null
-  try {
-    return new URL(gatewayUrl).hostname
-  } catch {
-    return null
-  }
+  const gatewayUrl = env.NEXT_PUBLIC_GATEWAY_URL
+  if (gatewayUrl == null || !URL.canParse(gatewayUrl)) return null
+  return new URL(gatewayUrl).hostname
 }
 
 export function isProductionEnvironment(): boolean {
-  return process.env.NEXT_PUBLIC_GATEWAY_URL === PRODUCTION_GATEWAY_URL
+  return env.NEXT_PUBLIC_GATEWAY_URL === PRODUCTION_GATEWAY_URL
 }
 
 export function isStagingEnvironment(): boolean {

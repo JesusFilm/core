@@ -44,7 +44,7 @@ export default async function proxy(
     return NextResponse.next()
 
   return await authMiddleware(req, {
-    ...authConfig,
+    ...authConfig(),
     loginPath: '/api/login',
     logoutPath: '/api/logout',
     refreshTokenPath: '/api/refresh-token',

@@ -1,15 +1,18 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { AuthContext, User } from './authContext'
 
 export interface AuthProviderProps {
   user: User | null
-  children: React.ReactNode
+  children: ReactNode
 }
 
-export const AuthProvider = ({ user, children }): ReactNode => {
+export function AuthProvider({
+  user,
+  children
+}: AuthProviderProps): ReactElement {
   return (
     <AuthContext.Provider
       value={{
