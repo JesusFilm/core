@@ -204,6 +204,16 @@ module "redis" {
   vpc_id            = module.stage.vpc.id
 }
 
+# ClickHouse Cloud service for short-link scan events (the redirect Worker
+# inserts, api-media reads). # Idles when stage is quiet; only storage is billed while paused.
+module "short_links_clickhouse" {
+  source               = "../../modules/clickhouse/service"
+  env                  = "stage"
+  idle_scaling         = true
+  idle_timeout_minutes = 15
+  doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
+}
+
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"

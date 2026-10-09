@@ -1,1 +1,7 @@
 import './redirectType'
+import './shortLinkAssetClass'
+import './shortLinkHealth'
+import './shortLinkNotFound'
+import './shortLinkPlacement'
+import './shortLinkResolutionSource'
+import './shortLinkStatus'

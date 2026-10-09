@@ -99,6 +99,7 @@ jobs:
           PLAYER_VERCEL_PROJECT_ID: ${{ secrets.PLAYER_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID }}
           RESOURCES_VERCEL_PROJECT_ID: ${{ secrets.RESOURCES_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: ${{ github.event_name == 'push' && github.ref == 'refs/heads/stage' && 'stage' || 'preview' }}
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}
@@ -147,11 +148,16 @@ jobs:
           state: ${{ job.status }}
           environment-url: ${{ steps.deployment-url.outputs.deployment-url }}
           deployment-id: ${{ steps.deployment.outputs.deployment_id }}
+      # Only apps with a Playwright project take part in the E2E matrix; an
+      # input file for any other app makes the Playwright job fail on
+      # "Unsupported Playwright app".
       - name: Prepare E2E input file
+        if: ${{ hashFiles(format('apps/{0}-e2e/project.json', matrix.app)) != '' }}
         run: |
           mkdir -p e2e-input
           echo "${{ steps.deployment-url.outputs.deployment-url }}" > e2e-input/${{ matrix.app }}.txt
       - name: Upload E2E input artifact
+        if: ${{ hashFiles(format('apps/{0}-e2e/project.json', matrix.app)) != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: e2e-input-${{ matrix.app }}
@@ -358,6 +364,7 @@ jobs:
           PLAYER_VERCEL_PROJECT_ID: ${{ secrets.PLAYER_VERCEL_PROJECT_ID }}
           SHORT_LINKS_VERCEL_PROJECT_ID: ${{ github.ref == 'refs/heads/stage' && secrets.SHORT_LINKS_STAGE_VERCEL_PROJECT_ID || secrets.SHORT_LINKS_VERCEL_PROJECT_ID }}
           VIDEOS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.VIDEOS_ADMIN_VERCEL_PROJECT_ID }}
+          SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID: ${{ secrets.SHORT_LINKS_ADMIN_VERCEL_PROJECT_ID }}
           RESOURCES_VERCEL_PROJECT_ID: ${{ secrets.RESOURCES_VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_VERCEL_ENV: prod
           NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA: ${{ github.sha }}

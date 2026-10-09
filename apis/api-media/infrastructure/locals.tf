@@ -1,6 +1,19 @@
 locals {
   port = 4005
-  environment_variables = [
+  # Every key here must exist in the api-media Doppler config of each
+  # environment (it becomes an SSM parameter, and AWS rejects an empty value).
+  # Short-link settings that have no value yet are left out, and api-media
+  # treats each as switched off. Add them back as the values arrive (the
+  # module makes an SSM parameter per name, so the Doppler key must exist and
+  # be non-empty in every environment the name is listed for):
+  #   CLOUDFLARE_SHORT_LINKS_API_TOKEN, CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID
+  #     -> edge publishing (the Worker serves through api-media until then);
+  #        stage only below until the prod namespace and token exist
+  #   SHORT_LINKS_CLICKHOUSE_URL, _USER, _PASSWORD, _DATABASE
+  #     -> scan statistics (zeros until then)
+  #   SLACK_SHORT_LINKS_BOT_TOKEN, SLACK_SHORT_LINKS_CHANNEL_ID
+  #     -> destination health alerts (logged only until then)
+  environment_variables = concat([
     "ARCLIGHT_API_KEY",
     "ARCLIGHT_V3_URL",
     "ALGOLIA_APPLICATION_ID",
@@ -34,6 +47,7 @@ locals {
     "PG_DATABASE_URL_MEDIA",
     "PG_DATABASE_URL_LANGUAGES",
     "PG_DATABASE_URL_JOURNEYS",
+    "PG_DATABASE_URL_USERS",
     "REDIS_PORT",
     "REDIS_URL",
     "SLACK_DATA_LANGS_CHANNEL_ID",
@@ -45,8 +59,15 @@ locals {
     "SEGMIND_API_KEY",
     "UNSPLASH_ACCESS_KEY",
     "WATCH_REVALIDATE_SECRET",
-    "WATCH_URL"
-  ]
+    "WATCH_URL",
+    "SHORT_LINKS_CLICKHOUSE_DATABASE",
+    "SHORT_LINKS_CLICKHOUSE_PASSWORD",
+    "SHORT_LINKS_CLICKHOUSE_URL",
+    "SHORT_LINKS_CLICKHOUSE_USER"
+    ], var.env == "stage" ? [
+    "CLOUDFLARE_SHORT_LINKS_API_TOKEN",
+    "CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID"
+  ] : [])
   service_config = {
     name                              = "api-media"
     is_public                         = false
