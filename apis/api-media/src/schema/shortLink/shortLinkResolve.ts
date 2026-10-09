@@ -6,6 +6,7 @@ import {
 } from '@core/prisma/media/client'
 
 import { builder } from '../builder'
+import { editorScopes } from './lib/access'
 
 import { effectiveDestination, effectiveRedirectStatus } from './edge'
 import {
@@ -189,9 +190,7 @@ export async function resolveShortLink(
 
 builder.queryFields((t) => ({
   shortLinkResolve: t
-    .withAuth({
-      $any: { isPublisher: true, isShortLinkEditor: true, isValidInterop: true }
-    })
+    .withAuth(editorScopes)
     .field({
       type: ShortLinkResolution,
       description:

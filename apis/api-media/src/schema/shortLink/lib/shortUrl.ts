@@ -1,3 +1,5 @@
+import { readShortLinksEnv } from './env'
+
 /**
  * The one place a short URL is built. A domain may serve its links under a
  * path prefix (`https://jesus.film/s/<pathname>`); an empty prefix keeps them
@@ -33,9 +35,8 @@ export function isValidPathPrefix(pathPrefix: string): boolean {
  * port that actually answer.
  */
 function shortUrlOrigin(hostname: string): string {
-  const localWorkerUrl = process.env.CLOUDFLARE_SHORT_LINKS_API_BASE_URL
-  if (localWorkerUrl == null || !URL.canParse(localWorkerUrl))
-    return `https://${hostname}`
+  const localWorkerUrl = readShortLinksEnv().CLOUDFLARE_SHORT_LINKS_API_BASE_URL
+  if (localWorkerUrl == null) return `https://${hostname}`
 
   const localWorker = new URL(localWorkerUrl)
   return localWorker.hostname === hostname.toLowerCase()

@@ -1,4 +1,5 @@
 import { builder } from '../builder'
+import { editorScopes } from './lib/access'
 
 import { getShortLinkStats } from './analytics'
 import { ShortLinkStatsFilter } from './inputs'
@@ -6,9 +7,7 @@ import { ShortLinkStats } from './objects'
 
 builder.queryFields((t) => ({
   shortLinkStats: t
-    .withAuth({
-      $any: { isPublisher: true, isShortLinkEditor: true, isValidInterop: true }
-    })
+    .withAuth(editorScopes)
     .field({
       type: ShortLinkStats,
       description:

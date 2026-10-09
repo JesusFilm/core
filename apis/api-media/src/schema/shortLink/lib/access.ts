@@ -5,6 +5,14 @@ import { ShortLinkAssetClass } from '@core/prisma/media/client'
 import { contextIsSuperAdmin } from '../../../lib/superAdmin'
 import { Context, isShortLinkAdmin } from '../../builder'
 
+/**
+ * "editor": shortLinkEditor, shortLinkAdmin, publisher, or a valid interop
+ * token. The scope every link-level query and mutation starts from.
+ */
+export const editorScopes = {
+  $any: { isPublisher: true, isShortLinkEditor: true, isValidInterop: true }
+} as const
+
 const PROTECTED_ASSET_CLASSES: ShortLinkAssetClass[] = [
   'permanent',
   'videoEmbedded'
@@ -48,6 +56,19 @@ export function forbidden(message: string): GraphQLError {
 export function assertShortLinkAdmin(context: Context, message: string): void {
   if (contextIsShortLinkAdmin(context)) return
   throw forbidden(message)
+}
+
+/**
+ * Interop callers (api-journeys, Arclight, YouTube Studio) create and keep
+ * `standard` links only; the protected classes are for people.
+ */
+export function assertInteropAssetClass(
+  context: Context,
+  assetClass: ShortLinkAssetClass | null | undefined
+): void {
+  if (context.type !== 'interop') return
+  if (assetClass == null || assetClass === 'standard') return
+  throw forbidden(`interop callers may not create or set ${assetClass} links`)
 }
 
 /**

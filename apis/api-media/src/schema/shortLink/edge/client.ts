@@ -5,6 +5,8 @@ import 'cloudflare/shims/web'
 
 import Cloudflare from 'cloudflare'
 
+import { readShortLinksEnv } from '../lib/env'
+
 export interface EdgeConfig {
   accountId: string
   /** the environment-wide namespace: domain records and global links */
@@ -12,10 +14,6 @@ export interface EdgeConfig {
   client: Cloudflare
 }
 
-export function envValue(name: string): string | null {
-  const value = process.env[name]
-  return value == null || value === '' ? null : value
-}
 
 let cachedClient: {
   apiToken: string
@@ -35,17 +33,18 @@ let cachedClient: {
  * (workers/short-links-redirect/README.md, "Publishing from a local api-media").
  */
 export function getEdgeConfig(): EdgeConfig | null {
-  const globalNamespaceId = envValue('CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID')
+  const env = readShortLinksEnv()
+  const globalNamespaceId = env.CLOUDFLARE_SHORT_LINKS_KV_NAMESPACE_ID
   if (globalNamespaceId == null) return null
 
-  const accountId = envValue('CLOUDFLARE_ACCOUNT_ID')
-  const apiToken = envValue('CLOUDFLARE_SHORT_LINKS_API_TOKEN')
+  const accountId = env.CLOUDFLARE_ACCOUNT_ID
+  const apiToken = env.CLOUDFLARE_SHORT_LINKS_API_TOKEN
   if (accountId == null || apiToken == null)
     throw new Error(
       'Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_SHORT_LINKS_API_TOKEN'
     )
 
-  const baseURL = envValue('CLOUDFLARE_SHORT_LINKS_API_BASE_URL')
+  const baseURL = env.CLOUDFLARE_SHORT_LINKS_API_BASE_URL ?? null
   if (
     cachedClient == null ||
     cachedClient.apiToken !== apiToken ||

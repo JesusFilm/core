@@ -83,10 +83,10 @@ describe('short url', () => {
         )
       })
 
-      it('ignores a value that is not a URL', () => {
+      it('rejects a value that is not a URL', () => {
         process.env.CLOUDFLARE_SHORT_LINKS_API_BASE_URL = 'not a url'
-        expect(buildShortUrl({ hostname: 'localhost' }, 'abc')).toBe(
-          'https://localhost/abc'
+        expect(() => buildShortUrl({ hostname: 'localhost' }, 'abc')).toThrow(
+          'Invalid short-link environment variables'
         )
       })
     })

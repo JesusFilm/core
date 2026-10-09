@@ -16,6 +16,9 @@ builder.mutationFields((t) => ({
       nullable: false,
       args: { id: t.arg.string({ required: true }) },
       resolve: async (query, _, { id }) => {
+        // Deliberately no `deletedAt: null` filter: republishing a retired or
+        // soft-deleted link is how its stale edge record gets removed
+        // (`publishLink` unpublishes anything that is not live).
         const shortLink = await prisma.shortLink.findUnique({
           ...query,
           where: { id }

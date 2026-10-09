@@ -16,8 +16,10 @@ import { ShortLinkPlacement } from './enums/shortLinkPlacement'
 import { ShortLinkStatus } from './enums/shortLinkStatus'
 import { ShortLinksFilter, ShortLinksFilterInput } from './inputs'
 import {
+  assertInteropAssetClass,
   assertShortLinkAdmin,
   contextActor,
+  editorScopes,
   isProtectedAssetClass
 } from './lib/access'
 import {
@@ -49,10 +51,6 @@ const BLOCKLIST_MESSAGE =
 const GENERATED_PATHNAME_LENGTH = 11
 const GENERATED_PATHNAME_ATTEMPTS = 5
 
-// editor = shortLinkEditor, shortLinkAdmin, publisher, or a valid interop token
-const editorScopes = {
-  $any: { isPublisher: true, isShortLinkEditor: true, isValidInterop: true }
-} as const
 
 export const ShortLink = builder.prismaObject('ShortLink', {
   description: 'A short link that redirects to a full URL',
@@ -188,6 +186,9 @@ export const ShortLink = builder.prismaObject('ShortLink', {
 
 builder.asEntity(ShortLink, {
   key: builder.selection<{ id: string }>('id'),
+  // Deliberately no `deletedAt: null` filter: a federated reference to a
+  // soft-deleted link (e.g. from a journey that still points at it) must
+  // still resolve, with `deletedAt` set, rather than break the caller's query.
   resolveReference: async ({ id }) =>
     await prisma.shortLink.findUniqueOrThrow({ where: { id } })
 })
@@ -403,6 +404,8 @@ builder.queryFields((t) => ({
     nullable: false,
     resolve: async (query, _, { id }) => {
       try {
+        // Deliberately no `deletedAt: null` filter: the admin opens
+        // soft-deleted links by id to show their history and restore them.
         return await prisma.shortLink.findFirstOrThrow({
           ...query,
           where: { id }
@@ -569,6 +572,7 @@ builder.mutationFields((t) => ({
           HOSTNAME_INVALID_MESSAGE
         )
 
+      assertInteropAssetClass(context, input.assetClass)
       const pathname = resolveCreatePathname(input.pathname, domain)
       const global = input.global === true
       if (global) {
@@ -738,6 +742,8 @@ builder.mutationFields((t) => ({
             'a note is required when changing the destination of a videoEmbedded link'
           )
       }
+      if (input.assetClass != null && input.assetClass !== existing.assetClass)
+        assertInteropAssetClass(context, input.assetClass)
       if (
         input.assetClass != null &&
         input.assetClass !== existing.assetClass &&
