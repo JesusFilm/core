@@ -2,6 +2,7 @@ import { vi } from 'vitest'
 
 import {
   MuxVideo,
+  Prisma,
   Video,
   VideoEdition,
   VideoSubtitle,
@@ -1859,6 +1860,103 @@ describe('videoVariant', () => {
             operation: 'Video variant reconciliation request failed'
           })
         )
+      })
+
+      describe('published toggle', () => {
+        beforeEach(() => {
+          prismaMock.userMediaRole.findUnique.mockResolvedValue({
+            id: 'userId',
+            userId: 'userId',
+            roles: ['publisher'],
+            createdAt: new Date(),
+            updatedAt: new Date()
+          })
+        })
+
+        // videoVariantUpdate reads the current variant through a `select` of
+        // just these four columns. Typing the fixture against that select
+        // makes drift from the resolver a compile error, and confines the
+        // widening the deep mock's full-model signature forces to the
+        // mockResolvedValue boundary.
+        type CurrentVariantPayload = Prisma.VideoVariantGetPayload<{
+          select: {
+            published: true
+            videoId: true
+            languageId: true
+            edition: true
+          }
+        }>
+
+        function mockVariant(published: boolean): void {
+          const currentVariant: CurrentVariantPayload = {
+            published,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base'
+          }
+          prismaMock.videoVariant.findUnique.mockResolvedValue(
+            currentVariant as unknown as VideoVariant
+          )
+          prismaMock.videoVariant.update.mockResolvedValue({
+            id: 'id',
+            hls: 'hls',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            duration: 1024,
+            lengthInMilliseconds: 123456,
+            dash: 'dash',
+            edition: 'base',
+            slug: 'videoSlug',
+            videoId: 'videoId',
+            languageId: 'languageId',
+            published,
+            share: 'share',
+            downloadable: false,
+            muxVideoId: null,
+            masterUrl: 'masterUrl',
+            masterWidth: 320,
+            masterHeight: 180,
+            assetId: null,
+            version: 1,
+            brightcoveId: null
+          })
+        }
+
+        it.each([
+          { from: true, to: false },
+          { from: false, to: true }
+        ])(
+          'should write published $to when switching from $from',
+          async ({ from, to }) => {
+            mockVariant(from)
+
+            await authClient({
+              document: VIDEO_VARIANT_UPDATE_MUTATION,
+              variables: { input: { id: 'id', published: to } }
+            })
+
+            expect(
+              prismaMock.videoVariant.update.mock.calls[0][0].data
+            ).toHaveProperty('published', to)
+            expect(
+              mockedRequestVideoVariantReconciliation
+            ).toHaveBeenCalledWith(expect.objectContaining({ published: to }))
+          }
+        )
+
+        it('should leave published untouched when omitted', async () => {
+          mockVariant(true)
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', hls: 'hls' } }
+          })
+
+          expect(
+            prismaMock.videoVariant.update.mock.calls[0][0].data.published
+          ).toBeUndefined()
+          expect(mockedRequestVideoVariantReconciliation).not.toHaveBeenCalled()
+        })
       })
 
       it('should fail if not publisher', async () => {
