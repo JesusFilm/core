@@ -609,6 +609,54 @@ describe('videoSlack', () => {
     )
   })
 
+  it('should link the Production Managers watch URL to the root slug even when the root variant was never in the report window', async () => {
+    // The root's own placeholder variant (created once by parentVariantsOnly
+    // publishing) is typically outside every later report window, so only
+    // the child's variant is ever returned here. The Watch link must still
+    // point at the root's slug, not the child's — a child slug is scoped
+    // under its parent and is not independently routable.
+    const packageChildVideo = videoRow({
+      id: 'jf-child',
+      label: 'segment',
+      title: [{ value: 'JESUS Segment' }]
+    })
+
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: 'jf-child',
+        languageId: '529',
+        version: 1,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-21T10:00:00.000Z'),
+        slug: 'jf-child/english',
+        video: packageChildVideo
+      })
+    ])
+    mockMediaPrisma.video.findMany.mockResolvedValueOnce([
+      videoRow({
+        id: 'jf-root',
+        label: 'featureFilm',
+        slug: 'jf-root',
+        title: [{ value: 'JESUS Root' }],
+        children: [{ id: 'jf-child', label: 'segment' }]
+      })
+    ])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain(
+      'https://www.jesusfilm.org/watch/jf-root.html/english.html'
+    )
+    expect(blocksText).not.toContain(
+      'https://www.jesusfilm.org/watch/jf-child.html/english.html'
+    )
+  })
+
   it('should split large Production Managers table reports at Slack table row limits', async () => {
     mockLanguagesPrisma.language.findMany.mockResolvedValue([])
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce(
