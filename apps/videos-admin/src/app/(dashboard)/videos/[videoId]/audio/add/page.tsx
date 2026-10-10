@@ -188,6 +188,7 @@ export default function AddAudioLanguageDialog(): ReactElement {
                     loading={languagesLoading}
                     disabled={isUploadInProgress}
                     value={values.language ?? null}
+                    showLanguageId
                     renderInput={(params) => (
                       <TextField
                         {...params}
