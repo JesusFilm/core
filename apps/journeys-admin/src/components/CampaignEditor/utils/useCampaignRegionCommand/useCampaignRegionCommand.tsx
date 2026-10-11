@@ -35,8 +35,11 @@ export function nextRegionSlug(
   return NEW_REGION_SLUG
 }
 
-/** A new region as `campaignRegionCreate` returns it, for the optimistic response. */
+/** A new region as `campaignRegionCreate` returns it, for the optimistic response: one unlinked default-language Share Language. */
 export function newRegion(campaign: Campaign, id: string): CampaignRegion {
+  const defaultLanguage = campaign.languages.find(
+    (language) => language.languageId === campaign.defaultLanguageId
+  )
   return {
     __typename: 'CampaignRegion',
     id,
@@ -45,14 +48,36 @@ export function newRegion(campaign: Campaign, id: string): CampaignRegion {
     slug: nextRegionSlug(campaign.regions),
     order: campaign.regions.length,
     listed: true,
+    languages: [
+      {
+        __typename: 'CampaignRegionLanguage',
+        id: `${id}-${campaign.defaultLanguageId}`,
+        regionId: id,
+        languageId: campaign.defaultLanguageId,
+        journeyId: null,
+        title: null,
+        description: null,
+        qrCodeId: null,
+        order: 0,
+        language: defaultLanguage?.language ?? {
+          __typename: 'Language',
+          id: campaign.defaultLanguageId,
+          bcp47: null,
+          name: []
+        },
+        journey: null,
+        qrCode: null
+      }
+    ],
     countries: []
   }
 }
 
 /**
- * A just-created region is still empty while it has no lines, no countries
- * and still the name and slug it was born with, so undoing its creation may
- * delete it. Renaming or re-slugging is not a Command, so it would be lost.
+ * A just-created region is still empty while it has no lines, no countries,
+ * no linked journey and still the name and slug it was born with, so undoing
+ * its creation may delete it. Renaming or re-slugging is not a Command, so it
+ * would be lost.
  */
 export function isEmptyRegion(
   campaign: Campaign,
@@ -65,6 +90,7 @@ export function isEmptyRegion(
     region.name === born.name &&
     region.slug === born.slug &&
     region.countries.length === 0 &&
+    region.languages.every((language) => language.journeyId == null) &&
     regionLines(campaign.blocks, regionId).length === 0
   )
 }

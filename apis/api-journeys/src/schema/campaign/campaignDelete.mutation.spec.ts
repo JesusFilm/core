@@ -6,9 +6,15 @@ import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { deleteShortLink } from '../qrCode/qrCode.service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../qrCode/qrCode.service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../qrCode/qrCode.service')>()),
+  deleteShortLink: vi.fn()
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -47,6 +53,10 @@ describe('campaignDelete', () => {
       userId: mockUser.id,
       roles: []
     })
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
+    prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([])
   })
 
   it('hard-deletes the campaign row for a manager, relying on the cascade for the rest', async () => {
@@ -72,6 +82,39 @@ describe('campaignDelete', () => {
     expect(prismaMock.campaignBlock.deleteMany).not.toHaveBeenCalled()
     expect(prismaMock.campaignRegion.deleteMany).not.toHaveBeenCalled()
     expect(prismaMock.campaignPage.deleteMany).not.toHaveBeenCalled()
+    expect(deleteShortLink).not.toHaveBeenCalled()
+    expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+  })
+
+  it("deletes every Share Language's QR row and short link before the campaign", async () => {
+    const campaign = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.delete.mockResolvedValue(campaign)
+    prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([
+      { qrCode: { id: 'qrCodeA', shortLinkId: 'shortLinkA' } },
+      { qrCode: { id: 'qrCodeB', shortLinkId: 'shortLinkB' } }
+    ] as never)
+
+    const result = (await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignRegionLanguage.findMany).toHaveBeenCalledWith({
+      where: { region: { campaignId: 'campaignId' }, qrCodeId: { not: null } },
+      select: { qrCode: { select: { id: true, shortLinkId: true } } }
+    })
+    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkA')
+    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkB')
+    expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['qrCodeA', 'qrCodeB'] } }
+    })
+    expect(prismaMock.campaign.delete).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'campaignId' } })
+    )
   })
 
   it('throws FORBIDDEN for a member', async () => {

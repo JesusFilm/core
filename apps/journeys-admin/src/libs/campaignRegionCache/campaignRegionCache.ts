@@ -103,3 +103,50 @@ export function campaignRegionCountriesRemove(
     }
   })
 }
+
+/** Append a Share Language to `CampaignRegion.languages` unless already listed. */
+export function campaignRegionLanguagesAdd(
+  cache: ApolloCache,
+  regionId: string,
+  regionLanguage: CampaignRegionRef
+): void {
+  cache.modify({
+    id: cache.identify({ __typename: 'CampaignRegion', id: regionId }),
+    fields: {
+      languages(existing: readonly Reference[] = [], { toReference }) {
+        const ref = toReference(regionLanguage)
+        if (
+          ref == null ||
+          existing.some((candidate) => candidate.__ref === ref.__ref)
+        )
+          return existing
+        return [...existing, ref]
+      }
+    }
+  })
+}
+
+/** Drop a Share Language from `CampaignRegion.languages` and evict its row. */
+export function campaignRegionLanguagesRemove(
+  cache: ApolloCache,
+  regionId: string,
+  regionLanguageId: string
+): void {
+  cache.modify({
+    id: cache.identify({ __typename: 'CampaignRegion', id: regionId }),
+    fields: {
+      languages(existing: readonly Reference[] = [], { readField }) {
+        return existing.filter(
+          (candidate) => readField('id', candidate) !== regionLanguageId
+        )
+      }
+    }
+  })
+  cache.evict({
+    id: cache.identify({
+      __typename: 'CampaignRegionLanguage',
+      id: regionLanguageId
+    })
+  })
+  cache.gc()
+}

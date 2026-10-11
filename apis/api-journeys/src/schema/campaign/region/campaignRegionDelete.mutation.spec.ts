@@ -9,9 +9,15 @@ import {
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { deleteShortLink } from '../../qrCode/qrCode.service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../qrCode/qrCode.service')>()),
+  deleteShortLink: vi.fn()
 }))
 
 const { mockQueueAdd } = vi.hoisted(() => ({ mockQueueAdd: vi.fn() }))
@@ -43,6 +49,7 @@ describe('campaignRegionDelete', () => {
     )
     prismaMock.campaignRegion.delete.mockResolvedValue(fixture.regions[0])
     prismaMock.campaignRegion.findMany.mockResolvedValue([fixture.regions[1]])
+    prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([])
     prismaMock.campaignRegion.update.mockImplementation((async ({
       where,
       data
@@ -76,6 +83,32 @@ describe('campaignRegionDelete', () => {
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
     expect(prismaMock.journey.delete).not.toHaveBeenCalled()
     expect(prismaMock.campaignPage.delete).not.toHaveBeenCalled()
+    expect(deleteShortLink).not.toHaveBeenCalled()
+    expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+  })
+
+  it("deletes every owned QR row's short link and row before the region", async () => {
+    prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([
+      { qrCode: { id: 'qrCodeA', shortLinkId: 'shortLinkA' } },
+      { qrCode: { id: 'qrCodeB', shortLinkId: 'shortLinkB' } }
+    ] as never)
+
+    const result = await remove()
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignRegionLanguage.findMany).toHaveBeenCalledWith({
+      where: { regionId: 'eurRegionId', qrCodeId: { not: null } },
+      select: { qrCode: { select: { id: true, shortLinkId: true } } }
+    })
+    expect(deleteShortLink).toHaveBeenCalledTimes(2)
+    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkA')
+    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkB')
+    expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['qrCodeA', 'qrCodeB'] } }
+    })
+    expect(prismaMock.campaignRegion.delete).toHaveBeenCalledWith({
+      where: { id: 'eurRegionId' }
+    })
   })
 
   it('renumbers the remaining regions contiguously', async () => {
