@@ -751,7 +751,7 @@ describe('BottomBar', () => {
         'Swap columns',
         'Empty column'
       ])
-      expect(screen.getByRole('button', { name: 'Style' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
     })
 
     it('offers extras only from a slot section’s Add', () => {

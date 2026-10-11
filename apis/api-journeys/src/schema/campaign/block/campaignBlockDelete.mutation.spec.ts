@@ -171,9 +171,9 @@ describe('campaignBlockDelete', () => {
     const result = await remove('heroId')
 
     expect(result).toEqual({ data: { campaignBlockDelete: [] } })
-    expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
-    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'heroId' },
+    expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ['heroId'] } },
       data: { deletedAt: expect.any(Date) }
     })
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
