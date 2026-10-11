@@ -1138,7 +1138,10 @@ export async function createOwnedImageBlock(
  */
 export async function validateMediaSlotTarget(
   mediaBlockId: string | number | null | undefined,
-  owner: Pick<CampaignBlock, 'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId'>
+  owner: Pick<
+    CampaignBlock,
+    'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId'
+  >
 ): Promise<string | null | undefined> {
   if (mediaBlockId === undefined) return undefined
   if (mediaBlockId == null) return null
