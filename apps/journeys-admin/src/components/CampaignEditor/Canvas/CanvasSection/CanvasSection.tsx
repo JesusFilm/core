@@ -46,8 +46,8 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { CanvasMedia } from '../CanvasMedia'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
+import { CanvasMedia } from '../CanvasMedia'
 import { InlineText } from '../InlineText'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
