@@ -288,15 +288,15 @@ describe('campaignImageBlockCreate', () => {
         }),
         include: { action: true }
       })
-      expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([c]: any) => c)
-      ).toEqual([
-        {
-          where: { id: 'oldCoverId' },
-          data: { deletedAt: expect.any(Date) }
-        },
-        { where: { id: 'heroId' }, data: { coverBlockId: 'coverId' } }
-      ])
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: 'oldCoverId', parentBlockId: 'heroId' },
+        data: { deletedAt: expect.any(Date) }
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'heroId' },
+        data: { coverBlockId: 'coverId' }
+      })
       // Siblings are never read for an owned block.
       expect(prismaMock.campaignBlock.findMany).not.toHaveBeenCalled()
     })
