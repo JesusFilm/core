@@ -4,6 +4,7 @@ import {
   REGION_PAGE_ID,
   chromeBlocks,
   columnSlot,
+  eurRegion as eurRegionPublic,
   landingBlocks,
   lightTheme,
   regionPageBlocks,
@@ -13,6 +14,7 @@ import {
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_regions as CampaignRegion,
   GetCampaign_campaign_strings as CampaignString
 } from '../../../__generated__/GetCampaign'
 import {
@@ -27,9 +29,9 @@ import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
 export const CURRENT_USER_ID = 'userId'
 
 /** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field. */
-export function withEmptyTranslations(
-  block: (typeof landingBlocks)[number]
-): CampaignBlock {
+export function withEmptyTranslations(block: {
+  __typename: string
+}): CampaignBlock {
   const fields: readonly string[] =
     block.__typename in CAMPAIGN_TEXT_FIELDS
       ? CAMPAIGN_TEXT_FIELDS[
@@ -84,6 +86,7 @@ export const campaign: Campaign = {
   status: CampaignStatus.draft,
   defaultLanguageId: '529',
   publishedAt: null,
+  palette: ['#C52D3A', '#F2B544', '#FBF7F1', '#FFFFFF', '#26262E', '#6D6F81'],
   createdAt: '2026-10-05T00:00:00.000Z',
   updatedAt: '2026-10-05T00:00:00.000Z',
   team: {
@@ -142,6 +145,56 @@ export const campaign: Campaign = {
   ),
   regions: [],
   strings: campaignStrings
+}
+
+/** A listed region with one country chip and one Region Line (`eurLine`, in `campaignWithRegions.blocks`). */
+export const eurRegion: CampaignRegion = {
+  __typename: 'CampaignRegion',
+  id: 'eurRegionId',
+  campaignId: CAMPAIGN_ID,
+  name: 'Europe',
+  slug: 'eur',
+  order: 0,
+  listed: true,
+  countries: [
+    {
+      __typename: 'CampaignRegionCountry',
+      id: 'eurCountry-FR',
+      regionId: 'eurRegionId',
+      countryId: 'FR',
+      order: 0,
+      country: {
+        __typename: 'Country',
+        id: 'FR',
+        flagPngSrc: 'https://flags.example.org/fr.png',
+        name: [{ __typename: 'CountryName', value: 'France' }]
+      }
+    }
+  ]
+}
+
+/** An unlisted region: its Region Page is an Orphan Page. */
+export const afrRegion: CampaignRegion = {
+  __typename: 'CampaignRegion',
+  id: 'afrRegionId',
+  campaignId: CAMPAIGN_ID,
+  name: 'Africa',
+  slug: 'afr',
+  order: 1,
+  listed: false,
+  countries: []
+}
+
+/** The Region Line of `eurRegion`, as the flat block list carries it. */
+export const eurLine: CampaignBlock = withEmptyTranslations(
+  eurRegionPublic.lines[0]
+)
+
+/** The seeded campaign with two regions: Europe (listed, one line, one country) and Africa (unlisted). */
+export const campaignWithRegions: Campaign = {
+  ...campaign,
+  blocks: [...campaign.blocks, eurLine],
+  regions: [eurRegion, afrRegion]
 }
 
 export const publishedCampaign: Campaign = {

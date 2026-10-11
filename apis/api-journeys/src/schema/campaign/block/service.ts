@@ -3,8 +3,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   CampaignAction,
+  CampaignBackgroundKind,
+  CampaignBackgroundOverlay,
   CampaignBlock,
   CampaignPage,
+  CampaignRegion,
   Prisma,
   prisma
 } from '@core/prisma/journeys/client'
@@ -16,7 +19,12 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
-import { assertEnum, badUserInput } from '../validation'
+import {
+  assertEnum,
+  assertEnumOrNull,
+  assertHexOrNull,
+  badUserInput
+} from '../validation'
 
 /**
  * The campaign block service: the Block service's shape, authorised through
@@ -638,6 +646,40 @@ function clampAroundSlots(
 }
 
 /**
+ * A Region Line's region is a region of the same campaign
+ * (`BAD_USER_INPUT` / `regionId`). Returns the region so create can scope
+ * the line to it.
+ */
+export async function validateRegion(
+  regionId: string,
+  campaignId: string
+): Promise<CampaignRegion> {
+  const region = await prisma.campaignRegion.findFirst({
+    where: { id: regionId, campaignId }
+  })
+  if (region == null)
+    throw badUserInput('regionId must be a region of this campaign', 'regionId')
+  return region
+}
+
+/**
+ * Create a Region Line: exactly a Typography block scoped to the region
+ * (`regionId` set; `pageId`, `parentBlockId` and `placement` null), appended
+ * last among the region's lines so `parentOrder` is the line order.
+ */
+export async function createRegionLine(
+  tx: Prisma.TransactionClient,
+  region: CampaignRegion,
+  data: CampaignBlockCreateData
+): Promise<CampaignBlockWithAction> {
+  return await createTopLevelBlock(
+    tx,
+    { campaignId: region.campaignId, pageId: null, regionId: region.id },
+    { ...data, typename: 'CampaignTypographyBlock', placement: null }
+  )
+}
+
+/**
  * Move a block among its siblings to `parentOrder` (clamped to the end) and
  * renumber contiguously. An Extra may change `placement` in the same move:
  * crossing the Section Body updates the column, moving among neighbours is
@@ -930,4 +972,116 @@ export async function createSlotChild(
       'parentBlockId'
     )
   return await createChildBlock(tx, slot, data)
+}
+
+// ---------------------------------------------------------------------------
+// Section style: the nine shared section fields, validated once for every
+// section and chrome update mutation.
+// ---------------------------------------------------------------------------
+
+export const CAMPAIGN_BACKGROUND_KINDS = Object.values(CampaignBackgroundKind)
+export const CAMPAIGN_BACKGROUND_OVERLAYS = Object.values(
+  CampaignBackgroundOverlay
+)
+
+/** The six nullable hex columns of a section row. */
+export const SECTION_COLOR_COLUMNS = [
+  'backgroundColor',
+  'headingColor',
+  'textColor',
+  'buttonColor',
+  'buttonTextColor',
+  'accentColor'
+] as const
+export type SectionColorColumn = (typeof SECTION_COLOR_COLUMNS)[number]
+
+/** The owned image typename a cover slot points at (the images ticket adds its mutations). */
+export const CAMPAIGN_IMAGE_TYPENAME = 'CampaignImageBlock'
+
+export type SectionStyleInput = Partial<
+  Record<SectionColorColumn, string | null | undefined>
+> & {
+  backgroundKind?: string | null
+  backgroundOverlay?: string | null
+  coverBlockId?: string | number | null
+}
+
+export type SectionStyleColumns = Partial<
+  Record<SectionColorColumn, string | null>
+> & {
+  backgroundKind?: CampaignBackgroundKind
+  backgroundOverlay?: CampaignBackgroundOverlay | null
+  coverBlockId?: string | null
+}
+
+/**
+ * The pure part of the section style contract: `backgroundKind` is one of
+ * the six kinds and never null; `backgroundOverlay` light, medium, heavy or
+ * null; the six hex columns `assertHex`-normalised or null, never `""`.
+ * Omitted fields are left untouched, and the kind is written exactly as
+ * given — never derived from which columns are populated — so a leftover
+ * `backgroundColor` or cover survives a switch to another kind.
+ */
+export function sectionStyleColumns(
+  input: SectionStyleInput
+): SectionStyleColumns {
+  const data: SectionStyleColumns = {}
+  if (input.backgroundKind !== undefined) {
+    if (input.backgroundKind == null)
+      throw badUserInput(
+        `backgroundKind must be one of ${CAMPAIGN_BACKGROUND_KINDS.join(', ')}`,
+        'backgroundKind'
+      )
+    data.backgroundKind = assertEnum(
+      input.backgroundKind,
+      'backgroundKind',
+      CAMPAIGN_BACKGROUND_KINDS
+    )
+  }
+  if (input.backgroundOverlay !== undefined)
+    data.backgroundOverlay = assertEnumOrNull(
+      input.backgroundOverlay,
+      'backgroundOverlay',
+      CAMPAIGN_BACKGROUND_OVERLAYS
+    )
+  if (input.coverBlockId !== undefined)
+    data.coverBlockId =
+      input.coverBlockId == null ? null : String(input.coverBlockId)
+  for (const column of SECTION_COLOR_COLUMNS) {
+    const value = input[column]
+    if (value === undefined) continue
+    data[column] = assertHexOrNull(value, column)
+  }
+  return data
+}
+
+/**
+ * The shared section style helper every section and chrome update runs:
+ * the pure rules above, then a given cover resolved to a live
+ * CampaignImageBlock owned by this section (`BAD_USER_INPUT` /
+ * `coverBlockId`). Ownership keeps the unique `coverBlockId` slot from
+ * colliding with another section's cover.
+ */
+export async function validateSectionStyle(
+  input: SectionStyleInput,
+  block: Pick<CampaignBlock, 'id' | 'campaignId'>
+): Promise<SectionStyleColumns> {
+  const data = sectionStyleColumns(input)
+  if (data.coverBlockId == null) return data
+  const cover = await prisma.campaignBlock.findFirst({
+    where: {
+      id: data.coverBlockId,
+      campaignId: block.campaignId,
+      parentBlockId: block.id,
+      typename: CAMPAIGN_IMAGE_TYPENAME,
+      deletedAt: null
+    },
+    select: { id: true }
+  })
+  if (cover == null)
+    throw badUserInput(
+      'coverBlockId must be a live image block of this section',
+      'coverBlockId'
+    )
+  return data
 }

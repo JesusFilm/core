@@ -18,12 +18,16 @@ import {
   createChildBlock,
   createColumnsSection,
   createSlotChild,
+  createRegionLine,
   createTopLevelBlock,
   getSiblings,
   removeBlock,
   restoreBlock,
+  sectionStyleColumns,
   validateParentBlock,
+  validateRegion,
   validateSectionPage,
+  validateSectionStyle,
   validateSlotParent
 } from './service'
 
@@ -758,6 +762,96 @@ describe('campaign block service', () => {
     })
   })
 
+  describe('validateRegion', () => {
+    it('returns a region of the campaign', async () => {
+      const region = campaignFactory().withRegion('EUR').build().regions[0]
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(region)
+
+      await expect(validateRegion('eurRegionId', 'campaignId')).resolves.toBe(
+        region
+      )
+      expect(prismaMock.campaignRegion.findFirst).toHaveBeenCalledWith({
+        where: { id: 'eurRegionId', campaignId: 'campaignId' }
+      })
+    })
+
+    it('rejects a region of another campaign (BAD_USER_INPUT, regionId)', async () => {
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(validateRegion('eurRegionId', 'campaignId'))
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'regionId'
+      })
+    })
+  })
+
+  describe('createRegionLine', () => {
+    it('creates exactly a Typography block scoped to the region, with pageId, parentBlockId and placement null and parentOrder = line order', async () => {
+      const region = campaignFactory().withRegion('EUR').build().regions[0]
+      const existingLine = {
+        ...hero,
+        id: 'eurLineId',
+        typename: 'CampaignTypographyBlock',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentOrder: 0
+      }
+      prismaMock.campaignBlock.findMany.mockResolvedValue([existingLine])
+      prismaMock.campaignBlock.create.mockImplementation((async ({
+        data
+      }: any) => ({
+        ...hero,
+        ...data,
+        id: 'newLineId',
+        action: null
+      })) as never)
+
+      const line = await createRegionLine(prismaMock, region, {
+        typename: 'CampaignTypographyBlock',
+        content: 'EUR',
+        placement: 'above'
+      })
+
+      expect(line).toMatchObject({
+        id: 'newLineId',
+        typename: 'CampaignTypographyBlock',
+        campaignId: 'campaignId',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentBlockId: null,
+        parentOrder: 1,
+        placement: null,
+        content: 'EUR'
+      })
+      expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            campaignId: 'campaignId',
+            parentBlockId: null,
+            pageId: null,
+            regionId: 'eurRegionId',
+            deletedAt: null
+          })
+        })
+      )
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+        data: {
+          typename: 'CampaignTypographyBlock',
+          content: 'EUR',
+          placement: null,
+          campaignId: 'campaignId',
+          pageId: null,
+          regionId: 'eurRegionId',
+          parentBlockId: null,
+          parentOrder: 1
+        },
+        include: { action: true }
+      })
+    })
+  })
+
   describe('validateSectionPage', () => {
     it('returns a page of the campaign', async () => {
       prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[1])
@@ -1008,6 +1102,134 @@ describe('campaign block service', () => {
         'heroMediaId',
         'heroButtonId'
       ])
+    })
+  })
+})
+
+describe('section style (the nine shared section fields)', () => {
+  const block = { id: 'sectionId', campaignId: 'campaignId' }
+
+  describe('sectionStyleColumns', () => {
+    it('writes the kind exactly as given and never derives it from the populated columns', () => {
+      // A section with a custom colour and a cover switched to a surface band
+      // keeps both: only backgroundKind is in the data.
+      expect(sectionStyleColumns({ backgroundKind: 'surface' })).toEqual({
+        backgroundKind: 'surface'
+      })
+      expect(
+        sectionStyleColumns({
+          backgroundKind: 'custom',
+          backgroundColor: '#fff'
+        })
+      ).toEqual({ backgroundKind: 'custom', backgroundColor: '#FFFFFF' })
+      expect(sectionStyleColumns({})).toEqual({})
+    })
+
+    it.each(['none', 'surface', 'contrast', 'primary', 'custom', 'image'])(
+      'accepts backgroundKind %s',
+      (kind) => {
+        expect(sectionStyleColumns({ backgroundKind: kind })).toEqual({
+          backgroundKind: kind
+        })
+      }
+    )
+
+    it.each(['gradient', '', null])(
+      'rejects backgroundKind %j (BAD_USER_INPUT, backgroundKind)',
+      (kind) => {
+        expect(() => sectionStyleColumns({ backgroundKind: kind })).toThrow(
+          expect.objectContaining({
+            extensions: { code: 'BAD_USER_INPUT', field: 'backgroundKind' }
+          })
+        )
+      }
+    )
+
+    it('takes backgroundOverlay light, medium, heavy or null', () => {
+      for (const overlay of ['light', 'medium', 'heavy', null]) {
+        expect(sectionStyleColumns({ backgroundOverlay: overlay })).toEqual({
+          backgroundOverlay: overlay
+        })
+      }
+      expect(() => sectionStyleColumns({ backgroundOverlay: 'dark' })).toThrow(
+        expect.objectContaining({
+          extensions: { code: 'BAD_USER_INPUT', field: 'backgroundOverlay' }
+        })
+      )
+    })
+
+    it.each([
+      'backgroundColor',
+      'headingColor',
+      'textColor',
+      'buttonColor',
+      'buttonTextColor',
+      'accentColor'
+    ])(
+      'normalises %s through assertHex and accepts null, never ""',
+      (column) => {
+        expect(sectionStyleColumns({ [column]: ' #abc ' })).toEqual({
+          [column]: '#AABBCC'
+        })
+        expect(sectionStyleColumns({ [column]: '#a1B2c3' })).toEqual({
+          [column]: '#A1B2C3'
+        })
+        expect(sectionStyleColumns({ [column]: null })).toEqual({
+          [column]: null
+        })
+        for (const bad of ['', 'red', 'rgb(1,2,3)', '#AABBCCDD']) {
+          expect(() => sectionStyleColumns({ [column]: bad })).toThrow(
+            expect.objectContaining({
+              extensions: { code: 'BAD_USER_INPUT', field: column }
+            })
+          )
+        }
+      }
+    )
+  })
+
+  describe('validateSectionStyle', () => {
+    it('clears the cover without a lookup', async () => {
+      await expect(
+        validateSectionStyle({ coverBlockId: null }, block)
+      ).resolves.toEqual({ coverBlockId: null })
+      expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
+    })
+
+    it('resolves a given cover to a live image block owned by the section', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue({
+        id: 'coverId'
+      } as never)
+
+      await expect(
+        validateSectionStyle(
+          { backgroundKind: 'image', coverBlockId: 'coverId' },
+          block
+        )
+      ).resolves.toEqual({ backgroundKind: 'image', coverBlockId: 'coverId' })
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'coverId',
+          campaignId: 'campaignId',
+          parentBlockId: 'sectionId',
+          typename: 'CampaignImageBlock',
+          deletedAt: null
+        },
+        select: { id: true }
+      })
+    })
+
+    it('rejects a cover that is not a live image block owned by the section (BAD_USER_INPUT, coverBlockId)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(
+        validateSectionStyle({ coverBlockId: 'heroId' }, block)
+      )
+
+      expect(error.extensions).toEqual({
+        code: 'BAD_USER_INPUT',
+        field: 'coverBlockId'
+      })
     })
   })
 })

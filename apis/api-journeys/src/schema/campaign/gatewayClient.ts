@@ -59,3 +59,21 @@ export async function fetchLanguage(
   const language = data.language as GatewayLanguage | null | undefined
   return language ?? null
 }
+
+export interface GatewayCountry {
+  id: string
+}
+
+/** Resolve an api-languages Country by id; `null` when it does not exist. */
+export async function fetchCountry(id: string): Promise<GatewayCountry | null> {
+  const query = `
+    query CampaignCountry($id: ID!) {
+      country(id: $id) {
+        id
+      }
+    }
+  `
+  const data = await graphqlRequest(query, { id })
+  const country = data.country as GatewayCountry | null | undefined
+  return country ?? null
+}

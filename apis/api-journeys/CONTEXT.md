@@ -331,6 +331,10 @@ _Avoid_: UI string, i18n string, interface key
 The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote. "Needs review" is simply every translation still marked as machine-made.
 _Avoid_: auto-translate (as a feature name), AI translate, sync
 
+**Campaign Translations**:
+The read behind the Translations view, `campaignTranslations(campaignId, languageId, filter)`: one row per Translated Field that has default-language text (an empty field has nothing to translate), carrying the target to write it through, the default wording, the wording in the chosen campaign language and who wrote it. `needsReview` is the machine's, `edited` a person's, `missing` has no entry (an empty stored value counts as missing); the default language is refused, its text being the field. Rows come in view order and each names its section: Interface (the campaign title, Campaign Strings, header and footer text), Landing page, Region Page, Regions (each region's name then its Region Lines).
+_Avoid_: translation report, review queue
+
 **Campaign Chrome**:
 The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section and holding the same text and button children, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section.
 _Avoid_: nav bar, site header/footer, layout, shell

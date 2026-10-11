@@ -44,6 +44,7 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { InlineText } from '../InlineText'
 
@@ -471,10 +472,14 @@ export function CanvasSection({
             field={field}
             editing={sectionSelected}
             focusField={focusField}
+            focusRequest={focusRequest}
             onSelect={handleSelectField}
             titleVariant={titleVariant}
           />
         ))}
+      {block.__typename === 'CampaignRegionSwitcherBlock' && (
+        <RegionSwitcherEdit block={block} />
+      )}
       <CanvasStrings
         strings={strings}
         editing={sectionSelected}

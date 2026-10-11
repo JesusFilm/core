@@ -338,6 +338,39 @@ input CampaignAnalyticsBlockUpdateInput {
   """At most 150 characters."""
   title: String
   showMap: Boolean
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 """
@@ -647,6 +680,44 @@ type CampaignFooterBlock implements CampaignBlock & CampaignSectionBlock {
 }
 
 """
+The footer’s Section Background and colour overrides: the shared section fields and nothing else.
+"""
+input CampaignFooterBlockUpdateInput {
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
+}
+
+"""
 Campaign Chrome: the one header every page shares. pageId and regionId are both null. Button children are the nav links; the brand mark and language select are fixed renderer elements, not blocks. Never deletable, movable or duplicable.
 """
 type CampaignHeaderBlock implements CampaignBlock & CampaignSectionBlock {
@@ -686,6 +757,44 @@ type CampaignHeaderBlock implements CampaignBlock & CampaignSectionBlock {
 
   """The owned CampaignImageBlock shown as the brand mark."""
   logoBlockId: ID
+}
+
+"""
+The header’s Section Background and colour overrides: the shared section fields and nothing else. The brand mark is set by the images ticket’s mutations.
+"""
+input CampaignHeaderBlockUpdateInput {
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 """
@@ -777,6 +886,39 @@ input CampaignHeroBlockUpdateInput {
   """At most 500 characters."""
   lede: String
   align: TypographyAlign
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 """
@@ -865,6 +1007,39 @@ input CampaignJourneyListBlockUpdateInput {
   """At most 500 characters."""
   lede: String
   display: CampaignJourneyListDisplay
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 """How a Journey List renders its items: a card grid or a list."""
@@ -1036,6 +1211,11 @@ type CampaignRegionCountry {
 
   """api-languages Country id."""
   countryId: ID!
+
+  """
+  The api-languages Country, resolved through federation: flag and translated name live there.
+  """
+  country: Country!
   order: Int!
 }
 
@@ -1104,6 +1284,39 @@ input CampaignRegionHeaderBlockCreateInput {
 input CampaignRegionHeaderBlockUpdateInput {
   """At most 500 characters."""
   intro: String
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 """
@@ -1250,6 +1463,39 @@ input CampaignRegionShareBlockUpdateInput {
 
   """At most 500 characters."""
   intro: String
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 """
@@ -1322,6 +1568,56 @@ input CampaignRegionSwitcherBlockUpdateInput {
   """At most 150 characters."""
   title: String
   variant: CampaignSwitcherVariant
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
+}
+
+input CampaignRegionUpdateInput {
+  """
+  Default-language name. Required, at most 60 characters. Does not move the slug.
+  """
+  name: String
+
+  """
+  The region’s address segment. Changing it breaks links to this page you have already shared.
+  """
+  slug: String
+
+  """
+  Whether the region appears on the Region Switcher; false keeps an Orphan Page.
+  """
+  listed: Boolean
 }
 
 """
@@ -1551,6 +1847,102 @@ type CampaignTheme {
 }
 
 """
+The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+"""
+input CampaignThemeUpdateInput {
+  """The MUI palette mode the theme is built on."""
+  themeMode: ThemeMode
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  headerFont: String
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  bodyFont: String
+
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  labelFont: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  primaryColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  accentColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  backgroundColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  surfaceColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  textColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  mutedColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  contrastBackgroundColor: String
+
+  """Hex colour, stored as `#RRGGBB` uppercase."""
+  contrastTextColor: String
+
+  """Corner radius: square, slight, rounded or veryRounded."""
+  radius: CampaignRadius
+
+  """Button shape: rounded or pill."""
+  buttonRadius: CampaignButtonRadius
+}
+
+"""
+One line of the Translations view: a Translated Field, its default-language text and its text in the requested language.
+"""
+type CampaignTranslation {
+  target: CampaignTranslationTarget!
+  group: CampaignTranslationGroup!
+  field: CampaignTextField!
+
+  """The field’s cap on this target, in characters."""
+  maxLength: Int!
+
+  """The text in the campaign’s default language."""
+  defaultValue: String!
+
+  """The text in the requested language; null when missing."""
+  value: String
+
+  """
+  Who wrote `value`: a person (`human`) or the machine; null when missing.
+  """
+  source: CampaignTextSource
+}
+
+"""
+Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+"""
+enum CampaignTranslationFilter {
+  all
+  needsReview
+  missing
+  edited
+}
+
+"""
+The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+"""
+enum CampaignTranslationGroup {
+  interface
+  landing
+  region
+  regions
+}
+
+"""
 One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
 """
 input CampaignTranslationSetInput {
@@ -1558,6 +1950,20 @@ input CampaignTranslationSetInput {
   field: CampaignTextField!
   languageId: ID!
   value: String!
+}
+
+"""
+The row a Translated Field belongs to, in the shape `campaignTranslationSet` takes: exactly one of `blockId`, `regionId`, `stringId` or `campaignId` is set.
+"""
+type CampaignTranslationTarget {
+  """
+  The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
+  """
+  typename: String!
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
 }
 
 """
@@ -1612,8 +2018,15 @@ input CampaignTypographyBlockCreateInput {
   id: ID
   campaignId: ID!
 
-  """A section or chrome block of the campaign."""
-  parentBlockId: ID!
+  """
+  A section or chrome block of the campaign, for a text Extra. Exactly one of parentBlockId and regionId.
+  """
+  parentBlockId: ID
+
+  """
+  A region of the campaign, for a Region Line. Exactly one of parentBlockId and regionId.
+  """
+  regionId: ID
 
   """Default-language text; empty when omitted. At most 2000 characters."""
   content: String
@@ -1625,7 +2038,7 @@ input CampaignTypographyBlockCreateInput {
   """`#RRGGBB` or null."""
   color: String
 
-  """Defaults to `below`."""
+  """Defaults to `below`; not allowed on a Region Line."""
   placement: CampaignChildPlacement
 }
 
@@ -1641,7 +2054,7 @@ input CampaignTypographyBlockUpdateInput {
 }
 
 """
-Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+Campaign settings and the Palette. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.
 """
 input CampaignUpdateInput {
   """
@@ -1653,6 +2066,11 @@ input CampaignUpdateInput {
   Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.
   """
   slug: String
+
+  """
+  The Palette, newest first: each entry a hex colour (stored as `#RRGGBB` uppercase), deduplicated, at most eight kept. Picker chrome, committed on picker blur and never undone.
+  """
+  palette: [String!]
 }
 
 """
@@ -1732,6 +2150,39 @@ input CampaignVideoCarouselBlockUpdateInput {
 
   """At most 150 characters."""
   title: String
+
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+
+  """Overlay strength over an image background; null means medium."""
+  backgroundOverlay: CampaignBackgroundOverlay
+
+  """`#RRGGBB` or null to inherit."""
+  headingColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  textColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  buttonTextColor: String
+
+  """`#RRGGBB` or null to inherit."""
+  accentColor: String
 }
 
 type CardBlock implements Block
@@ -1877,6 +2328,13 @@ input ChatOpenEventCreateInput {
 enum ContactActionType {
   call
   text
+}
+
+type Country
+  @key(fields: "id")
+  @extends
+{
+  id: ID! @external
 }
 
 input CreateGoogleSheetsSyncInput {
@@ -3134,15 +3592,16 @@ type Mutation {
   blockUpdateChatAction(id: ID!, input: ChatActionInput!, journeyId: ID): ChatAction!
 
   """
-  Add a text Extra to a section or chrome block. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. Omitted content is empty; the editor shows the placeholder "Your text".
+  Add a text block: with `parentBlockId`, a text Extra of a section or chrome block, landing last among its siblings (`parentOrder = siblings.length`) on the side the placement names and copying the parent’s page or region scoping down; with `regionId`, a Region Line, scoped to the region alone (`pageId`, `parentBlockId` and `placement` null) and appended last among the region’s lines. Omitted content is empty; the editor shows the placeholder "Your text".
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: campaignId does not resolve.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
-  - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign, or neither / both of parentBlockId and regionId given.
+  - BAD_USER_INPUT (field: `regionId`): not a region of this campaign.
+  - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule; placement is refused on a Region Line.
   """
   campaignTypographyBlockCreate(input: CampaignTypographyBlockCreateInput!): CampaignTypographyBlock!
 
@@ -3201,7 +3660,7 @@ type Mutation {
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!): CampaignHeroBlock!
 
   """
-  Update the hero’s default-language eyebrow, title, lede or alignment. Only the given fields change; empty text is allowed and not rendered.
+  Update the hero’s default-language eyebrow, title, lede or alignment, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3210,6 +3669,10 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!): CampaignHeroBlock!
 
@@ -3229,7 +3692,7 @@ type Mutation {
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!): CampaignRegionSwitcherBlock!
 
   """
-  Update the region switcher’s default-language title or its variant (cards, list, pills). Only the given fields change.
+  Update the region switcher’s default-language title or its variant (cards, list, pills), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3238,6 +3701,10 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title`): over 150 characters.
   - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!): CampaignRegionSwitcherBlock!
 
@@ -3257,7 +3724,7 @@ type Mutation {
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!): CampaignVideoCarouselBlock!
 
   """
-  Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
+  Update the video carousel’s default-language eyebrow or title, or its Section Background and colour overrides. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3265,6 +3732,10 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!): CampaignVideoCarouselBlock!
 
@@ -3284,7 +3755,7 @@ type Mutation {
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!): CampaignJourneyListBlock!
 
   """
-  Update the journey list’s default-language eyebrow, title or lede, or its display (grid, list). Only the given fields change.
+  Update the journey list’s default-language eyebrow, title or lede, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3293,6 +3764,10 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `display`): not grid or list.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!): CampaignJourneyListBlock!
 
@@ -3312,7 +3787,7 @@ type Mutation {
   campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!): CampaignAnalyticsBlock!
 
   """
-  Update the analytics section’s default-language eyebrow or title, or whether the world map shows. Only the given fields change.
+  Update the analytics section’s default-language eyebrow or title, whether the world map shows, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3320,6 +3795,10 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live CampaignAnalyticsBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!): CampaignAnalyticsBlock!
 
@@ -3340,7 +3819,7 @@ type Mutation {
   campaignRegionHeaderBlockCreate(input: CampaignRegionHeaderBlockCreateInput!): CampaignRegionHeaderBlock!
 
   """
-  Update the region header’s default-language intro.
+  Update the region header’s default-language intro, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3348,6 +3827,10 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live CampaignRegionHeaderBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `intro`): over 500 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!): CampaignRegionHeaderBlock!
 
@@ -3368,7 +3851,7 @@ type Mutation {
   campaignRegionShareBlockCreate(input: CampaignRegionShareBlockCreateInput!): CampaignRegionShareBlock!
 
   """
-  Update the region share panel’s default-language title or intro. Only the given fields change.
+  Update the region share panel’s default-language title or intro, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3376,6 +3859,10 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live CampaignRegionShareBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
 
@@ -3435,6 +3922,36 @@ type Mutation {
   campaignColumnsBlockUpdate(id: ID!, input: CampaignColumnsBlockUpdateInput!): CampaignColumnsBlock!
 
   """
+  Update the header’s Section Background and colour overrides. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to the live CampaignHeaderBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  """
+  campaignHeaderBlockUpdate(id: ID!, input: CampaignHeaderBlockUpdateInput!): CampaignHeaderBlock!
+
+  """
+  Update the footer’s Section Background and colour overrides. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to the live CampaignFooterBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  """
+  campaignFooterBlockUpdate(id: ID!, input: CampaignFooterBlockUpdateInput!): CampaignFooterBlock!
+
+  """
   Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Its live descendants and owned blocks are stamped with the same `deletedAt`, so `campaignBlockRestore` brings back exactly what was deleted with it.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
@@ -3490,6 +4007,87 @@ type Mutation {
   campaignBlockDuplicate(id: ID!, idMap: [CampaignBlockDuplicateIdMapInput!]): [CampaignBlock!]!
 
   """
+  Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Idempotent per id: a retry with the id of an existing region of the same campaign returns that region.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT: a concurrent create took the id or the derived slug; retry.
+  """
+  campaignRegionCreate(
+    campaignId: ID!
+
+    """A client-generated id, so a redo recreates the same row."""
+    id: ID
+  ): CampaignRegion!
+
+  """
+  Update a Campaign Region’s settings: the default-language name, the slug and whether it is listed on the Region Switcher. The slug never follows a name change; it moves only when given here, and links already shared to the old region address stop resolving. List and unlist are one-field changes with no confirmation.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `name`): empty or over 60 characters.
+  - BAD_USER_INPUT (field: `slug`): fails the shape, length or reserved-word checks, is taken by another region of the campaign (including the concurrent-update race on the unique constraint), or equals the slug of a journey in the campaign’s team.
+  
+  A slug or listing change on a published campaign queues on-demand revalidation of the campaign’s pages, including the region’s previous path.
+  """
+  campaignRegionUpdate(id: ID!, input: CampaignRegionUpdateInput!): CampaignRegion!
+
+  """
+  Move a Campaign Region to `order` among the campaign’s regions (a position past the end moves it last) and renumber them contiguously. One order serves every Region Switcher. Returns every region of the campaign with its new `order`.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `order`): negative.
+  """
+  campaignRegionOrderUpdate(id: ID!, order: Int!): [CampaignRegion!]!
+
+  """
+  Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages, its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. A published campaign’s landing page and the deleted path are queued for on-demand revalidation so the deleted path stops resolving. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `regionId`): the region is listed; unlist it first.
+  """
+  campaignRegionDelete(id: ID!): CampaignRegion!
+
+  """
+  Add a country chip to a Campaign Region’s card, appended last in chip order. The id is an api-languages Country id; flag and translated name resolve from the owner.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: regionId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `countryId`): not an api-languages country, already on the region, or the region already has 250 countries.
+  """
+  campaignRegionCountryAdd(regionId: ID!, countryId: ID!): CampaignRegionCountry!
+
+  """
+  Remove a country chip from a Campaign Region’s card and renumber the remaining chips. Returns the deleted row.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  """
+  campaignRegionCountryRemove(id: ID!): CampaignRegionCountry!
+
+  """
   Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
@@ -3504,7 +4102,7 @@ type Mutation {
   campaignCreate(input: CampaignCreateInput!): Campaign!
 
   """
-  Update the campaign settings: the default-language title and the Campaign Address slug. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving.
+  Update the campaign settings — the default-language title and the Campaign Address slug — or the Palette. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving. The Palette is picker chrome: each entry assertHex-normalised, deduplicated, the first eight kept newest first; saved outside any Command.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -3513,8 +4111,27 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
+  - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
+
+  """
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a Campaign Theme.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: the colour column): a colour is null, empty or not a hex colour.
+  - BAD_USER_INPUT (field: `headerFont` / `bodyFont` / `labelFont`): a font name is not in the shared curated list.
+  - BAD_USER_INPUT (field: `themeMode` / `radius` / `buttonRadius`): null, or not one of the enum’s values.
+  """
+  campaignThemeUpdate(
+    """The Campaign Theme id (`campaign.theme.id`)."""
+    id: ID!
+    input: CampaignThemeUpdateInput!
+  ): CampaignTheme!
 
   """
   Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.
@@ -4204,6 +4821,18 @@ type Query {
     """
     languageId: ID
   ): CampaignPublic!
+
+  """
+  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+  
+  Auth: campaign Read — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
+  """
+  campaignTranslations(campaignId: ID!, languageId: ID!, filter: CampaignTranslationFilter = all): [CampaignTranslation!]!
   customDomains(teamId: ID!): [CustomDomain!]!
   customDomain(id: ID!): CustomDomain!
   node(id: ID!): Node

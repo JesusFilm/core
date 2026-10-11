@@ -26,6 +26,7 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { FontLoader } from '../../Editor/FontLoader'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
 import { slotSection } from '../sectionTypes'
@@ -199,6 +200,14 @@ export function Canvas({
     }),
     [campaign.theme]
   )
+  const fonts = useMemo(
+    () => [
+      fontFamilies.headerFont,
+      fontFamilies.bodyFont,
+      fontFamilies.labelFont
+    ],
+    [fontFamilies]
+  )
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, {
@@ -255,6 +264,7 @@ export function Canvas({
         py: 3
       }}
     >
+      <FontLoader fonts={fonts} />
       <Box
         sx={{
           width: view === 'phone' ? PHONE_FRAME_WIDTH : '100%',

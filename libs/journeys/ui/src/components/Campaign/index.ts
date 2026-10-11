@@ -30,7 +30,13 @@ export {
 } from './CampaignProvider'
 export { CampaignRegionHeader } from './CampaignRegionHeader'
 export { CampaignRegionShare } from './CampaignRegionShare'
-export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
+export {
+  CampaignRegionCountries,
+  CampaignRegionSwitcher,
+  countryLabel,
+  listedRegions,
+  switcherRegions
+} from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
 export { CampaignRichText, splitParagraphs } from './CampaignRichText'
 export {
@@ -72,6 +78,15 @@ export {
   overlayAlpha,
   resolveBand
 } from './libs/resolveBand'
+export {
+  CAMPAIGN_THEME_PRESETS,
+  DARK_PRESET,
+  LIGHT_PRESET,
+  PRESET_COLOR_COLUMNS,
+  PRESET_COLUMNS,
+  activeThemePreset,
+  presetColors
+} from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
 export { hasText, isCampaignSection } from './types'
 export type {
@@ -95,4 +110,10 @@ export type {
 } from './libs/resolvePageLanguage'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
 export type { CampaignBandOverlay, ResolvedBand } from './libs/resolveBand'
+export type {
+  CampaignThemePreset,
+  CampaignThemePresetColumn,
+  CampaignThemePresetLabel,
+  CampaignThemePresetName
+} from './libs/themePresets'
 export type { CampaignTreeBlock } from './libs/transformer'

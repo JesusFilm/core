@@ -31,14 +31,40 @@ function trailOf(
  */
 export function Breadcrumb(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection, selectBlock } = useCampaignEditor()
-  const crumbs: Array<{ label: string; blockId?: string }> = [
-    { label: t('Campaign') },
-    ...trailOf(campaign.blocks, selection.block).map((block) => ({
-      label: blockLabel(t, block.__typename),
-      blockId: block.id
-    }))
+  const { campaign, selection, selectBlock, selectRegion } = useCampaignEditor()
+  const crumbs: Array<{ label: string; onClick?: () => void }> = [
+    { label: t('Campaign') }
   ]
+  if (selection.region != null) {
+    // A region card sits in its switcher; a Region Line sits in its region.
+    if (selection.host != null) {
+      const hostId = selection.host.id
+      crumbs.push({
+        label: blockLabel(t, selection.host.__typename),
+        onClick: () => selectBlock(hostId)
+      })
+    }
+    const regionId = selection.region.id
+    const hostId = selection.host?.id
+    crumbs.push({
+      label: selection.region.name,
+      onClick: () => selectRegion(regionId, hostId)
+    })
+    if (selection.block != null && selection.block.id !== selection.host?.id) {
+      const blockId = selection.block.id
+      crumbs.push({
+        label: blockLabel(t, selection.block.__typename),
+        onClick: () => selectBlock(blockId)
+      })
+    }
+  } else {
+    trailOf(campaign.blocks, selection.block).forEach((block) =>
+      crumbs.push({
+        label: blockLabel(t, block.__typename),
+        onClick: () => selectBlock(block.id)
+      })
+    )
+  }
 
   return (
     <Breadcrumbs
@@ -59,7 +85,7 @@ export function Breadcrumb(): ReactElement {
             type="button"
             underline="hover"
             color="inherit"
-            onClick={() => selectBlock(crumb.blockId)}
+            onClick={crumb.onClick ?? (() => selectBlock(undefined))}
           >
             {crumb.label}
           </Link>

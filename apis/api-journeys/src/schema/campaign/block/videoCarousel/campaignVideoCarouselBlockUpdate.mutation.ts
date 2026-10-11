@@ -1,6 +1,14 @@
 import { builder } from '../../../builder'
 import { CampaignVideoCarouselBlock } from '../campaignVideoCarouselBlock'
-import { authorizeTypedBlockUpdate, updateBlock } from '../service'
+import {
+  SECTION_STYLE_ERRORS,
+  sectionStyleInputFields
+} from '../sectionStyleInput'
+import {
+  authorizeTypedBlockUpdate,
+  updateBlock,
+  validateSectionStyle
+} from '../service'
 import { validateSectionText } from '../validateSectionText'
 
 export const CampaignVideoCarouselBlockUpdateInput = builder.inputType(
@@ -14,7 +22,8 @@ export const CampaignVideoCarouselBlockUpdateInput = builder.inputType(
       title: t.string({
         required: false,
         description: 'At most 150 characters.'
-      })
+      }),
+      ...sectionStyleInputFields(t)
     })
   }
 )
@@ -23,8 +32,7 @@ builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: CampaignVideoCarouselBlock,
     nullable: false,
-    description:
-      'Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.',
+    description: `Update the video carousel’s default-language eyebrow or title, or its Section Background and colour overrides. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\`): over 80 / 150 characters.\n${SECTION_STYLE_ERRORS}`,
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({
@@ -38,10 +46,10 @@ builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
         context.user,
         'CampaignVideoCarouselBlock'
       )
-      return await updateBlock(
-        block,
-        validateSectionText(input, ['eyebrow', 'title'])
-      )
+      return await updateBlock(block, {
+        ...validateSectionText(input, ['eyebrow', 'title']),
+        ...(await validateSectionStyle(input, block))
+      })
     }
   })
 )
