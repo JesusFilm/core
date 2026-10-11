@@ -445,10 +445,13 @@ describe('BottomBar', () => {
   it('adds the link chip and variant, size and colours for a button Extra', () => {
     renderBar({ selectedBlockId: 'heroButtonId' })
 
-    expect(screen.getByText('Add link')).toBeInTheDocument()
+    expect(screen.getByTestId('LinkChip')).toHaveTextContent(
+      'Choose your region'
+    )
     expect(buttonNames()).toEqual([
       'Campaign',
       'Hero',
+      'Choose your region',
       'Variant',
       'Size',
       'Colours',
