@@ -51,12 +51,19 @@ export function newRegion(campaign: Campaign, id: string): CampaignRegion {
 
 /**
  * A just-created region is still empty while it has no lines, no countries
- * and nothing else the author added, so undoing its creation may delete it.
+ * and still the name and slug it was born with, so undoing its creation may
+ * delete it. Renaming or re-slugging is not a Command, so it would be lost.
  */
-export function isEmptyRegion(campaign: Campaign, regionId: string): boolean {
+export function isEmptyRegion(
+  campaign: Campaign,
+  regionId: string,
+  born: Pick<CampaignRegion, 'name' | 'slug'>
+): boolean {
   const region = campaign.regions.find((candidate) => candidate.id === regionId)
   if (region == null) return false
   return (
+    region.name === born.name &&
+    region.slug === born.slug &&
     region.countries.length === 0 &&
     regionLines(campaign.blocks, regionId).length === 0
   )
@@ -110,8 +117,8 @@ interface AddRegionOptions {
  * The region Commands. Adding a region runs `campaignRegionCreate` and
  * selects the new card; its undo deletes the region while it is still empty
  * (unlisting first, since only an orphan can be deleted) and leaves it alone
- * once the author has put lines or countries on it; redo recreates the same
- * row. List/unlist is a one-field Command with no confirmation, and reorder
+ * once the author has put lines or countries on it or renamed it; redo
+ * recreates the same row, unless undo left the region in place. List/unlist is a one-field Command with no confirmation, and reorder
  * writes the new order with every region renumbered at once; undo reverses
  * each through the same mutation. Delete is not a Command: see
  * `OrphanPageBar`.
@@ -147,6 +154,7 @@ export function useCampaignRegionCommand(): {
     const id = uuidv4()
     const region = newRegion(campaign, id)
     const before = currentFocus()
+    let born: Pick<CampaignRegion, 'name' | 'slug'> = region
     const after: Focus = {
       pageKind: state.pageKind,
       regionId: state.regionId,
@@ -158,6 +166,9 @@ export function useCampaignRegionCommand(): {
       void regionCreate({
         variables: { campaignId: campaign.id, id },
         optimisticResponse: { campaignRegionCreate: region }
+      }).then((result) => {
+        if (result.data?.campaignRegionCreate != null)
+          born = result.data.campaignRegionCreate
       })
     }
 
@@ -169,7 +180,7 @@ export function useCampaignRegionCommand(): {
       },
       undo() {
         focus(before)
-        if (!isEmptyRegion(campaignRef.current, id)) return
+        if (!isEmptyRegion(campaignRef.current, id, born)) return
         void regionUpdate({
           variables: { id, input: { listed: false } },
           optimisticResponse: {
@@ -187,7 +198,10 @@ export function useCampaignRegionCommand(): {
       },
       redo() {
         focus(after)
-        create()
+        const stillThere = campaignRef.current.regions.some(
+          (candidate) => candidate.id === id
+        )
+        if (!stillThere) create()
       }
     })
   }

@@ -12,6 +12,7 @@ import { builder } from '../builder'
 import { JourneyUpdateInput } from './inputs'
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
+import { isReservedJourneySlug } from './reservedJourneySlugs/reservedJourneySlugs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -47,6 +48,10 @@ builder.mutationField('journeyUpdate', (t) =>
         const input = { ...args.input }
         if (input.slug != null)
           input.slug = slugify(input.slug, { lower: true, strict: true })
+        if (input.slug != null && isReservedJourneySlug(input.slug))
+          throw new GraphQLError('slug is reserved', {
+            extensions: { code: 'BAD_USER_INPUT' }
+          })
 
         if (input.hostId != null) {
           const host = await prisma.host.findUnique({

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignButtonBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignButtonBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignButtonBlockCreate
@@ -38,6 +38,16 @@ export interface CampaignButtonBlockCreate_campaignButtonBlockCreate_action_Camp
 }
 
 export type CampaignButtonBlockCreate_campaignButtonBlockCreate_action = CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignLinkAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignScrollToBlockAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignNavigateToRegionAction;
+
+export interface CampaignButtonBlockCreate_campaignButtonBlockCreate_labelTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignButtonBlockCreate_campaignButtonBlockCreate {
   __typename: "CampaignButtonBlock";
@@ -79,6 +89,7 @@ export interface CampaignButtonBlockCreate_campaignButtonBlockCreate {
   labelColor: string | null;
   placement: CampaignChildPlacement | null;
   action: CampaignButtonBlockCreate_campaignButtonBlockCreate_action | null;
+  labelTranslations: CampaignButtonBlockCreate_campaignButtonBlockCreate_labelTranslations[];
 }
 
 export interface CampaignButtonBlockCreate {

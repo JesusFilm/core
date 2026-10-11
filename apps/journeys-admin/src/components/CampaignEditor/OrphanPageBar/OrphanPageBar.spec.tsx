@@ -60,7 +60,7 @@ function renderBar(
         <SelectionProbe />
         <CommandProbe />
         <RegionsProbe />
-        <BottomBar onSettingsClick={vi.fn()} />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </QueriedEditor>
     </SnackbarProvider>
   )

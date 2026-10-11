@@ -3,11 +3,31 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignAnalyticsBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignAnalyticsBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignAnalyticsBlockCreate
 // ====================================================
+
+export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate {
   __typename: "CampaignAnalyticsBlock";
@@ -47,6 +67,8 @@ export interface CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate {
   eyebrow: string | null;
   title: string | null;
   showMap: boolean;
+  eyebrowTranslations: CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignAnalyticsBlockCreate_campaignAnalyticsBlockCreate_titleTranslations[];
 }
 
 export interface CampaignAnalyticsBlockCreate {

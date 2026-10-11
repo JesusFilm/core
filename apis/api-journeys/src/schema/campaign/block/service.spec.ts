@@ -21,9 +21,11 @@ import {
   getSiblings,
   removeBlock,
   restoreBlock,
+  sectionStyleColumns,
   validateParentBlock,
   validateRegion,
-  validateSectionPage
+  validateSectionPage,
+  validateSectionStyle
 } from './service'
 
 const user = { id: 'userId' } as unknown as User
@@ -247,7 +249,7 @@ describe('campaign block service', () => {
           parentOrder: { not: null },
           deletedAt: null
         },
-        orderBy: { parentOrder: 'asc' },
+        orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
         include: { action: true }
       })
     })
@@ -341,17 +343,46 @@ describe('campaign block service', () => {
         id: where.id,
         ...data
       })) as never)
-      prismaMock.campaignBlock.findMany.mockResolvedValue([first, third])
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([first, heroButton, third])
+        .mockResolvedValueOnce([first, third])
 
       const result = await removeBlock({ ...heroButton, parentOrder: 1 })
 
-      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-        where: { id: 'heroButtonId' },
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['heroButtonId'] } },
         data: { deletedAt: expect.any(Date) }
       })
       expect(result.map((block) => [block.id, block.parentOrder])).toEqual([
         ['firstId', 0],
         ['thirdId', 1]
+      ])
+    })
+
+    it('stamps the live descendants and owned blocks in the same write', async () => {
+      const child = { ...heroButton, id: 'childId', parentBlockId: 'heroId' }
+      const owned = { ...heroButton, id: 'ownedId', parentOrder: null }
+      const unrelated = {
+        ...heroButton,
+        id: 'unrelatedId',
+        parentBlockId: 'otherId'
+      }
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([
+          { ...hero, coverBlockId: 'ownedId' },
+          child,
+          owned,
+          unrelated
+        ])
+        .mockResolvedValueOnce([])
+
+      await removeBlock({ ...hero, parentOrder: 0 })
+
+      const { where } = prismaMock.campaignBlock.updateMany.mock.calls[0][0]
+      expect((where!.id as { in: string[] }).in.sort()).toEqual([
+        'childId',
+        'heroId',
+        'ownedId'
       ])
     })
   })
@@ -389,6 +420,32 @@ describe('campaign block service', () => {
         ['heroButtonId', 1],
         ['thirdId', 2]
       ])
+    })
+
+    it('clears deletedAt on the rows deleted with the block, matched by timestamp', async () => {
+      const deletedAt = new Date('2026-10-01T00:00:00.000Z')
+      prismaMock.campaignBlock.update.mockImplementation((async ({
+        where,
+        data
+      }: any) => ({
+        ...hero,
+        id: where.id,
+        ...data
+      })) as never)
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+
+      await restoreBlock({ ...hero, deletedAt })
+
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: {
+          campaignId: hero.campaignId,
+          deletedAt,
+          id: { not: 'heroId' }
+        },
+        data: { deletedAt: null }
+      })
     })
 
     it('returns the restored block’s live descendants after its siblings', async () => {
@@ -846,6 +903,134 @@ describe('campaign block service', () => {
         'heroMediaId',
         'heroButtonId'
       ])
+    })
+  })
+})
+
+describe('section style (the nine shared section fields)', () => {
+  const block = { id: 'sectionId', campaignId: 'campaignId' }
+
+  describe('sectionStyleColumns', () => {
+    it('writes the kind exactly as given and never derives it from the populated columns', () => {
+      // A section with a custom colour and a cover switched to a surface band
+      // keeps both: only backgroundKind is in the data.
+      expect(sectionStyleColumns({ backgroundKind: 'surface' })).toEqual({
+        backgroundKind: 'surface'
+      })
+      expect(
+        sectionStyleColumns({
+          backgroundKind: 'custom',
+          backgroundColor: '#fff'
+        })
+      ).toEqual({ backgroundKind: 'custom', backgroundColor: '#FFFFFF' })
+      expect(sectionStyleColumns({})).toEqual({})
+    })
+
+    it.each(['none', 'surface', 'contrast', 'primary', 'custom', 'image'])(
+      'accepts backgroundKind %s',
+      (kind) => {
+        expect(sectionStyleColumns({ backgroundKind: kind })).toEqual({
+          backgroundKind: kind
+        })
+      }
+    )
+
+    it.each(['gradient', '', null])(
+      'rejects backgroundKind %j (BAD_USER_INPUT, backgroundKind)',
+      (kind) => {
+        expect(() => sectionStyleColumns({ backgroundKind: kind })).toThrow(
+          expect.objectContaining({
+            extensions: { code: 'BAD_USER_INPUT', field: 'backgroundKind' }
+          })
+        )
+      }
+    )
+
+    it('takes backgroundOverlay light, medium, heavy or null', () => {
+      for (const overlay of ['light', 'medium', 'heavy', null]) {
+        expect(sectionStyleColumns({ backgroundOverlay: overlay })).toEqual({
+          backgroundOverlay: overlay
+        })
+      }
+      expect(() => sectionStyleColumns({ backgroundOverlay: 'dark' })).toThrow(
+        expect.objectContaining({
+          extensions: { code: 'BAD_USER_INPUT', field: 'backgroundOverlay' }
+        })
+      )
+    })
+
+    it.each([
+      'backgroundColor',
+      'headingColor',
+      'textColor',
+      'buttonColor',
+      'buttonTextColor',
+      'accentColor'
+    ])(
+      'normalises %s through assertHex and accepts null, never ""',
+      (column) => {
+        expect(sectionStyleColumns({ [column]: ' #abc ' })).toEqual({
+          [column]: '#AABBCC'
+        })
+        expect(sectionStyleColumns({ [column]: '#a1B2c3' })).toEqual({
+          [column]: '#A1B2C3'
+        })
+        expect(sectionStyleColumns({ [column]: null })).toEqual({
+          [column]: null
+        })
+        for (const bad of ['', 'red', 'rgb(1,2,3)', '#AABBCCDD']) {
+          expect(() => sectionStyleColumns({ [column]: bad })).toThrow(
+            expect.objectContaining({
+              extensions: { code: 'BAD_USER_INPUT', field: column }
+            })
+          )
+        }
+      }
+    )
+  })
+
+  describe('validateSectionStyle', () => {
+    it('clears the cover without a lookup', async () => {
+      await expect(
+        validateSectionStyle({ coverBlockId: null }, block)
+      ).resolves.toEqual({ coverBlockId: null })
+      expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
+    })
+
+    it('resolves a given cover to a live image block owned by the section', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue({
+        id: 'coverId'
+      } as never)
+
+      await expect(
+        validateSectionStyle(
+          { backgroundKind: 'image', coverBlockId: 'coverId' },
+          block
+        )
+      ).resolves.toEqual({ backgroundKind: 'image', coverBlockId: 'coverId' })
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'coverId',
+          campaignId: 'campaignId',
+          parentBlockId: 'sectionId',
+          typename: 'CampaignImageBlock',
+          deletedAt: null
+        },
+        select: { id: true }
+      })
+    })
+
+    it('rejects a cover that is not a live image block owned by the section (BAD_USER_INPUT, coverBlockId)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(
+        validateSectionStyle({ coverBlockId: 'heroId' }, block)
+      )
+
+      expect(error.extensions).toEqual({
+        code: 'BAD_USER_INPUT',
+        field: 'coverBlockId'
+      })
     })
   })
 })

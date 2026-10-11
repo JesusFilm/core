@@ -9,8 +9,7 @@ import {
   CampaignSeo,
   campaignBasePath,
   campaignFontsHref,
-  createCampaignTheme,
-  hasText
+  createCampaignTheme
 } from '@core/journeys/ui/Campaign'
 import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
@@ -31,24 +30,10 @@ interface CampaignPageWrapperProps {
   children?: ReactNode
 }
 
-function heroDescription(
-  campaign: CampaignPublic,
-  pageKind: CampaignPageKind
-): string | undefined {
-  const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
-  const hero = page?.blocks.find(
-    (block) => block.__typename === 'CampaignHeroBlock'
-  )
-  if (hero == null || hero.__typename !== 'CampaignHeroBlock') return undefined
-  if (hasText(hero.lede)) return hero.lede
-  if (hasText(hero.title)) return hero.title
-  return undefined
-}
-
 /**
  * Everything a public campaign page shares: the campaign theme, the Google
- * Fonts link, SEO tags, and Plausible page views on the campaign team's
- * existing site through the same `/plausible` proxy journeys use (page path
+ * Fonts link, SEO and social tags (`CampaignSeo`, canonical in the preferred
+ * address form), and Plausible page views on the campaign team's existing site through the same `/plausible` proxy journeys use (page path
  * as rendered; automatic page views, so nothing is reported from the admin
  * canvas, which uses its own components).
  */
@@ -77,8 +62,8 @@ export function CampaignPageWrapper({
       </Head>
       <CampaignSeo
         campaign={campaign}
+        pageKind={pageKind}
         region={region}
-        description={heroDescription(campaign, pageKind)}
         rootDomain={ROOT_DOMAIN}
       />
       <ThemeProvider theme={theme}>

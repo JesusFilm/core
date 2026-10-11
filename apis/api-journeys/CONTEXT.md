@@ -331,6 +331,10 @@ _Avoid_: UI string, i18n string, interface key
 The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote. "Needs review" is simply every translation still marked as machine-made.
 _Avoid_: auto-translate (as a feature name), AI translate, sync
 
+**Campaign Translations**:
+The read behind the Translations view, `campaignTranslations(campaignId, languageId, filter)`: one row per Translated Field that has default-language text (an empty field has nothing to translate), carrying the target to write it through, the default wording, the wording in the chosen campaign language and who wrote it. `needsReview` is the machine's, `edited` a person's, `missing` has no entry (an empty stored value counts as missing); the default language is refused, its text being the field. Rows come in view order and each names its section: Interface (the campaign title, Campaign Strings, header and footer text), Landing page, Region Page, Regions (each region's name then its Region Lines).
+_Avoid_: translation report, review queue
+
 **Campaign Chrome**:
 The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section and holding the same text and button children, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section.
 _Avoid_: nav bar, site header/footer, layout, shell
@@ -340,7 +344,7 @@ The fixed leading element of the Campaign header: the logo image when one is set
 _Avoid_: logo (the logo is one of its two forms), home button, title
 
 **Campaign Public Page**:
-How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rebuilt in the background about once a minute (and at once on publish, unpublish or a domain change), from one read of the published Campaign in the visitor's Page Language. A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.
+How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rendered per request from one read of the published Campaign in the visitor's Page Language (the request's `lang` parameter, saved cookie and `Accept-Language` decide it, so the page cannot be pre-built; a response the link's `lang` parameter alone decided is shared-cacheable for a minute, every other one is private). A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.
 _Avoid_: viewer page (the viewer is the app), static page, preview (that is the editor's)
 
 **Campaign Renderer**:

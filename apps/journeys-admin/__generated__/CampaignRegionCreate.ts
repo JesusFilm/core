@@ -63,9 +63,12 @@ export interface CampaignRegionCreate {
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
+   * Idempotent per id: a retry with the id of an existing region of the same campaign returns that region.
+   * 
    * Errors:
    * - NOT_FOUND: campaignId does not resolve.
    * - FORBIDDEN: caller is not in the team.
+   * - CONFLICT: a concurrent create took the id or the derived slug; retry.
    */
   campaignRegionCreate: CampaignRegionCreate_campaignRegionCreate;
 }
