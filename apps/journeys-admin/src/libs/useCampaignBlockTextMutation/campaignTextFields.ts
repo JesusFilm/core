@@ -1,4 +1,5 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
+import { CampaignTextSource } from '../../../__generated__/globalTypes'
 
 /** Every inline-editable default-language text column of a campaign block. */
 export type CampaignTextField =
@@ -54,4 +55,58 @@ export function primaryTextField(
 ): CampaignTextField {
   const fields: readonly CampaignTextField[] = CAMPAIGN_TEXT_FIELDS[typename]
   return fields.includes('title') ? 'title' : fields[0]
+}
+
+export interface CampaignTranslatedValue {
+  __typename: 'TranslatedValue'
+  languageId: string
+  value: string
+  source: CampaignTextSource
+}
+
+/** The `<field>Translations` list a block carries beside `field`. */
+export function blockTranslations(
+  block: CampaignTextBlock,
+  field: CampaignTextField
+): CampaignTranslatedValue[] {
+  const list = (block as unknown as Record<string, unknown>)[
+    `${field}Translations`
+  ]
+  return Array.isArray(list) ? (list as CampaignTranslatedValue[]) : []
+}
+
+/** The stored translation of a field in one language, or empty when there is none. */
+export function translationValue(
+  translations: readonly CampaignTranslatedValue[],
+  languageId: string
+): string {
+  return (
+    translations.find((translation) => translation.languageId === languageId)
+      ?.value ?? ''
+  )
+}
+
+/**
+ * The translations list after `campaignTranslationSet` writes `value` for
+ * `languageId` as a human entry (or clears it when empty): the optimistic
+ * shape of the mutation's result.
+ */
+export function withTranslationValue(
+  translations: readonly CampaignTranslatedValue[],
+  languageId: string,
+  value: string
+): CampaignTranslatedValue[] {
+  const others = translations.filter(
+    (translation) => translation.languageId !== languageId
+  )
+  if (value === '') return others
+  return [
+    ...others,
+    {
+      __typename: 'TranslatedValue',
+      languageId,
+      value,
+      source: CampaignTextSource.human
+    }
+  ]
 }

@@ -53,6 +53,7 @@ const createMock = {
         parentBlockId: 'headerId',
         parentOrder: 2,
         content: '',
+        contentTranslations: [],
         typographyVariant: null,
         align: null,
         color: null,
@@ -198,7 +199,8 @@ function renderBar(
   initialState?: Partial<CampaignEditorState>,
   onSettingsClick = vi.fn(),
   campaignProp = campaign,
-  onRegionSettingsClick = vi.fn()
+  onRegionSettingsClick = vi.fn(),
+  onThemeClick = vi.fn()
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
@@ -220,6 +222,7 @@ function renderBar(
       <BottomBar
         onSettingsClick={onSettingsClick}
         onRegionSettingsClick={onRegionSettingsClick}
+        onThemeClick={onThemeClick}
       />
     </StaticEditor>
   )
@@ -242,9 +245,10 @@ describe('BottomBar', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
-  it('shows Settings, Theme, Translations and Add section on the campaign row', () => {
+  it('shows Settings, Theme, Languages, Translations and Add section on the campaign row', () => {
     const onSettingsClick = vi.fn()
-    renderBar(undefined, onSettingsClick)
+    const onThemeClick = vi.fn()
+    renderBar(undefined, onSettingsClick, campaign, vi.fn(), onThemeClick)
 
     expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
       'data-selection',
@@ -253,15 +257,18 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])
-    expect(screen.getByRole('button', { name: 'Theme' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Theme' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Translations' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Add section' })).toBeEnabled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
     expect(onSettingsClick).toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
+    expect(onThemeClick).toHaveBeenCalled()
   })
 
   it('shows Open page, Add line, Settings, Unlist and move for a selected region card', () => {
@@ -329,6 +336,23 @@ describe('BottomBar', () => {
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
   })
 
+  it('opens the Translations view from the campaign row', () => {
+    const onTranslationsClick = vi.fn()
+    render(
+      <StaticEditor mocks={[createMock, deleteMock]}>
+        <BottomBar
+          onSettingsClick={vi.fn()}
+          onThemeClick={vi.fn()}
+          onTranslationsClick={onTranslationsClick}
+        />
+      </StaticEditor>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
+
+    expect(onTranslationsClick).toHaveBeenCalled()
+  })
+
   it('shows Edit, Style, Add, move, duplicate and bin for a section', () => {
     renderBar({ selectedBlockId: 'heroId' })
 
@@ -342,7 +366,7 @@ describe('BottomBar', () => {
       'Duplicate',
       'Delete'
     ])
-    expect(screen.getByRole('button', { name: 'Style' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
     // The hero is first on the page, so only Move down applies.
     expect(screen.getByRole('button', { name: 'Move up' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Move down' })).toBeEnabled()
@@ -375,6 +399,7 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])
@@ -400,16 +425,33 @@ describe('BottomBar', () => {
       'Delete'
     ])
     expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled()
-    expect(screen.getByRole('button', { name: 'Size' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Size' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Style' })).toBeEnabled()
+  })
+
+  it('opens the Style panel for the selected section, and for an Extra’s host section', () => {
+    renderBar({ selectedBlockId: 'journeyListNoteId' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Style' }))
+
+    expect(screen.getByTestId('CampaignStylePanel')).toHaveAttribute(
+      'data-block-id',
+      'landingJourneyListId'
+    )
+    expect(screen.getByRole('tab', { name: 'Background' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Colours' })).toBeInTheDocument()
   })
 
   it('adds the link chip and variant, size and colours for a button Extra', () => {
     renderBar({ selectedBlockId: 'heroButtonId' })
 
-    expect(screen.getByText('Add link')).toBeInTheDocument()
+    expect(screen.getByTestId('LinkChip')).toHaveTextContent(
+      'Choose your region'
+    )
     expect(buttonNames()).toEqual([
       'Campaign',
       'Hero',
+      'Choose your region',
       'Variant',
       'Size',
       'Colours',
@@ -459,7 +501,8 @@ describe('BottomBar', () => {
         'Region switcher',
         'Video carousel',
         'Journey list',
-        'Analytics'
+        'Analytics',
+        'Image'
       ])
     )
 
@@ -470,7 +513,7 @@ describe('BottomBar', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('appends a section to the Region Page from the campaign row, offering all seven types', async () => {
+  it('appends a section to the Region Page from the campaign row, offering all eight types', async () => {
     renderBar({ pageKind: CampaignPageKind.regionTemplate })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add section' }))
@@ -481,7 +524,8 @@ describe('BottomBar', () => {
       'Journey list',
       'Analytics',
       'Region header',
-      'Region share'
+      'Region share',
+      'Image'
     ])
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Region share' }))

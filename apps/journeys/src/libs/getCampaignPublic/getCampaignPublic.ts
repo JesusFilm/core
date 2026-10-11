@@ -1,6 +1,10 @@
 import { ApolloClient, CombinedGraphQLErrors, gql } from '@apollo/client'
 
-import { CAMPAIGN_PUBLIC_FIELDS } from '@core/journeys/ui/Campaign'
+import {
+  CAMPAIGN_PUBLIC_FIELDS,
+  resolvePageLanguage
+} from '@core/journeys/ui/Campaign'
+import type { ResolvedPageLanguage } from '@core/journeys/ui/Campaign'
 
 import {
   GetCampaignPublic_campaignPublic as CampaignPublic,
@@ -40,9 +44,9 @@ function isNotFound(error: unknown): boolean {
 }
 
 /**
- * Read a published campaign for the public page. Null for a draft, unknown
- * or malformed slug (the route answers not found with `revalidate: 1`);
- * any other failure is rethrown so the previous page stays served.
+ * Read a published campaign for the public page in one language. Null for a
+ * draft, unknown or malformed slug (the route answers not found); any other
+ * failure is rethrown.
  */
 export async function fetchCampaignPublic(
   apolloClient: ApolloClient,
@@ -63,4 +67,71 @@ export async function fetchCampaignPublic(
     if (isNotFound(error)) return null
     throw error
   }
+}
+
+/** What the request carries that decides the Page Language (PRD §2). */
+export interface PageLanguageRequest {
+  /** The `lang` query param. */
+  param?: string | string[] | null
+  /** The language cookie the header select wrote. */
+  cookie?: string | null
+  /** The `Accept-Language` header. */
+  acceptLanguage?: string | null
+}
+
+export interface CampaignPublicInPageLanguage {
+  campaign: CampaignPublic
+  language: ResolvedPageLanguage
+}
+
+/**
+ * Read a published campaign in the visitor's Page Language: one read in the
+ * campaign default yields the language list the request is resolved
+ * against (`?lang` → cookie → `Accept-Language` → default), then a second
+ * read only when the resolved language differs. Null when the campaign is
+ * not published.
+ */
+export async function fetchCampaignPublicInPageLanguage(
+  apolloClient: ApolloClient,
+  slug: string,
+  request: PageLanguageRequest
+): Promise<CampaignPublicInPageLanguage | null> {
+  const inDefault = await fetchCampaignPublic(apolloClient, slug)
+  if (inDefault == null) return null
+  const language = resolvePageLanguage({
+    languages: inDefault.languages.map((candidate) => ({
+      languageId: candidate.languageId,
+      bcp47: candidate.language.bcp47
+    })),
+    defaultLanguageId: inDefault.defaultLanguageId,
+    ...request
+  })
+  if (language.languageId === inDefault.languageId)
+    return { campaign: inDefault, language }
+  const campaign = await fetchCampaignPublic(
+    apolloClient,
+    slug,
+    language.languageId
+  )
+  if (campaign == null) return null
+  return { campaign, language }
+}
+
+/**
+ * The `Cache-Control` a campaign page answers with: shared caching when the
+ * response is a function of the URL alone — the `lang` param decided the
+ * language, or the campaign has one language so nothing can vary. Every
+ * other outcome depends on the visitor's cookie or `Accept-Language` (a
+ * default-language answer included: the next visitor at the same URL may
+ * carry a cookie), so it is private. Every in-campaign link and the header
+ * select carry the param on a multi-language campaign, so only a first
+ * visit there is uncached.
+ */
+export function campaignPageCacheControl(
+  language: ResolvedPageLanguage,
+  campaignLanguageCount: number
+): string {
+  return language.source === 'param' || campaignLanguageCount <= 1
+    ? 'public, s-maxage=60, stale-while-revalidate=300'
+    : 'private, no-cache'
 }
