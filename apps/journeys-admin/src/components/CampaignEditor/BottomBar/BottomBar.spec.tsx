@@ -501,7 +501,8 @@ describe('BottomBar', () => {
         'Region switcher',
         'Video carousel',
         'Journey list',
-        'Analytics'
+        'Analytics',
+        'Image'
       ])
     )
 
@@ -512,7 +513,7 @@ describe('BottomBar', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('appends a section to the Region Page from the campaign row, offering all seven types', async () => {
+  it('appends a section to the Region Page from the campaign row, offering all eight types', async () => {
     renderBar({ pageKind: CampaignPageKind.regionTemplate })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add section' }))
@@ -523,7 +524,8 @@ describe('BottomBar', () => {
       'Journey list',
       'Analytics',
       'Region header',
-      'Region share'
+      'Region share',
+      'Image'
     ])
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Region share' }))
