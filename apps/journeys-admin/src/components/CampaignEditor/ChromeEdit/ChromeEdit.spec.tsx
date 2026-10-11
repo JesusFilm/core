@@ -3,6 +3,7 @@ import { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignImageSlot } from '../../../../__generated__/globalTypes'
+import { CAMPAIGN_BLOCK_RESTORE } from '../../../libs/useCampaignBlockRestoreMutation'
 import { CAMPAIGN_HEADER_BLOCK_UPDATE_LOGO } from '../../../libs/useCampaignHeaderLogoMutation'
 import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
@@ -11,7 +12,6 @@ import {
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../libs/useImageUpload'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
-import { CAMPAIGN_BLOCK_RESTORE } from '../../../libs/useCampaignBlockRestoreMutation'
 import { campaign } from '../data'
 import { WithBlock, blockOf } from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'

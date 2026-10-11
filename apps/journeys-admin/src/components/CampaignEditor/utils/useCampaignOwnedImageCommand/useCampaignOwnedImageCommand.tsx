@@ -2,11 +2,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignImageSlot } from '../../../../../__generated__/globalTypes'
+import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import {
   CampaignImageOwner,
   useCampaignImageBlockCreateMutation
 } from '../../../../libs/useCampaignImageBlockCreateMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import {
   CampaignStyleCommand,
