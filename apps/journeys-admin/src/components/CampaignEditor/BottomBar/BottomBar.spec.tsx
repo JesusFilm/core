@@ -722,6 +722,7 @@ describe('BottomBar', () => {
 
     function renderColumnBar(
       selectedBlockId: string
+    ): ReturnType<typeof render> {
       return renderBar(
         { selectedBlockId },
         vi.fn(),
@@ -730,7 +731,6 @@ describe('BottomBar', () => {
         vi.fn(),
         mocks
       )
-      })
     }
 
     it('shows Edit, Style, Change type, Add, swap and the emptying bin for a section in a slot', () => {
