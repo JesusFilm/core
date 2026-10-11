@@ -69,6 +69,28 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     })
   })
 
+  it('reads again with the language id when the campaign default is not the fallback Watch text language', async () => {
+    const inFrench = { ...french, defaultLanguageId: '496' }
+    const query = vi.fn(async () => ({
+      data: { campaignPublic: inFrench }
+    }))
+    const apollo = { query } as unknown as ApolloClient
+
+    const result = await fetchCampaignPublicInPageLanguage(
+      apollo,
+      'christmas-2026',
+      {}
+    )
+
+    expect(result?.language.languageId).toBe('496')
+    expect(query).toHaveBeenCalledTimes(2)
+    expect(query.mock.calls[1]).toEqual([
+      expect.objectContaining({
+        variables: { slug: 'christmas-2026', languageId: '496' }
+      })
+    ])
+  })
+
   it('follows the ?lang → cookie → Accept-Language → default order against the campaign languages', async () => {
     const apollo = client()
     const header = await fetchCampaignPublicInPageLanguage(

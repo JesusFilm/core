@@ -1224,6 +1224,32 @@ describe('the Media Slot (hero and Featured Media)', () => {
       }
     )
 
+    it("excludes the section's live cover and logo from the targets", async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(
+        validateMediaSlotTarget('coverId', {
+          ...hero,
+          coverBlockId: 'coverId',
+          logoBlockId: 'logoId'
+        })
+      )
+
+      expect(error.extensions).toEqual({
+        code: 'BAD_USER_INPUT',
+        field: 'mediaBlockId'
+      })
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: 'coverId',
+          campaignId: 'campaignId',
+          parentBlockId: 'heroId',
+          NOT: { id: { in: ['coverId', 'logoId'] } }
+        },
+        select: { id: true, typename: true }
+      })
+    })
+
     it.each([
       ['a Button Extra', { id: 'mediaId', typename: 'CampaignButtonBlock' }],
       ['a section', { id: 'mediaId', typename: 'CampaignHeroBlock' }],

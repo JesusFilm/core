@@ -1130,21 +1130,27 @@ export async function createOwnedImageBlock(
 /**
  * `mediaBlockId` on a hero or Featured Media update names a
  * CampaignVideoBlock or CampaignImageBlock that section owns — live, or
- * soft-deleted by an earlier swap so undo can bring it back. Anything else
- * is `BAD_USER_INPUT` / `mediaBlockId`. Null empties the slot without a
- * lookup; omitted leaves it alone.
+ * soft-deleted by an earlier swap so undo can bring it back. The section's
+ * live background cover and logo are owned too but belong to their own slots,
+ * so they are not targets. Anything else is `BAD_USER_INPUT` /
+ * `mediaBlockId`. Null empties the slot without a lookup; omitted leaves it
+ * alone.
  */
 export async function validateMediaSlotTarget(
   mediaBlockId: string | number | null | undefined,
-  owner: Pick<CampaignBlock, 'id' | 'campaignId'>
+  owner: Pick<CampaignBlock, 'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId'>
 ): Promise<string | null | undefined> {
   if (mediaBlockId === undefined) return undefined
   if (mediaBlockId == null) return null
+  const otherSlotIds = [owner.coverBlockId, owner.logoBlockId].filter(
+    (id): id is string => id != null
+  )
   const media = await prisma.campaignBlock.findFirst({
     where: {
       id: String(mediaBlockId),
       campaignId: owner.campaignId,
-      parentBlockId: owner.id
+      parentBlockId: owner.id,
+      ...(otherSlotIds.length > 0 && { NOT: { id: { in: otherSlotIds } } })
     },
     select: { id: true, typename: true }
   })
