@@ -128,6 +128,15 @@ export function newSectionBlock(
         titleTranslations: [],
         introTranslations: []
       }
+    case 'CampaignImageBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        src: null,
+        alt: null,
+        width: null,
+        height: null
+      }
   }
 }
 

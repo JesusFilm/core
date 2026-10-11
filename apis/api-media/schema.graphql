@@ -371,8 +371,25 @@ enum MediaRole {
 }
 
 type Mutation {
-  createCloudflareUploadByFile(input: ImageInput, journeyId: ID): CloudflareImage!
-  createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID): CloudflareImage!
+  createCloudflareUploadByFile(
+    input: ImageInput
+    journeyId: ID
+
+    """
+    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    """
+    teamId: ID
+  ): CloudflareImage!
+  createCloudflareUploadByUrl(
+    url: String!
+    input: ImageInput
+    journeyId: ID
+
+    """
+    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    """
+    teamId: ID
+  ): CloudflareImage!
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID): CloudflareImage!
   deleteCloudflareImage(id: ID!): Boolean!
   cloudflareUploadComplete(id: ID!): Boolean!

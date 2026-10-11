@@ -1,0 +1,1 @@
+export { CampaignImage } from './CampaignImage'
