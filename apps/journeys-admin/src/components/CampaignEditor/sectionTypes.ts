@@ -159,6 +159,15 @@ export function newSectionBlock(
         ...shared,
         ratio: CampaignColumnsRatio.equal
       }
+    case 'CampaignImageBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        src: null,
+        alt: null,
+        width: null,
+        height: null
+      }
   }
 }
 

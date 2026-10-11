@@ -18,6 +18,7 @@ import { CAMPAIGN_THEME_UPDATE } from '../../libs/useCampaignThemeUpdateMutation
 import { useCampaignEditor } from './CampaignEditorProvider'
 import { campaign } from './data'
 
+/** A type alias, not an interface, so the array is assignable to the editors' `Record<string, unknown>[]` mocks. */
 export type StyleMock = {
   request: Record<string, unknown>
   result: ReturnType<typeof vi.fn>

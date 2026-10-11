@@ -28,6 +28,8 @@ export function blockLabel(
       return t('Columns')
     case 'CampaignColumnBlock':
       return t('Column')
+    case 'CampaignImageBlock':
+      return t('Image')
     case 'CampaignHeaderBlock':
       return t('Header')
     case 'CampaignFooterBlock':

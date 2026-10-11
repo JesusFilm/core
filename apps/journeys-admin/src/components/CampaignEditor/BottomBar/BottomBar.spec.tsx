@@ -449,10 +449,13 @@ describe('BottomBar', () => {
   it('adds the link chip and variant, size and colours for a button Extra', () => {
     renderBar({ selectedBlockId: 'heroButtonId' })
 
-    expect(screen.getByText('Add link')).toBeInTheDocument()
+    expect(screen.getByTestId('LinkChip')).toHaveTextContent(
+      'Choose your region'
+    )
     expect(buttonNames()).toEqual([
       'Campaign',
       'Hero',
+      'Choose your region',
       'Variant',
       'Size',
       'Colours',
@@ -504,7 +507,8 @@ describe('BottomBar', () => {
         'Journey list',
         'Analytics',
         'Rich text',
-        'Columns'
+        'Columns',
+        'Image'
       ])
     )
 
@@ -515,7 +519,7 @@ describe('BottomBar', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('appends a section to the Region Page from the campaign row, offering all nine types', async () => {
+  it('appends a section to the Region Page from the campaign row, offering all ten types', async () => {
     renderBar({ pageKind: CampaignPageKind.regionTemplate })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add section' }))
@@ -528,7 +532,8 @@ describe('BottomBar', () => {
       'Region header',
       'Region share',
       'Rich text',
-      'Columns'
+      'Columns',
+      'Image'
     ])
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Region share' }))

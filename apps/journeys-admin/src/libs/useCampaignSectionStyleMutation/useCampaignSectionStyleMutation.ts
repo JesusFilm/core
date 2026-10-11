@@ -174,6 +174,18 @@ export const CAMPAIGN_COLUMNS_BLOCK_UPDATE_STYLE = gql`
   }
 `
 
+export const CAMPAIGN_IMAGE_BLOCK_UPDATE_STYLE = gql`
+  ${CAMPAIGN_SECTION_STYLE_FIELDS}
+  mutation CampaignImageBlockUpdateStyle(
+    $id: ID!
+    $input: CampaignImageBlockUpdateInput!
+  ) {
+    campaignImageBlockUpdate(id: $id, input: $input) {
+      ...CampaignSectionStyleFields
+    }
+  }
+`
+
 export const CAMPAIGN_HEADER_BLOCK_UPDATE_STYLE = gql`
   ${CAMPAIGN_SECTION_STYLE_FIELDS}
   mutation CampaignHeaderBlockUpdateStyle(
@@ -242,6 +254,10 @@ export const SECTION_STYLE_OPERATIONS: Record<
   CampaignColumnsBlock: {
     document: CAMPAIGN_COLUMNS_BLOCK_UPDATE_STYLE,
     operation: 'campaignColumnsBlockUpdate'
+  },
+  CampaignImageBlock: {
+    document: CAMPAIGN_IMAGE_BLOCK_UPDATE_STYLE,
+    operation: 'campaignImageBlockUpdate'
   },
   CampaignHeaderBlock: {
     document: CAMPAIGN_HEADER_BLOCK_UPDATE_STYLE,

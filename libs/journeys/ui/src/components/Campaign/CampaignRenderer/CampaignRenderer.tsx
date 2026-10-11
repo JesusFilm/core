@@ -4,6 +4,7 @@ import { CampaignAnalytics } from '../CampaignAnalytics'
 import { CampaignButton } from '../CampaignButton'
 import { CampaignColumns } from '../CampaignColumns'
 import { CampaignHero } from '../CampaignHero'
+import { CampaignImage } from '../CampaignImage'
 import { CampaignJourneyList } from '../CampaignJourneyList'
 import { CampaignRegionHeader } from '../CampaignRegionHeader'
 import { CampaignRegionShare } from '../CampaignRegionShare'
@@ -44,6 +45,8 @@ export function CampaignRenderer({
       return <CampaignRichText block={block} />
     case 'CampaignColumnsBlock':
       return <CampaignColumns block={block} />
+    case 'CampaignImageBlock':
+      return <CampaignImage block={block} />
     case 'CampaignTypographyBlock':
       return <CampaignTypography block={block} />
     case 'CampaignButtonBlock':

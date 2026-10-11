@@ -9,6 +9,7 @@ import {
   campaignBlockInsertUpdate,
   campaignBlocksAdd
 } from '../campaignBlockCache'
+import { CAMPAIGN_IMAGE_BLOCK_CREATE } from '../useCampaignImageBlockCreateMutation'
 import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 /** Every section typename: what "+Add section" offers. */
@@ -21,7 +22,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
   'CampaignRichTextBlock',
-  'CampaignColumnsBlock'
+  'CampaignColumnsBlock',
+  'CampaignImageBlock'
 ] as const
 
 export type CampaignSectionTypename =
@@ -200,6 +202,10 @@ export const SECTION_CREATE_OPERATIONS: Record<
   CampaignColumnsBlock: {
     document: CAMPAIGN_COLUMNS_BLOCK_CREATE,
     operation: 'campaignColumnsBlockCreate'
+  },
+  CampaignImageBlock: {
+    document: CAMPAIGN_IMAGE_BLOCK_CREATE,
+    operation: 'campaignImageBlockCreate'
   }
 }
 

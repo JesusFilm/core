@@ -1,4 +1,3 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import { useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -21,6 +20,7 @@ import {
 import { useCampaignStringUpdateMutation } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignTranslationSetMutation } from '../../../../libs/useCampaignTranslationSetMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { messageOf } from '../messageOf'
 
 /** One inline-editable text: a text field of a campaign block, or a Campaign String. */
 export type CampaignTextTarget =
@@ -70,12 +70,6 @@ export function textDebounceKeyPrefix(target: {
   id: string
 }): string {
   return `${target.__typename}:${target.id}:`
-}
-
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
 }
 
 interface ResolvedTarget {

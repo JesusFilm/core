@@ -14,6 +14,7 @@ export {
   writeCampaignLanguageCookie
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
+export { CampaignImage } from './CampaignImage'
 export { CampaignJourneyList } from './CampaignJourneyList'
 export {
   CampaignPage,

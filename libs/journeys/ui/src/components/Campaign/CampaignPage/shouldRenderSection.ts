@@ -47,7 +47,8 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * is skipped; Analytics always renders; Region Header and Region Share render
  * on a Region Page (Share needs text until a language is linked); Rich Text
  * needs a title or a non-empty paragraph; Columns needs a Column Slot whose
- * section itself renders, or an Extra, so two empty slots skip the band.
+ * section itself renders, or an Extra, so two empty slots skip the band; an
+ * Image section renders with a picture or an Extra, else is skipped.
  */
 export function shouldRenderSection(
   section: CampaignSectionTree,
@@ -102,6 +103,8 @@ export function shouldRenderSection(
         extras ||
         section.children.some((slot) => slotSection(slot, context) != null)
       )
+    case 'CampaignImageBlock':
+      return hasText(section.src) || extras
     case 'CampaignHeaderBlock':
     case 'CampaignFooterBlock':
     default:

@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button'
-import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
@@ -44,6 +43,9 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { ChromeEdit } from '../ChromeEdit'
+import { ImageSectionEdit } from '../ImageSectionEdit'
+import { LinkChip } from '../LinkChip'
 import { OrphanPageBar } from '../OrphanPageBar'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import {
@@ -101,13 +103,15 @@ interface SectionInsert {
  * is selected. Campaign row: Settings, Theme, Languages, Translations, +Add
  * section. Section: Edit, Style, +Add (an Extra, or a section above or
  * below), move up/down, duplicate, bin behind a confirmation. Chrome: Edit,
- * Style, +Add only. Column child (the section in a Column Slot): Edit, Style,
- * Change type, +Add (Extras only), ⇄ swap the two slots, bin behind a
- * confirmation that empties the column. Column Slot: a type picker while
- * empty, ⇄ swap. Text Extra: size, align, colour, Style, bin. Button Extra
- * adds the link chip and variant/size/colours. Region card: Open page, +Add
- * line, Settings, list/unlist and move. On an Orphan Page the campaign row
- * adds the orphan page bar. Controls that belong to later tickets render
+ * Style, +Add only; the header's Edit opens the logo editor and an Image
+ * section's Edit opens the picture editor, both in a drawer. Column child (the
+ * section in a Column Slot): Edit, Style, Change type, +Add (Extras only), ⇄
+ * swap the two slots, bin behind a confirmation that empties the column.
+ * Column Slot: a type picker while empty, ⇄ swap. Text Extra: size, align,
+ * colour, Style, bin. Button Extra adds the link chip and variant/size/colours.
+ * Region card: Open page, +Add line, Settings, list/unlist and move. On an
+ * Orphan Page the campaign row adds the orphan page bar. Controls that belong
+ * to later tickets render
  * disabled.
  */
 export function BottomBar({
@@ -148,6 +152,7 @@ export function BottomBar({
   )
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   /** The section or chrome block the Style panel edits: the selection's host. */
   const styledHost =
@@ -179,8 +184,18 @@ export function BottomBar({
     selectedSlot?.parentBlockId != null
       ? columnSlots(campaign.blocks, selectedSlot.parentBlockId).length
       : 0
+  /** The header and an Image section edit in a drawer (logo, picture); everything else edits its text in place. */
+  const editedBlock =
+    selection.block?.__typename === 'CampaignHeaderBlock' ||
+    selection.block?.__typename === 'CampaignImageBlock'
+      ? selection.block
+      : undefined
 
   function handleEdit(): void {
+    if (editedBlock != null) {
+      setEditOpen(true)
+      return
+    }
     dispatch({ type: 'RequestEditAction' })
   }
 
@@ -719,14 +734,11 @@ export function BottomBar({
       case 'button':
         return (
           <>
-            <Chip
-              icon={<LinkIcon />}
-              label={t('Add link')}
-              variant="outlined"
-              disabled
-            />
             {selection.block?.__typename === 'CampaignButtonBlock' && (
-              <ButtonControls block={selection.block} />
+              <>
+                <LinkChip block={selection.block} />
+                <ButtonControls block={selection.block} />
+              </>
             )}
             {styleButton}
             {binButton}
@@ -773,6 +785,21 @@ export function BottomBar({
       >
         {styledHost != null && (
           <StylePanel block={styledHost} onClose={() => setStyleOpen(false)} />
+        )}
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={editOpen && editedBlock != null}
+        onClose={() => setEditOpen(false)}
+      >
+        {editedBlock?.__typename === 'CampaignHeaderBlock' && (
+          <ChromeEdit block={editedBlock} onClose={() => setEditOpen(false)} />
+        )}
+        {editedBlock?.__typename === 'CampaignImageBlock' && (
+          <ImageSectionEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
         )}
       </Drawer>
     </Stack>

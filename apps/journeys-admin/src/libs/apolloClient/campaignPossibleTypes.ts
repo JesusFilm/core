@@ -13,6 +13,7 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignRegionShareBlock',
   'CampaignRichTextBlock',
   'CampaignColumnsBlock',
+  'CampaignImageBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
