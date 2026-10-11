@@ -84,7 +84,7 @@ export function CampaignButton({
         <MuiButton
           href={resolved.href}
           target={resolved.target}
-          rel={resolved.target === '_blank' ? 'noopener noreferrer' : undefined}
+          rel={resolved.target != null ? 'noopener noreferrer' : undefined}
           onClick={handleClick}
           variant={variant}
           size={size}
