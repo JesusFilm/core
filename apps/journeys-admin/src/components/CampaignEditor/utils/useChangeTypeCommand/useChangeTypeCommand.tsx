@@ -27,7 +27,10 @@ interface ChangeTypeParameters {
  * slot; undo deletes the new section and restores the old one with its Extras
  * and text; redo deletes the old one again and restores the new. The second
  * request of each pair waits for the first, because a slot holds one section
- * at a time and the API refuses a second.
+ * at a time and the API refuses a second. If the create is refused after the
+ * delete went through, the old section is restored so the column is never
+ * left empty, and undo and redo carry on to their restore even when their
+ * delete finds nothing to remove (the new section never existed).
  */
 export function useChangeTypeCommand(): {
   addChangeType: (
@@ -68,6 +71,14 @@ export function useChangeTypeCommand(): {
     })
   }
 
+  async function replace(
+    outgoing: CampaignBlock,
+    incoming: CampaignBlock
+  ): Promise<void> {
+    await remove(outgoing).catch(() => undefined)
+    await restore(incoming).catch(() => undefined)
+  }
+
   function addChangeType(
     section: CampaignBlock,
     typename: CampaignSectionTypename
@@ -90,28 +101,29 @@ export function useChangeTypeCommand(): {
       parameters: { execute: {}, undo: parameters, redo: parameters },
       execute() {
         focus(parameters, next)
-        void remove(section).then(
-          async () =>
-            await sectionCreate(next, {
-              id: next.id,
-              campaignId: campaign.id,
-              pageId: section.pageId as string,
-              parentBlockId: section.parentBlockId as string,
-              parentOrder: 0
-            })
-        )
+        void remove(section)
+          .then(async () => {
+            try {
+              await sectionCreate(next, {
+                id: next.id,
+                campaignId: campaign.id,
+                pageId: section.pageId as string,
+                parentBlockId: section.parentBlockId as string,
+                parentOrder: 0
+              })
+            } catch {
+              await restore(section)
+            }
+          })
+          .catch(() => undefined)
       },
       undo(target) {
         focus(target, target.previous)
-        void remove(target.next).then(
-          async () => await restore(target.previous)
-        )
+        void replace(target.next, target.previous)
       },
       redo(target) {
         focus(target, target.next)
-        void remove(target.previous).then(
-          async () => await restore(target.next)
-        )
+        void replace(target.previous, target.next)
       }
     })
   }

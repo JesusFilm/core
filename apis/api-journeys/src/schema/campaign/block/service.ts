@@ -431,6 +431,26 @@ function getDescendants(
 }
 
 /**
+ * A section binned from a column slot comes back only while the slot is still
+ * empty: a slot holds one section, so restoring beside another occupant
+ * (the author changed the type or added a new one since) is `CONFLICT` /
+ * `id`. A live block is its own occupant and only renumbers.
+ */
+async function assertSlotFreeForRestore(
+  block: CampaignBlock,
+  tx: Prisma.TransactionClient
+): Promise<void> {
+  if (block.parentBlockId == null) return
+  const parent = await tx.campaignBlock.findUnique({
+    where: { id: block.parentBlockId }
+  })
+  if (parent == null || !isCampaignSlotTypename(parent.typename)) return
+  const occupants = await getSiblings(block, tx, { id: { not: block.id } })
+  if (occupants.length > 0)
+    throw conflict('the column slot already holds a section', 'id')
+}
+
+/**
  * Restore a soft-deleted block: clear `deletedAt` on it and on the rows
  * deleted with it (same timestamp), and re-insert it among its siblings at
  * its own `parentOrder`, renumbering again. Returns the restored block with
@@ -441,6 +461,7 @@ export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    await assertSlotFreeForRestore(block, tx)
     if (block.deletedAt != null)
       await tx.campaignBlock.updateMany({
         where: {
@@ -811,6 +832,9 @@ export async function duplicateBlock(
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
+    const parent = live.find((row) => row.id === block.parentBlockId)
+    if (parent != null && isCampaignSlotTypename(parent.typename))
+      throw conflict('a column slot holds at most one section', 'id')
     const subtree = collectSubtree(block.id, live)
     const ids = new Map<string, string>()
     for (const row of subtree)

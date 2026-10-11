@@ -366,6 +366,43 @@ describe('campaignBlockDuplicate', () => {
     })
   })
 
+  it('refuses to duplicate the section inside a column slot (CONFLICT, id)', async () => {
+    const template = fixture.blocks[0]
+    const row = (
+      id: string,
+      typename: string,
+      parentBlockId: string | null
+    ): CampaignBlockRow => ({
+      ...template,
+      id,
+      typename,
+      parentBlockId,
+      parentOrder: 0,
+      pageId: 'landingPageId',
+      coverBlockId: null,
+      mediaBlockId: null,
+      logoBlockId: null,
+      action: null
+    })
+    const slotted = [
+      row('columnsId', 'CampaignColumnsBlock', null),
+      row('slotLeftId', 'CampaignColumnBlock', 'columnsId'),
+      row('slotHeroId', 'CampaignHeroBlock', 'slotLeftId')
+    ]
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', slotted[2])
+    )
+    setLive(slotted)
+
+    const result = await duplicate('slotHeroId')
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'CONFLICT',
+      field: 'id'
+    })
+    expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+  })
+
   it('refuses to duplicate a page (CONFLICT, id)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
     const { team, languages, theme, pages, blocks, regions, strings, ...row } =

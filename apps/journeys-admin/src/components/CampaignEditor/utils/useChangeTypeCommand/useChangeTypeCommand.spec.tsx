@@ -168,4 +168,65 @@ describe('useChangeTypeCommand', () => {
     expect(calls).toEqual(['delete slotRichTextId', 'restore newId'])
     await waitFor(() => expect(slotBlocks()).toEqual(['Block-newId']))
   })
+
+  it('restores the old section when the create is refused, so the column is not left empty', async () => {
+    const failingCreate = { ...createMock, error: new Error('refused') }
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{ selectedBlockId: 'slotRichTextId' }}
+        mocks={[deleteOldMock, failingCreate, restoreOldMock]}
+      >
+        <BlocksProbe />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+    expect(calls).toEqual(['delete slotRichTextId', 'restore slotRichTextId'])
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
+  })
+
+  it('still restores the old section on undo when the new one was never created', async () => {
+    const failingCreate = { ...createMock, error: new Error('refused') }
+    const deleteMissingNew = {
+      ...deleteNewMock,
+      error: new Error('NOT_FOUND')
+    }
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{ selectedBlockId: 'slotRichTextId' }}
+        mocks={[
+          deleteOldMock,
+          failingCreate,
+          restoreOldMock,
+          deleteMissingNew,
+          restoreMock('slotRichTextId', slotRichText)
+        ]}
+      >
+        <CommandUndoItem variant="button" />
+        <BlocksProbe />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+    calls.length = 0
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(calls).toEqual(['restore slotRichTextId']))
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
+  })
 })
