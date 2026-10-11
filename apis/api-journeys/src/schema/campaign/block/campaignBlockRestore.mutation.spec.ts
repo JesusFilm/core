@@ -126,7 +126,7 @@ describe('campaignBlockRestore', () => {
         parentBlockId: 'slotId',
         parentOrder: 0,
         deletedAt: null
-      } as never)
+      })
 
       const result = await restore('slotHeroId')
 
