@@ -102,6 +102,17 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
     ],
     regions: fixture.regions.map((region) => ({
       ...region,
+      countries:
+        region.id === 'eurRegionId'
+          ? [
+              {
+                id: 'eurCountry-FR',
+                regionId: 'eurRegionId',
+                countryId: 'FR',
+                order: 0
+              }
+            ]
+          : [],
       nameTranslations:
         region.id === 'eurRegionId'
           ? { [FRENCH]: { value: 'Europe', source: 'human' } }
@@ -182,6 +193,10 @@ describe('campaignPublic', () => {
           order
           countries {
             countryId
+            order
+            country {
+              id
+            }
           }
           languages {
             languageId
@@ -377,7 +392,7 @@ describe('campaignPublic', () => {
         name: 'Europe',
         listed: true,
         order: 0,
-        countries: [],
+        countries: [{ countryId: 'FR', order: 0, country: { id: 'FR' } }],
         languages: [
           {
             languageId: '529',
@@ -835,6 +850,57 @@ describe('campaignPublic', () => {
     expect(names(result.data.regionLanguage)).not.toContain('qrCodeId')
     expect(names(result.data.campaign)).toEqual(
       expect.arrayContaining(['team', 'teamId', 'palette', 'blocks'])
+    )
+  })
+})
+
+describe('campaignPublic languages', () => {
+  const publicClient = getClient()
+
+  const CAMPAIGN_PUBLIC_LANGUAGES = graphql(`
+    query CampaignPublicLanguages($slug: String, $languageId: ID) {
+      campaignPublic(slug: $slug, languageId: $languageId) {
+        languageId
+        languages {
+          languageId
+          order
+          language {
+            id
+          }
+        }
+      }
+    }
+  `)
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns the Page Languages in CampaignLanguage.order, each resolving to its api-languages Language for bcp47 and autonym', async () => {
+    // Order comes from the Prisma read; the gateway fills `language.bcp47`
+    // and `language.name(primary: true)` from api-languages through the
+    // `Language` entity reference.
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC_LANGUAGES,
+      variables: { slug: 'christmas-2026', languageId: FRENCH }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignPublic).toEqual({
+      languageId: FRENCH,
+      languages: [
+        { languageId: '529', order: 0, language: { id: '529' } },
+        { languageId: FRENCH, order: 1, language: { id: FRENCH } }
+      ]
+    })
+    expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        include: expect.objectContaining({
+          languages: { orderBy: { order: 'asc' } }
+        })
+      })
     )
   })
 })

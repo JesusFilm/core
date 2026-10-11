@@ -230,6 +230,31 @@ describe('CampaignHeader', () => {
       expect(options).toEqual(['English', 'Français'])
     })
 
+    it('labels the options by autonym only, never the local name', () => {
+      renderHeader({
+        ...campaignPublic,
+        languages: campaignPublic.languages.map((language) => ({
+          ...language,
+          language: {
+            ...language.language,
+            name: [
+              ...language.language.name,
+              {
+                __typename: 'LanguageName' as const,
+                value: language.languageId === '496' ? 'French' : 'Anglais',
+                primary: false
+              }
+            ]
+          }
+        }))
+      })
+      fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Language' }))
+      const options = screen
+        .getAllByRole('option')
+        .map((option) => option.textContent)
+      expect(options).toEqual(['English', 'Français'])
+    })
+
     it('orders the options by CampaignLanguage.order', () => {
       renderHeader({
         ...campaignPublic,
@@ -255,9 +280,10 @@ describe('CampaignHeader', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('reloads the page with the chosen language as the lang param', () => {
+    it('writes the language cookie and reloads the page with the chosen language as the lang param', () => {
       const assign = vi.fn()
       const location = window.location
+      document.cookie = 'campaign-lang=en; path=/'
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: {
@@ -270,8 +296,9 @@ describe('CampaignHeader', () => {
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Language' }))
       fireEvent.click(screen.getByRole('option', { name: 'Français' }))
       expect(assign).toHaveBeenCalledWith(
-        'http://localhost/campaign/christmas-2026?lang=fr'
+        'http://localhost/campaign/christmas-2026?lang=fr#heroId'
       )
+      expect(document.cookie).toContain('campaign-lang=fr')
       Object.defineProperty(window, 'location', {
         configurable: true,
         value: location

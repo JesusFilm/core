@@ -8,15 +8,18 @@ import {
   CampaignTypographyBlockCreateVariables
 } from '../../../__generated__/CampaignTypographyBlockCreate'
 import { campaignBlockCreateUpdate } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export const CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignTypographyBlockCreate(
     $input: CampaignTypographyBlockCreateInput!
     $languageId: ID
   ) {
     campaignTypographyBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `

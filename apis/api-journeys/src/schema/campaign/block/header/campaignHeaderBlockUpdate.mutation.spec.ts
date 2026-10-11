@@ -88,7 +88,7 @@ describe('campaignHeaderBlockUpdate', () => {
     })
   })
 
-  it('sets logoBlockId to a live image block of the campaign', async () => {
+  it('sets logoBlockId to a live image block owned by the header', async () => {
     prismaMock.campaignBlock.findFirst
       .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
       .mockResolvedValueOnce({ id: 'logoId' } as never)
@@ -103,6 +103,7 @@ describe('campaignHeaderBlockUpdate', () => {
       where: {
         id: 'logoId',
         campaignId: 'campaignId',
+        parentBlockId: 'headerId',
         typename: 'CampaignImageBlock',
         deletedAt: null
       },
@@ -131,7 +132,7 @@ describe('campaignHeaderBlockUpdate', () => {
     })
   })
 
-  it('rejects a logo that is not a live CampaignImageBlock of the campaign (BAD_USER_INPUT, logoBlockId)', async () => {
+  it('rejects a logo that is not a live CampaignImageBlock owned by the header (BAD_USER_INPUT, logoBlockId)', async () => {
     prismaMock.campaignBlock.findFirst
       .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
       .mockResolvedValueOnce(null)

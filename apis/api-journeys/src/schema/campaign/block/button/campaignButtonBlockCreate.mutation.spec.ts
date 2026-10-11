@@ -136,7 +136,7 @@ describe('campaignButtonBlockCreate', () => {
 
   it('rejects an Extra as the parent (BAD_USER_INPUT, parentBlockId)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
-      fixture.blocks.find((block) => block.id === 'navHomeId')!
+      fixture.blocks.find((block) => block.id === 'navHomeId') ?? null
     )
 
     const result = await create({ parentBlockId: 'navHomeId' })

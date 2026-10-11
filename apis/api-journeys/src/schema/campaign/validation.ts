@@ -3,6 +3,7 @@ import slugify from 'slugify'
 import type { ZodType } from 'zod'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { FONT_FAMILIES } from '@core/shared/ui/fontFamilies'
 
 import { assertHttpsUrl } from '../templateGalleryPage/assertHttpsUrl'
 import {
@@ -56,6 +57,23 @@ export function assertHexOrNull<T extends string | null | undefined>(
 ): T extends string ? string : T {
   if (value == null) return value as T extends string ? string : T
   return assertHex(value, field) as T extends string ? string : T
+}
+
+/**
+ * A Campaign Theme font: null means the base theme default; a name must be
+ * in the shared curated `FontFamily` list (PRD §4, §15). Never `""`.
+ */
+export function assertFontFamily<T extends string | null>(
+  value: T,
+  field: string
+): T {
+  if (value === null) return value
+  if (!FONT_FAMILIES.includes(value))
+    throw badUserInput(
+      `${field} must be one of the offered fonts: ${FONT_FAMILIES.join(', ')}`,
+      field
+    )
+  return value
 }
 
 export const TEXT_CAPS = {
@@ -294,4 +312,24 @@ export async function validateRegionSlug(
   })
   if (existing != null) throw new SlugTakenError()
   return slug
+}
+
+/**
+ * On a Custom Domain a region slug outranks a journey slug with the same
+ * spelling, so a region may not take the address of a live journey in the
+ * campaign's team: `BAD_USER_INPUT` / `slug`, naming the journey.
+ */
+export async function assertRegionSlugFreeOfJourneys(
+  teamId: string,
+  slug: string
+): Promise<void> {
+  const journey = await prisma.journey.findFirst({
+    where: { teamId, slug, deletedAt: null },
+    select: { id: true, title: true }
+  })
+  if (journey != null)
+    throw badUserInput(
+      `slug "${slug}" is already the address of the journey "${journey.title}" in this team`,
+      'slug'
+    )
 }

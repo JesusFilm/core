@@ -3,11 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignTypographyBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, VideoLabel, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignTypographyBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignTypographyBlockCreate
 // ====================================================
+
+export interface CampaignTypographyBlockCreate_campaignTypographyBlockCreate_contentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignTypographyBlockCreate_campaignTypographyBlockCreate {
   __typename: "CampaignTypographyBlock";
@@ -43,24 +53,25 @@ export interface CampaignTypographyBlockCreate_campaignTypographyBlockCreate {
    * Which side of the Section Body this Extra renders on; null on a Region Line.
    */
   placement: CampaignChildPlacement | null;
+  contentTranslations: CampaignTypographyBlockCreate_campaignTypographyBlockCreate_contentTranslations[];
 }
 
 export interface CampaignTypographyBlockCreate {
   /**
-   * Add a text Extra to a section or chrome block. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. Omitted content is empty; the editor shows the placeholder "Your text".
+   * Add a text block: with `parentBlockId`, a text Extra of a section or chrome block, landing last among its siblings (`parentOrder = siblings.length`) on the side the placement names and copying the parent’s page or region scoping down; with `regionId`, a Region Line, scoped to the region alone (`pageId`, `parentBlockId` and `placement` null) and appended last among the region’s lines. Omitted content is empty; the editor shows the placeholder "Your text".
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
    * Errors:
    * - NOT_FOUND: campaignId does not resolve.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
-   * - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule.
+   * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign, or neither / both of parentBlockId and regionId given.
+   * - BAD_USER_INPUT (field: `regionId`): not a region of this campaign.
+   * - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule; placement is refused on a Region Line.
    */
   campaignTypographyBlockCreate: CampaignTypographyBlockCreate_campaignTypographyBlockCreate;
 }
 
 export interface CampaignTypographyBlockCreateVariables {
   input: CampaignTypographyBlockCreateInput;
-  languageId?: string | null;
 }

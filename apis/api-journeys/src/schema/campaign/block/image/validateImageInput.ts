@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql'
 
+import { env } from '../../../../env'
 import { transformInput } from '../../../block/image/transformInput'
 import {
   TEXT_CAPS,
@@ -24,17 +25,24 @@ export interface ImageColumns {
 }
 
 /**
- * `src`: https, and the host is `imagedelivery.net`. A pasted image URL on
- * another host is fetched into Cloudflare by the editor (api-media's
+ * `src`: https, the host `imagedelivery.net` and this deployment's
+ * Cloudflare account hash as the first path segment, so an image from another
+ * Cloudflare account is refused. A pasted image URL on another host is
+ * fetched into Cloudflare by the editor (api-media's
  * `createCloudflareUploadByUrl`) before it reaches this mutation, so the
- * stored address is always a Cloudflare one. `BAD_USER_INPUT` / `src`.
+ * stored address is always one of ours. `BAD_USER_INPUT` / `src`.
  */
 export function assertImageSrc(src: string): string {
   const trimmed = src.trim()
   assertHttpsUrl(trimmed, 'src')
-  if (new URL(trimmed).hostname !== CAMPAIGN_IMAGE_HOST)
+  const url = new URL(trimmed)
+  const accountHash = url.pathname.split('/')[1]
+  if (
+    url.hostname !== CAMPAIGN_IMAGE_HOST ||
+    accountHash !== env.CLOUDFLARE_UPLOAD_KEY
+  )
     throw badUserInput(
-      `src must be an https://${CAMPAIGN_IMAGE_HOST} image`,
+      `src must be an https://${CAMPAIGN_IMAGE_HOST} image of this account`,
       'src'
     )
   return trimmed

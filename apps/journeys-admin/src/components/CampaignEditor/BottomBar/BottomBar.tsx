@@ -1,3 +1,4 @@
+import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import Drawer from '@mui/material/Drawer'
@@ -13,7 +14,11 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronUpIcon from '@core/shared/ui/icons/ChevronUp'
 import CopyLeftIcon from '@core/shared/ui/icons/CopyLeft'
 import Edit2Icon from '@core/shared/ui/icons/Edit2'
+import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import LinkIcon from '@core/shared/ui/icons/Link'
+import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import SettingsIcon from '@core/shared/ui/icons/Settings'
@@ -33,10 +38,16 @@ import { useCampaignTypographyBlockCreateMutation } from '../../../libs/useCampa
 import { BarButton } from '../BarButton'
 import { blockLabel } from '../blockLabel'
 import { ButtonControls } from '../ButtonControls'
-import { useCampaignEditor } from '../CampaignEditorProvider'
+import { campaignPermanentAddress } from '../campaignAddress'
+import {
+  regionLines,
+  sortedRegions,
+  useCampaignEditor
+} from '../CampaignEditorProvider'
 import { ChromeEdit } from '../ChromeEdit'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { MediaSectionEdit } from '../MediaSectionEdit'
+import { OrphanPageBar } from '../OrphanPageBar'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import {
   newSectionBlock,
@@ -49,6 +60,7 @@ import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCo
 import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
+import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
 import { Breadcrumb } from './Breadcrumb'
 
@@ -57,6 +69,13 @@ export const NEW_BUTTON_LABEL = 'Button'
 
 interface BottomBarProps {
   onSettingsClick: () => void
+  onThemeClick: () => void
+  /** Opens the Languages panel (add and remove campaign languages). */
+  onLanguagesClick?: () => void
+  /** Opens the Translations view (review and edit translated text). */
+  onTranslationsClick?: () => void
+  /** Opens the selected region's settings (name, slug, countries). */
+  onRegionSettingsClick?: () => void
 }
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
@@ -69,26 +88,36 @@ interface SectionInsert {
 
 /**
  * The one contextual bottom bar: the breadcrumb, then the controls for what
- * is selected. Campaign row: Settings, Theme, Translations, +Add section.
- * Section: Edit, Style, +Add (an Extra, or a section above or below), move
- * up/down, duplicate, bin behind a confirmation. Chrome: Edit, Style, +Add
- * only; the header's Edit opens the logo editor, an Image section's Edit
- * the picture editor and a hero's or Featured Media section's Edit the
- * media editor, all in a drawer. Text Extra: size, align,
- * colour, Style, bin. Button Extra adds the link chip and
- * variant/size/colours. Controls that belong to later tickets render
+ * is selected. Campaign row: Settings, Theme, Languages, Translations, +Add
+ * section. Section: Edit, Style, +Add (an Extra, or a section above or
+ * below), move up/down, duplicate, bin behind a confirmation. Chrome: Edit,
+ * Style, +Add only; the header's Edit opens the logo editor, an Image
+ * section's Edit the picture editor and a hero's or Featured Media
+ * section's Edit the media editor, all in a drawer. Text Extra: size,
+ * align, colour, Style, bin. Button Extra adds the link chip and
+ * variant/size/colours. Region card: Open page, +Add line, Settings,
+ * list/unlist and move. On an Orphan Page the campaign row adds the orphan
+ * page bar. Controls that belong to later tickets render
  * disabled.
  */
-export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
+export function BottomBar({
+  onSettingsClick,
+  onThemeClick,
+  onLanguagesClick,
+  onTranslationsClick,
+  onRegionSettingsClick
+}: BottomBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
     selection,
+    currentRegion,
     state: { pageKind },
     dispatch,
     pageKindOf
   } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
+  const { setListed, reorderRegion } = useCampaignRegionCommand()
   const { addBlockDelete } = useCampaignBlockDeleteCommand()
   const { addBlockDuplicate } = useCampaignBlockDuplicateCommand()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
@@ -170,6 +199,7 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
         __typename: 'CampaignTypographyBlock',
         ...base,
         content: '',
+        contentTranslations: [],
         typographyVariant: null,
         align: null,
         color: null
@@ -189,6 +219,7 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       __typename: 'CampaignButtonBlock',
       ...base,
       label: NEW_BUTTON_LABEL,
+      labelTranslations: [],
       buttonVariant: null,
       size: null,
       align: null,
@@ -257,6 +288,51 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
   function handleMove(step: -1 | 1): void {
     if (selectedSection?.parentOrder == null) return
     addBlockOrder(selectedSection, selectedSection.parentOrder + step)
+  }
+
+  /** A region card's "+Add line": a Typography block scoped to the region, last among its lines. */
+  function handleAddLine(): void {
+    const region = selection.region
+    if (region == null) return
+    const id = uuidv4()
+    const block: CampaignBlock = {
+      __typename: 'CampaignTypographyBlock',
+      id,
+      campaignId: campaign.id,
+      pageId: null,
+      regionId: region.id,
+      parentBlockId: null,
+      parentOrder: regionLines(campaign.blocks, region.id).length,
+      content: '',
+      contentTranslations: [],
+      typographyVariant: null,
+      align: null,
+      color: null,
+      placement: null
+    }
+    addBlock({
+      block,
+      execute() {
+        void typographyCreate({
+          variables: {
+            input: { id, campaignId: campaign.id, regionId: region.id }
+          },
+          optimisticResponse: { campaignTypographyBlockCreate: block }
+        })
+      }
+    })
+  }
+
+  const selectedRegion =
+    selection.kind === 'region' ? selection.region : undefined
+  const regionSiblings = sortedRegions(campaign.regions)
+  const regionIndex = regionSiblings.findIndex(
+    (candidate) => candidate.id === selectedRegion?.id
+  )
+
+  function handleMoveRegion(step: -1 | 1): void {
+    if (selectedRegion == null) return
+    reorderRegion(selectedRegion, selectedRegion.order + step)
   }
 
   function handleDuplicate(): void {
@@ -380,16 +456,30 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
       case 'campaign':
         return (
           <>
+            {currentRegion != null && !currentRegion.listed && (
+              <OrphanPageBar region={currentRegion} />
+            )}
             <BarButton
               label={t('Settings')}
               icon={<SettingsIcon />}
               onClick={onSettingsClick}
             />
-            <BarButton label={t('Theme')} icon={<PaletteIcon />} disabled />
+            <BarButton
+              label={t('Theme')}
+              icon={<PaletteIcon />}
+              onClick={onThemeClick}
+            />
+            <BarButton
+              label={t('Languages')}
+              icon={<Globe1Icon />}
+              onClick={onLanguagesClick}
+              disabled={onLanguagesClick == null}
+            />
             <BarButton
               label={t('Translations')}
               icon={<TranslateIcon />}
-              disabled
+              onClick={onTranslationsClick}
+              disabled={onTranslationsClick == null}
             />
             <BarButton
               label={t('Add section')}
@@ -445,6 +535,54 @@ export function BottomBar({ onSettingsClick }: BottomBarProps): ReactElement {
             />
             {styleButton}
             {addButton}
+          </>
+        )
+      case 'region':
+        return selectedRegion == null ? null : (
+          <>
+            <Button
+              variant="outlined"
+              color="secondary"
+              startIcon={<LinkExternalIcon />}
+              href={`${campaignPermanentAddress(campaign.slug)}/${selectedRegion.slug}`}
+              target="_blank"
+              rel="noopener"
+            >
+              {t('Open page')}
+            </Button>
+            <BarButton
+              label={t('Add line')}
+              icon={<Plus2Icon />}
+              onClick={handleAddLine}
+            />
+            <BarButton
+              label={t('Settings')}
+              icon={<SettingsIcon />}
+              onClick={onRegionSettingsClick}
+            />
+            <BarButton
+              label={
+                selectedRegion.listed ? t('Unlist') : t('List on switcher')
+              }
+              icon={selectedRegion.listed ? <EyeClosedIcon /> : <EyeOpenIcon />}
+              onClick={() => setListed(selectedRegion, !selectedRegion.listed)}
+            />
+            <IconButton
+              aria-label={t('Move up')}
+              disabled={regionIndex <= 0}
+              onClick={() => handleMoveRegion(-1)}
+            >
+              <ChevronUpIcon />
+            </IconButton>
+            <IconButton
+              aria-label={t('Move down')}
+              disabled={
+                regionIndex < 0 || regionIndex >= regionSiblings.length - 1
+              }
+              onClick={() => handleMoveRegion(1)}
+            >
+              <ChevronDownIcon />
+            </IconButton>
           </>
         )
       case 'text':

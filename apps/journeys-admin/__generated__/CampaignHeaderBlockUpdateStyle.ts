@@ -44,8 +44,8 @@ export interface CampaignHeaderBlockUpdateStyle {
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
    * - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-   * - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock of this campaign.
-   * - BAD_USER_INPUT (field: `logoBlockId`): not a live CampaignImageBlock of this campaign.
+   * - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+   * - BAD_USER_INPUT (field: `logoBlockId`): not a live CampaignImageBlock owned by the header.
    */
   campaignHeaderBlockUpdate: CampaignHeaderBlockUpdateStyle_campaignHeaderBlockUpdate;
 }

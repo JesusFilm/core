@@ -20,6 +20,7 @@ import {
   createChildBlock,
   createOwnedBlock,
   createOwnedImageBlock,
+  createRegionLine,
   createTopLevelBlock,
   getSiblings,
   removeBlock,
@@ -30,6 +31,7 @@ import {
   validateImageSlotTarget,
   validateMediaSlotTarget,
   validateParentBlock,
+  validateRegion,
   validateSectionPage,
   validateSectionStyle
 } from './service'
@@ -255,7 +257,7 @@ describe('campaign block service', () => {
           parentOrder: { not: null },
           deletedAt: null
         },
-        orderBy: { parentOrder: 'asc' },
+        orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
         include: { action: true }
       })
     })
@@ -349,17 +351,46 @@ describe('campaign block service', () => {
         id: where.id,
         ...data
       })) as never)
-      prismaMock.campaignBlock.findMany.mockResolvedValue([first, third])
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([first, heroButton, third])
+        .mockResolvedValueOnce([first, third])
 
       const result = await removeBlock({ ...heroButton, parentOrder: 1 })
 
-      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-        where: { id: 'heroButtonId' },
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: { in: ['heroButtonId'] } },
         data: { deletedAt: expect.any(Date) }
       })
       expect(result.map((block) => [block.id, block.parentOrder])).toEqual([
         ['firstId', 0],
         ['thirdId', 1]
+      ])
+    })
+
+    it('stamps the live descendants and owned blocks in the same write', async () => {
+      const child = { ...heroButton, id: 'childId', parentBlockId: 'heroId' }
+      const owned = { ...heroButton, id: 'ownedId', parentOrder: null }
+      const unrelated = {
+        ...heroButton,
+        id: 'unrelatedId',
+        parentBlockId: 'otherId'
+      }
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([
+          { ...hero, coverBlockId: 'ownedId' },
+          child,
+          owned,
+          unrelated
+        ])
+        .mockResolvedValueOnce([])
+
+      await removeBlock({ ...hero, parentOrder: 0 })
+
+      const { where } = prismaMock.campaignBlock.updateMany.mock.calls[0][0]
+      expect((where!.id as { in: string[] }).in.sort()).toEqual([
+        'childId',
+        'heroId',
+        'ownedId'
       ])
     })
   })
@@ -397,6 +428,32 @@ describe('campaign block service', () => {
         ['heroButtonId', 1],
         ['thirdId', 2]
       ])
+    })
+
+    it('clears deletedAt on the rows deleted with the block, matched by timestamp', async () => {
+      const deletedAt = new Date('2026-10-01T00:00:00.000Z')
+      prismaMock.campaignBlock.update.mockImplementation((async ({
+        where,
+        data
+      }: any) => ({
+        ...hero,
+        id: where.id,
+        ...data
+      })) as never)
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+
+      await restoreBlock({ ...hero, deletedAt })
+
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: {
+          campaignId: hero.campaignId,
+          deletedAt,
+          id: { not: 'heroId' }
+        },
+        data: { deletedAt: null }
+      })
     })
 
     it('returns the restored block’s live descendants after its siblings', async () => {
@@ -692,6 +749,96 @@ describe('campaign block service', () => {
     })
   })
 
+  describe('validateRegion', () => {
+    it('returns a region of the campaign', async () => {
+      const region = campaignFactory().withRegion('EUR').build().regions[0]
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(region)
+
+      await expect(validateRegion('eurRegionId', 'campaignId')).resolves.toBe(
+        region
+      )
+      expect(prismaMock.campaignRegion.findFirst).toHaveBeenCalledWith({
+        where: { id: 'eurRegionId', campaignId: 'campaignId' }
+      })
+    })
+
+    it('rejects a region of another campaign (BAD_USER_INPUT, regionId)', async () => {
+      prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
+
+      const error = await errorOf(validateRegion('eurRegionId', 'campaignId'))
+
+      expect(error.extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'regionId'
+      })
+    })
+  })
+
+  describe('createRegionLine', () => {
+    it('creates exactly a Typography block scoped to the region, with pageId, parentBlockId and placement null and parentOrder = line order', async () => {
+      const region = campaignFactory().withRegion('EUR').build().regions[0]
+      const existingLine = {
+        ...hero,
+        id: 'eurLineId',
+        typename: 'CampaignTypographyBlock',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentOrder: 0
+      }
+      prismaMock.campaignBlock.findMany.mockResolvedValue([existingLine])
+      prismaMock.campaignBlock.create.mockImplementation((async ({
+        data
+      }: any) => ({
+        ...hero,
+        ...data,
+        id: 'newLineId',
+        action: null
+      })) as never)
+
+      const line = await createRegionLine(prismaMock, region, {
+        typename: 'CampaignTypographyBlock',
+        content: 'EUR',
+        placement: 'above'
+      })
+
+      expect(line).toMatchObject({
+        id: 'newLineId',
+        typename: 'CampaignTypographyBlock',
+        campaignId: 'campaignId',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentBlockId: null,
+        parentOrder: 1,
+        placement: null,
+        content: 'EUR'
+      })
+      expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            campaignId: 'campaignId',
+            parentBlockId: null,
+            pageId: null,
+            regionId: 'eurRegionId',
+            deletedAt: null
+          })
+        })
+      )
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
+        data: {
+          typename: 'CampaignTypographyBlock',
+          content: 'EUR',
+          placement: null,
+          campaignId: 'campaignId',
+          pageId: null,
+          regionId: 'eurRegionId',
+          parentBlockId: null,
+          parentOrder: 1
+        },
+        include: { action: true }
+      })
+    })
+  })
+
   describe('validateSectionPage', () => {
     it('returns a page of the campaign', async () => {
       prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[1])
@@ -878,12 +1025,15 @@ describe('owned images (cover and logo)', () => {
         parentBlockId: 'heroId',
         parentOrder: null
       })
-      expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
-      ).toEqual([
-        { where: { id: 'oldCoverId' }, data: { deletedAt: expect.any(Date) } },
-        { where: { id: 'heroId' }, data: { coverBlockId: 'coverId' } }
-      ])
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: 'oldCoverId', parentBlockId: 'heroId' },
+        data: { deletedAt: expect.any(Date) }
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'heroId' },
+        data: { coverBlockId: 'coverId' }
+      })
       expect(prismaMock.campaign.update).toHaveBeenCalledWith({
         where: { id: 'campaignId' },
         data: { updatedAt: expect.any(Date) }
@@ -1132,7 +1282,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
 })
 
 describe('section style (the nine shared section fields)', () => {
-  const block = { campaignId: 'campaignId' }
+  const block = { id: 'sectionId', campaignId: 'campaignId' }
 
   describe('sectionStyleColumns', () => {
     it('writes the kind exactly as given and never derives it from the populated columns', () => {
@@ -1216,23 +1366,29 @@ describe('section style (the nine shared section fields)', () => {
   describe('validateImageSlotTarget', () => {
     it('returns null for a cleared slot without a lookup', async () => {
       await expect(
-        validateImageSlotTarget(null, 'campaignId', 'logoBlockId')
+        validateImageSlotTarget(null, 'campaignId', 'logoBlockId', 'headerId')
       ).resolves.toBeNull()
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
     })
 
-    it('resolves a live image block of the campaign for any slot column', async () => {
+    it('resolves a live image block owned by the block for any slot column', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         id: 'logoId'
       } as never)
 
       await expect(
-        validateImageSlotTarget('logoId', 'campaignId', 'logoBlockId')
+        validateImageSlotTarget(
+          'logoId',
+          'campaignId',
+          'logoBlockId',
+          'headerId'
+        )
       ).resolves.toBe('logoId')
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
         where: {
           id: 'logoId',
           campaignId: 'campaignId',
+          parentBlockId: 'headerId',
           typename: 'CampaignImageBlock',
           deletedAt: null
         },
@@ -1244,7 +1400,12 @@ describe('section style (the nine shared section fields)', () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
       const error = await errorOf(
-        validateImageSlotTarget('heroId', 'campaignId', 'logoBlockId')
+        validateImageSlotTarget(
+          'heroId',
+          'campaignId',
+          'logoBlockId',
+          'headerId'
+        )
       )
 
       expect(error.extensions).toEqual({
@@ -1262,7 +1423,7 @@ describe('section style (the nine shared section fields)', () => {
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
     })
 
-    it('resolves a given cover to a live image block of the same campaign', async () => {
+    it('resolves a given cover to a live image block owned by the section', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         id: 'coverId'
       } as never)
@@ -1277,6 +1438,7 @@ describe('section style (the nine shared section fields)', () => {
         where: {
           id: 'coverId',
           campaignId: 'campaignId',
+          parentBlockId: 'sectionId',
           typename: 'CampaignImageBlock',
           deletedAt: null
         },
@@ -1284,7 +1446,7 @@ describe('section style (the nine shared section fields)', () => {
       })
     })
 
-    it('rejects a cover that is not a live image block of the campaign (BAD_USER_INPUT, coverBlockId)', async () => {
+    it('rejects a cover that is not a live image block owned by the section (BAD_USER_INPUT, coverBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
       const error = await errorOf(

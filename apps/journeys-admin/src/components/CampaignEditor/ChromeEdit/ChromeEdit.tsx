@@ -50,6 +50,7 @@ export function ChromeEdit({ block, onClose }: ChromeEditProps): ReactElement {
       src,
       input: (imageId) => ({ logoBlockId: imageId }),
       previous: { logoBlockId: block.logoBlockId },
+      imageIdOf: (fields) => fields.logoBlockId,
       write: writeLogo
     })
   }

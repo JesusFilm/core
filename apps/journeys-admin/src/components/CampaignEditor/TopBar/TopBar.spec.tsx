@@ -20,7 +20,7 @@ import {
 import { CAMPAIGN_PUBLISH } from '../../../libs/useCampaignPublishMutation'
 import { CAMPAIGN_UNPUBLISH } from '../../../libs/useCampaignUnpublishMutation'
 import type { CanvasView } from '../Canvas'
-import { campaign, publishedCampaign } from '../data'
+import { campaign, campaignWithRegions, publishedCampaign } from '../data'
 
 import { TopBar } from './TopBar'
 
@@ -75,13 +75,16 @@ function AddCommandButton(): ReactElement {
 interface HarnessProps {
   campaign?: Campaign
   isManager?: boolean
+  onPageKindChange?: (pageKind: CampaignPageKind, regionId?: string) => void
 }
 
 function Harness({
   campaign: campaignProp = campaign,
-  isManager = true
+  isManager = true,
+  onPageKindChange
 }: HarnessProps): ReactElement {
   const [pageKind, setPageKind] = useState(CampaignPageKind.landing)
+  const [regionId, setRegionId] = useState<string>()
   const [previewLanguageId, setPreviewLanguageId] = useState('529')
   const [view, setView] = useState<CanvasView>('desktop')
   return (
@@ -90,12 +93,18 @@ function Harness({
         <CommandProvider>
           <AddCommandButton />
           <span data-testid="PageKind">{pageKind}</span>
+          <span data-testid="RegionId">{regionId ?? ''}</span>
           <span data-testid="PreviewLanguage">{previewLanguageId}</span>
           <span data-testid="View">{view}</span>
           <TopBar
             campaign={campaignProp}
             pageKind={pageKind}
-            onPageKindChange={setPageKind}
+            regionId={regionId}
+            onPageKindChange={(nextPageKind, nextRegionId) => {
+              setPageKind(nextPageKind)
+              setRegionId(nextRegionId)
+              onPageKindChange?.(nextPageKind, nextRegionId)
+            }}
             previewLanguageId={previewLanguageId}
             onPreviewLanguageChange={setPreviewLanguageId}
             view={view}
@@ -123,6 +132,34 @@ describe('TopBar', () => {
     expect(
       screen.getByRole('option', { name: 'Region page' })
     ).toBeInTheDocument()
+  })
+
+  it('lists each region as the Region Page rendered for it, with " · not listed" for orphans and no " · custom"', () => {
+    const onPageKindChange = vi.fn()
+    render(
+      <Harness
+        campaign={campaignWithRegions}
+        onPageKindChange={onPageKindChange}
+      />
+    )
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: /^Page/ }))
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent)
+    ).toEqual(['Landing page', 'Europe', 'Africa · not listed'])
+    expect(screen.queryByText(/custom/)).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('option', { name: 'Africa · not listed' }))
+    expect(onPageKindChange).toHaveBeenCalledWith(
+      CampaignPageKind.regionTemplate,
+      'afrRegionId'
+    )
+    expect(screen.getByTestId('PageKind')).toHaveTextContent('regionTemplate')
+    expect(screen.getByTestId('RegionId')).toHaveTextContent('afrRegionId')
+    expect(screen.getByRole('link', { name: 'Open page' })).toHaveAttribute(
+      'href',
+      'https://your.nextstep.is/campaign/christmas-2026/afr'
+    )
   })
 
   it('keeps the Command history when switching pages', () => {
@@ -245,5 +282,25 @@ describe('TopBar', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
     expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
+  })
+})
+
+describe('TopBar preview language', () => {
+  it('lists the campaign languages by autonym and hands the chosen one to the shell', () => {
+    render(<Harness />)
+
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('529')
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    )
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent)
+    ).toEqual(['English', 'Français'])
+
+    fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+    expect(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    ).toHaveTextContent('Français')
   })
 })

@@ -26,6 +26,7 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { FontLoader } from '../../Editor/FontLoader'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
@@ -107,28 +108,30 @@ function dropTargetOf(
 interface CanvasProps {
   campaign: Campaign
   pageKind: CampaignPageKind
-  previewLanguageId: string
   view: CanvasView
 }
 
 /**
  * The campaign canvas: the chosen page rendered inside a FramePortal iframe
- * with the editor's own section components under the campaign's theme, the
- * header above and the footer below as on the public page. Desktop/Phone is
- * a view toggle held by the shell, never a Command. The frame carries its
- * own Hotkeys, since its key events never leave it, and a click on the empty
- * frame returns to the campaign row. A section is dragged by its handle
- * only; the drop lands before or after the section under the pointer by its
- * midpoint, as one reorder Command.
+ * with the editor's own section components under the campaign's theme, in
+ * the Preview Language the top bar chose (its text direction follows that
+ * language's bcp47), the header above and the footer below as on the public
+ * page. Desktop/Phone is a view toggle held by the shell, never a Command.
+ * The frame carries its own Hotkeys, since its key events never leave it, and
+ * a click on the empty frame returns to the campaign row. A section is
+ * dragged by its handle only; the drop lands before or after the section
+ * under the pointer by its midpoint, as one reorder Command.
  */
 export function Canvas({
   campaign,
   pageKind,
-  previewLanguageId,
   view
 }: CanvasProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selectBlock } = useCampaignEditor()
+  const {
+    selectBlock,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
   const [dropTarget, setDropTarget] = useState<DropTarget>()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
@@ -171,6 +174,14 @@ export function Canvas({
     }),
     [campaign.theme]
   )
+  const fonts = useMemo(
+    () => [
+      fontFamilies.headerFont,
+      fontFamilies.bodyFont,
+      fontFamilies.labelFont
+    ],
+    [fontFamilies]
+  )
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, {
@@ -211,6 +222,7 @@ export function Canvas({
         py: 3
       }}
     >
+      <FontLoader fonts={fonts} />
       <Box
         sx={{
           width: view === 'phone' ? PHONE_FRAME_WIDTH : '100%',
@@ -252,13 +264,18 @@ export function Canvas({
                   onDragCancel={() => setDropTarget(undefined)}
                 >
                   {header != null && (
-                    <CanvasSection block={header} theme={campaign.theme} />
+                    <CanvasSection
+                      block={header}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                    />
                   )}
                   {sections.map((section) => (
                     <CanvasSection
                       key={section.id}
                       block={section}
                       theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
                       draggable
                       dropEdge={
                         dropTarget?.overId === section.id
@@ -268,7 +285,11 @@ export function Canvas({
                     />
                   ))}
                   {footer != null && (
-                    <CanvasSection block={footer} theme={campaign.theme} />
+                    <CanvasSection
+                      block={footer}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                    />
                   )}
                 </DndContext>
               </Box>

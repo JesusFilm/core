@@ -12,7 +12,9 @@ export { CampaignFooter } from './CampaignFooter'
 export {
   CampaignHeader,
   CampaignLanguageSelect,
-  languageAutonym
+  campaignLanguageUrl,
+  languageAutonym,
+  writeCampaignLanguageCookie
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
 export { CampaignImage, CampaignPicture } from './CampaignImage'
@@ -37,7 +39,13 @@ export {
 } from './CampaignProvider'
 export { CampaignRegionHeader } from './CampaignRegionHeader'
 export { CampaignRegionShare } from './CampaignRegionShare'
-export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
+export {
+  CampaignRegionCountries,
+  CampaignRegionSwitcher,
+  countryLabel,
+  listedRegions,
+  switcherRegions
+} from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
 export {
   CAMPAIGN_HEADER_HEIGHT,
@@ -61,6 +69,12 @@ export {
 } from './libs/campaignFontsHref'
 export { campaignImageSource } from './libs/campaignImageSource'
 export {
+  CAMPAIGN_LANGUAGE_COOKIE,
+  CAMPAIGN_LANGUAGE_PARAM,
+  parseAcceptLanguage,
+  resolvePageLanguage
+} from './libs/resolvePageLanguage'
+export {
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
@@ -71,6 +85,15 @@ export {
   overlayAlpha,
   resolveBand
 } from './libs/resolveBand'
+export {
+  CAMPAIGN_THEME_PRESETS,
+  DARK_PRESET,
+  LIGHT_PRESET,
+  PRESET_COLOR_COLUMNS,
+  PRESET_COLUMNS,
+  activeThemePreset,
+  presetColors
+} from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
 export { watchUrl } from './libs/watchUrl'
 export { hasText, isCampaignSection } from './types'
@@ -87,6 +110,18 @@ export type {
 export type { CampaignChromeTrees } from './CampaignPage'
 export type { CampaignSeoOptions } from './CampaignSeo'
 export type { CampaignImageSource } from './libs/campaignImageSource'
+export type {
+  PageLanguageCandidate,
+  PageLanguageSource,
+  ResolvePageLanguageInput,
+  ResolvedPageLanguage
+} from './libs/resolvePageLanguage'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
 export type { CampaignBandOverlay, ResolvedBand } from './libs/resolveBand'
+export type {
+  CampaignThemePreset,
+  CampaignThemePresetColumn,
+  CampaignThemePresetLabel,
+  CampaignThemePresetName
+} from './libs/themePresets'
 export type { CampaignTreeBlock } from './libs/transformer'
