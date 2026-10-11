@@ -45,12 +45,14 @@ describe('campaignBlockDelete', () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'footerTermsId')
     )
-    prismaMock.campaignBlock.findMany.mockResolvedValue(
-      fixture.blocks.filter(
-        (block) =>
-          block.parentBlockId === 'footerId' && block.id !== 'footerTermsId'
+    prismaMock.campaignBlock.findMany
+      .mockResolvedValueOnce(fixture.blocks)
+      .mockResolvedValueOnce(
+        fixture.blocks.filter(
+          (block) =>
+            block.parentBlockId === 'footerId' && block.id !== 'footerTermsId'
+        )
       )
-    )
 
     const result = await remove('footerTermsId')
 
@@ -62,8 +64,8 @@ describe('campaignBlockDelete', () => {
         ]
       }
     })
-    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'footerTermsId' },
+    expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ['footerTermsId'] } },
       data: { deletedAt: expect.any(Date) }
     })
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
@@ -119,18 +121,20 @@ describe('campaignBlockDelete', () => {
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
-  it('soft-deletes a section, renumbers the page’s sections and leaves its children to fall out of the tree', async () => {
+  it('soft-deletes a section with its descendants under one timestamp and renumbers the page’s sections', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'landingSwitcherId')
     )
-    prismaMock.campaignBlock.findMany.mockResolvedValue(
-      fixture.blocks.filter(
-        (block) =>
-          block.pageId === 'landingPageId' &&
-          block.parentBlockId == null &&
-          block.id !== 'landingSwitcherId'
+    prismaMock.campaignBlock.findMany
+      .mockResolvedValueOnce(fixture.blocks)
+      .mockResolvedValueOnce(
+        fixture.blocks.filter(
+          (block) =>
+            block.pageId === 'landingPageId' &&
+            block.parentBlockId == null &&
+            block.id !== 'landingSwitcherId'
+        )
       )
-    )
 
     const result = await remove('landingSwitcherId')
 
@@ -140,14 +144,10 @@ describe('campaignBlockDelete', () => {
       { id: 'landingJourneyListId', parentOrder: 2 },
       { id: 'landingAnalyticsId', parentOrder: 3 }
     ])
-    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'landingSwitcherId' },
+    expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: expect.arrayContaining(['landingSwitcherId']) } },
       data: { deletedAt: expect.any(Date) }
     })
-    // Only the section row is stamped; a child keeps its row untouched for restore.
-    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 'heroButtonId' } })
-    )
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({

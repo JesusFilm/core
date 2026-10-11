@@ -13,6 +13,8 @@ import { CampaignRenderer } from '../CampaignRenderer'
 import { bandCssVariables, resolveBand } from '../libs/resolveBand'
 import type { CampaignSectionTree, CampaignTree } from '../types'
 
+import { CampaignBandCover } from './CampaignBandCover'
+import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
 import { CampaignSectionContext } from './CampaignSectionContext'
 import { useCampaignSlot } from './CampaignSlotContext'
 
@@ -34,11 +36,13 @@ function isAbove(child: CampaignTree): boolean {
 
 /**
  * The one wrapper every section and chrome block renders through: paints the
- * band from the §4 table as CSS variables, anchors the band by block id, and
- * orders the Extras placed above, then the typed body, then the Extras placed
- * below, each group by parentOrder. In a Column Slot the band is not a
- * container: no page container or section rhythm, and a section with a
- * background of its own gets padding and a radius.
+ * band from the §4 table as CSS variables (with the `image` cover and overlay
+ * behind), anchors the band by block id under the sticky header, and orders
+ * the Extras placed above, then the typed body, then the Extras placed below,
+ * each group by parentOrder. In a Column Slot the band is not a container: no
+ * page container or section rhythm, and a section with a background of its
+ * own gets padding and a radius. The chrome paints the same band through
+ * `CampaignHeader` and `CampaignFooter`.
  */
 export function CampaignSectionBand({
   block,
@@ -57,7 +61,7 @@ export function CampaignSectionBand({
   const above = extras.filter(isAbove)
   const below = extras.filter((child) => !isAbove(child))
   const body = (
-    <Stack spacing={3}>
+    <Stack spacing={3} sx={{ position: 'relative' }}>
       {above.map((child) => (
         <CampaignRenderer key={child.id} block={child} />
       ))}
@@ -76,10 +80,11 @@ export function CampaignSectionBand({
         data-testid={`CampaignSectionBand-${block.id}`}
         style={bandCssVariables(band)}
         sx={{
+          position: 'relative',
           backgroundColor: 'var(--campaign-band-background)',
           color: 'var(--campaign-band-text)',
           textAlign: align ?? undefined,
-          scrollMarginTop: 'var(--campaign-header-height, 64px)',
+          scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
           ...(inSlot
             ? block.backgroundKind !== CampaignBackgroundKind.none
               ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
@@ -87,6 +92,7 @@ export function CampaignSectionBand({
             : { py: { xs: 6, md: 10 } })
         }}
       >
+        <CampaignBandCover block={block} />
         {inSlot ? body : <Container maxWidth="lg">{body}</Container>}
       </Box>
     </CampaignSectionContext.Provider>

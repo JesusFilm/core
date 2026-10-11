@@ -17,11 +17,15 @@ export {
   CAMPAIGN_TEXT_CAPS,
   CAMPAIGN_TEXT_FIELDS,
   campaignTextInputKey,
+  blockTranslations,
   isCampaignTextBlock,
-  primaryTextField
+  primaryTextField,
+  translationValue,
+  withTranslationValue
 } from './campaignTextFields'
 export type {
   CampaignTextBlock,
   CampaignTextField,
-  CampaignTextTypename
+  CampaignTextTypename,
+  CampaignTranslatedValue
 } from './campaignTextFields'

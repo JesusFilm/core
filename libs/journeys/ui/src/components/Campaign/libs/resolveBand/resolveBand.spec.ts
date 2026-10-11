@@ -4,6 +4,7 @@ import {
   CampaignBandTheme,
   bandCssVariables,
   contrastText,
+  overlayAlpha,
   resolveBand
 } from './resolveBand'
 
@@ -184,5 +185,13 @@ describe('resolveBand', () => {
       '--campaign-band-button': '#F2B544',
       '--campaign-band-button-label': onAccent
     })
+  })
+
+  it('maps backgroundOverlay to the cover overlay alpha, medium when null', () => {
+    expect(overlayAlpha('light')).toBe(0.3)
+    expect(overlayAlpha('medium')).toBe(0.55)
+    expect(overlayAlpha('heavy')).toBe(0.75)
+    expect(overlayAlpha(null)).toBe(0.55)
+    expect(overlayAlpha(undefined)).toBe(0.55)
   })
 })

@@ -58,6 +58,21 @@ const CARD_ALPHA = 0.12
 const MUTED_ALPHA = 0.7
 const BORDER_ALPHA = 0.12
 
+export type CampaignBandOverlay = 'light' | 'medium' | 'heavy'
+
+/** `backgroundOverlay` → the dark overlay's alpha over an `image` cover (PRD §4); null ⇒ medium. */
+export const CAMPAIGN_OVERLAY_ALPHA: Record<CampaignBandOverlay, number> = {
+  light: 0.3,
+  medium: 0.55,
+  heavy: 0.75
+}
+
+export function overlayAlpha(
+  overlay: CampaignBandOverlay | null | undefined
+): number {
+  return CAMPAIGN_OVERLAY_ALPHA[overlay ?? 'medium']
+}
+
 const { palette } = createTheme()
 
 /**

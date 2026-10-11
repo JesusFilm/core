@@ -247,3 +247,23 @@ describe('TopBar', () => {
     expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
   })
 })
+
+describe('TopBar preview language', () => {
+  it('lists the campaign languages by autonym and hands the chosen one to the shell', () => {
+    render(<Harness />)
+
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('529')
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    )
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent)
+    ).toEqual(['English', 'Français'])
+
+    fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+    expect(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    ).toHaveTextContent('Français')
+  })
+})

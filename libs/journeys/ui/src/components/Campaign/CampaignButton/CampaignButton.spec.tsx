@@ -180,14 +180,14 @@ describe('CampaignButton', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
   })
 
-  it('renders a NavigateToRegionAction as a relative link to the region page, static when the region is gone', () => {
+  it('renders a NavigateToRegionAction as a relative link to the region page in the page language, static when the region is gone', () => {
     const navigate = landingBlocks.find(
       (block) => block.id === 'switcherEuropeButtonId'
     ) as CampaignBlockOf<'CampaignButtonBlock'>
     const { unmount } = renderButton(<CampaignButton block={navigate} />)
     expect(
       screen.getByRole('link', { name: 'Start with Europe' })
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=en')
     unmount()
 
     renderButton(

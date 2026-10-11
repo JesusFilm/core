@@ -3,7 +3,7 @@ import ButtonBase from '@mui/material/ButtonBase'
 import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
-import { useCampaign } from '../CampaignProvider'
+import { campaignPageHref, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { CampaignTypography } from '../CampaignTypography'
@@ -47,7 +47,7 @@ export function CampaignRegionSwitcher({
         {regions.map((region) => (
           <ButtonBase
             key={region.id}
-            href={`${basePath}/${region.slug}`}
+            href={campaignPageHref(`${basePath}/${region.slug}`, campaign)}
             data-testid={`CampaignRegionCard-${region.id}`}
             sx={{
               display: 'flex',

@@ -233,3 +233,91 @@ describe('campaign', () => {
     })
   })
 })
+
+describe('translation lists', () => {
+  const publicClient = getClient()
+
+  const TYPE_FIELDS = graphql(`
+    query TypeFields($name: String!) {
+      __type(name: $name) {
+        fields {
+          name
+          type {
+            kind
+            ofType {
+              kind
+              ofType {
+                kind
+                ofType {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  async function fieldNames(name: string): Promise<string[]> {
+    const result = (await publicClient({
+      document: TYPE_FIELDS,
+      variables: { name }
+    })) as any
+    return result.data.__type.fields.map((field: any) => field.name)
+  }
+
+  it('exposes <field>Translations: [TranslatedValue!]! on every admin type that carries a Translated Field', async () => {
+    const result = (await publicClient({
+      document: TYPE_FIELDS,
+      variables: { name: 'Campaign' }
+    })) as any
+    const titleTranslations = result.data.__type.fields.find(
+      (field: any) => field.name === 'titleTranslations'
+    )
+    expect(titleTranslations.type).toEqual({
+      kind: 'NON_NULL',
+      ofType: {
+        kind: 'LIST',
+        ofType: {
+          kind: 'NON_NULL',
+          ofType: { name: 'TranslatedValue' }
+        }
+      }
+    })
+    expect(await fieldNames('CampaignRegion')).toContain('nameTranslations')
+    expect(await fieldNames('CampaignString')).toContain('valueTranslations')
+    expect(await fieldNames('CampaignHeroBlock')).toEqual(
+      expect.arrayContaining([
+        'eyebrowTranslations',
+        'titleTranslations',
+        'ledeTranslations'
+      ])
+    )
+    expect(await fieldNames('CampaignTypographyBlock')).toContain(
+      'contentTranslations'
+    )
+    expect(await fieldNames('CampaignButtonBlock')).toContain(
+      'labelTranslations'
+    )
+    expect((await fieldNames('TranslatedValue')).sort()).toEqual([
+      'languageId',
+      'source',
+      'value'
+    ])
+  })
+
+  it('omits every translation list from the CampaignPublic projection', async () => {
+    for (const name of [
+      'CampaignPublic',
+      'CampaignRegionPublic',
+      'CampaignPagePublic',
+      'CampaignRegionLanguagePublic'
+    ]) {
+      const names = await fieldNames(name)
+      expect(names.filter((field) => field.endsWith('Translations'))).toEqual(
+        []
+      )
+    }
+  })
+})
