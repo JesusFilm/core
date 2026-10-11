@@ -1153,12 +1153,15 @@ describe('the Media Slot (hero and Featured Media)', () => {
         },
         include: { action: true }
       })
-      expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
-      ).toEqual([
-        { where: { id: 'oldImageId' }, data: { deletedAt: expect.any(Date) } },
-        { where: { id: 'featuredId' }, data: { mediaBlockId: 'videoId' } }
-      ])
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: 'oldImageId', parentBlockId: 'featuredId' },
+        data: { deletedAt: expect.any(Date) }
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'featuredId' },
+        data: { mediaBlockId: 'videoId' }
+      })
       expect(prismaMock.campaign.update).toHaveBeenCalledWith({
         where: { id: 'campaignId' },
         data: { updatedAt: expect.any(Date) }
