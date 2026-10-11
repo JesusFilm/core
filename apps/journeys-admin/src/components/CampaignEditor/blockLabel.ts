@@ -22,6 +22,8 @@ export function blockLabel(
       return t('Region header')
     case 'CampaignRegionShareBlock':
       return t('Region share')
+    case 'CampaignImageBlock':
+      return t('Image')
     case 'CampaignHeaderBlock':
       return t('Header')
     case 'CampaignFooterBlock':
