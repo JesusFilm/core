@@ -29,10 +29,11 @@ export function sectionTypesForPage(
   )
 }
 
-/** Sections that never sit in a Column Slot: no nesting, and the share panel reads a whole page. */
+/** Sections a Column Slot's type picker never offers: no nesting, the share panel reads a whole page, and an Image section is created on a page (its `parentBlockId` names an owner, not a slot). */
 export const SLOT_DISALLOWED_TYPENAMES: readonly CampaignSectionTypename[] = [
   'CampaignColumnsBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignImageBlock'
 ]
 
 /** The section types a Column Slot's type picker offers on a page, in menu order. */
