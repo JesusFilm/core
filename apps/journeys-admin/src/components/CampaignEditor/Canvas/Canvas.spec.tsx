@@ -424,7 +424,6 @@ describe('Canvas', () => {
           <Canvas
             campaign={campaignWithColumns}
             pageKind={CampaignPageKind.landing}
-            previewLanguageId="529"
             view="desktop"
           />
         </StaticEditor>

@@ -15,6 +15,7 @@ import { CanvasBlock, CanvasSection } from '../CanvasSection'
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
   theme: CampaignTheme
+  previewLanguageId: string | null
 }
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -28,7 +29,8 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
  */
 export function CanvasColumnSlot({
   slot,
-  theme
+  theme,
+  previewLanguageId
 }: CanvasColumnSlotProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { selection, selectBlock } = useCampaignEditor()
@@ -113,7 +115,12 @@ export function CanvasColumnSlot({
         <DragIcon fontSize="small" />
       </Box>
       {section != null ? (
-        <CanvasSection block={section} theme={theme} inSlot />
+        <CanvasSection
+          block={section}
+          theme={theme}
+          previewLanguageId={previewLanguageId}
+          inSlot
+        />
       ) : (
         <Box
           data-testid={`CanvasEmptyColumn-${slot.id}`}

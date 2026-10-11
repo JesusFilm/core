@@ -673,6 +673,19 @@ export interface CampaignColumnsBlockCreateInput {
   slotIds?: string[] | null;
 }
 
+export interface CampaignColumnsBlockUpdateInput {
+  ratio?: CampaignColumnsRatio | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
 /**
  * Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
  */
@@ -857,6 +870,15 @@ export interface CampaignRichTextBlockCreateInput {
 export interface CampaignRichTextBlockUpdateInput {
   title?: string | null;
   content?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 /**

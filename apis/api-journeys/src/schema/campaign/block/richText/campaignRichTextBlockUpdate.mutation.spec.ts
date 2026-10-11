@@ -25,6 +25,19 @@ describe('campaignRichTextBlockUpdate', () => {
     }
   `)
 
+  const UPDATE_STYLE = graphql(`
+    mutation CampaignRichTextBlockUpdateStyle(
+      $id: ID!
+      $input: CampaignRichTextBlockUpdateInput!
+    ) {
+      campaignRichTextBlockUpdate(id: $id, input: $input) {
+        id
+        backgroundKind
+        backgroundOverlay
+      }
+    }
+  `)
+
   let fixture: CampaignFixture
 
   beforeEach(() => {
@@ -41,9 +54,12 @@ describe('campaignRichTextBlockUpdate', () => {
     }: any) => ({ ...block, ...data })) as never)
   })
 
-  async function update(input: Record<string, unknown>): Promise<any> {
+  async function update(
+    input: Record<string, unknown>,
+    document: typeof UPDATE | typeof UPDATE_STYLE = UPDATE
+  ): Promise<any> {
     return await authClient({
-      document: UPDATE,
+      document,
       variables: { id: 'richTextId', input }
     })
   }
@@ -100,5 +116,22 @@ describe('campaignRichTextBlockUpdate', () => {
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('writes an explicit backgroundKind and overlay, leaving the colour and cover alone', async () => {
+    const result = await update(
+      { backgroundKind: 'surface', backgroundOverlay: 'heavy' },
+      UPDATE_STYLE
+    )
+
+    expect(result.data.campaignRichTextBlockUpdate).toMatchObject({
+      backgroundKind: 'surface',
+      backgroundOverlay: 'heavy'
+    })
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { backgroundKind: 'surface', backgroundOverlay: 'heavy' }
+      })
+    )
   })
 })

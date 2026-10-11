@@ -503,7 +503,12 @@ export function CanvasSection({
           }}
         >
           {slots.map((slot) => (
-            <CanvasColumnSlot key={slot.id} slot={slot} theme={theme} />
+            <CanvasColumnSlot
+              key={slot.id}
+              slot={slot}
+              theme={theme}
+              previewLanguageId={previewLanguageId}
+            />
           ))}
         </Box>
       )}

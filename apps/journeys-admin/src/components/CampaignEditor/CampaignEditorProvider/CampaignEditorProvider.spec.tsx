@@ -233,7 +233,7 @@ describe('CampaignEditorProvider', () => {
       >
         <Hotkeys />
         <SelectionProbe />
-        <BottomBar onSettingsClick={vi.fn()} />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </StaticEditor>
     )
     expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
