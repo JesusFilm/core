@@ -159,6 +159,7 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
       src,
       input,
       previous: previousOf(block, input('')),
+      imageIdOf: (fields) => fields.coverBlockId,
       write: writeStyle
     })
   }

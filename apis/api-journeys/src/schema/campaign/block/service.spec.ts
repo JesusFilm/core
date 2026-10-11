@@ -1003,12 +1003,15 @@ describe('owned images (cover and logo)', () => {
         parentBlockId: 'heroId',
         parentOrder: null
       })
-      expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
-      ).toEqual([
-        { where: { id: 'oldCoverId' }, data: { deletedAt: expect.any(Date) } },
-        { where: { id: 'heroId' }, data: { coverBlockId: 'coverId' } }
-      ])
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: 'oldCoverId', parentBlockId: 'heroId' },
+        data: { deletedAt: expect.any(Date) }
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'heroId' },
+        data: { coverBlockId: 'coverId' }
+      })
       expect(prismaMock.campaign.update).toHaveBeenCalledWith({
         where: { id: 'campaignId' },
         data: { updatedAt: expect.any(Date) }

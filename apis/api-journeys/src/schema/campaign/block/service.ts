@@ -1039,8 +1039,8 @@ export async function createOwnedImageBlock(
   const column = IMAGE_SLOT_COLUMN[slot]
   const previousId = owner[column]
   if (previousId != null)
-    await tx.campaignBlock.update({
-      where: { id: previousId },
+    await tx.campaignBlock.updateMany({
+      where: { id: previousId, parentBlockId: owner.id },
       data: { deletedAt: new Date() }
     })
   const image = await tx.campaignBlock.create({

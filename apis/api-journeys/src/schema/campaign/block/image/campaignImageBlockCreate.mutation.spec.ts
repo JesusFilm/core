@@ -19,7 +19,7 @@ vi.mock('../../../block/image/transformInput', () => ({
   transformInput: vi.fn()
 }))
 
-const SRC = 'https://imagedelivery.net/accountHash/imageId/public'
+const SRC = 'https://imagedelivery.net/test-cloudflare-account-hash/imageId/public'
 
 describe('campaignImageBlockCreate', () => {
   const CREATE = graphql(`
@@ -183,8 +183,9 @@ describe('campaignImageBlockCreate', () => {
 
   describe('src (PRD §15)', () => {
     it.each([
-      ['http://imagedelivery.net/accountHash/imageId/public', 'http'],
+      ['http://imagedelivery.net/test-cloudflare-account-hash/imageId/public', 'http'],
       ['https://example.com/picture.jpg', 'another https host'],
+      ['https://imagedelivery.net/someOtherAccount/imageId/public', 'another Cloudflare account'],
       ['not a url', 'not a URL']
     ])(
       'rejects %s (%s) with BAD_USER_INPUT on src before measuring or writing',

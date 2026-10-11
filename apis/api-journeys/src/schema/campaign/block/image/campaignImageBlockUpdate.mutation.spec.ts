@@ -19,8 +19,8 @@ vi.mock('../../../block/image/transformInput', () => ({
   transformInput: vi.fn()
 }))
 
-const SRC = 'https://imagedelivery.net/accountHash/imageId/public'
-const NEXT_SRC = 'https://imagedelivery.net/accountHash/otherId/public'
+const SRC = 'https://imagedelivery.net/test-cloudflare-account-hash/imageId/public'
+const NEXT_SRC = 'https://imagedelivery.net/test-cloudflare-account-hash/otherId/public'
 
 describe('campaignImageBlockUpdate', () => {
   const UPDATE = graphql(`

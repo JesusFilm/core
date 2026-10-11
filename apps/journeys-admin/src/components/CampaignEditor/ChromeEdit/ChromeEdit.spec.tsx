@@ -11,6 +11,8 @@ import {
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../libs/useImageUpload'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { CAMPAIGN_BLOCK_RESTORE } from '../../../libs/useCampaignBlockRestoreMutation'
+import { campaign } from '../data'
 import { WithBlock, blockOf } from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
 
@@ -188,6 +190,91 @@ describe('ChromeEdit', () => {
       expect(screen.getByTestId('CampaignChromeEditLogo')).toHaveAttribute(
         'src',
         SRC
+      )
+    )
+  })
+})
+
+describe('ChromeEdit replace', () => {
+  const OLD_SRC = 'https://imagedelivery.net/accountHash/oldCfId/public'
+  const oldLogo = newOwnedImageBlock('oldLogoId', header, OLD_SRC)
+  const campaignWithLogo = {
+    ...campaign,
+    blocks: [
+      ...campaign.blocks.map((block) =>
+        block.id === 'headerId' ? { ...block, logoBlockId: 'oldLogoId' } : block
+      ),
+      oldLogo
+    ]
+  } as typeof campaign
+  const restoreMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_RESTORE,
+      variables: { id: 'oldLogoId' }
+    },
+    result: vi.fn(() => ({
+      data: { campaignBlockRestore: [{ ...oldLogo, translations: [] }] }
+    }))
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(uuidv4).mockImplementation(() => 'newId')
+  })
+
+  it('undoing a replace restores the soft-deleted previous logo before pointing logoBlockId back at it', async () => {
+    const calls: string[] = []
+    const restoreOrdered = {
+      ...restoreMock,
+      result: vi.fn(() => {
+        calls.push('restore')
+        return restoreMock.result()
+      })
+    }
+    const undoLogo = logoMock('oldLogoId')
+    const undoLogoOrdered = {
+      ...undoLogo,
+      result: vi.fn(() => {
+        calls.push('write oldLogoId')
+        return undoLogo.result()
+      })
+    }
+    render(
+      <QueriedEditor
+        campaignProp={campaignWithLogo}
+        mocks={[
+          uploadByUrlMock,
+          imageCreateMock,
+          logoMock('newId'),
+          restoreOrdered,
+          undoLogoOrdered
+        ]}
+        initialState={{ selectedBlockId: 'headerId' }}
+      >
+        <CommandUndoItem variant="button" />
+        <CommandProbe />
+        <WithBlock blockId="headerId" typename="CampaignHeaderBlock">
+          {(block) => <ChromeEdit block={block} />}
+        </WithBlock>
+      </QueriedEditor>
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Replace logo' }))
+    await pasteLogo()
+    await waitFor(() =>
+      expect(screen.getByTestId('CampaignChromeEditLogo')).toHaveAttribute(
+        'src',
+        SRC
+      )
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(undoLogoOrdered.result).toHaveBeenCalled())
+    expect(calls).toEqual(['restore', 'write oldLogoId'])
+    await waitFor(() =>
+      expect(screen.getByTestId('CampaignChromeEditLogo')).toHaveAttribute(
+        'src',
+        OLD_SRC
       )
     )
   })
