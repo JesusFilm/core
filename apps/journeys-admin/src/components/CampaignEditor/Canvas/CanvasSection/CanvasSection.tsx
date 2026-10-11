@@ -47,6 +47,7 @@ import {
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
+import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { CanvasMedia } from '../CanvasMedia'
 import { InlineText } from '../InlineText'
 
@@ -667,6 +668,9 @@ export function CanvasSection({
               ))}
             {block.__typename === 'CampaignRegionSwitcherBlock' && (
               <RegionSwitcherEdit block={block} />
+            )}
+            {block.__typename === 'CampaignRegionShareBlock' && (
+              <ShareSectionEdit block={block} />
             )}
             <CanvasStrings
               strings={strings}

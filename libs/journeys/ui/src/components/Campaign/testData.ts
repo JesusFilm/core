@@ -216,6 +216,7 @@ export const eurRegion: CampaignPublicFields_regions = {
       languageId: '529',
       order: 0,
       journeyStatus: JourneyStatus.published,
+      shortLinkUrl: 'https://short.nextstep.is/eur-en',
       journeyUrl: 'https://your.nextstep.is/christmas-europe',
       embedUrl: 'https://your.nextstep.is/embed/christmas-europe',
       language: english
@@ -247,6 +248,7 @@ export const afrRegion: CampaignPublicFields_regions = {
       languageId: '496',
       order: 0,
       journeyStatus: JourneyStatus.published,
+      shortLinkUrl: 'https://short.nextstep.is/afr-fr',
       journeyUrl: 'https://journeys.example.org/noel-afrique',
       embedUrl: 'https://your.nextstep.is/embed/noel-afrique',
       language: french

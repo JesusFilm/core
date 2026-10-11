@@ -123,6 +123,10 @@ export interface GetCampaignPublic_campaignPublic_regions_languages {
    */
   journeyStatus: JourneyStatus | null;
   /**
+   * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
+   */
+  shortLinkUrl: string | null;
+  /**
    * The linked journey's public address, decided by its own team's domains; null unless the journey is live-published.
    */
   journeyUrl: string | null;
