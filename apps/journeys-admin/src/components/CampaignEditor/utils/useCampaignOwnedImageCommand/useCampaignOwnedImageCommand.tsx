@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignImageSlot } from '../../../../../__generated__/globalTypes'
+import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import {
   CampaignImageOwner,
   useCampaignImageBlockCreateMutation
@@ -22,6 +23,8 @@ export interface AddOwnedImageOptions<B extends CampaignBlock, I> {
   input: (imageId: string) => I
   /** The same fields as the owner holds them now: what undo writes back. */
   previous: I
+  /** The image id a set of the owner's fields points the slot at. */
+  imageIdOf: (fields: I) => string | null | undefined
   /** Runs the owner's own update mutation for `input`. */
   write: (owner: B, input: I) => Promise<unknown>
 }
@@ -38,14 +41,16 @@ export interface CampaignOwnedImageCommand extends CampaignStyleCommand {
  * (`campaignImageBlockCreate`, which also points the slot column at it on the
  * server) and then writes the owner's fields — the background kind and
  * overlay, or `logoBlockId` — so the canvas shows the picture at once; undo
- * writes the owner's previous fields back and leaves the image row behind,
- * out of the tree; redo writes the fields again without a second create.
+ * restores the image the slot held (the create soft-deleted it) and writes
+ * the owner's previous fields back, leaving the new image row behind, out of
+ * the tree; redo writes the fields again without a second create.
  * `addStyle` is the plain style Command for the slot's other edits (Clear
  * logo, the overlay), sharing this hook's error.
  */
 export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
   const { campaign } = useCampaignEditor()
   const createOwnedImage = useCampaignImageBlockCreateMutation(campaign.id)
+  const [restoreBlock] = useCampaignBlockRestoreMutation(campaign.id)
   const styleCommand = useCampaignStyleCommand()
 
   function addOwnedImage<B extends CampaignBlock, I>({
@@ -54,6 +59,7 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
     src,
     input,
     previous,
+    imageIdOf,
     write
   }: AddOwnedImageOptions<B, I>): void {
     const imageId = uuidv4()
@@ -72,6 +78,9 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
             src
           })
         }
+        const targetImageId = imageIdOf(next)
+        if (targetImageId != null && targetImageId !== imageId)
+          await restoreBlock({ variables: { id: targetImageId } })
         return await write(current, next)
       }
     })

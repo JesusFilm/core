@@ -2,6 +2,11 @@ import { GraphQLError } from 'graphql'
 
 import { QrCode, prisma } from '@core/prisma/journeys/client'
 
+import {
+  INCLUDE_JOURNEY_PUBLIC_URL,
+  getJourneyPublicUrl
+} from '../campaign/getJourneyPublicUrl'
+
 interface ShortLinkCreateInput {
   id: string
   hostname: string
@@ -127,29 +132,30 @@ export async function deleteShortLink(id: string): Promise<void> {
   await graphqlRequest(query, { id })
 }
 
+/**
+ * The short-link target: the journey's public address, decided by the
+ * target journey's own team (a route-all custom domain, else a collection
+ * domain containing it, else the root domain), plus the block path and the
+ * QR attribution parameters. The QR row's own team no longer decides the
+ * domain, so a campaign QR code pointing at another team's journey lands
+ * where that team serves it; for a QR whose team owns the journey the
+ * result is unchanged.
+ */
 export async function getTo({
   shortLinkId,
-  teamId,
   toJourneyId,
   toBlockId
 }: {
   shortLinkId: string
-  teamId: string
+  /** The QR row's team; kept for callers, the domain comes from the journey's team. */
+  teamId?: string
   toJourneyId: string
   toBlockId?: string | null
 }): Promise<string> {
-  if (JOURNEYS_URL == null)
-    throw new GraphQLError('Journeys url not added', {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
   const journey = await prisma.journey.findUniqueOrThrow({
-    where: { id: toJourneyId }
+    where: { id: toJourneyId },
+    include: INCLUDE_JOURNEY_PUBLIC_URL
   })
-
-  const customDomain = (
-    await prisma.customDomain.findMany({ where: { teamId } })
-  )[0]
 
   const block =
     toBlockId != null
@@ -158,13 +164,11 @@ export async function getTo({
         })
       : null
 
-  const base =
-    customDomain?.name != null ? `https://${customDomain.name}` : JOURNEYS_URL
-
-  const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
+  const url = getJourneyPublicUrl(journey)
+  const path = block != null ? `/${block.id}` : ''
   const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
 
-  return `${base}/${path}${utm}`
+  return `${url}${path}${utm}`
 }
 
 export async function parseAndVerifyTo(

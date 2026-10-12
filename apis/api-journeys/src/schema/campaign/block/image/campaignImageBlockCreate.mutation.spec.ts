@@ -19,7 +19,8 @@ vi.mock('../../../block/image/transformInput', () => ({
   transformInput: vi.fn()
 }))
 
-const SRC = 'https://imagedelivery.net/accountHash/imageId/public'
+const SRC =
+  'https://imagedelivery.net/test-cloudflare-account-hash/imageId/public'
 
 describe('campaignImageBlockCreate', () => {
   const CREATE = graphql(`
@@ -183,8 +184,15 @@ describe('campaignImageBlockCreate', () => {
 
   describe('src (PRD §15)', () => {
     it.each([
-      ['http://imagedelivery.net/accountHash/imageId/public', 'http'],
+      [
+        'http://imagedelivery.net/test-cloudflare-account-hash/imageId/public',
+        'http'
+      ],
       ['https://example.com/picture.jpg', 'another https host'],
+      [
+        'https://imagedelivery.net/someOtherAccount/imageId/public',
+        'another Cloudflare account'
+      ],
       ['not a url', 'not a URL']
     ])(
       'rejects %s (%s) with BAD_USER_INPUT on src before measuring or writing',
@@ -280,15 +288,15 @@ describe('campaignImageBlockCreate', () => {
         }),
         include: { action: true }
       })
-      expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([c]: any) => c)
-      ).toEqual([
-        {
-          where: { id: 'oldCoverId' },
-          data: { deletedAt: expect.any(Date) }
-        },
-        { where: { id: 'heroId' }, data: { coverBlockId: 'coverId' } }
-      ])
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: 'oldCoverId', parentBlockId: 'heroId' },
+        data: { deletedAt: expect.any(Date) }
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'heroId' },
+        data: { coverBlockId: 'coverId' }
+      })
       // Siblings are never read for an owned block.
       expect(prismaMock.campaignBlock.findMany).not.toHaveBeenCalled()
     })

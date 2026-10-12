@@ -119,3 +119,69 @@ export async function fetchWatchVideoById(
     throw error
   }
 }
+
+export interface GatewayCountry {
+  id: string
+}
+
+/** Resolve an api-languages Country by id; `null` when it does not exist. */
+export async function fetchCountry(id: string): Promise<GatewayCountry | null> {
+  const query = `
+    query CampaignCountry($id: ID!) {
+      country(id: $id) {
+        id
+      }
+    }
+  `
+  const data = await graphqlRequest(query, { id })
+  const country = data.country as GatewayCountry | null | undefined
+  return country ?? null
+}
+
+export interface GatewayShortLink {
+  id: string
+  pathname: string
+  hostname: string
+}
+
+/**
+ * Resolve an api-media ShortLink by id to the pieces of its public address;
+ * `null` when it no longer exists. The Share Link a region hands out is
+ * `https://<hostname>/<pathname>`.
+ */
+export async function fetchShortLink(
+  id: string
+): Promise<GatewayShortLink | null> {
+  const query = `
+    query CampaignShortLink($id: String!) {
+      shortLink(id: $id) {
+        ... on QueryShortLinkSuccess {
+          data {
+            id
+            pathname
+            domain {
+              hostname
+            }
+          }
+        }
+      }
+    }
+  `
+  const data = await graphqlRequest(query, { id })
+  const result = data.shortLink as
+    | { data?: { id: string; pathname: string; domain: { hostname: string } } }
+    | null
+    | undefined
+  const shortLink = result?.data
+  if (shortLink == null) return null
+  return {
+    id: shortLink.id,
+    pathname: shortLink.pathname,
+    hostname: shortLink.domain.hostname
+  }
+}
+
+/** The public address of a resolved short link. */
+export function shortLinkUrl(shortLink: GatewayShortLink): string {
+  return `https://${shortLink.hostname}/${shortLink.pathname}`
+}

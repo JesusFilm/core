@@ -31,7 +31,10 @@ export interface MediaSlotUpdate {
  */
 export async function mediaSlotUpdate(
   mediaBlockId: string | number | null | undefined,
-  owner: Pick<CampaignBlock, 'id' | 'campaignId' | 'mediaBlockId'>
+  owner: Pick<
+    CampaignBlock,
+    'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId' | 'mediaBlockId'
+  >
 ): Promise<MediaSlotUpdate> {
   const target = await validateMediaSlotTarget(mediaBlockId, owner)
   if (target === undefined) return { data: {} }

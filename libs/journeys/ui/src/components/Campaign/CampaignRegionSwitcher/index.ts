@@ -1,1 +1,7 @@
-export { CampaignRegionSwitcher, listedRegions } from './CampaignRegionSwitcher'
+export {
+  CampaignRegionCountries,
+  CampaignRegionSwitcher,
+  countryLabel,
+  listedRegions,
+  switcherRegions
+} from './CampaignRegionSwitcher'

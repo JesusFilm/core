@@ -261,12 +261,20 @@ export const CAMPAIGN_PUBLIC_FIELDS = gql`
         id
         countryId
         order
+        country {
+          id
+          flagPngSrc
+          name(primary: true) {
+            value
+          }
+        }
       }
       languages {
         id
         languageId
         order
         journeyStatus
+        shortLinkUrl
         journeyUrl
         embedUrl
         language {

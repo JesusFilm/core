@@ -43,7 +43,7 @@ describe('CampaignAction', () => {
     expect(isTypeOf('CampaignLinkAction', action)).toBe(false)
   })
 
-  it('resolves everything else to CampaignLinkAction', () => {
+  it('resolves url to CampaignLinkAction', () => {
     const action = { blockId: null, regionId: null, url: 'https://x.test' }
     expect(resolveCampaignActionType(action)).toBe('CampaignLinkAction')
     expect(campaignAction.resolveType?.(action, {}, info, campaignAction)).toBe(
@@ -54,9 +54,21 @@ describe('CampaignAction', () => {
     expect(isTypeOf('CampaignNavigateToRegionAction', action)).toBe(false)
   })
 
-  it('prefers blockId over regionId when both are populated', () => {
+  it('resolves a row with every target null to CampaignNavigateToRegionAction (region deleted)', () => {
+    const action = { blockId: null, regionId: null, url: null }
+    expect(resolveCampaignActionType(action)).toBe(
+      'CampaignNavigateToRegionAction'
+    )
+    expect(isTypeOf('CampaignNavigateToRegionAction', action)).toBe(true)
+    expect(isTypeOf('CampaignLinkAction', action)).toBe(false)
+  })
+
+  it('prefers blockId over regionId and url when more than one is populated', () => {
     expect(
       resolveCampaignActionType({ blockId: 'heroId', regionId: 'eurRegionId' })
+    ).toBe('CampaignScrollToBlockAction')
+    expect(
+      resolveCampaignActionType({ blockId: 'heroId', url: 'https://x.test' })
     ).toBe('CampaignScrollToBlockAction')
   })
 

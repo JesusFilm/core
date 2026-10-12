@@ -21,7 +21,7 @@ import {
 } from '../../../libs/useCampaignSectionCreateMutation'
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
-import { campaign } from '../data'
+import { campaign, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
 import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
@@ -56,6 +56,7 @@ const createMock = {
         parentBlockId: 'headerId',
         parentOrder: 2,
         content: '',
+        contentTranslations: [],
         typographyVariant: null,
         align: null,
         color: null,
@@ -170,13 +171,44 @@ const sectionDeleteMock = {
   result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
 }
 
+const lineCreateMock = {
+  request: {
+    query: CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE,
+    variables: {
+      input: { id: 'newId', campaignId: 'campaignId', regionId: 'eurRegionId' }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignTypographyBlockCreate: {
+        __typename: 'CampaignTypographyBlock',
+        id: 'newId',
+        campaignId: 'campaignId',
+        pageId: null,
+        regionId: 'eurRegionId',
+        parentBlockId: null,
+        parentOrder: 1,
+        content: '',
+        typographyVariant: null,
+        align: null,
+        color: null,
+        placement: null
+      }
+    }
+  }))
+}
+
 function renderBar(
   initialState?: Partial<CampaignEditorState>,
-  onSettingsClick = vi.fn()
+  onSettingsClick = vi.fn(),
+  campaignProp = campaign,
+  onRegionSettingsClick = vi.fn(),
+  onThemeClick = vi.fn()
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
       initialState={initialState}
+      campaignProp={campaignProp}
       mocks={[
         createMock,
         deleteMock,
@@ -184,12 +216,17 @@ function renderBar(
         regionShareAppendMock,
         moveUpMock,
         duplicateMock,
-        sectionDeleteMock
+        sectionDeleteMock,
+        lineCreateMock
       ]}
     >
       <Hotkeys />
       <SelectionProbe />
-      <BottomBar onSettingsClick={onSettingsClick} />
+      <BottomBar
+        onSettingsClick={onSettingsClick}
+        onRegionSettingsClick={onRegionSettingsClick}
+        onThemeClick={onThemeClick}
+      />
     </StaticEditor>
   )
 }
@@ -211,9 +248,10 @@ describe('BottomBar', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
-  it('shows Settings, Theme, Translations and Add section on the campaign row', () => {
+  it('shows Settings, Theme, Languages, Translations and Add section on the campaign row', () => {
     const onSettingsClick = vi.fn()
-    renderBar(undefined, onSettingsClick)
+    const onThemeClick = vi.fn()
+    renderBar(undefined, onSettingsClick, campaign, vi.fn(), onThemeClick)
 
     expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
       'data-selection',
@@ -222,15 +260,100 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])
-    expect(screen.getByRole('button', { name: 'Theme' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Theme' })).toBeEnabled()
     expect(screen.getByRole('button', { name: 'Translations' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Add section' })).toBeEnabled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
     expect(onSettingsClick).toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
+    expect(onThemeClick).toHaveBeenCalled()
+  })
+
+  it('shows Open page, Add line, Settings, Unlist and move for a selected region card', () => {
+    const onRegionSettingsClick = vi.fn()
+    renderBar(
+      { selectedRegionId: 'eurRegionId', selectedBlockId: 'landingSwitcherId' },
+      vi.fn(),
+      campaignWithRegions,
+      onRegionSettingsClick
+    )
+
+    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+      'data-selection',
+      'region'
+    )
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+      'Campaign›Region switcher›Europe'
+    )
+    expect(screen.getByRole('link', { name: 'Open page' })).toHaveAttribute(
+      'href',
+      'https://your.nextstep.is/campaign/christmas-2026/eur'
+    )
+    expect(buttonNames()).toEqual([
+      'Campaign',
+      'Region switcher',
+      'Add line',
+      'Settings',
+      'Unlist',
+      'Move up',
+      'Move down'
+    ])
+    expect(screen.getByRole('button', { name: 'Move up' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Move down' })).toBeEnabled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+    expect(onRegionSettingsClick).toHaveBeenCalled()
+  })
+
+  it('adds a Region Line as a Command and selects it for inline editing', async () => {
+    renderBar(
+      { selectedRegionId: 'eurRegionId', selectedBlockId: 'landingSwitcherId' },
+      vi.fn(),
+      campaignWithRegions
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add line' }))
+
+    await waitFor(() => expect(lineCreateMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
+  })
+
+  it('shows a Region Line as text in its region, with a bin and no section host', () => {
+    renderBar({ selectedBlockId: 'eurLineId' }, vi.fn(), campaignWithRegions)
+
+    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+      'data-selection',
+      'text'
+    )
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+      'Campaign›Europe›Text'
+    )
+    expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled()
+
+    fireEvent.keyDown(document.body, { key: 'Escape' })
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+  })
+
+  it('opens the Translations view from the campaign row', () => {
+    const onTranslationsClick = vi.fn()
+    render(
+      <StaticEditor mocks={[createMock, deleteMock]}>
+        <BottomBar
+          onSettingsClick={vi.fn()}
+          onThemeClick={vi.fn()}
+          onTranslationsClick={onTranslationsClick}
+        />
+      </StaticEditor>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
+
+    expect(onTranslationsClick).toHaveBeenCalled()
   })
 
   it('shows Edit, Style, Add, move, duplicate and bin for a section', () => {
@@ -292,6 +415,7 @@ describe('BottomBar', () => {
     expect(buttonNames()).toEqual([
       'Settings',
       'Theme',
+      'Languages',
       'Translations',
       'Add section'
     ])
@@ -337,10 +461,13 @@ describe('BottomBar', () => {
   it('adds the link chip and variant, size and colours for a button Extra', () => {
     renderBar({ selectedBlockId: 'heroButtonId' })
 
-    expect(screen.getByText('Add link')).toBeInTheDocument()
+    expect(screen.getByTestId('LinkChip')).toHaveTextContent(
+      'Choose your region'
+    )
     expect(buttonNames()).toEqual([
       'Campaign',
       'Hero',
+      'Choose your region',
       'Variant',
       'Size',
       'Colours',

@@ -8,9 +8,11 @@ import {
   CampaignBlockDuplicateVariables
 } from '../../../__generated__/CampaignBlockDuplicate'
 import { campaignBlockRestoreUpdate } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export const CAMPAIGN_BLOCK_DUPLICATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignBlockDuplicate(
     $id: ID!
     $idMap: [CampaignBlockDuplicateIdMapInput!]
@@ -18,6 +20,7 @@ export const CAMPAIGN_BLOCK_DUPLICATE = gql`
   ) {
     campaignBlockDuplicate(id: $id, idMap: $idMap) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `

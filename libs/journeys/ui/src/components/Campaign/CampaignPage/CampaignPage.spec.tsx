@@ -4,6 +4,7 @@ import { render, screen, within } from '@testing-library/react'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
+  afrRegion,
   campaignPublic,
   eurRegion,
   featuredMediaImageBlock,
@@ -89,6 +90,49 @@ describe('CampaignPage', () => {
       'regionSwitcherId'
     ])
     expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
+  })
+
+  it('renders the same Region Page rows for every region; region-only sections read the region from the request', () => {
+    const { unmount } = renderPage(
+      campaignPublic,
+      CampaignPageKind.regionTemplate,
+      eurRegion
+    )
+    const eurBands = bandIds()
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
+    expect(
+      screen.queryByTestId('CampaignRegionCard-eurRegionId')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('CampaignRegionCard-afrRegionId')
+    ).toBeInTheDocument()
+    unmount()
+
+    renderPage(campaignPublic, CampaignPageKind.regionTemplate, afrRegion)
+    expect(bandIds()).toEqual(eurBands)
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Africa')
+    expect(
+      screen.queryByTestId('CampaignRegionCard-afrRegionId')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toBeInTheDocument()
+  })
+
+  it('renders the Region Page for an orphan region too, hidden from the switcher', () => {
+    const orphan = { ...afrRegion, listed: false }
+    renderPage(
+      { ...campaignPublic, regions: [eurRegion, orphan] },
+      CampaignPageKind.regionTemplate,
+      orphan
+    )
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Africa')
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CampaignRegionCard-afrRegionId')
+    ).not.toBeInTheDocument()
   })
 
   describe('chrome', () => {
@@ -368,5 +412,91 @@ describe('CampaignPage', () => {
       renderPage(campaignPublic)
       expect(styleText()).toContain('scroll-behavior:smooth')
     })
+  })
+})
+
+describe('CampaignPage page language', () => {
+  const arabic: CampaignPublic['languages'][number] = {
+    __typename: 'CampaignLanguage',
+    id: 'campaignLanguageArId',
+    languageId: '22658',
+    order: 2,
+    language: {
+      __typename: 'Language',
+      id: '22658',
+      bcp47: 'ar',
+      name: [{ __typename: 'LanguageName', value: 'العربية', primary: true }]
+    }
+  }
+
+  afterEach(() => {
+    document.documentElement.lang = ''
+    document.documentElement.dir = ''
+  })
+
+  it("carries the lang param on every in-campaign link: brand mark, back chip and the other regions' switcher cards", () => {
+    renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
+    expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
+      'href',
+      '/campaign/christmas-2026?lang=en'
+    )
+    expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
+      'href',
+      '/campaign/christmas-2026?lang=en'
+    )
+    expect(
+      screen.queryByTestId('CampaignRegionCard-eurRegionId')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByTestId('CampaignRegionCard-afrRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/afr?lang=en')
+  })
+
+  it('keeps the chosen language, not the default, across a region switch', () => {
+    renderPage({
+      ...campaignPublic,
+      languageId: '496',
+      language: { __typename: 'Language', id: '496', bcp47: 'fr' }
+    })
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    expect(
+      screen.getByRole('link', { name: 'Start with Europe' })
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
+      'href',
+      '/campaign/christmas-2026?lang=fr'
+    )
+  })
+
+  it('drops the lang param on a single-language campaign', () => {
+    renderPage({
+      ...campaignPublic,
+      languages: [campaignPublic.languages[0]]
+    })
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
+  })
+
+  it('sets html lang to the resolved bcp47 and dir to ltr when the language is not right-to-left', () => {
+    renderPage(campaignPublic)
+    expect(document.documentElement).toHaveAttribute('lang', 'en')
+    expect(document.documentElement).toHaveAttribute('dir', 'ltr')
+  })
+
+  it('sets dir to rtl for a right-to-left page language', () => {
+    renderPage({
+      ...campaignPublic,
+      languageId: '22658',
+      language: { __typename: 'Language', id: '22658', bcp47: 'ar' },
+      languages: [...campaignPublic.languages, arabic]
+    })
+    expect(document.documentElement).toHaveAttribute('lang', 'ar')
+    expect(document.documentElement).toHaveAttribute('dir', 'rtl')
+    expect(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=ar')
   })
 })

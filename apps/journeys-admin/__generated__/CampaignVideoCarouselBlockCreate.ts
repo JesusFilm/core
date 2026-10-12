@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoCarouselBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoCarouselBlockCreate
@@ -98,6 +98,26 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   children: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_video_children[];
 }
 
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -147,6 +167,8 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
    * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
    */
   video: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_video | null;
+  eyebrowTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations[];
 }
 
 export interface CampaignVideoCarouselBlockCreate {

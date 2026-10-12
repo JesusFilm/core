@@ -176,15 +176,15 @@ describe('campaignVideoBlockCreate', () => {
         }),
         include: { action: true }
       })
-      expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
-      ).toEqual([
-        {
-          where: { id: 'oldMediaId' },
-          data: { deletedAt: expect.any(Date) }
-        },
-        { where: { id: 'heroId' }, data: { mediaBlockId: 'videoId' } }
-      ])
+      expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
+        where: { id: 'oldMediaId', parentBlockId: 'heroId' },
+        data: { deletedAt: expect.any(Date) }
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: 'heroId' },
+        data: { mediaBlockId: 'videoId' }
+      })
       expect(prismaMock.campaign.update).toHaveBeenCalledWith({
         where: { id: 'campaignId' },
         data: { updatedAt: expect.any(Date) }

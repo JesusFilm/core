@@ -181,6 +181,51 @@ export enum CampaignSwitcherVariant {
   pills = "pills",
 }
 
+/**
+ * Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+ */
+export enum CampaignTextField {
+  alt = "alt",
+  bullets = "bullets",
+  content = "content",
+  description = "description",
+  eyebrow = "eyebrow",
+  intro = "intro",
+  label = "label",
+  lede = "lede",
+  name = "name",
+  title = "title",
+  value = "value",
+}
+
+/**
+ * Who wrote a translation: a person or the machine-translation sweep.
+ */
+export enum CampaignTextSource {
+  human = "human",
+  machine = "machine",
+}
+
+/**
+ * Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+ */
+export enum CampaignTranslationFilter {
+  all = "all",
+  edited = "edited",
+  missing = "missing",
+  needsReview = "needsReview",
+}
+
+/**
+ * The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+ */
+export enum CampaignTranslationGroup {
+  interface = "interface",
+  landing = "landing",
+  region = "region",
+  regions = "regions",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -789,6 +834,15 @@ export interface CampaignJourneyListBlockUpdateInput {
   accentColor?: string | null;
 }
 
+export interface CampaignLinkActionInput {
+  url: string;
+  target?: string | null;
+}
+
+export interface CampaignNavigateToRegionActionInput {
+  regionId: string;
+}
+
 export interface CampaignRegionHeaderBlockCreateInput {
   id?: string | null;
   campaignId: string;
@@ -808,6 +862,13 @@ export interface CampaignRegionHeaderBlockUpdateInput {
   buttonColor?: string | null;
   buttonTextColor?: string | null;
   accentColor?: string | null;
+}
+
+export interface CampaignRegionLanguageUpdateInput {
+  url?: string | null;
+  journeyId?: string | null;
+  title?: string | null;
+  description?: string | null;
 }
 
 export interface CampaignRegionShareBlockCreateInput {
@@ -856,10 +917,61 @@ export interface CampaignRegionSwitcherBlockUpdateInput {
   accentColor?: string | null;
 }
 
+export interface CampaignRegionUpdateInput {
+  name?: string | null;
+  slug?: string | null;
+  listed?: boolean | null;
+}
+
+export interface CampaignScrollToBlockActionInput {
+  blockId: string;
+}
+
+/**
+ * The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+ */
+export interface CampaignThemeUpdateInput {
+  themeMode?: ThemeMode | null;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+  primaryColor?: string | null;
+  accentColor?: string | null;
+  backgroundColor?: string | null;
+  surfaceColor?: string | null;
+  textColor?: string | null;
+  mutedColor?: string | null;
+  contrastBackgroundColor?: string | null;
+  contrastTextColor?: string | null;
+  radius?: CampaignRadius | null;
+  buttonRadius?: CampaignButtonRadius | null;
+}
+
+/**
+ * One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
+ */
+export interface CampaignTranslationSetInput {
+  target: CampaignTranslationTargetInput;
+  field: CampaignTextField;
+  languageId: string;
+  value: string;
+}
+
+/**
+ * The row a translation belongs to: exactly one of a live Campaign Block, a Campaign Region, a Campaign String or the Campaign itself (its title).
+ */
+export interface CampaignTranslationTargetInput {
+  blockId?: string | null;
+  regionId?: string | null;
+  stringId?: string | null;
+  campaignId?: string | null;
+}
+
 export interface CampaignTypographyBlockCreateInput {
   id?: string | null;
   campaignId: string;
-  parentBlockId: string;
+  parentBlockId?: string | null;
+  regionId?: string | null;
   content?: string | null;
   variant?: TypographyVariant | null;
   align?: TypographyAlign | null;

@@ -1,7 +1,9 @@
 export {
   CampaignEditorProvider,
   isCarouselItem,
+  regionLines,
   resolveSelection,
+  sortedRegions,
   useCampaignEditor
 } from './CampaignEditorProvider'
 export type {

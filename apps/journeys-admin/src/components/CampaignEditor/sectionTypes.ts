@@ -67,14 +67,18 @@ export function newSectionBlock(
         title: null,
         lede: null,
         align: null,
-        mediaBlockId: null
+        mediaBlockId: null,
+        eyebrowTranslations: [],
+        titleTranslations: [],
+        ledeTranslations: []
       }
     case 'CampaignRegionSwitcherBlock':
       return {
         __typename: typename,
         ...shared,
         title: null,
-        switcherVariant: CampaignSwitcherVariant.cards
+        switcherVariant: CampaignSwitcherVariant.cards,
+        titleTranslations: []
       }
     case 'CampaignVideoCarouselBlock':
       return {
@@ -84,7 +88,9 @@ export function newSectionBlock(
         title: null,
         videoId: null,
         videoVariantLanguageId: null,
-        video: null
+        video: null,
+        eyebrowTranslations: [],
+        titleTranslations: []
       }
     case 'CampaignJourneyListBlock':
       return {
@@ -93,7 +99,10 @@ export function newSectionBlock(
         eyebrow: null,
         title: null,
         lede: null,
-        display: CampaignJourneyListDisplay.grid
+        display: CampaignJourneyListDisplay.grid,
+        eyebrowTranslations: [],
+        titleTranslations: [],
+        ledeTranslations: []
       }
     case 'CampaignAnalyticsBlock':
       return {
@@ -101,12 +110,26 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        showMap: false
+        showMap: false,
+        eyebrowTranslations: [],
+        titleTranslations: []
       }
     case 'CampaignRegionHeaderBlock':
-      return { __typename: typename, ...shared, intro: null }
+      return {
+        __typename: typename,
+        ...shared,
+        intro: null,
+        introTranslations: []
+      }
     case 'CampaignRegionShareBlock':
-      return { __typename: typename, ...shared, title: null, intro: null }
+      return {
+        __typename: typename,
+        ...shared,
+        title: null,
+        intro: null,
+        titleTranslations: [],
+        introTranslations: []
+      }
     case 'CampaignImageBlock':
       return {
         __typename: typename,

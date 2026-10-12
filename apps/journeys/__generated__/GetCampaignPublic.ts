@@ -71,6 +71,18 @@ export interface GetCampaignPublic_campaignPublic_strings {
   value: string;
 }
 
+export interface GetCampaignPublic_campaignPublic_regions_countries_country_name {
+  __typename: "CountryName";
+  value: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_countries_country {
+  __typename: "Country";
+  id: string;
+  flagPngSrc: string | null;
+  name: GetCampaignPublic_campaignPublic_regions_countries_country_name[];
+}
+
 export interface GetCampaignPublic_campaignPublic_regions_countries {
   __typename: "CampaignRegionCountry";
   id: string;
@@ -79,6 +91,10 @@ export interface GetCampaignPublic_campaignPublic_regions_countries {
    */
   countryId: string;
   order: number;
+  /**
+   * The api-languages Country, resolved through federation: flag and translated name live there.
+   */
+  country: GetCampaignPublic_campaignPublic_regions_countries_country;
 }
 
 export interface GetCampaignPublic_campaignPublic_regions_languages_language_name {
@@ -106,6 +122,10 @@ export interface GetCampaignPublic_campaignPublic_regions_languages {
    * The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.
    */
   journeyStatus: JourneyStatus | null;
+  /**
+   * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
+   */
+  shortLinkUrl: string | null;
   /**
    * The linked journey's public address, decided by its own team's domains; null unless the journey is live-published.
    */
@@ -855,7 +875,10 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBl
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action = GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action_CampaignLinkAction | GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action_CampaignScrollToBlockAction | GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1741,7 +1764,10 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_act
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action = GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action_CampaignLinkAction | GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action_CampaignScrollToBlockAction | GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -2528,7 +2554,10 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlo
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action = GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action_CampaignLinkAction | GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
