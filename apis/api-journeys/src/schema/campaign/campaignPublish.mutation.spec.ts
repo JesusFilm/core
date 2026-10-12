@@ -138,6 +138,24 @@ describe('campaignPublish', () => {
     ])
   })
 
+  it('still publishes when queueing a revalidation fails', async () => {
+    const draft = campaignFactory({ role: 'manager' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(draft)
+    prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
+      ...draft,
+      status: 'published'
+    })
+    mockQueueAdd.mockRejectedValue(new Error('redis down'))
+
+    const result = (await authClient({
+      document: CAMPAIGN_PUBLISH,
+      variables: { id: 'campaignId' }
+    })) as any
+
+    expect(result.data.campaignPublish.status).toBe('published')
+  })
+
   it('queues nothing when the publish race is lost', async () => {
     const draft = campaignFactory({ role: 'manager' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue(draft)

@@ -15,7 +15,10 @@ builder.queryField('qrCodes', (t) =>
         where: t.arg({ type: QrCodesFilter, required: true })
       },
       resolve: async (query, _parent, args) => {
-        const filter: Prisma.QrCodeWhereInput = {}
+        // A Campaign QR Code is not a journey QR Code, wherever its journey points.
+        const filter: Prisma.QrCodeWhereInput = {
+          campaignRegionLanguages: { none: {} }
+        }
         if (args.where.journeyId)
           filter.journeyId = String(args.where.journeyId)
         if (args.where.teamId) filter.teamId = String(args.where.teamId)

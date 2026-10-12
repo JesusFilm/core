@@ -504,6 +504,59 @@ export interface CampaignPublicFields_regions_lines_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -565,7 +618,10 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock_action_C
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_regions_lines_CampaignButtonBlock_action = CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -612,7 +668,7 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock {
   action: CampaignPublicFields_regions_lines_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
+export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignImageBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
 
 export interface CampaignPublicFields_regions {
   __typename: "CampaignRegionPublic";
@@ -1080,6 +1136,59 @@ export interface CampaignPublicFields_chrome_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_chrome_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+}
+
 export interface CampaignPublicFields_chrome_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -1141,7 +1250,10 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock_action_Campaign
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_chrome_CampaignButtonBlock_action = CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1188,7 +1300,7 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock {
   action: CampaignPublicFields_chrome_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
+export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignImageBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
 
 export interface CampaignPublicFields_pages_blocks_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
@@ -1557,6 +1669,59 @@ export interface CampaignPublicFields_pages_blocks_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -1618,7 +1783,10 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_Ca
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_pages_blocks_CampaignButtonBlock_action = CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1665,7 +1833,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock {
   action: CampaignPublicFields_pages_blocks_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
+export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignImageBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
 
 export interface CampaignPublicFields_pages {
   __typename: "CampaignPagePublic";

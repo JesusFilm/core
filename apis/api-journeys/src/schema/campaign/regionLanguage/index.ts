@@ -9,6 +9,7 @@ export {
   JOURNEY_NOT_FOUND_MESSAGE,
   authorizeRegionLanguageUpdate,
   deleteQrCodes,
+  deleteShortLinks,
   findRegionQrCodes,
   parseJourneyLink,
   resolveJourneyLink

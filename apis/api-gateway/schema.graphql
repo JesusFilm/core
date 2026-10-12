@@ -329,7 +329,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the hero’s default-language eyebrow, title, lede or alignment. Only the given fields change; empty text is allowed and not rendered.
+  Update the hero’s default-language eyebrow, title, lede or alignment, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -338,6 +338,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -354,7 +358,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the region switcher’s default-language title or its variant (cards, list, pills). Only the given fields change.
+  Update the region switcher’s default-language title or its variant (cards, list, pills), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -363,6 +367,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title`): over 150 characters.
   - BAD_USER_INPUT (field: `variant`): not cards, list or pills.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -379,7 +387,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the video carousel’s default-language eyebrow or title. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
+  Update the video carousel’s default-language eyebrow or title, or its Section Background and colour overrides. Only the given fields change; the Watch expansion and items are set by the media ticket’s mutations.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -387,6 +395,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -403,7 +415,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the journey list’s default-language eyebrow, title or lede, or its display (grid, list). Only the given fields change.
+  Update the journey list’s default-language eyebrow, title or lede, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -412,6 +424,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `display`): not grid or list.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -428,7 +444,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the analytics section’s default-language eyebrow or title, or whether the world map shows. Only the given fields change.
+  Update the analytics section’s default-language eyebrow or title, whether the world map shows, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -436,6 +452,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignAnalyticsBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -453,7 +473,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionHeaderBlockCreate(input: CampaignRegionHeaderBlockCreateInput!) : CampaignRegionHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the region header’s default-language intro.
+  Update the region header’s default-language intro, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -461,6 +481,10 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignRegionHeaderBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `intro`): over 500 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!) : CampaignRegionHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -478,7 +502,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionShareBlockCreate(input: CampaignRegionShareBlockCreateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the region share panel’s default-language title or intro. Only the given fields change.
+  Update the region share panel’s default-language title or intro, or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -486,10 +510,76 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignRegionShareBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
   """
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Children keep their rows and fall out of the tree with the parent, so `campaignBlockRestore` is how undo of a delete works.
+  Add an image in one of two roles. With `pageId`: an Image section, last among the page’s sections or at `parentOrder`. With `parentBlockId` and `slot`: an owned image with `parentOrder: null` that becomes the parent’s background cover (any section or chrome block) or the header logo, replacing (soft-deleting) the image that slot held. `width` and `height` are measured by the server from `src`; the editor never supplies them.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaignId does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
+  - BAD_USER_INPUT (field: `parentOrder`): negative.
+  - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
+  - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
+  - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
+  - BAD_USER_INPUT (field: `alt`): over 500 characters.
+  """
+  campaignImageBlockCreate(input: CampaignImageBlockCreateInput!) : CampaignImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update an image’s address or default-language alt text, and for an Image section its Section Background and colour overrides. Only the given fields change; alt translations are untouched. A new `src` is re-measured by the server; null clears the image and its size.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live CampaignImageBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
+  - BAD_USER_INPUT (field: `alt`): over 500 characters.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  """
+  campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!) : CampaignImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the header’s Section Background, colour overrides or logo. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to the live CampaignHeaderBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `logoBlockId`): not a live CampaignImageBlock owned by the header.
+  """
+  campaignHeaderBlockUpdate(id: ID!, input: CampaignHeaderBlockUpdateInput!) : CampaignHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the footer’s Section Background and colour overrides. Only the given fields change.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to the live CampaignFooterBlock.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
+  - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
+  - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
+  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  """
+  campaignFooterBlockUpdate(id: ID!, input: CampaignFooterBlockUpdateInput!) : CampaignFooterBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Soft-delete a campaign block: stamp `deletedAt` and renumber the remaining siblings contiguously. Returns those siblings with their new `parentOrder`. Its live descendants and owned blocks are stamped with the same `deletedAt`, so `campaignBlockRestore` brings back exactly what was deleted with it.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -500,7 +590,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignBlockDelete(id: ID!) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Restore a soft-deleted campaign block: clear `deletedAt` and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
+  Restore a soft-deleted campaign block: clear `deletedAt` on it and on the rows deleted with it (same timestamp), and re-insert it among its siblings at its own `parentOrder`, renumbering again. Returns the block, its renumbered siblings and its live descendants. Restoring a live block only renumbers.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -541,13 +631,64 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignBlockDuplicate(id: ID!, idMap: [CampaignBlockDuplicateIdMapInput!]) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
+  Point a button at a web address (a journey, a video or any https page). The button’s one action becomes this link; any scroll or region target it had is cleared.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  - BAD_USER_INPUT (field: `url`): not an https address, or over 2048 characters.
+  - BAD_USER_INPUT (field: `target`): not `_blank` or null.
+  """
+  campaignBlockUpdateLinkAction(id: ID!, input: CampaignLinkActionInput!) : CampaignLinkAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Point a button at a block of the same campaign: the public page scrolls to `#<blockId>` when the target is on the same page and renders the button static otherwise. The button’s one action becomes this scroll; any link or region target it had is cleared.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  - BAD_USER_INPUT (field: `blockId`): not a live block of this campaign.
+  """
+  campaignBlockUpdateScrollToBlockAction(id: ID!, input: CampaignScrollToBlockActionInput!) : CampaignScrollToBlockAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Point a button at a Campaign Region’s page, carrying the visitor’s Page Language. The button’s one action becomes this navigation; any link or scroll target it had is cleared. Deleting the region later sets the target null and the button renders static.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  - BAD_USER_INPUT (field: `regionId`): not a region of this campaign.
+  """
+  campaignBlockUpdateNavigateToRegionAction(id: ID!, input: CampaignNavigateToRegionActionInput!) : CampaignNavigateToRegionAction! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Remove a button’s action so it renders static. Returns the button with `action` null; a button that had no action is returned unchanged.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a live block.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
+  """
+  campaignBlockDeleteAction(id: ID!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Idempotent per id: a retry with the id of an existing region of the same campaign returns that region.
+  
+  Errors:
   - NOT_FOUND: campaignId does not resolve.
   - FORBIDDEN: caller is not in the team.
+  - CONFLICT: a concurrent create took the id or the derived slug; retry.
   """
   campaignRegionCreate(
     campaignId: ID!
@@ -566,6 +707,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `name`): empty or over 60 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length or reserved-word checks, is taken by another region of the campaign (including the concurrent-update race on the unique constraint), or equals the slug of a journey in the campaign’s team.
+  
+  A slug or listing change on a published campaign queues on-demand revalidation of the campaign’s pages, including the region’s previous path.
   """
   campaignRegionUpdate(id: ID!, input: CampaignRegionUpdateInput!) : CampaignRegion! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -580,7 +723,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionOrderUpdate(id: ID!, order: Int!) : [CampaignRegion!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages (each deleting its Campaign QR Code and short link), its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.
+  Hard-delete an unlisted Campaign Region with everything it owns: its Share Languages (each deleting its Campaign QR Code and short link), its Region Countries and its Region Lines go by cascade; `CampaignNavigateToRegionAction` rows that targeted it keep their row with `regionId` set null; linked journeys are untouched. The remaining regions are renumbered. A published campaign’s landing page and the deleted path are queued for on-demand revalidation so the deleted path stops resolving. There is no restore, so the editor confirms first. The Region Page itself is not a region and cannot be deleted. Returns the deleted row; only its scalar fields are readable.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -669,7 +812,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignCreate(input: CampaignCreateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the campaign settings: the default-language title and the Campaign Address slug. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving.
+  Update the campaign settings — the default-language title and the Campaign Address slug — or the Palette. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving. The Palette is picker chrome: each entry assertHex-normalised, deduplicated, the first eight kept newest first; saved outside any Command.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -678,8 +821,28 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
+  - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve to a Campaign Theme.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: the colour column): a colour is null, empty or not a hex colour.
+  - BAD_USER_INPUT (field: `headerFont` / `bodyFont` / `labelFont`): a font name is not in the shared curated list.
+  - BAD_USER_INPUT (field: `themeMode` / `radius` / `buttonRadius`): null, or not one of the enum’s values.
+  """
+  campaignThemeUpdate(
+    """
+    The Campaign Theme id (`campaign.theme.id`).
+    """
+    id: ID!
+    input: CampaignThemeUpdateInput!
+  ): CampaignTheme! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
   
@@ -710,6 +873,53 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not a manager of the team.
   """
   campaignUnpublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Update the default-language wording of one Campaign String. The seventeen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `value`): over 200 characters.
+  """
+  campaignStringUpdate(campaignId: ID!, key: CampaignStringKey!, value: String!) : CampaignString! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The machine-translation run into the new language is a separate mutation (the Translations ticket).
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already a language of this campaign.
+  """
+  campaignLanguageAdd(campaignId: ID!, languageId: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Remove a Page Language from a campaign and close the gap in the selector order. `Campaign.defaultLanguageId` is always one of its languages and a campaign always has at least one, so the default and the last language cannot be removed. Stored translations in that language are kept. Not a Command.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve, or the language is not one of its languages.
+  - FORBIDDEN: caller is not in the team.
+  - CONFLICT (field: `languageId`): the language is the campaign default, or its last language.
+  """
+  campaignLanguageRemove(campaignId: ID!, languageId: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  Write one translation of one Translated Field: `{ value, source: human }` into the target’s `<field>Translations[languageId]`, or clear that entry when `value` is empty. The default-language value is the field itself and is edited through the target’s typed update mutation. Returns the field’s translations after the write.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: the target row does not exist or is not live.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `target`): not exactly one target id.
+  - BAD_USER_INPUT (field: `field`): the target has no such translatable field.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language.
+  - BAD_USER_INPUT (field: the text field): over the field’s cap.
+  """
+  campaignTranslationSet(input: CampaignTranslationSetInput!) : [TranslatedValue!]! @join__field(graph: API_JOURNEYS_MODERN) 
   chatButtonCreate(journeyId: ID!, input: ChatButtonCreateInput) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
   chatButtonRemove(id: ID!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
   chatButtonUpdate(id: ID!, journeyId: ID!, input: ChatButtonUpdateInput!) : ChatButton! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -941,8 +1151,23 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Runs the WESS QueryRunner imports (languages, then countries, then country-languages) in the FK-safe order. Runs synchronously and can take several minutes; requires WESS_API_TOKEN in the server environment.
   """
   wessImport: WessImportResult! @join__field(graph: API_LANGUAGES) 
-  createCloudflareUploadByFile(input: ImageInput, journeyId: ID) : CloudflareImage! @join__field(graph: API_MEDIA) 
-  createCloudflareUploadByUrl(url: String!, input: ImageInput, journeyId: ID) : CloudflareImage! @join__field(graph: API_MEDIA) 
+  createCloudflareUploadByFile(
+    input: ImageInput
+    journeyId: ID
+    """
+    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    """
+    teamId: ID
+  ): CloudflareImage! @join__field(graph: API_MEDIA) 
+  createCloudflareUploadByUrl(
+    url: String!
+    input: ImageInput
+    journeyId: ID
+    """
+    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    """
+    teamId: ID
+  ): CloudflareImage! @join__field(graph: API_MEDIA) 
   createCloudflareImageFromPrompt(prompt: String!, input: ImageInput, journeyId: ID) : CloudflareImage! @join__field(graph: API_MEDIA) 
   deleteCloudflareImage(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
   cloudflareUploadComplete(id: ID!) : Boolean! @join__field(graph: API_MEDIA) 
@@ -1455,6 +1680,62 @@ type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock @join__ty
 }
 
 """
+The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is always an https imagedelivery.net address; width and height are measured by the server.
+"""
+type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
+  id: ID!
+  campaignId: ID!
+  """
+  The Campaign Page this block sits on, if page-scoped.
+  """
+  pageId: ID
+  """
+  The Campaign Region this block belongs to, if region-scoped (a Region Line).
+  """
+  regionId: ID
+  parentBlockId: ID
+  """
+  Order among siblings. Null on an owned block (a cover, logo or media slot).
+  """
+  parentOrder: Int
+  backgroundKind: CampaignBackgroundKind!
+  """
+  Read only when backgroundKind is `custom`. `#RRGGBB`.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock; read only when backgroundKind is `image`.
+  """
+  coverBlockId: ID
+  """
+  Read only when backgroundKind is `image`; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  headingColor: String
+  textColor: String
+  buttonColor: String
+  buttonTextColor: String
+  accentColor: String
+  """
+  The Cloudflare image address (`https://imagedelivery.net/…`); null until an image is chosen.
+  """
+  src: String
+  """
+  Visitor-facing alternative text; at most 500 characters.
+  """
+  alt: String
+  altTranslations: [TranslatedValue!]!
+  """
+  Measured by the server from the image; never client-supplied.
+  """
+  width: Int
+  """
+  Measured by the server from the image; never client-supplied.
+  """
+  height: Int
+}
+
+"""
 Ready-made journeys as cards. Items are the ordered CampaignJourneyBlock children.
 """
 type CampaignJourneyListBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
@@ -1528,7 +1809,7 @@ type CampaignLinkAction implements CampaignAction @join__type(graph: API_JOURNEY
 }
 
 """
-Navigate to a Campaign Region's page, carrying the visitor's Page Language. The target is set null when the region is deleted.
+Navigate to a Campaign Region's page, carrying the visitor's Page Language. The target is set null when the region is deleted: the editor shows "Missing region" and the public page renders the button static.
 """
 type CampaignNavigateToRegionAction implements CampaignAction @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignAction")  {
   """
@@ -1536,7 +1817,10 @@ type CampaignNavigateToRegionAction implements CampaignAction @join__type(graph:
   """
   parentBlockId: ID!
   parentBlock: CampaignBlock!
-  regionId: String!
+  """
+  Null once the region has been deleted.
+  """
+  regionId: String
 }
 
 """
@@ -1956,6 +2240,45 @@ type CampaignTheme @join__type(graph: API_JOURNEYS_MODERN)  {
   buttonRadius: CampaignButtonRadius!
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
+}
+
+"""
+One line of the Translations view: a Translated Field, its default-language text and its text in the requested language.
+"""
+type CampaignTranslation @join__type(graph: API_JOURNEYS_MODERN)  {
+  target: CampaignTranslationTarget!
+  group: CampaignTranslationGroup!
+  field: CampaignTextField!
+  """
+  The field’s cap on this target, in characters.
+  """
+  maxLength: Int!
+  """
+  The text in the campaign’s default language.
+  """
+  defaultValue: String!
+  """
+  The text in the requested language; null when missing.
+  """
+  value: String
+  """
+  Who wrote `value`: a person (`human`) or the machine; null when missing.
+  """
+  source: CampaignTextSource
+}
+
+"""
+The row a Translated Field belongs to, in the shape `campaignTranslationSet` takes: exactly one of `blockId`, `regionId`, `stringId` or `campaignId` is set.
+"""
+type CampaignTranslationTarget @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The block typename (`CampaignHeroBlock`, …), or `CampaignRegion`, `CampaignString` or `Campaign`.
+  """
+  typename: String!
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
 }
 
 """
@@ -2763,6 +3086,17 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served.
   """
   campaignStats(id: ID!) : CampaignStats! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+  
+  Auth: campaign Read — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.
+  """
+  campaignTranslations(campaignId: ID!, languageId: ID!, filter: CampaignTranslationFilter = all) : [CampaignTranslation!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomains(teamId: ID!) : [CustomDomain!]! @join__field(graph: API_JOURNEYS_MODERN) 
   customDomain(id: ID!) : CustomDomain! @join__field(graph: API_JOURNEYS_MODERN) 
   node(id: ID!) : Node @join__field(graph: API_JOURNEYS_MODERN) 
@@ -4976,6 +5310,14 @@ enum CampaignColumnsRatio @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
+Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, or the header `logo` (the Brand Mark). An owned image has `parentOrder: null` and replaces the slot’s previous image.
+"""
+enum CampaignImageSlot @join__type(graph: API_JOURNEYS_MODERN)  {
+  cover @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  logo @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
 How a Journey List renders its items: a card grid or a list.
 """
 enum CampaignJourneyListDisplay @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5050,6 +5392,23 @@ enum CampaignStringKey @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
+Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+"""
+enum CampaignTextField @join__type(graph: API_JOURNEYS_MODERN)  {
+  eyebrow @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  title @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  lede @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  bullets @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  content @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  intro @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  label @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  alt @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  description @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  name @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  value @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
 Who wrote a translation: a person or the machine-translation sweep.
 """
 enum CampaignTextSource @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5060,6 +5419,26 @@ enum CampaignTextSource @join__type(graph: API_JOURNEYS_MODERN)  {
 enum ThemeMode @join__type(graph: API_JOURNEYS_MODERN)  {
   dark @join__enumValue(graph: API_JOURNEYS_MODERN) 
   light @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+"""
+enum CampaignTranslationGroup @join__type(graph: API_JOURNEYS_MODERN)  {
+  interface @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  landing @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  region @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  regions @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+"""
+enum CampaignTranslationFilter @join__type(graph: API_JOURNEYS_MODERN)  {
+  all @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  needsReview @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  missing @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  edited @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 enum TypographyVariant @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5714,6 +6093,42 @@ input CampaignAnalyticsBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN) 
   """
   title: String
   showMap: Boolean
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
 }
 
 """
@@ -5792,6 +6207,94 @@ input CampaignCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   defaultLanguageId: ID!
 }
 
+"""
+The footer’s Section Background and colour overrides: the shared section fields and nothing else.
+"""
+input CampaignFooterBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
+}
+
+"""
+The header’s Section Background and colour overrides (the shared section fields) and its logo slot.
+"""
+input CampaignHeaderBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
+  """
+  The owned CampaignImageBlock shown as the Brand Mark; null clears the logo so the campaign title shows instead. Usually set by campaignImageBlockCreate with slot logo.
+  """
+  logoBlockId: ID
+}
+
 input CampaignHeroBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   campaignId: ID!
@@ -5832,6 +6335,121 @@ input CampaignHeroBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   lede: String
   align: TypographyAlign
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
+}
+
+"""
+One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover or logo and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
+"""
+input CampaignImageBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  id: ID
+  campaignId: ID!
+  """
+  A page of the campaign; the Image section role.
+  """
+  pageId: ID
+  """
+  Section role only: position among the page’s sections; appended when omitted or past the end.
+  """
+  parentOrder: Int
+  """
+  A section or chrome block of the campaign; the owned image role.
+  """
+  parentBlockId: ID
+  """
+  Owned role only: which slot of the parent this image fills. Defaults to `cover`; `logo` needs the header as parent.
+  """
+  slot: CampaignImageSlot
+  """
+  An https imagedelivery.net address. Width and height are measured by the server.
+  """
+  src: String
+  """
+  At most 500 characters.
+  """
+  alt: String
+}
+
+input CampaignImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  An https imagedelivery.net address; null clears the image. Width and height are re-measured by the server.
+  """
+  src: String
+  """
+  Default-language alternative text. At most 500 characters.
+  """
+  alt: String
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
 }
 
 input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5877,6 +6495,60 @@ input CampaignJourneyListBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN
   """
   lede: String
   display: CampaignJourneyListDisplay
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
+}
+
+input CampaignLinkActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  An https address of at most 2048 characters.
+  """
+  url: String!
+  """
+  `_blank` to open in a new tab; null for the same tab. Any other value is rejected.
+  """
+  target: String
+}
+
+input CampaignNavigateToRegionActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  A Campaign Region of the same campaign.
+  """
+  regionId: ID!
 }
 
 input CampaignRegionHeaderBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5901,6 +6573,42 @@ input CampaignRegionHeaderBlockUpdateInput @join__type(graph: API_JOURNEYS_MODER
   At most 500 characters.
   """
   intro: String
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
 }
 
 input CampaignRegionLanguageUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5952,6 +6660,42 @@ input CampaignRegionShareBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN
   At most 500 characters.
   """
   intro: String
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
 }
 
 input CampaignRegionSwitcherBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5981,6 +6725,42 @@ input CampaignRegionSwitcherBlockUpdateInput @join__type(graph: API_JOURNEYS_MOD
   """
   title: String
   variant: CampaignSwitcherVariant
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
 }
 
 input CampaignRegionUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5996,6 +6776,95 @@ input CampaignRegionUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Whether the region appears on the Region Switcher; false keeps an Orphan Page.
   """
   listed: Boolean
+}
+
+input CampaignScrollToBlockActionInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  A live block of the same campaign.
+  """
+  blockId: ID!
+}
+
+"""
+The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+"""
+input CampaignThemeUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  The MUI palette mode the theme is built on.
+  """
+  themeMode: ThemeMode
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  headerFont: String
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  bodyFont: String
+  """
+  Google Fonts family from the shared curated list; null = the base theme default.
+  """
+  labelFont: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  primaryColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  accentColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  backgroundColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  surfaceColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  textColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  mutedColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  contrastBackgroundColor: String
+  """
+  Hex colour, stored as `#RRGGBB` uppercase.
+  """
+  contrastTextColor: String
+  """
+  Corner radius: square, slight, rounded or veryRounded.
+  """
+  radius: CampaignRadius
+  """
+  Button shape: rounded or pill.
+  """
+  buttonRadius: CampaignButtonRadius
+}
+
+"""
+One translation write: the target row, which of its Translated Fields, the campaign language (never the default) and the wording. An empty value clears the entry.
+"""
+input CampaignTranslationSetInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  target: CampaignTranslationTargetInput!
+  field: CampaignTextField!
+  languageId: ID!
+  value: String!
+}
+
+"""
+The row a translation belongs to: exactly one of a live Campaign Block, a Campaign Region, a Campaign String or the Campaign itself (its title).
+"""
+input CampaignTranslationTargetInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  blockId: ID
+  regionId: ID
+  stringId: ID
+  campaignId: ID
 }
 
 input CampaignTypographyBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -6043,7 +6912,7 @@ input CampaignTypographyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)
 }
 
 """
-Campaign settings. Both fields are optional: an omitted field leaves the stored value alone. Neither is a Command in the editor.
+Campaign settings and the Palette. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.
 """
 input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
@@ -6054,6 +6923,10 @@ input CampaignUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.
   """
   slug: String
+  """
+  The Palette, newest first: each entry a hex colour (stored as `#RRGGBB` uppercase), deduplicated, at most eight kept. Picker chrome, committed on picker blur and never undone.
+  """
+  palette: [String!]
 }
 
 input CampaignVideoCarouselBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -6086,6 +6959,42 @@ input CampaignVideoCarouselBlockUpdateInput @join__type(graph: API_JOURNEYS_MODE
   At most 150 characters.
   """
   title: String
+  """
+  The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
+  """
+  backgroundKind: CampaignBackgroundKind
+  """
+  Read when backgroundKind is `custom`. `#RGB` or `#RRGGBB`, stored as `#RRGGBB` uppercase; null clears.
+  """
+  backgroundColor: String
+  """
+  The owned CampaignImageBlock read when backgroundKind is `image`; null clears.
+  """
+  coverBlockId: ID
+  """
+  Overlay strength over an image background; null means medium.
+  """
+  backgroundOverlay: CampaignBackgroundOverlay
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  headingColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  textColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  buttonTextColor: String
+  """
+  `#RRGGBB` or null to inherit.
+  """
+  accentColor: String
 }
 
 input CardBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

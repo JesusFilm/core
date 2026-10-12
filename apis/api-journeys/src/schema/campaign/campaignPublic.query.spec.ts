@@ -484,6 +484,23 @@ describe('campaignPublic', () => {
     })
   })
 
+  it('renders the page without Share Links when the gateway lookup fails', async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+    vi.mocked(fetchShortLink).mockRejectedValue(new Error('gateway down'))
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC,
+      variables: { slug: 'christmas-2026' }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignPublic.regions[0].languages[0]).toMatchObject({
+      journeyStatus: 'published',
+      shortLinkUrl: null,
+      journeyUrl: 'https://journeys.example.org/eur-journey'
+    })
+  })
+
   it('resolves to the default language when none is requested or the language is not a campaign language', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
 
@@ -651,6 +668,57 @@ describe('campaignPublic', () => {
     expect(names(result.data.regionLanguage)).not.toContain('qrCodeId')
     expect(names(result.data.campaign)).toEqual(
       expect.arrayContaining(['team', 'teamId', 'palette', 'blocks'])
+    )
+  })
+})
+
+describe('campaignPublic languages', () => {
+  const publicClient = getClient()
+
+  const CAMPAIGN_PUBLIC_LANGUAGES = graphql(`
+    query CampaignPublicLanguages($slug: String, $languageId: ID) {
+      campaignPublic(slug: $slug, languageId: $languageId) {
+        languageId
+        languages {
+          languageId
+          order
+          language {
+            id
+          }
+        }
+      }
+    }
+  `)
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns the Page Languages in CampaignLanguage.order, each resolving to its api-languages Language for bcp47 and autonym', async () => {
+    // Order comes from the Prisma read; the gateway fills `language.bcp47`
+    // and `language.name(primary: true)` from api-languages through the
+    // `Language` entity reference.
+    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+
+    const result = (await publicClient({
+      document: CAMPAIGN_PUBLIC_LANGUAGES,
+      variables: { slug: 'christmas-2026', languageId: FRENCH }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignPublic).toEqual({
+      languageId: FRENCH,
+      languages: [
+        { languageId: '529', order: 0, language: { id: '529' } },
+        { languageId: FRENCH, order: 1, language: { id: FRENCH } }
+      ]
+    })
+    expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        include: expect.objectContaining({
+          languages: { orderBy: { order: 'asc' } }
+        })
+      })
     )
   })
 })

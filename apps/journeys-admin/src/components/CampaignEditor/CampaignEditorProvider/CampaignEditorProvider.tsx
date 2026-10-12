@@ -21,6 +21,12 @@ export interface CampaignEditorState {
   pageKind: CampaignPageKind
   /** The region the Region Page is rendered for; ignored on the landing page. */
   regionId?: string
+  /**
+   * The Preview Language the canvas renders in: a campaign language id, the
+   * default on first open. Text edits made while it is not the default write
+   * translations for it. A view choice, never a Command.
+   */
+  previewLanguageId: string
   /** The selected block; undefined is the campaign row (or a region card). */
   selectedBlockId?: string
   /** The selected region card; its switcher, if known, is `selectedBlockId`. */
@@ -60,12 +66,17 @@ interface SetEditorFocusAction {
 interface RequestEditAction {
   type: 'RequestEditAction'
 }
+interface SetPreviewLanguageAction {
+  type: 'SetPreviewLanguageAction'
+  previewLanguageId: string
+}
 export type CampaignEditorAction =
   | SetPageKindAction
   | SelectBlockAction
   | SelectRegionAction
   | SetEditorFocusAction
   | RequestEditAction
+  | SetPreviewLanguageAction
 
 export function reducer(
   state: CampaignEditorState,
@@ -102,6 +113,8 @@ export function reducer(
       }
     case 'RequestEditAction':
       return { ...state, editRequest: state.editRequest + 1 }
+    case 'SetPreviewLanguageAction':
+      return { ...state, previewLanguageId: action.previewLanguageId }
   }
 }
 
@@ -233,18 +246,30 @@ interface CampaignEditorProviderProps {
  * which region the Region Page is rendered for) and which block or region
  * card is selected. The selection resolves against the campaign's block and
  * region lists, so a row that leaves the cache (deleted, undone) falls back
- * to the campaign row without a dispatch.
+ * to the campaign row without a dispatch. The Preview Language is clamped the
+ * same way: when its language leaves `campaign.languages` (removed in the
+ * Languages panel) the preview falls back to the campaign default.
  */
 export function CampaignEditorProvider({
   campaign,
   initialState,
   children
 }: CampaignEditorProviderProps): ReactElement {
-  const [state, dispatch] = useReducer(reducer, {
+  const [rawState, dispatch] = useReducer(reducer, {
     pageKind: CampaignPageKind.landing,
+    previewLanguageId: campaign.defaultLanguageId,
     editRequest: 0,
     ...initialState
   })
+  const previewLanguageId = campaign.languages.some(
+    (language) => language.languageId === rawState.previewLanguageId
+  )
+    ? rawState.previewLanguageId
+    : campaign.defaultLanguageId
+  const state = useMemo(
+    () => ({ ...rawState, previewLanguageId }),
+    [rawState, previewLanguageId]
+  )
   const selection = useMemo(
     () =>
       resolveSelection(

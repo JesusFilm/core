@@ -126,7 +126,7 @@ function renderEditor(children?: ReactElement): ReturnType<typeof render> {
       <CommandUndoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} />
+      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       {children}
     </QueriedEditor>
   )
