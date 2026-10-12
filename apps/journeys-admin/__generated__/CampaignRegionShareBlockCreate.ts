@@ -3,11 +3,31 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRegionShareBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionShareBlockCreate
 // ====================================================
+
+export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate {
   __typename: "CampaignRegionShareBlock";
@@ -46,6 +66,8 @@ export interface CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate {
   accentColor: string | null;
   title: string | null;
   intro: string | null;
+  titleTranslations: CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_titleTranslations[];
+  introTranslations: CampaignRegionShareBlockCreate_campaignRegionShareBlockCreate_introTranslations[];
 }
 
 export interface CampaignRegionShareBlockCreate {
@@ -59,6 +81,7 @@ export interface CampaignRegionShareBlockCreate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
+   * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `pageId`): the landing page.
    * - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
    */
@@ -67,4 +90,5 @@ export interface CampaignRegionShareBlockCreate {
 
 export interface CampaignRegionShareBlockCreateVariables {
   input: CampaignRegionShareBlockCreateInput;
+  languageId?: string | null;
 }

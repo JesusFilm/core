@@ -3,7 +3,13 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
+import { logger } from '../logger'
 
+import {
+  CampaignJourneyLive,
+  isJourneyVisible,
+  loadCampaignJourneyLives
+} from './block/campaignJourneyBlock'
 import {
   CampaignPublicBlock,
   CampaignPublicPayload,
@@ -18,6 +24,7 @@ import {
   getJourneyPublicUrl
 } from './getJourneyPublicUrl'
 import { resolveText } from './resolveText'
+import { CAMPAIGN_BLOCK_TEXT_COLUMNS } from './translation/campaignTextField'
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './validation'
 
 const INCLUDE_CAMPAIGN_PUBLIC = {
@@ -69,8 +76,8 @@ function isLivePublished(
 /**
  * Resolve the Share Link of every live-published region language through the
  * gateway's short-link lookup, in parallel; a link the gateway no longer
- * knows is left out, so the language renders without a Share Link rather
- * than failing the page.
+ * knows, or cannot be reached for, is left out, so the language renders
+ * without a Share Link rather than failing the page.
  */
 export async function resolveShortLinkUrls(
   campaign: CampaignPublicRow
@@ -82,7 +89,16 @@ export async function resolveShortLinkUrls(
         shortLinkIds.add(regionLanguage.qrCode.shortLinkId)
 
   const resolved = await Promise.all(
-    [...shortLinkIds].map(async (id) => [id, await fetchShortLink(id)] as const)
+    [...shortLinkIds].map(
+      async (id) =>
+        [
+          id,
+          await fetchShortLink(id).catch((error) => {
+            logger.error({ error, shortLinkId: id }, 'short link lookup failed')
+            return null
+          })
+        ] as const
+    )
   )
   const urls = new Map<string, string>()
   for (const [id, shortLink] of resolved)
@@ -90,18 +106,27 @@ export async function resolveShortLinkUrls(
   return urls
 }
 
-/** Every translatable text column of CampaignBlock and its translations sibling. */
-const BLOCK_TEXT_FIELDS = [
-  ['eyebrow', 'eyebrowTranslations'],
-  ['title', 'titleTranslations'],
-  ['lede', 'ledeTranslations'],
-  ['bullets', 'bulletsTranslations'],
-  ['content', 'contentTranslations'],
-  ['intro', 'introTranslations'],
-  ['label', 'labelTranslations'],
-  ['alt', 'altTranslations'],
-  ['description', 'descriptionTranslations']
-] as const
+/** The live journey read of every journey-list item, by journey id. */
+export type JourneyLives = ReadonlyMap<string, CampaignJourneyLive>
+
+/**
+ * Read the live status, address and image of every journey a journey-list
+ * item links, in one query; cards whose journey is not visible are left out of
+ * the public payload by this at request time.
+ */
+export async function resolveJourneyLives(
+  campaign: CampaignPublicRow
+): Promise<JourneyLives> {
+  const journeyIds = campaign.blocks.flatMap((block) =>
+    block.typename === 'CampaignJourneyBlock' && block.journeyId != null
+      ? [block.journeyId]
+      : []
+  )
+  return await loadCampaignJourneyLives(journeyIds)
+}
+
+/** Every translatable text column of CampaignBlock and its translations sibling, from the `CampaignTextField` map. */
+const BLOCK_TEXT_FIELDS = CAMPAIGN_BLOCK_TEXT_COLUMNS
 
 function notFound(): GraphQLError {
   return new GraphQLError('campaign not found', {
@@ -137,6 +162,7 @@ function toRegionLanguage(
     languageId: regionLanguage.languageId,
     order: regionLanguage.order,
     journeyStatus: live,
+    title: published ? regionLanguage.title : null,
     shortLinkUrl:
       published && shortLinkId != null
         ? (shortLinkUrls.get(shortLinkId) ?? null)
@@ -154,7 +180,8 @@ function toRegionLanguage(
 export function toCampaignPublic(
   campaign: CampaignPublicRow,
   requestedLanguageId: string | null | undefined,
-  shortLinkUrls: ShortLinkUrls = new Map()
+  shortLinkUrls: ShortLinkUrls = new Map(),
+  journeyLives: JourneyLives = new Map()
 ): CampaignPublicPayload {
   const languageId =
     requestedLanguageId != null &&
@@ -164,9 +191,23 @@ export function toCampaignPublic(
       ? requestedLanguageId
       : campaign.defaultLanguageId
 
-  const blocks = campaign.blocks.map((block) =>
-    resolveBlockText(block, languageId)
+  const visibleBlocks = campaign.blocks.filter(
+    (block) =>
+      block.typename !== 'CampaignJourneyBlock' ||
+      (block.journeyId != null &&
+        isJourneyVisible(journeyLives.get(block.journeyId)?.status ?? null))
   )
+  const blocks = visibleBlocks.map((block) => {
+    const resolved = resolveBlockText(block, languageId)
+    if (block.typename !== 'CampaignJourneyBlock') return resolved
+    return {
+      ...resolved,
+      journeyLive:
+        block.journeyId == null
+          ? null
+          : (journeyLives.get(block.journeyId) ?? null)
+    }
+  })
   const chrome = blocks.filter(
     (block) => block.pageId == null && block.regionId == null
   )
@@ -269,10 +310,15 @@ builder.queryField('campaignPublic', (t) =>
           include: INCLUDE_CAMPAIGN_PUBLIC
         })
         if (campaign == null) throw notFound()
+        const [shortLinkUrls, journeyLives] = await Promise.all([
+          resolveShortLinkUrls(campaign),
+          resolveJourneyLives(campaign)
+        ])
         return toCampaignPublic(
           campaign,
           args.languageId == null ? null : String(args.languageId),
-          await resolveShortLinkUrls(campaign)
+          shortLinkUrls,
+          journeyLives
         )
       }
 

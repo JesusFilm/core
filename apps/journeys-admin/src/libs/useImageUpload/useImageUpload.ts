@@ -22,6 +22,12 @@ export type ImageUploadErrorCode = ErrorCode | number | 'unknown-error'
 
 export interface UseImageUploadOptions {
   onUploadComplete: (url: string) => void
+  /**
+   * The team the upload belongs to when there is no journey (a campaign
+   * edit). Given, it is passed to the Cloudflare mutation instead of the
+   * surrounding journey's id.
+   */
+  teamId?: string
   onUploadStart?: () => void
   onUploadError?: (
     errorCode: ImageUploadErrorCode,
@@ -66,6 +72,7 @@ export function useImageUpload(
   const { journey } = useJourney()
   const {
     onUploadComplete,
+    teamId,
     onUploadStart,
     onUploadError,
     maxSize = DEFAULT_MAX_SIZE,
@@ -140,7 +147,7 @@ export function useImageUpload(
 
     try {
       const { data } = await createCloudflareUploadByFile({
-        variables: { journeyId: journey?.id }
+        variables: teamId != null ? { teamId } : { journeyId: journey?.id }
       })
 
       if (data?.createCloudflareUploadByFile?.uploadUrl != null) {

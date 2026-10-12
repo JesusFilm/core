@@ -146,10 +146,14 @@ describe('TopBar', () => {
     fireEvent.mouseDown(screen.getByRole('combobox', { name: /^Page/ }))
     expect(
       screen.getAllByRole('option').map((option) => option.textContent)
-    ).toEqual(['Landing page', 'Europe', 'Africa · not listed'])
+    ).toEqual([
+      'Landing page',
+      'EuropeNeeds journey',
+      'Africa · not listedNeeds journey'
+    ])
     expect(screen.queryByText(/custom/)).not.toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('option', { name: 'Africa · not listed' }))
+    fireEvent.click(screen.getByRole('option', { name: /Africa · not listed/ }))
     expect(onPageKindChange).toHaveBeenCalledWith(
       CampaignPageKind.regionTemplate,
       'afrRegionId'
@@ -160,6 +164,36 @@ describe('TopBar', () => {
       'href',
       'https://your.nextstep.is/campaign/christmas-2026/afr'
     )
+  })
+
+  it(`carries a "Needs journey" badge on a region's page-selector entry while any of its languages is unlinked`, () => {
+    render(
+      <Harness
+        campaign={{
+          ...campaignWithRegions,
+          regions: campaignWithRegions.regions.map((region) =>
+            region.id === 'afrRegionId'
+              ? {
+                  ...region,
+                  languages: [
+                    { ...region.languages[0], journeyId: 'journeyId' }
+                  ]
+                }
+              : region
+          )
+        }}
+      />
+    )
+
+    fireEvent.mouseDown(screen.getByRole('combobox', { name: /^Page/ }))
+    const europe = screen.getByRole('option', { name: /^Europe/ })
+    expect(within(europe).getByTestId('RegionNeedsJourney')).toHaveTextContent(
+      'Needs journey'
+    )
+    const africa = screen.getByRole('option', { name: /^Africa/ })
+    expect(
+      within(africa).queryByTestId('RegionNeedsJourney')
+    ).not.toBeInTheDocument()
   })
 
   it('keeps the Command history when switching pages', () => {
@@ -282,5 +316,25 @@ describe('TopBar', () => {
     ).not.toBeInTheDocument()
     expect(screen.queryByText('Unsaved')).not.toBeInTheDocument()
     expect(screen.queryByText(/Saving/)).not.toBeInTheDocument()
+  })
+})
+
+describe('TopBar preview language', () => {
+  it('lists the campaign languages by autonym and hands the chosen one to the shell', () => {
+    render(<Harness />)
+
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('529')
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    )
+    expect(
+      screen.getAllByRole('option').map((option) => option.textContent)
+    ).toEqual(['English', 'Français'])
+
+    fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+    expect(
+      screen.getByRole('combobox', { name: 'Preview language' })
+    ).toHaveTextContent('Français')
   })
 })

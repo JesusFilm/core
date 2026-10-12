@@ -26,9 +26,12 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { FontLoader } from '../../Editor/FontLoader'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
+import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
+import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
 import { CanvasSection } from './CanvasSection'
 
@@ -70,10 +73,33 @@ export function dropParentOrder(
   return to === from ? undefined : to
 }
 
-/** The section under the pointer, falling back to the nearest centre at the page's edges. */
+/** The drag data a Column Slot carries, set by `CanvasColumnSlot`. */
+interface SlotDragData {
+  slot?: boolean
+  columnsId?: string | null
+}
+
+function slotDataOf(
+  data: { current?: SlotDragData } | undefined
+): SlotDragData {
+  return data?.current ?? {}
+}
+
+/**
+ * The section under the pointer, falling back to the nearest centre at the
+ * page's edges. A section only collides with sections; a Column Slot only
+ * with the other slot of its own Columns section.
+ */
 const collisionDetection: CollisionDetection = (args) => {
-  const within = pointerWithin(args)
-  return within.length > 0 ? within : closestCenter(args)
+  const active = slotDataOf(args.active?.data)
+  const droppableContainers = args.droppableContainers.filter((container) => {
+    const candidate = slotDataOf(container.data)
+    if (active.slot !== true) return candidate.slot !== true
+    return candidate.slot === true && candidate.columnsId === active.columnsId
+  })
+  const scoped = { ...args, droppableContainers }
+  const within = pointerWithin(scoped)
+  return within.length > 0 ? within : closestCenter(scoped)
 }
 
 function pointerYOf(event: DragMoveEvent | DragEndEvent): number | undefined {
@@ -107,29 +133,32 @@ function dropTargetOf(
 interface CanvasProps {
   campaign: Campaign
   pageKind: CampaignPageKind
-  previewLanguageId: string
   view: CanvasView
 }
 
 /**
  * The campaign canvas: the chosen page rendered inside a FramePortal iframe
- * with the editor's own section components under the campaign's theme, the
- * header above and the footer below as on the public page. Desktop/Phone is
- * a view toggle held by the shell, never a Command. The frame carries its
- * own Hotkeys, since its key events never leave it, and a click on the empty
- * frame returns to the campaign row. A section is dragged by its handle
- * only; the drop lands before or after the section under the pointer by its
- * midpoint, as one reorder Command.
+ * with the editor's own section components under the campaign's theme, in
+ * the Preview Language the top bar chose (its text direction follows that
+ * language's bcp47), the header above and the footer below as on the public
+ * page. Desktop/Phone is a view toggle held by the shell, never a Command.
+ * The frame carries its own Hotkeys, since its key events never leave it, and
+ * a click on the empty frame returns to the campaign row. A section is
+ * dragged by its handle only; the drop lands before or after the section
+ * under the pointer by its midpoint, as one reorder Command.
  */
 export function Canvas({
   campaign,
   pageKind,
-  previewLanguageId,
   view
 }: CanvasProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selectBlock } = useCampaignEditor()
+  const {
+    selectBlock,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
+  const { addColumnSwap } = useColumnSwapCommand()
   const [dropTarget, setDropTarget] = useState<DropTarget>()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const pageId = page?.id
@@ -171,6 +200,14 @@ export function Canvas({
     }),
     [campaign.theme]
   )
+  const fonts = useMemo(
+    () => [
+      fontFamilies.headerFont,
+      fontFamilies.bodyFont,
+      fontFamilies.labelFont
+    ],
+    [fontFamilies]
+  )
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, {
@@ -179,11 +216,27 @@ export function Canvas({
   )
 
   function handleDragMove(event: DragMoveEvent): void {
+    if (slotDataOf(event.active.data).slot === true) return
     setDropTarget(dropTargetOf(event))
+  }
+
+  /** A slot dropped on the other slot of its Columns section swaps the two. */
+  function handleSlotDragEnd(event: DragEndEvent): void {
+    const overId = event.collisions?.[0]?.id
+    if (overId == null || overId === event.active.id) return
+    const slot = campaign.blocks.find(
+      (candidate) => candidate.id === String(event.active.id)
+    )
+    if (slot == null) return
+    addColumnSwap(slot, slotSection(campaign.blocks, slot.id)?.id)
   }
 
   function handleDragEnd(event: DragEndEvent): void {
     setDropTarget(undefined)
+    if (slotDataOf(event.active.data).slot === true) {
+      handleSlotDragEnd(event)
+      return
+    }
     const target = dropTargetOf(event)
     if (target == null) return
     const activeId = String(event.active.id)
@@ -211,6 +264,7 @@ export function Canvas({
         py: 3
       }}
     >
+      <FontLoader fonts={fonts} />
       <Box
         sx={{
           width: view === 'phone' ? PHONE_FRAME_WIDTH : '100%',
@@ -252,13 +306,18 @@ export function Canvas({
                   onDragCancel={() => setDropTarget(undefined)}
                 >
                   {header != null && (
-                    <CanvasSection block={header} theme={campaign.theme} />
+                    <CanvasSection
+                      block={header}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                    />
                   )}
                   {sections.map((section) => (
                     <CanvasSection
                       key={section.id}
                       block={section}
                       theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
                       draggable
                       dropEdge={
                         dropTarget?.overId === section.id
@@ -268,7 +327,11 @@ export function Canvas({
                     />
                   ))}
                   {footer != null && (
-                    <CanvasSection block={footer} theme={campaign.theme} />
+                    <CanvasSection
+                      block={footer}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                    />
                   )}
                 </DndContext>
               </Box>

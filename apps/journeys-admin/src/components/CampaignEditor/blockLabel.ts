@@ -16,12 +16,26 @@ export function blockLabel(
       return t('Video carousel')
     case 'CampaignJourneyListBlock':
       return t('Journey list')
+    case 'CampaignJourneyBlock':
+      return t('Journey')
     case 'CampaignAnalyticsBlock':
       return t('Analytics')
     case 'CampaignRegionHeaderBlock':
       return t('Region header')
     case 'CampaignRegionShareBlock':
       return t('Region share')
+    case 'CampaignRichTextBlock':
+      return t('Rich text')
+    case 'CampaignColumnsBlock':
+      return t('Columns')
+    case 'CampaignColumnBlock':
+      return t('Column')
+    case 'CampaignImageBlock':
+      return t('Image')
+    case 'CampaignFeaturedMediaBlock':
+      return t('Featured media')
+    case 'CampaignVideoBlock':
+      return t('Video')
     case 'CampaignHeaderBlock':
       return t('Header')
     case 'CampaignFooterBlock':

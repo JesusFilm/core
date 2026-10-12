@@ -5,9 +5,16 @@ import { ReactElement, useState } from 'react'
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
 import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import {
+  CampaignPageKind,
+  CampaignTextSource,
+  VideoBlockSource
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
-import { campaign } from '../data'
+import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
+import { campaign, campaignWithColumns } from '../data'
+import { newSectionBlock } from '../sectionTypes'
 import {
   CommandProbe,
   SelectionProbe,
@@ -17,6 +24,10 @@ import {
 
 import { Canvas, dropEdgeFor, dropParentOrder } from './Canvas'
 import type { CanvasView } from './Canvas'
+
+const mockWebFontLoader = { load: vi.fn() }
+
+vi.mock('webfontloader', () => mockWebFontLoader)
 
 const LANDING_SECTION_IDS = [
   'heroId',
@@ -53,6 +64,25 @@ const statsMock = {
   result: vi.fn(() => ({ data: { campaignStats: campaignStatsFixture } }))
 }
 
+const swapMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+    variables: { id: 'slotLeftId', parentOrder: 1 }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockOrderUpdate: [
+        {
+          __typename: 'CampaignColumnBlock',
+          id: 'slotRightId',
+          parentOrder: 0
+        },
+        { __typename: 'CampaignColumnBlock', id: 'slotLeftId', parentOrder: 1 }
+      ]
+    }
+  }))
+}
+
 function ViewHarness(): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
   return (
@@ -64,7 +94,6 @@ function ViewHarness(): ReactElement {
       <Canvas
         campaign={campaign}
         pageKind={CampaignPageKind.landing}
-        previewLanguageId="529"
         view={view}
       />
     </StaticEditor>
@@ -73,18 +102,14 @@ function ViewHarness(): ReactElement {
 
 function renderCanvas(
   pageKind = CampaignPageKind.landing,
-  view: CanvasView = 'desktop'
+  view: CanvasView = 'desktop',
+  canvasCampaign: Campaign = campaign
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor mocks={[orderMock]}>
+    <StaticEditor mocks={[orderMock]} campaignProp={canvasCampaign}>
       <SelectionProbe />
       <CommandProbe />
-      <Canvas
-        campaign={campaign}
-        pageKind={pageKind}
-        previewLanguageId="529"
-        view={view}
-      />
+      <Canvas campaign={canvasCampaign} pageKind={pageKind} view={view} />
     </StaticEditor>
   )
 }
@@ -238,6 +263,45 @@ describe('Canvas', () => {
     ).toBeNull()
   })
 
+  it('feeds the theme’s three fonts to the FontLoader so the frame renders them', async () => {
+    render(
+      <StaticEditor>
+        <Canvas
+          campaign={{
+            ...campaign,
+            theme: {
+              ...campaign.theme,
+              headerFont: 'Oswald',
+              bodyFont: 'Nunito',
+              labelFont: 'Inter'
+            }
+          }}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+
+    await waitFor(() =>
+      expect(mockWebFontLoader.load).toHaveBeenCalledWith({
+        google: {
+          families: [
+            'Inter:400,500,600,700,800',
+            'Nunito:400,500,600,700,800',
+            'Oswald:400,500,600,700,800'
+          ]
+        }
+      })
+    )
+  })
+
+  it('loads no fonts while the three theme fonts are null', async () => {
+    renderCanvas()
+
+    await frameBody(document.body, 'CampaignCanvasPage')
+    expect(mockWebFontLoader.load).not.toHaveBeenCalled()
+  })
+
   it('sets the frame to 390 px in Phone view', () => {
     const { baseElement } = renderCanvas(CampaignPageKind.landing, 'phone')
 
@@ -261,6 +325,60 @@ describe('Canvas', () => {
       '100%'
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('shows the hero’s media slot beside its text, and a Featured Media section’s placeholder and bullets', async () => {
+    const hero = campaign.blocks.find((block) => block.id === 'heroId')
+    if (hero?.__typename !== 'CampaignHeroBlock') throw new Error('no hero')
+    const heroVideo = {
+      ...newOwnedVideoBlock('heroVideoId', hero, {
+        source: VideoBlockSource.youTube,
+        videoId: 'jQaeIJOA6J0'
+      }),
+      title: 'Blessing and Curse',
+      image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg'
+    }
+    const featured = {
+      ...newSectionBlock('CampaignFeaturedMediaBlock', {
+        id: 'featuredId',
+        campaignId: campaign.id,
+        pageId: hero.pageId ?? '',
+        parentOrder: 5
+      }),
+      bullets: 'Free to share\nIn many languages'
+    }
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'desktop', {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks.map((block) =>
+          block.id === 'heroId'
+            ? { ...hero, mediaBlockId: 'heroVideoId' }
+            : block
+        ),
+        heroVideo,
+        featured
+      ]
+    })
+    const body = await frameBody(baseElement, 'CanvasSection-featuredId')
+
+    const heroSection = body.querySelector(
+      '[data-testid="CanvasSection-heroId"]'
+    ) as HTMLElement
+    expect(
+      heroSection.querySelector('[data-testid="CanvasMediaVideoPoster"]')
+    ).toHaveAttribute('src', 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg')
+    expect(heroSection.textContent).toContain('Blessing and Curse')
+    expect(heroSection.textContent).toContain('Share the story of Christmas')
+
+    const featuredSection = body.querySelector(
+      '[data-testid="CanvasSection-featuredId"]'
+    ) as HTMLElement
+    expect(
+      featuredSection.querySelector('[data-testid="CanvasMediaPlaceholder"]')
+    ).not.toBeNull()
+    expect(
+      featuredSection.querySelector('[data-testid="InlineText-bullets"]')
+    ).toHaveTextContent('Free to share In many languages')
   })
 
   it('selects a section on click and turns its text into inline inputs', async () => {
@@ -395,5 +513,231 @@ describe('Canvas', () => {
     expect(body.querySelector('[data-testid="CanvasDropIndicator"]')).toBeNull()
     expect(orderMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  describe('Columns', () => {
+    function renderColumnsCanvas(): ReturnType<typeof render> {
+      return render(
+        <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+          <SelectionProbe />
+          <CommandProbe />
+          <Canvas
+            campaign={campaignWithColumns}
+            pageKind={CampaignPageKind.landing}
+            view="desktop"
+          />
+        </StaticEditor>
+      )
+    }
+
+    /** Lay the two slots side by side, 400 px wide each, since jsdom lays nothing out. */
+    function placeSlots(body: HTMLElement): void {
+      ;['slotLeftId', 'slotRightId'].forEach((id, index) => {
+        const slot = body.querySelector(
+          `[data-testid="CanvasColumnSlot-${id}"]`
+        ) as HTMLElement
+        const left = index * 400
+        slot.getBoundingClientRect = () => ({
+          top: 0,
+          bottom: 100,
+          left,
+          right: left + 400,
+          width: 400,
+          height: 100,
+          x: left,
+          y: 0,
+          toJSON: () => ({})
+        })
+      })
+    }
+
+    it('renders the two slots, the section one holds and a placeholder for the empty one', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+
+      const left = body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotLeftId"]'
+      )!
+      const right = body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotRightId"]'
+      )!
+      expect(
+        left.querySelector('[data-testid="CanvasSection-slotRichTextId"]')
+      ).not.toBeNull()
+      expect(left.textContent).toContain('Our story')
+      expect(left.textContent).toContain('First.')
+      expect(
+        right.querySelector('[data-testid="CanvasEmptyColumn-slotRightId"]')
+      ).not.toBeNull()
+      // Only a page section has a drag handle; each slot has its own.
+      expect(
+        body.querySelector('[data-testid="CanvasSectionDragHandle-columnsId"]')
+      ).not.toBeNull()
+      expect(
+        body.querySelector(
+          '[data-testid="CanvasSectionDragHandle-slotRichTextId"]'
+        )
+      ).toBeNull()
+      expect(
+        body.querySelector('[data-testid="CanvasColumnDragHandle-slotLeftId"]')
+      ).toHaveAttribute('aria-label', 'Drag column')
+    })
+
+    it('selects an empty slot, the section in a slot and the Columns section on click', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+
+      fireEvent.click(
+        body.querySelector('[data-testid="CanvasColumnSlot-slotRightId"]')!
+      )
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('slot')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'slotRightId'
+      )
+
+      fireEvent.click(
+        body.querySelector('[data-testid="CanvasSection-slotRichTextId"]')!
+      )
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('column')
+      await waitFor(() =>
+        expect(body.querySelector('textarea[name="title"]')).toHaveValue(
+          'Our story'
+        )
+      )
+      expect(
+        body.querySelector('textarea[name="richTextContent"]')
+      ).toHaveValue('First.\n\nSecond.')
+
+      fireEvent.click(
+        body.querySelector('[data-testid="CanvasSection-columnsId"]')!
+      )
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+    })
+
+    it('swaps the slots when one is dragged by its handle onto the other, as one Command', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+      placeSlots(body)
+      const frameDocument = body.ownerDocument
+      const handle = body.querySelector(
+        '[data-testid="CanvasColumnDragHandle-slotLeftId"]'
+      )!
+
+      fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+      fireEvent.mouseMove(frameDocument, { clientX: 40, clientY: 50 })
+      fireEvent.mouseMove(frameDocument, { clientX: 600, clientY: 50 })
+      fireEvent.mouseUp(frameDocument, { clientX: 600, clientY: 50 })
+
+      await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+      // The slot's section stays selected through the swap.
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'slotRichTextId'
+      )
+    })
+
+    it('does nothing when a slot is dropped back on itself', async () => {
+      const { baseElement } = renderColumnsCanvas()
+      const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+      placeSlots(body)
+      const frameDocument = body.ownerDocument
+      const handle = body.querySelector(
+        '[data-testid="CanvasColumnDragHandle-slotLeftId"]'
+      )!
+
+      fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+      fireEvent.mouseMove(frameDocument, { clientX: 40, clientY: 50 })
+      fireEvent.mouseMove(frameDocument, { clientX: 100, clientY: 50 })
+      fireEvent.mouseUp(frameDocument, { clientX: 100, clientY: 50 })
+
+      expect(swapMock.result).not.toHaveBeenCalled()
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    })
+  })
+})
+
+describe('Canvas preview language', () => {
+  const translated: typeof campaign = {
+    ...campaign,
+    blocks: campaign.blocks.map((block) =>
+      block.__typename === 'CampaignHeroBlock'
+        ? {
+            ...block,
+            titleTranslations: [
+              {
+                __typename: 'TranslatedValue',
+                languageId: '496',
+                value: "Partagez l'histoire de Noël",
+                source: CampaignTextSource.human
+              }
+            ]
+          }
+        : block
+    )
+  }
+
+  it('renders the campaign text in the preview language the top bar chose, falling back to the default where no translation exists', async () => {
+    const { baseElement } = render(
+      <StaticEditor
+        campaignProp={translated}
+        initialState={{ previewLanguageId: '496' }}
+      >
+        <Canvas
+          campaign={translated}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const hero = body.querySelector('[data-testid="CanvasSection-heroId"]')
+    expect(hero?.textContent).toContain("Partagez l'histoire de Noël")
+    expect(hero?.textContent).not.toContain('Share the story of Christmas')
+    // The untranslated eyebrow shows the default-language fallback, marked.
+    const eyebrow = hero?.querySelector('[data-testid="InlineText-eyebrow"]')
+    expect(eyebrow).toHaveTextContent('Christmas 2026')
+    expect(eyebrow).toHaveAttribute('data-fallback', 'true')
+  })
+
+  it('sets the frame direction from the preview language', async () => {
+    const arabic: typeof campaign = {
+      ...campaign,
+      languages: [
+        ...campaign.languages,
+        {
+          __typename: 'CampaignLanguage',
+          id: 'campaignLanguageArId',
+          languageId: '22658',
+          order: 2,
+          language: {
+            __typename: 'Language',
+            id: '22658',
+            bcp47: 'ar',
+            name: [
+              { __typename: 'LanguageName', value: 'العربية', primary: true }
+            ]
+          }
+        }
+      ]
+    }
+    const { baseElement } = render(
+      <StaticEditor
+        campaignProp={arabic}
+        initialState={{ previewLanguageId: '22658' }}
+      >
+        <Canvas
+          campaign={arabic}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    await frameBody(baseElement, 'CanvasSection-heroId')
+    const iframe = baseElement.getElementsByTagName('iframe')[0]
+    expect(iframe.contentDocument?.documentElement).toHaveAttribute(
+      'dir',
+      'rtl'
+    )
   })
 })

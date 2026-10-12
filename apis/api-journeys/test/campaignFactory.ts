@@ -411,6 +411,7 @@ function fromFixture(fixture: CampaignFixture): CampaignFactory {
                 journeyId: null,
                 title: null,
                 description: null,
+                snapshotEdited: false,
                 qrCodeId: null,
                 order: 0
               }
@@ -448,6 +449,7 @@ function fromFixture(fixture: CampaignFixture): CampaignFactory {
             journeyId: journey.id,
             title: journey.title,
             description: journey.description,
+            snapshotEdited: false,
             qrCodeId: `${regionId}-${languageId}-qrCodeId`,
             order: existing?.order ?? region.languages.length
           }

@@ -84,6 +84,11 @@ describe('campaignRegionLanguageUpdate', () => {
     prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
       campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529')
     )
+    // The row re-read under the lock is the row authorised.
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockImplementation(
+      (async (args: any) =>
+        await prismaMock.campaignRegionLanguage.findUnique(args)) as never
+    )
     // The row as authorised, updated: the same row `findUnique` served.
     prismaMock.campaignRegionLanguage.update.mockImplementation((async ({
       where,
@@ -220,6 +225,7 @@ describe('campaignRegionLanguageUpdate', () => {
             journeyId: 'journeyId',
             title: 'christmas-europe title',
             description: 'christmas-europe description',
+            snapshotEdited: false,
             qrCodeId: 'qrCodeId'
           }
         })
@@ -311,6 +317,121 @@ describe('campaignRegionLanguageUpdate', () => {
       expect(updateShortLink).not.toHaveBeenCalled()
     })
 
+    describe('gateway consistency', () => {
+      it('takes the row lock, then applies the short-link create last, after every database write', async () => {
+        await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
+
+        const order = (mock: unknown): number =>
+          vi.mocked(mock as () => void).mock.invocationCallOrder[0]
+        expect(order(prismaMock.$queryRaw)).toBeLessThan(
+          order(prismaMock.qrCode.create)
+        )
+        expect(order(prismaMock.qrCode.create)).toBeLessThan(
+          order(createShortLink)
+        )
+        expect(order(prismaMock.campaignRegionLanguage.update)).toBeLessThan(
+          order(createShortLink)
+        )
+        expect(order(prismaMock.campaign.update)).toBeLessThan(
+          order(createShortLink)
+        )
+      })
+
+      it('decides from the row re-read under the lock: a concurrent link already made leaves a second call retargeting, not creating', async () => {
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValueOnce(
+          campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529')
+        )
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+        prismaMock.journey.findFirst.mockResolvedValue(
+          journeyRow('otherJourneyId', 'noel-europe') as never
+        )
+
+        await update({
+          url: 'https://admin.nextstep.is/journeys/otherJourneyId'
+        })
+
+        expect(createShortLink).not.toHaveBeenCalled()
+        expect(prismaMock.qrCode.create).not.toHaveBeenCalled()
+        expect(updateShortLink).toHaveBeenCalledTimes(1)
+      })
+
+      it('rolls back with nothing left at the gateway when the short-link create fails', async () => {
+        vi.mocked(createShortLink).mockRejectedValue(new Error('gateway down'))
+
+        const result = await update({
+          url: 'https://admin.nextstep.is/journeys/journeyId'
+        })
+
+        expect(result.errors).toBeDefined()
+        expect(deleteShortLink).not.toHaveBeenCalled()
+      })
+
+      it('deletes the new short link when the commit fails after the create', async () => {
+        prismaMock.$transaction.mockImplementationOnce((async (
+          callback: any
+        ) => {
+          await callback(prismaMock)
+          throw new Error('transaction timed out')
+        }) as never)
+
+        const result = await update({
+          url: 'https://admin.nextstep.is/journeys/journeyId'
+        })
+
+        expect(result.errors).toBeDefined()
+        const createdId = vi.mocked(createShortLink).mock.calls[0][0].id
+        expect(deleteShortLink).toHaveBeenCalledWith(createdId)
+      })
+
+      it('points a retargeted short link back at the previous journey when the commit fails after the retarget', async () => {
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+        prismaMock.journey.findFirst.mockResolvedValue(
+          journeyRow('otherJourneyId', 'noel-europe') as never
+        )
+        prismaMock.$transaction.mockImplementationOnce((async (
+          callback: any
+        ) => {
+          await callback(prismaMock)
+          throw new Error('transaction timed out')
+        }) as never)
+
+        const result = await update({
+          url: 'https://admin.nextstep.is/journeys/otherJourneyId'
+        })
+
+        expect(result.errors).toBeDefined()
+        expect(updateShortLink).toHaveBeenCalledTimes(2)
+        expect(updateShortLink).toHaveBeenLastCalledWith({
+          id: 'shortLinkId',
+          to: 'https://example.com/christmas-europe?utm_source=ns-qr-code&utm_campaign=shortLinkId'
+        })
+      })
+
+      it('deletes the short link only after the QR row is deleted and the transaction has committed, and a failed delete does not fail the unlink', async () => {
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+        let committed = false
+        prismaMock.$transaction.mockImplementationOnce((async (
+          callback: any
+        ) => {
+          const result = await callback(prismaMock)
+          committed = true
+          return result
+        }) as never)
+        vi.mocked(deleteShortLink).mockImplementation(async () => {
+          expect(committed).toBe(true)
+          throw new Error('gateway down')
+        })
+
+        const result = await update({ journeyId: null })
+
+        expect(result.errors).toBeUndefined()
+        expect(deleteShortLink).toHaveBeenCalledWith('shortLinkId')
+        expect(
+          vi.mocked(prismaMock.qrCode.deleteMany).mock.invocationCallOrder[0]
+        ).toBeLessThan(vi.mocked(deleteShortLink).mock.invocationCallOrder[0])
+      })
+    })
+
     it('links a journey by id, published only', async () => {
       await update({ journeyId: 'journeyId' })
 
@@ -349,12 +470,38 @@ describe('campaignRegionLanguageUpdate', () => {
     })
     expect(createShortLink).not.toHaveBeenCalled()
     expect(updateShortLink).not.toHaveBeenCalled()
+    expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { title: 'Our title', description: null, snapshotEdited: true }
+      })
+    )
 
     const tooLong = await update({ title: 'x'.repeat(201) })
     expect(tooLong.errors[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
+  })
+
+  it('sets the edited flag outright when the input carries it, as an undo does', async () => {
+    prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+
+    const result = await update({
+      title: 'Before',
+      description: 'Before too',
+      snapshotEdited: false
+    })
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          title: 'Before',
+          description: 'Before too',
+          snapshotEdited: false
+        }
+      })
+    )
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {

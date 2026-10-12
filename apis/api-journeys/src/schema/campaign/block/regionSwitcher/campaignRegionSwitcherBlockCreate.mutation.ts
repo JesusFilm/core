@@ -4,7 +4,11 @@ import { builder } from '../../../builder'
 import { CampaignSwitcherVariant } from '../../enums'
 import { assertEnum } from '../../validation'
 import { CampaignRegionSwitcherBlock } from '../campaignRegionSwitcherBlock'
-import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
+import {
+  SECTION_CREATE_ERRORS,
+  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
+  createSection
+} from '../createSection'
 import { validateSectionText } from '../validateSectionText'
 
 const SWITCHER_VARIANTS = Object.values(PrismaCampaignSwitcherVariant)
@@ -16,6 +20,10 @@ export const CampaignRegionSwitcherBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       campaignId: t.id({ required: true }),
       pageId: t.id({ required: true, description: 'A page of the campaign.' }),
+      parentBlockId: t.id({
+        required: false,
+        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
+      }),
       parentOrder: t.int({
         required: false,
         description:

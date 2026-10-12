@@ -1,3 +1,5 @@
+import { Prisma } from '@core/prisma/journeys/client'
+
 import {
   authClient,
   setupCampaignBlockSpec
@@ -105,6 +107,49 @@ describe('campaignRegionCreate', () => {
     expect(prismaMock.campaignRegion.findMany).toHaveBeenCalledWith({
       where: { campaignId: 'campaignId', slug: { startsWith: 'new-region' } },
       select: { slug: true }
+    })
+  })
+
+  describe('unique violation', () => {
+    const duplicate = new Prisma.PrismaClientKnownRequestError('unique', {
+      code: 'P2002',
+      clientVersion: 'test'
+    })
+
+    it('returns the existing region of the same campaign when the id is already taken', async () => {
+      prismaMock.campaignRegion.create.mockRejectedValue(duplicate)
+      prismaMock.campaignRegion.findUnique.mockResolvedValue({
+        ...campaignFactory().withRegion('New region').build().regions[0],
+        id: 'clientId',
+        campaignId: 'campaignId'
+      })
+
+      const result = await create('clientId')
+
+      expect(result.data.campaignRegionCreate).toMatchObject({
+        id: 'clientId',
+        campaignId: 'campaignId'
+      })
+    })
+
+    it('answers CONFLICT when the id belongs to another campaign or the slug raced', async () => {
+      prismaMock.campaignRegion.create.mockRejectedValue(duplicate)
+      prismaMock.campaignRegion.findUnique.mockResolvedValue({
+        id: 'clientId',
+        campaignId: 'otherCampaignId'
+      } as never)
+
+      const taken = await create('clientId')
+      const raced = await create()
+
+      expect(taken.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'id'
+      })
+      expect(raced.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'slug'
+      })
     })
   })
 

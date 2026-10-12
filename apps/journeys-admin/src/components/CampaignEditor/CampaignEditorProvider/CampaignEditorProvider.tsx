@@ -15,12 +15,19 @@ import {
   GetCampaign_campaign_regions as CampaignRegion
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { isInColumnSlot } from '../sectionTypes'
 
 export interface CampaignEditorState {
   /** The page the canvas shows; a view choice, never a Command. */
   pageKind: CampaignPageKind
   /** The region the Region Page is rendered for; ignored on the landing page. */
   regionId?: string
+  /**
+   * The Preview Language the canvas renders in: a campaign language id, the
+   * default on first open. Text edits made while it is not the default write
+   * translations for it. A view choice, never a Command.
+   */
+  previewLanguageId: string
   /** The selected block; undefined is the campaign row (or a region card). */
   selectedBlockId?: string
   /** The selected region card; its switcher, if known, is `selectedBlockId`. */
@@ -60,12 +67,17 @@ interface SetEditorFocusAction {
 interface RequestEditAction {
   type: 'RequestEditAction'
 }
+interface SetPreviewLanguageAction {
+  type: 'SetPreviewLanguageAction'
+  previewLanguageId: string
+}
 export type CampaignEditorAction =
   | SetPageKindAction
   | SelectBlockAction
   | SelectRegionAction
   | SetEditorFocusAction
   | RequestEditAction
+  | SetPreviewLanguageAction
 
 export function reducer(
   state: CampaignEditorState,
@@ -102,6 +114,8 @@ export function reducer(
       }
     case 'RequestEditAction':
       return { ...state, editRequest: state.editRequest + 1 }
+    case 'SetPreviewLanguageAction':
+      return { ...state, previewLanguageId: action.previewLanguageId }
   }
 }
 
@@ -111,13 +125,20 @@ export type CampaignSelectionKind =
   | 'chrome'
   | 'text'
   | 'button'
+  | 'slot'
+  | 'column'
+  | 'card'
+  | 'journey'
   | 'region'
 
 export interface CampaignSelection {
   kind: CampaignSelectionKind
   /** The selected block; undefined on the campaign row or a region card. */
   block?: CampaignBlock
-  /** The section or chrome block hosting the selection; the block itself when one is selected. */
+  /**
+   * The section or chrome block hosting the selection; the block itself when
+   * one is selected, and the Columns section for a selected Column Slot.
+   */
   host?: CampaignBlock
   /** The selected region card, or the region a selected Region Line belongs to. */
   region?: CampaignRegion
@@ -132,12 +153,33 @@ function isChrome(block: CampaignBlock): boolean {
   )
 }
 
+/** A Video Carousel's explicit item: a CampaignVideoBlock ordered among its children. */
+export function isCarouselItem(
+  blocks: CampaignBlock[],
+  block: CampaignBlock
+): boolean {
+  if (block.__typename !== 'CampaignVideoBlock' || block.parentOrder == null)
+    return false
+  return blocks.some(
+    (candidate) =>
+      candidate.id === block.parentBlockId &&
+      candidate.__typename === 'CampaignVideoCarouselBlock'
+  )
+}
+
 /** The campaign's regions in switcher order. */
 export function sortedRegions(regions: CampaignRegion[]): CampaignRegion[] {
   return [...regions].sort((a, b) => a.order - b.order)
 }
 
 /** A region's Region Lines in line order. */
+/** A region needs a journey while any of its Share Languages is unlinked: its switcher card and page-selector entry carry the badge. */
+export function regionNeedsJourney(
+  region: Pick<CampaignRegion, 'languages'>
+): boolean {
+  return region.languages.some((language) => language.journeyId == null)
+}
+
 export function regionLines(
   blocks: CampaignBlock[],
   regionId: string
@@ -177,6 +219,18 @@ export function resolveSelection(
   if (selectedBlockId == null) return CAMPAIGN_SELECTION
   const block = blocks.find((candidate) => candidate.id === selectedBlockId)
   if (block == null) return CAMPAIGN_SELECTION
+  if (block.__typename === 'CampaignColumnBlock')
+    return {
+      kind: 'slot',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
+  if (isCarouselItem(blocks, block)) {
+    const host = blocks.find(
+      (candidate) => candidate.id === block.parentBlockId
+    )
+    return { kind: 'card', block, host }
+  }
   if (
     block.__typename === 'CampaignTypographyBlock' ||
     block.__typename === 'CampaignButtonBlock'
@@ -196,6 +250,14 @@ export function resolveSelection(
       host
     }
   }
+  if (isInColumnSlot(blocks, block))
+    return { kind: 'column', block, host: block }
+  if (block.__typename === 'CampaignJourneyBlock')
+    return {
+      kind: 'journey',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
   return { kind: isChrome(block) ? 'chrome' : 'section', block, host: block }
 }
 
@@ -210,7 +272,11 @@ export interface CampaignEditorContextValue {
   selectBlock: (blockId?: string) => void
   /** Select a region card, naming the switcher it sits in when known. */
   selectRegion: (regionId: string, hostBlockId?: string) => void
-  /** Escape: an Extra steps up to its section, a line to its region, a region to its switcher, a section or chrome block to the campaign row. */
+  /**
+   * Escape: an Extra or a card steps up to its section, a line to its region,
+   * a region to its switcher, a Column Slot or the section in one to its
+   * Columns section, a section or chrome block to the campaign row.
+   */
   escape: () => void
   /** The page a block sits on; undefined for chrome and Region Lines, which every page shows. */
   pageKindOf: (
@@ -233,18 +299,30 @@ interface CampaignEditorProviderProps {
  * which region the Region Page is rendered for) and which block or region
  * card is selected. The selection resolves against the campaign's block and
  * region lists, so a row that leaves the cache (deleted, undone) falls back
- * to the campaign row without a dispatch.
+ * to the campaign row without a dispatch. The Preview Language is clamped the
+ * same way: when its language leaves `campaign.languages` (removed in the
+ * Languages panel) the preview falls back to the campaign default.
  */
 export function CampaignEditorProvider({
   campaign,
   initialState,
   children
 }: CampaignEditorProviderProps): ReactElement {
-  const [state, dispatch] = useReducer(reducer, {
+  const [rawState, dispatch] = useReducer(reducer, {
     pageKind: CampaignPageKind.landing,
+    previewLanguageId: campaign.defaultLanguageId,
     editRequest: 0,
     ...initialState
   })
+  const previewLanguageId = campaign.languages.some(
+    (language) => language.languageId === rawState.previewLanguageId
+  )
+    ? rawState.previewLanguageId
+    : campaign.defaultLanguageId
+  const state = useMemo(
+    () => ({ ...rawState, previewLanguageId }),
+    [rawState, previewLanguageId]
+  )
   const selection = useMemo(
     () =>
       resolveSelection(
@@ -286,12 +364,28 @@ export function CampaignEditorProvider({
       selectRegion(selection.region.id)
       return
     }
-    if (selection.kind === 'text' || selection.kind === 'button') {
+    if (
+      selection.kind === 'text' ||
+      selection.kind === 'button' ||
+      selection.kind === 'card' ||
+      selection.kind === 'journey'
+    ) {
       selectBlock(selection.host?.id)
       return
     }
+    if (selection.kind === 'slot') {
+      selectBlock(selection.host?.id)
+      return
+    }
+    if (selection.kind === 'column') {
+      const slot = campaign.blocks.find(
+        (candidate) => candidate.id === selection.block?.parentBlockId
+      )
+      selectBlock(slot?.parentBlockId ?? undefined)
+      return
+    }
     selectBlock(undefined)
-  }, [selection, selectBlock, selectRegion])
+  }, [selection, selectBlock, selectRegion, campaign.blocks])
   const pageKindOf = useCallback(
     (block: Pick<CampaignBlock, 'pageId'>) =>
       campaign.pages.find((page) => page.id === block.pageId)?.kind,

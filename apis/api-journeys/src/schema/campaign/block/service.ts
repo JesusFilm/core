@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   CampaignAction,
+  CampaignBackgroundKind,
+  CampaignBackgroundOverlay,
   CampaignBlock,
   CampaignPage,
   CampaignRegion,
@@ -17,7 +19,12 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
-import { assertEnum, badUserInput } from '../validation'
+import {
+  assertEnum,
+  assertEnumOrNull,
+  assertHexOrNull,
+  badUserInput
+} from '../validation'
 
 /**
  * The campaign block service: the Block service's shape, authorised through
@@ -55,6 +62,10 @@ export const CAMPAIGN_HOST_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock',
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
@@ -65,7 +76,7 @@ export const CAMPAIGN_CHROME_TYPENAMES = [
   'CampaignFooterBlock'
 ] as const
 
-/** The seeded section typenames: what "+Add section" offers today. */
+/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -73,7 +84,11 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignJourneyListBlock',
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock',
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock'
 ] as const
 export type CampaignSectionTypename =
   (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
@@ -86,6 +101,15 @@ export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
 
 /** Column slots are created with their Columns section and never touched on their own. */
 export const CAMPAIGN_SLOT_TYPENAMES = ['CampaignColumnBlock'] as const
+
+/** No nesting, and the share panel reads a whole page: neither sits in a slot. */
+export const CAMPAIGN_SLOT_DISALLOWED_TYPENAMES = [
+  'CampaignColumnsBlock',
+  'CampaignRegionShareBlock'
+] as const
+
+/** A Columns section is created with exactly this many slots. */
+export const CAMPAIGN_COLUMN_SLOT_COUNT = 2
 
 export const CAMPAIGN_CHILD_PLACEMENTS = ['above', 'below'] as const
 
@@ -111,6 +135,12 @@ export function isCampaignRegionOnlyTypename(typename: string): boolean {
 
 export function isCampaignSlotTypename(typename: string): boolean {
   return (CAMPAIGN_SLOT_TYPENAMES as readonly string[]).includes(typename)
+}
+
+export function isCampaignSlotDisallowedTypename(typename: string): boolean {
+  return (CAMPAIGN_SLOT_DISALLOWED_TYPENAMES as readonly string[]).includes(
+    typename
+  )
 }
 
 function notFound(message: string): GraphQLError {
@@ -179,6 +209,8 @@ export type StructuralVerb = 'deleted' | 'moved' | 'duplicated'
  * Delete, move and duplicate share one gate: campaign Update on the block's
  * campaign, then the protected rows refused with `CONFLICT` / `id` — the
  * header and footer, a column slot, and the landing or Region Page itself.
+ * A slot is refused everywhere but a move: swapping the two slots is an order
+ * update, and an order update never changes a block's parent.
  * A page id is not a block id, but the editor's structural controls may
  * still address one, so a page is told apart from an unknown id.
  */
@@ -202,25 +234,31 @@ export async function authorizeStructuralBlock(
     throw forbidden('user is not allowed to update block')
   if (isCampaignChromeTypename(block.typename))
     throw conflict(`the header and footer cannot be ${verb}`, 'id')
-  if (isCampaignSlotTypename(block.typename))
+  if (isCampaignSlotTypename(block.typename) && verb !== 'moved')
     throw conflict(`a column slot cannot be ${verb}`, 'id')
   return block
 }
 
+/** The section whose ordered items are Campaign Videos. */
+export const CAMPAIGN_CAROUSEL_TYPENAME = 'CampaignVideoCarouselBlock'
+
 /**
  * A child block's parent is a section or chrome block of the same campaign,
- * not soft-deleted (`BAD_USER_INPUT` / `parentBlockId`), and the child is a
- * Typography or Button block (`BAD_USER_INPUT` / `typename`). Returns the
- * parent so create can copy its scoping down.
+ * not soft-deleted (`BAD_USER_INPUT` / `parentBlockId`). The child is a
+ * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
+ * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
+ * else (`BAD_USER_INPUT` / `typename`). Returns the parent so create can
+ * copy its scoping down.
  */
 export async function validateParentBlock(
   parentBlockId: string,
   campaignId: string,
   typename: string
 ): Promise<CampaignBlock> {
-  if (!isCampaignChildTypename(typename))
+  const item = typename === CAMPAIGN_VIDEO_TYPENAME
+  if (!item && !isCampaignChildTypename(typename))
     throw badUserInput(
-      `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}`,
+      `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}, or ${CAMPAIGN_VIDEO_TYPENAME} in a video carousel`,
       'typename'
     )
   const parent = await prisma.campaignBlock.findFirst({
@@ -230,6 +268,11 @@ export async function validateParentBlock(
     throw badUserInput(
       'parentBlockId must be a section or chrome block of this campaign',
       'parentBlockId'
+    )
+  if (item && parent.typename !== CAMPAIGN_CAROUSEL_TYPENAME)
+    throw badUserInput(
+      `only a video carousel takes ${CAMPAIGN_VIDEO_TYPENAME} items`,
+      'typename'
     )
   return parent
 }
@@ -275,7 +318,7 @@ export async function getSiblings(
       deletedAt: null,
       ...where
     },
-    orderBy: { parentOrder: 'asc' },
+    orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
     include: { action: true }
   })
 }
@@ -342,12 +385,17 @@ export async function createChildBlock(
   return block
 }
 
-/** Write validated columns to a block and bump its campaign. */
+/**
+ * Write validated columns to a block and bump its campaign. `before` runs
+ * first in the same transaction (the Media Slot swap uses it).
+ */
 export async function updateBlock(
   block: Pick<CampaignBlock, 'id' | 'campaignId'>,
-  data: Prisma.CampaignBlockUncheckedUpdateInput
+  data: Prisma.CampaignBlockUncheckedUpdateInput,
+  before?: (tx: Prisma.TransactionClient) => Promise<void>
 ): Promise<CampaignBlockWithAction> {
   return await prisma.$transaction(async (tx) => {
+    if (before != null) await before(tx)
     const updated = await tx.campaignBlock.update({
       where: { id: block.id },
       data,
@@ -359,17 +407,26 @@ export async function updateBlock(
 }
 
 /**
- * Soft-delete a block: stamp `deletedAt` and renumber the remaining siblings
- * contiguously. Children keep their rows and fall out of the tree with the
- * parent, so restore brings them back untouched. Returns the renumbered
+ * Soft-delete a block: stamp `deletedAt` on it and on everything it owns
+ * (live descendants and owned blocks) with one shared timestamp, then
+ * renumber the remaining siblings contiguously. Restore matches that
+ * timestamp, so rows deleted earlier stay deleted. Returns the renumbered
  * siblings.
  */
 export async function removeBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
-    await tx.campaignBlock.update({
-      where: { id: block.id },
+    const live = await tx.campaignBlock.findMany({
+      where: { campaignId: block.campaignId, deletedAt: null },
+      include: { action: true }
+    })
+    const subtreeIds = [
+      block.id,
+      ...collectSubtree(block.id, live).map((row) => row.id)
+    ]
+    await tx.campaignBlock.updateMany({
+      where: { id: { in: [...new Set(subtreeIds)] } },
       data: { deletedAt: new Date() }
     })
     const siblings =
@@ -394,15 +451,46 @@ function getDescendants(
 }
 
 /**
- * Restore a soft-deleted block: clear `deletedAt` and re-insert it among its
- * siblings at its own `parentOrder`, renumbering again. Returns the restored
- * block with its siblings and its live descendants, so the editor cache can
- * take the whole subtree back in one write.
+ * A section binned from a column slot comes back only while the slot is still
+ * empty: a slot holds one section, so restoring beside another occupant
+ * (the author changed the type or added a new one since) is `CONFLICT` /
+ * `id`. A live block is its own occupant and only renumbers.
+ */
+async function assertSlotFreeForRestore(
+  block: CampaignBlock,
+  tx: Prisma.TransactionClient
+): Promise<void> {
+  if (block.parentBlockId == null) return
+  const parent = await tx.campaignBlock.findUnique({
+    where: { id: block.parentBlockId }
+  })
+  if (parent == null || !isCampaignSlotTypename(parent.typename)) return
+  const occupants = await getSiblings(block, tx, { id: { not: block.id } })
+  if (occupants.length > 0)
+    throw conflict('the column slot already holds a section', 'id')
+}
+
+/**
+ * Restore a soft-deleted block: clear `deletedAt` on it and on the rows
+ * deleted with it (same timestamp), and re-insert it among its siblings at
+ * its own `parentOrder`, renumbering again. Returns the restored block with
+ * its siblings and its live descendants, so the editor cache can take the
+ * whole subtree back in one write.
  */
 export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    await assertSlotFreeForRestore(block, tx)
+    if (block.deletedAt != null)
+      await tx.campaignBlock.updateMany({
+        where: {
+          campaignId: block.campaignId,
+          deletedAt: block.deletedAt,
+          id: { not: block.id }
+        },
+        data: { deletedAt: null }
+      })
     const restored = await tx.campaignBlock.update({
       where: { id: block.id },
       data: { deletedAt: null },
@@ -582,6 +670,23 @@ export async function createSectionBlock(
 }
 
 /**
+ * A Columns section's children are its two slots (always first, at 0 and 1)
+ * then its Extras. A move stays on its own side of that line, so the slots
+ * keep their order values whatever the Extras do: a slot lands among the
+ * slots, anything else after them. Any other parent has no slots, and the
+ * position only clamps to the end.
+ */
+function clampAroundSlots(
+  parentOrder: number,
+  movingSlot: boolean,
+  slotCount: number,
+  otherCount: number
+): number {
+  if (movingSlot) return Math.min(parentOrder, slotCount - 1)
+  return Math.min(Math.max(parentOrder, slotCount), otherCount)
+}
+
+/**
  * A Region Line's region is a region of the same campaign
  * (`BAD_USER_INPUT` / `regionId`). Returns the region so create can scope
  * the line to it.
@@ -645,7 +750,16 @@ export async function reorderBlock(
     const all = await getSiblings(block, tx)
     const self = all.find((candidate) => candidate.id === block.id)
     const others = all.filter((candidate) => candidate.id !== block.id)
-    others.splice(Math.min(parentOrder, others.length), 0, {
+    const slotCount = all.filter((candidate) =>
+      isCampaignSlotTypename(candidate.typename)
+    ).length
+    const position = clampAroundSlots(
+      parentOrder,
+      isCampaignSlotTypename(block.typename),
+      slotCount,
+      others.length
+    )
+    others.splice(position, 0, {
       ...(self ?? { ...block, action: null }),
       placement: nextPlacement ?? block.placement
     })
@@ -738,6 +852,9 @@ export async function duplicateBlock(
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
+    const parent = live.find((row) => row.id === block.parentBlockId)
+    if (parent != null && isCampaignSlotTypename(parent.typename))
+      throw conflict('a column slot holds at most one section', 'id')
     const subtree = collectSubtree(block.id, live)
     const ids = new Map<string, string>()
     for (const row of subtree)
@@ -747,6 +864,8 @@ export async function duplicateBlock(
       )
     const remap = (id: string | null): string | null =>
       id == null ? null : (ids.get(id) ?? id)
+    const remapSlot = (id: string | null): string | null =>
+      id == null ? null : (ids.get(id) ?? null)
     const siblings = await getSiblings(block, tx)
 
     const copies: CampaignBlockWithAction[] = []
@@ -769,7 +888,7 @@ export async function duplicateBlock(
     for (const [index, row] of subtree.entries()) {
       const slots: Partial<Record<(typeof SLOT_COLUMNS)[number], string>> = {}
       for (const column of SLOT_COLUMNS) {
-        const target = remap(row[column])
+        const target = remapSlot(row[column])
         if (target != null) slots[column] = target
       }
       if (Object.keys(slots).length === 0 && row.action == null) continue
@@ -802,4 +921,449 @@ export async function duplicateBlock(
     await touchCampaign(tx, block.campaignId)
     return [...reordered, ...copies.slice(1)]
   })
+}
+
+// ---------------------------------------------------------------------------
+// Columns: the two slots, and the one section a slot holds.
+// ---------------------------------------------------------------------------
+
+/**
+ * Create a Columns section with its two Column Slots in `tx`, so the
+ * container never exists without them. The slots are rows of their own at
+ * `parentOrder` 0 and 1 with the section's scoping copied down;
+ * `slotIds` fixes their ids (exactly two) so the editor can show them
+ * before the response arrives. Returns the section; the slots are its
+ * children.
+ */
+export async function createColumnsSection(
+  tx: Prisma.TransactionClient,
+  page: CampaignPage,
+  data: CampaignBlockCreateData,
+  parentOrder?: number | null,
+  slotIds?: string[] | null
+): Promise<CampaignBlockWithAction> {
+  if (slotIds != null && slotIds.length !== CAMPAIGN_COLUMN_SLOT_COUNT)
+    throw badUserInput(
+      `slotIds must name exactly ${CAMPAIGN_COLUMN_SLOT_COUNT} slots`,
+      'slotIds'
+    )
+  const section = await createSectionBlock(tx, page, data, parentOrder)
+  for (let slot = 0; slot < CAMPAIGN_COLUMN_SLOT_COUNT; slot++)
+    await tx.campaignBlock.create({
+      data: {
+        ...(slotIds != null ? { id: slotIds[slot] } : {}),
+        typename: 'CampaignColumnBlock',
+        campaignId: section.campaignId,
+        pageId: section.pageId,
+        regionId: section.regionId,
+        parentBlockId: section.id,
+        parentOrder: slot
+      }
+    })
+  return section
+}
+
+/**
+ * A section's slot is a live Column Slot of a live Columns section on the
+ * same page, and `typename` may sit in a slot at all (`BAD_USER_INPUT` /
+ * `parentBlockId` otherwise). Whether the slot is still free is decided in
+ * the insert's transaction, by `createSlotChild`.
+ */
+export async function validateSlotParent(
+  parentBlockId: string,
+  campaignId: string,
+  page: CampaignPage,
+  typename: string
+): Promise<CampaignBlock> {
+  const slot = await prisma.campaignBlock.findFirst({
+    where: {
+      id: parentBlockId,
+      campaignId,
+      pageId: page.id,
+      typename: 'CampaignColumnBlock',
+      deletedAt: null,
+      parentBlock: { is: { deletedAt: null } }
+    }
+  })
+  if (slot == null)
+    throw badUserInput(
+      'parentBlockId must be a column slot on the same page',
+      'parentBlockId'
+    )
+  if (isCampaignSlotDisallowedTypename(typename))
+    throw badUserInput(
+      `${typename} cannot sit in a column slot`,
+      'parentBlockId'
+    )
+  return slot
+}
+
+/**
+ * Create the one section a slot holds inside `tx`: `parentOrder` 0, the
+ * slot's scoping copied down. A slot that already holds a live section is
+ * `BAD_USER_INPUT` / `parentBlockId`; the author bins or changes the
+ * type of what is there first.
+ */
+export async function createSlotChild(
+  tx: Prisma.TransactionClient,
+  slot: CampaignBlock,
+  data: CampaignBlockCreateData
+): Promise<CampaignBlockWithAction> {
+  const occupant = await getSiblings({ ...slot, parentBlockId: slot.id }, tx)
+  if (occupant.length > 0)
+    throw badUserInput(
+      'a column slot holds at most one section',
+      'parentBlockId'
+    )
+  return await createChildBlock(tx, slot, data)
+}
+
+// ---------------------------------------------------------------------------
+// Section style: the nine shared section fields, validated once for every
+// section and chrome update mutation.
+// ---------------------------------------------------------------------------
+
+export const CAMPAIGN_BACKGROUND_KINDS = Object.values(CampaignBackgroundKind)
+export const CAMPAIGN_BACKGROUND_OVERLAYS = Object.values(
+  CampaignBackgroundOverlay
+)
+
+/** The six nullable hex columns of a section row. */
+export const SECTION_COLOR_COLUMNS = [
+  'backgroundColor',
+  'headingColor',
+  'textColor',
+  'buttonColor',
+  'buttonTextColor',
+  'accentColor'
+] as const
+export type SectionColorColumn = (typeof SECTION_COLOR_COLUMNS)[number]
+
+/** The owned image typename a cover slot points at (the images ticket adds its mutations). */
+export const CAMPAIGN_IMAGE_TYPENAME = 'CampaignImageBlock'
+
+export type SectionStyleInput = Partial<
+  Record<SectionColorColumn, string | null | undefined>
+> & {
+  backgroundKind?: string | null
+  backgroundOverlay?: string | null
+  coverBlockId?: string | number | null
+}
+
+export type SectionStyleColumns = Partial<
+  Record<SectionColorColumn, string | null>
+> & {
+  backgroundKind?: CampaignBackgroundKind
+  backgroundOverlay?: CampaignBackgroundOverlay | null
+  coverBlockId?: string | null
+}
+
+/**
+ * The pure part of the section style contract: `backgroundKind` is one of
+ * the six kinds and never null; `backgroundOverlay` light, medium, heavy or
+ * null; the six hex columns `assertHex`-normalised or null, never `""`.
+ * Omitted fields are left untouched, and the kind is written exactly as
+ * given — never derived from which columns are populated — so a leftover
+ * `backgroundColor` or cover survives a switch to another kind.
+ */
+export function sectionStyleColumns(
+  input: SectionStyleInput
+): SectionStyleColumns {
+  const data: SectionStyleColumns = {}
+  if (input.backgroundKind !== undefined) {
+    if (input.backgroundKind == null)
+      throw badUserInput(
+        `backgroundKind must be one of ${CAMPAIGN_BACKGROUND_KINDS.join(', ')}`,
+        'backgroundKind'
+      )
+    data.backgroundKind = assertEnum(
+      input.backgroundKind,
+      'backgroundKind',
+      CAMPAIGN_BACKGROUND_KINDS
+    )
+  }
+  if (input.backgroundOverlay !== undefined)
+    data.backgroundOverlay = assertEnumOrNull(
+      input.backgroundOverlay,
+      'backgroundOverlay',
+      CAMPAIGN_BACKGROUND_OVERLAYS
+    )
+  if (input.coverBlockId !== undefined)
+    data.coverBlockId =
+      input.coverBlockId == null ? null : String(input.coverBlockId)
+  for (const column of SECTION_COLOR_COLUMNS) {
+    const value = input[column]
+    if (value === undefined) continue
+    data[column] = assertHexOrNull(value, column)
+  }
+  return data
+}
+
+/** The two slot columns only an image fills; `mediaBlockId` also takes a video (`validateMediaSlotTarget`). */
+export const CAMPAIGN_IMAGE_SLOT_COLUMNS = [
+  'coverBlockId',
+  'logoBlockId'
+] as const
+export type CampaignImageSlotColumn =
+  (typeof CAMPAIGN_IMAGE_SLOT_COLUMNS)[number]
+
+/**
+ * A slot column (`coverBlockId`, `logoBlockId`) names a live
+ * CampaignImageBlock of the same campaign owned by `ownerBlockId` and
+ * nothing else: `BAD_USER_INPUT` with the slot column as `field`. Ownership
+ * keeps the unique slot column from colliding with another block's image.
+ * Null clears without a lookup.
+ */
+export async function validateImageSlotTarget(
+  imageBlockId: string | number | null | undefined,
+  campaignId: string,
+  field: CampaignImageSlotColumn,
+  ownerBlockId: string
+): Promise<string | null> {
+  if (imageBlockId == null) return null
+  const image = await prisma.campaignBlock.findFirst({
+    where: {
+      id: String(imageBlockId),
+      campaignId,
+      parentBlockId: ownerBlockId,
+      typename: CAMPAIGN_IMAGE_TYPENAME,
+      deletedAt: null
+    },
+    select: { id: true }
+  })
+  if (image == null)
+    throw badUserInput(
+      `${field} must be a live image block owned by this block`,
+      field
+    )
+  return image.id
+}
+
+/**
+ * The shared section style helper every section and chrome update runs:
+ * the pure rules above, then a given cover resolved to a live
+ * CampaignImageBlock owned by this section (`BAD_USER_INPUT` /
+ * `coverBlockId`). Ownership keeps the unique `coverBlockId` slot from
+ * colliding with another section's cover.
+ */
+export async function validateSectionStyle(
+  input: SectionStyleInput,
+  block: Pick<CampaignBlock, 'id' | 'campaignId'>
+): Promise<SectionStyleColumns> {
+  const data = sectionStyleColumns(input)
+  if (data.coverBlockId == null) return data
+  await validateImageSlotTarget(
+    data.coverBlockId,
+    block.campaignId,
+    'coverBlockId',
+    block.id
+  )
+  return data
+}
+
+// ---------------------------------------------------------------------------
+// Owned blocks: a section's background cover, the header logo and the Media
+// Slot of a hero or Featured Media section — one block per slot, replaced
+// rather than edited in place.
+// ---------------------------------------------------------------------------
+
+export type CampaignImageSlotName = 'cover' | 'logo' | 'media'
+
+export type CampaignOwnedSlotColumn =
+  | 'coverBlockId'
+  | 'logoBlockId'
+  | 'mediaBlockId'
+
+const IMAGE_SLOT_COLUMN: Record<
+  CampaignImageSlotName,
+  CampaignOwnedSlotColumn
+> = { cover: 'coverBlockId', logo: 'logoBlockId', media: 'mediaBlockId' }
+
+/** The owned video typename a Media Slot may point at. */
+export const CAMPAIGN_VIDEO_TYPENAME = 'CampaignVideoBlock'
+
+/** The sections with a Media Slot (`mediaBlockId`). */
+export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
+  'CampaignHeroBlock',
+  'CampaignFeaturedMediaBlock'
+] as const
+
+/** What a Media Slot holds: a Campaign Video or a Campaign Image. */
+export const CAMPAIGN_MEDIA_TYPENAMES = [
+  CAMPAIGN_VIDEO_TYPENAME,
+  CAMPAIGN_IMAGE_TYPENAME
+] as const
+
+export function isCampaignMediaOwnerTypename(typename: string): boolean {
+  return (CAMPAIGN_MEDIA_OWNER_TYPENAMES as readonly string[]).includes(
+    typename
+  )
+}
+
+/**
+ * An owned block's parent is a live section or chrome block of the same
+ * campaign (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the owned
+ * block can copy its scoping down.
+ */
+export async function validateImageOwner(
+  parentBlockId: string,
+  campaignId: string
+): Promise<CampaignBlock> {
+  const owner = await prisma.campaignBlock.findFirst({
+    where: { id: parentBlockId, campaignId, deletedAt: null }
+  })
+  if (owner == null || !isCampaignHostTypename(owner.typename))
+    throw badUserInput(
+      'parentBlockId must be a section or chrome block of this campaign',
+      'parentBlockId'
+    )
+  return owner
+}
+
+/**
+ * Only a hero or a Featured Media section has a Media Slot: any other owner
+ * is `BAD_USER_INPUT` with the slot column, `mediaBlockId`, as the field.
+ */
+export function assertMediaOwner(owner: Pick<CampaignBlock, 'typename'>): void {
+  if (!isCampaignMediaOwnerTypename(owner.typename))
+    throw badUserInput(
+      'only a hero or Featured Media section has a media slot',
+      'mediaBlockId'
+    )
+}
+
+/**
+ * The slot an owned image fills, `cover` when omitted. Every section and
+ * chrome block has a cover; only the header has a logo (`BAD_USER_INPUT` /
+ * `logoBlockId`) and only a hero or Featured Media section a media slot
+ * (`BAD_USER_INPUT` / `mediaBlockId`) — the slot column is the field.
+ */
+export function assertImageSlot(
+  owner: Pick<CampaignBlock, 'typename'>,
+  slot: string | null | undefined
+): CampaignImageSlotName {
+  const name = assertEnum(slot ?? 'cover', 'slot', [
+    'cover',
+    'logo',
+    'media'
+  ] as const)
+  if (name === 'logo' && owner.typename !== 'CampaignHeaderBlock')
+    throw badUserInput('only the header has a logo', 'logoBlockId')
+  if (name === 'media') assertMediaOwner(owner)
+  return name
+}
+
+/**
+ * Create an owned block inside `tx`: `parentOrder: null`, the owner's
+ * scoping copied down, the owner's slot column pointed at the new row, and
+ * the block the slot held before soft-deleted (block restore brings it back
+ * as a row; a Media Slot update brings it back as the slot's block). Returns
+ * the new block.
+ */
+export async function createOwnedBlock(
+  tx: Prisma.TransactionClient,
+  owner: CampaignBlock,
+  column: CampaignOwnedSlotColumn,
+  data: CampaignChildCreateData
+): Promise<CampaignBlockWithAction> {
+  const previousId = owner[column]
+  if (previousId != null)
+    await tx.campaignBlock.updateMany({
+      where: { id: previousId, parentBlockId: owner.id },
+      data: { deletedAt: new Date() }
+    })
+  const block = await tx.campaignBlock.create({
+    data: {
+      ...data,
+      campaignId: owner.campaignId,
+      pageId: owner.pageId,
+      regionId: owner.regionId,
+      parentBlockId: owner.id,
+      parentOrder: null
+    },
+    include: { action: true }
+  })
+  await tx.campaignBlock.update({
+    where: { id: owner.id },
+    data: { [column]: block.id }
+  })
+  await touchCampaign(tx, owner.campaignId)
+  return block
+}
+
+/** `createOwnedBlock` for a CampaignImageBlock in the named slot. */
+export async function createOwnedImageBlock(
+  tx: Prisma.TransactionClient,
+  owner: CampaignBlock,
+  slot: CampaignImageSlotName,
+  data: Omit<CampaignChildCreateData, 'typename'>
+): Promise<CampaignBlockWithAction> {
+  return await createOwnedBlock(tx, owner, IMAGE_SLOT_COLUMN[slot], {
+    ...data,
+    typename: CAMPAIGN_IMAGE_TYPENAME
+  })
+}
+
+/**
+ * `mediaBlockId` on a hero or Featured Media update names a
+ * CampaignVideoBlock or CampaignImageBlock that section owns — live, or
+ * soft-deleted by an earlier swap so undo can bring it back. The section's
+ * live background cover and logo are owned too but belong to their own slots,
+ * so they are not targets. Anything else is `BAD_USER_INPUT` /
+ * `mediaBlockId`. Null empties the slot without a lookup; omitted leaves it
+ * alone.
+ */
+export async function validateMediaSlotTarget(
+  mediaBlockId: string | number | null | undefined,
+  owner: Pick<
+    CampaignBlock,
+    'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId'
+  >
+): Promise<string | null | undefined> {
+  if (mediaBlockId === undefined) return undefined
+  if (mediaBlockId == null) return null
+  const otherSlotIds = [owner.coverBlockId, owner.logoBlockId].filter(
+    (id): id is string => id != null
+  )
+  const media = await prisma.campaignBlock.findFirst({
+    where: {
+      id: String(mediaBlockId),
+      campaignId: owner.campaignId,
+      parentBlockId: owner.id,
+      ...(otherSlotIds.length > 0 && { NOT: { id: { in: otherSlotIds } } })
+    },
+    select: { id: true, typename: true }
+  })
+  if (
+    media == null ||
+    !(CAMPAIGN_MEDIA_TYPENAMES as readonly string[]).includes(media.typename)
+  )
+    throw badUserInput(
+      'mediaBlockId must be a video or image block owned by this section',
+      'mediaBlockId'
+    )
+  return media.id
+}
+
+/**
+ * Point the Media Slot at `mediaBlockId`, or empty it, inside `tx`, keeping
+ * 0 or 1 live block in the slot: the block it held is soft-deleted and the
+ * new one restored if an earlier swap deleted it. The owner's column itself
+ * is written by the caller's update.
+ */
+export async function swapMediaSlot(
+  tx: Prisma.TransactionClient,
+  owner: Pick<CampaignBlock, 'mediaBlockId'>,
+  mediaBlockId: string | null
+): Promise<void> {
+  if (owner.mediaBlockId != null && owner.mediaBlockId !== mediaBlockId)
+    await tx.campaignBlock.update({
+      where: { id: owner.mediaBlockId },
+      data: { deletedAt: new Date() }
+    })
+  if (mediaBlockId != null)
+    await tx.campaignBlock.update({
+      where: { id: mediaBlockId },
+      data: { deletedAt: null }
+    })
 }

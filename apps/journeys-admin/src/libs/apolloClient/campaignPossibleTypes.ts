@@ -11,6 +11,10 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
+  'CampaignRichTextBlock',
+  'CampaignColumnsBlock',
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
@@ -18,8 +22,11 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
 export const CAMPAIGN_POSSIBLE_TYPES: Record<string, string[]> = {
   CampaignBlock: [
     ...CAMPAIGN_SECTION_TYPENAMES,
+    'CampaignJourneyBlock',
     'CampaignTypographyBlock',
-    'CampaignButtonBlock'
+    'CampaignButtonBlock',
+    'CampaignColumnBlock',
+    'CampaignVideoBlock'
   ],
   CampaignSectionBlock: [...CAMPAIGN_SECTION_TYPENAMES],
   CampaignAction: [

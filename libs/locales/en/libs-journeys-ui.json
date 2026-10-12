@@ -149,5 +149,11 @@
   "Top country": "Top country",
   "0 visitors": "0 visitors",
   "since {{date}}": "since {{date}}",
-  "No visits yet": "No visits yet"
+  "No visits yet": "No visits yet",
+  "Open": "Open",
+  "Copied": "Copied",
+  "Copy link": "Copy link",
+  "Download QR code": "Download QR code",
+  "Language": "Language",
+  "Open menu": "Open menu"
 }
