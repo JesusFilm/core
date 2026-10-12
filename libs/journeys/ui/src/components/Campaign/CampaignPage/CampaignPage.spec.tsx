@@ -42,14 +42,9 @@ function renderPage(
   return render(
     <MockedProvider mocks={mocks as never}>
       <ThemeProvider theme={theme}>
-        <CampaignPage
-          campaign={campaign}
-          pageKind={pageKind}
-          region={region}
-        />
+        <CampaignPage campaign={campaign} pageKind={pageKind} region={region} />
       </ThemeProvider>
     </MockedProvider>
-
   )
 }
 

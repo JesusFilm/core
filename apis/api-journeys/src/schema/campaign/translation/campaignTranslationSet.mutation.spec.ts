@@ -90,11 +90,11 @@ describe('campaignTranslationSet', () => {
     prismaMock.campaignRegion.findUnique.mockResolvedValue({
       ...region,
       campaign: fixture
-    } as any)
+    })
     prismaMock.campaignString.findUnique.mockResolvedValue({
       ...copy,
       campaign: fixture
-    } as any)
+    })
     prismaMock.campaign.findUnique.mockResolvedValue(fixture)
   })
 
@@ -174,7 +174,7 @@ describe('campaignTranslationSet', () => {
       ...region,
       nameTranslations: { [FRENCH]: { value: 'Europe', source: 'human' } },
       campaign: fixture
-    } as any)
+    })
 
     const result = await set({
       target: { regionId: region.id },
@@ -338,7 +338,7 @@ describe('campaignTranslationSet', () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue({
       ...hero,
       campaign: outsider
-    } as any)
+    })
 
     const result = await set({
       target: { blockId: 'heroId' },
