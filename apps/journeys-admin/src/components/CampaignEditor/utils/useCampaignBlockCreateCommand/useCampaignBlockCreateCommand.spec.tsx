@@ -88,13 +88,13 @@ const buttonCreateMock = {
 }
 
 const deleteMock = {
-  delay: 200,
+  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'newId' } },
   result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
 }
 
 const restoreTextMock = {
-  delay: 200,
+  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'newId' } },
   result: vi.fn(() => ({ data: { campaignBlockRestore: [newText] } }))
 }
@@ -231,7 +231,7 @@ describe('useCampaignBlockCreateCommand', () => {
     }
 
     const sectionDeleteMock = {
-      delay: 200,
+      delay: 1000,
       request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'newId' } },
       result: vi.fn(() => ({
         data: {

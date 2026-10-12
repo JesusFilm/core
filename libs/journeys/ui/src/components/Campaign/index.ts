@@ -2,7 +2,11 @@ export {
   CAMPAIGN_PUBLIC_BLOCK_FIELDS,
   CAMPAIGN_PUBLIC_FIELDS
 } from './campaignPublicFields'
-export { CampaignAnalytics } from './CampaignAnalytics'
+export {
+  CampaignAnalytics,
+  CampaignAnalyticsPanel,
+  GET_CAMPAIGN_STATS
+} from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
 export {
@@ -125,6 +129,7 @@ export type {
   CampaignTree,
   CampaignTreeOf
 } from './types'
+export type { CampaignAnalyticsRegion } from './CampaignAnalytics'
 export type { CampaignChromeTrees } from './CampaignPage'
 export type {
   CampaignCarouselCard,

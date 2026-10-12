@@ -21,7 +21,7 @@ const footerTerms = campaign.blocks.find(
 )!
 
 const deleteMock = {
-  delay: 200,
+  delay: 1000,
   request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'footerTermsId' } },
   result: vi.fn(() => ({
     data: {
@@ -42,7 +42,7 @@ const deleteMock = {
 }
 
 const restoreMock = {
-  delay: 200,
+  delay: 1000,
   request: {
     query: CAMPAIGN_BLOCK_RESTORE,
     variables: { id: 'footerTermsId' }
@@ -138,7 +138,7 @@ describe('useCampaignBlockDeleteCommand', () => {
     ]
 
     const sectionDeleteMock = {
-      delay: 200,
+      delay: 1000,
       request: { query: CAMPAIGN_BLOCK_DELETE, variables: { id: 'heroId' } },
       result: vi.fn(() => ({
         data: {
@@ -155,7 +155,7 @@ describe('useCampaignBlockDeleteCommand', () => {
     }
 
     const sectionRestoreMock = {
-      delay: 200,
+      delay: 1000,
       request: { query: CAMPAIGN_BLOCK_RESTORE, variables: { id: 'heroId' } },
       result: vi.fn(() => ({
         data: {

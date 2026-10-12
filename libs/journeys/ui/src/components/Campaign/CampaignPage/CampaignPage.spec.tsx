@@ -1,11 +1,14 @@
+import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
   afrRegion,
   campaignPublic,
+  campaignStatsFixture,
   eurRegion,
   featuredMediaImageBlock,
   featuredMediaSectionBlock,
@@ -33,12 +36,15 @@ function withLanding(
 function renderPage(
   campaign: CampaignPublic,
   pageKind = CampaignPageKind.landing,
-  region: CampaignRegion | null = null
+  region: CampaignRegion | null = null,
+  mocks: Array<Record<string, unknown>> = []
 ) {
   return render(
-    <ThemeProvider theme={theme}>
-      <CampaignPage campaign={campaign} pageKind={pageKind} region={region} />
-    </ThemeProvider>
+    <MockedProvider mocks={mocks as never}>
+      <ThemeProvider theme={theme}>
+        <CampaignPage campaign={campaign} pageKind={pageKind} region={region} />
+      </ThemeProvider>
+    </MockedProvider>
   )
 }
 
@@ -367,6 +373,29 @@ describe('CampaignPage', () => {
       )
       expect(
         screen.getByTestId('CampaignAnalyticsSkeleton')
+      ).toBeInTheDocument()
+    })
+
+    it('Analytics requests campaignStats client-side after render, never in the page payload', async () => {
+      const result = vi.fn(() => ({
+        data: { campaignStats: campaignStatsFixture }
+      }))
+      expect(JSON.stringify(campaignPublic)).not.toContain('campaignStats')
+      renderPage(withLanding([pick('landingAnalyticsId')]), undefined, null, [
+        {
+          request: {
+            query: GET_CAMPAIGN_STATS,
+            variables: { id: campaignPublic.id }
+          },
+          result
+        }
+      ])
+      expect(
+        screen.getByTestId('CampaignAnalyticsSkeleton')
+      ).toBeInTheDocument()
+      await waitFor(() => expect(result).toHaveBeenCalledTimes(1))
+      expect(
+        await screen.findByTestId('CampaignAnalyticsVisitors')
       ).toBeInTheDocument()
     })
 

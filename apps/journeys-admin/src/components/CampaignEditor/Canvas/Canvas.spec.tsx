@@ -2,6 +2,9 @@ import Button from '@mui/material/Button'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
+import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
+import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
+
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
   CampaignPageKind,
@@ -51,6 +54,14 @@ const orderMock = {
       ]
     }
   }))
+}
+
+const statsMock = {
+  request: {
+    query: GET_CAMPAIGN_STATS,
+    variables: { id: campaign.id }
+  },
+  result: vi.fn(() => ({ data: { campaignStats: campaignStatsFixture } }))
 }
 
 const swapMock = {
@@ -211,6 +222,35 @@ describe('Canvas', () => {
 
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('chrome')
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('headerId')
+  })
+
+  it('renders the Analytics section with the same campaignStats query', async () => {
+    const { baseElement } = render(
+      <StaticEditor mocks={[statsMock]}>
+        <Canvas
+          campaign={campaign}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    const body = await frameBody(
+      baseElement,
+      'CanvasSection-landingAnalyticsId'
+    )
+
+    await waitFor(() =>
+      expect(
+        body.querySelector('[data-testid="CampaignAnalyticsVisitors"]')
+      ).toHaveTextContent('Total visitors')
+    )
+    expect(statsMock.result).toHaveBeenCalledTimes(1)
+    expect(
+      body.querySelector('[data-testid="CampaignAnalyticsTopCountry"]')
+    ).toHaveTextContent('France')
+    expect(
+      body.querySelector('[data-testid="CampaignAnalyticsList"]')
+    ).toBeInTheDocument()
   })
 
   it('renders the Region Page when selected', async () => {

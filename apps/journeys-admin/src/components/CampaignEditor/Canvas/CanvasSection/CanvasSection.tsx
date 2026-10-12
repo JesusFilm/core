@@ -17,6 +17,7 @@ import {
 } from 'react'
 
 import {
+  CampaignAnalyticsPanel,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
@@ -386,6 +387,7 @@ export function CanvasSection({
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
+    currentRegion,
     selection,
     selectBlock,
     state: { editRequest }
@@ -608,6 +610,14 @@ export function CanvasSection({
         )}
         {block.__typename === 'CampaignRegionShareBlock' && (
           <ShareSectionEdit block={block} />
+        )}
+        {block.__typename === 'CampaignAnalyticsBlock' && (
+          <CampaignAnalyticsPanel
+            campaignId={campaign.id}
+            regions={campaign.regions}
+            fixedRegion={currentRegion}
+            strings={campaign.strings}
+          />
         )}
         {block.__typename === 'CampaignJourneyListBlock' && (
           <JourneyListEdit
