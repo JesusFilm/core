@@ -274,6 +274,7 @@ export const CAMPAIGN_PUBLIC_FIELDS = gql`
         languageId
         order
         journeyStatus
+        title
         shortLinkUrl
         journeyUrl
         embedUrl

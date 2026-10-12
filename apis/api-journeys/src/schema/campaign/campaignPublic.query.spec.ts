@@ -223,6 +223,7 @@ describe('campaignPublic', () => {
             languageId
             order
             journeyStatus
+            title
             shortLinkUrl
             journeyUrl
             embedUrl
@@ -425,6 +426,7 @@ describe('campaignPublic', () => {
             languageId: '529',
             order: 0,
             journeyStatus: 'published',
+            title: 'EUR journey',
             shortLinkUrl: 'https://short.example.org/eurRegionId-529',
             journeyUrl: 'https://journeys.example.org/eur-journey',
             embedUrl: 'https://example.com/embed/eur-journey'
@@ -451,6 +453,7 @@ describe('campaignPublic', () => {
             languageId: '529',
             order: 0,
             journeyStatus: 'published',
+            title: 'AFR journey',
             shortLinkUrl: 'https://short.example.org/afrRegionId-529',
             journeyUrl: 'https://example.com/afr-journey',
             embedUrl: 'https://example.com/embed/afr-journey'
@@ -916,6 +919,7 @@ describe('campaignPublic', () => {
       languageId: '529',
       order: 0,
       journeyStatus: 'draft',
+      title: null,
       shortLinkUrl: null,
       journeyUrl: null,
       embedUrl: null
@@ -924,6 +928,7 @@ describe('campaignPublic', () => {
       languageId: '529',
       order: 0,
       journeyStatus: null,
+      title: null,
       shortLinkUrl: null,
       journeyUrl: null,
       embedUrl: null

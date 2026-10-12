@@ -869,6 +869,7 @@ export interface CampaignRegionLanguageUpdateInput {
   journeyId?: string | null;
   title?: string | null;
   description?: string | null;
+  snapshotEdited?: boolean | null;
 }
 
 export interface CampaignRegionShareBlockCreateInput {

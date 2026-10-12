@@ -1073,6 +1073,11 @@ export interface CampaignFields_regions_languages_journey {
   id: string;
   slug: string;
   status: JourneyStatus;
+  /**
+   * private title for creators
+   */
+  title: string;
+  description: string | null;
 }
 
 export interface CampaignFields_regions_languages_qrCode_shortLink_domain {
@@ -1110,6 +1115,10 @@ export interface CampaignFields_regions_languages {
    */
   title: string | null;
   description: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Linking, unlinking and refreshing from the journey clear it.
+   */
+  snapshotEdited: boolean;
   qrCodeId: string | null;
   order: number;
   language: CampaignFields_regions_languages_language;

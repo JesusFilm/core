@@ -225,6 +225,7 @@ describe('campaignRegionLanguageUpdate', () => {
             journeyId: 'journeyId',
             title: 'christmas-europe title',
             description: 'christmas-europe description',
+            snapshotEdited: false,
             qrCodeId: 'qrCodeId'
           }
         })
@@ -469,12 +470,38 @@ describe('campaignRegionLanguageUpdate', () => {
     })
     expect(createShortLink).not.toHaveBeenCalled()
     expect(updateShortLink).not.toHaveBeenCalled()
+    expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: { title: 'Our title', description: null, snapshotEdited: true }
+      })
+    )
 
     const tooLong = await update({ title: 'x'.repeat(201) })
     expect(tooLong.errors[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'title'
     })
+  })
+
+  it('sets the edited flag outright when the input carries it, as an undo does', async () => {
+    prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+
+    const result = await update({
+      title: 'Before',
+      description: 'Before too',
+      snapshotEdited: false
+    })
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          title: 'Before',
+          description: 'Before too',
+          snapshotEdited: false
+        }
+      })
+    )
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
