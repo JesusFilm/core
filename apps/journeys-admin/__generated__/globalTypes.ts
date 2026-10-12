@@ -1070,6 +1070,7 @@ export interface CampaignTypographyBlockUpdateInput {
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
+  defaultLanguageId?: string | null;
   palette?: string[] | null;
 }
 

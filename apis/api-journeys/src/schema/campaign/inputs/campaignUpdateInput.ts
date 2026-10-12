@@ -14,6 +14,11 @@ export const CampaignUpdateInput = builder.inputType('CampaignUpdateInput', {
       description:
         'Author-edited Campaign Address slug: lowercase letters, digits and single hyphens, at most 200 characters, not a reserved word, globally unique.'
     }),
+    defaultLanguageId: t.id({
+      required: false,
+      description:
+        'api-languages Language id of the new default language, one of the campaign’s languages. Refused with CONFLICT until every text exists in it; when complete, each field’s default text moves to the old default’s translation and the new language’s translation becomes the field.'
+    }),
     palette: t.stringList({
       required: false,
       description:
