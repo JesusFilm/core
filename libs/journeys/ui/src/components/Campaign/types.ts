@@ -27,10 +27,13 @@ export type CampaignTreeOf<T extends CampaignBlock['__typename']> =
 export type CampaignPublic = CampaignPublicFields
 export type CampaignRegion = CampaignPublicFields_regions
 
-/** Every typename that renders through `CampaignSectionBand`. */
+/**
+ * Every typename that renders through `CampaignSectionBand`: not the Extras,
+ * and not the Campaign Video, which only ever fills a Media Slot.
+ */
 export type CampaignSectionTypename = Exclude<
   CampaignBlock['__typename'],
-  'CampaignTypographyBlock' | 'CampaignButtonBlock'
+  'CampaignTypographyBlock' | 'CampaignButtonBlock' | 'CampaignVideoBlock'
 >
 export type CampaignSectionBlock = CampaignBlockOf<CampaignSectionTypename>
 export type CampaignSectionTree = CampaignTree<CampaignSectionBlock>
@@ -40,7 +43,8 @@ export function isCampaignSection(
 ): block is CampaignSectionBlock {
   return (
     block.__typename !== 'CampaignTypographyBlock' &&
-    block.__typename !== 'CampaignButtonBlock'
+    block.__typename !== 'CampaignButtonBlock' &&
+    block.__typename !== 'CampaignVideoBlock'
   )
 }
 

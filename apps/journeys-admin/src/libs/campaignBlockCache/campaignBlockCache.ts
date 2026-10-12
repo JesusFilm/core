@@ -183,3 +183,27 @@ export function campaignBlockInsertUpdate(
   if (block == null) return
   campaignBlocksInsert(cache, campaignId, block)
 }
+
+/** The slot columns a create points at its new owned block on the server. */
+export type CampaignSlotColumn = 'coverBlockId' | 'mediaBlockId' | 'logoBlockId'
+
+/**
+ * Point an owner's slot column at a block in the cache, as the create that
+ * filled the slot did on the server, so the canvas trees the new block into
+ * the slot with the create's optimistic response.
+ */
+export function campaignBlockSlotWrite(
+  cache: ApolloCache,
+  owner: CampaignBlockRef,
+  column: CampaignSlotColumn,
+  blockId: string
+): void {
+  cache.modify({
+    id: cache.identify(owner),
+    fields: {
+      [column]() {
+        return blockId
+      }
+    }
+  })
+}

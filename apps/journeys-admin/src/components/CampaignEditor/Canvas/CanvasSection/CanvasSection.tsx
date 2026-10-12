@@ -34,6 +34,7 @@ import {
 import {
   CampaignBackgroundKind,
   CampaignChildPlacement,
+  CampaignMediaSide,
   CampaignStringKey,
   TypographyVariant
 } from '../../../../../__generated__/globalTypes'
@@ -47,6 +48,7 @@ import {
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
+import { CanvasMedia } from '../CanvasMedia'
 import { InlineText } from '../InlineText'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
@@ -206,6 +208,8 @@ function sectionFieldPlaceholder(
       return t('Lede')
     case 'intro':
       return t('Intro')
+    case 'bullets':
+      return t('Bullets, one per line')
     default:
       return t('Your text')
   }
@@ -240,8 +244,12 @@ function SectionText({
     intro: {
       variant: 'body1' as const,
       sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+    },
+    bullets: {
+      variant: 'body1' as const,
+      sx: { color: 'var(--campaign-band-text)', maxWidth: 720 }
     }
-  }[field as 'eyebrow' | 'title' | 'lede' | 'intro']
+  }[field as 'eyebrow' | 'title' | 'lede' | 'intro' | 'bullets']
 
   return (
     <InlineText
@@ -339,9 +347,12 @@ function CanvasStrings({
 /**
  * One section on the editor canvas: the band from the shared resolution
  * table, the Extras placed above, the section's typed text, the Campaign
- * Strings its public rendering reads, then the Extras placed below. Clicking
- * anywhere selects the section; clicking an Extra selects it. The selected
- * block's text fields and strings become inline inputs.
+ * Strings its public rendering reads, then the Extras placed below. A hero
+ * with media and a Featured Media section put their Media Slot beside that
+ * text (Featured Media on its `mediaSide`, with a placeholder while empty),
+ * stacked below `md`. Clicking anywhere selects the section; clicking an
+ * Extra selects it. The selected block's text fields and strings become
+ * inline inputs.
  */
 export function CanvasSection({
   block,
@@ -383,7 +394,8 @@ export function CanvasSection({
   const band = useMemo(() => {
     if (
       block.__typename === 'CampaignTypographyBlock' ||
-      block.__typename === 'CampaignButtonBlock'
+      block.__typename === 'CampaignButtonBlock' ||
+      block.__typename === 'CampaignVideoBlock'
     )
       return null
     return resolveBand(block, theme)
@@ -433,6 +445,13 @@ export function CanvasSection({
   const strings = stringKeys.flatMap((key) =>
     campaign.strings.filter((string) => string.key === key)
   )
+  /** A Featured Media section always shows its slot (or the placeholder); a hero only once it has media. */
+  const showMedia =
+    block.__typename === 'CampaignFeaturedMediaBlock' ||
+    (block.__typename === 'CampaignHeroBlock' && block.media != null)
+  const mediaLeft =
+    block.__typename === 'CampaignFeaturedMediaBlock' &&
+    block.mediaSide === CampaignMediaSide.left
 
   function handleSelectField(field: CampaignTextField): void {
     setFocusField(field)
@@ -556,104 +575,121 @@ export function CanvasSection({
         />
       )}
       <Container maxWidth="lg" sx={{ position: 'relative' }}>
-        <Stack spacing={3} sx={{ alignItems }}>
-          {block.__typename === 'CampaignHeaderBlock' && (
-            <Box
-              data-testid="CanvasBrandMark"
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                alignSelf: 'stretch'
-              }}
-            >
-              {logo != null ? (
-                <Box
-                  component="img"
-                  src={logo.src}
-                  alt={logo.alt ?? campaign.title}
-                  data-testid="CanvasBrandMarkLogo"
-                  sx={{ height: 40, maxWidth: 200, objectFit: 'contain' }}
-                />
-              ) : (
-                <Typography
-                  variant="h6"
-                  component="span"
-                  noWrap
-                  data-testid="CanvasBrandMarkTitle"
-                  sx={{ color: 'var(--campaign-band-text)' }}
-                >
-                  {campaign.title}
-                </Typography>
-              )}
-            </Box>
-          )}
-          {above.map(renderExtra)}
-          {block.__typename === 'CampaignImageBlock' &&
-            (picture != null ? (
+        <Stack
+          direction={{ xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }}
+          spacing={6}
+          sx={{ alignItems: 'center' }}
+        >
+          <Stack
+            spacing={3}
+            sx={{ alignItems, flex: 1, minWidth: 0, width: '100%' }}
+          >
+            {block.__typename === 'CampaignHeaderBlock' && (
               <Box
-                component="img"
-                src={picture.src}
-                alt={picture.alt ?? ''}
-                data-testid="CanvasSectionImage"
+                data-testid="CanvasBrandMark"
                 sx={{
-                  display: 'block',
-                  width: '100%',
-                  height: 'auto',
-                  aspectRatio:
-                    picture.width != null && picture.height != null
-                      ? `${picture.width} / ${picture.height}`
-                      : undefined,
-                  objectFit: 'cover',
-                  borderRadius: 1
-                }}
-              />
-            ) : (
-              <Box
-                data-testid="CanvasSectionImagePlaceholder"
-                sx={{
-                  width: '100%',
-                  aspectRatio: '16 / 6',
-                  border: '1px dashed var(--campaign-band-border)',
-                  borderRadius: 1,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--campaign-band-muted)'
+                  alignSelf: 'stretch'
                 }}
               >
-                <Typography variant="body2">
-                  {t('Add a picture from Edit')}
-                </Typography>
+                {logo != null ? (
+                  <Box
+                    component="img"
+                    src={logo.src}
+                    alt={logo.alt ?? campaign.title}
+                    data-testid="CanvasBrandMarkLogo"
+                    sx={{ height: 40, maxWidth: 200, objectFit: 'contain' }}
+                  />
+                ) : (
+                  <Typography
+                    variant="h6"
+                    component="span"
+                    noWrap
+                    data-testid="CanvasBrandMarkTitle"
+                    sx={{ color: 'var(--campaign-band-text)' }}
+                  >
+                    {campaign.title}
+                  </Typography>
+                )}
               </Box>
-            ))}
-          {isCampaignTextBlock(block) &&
-            textFields.map((field) => (
-              <SectionText
-                key={field}
-                block={block}
-                field={field}
-                editing={sectionSelected}
-                focusField={focusField}
-                focusRequest={focusRequest}
-                onSelect={handleSelectField}
-                titleVariant={titleVariant}
-              />
-            ))}
-          {block.__typename === 'CampaignRegionSwitcherBlock' && (
-            <RegionSwitcherEdit block={block} />
+            )}
+            {above.map(renderExtra)}
+            {block.__typename === 'CampaignImageBlock' &&
+              (picture != null ? (
+                <Box
+                  component="img"
+                  src={picture.src}
+                  alt={picture.alt ?? ''}
+                  data-testid="CanvasSectionImage"
+                  sx={{
+                    display: 'block',
+                    width: '100%',
+                    height: 'auto',
+                    aspectRatio:
+                      picture.width != null && picture.height != null
+                        ? `${picture.width} / ${picture.height}`
+                        : undefined,
+                    objectFit: 'cover',
+                    borderRadius: 1
+                  }}
+                />
+              ) : (
+                <Box
+                  data-testid="CanvasSectionImagePlaceholder"
+                  sx={{
+                    width: '100%',
+                    aspectRatio: '16 / 6',
+                    border: '1px dashed var(--campaign-band-border)',
+                    borderRadius: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--campaign-band-muted)'
+                  }}
+                >
+                  <Typography variant="body2">
+                    {t('Add a picture from Edit')}
+                  </Typography>
+                </Box>
+              ))}
+            {isCampaignTextBlock(block) &&
+              textFields.map((field) => (
+                <SectionText
+                  key={field}
+                  block={block}
+                  field={field}
+                  editing={sectionSelected}
+                  focusField={focusField}
+                  focusRequest={focusRequest}
+                  onSelect={handleSelectField}
+                  titleVariant={titleVariant}
+                />
+              ))}
+            {block.__typename === 'CampaignRegionSwitcherBlock' && (
+              <RegionSwitcherEdit block={block} />
+            )}
+            {block.__typename === 'CampaignRegionShareBlock' && (
+              <ShareSectionEdit block={block} />
+            )}
+            <CanvasStrings
+              strings={strings}
+              editing={sectionSelected}
+              onSelect={() => {
+                setFocusField(undefined)
+                selectBlock(block.id)
+              }}
+            />
+            {below.map(renderExtra)}
+          </Stack>
+          {showMedia && (
+            <Box
+              data-testid="CanvasSectionMedia"
+              sx={{ flex: 1, minWidth: 0, width: '100%' }}
+            >
+              <CanvasMedia media={block.media} />
+            </Box>
           )}
-          {block.__typename === 'CampaignRegionShareBlock' && (
-            <ShareSectionEdit block={block} />
-          )}
-          <CanvasStrings
-            strings={strings}
-            editing={sectionSelected}
-            onSelect={() => {
-              setFocusField(undefined)
-              selectBlock(block.id)
-            }}
-          />
-          {below.map(renderExtra)}
         </Stack>
       </Container>
     </Box>

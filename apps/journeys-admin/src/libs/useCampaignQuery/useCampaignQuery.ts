@@ -10,7 +10,7 @@ import { CAMPAIGN_FIELDS } from './campaignFields'
 
 export const GET_CAMPAIGN = gql`
   ${CAMPAIGN_FIELDS}
-  query GetCampaign($id: ID!) {
+  query GetCampaign($id: ID!, $languageId: ID) {
     campaign(id: $id) {
       ...CampaignFields
     }

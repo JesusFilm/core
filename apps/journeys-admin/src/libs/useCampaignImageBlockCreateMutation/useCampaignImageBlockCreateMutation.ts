@@ -16,13 +16,19 @@ import {
   CampaignBackgroundKind,
   CampaignImageSlot
 } from '../../../__generated__/globalTypes'
-import { campaignBlockCreateUpdate } from '../campaignBlockCache'
+import {
+  campaignBlockCreateUpdate,
+  campaignBlockSlotWrite
+} from '../campaignBlockCache'
 
 export type CampaignImageBlock = GetCampaign_campaign_blocks_CampaignImageBlock
 
 export const CAMPAIGN_IMAGE_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
-  mutation CampaignImageBlockCreate($input: CampaignImageBlockCreateInput!) {
+  mutation CampaignImageBlockCreate(
+    $input: CampaignImageBlockCreateInput!
+    $languageId: ID
+  ) {
     campaignImageBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
     }
@@ -32,7 +38,7 @@ export const CAMPAIGN_IMAGE_BLOCK_CREATE = gql`
 /** The columns of a block that owns an image: the section or chrome block the image copies its scoping from. */
 export type CampaignImageOwner = Pick<
   CampaignBlock,
-  'id' | 'campaignId' | 'pageId' | 'regionId'
+  '__typename' | 'id' | 'campaignId' | 'pageId' | 'regionId'
 >
 
 /**
@@ -80,10 +86,12 @@ export type CreateOwnedImage = (
 ) => Promise<ApolloLink.Result<CampaignImageBlockCreate>>
 
 /**
- * Create an owned image (a section's cover or the header logo) through
- * `campaignImageBlockCreate`, shown optimistically with the given src, and
- * append it to the campaign's cached block list so the canvas trees it
- * through the owner's slot column as soon as that column is written.
+ * Create an owned image (a section's cover, the header logo or a Media
+ * Slot) through `campaignImageBlockCreate`, shown optimistically with the
+ * given src, and append it to the campaign's cached block list so the canvas
+ * trees it through the owner's slot column as soon as that column is
+ * written. A Media Slot pick writes that column here, as the server does, so
+ * the section shows the picture with the optimistic response.
  */
 export function useCampaignImageBlockCreateMutation(
   campaignId: string
@@ -103,11 +111,10 @@ export function useCampaignImageBlockCreateMutation(
           campaignImageBlockCreate: newOwnedImageBlock(id, owner, src)
         },
         update(cache, { data }) {
-          campaignBlockCreateUpdate(
-            cache,
-            campaignId,
-            data?.campaignImageBlockCreate
-          )
+          const image = data?.campaignImageBlockCreate
+          campaignBlockCreateUpdate(cache, campaignId, image)
+          if (image != null && slot === CampaignImageSlot.media)
+            campaignBlockSlotWrite(cache, owner, 'mediaBlockId', image.id)
         }
       }),
     [client, campaignId]

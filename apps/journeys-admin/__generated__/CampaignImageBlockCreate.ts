@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignImageBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignImageBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, VideoLabel, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignImageBlockCreate
@@ -64,7 +64,7 @@ export interface CampaignImageBlockCreate_campaignImageBlockCreate {
 
 export interface CampaignImageBlockCreate {
   /**
-   * Add an image in one of two roles. With `pageId`: an Image section, last among the page’s sections or at `parentOrder`. With `parentBlockId` and `slot`: an owned image with `parentOrder: null` that becomes the parent’s background cover (any section or chrome block) or the header logo, replacing (soft-deleting) the image that slot held. `width` and `height` are measured by the server from `src`; the editor never supplies them.
+   * Add an image in one of two roles. With `pageId`: an Image section, last among the page’s sections or at `parentOrder`. With `parentBlockId` and `slot`: an owned image with `parentOrder: null` that becomes the parent’s background cover (any section or chrome block), the header logo, or the Media Slot of a hero or Featured Media section, replacing (soft-deleting) the block that slot held. `width` and `height` are measured by the server from `src`; the editor never supplies them.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -76,6 +76,7 @@ export interface CampaignImageBlockCreate {
    * - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
    * - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
+   * - BAD_USER_INPUT (field: `mediaBlockId`): the media slot on a block that is not a hero or Featured Media section.
    * - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
    * - BAD_USER_INPUT (field: `alt`): over 500 characters.
    */
@@ -84,4 +85,5 @@ export interface CampaignImageBlockCreate {
 
 export interface CampaignImageBlockCreateVariables {
   input: CampaignImageBlockCreateInput;
+  languageId?: string | null;
 }

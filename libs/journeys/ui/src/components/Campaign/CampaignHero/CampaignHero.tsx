@@ -1,8 +1,9 @@
-import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
+import { CampaignMediaSplit } from '../CampaignMediaSlot'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
+import { hasText } from '../types'
 import type { CampaignTreeOf } from '../types'
 
 interface CampaignHeroProps {
@@ -10,31 +11,30 @@ interface CampaignHeroProps {
 }
 
 /**
- * The opening section: eyebrow, title and lede aligned by `align`, over a
- * Media Slot that the media ticket fills. The slot keeps its place only when
- * the hero owns a media block.
+ * The opening section: eyebrow, title and lede aligned by `align`, with its
+ * Media Slot (a video or an image) beside the text from `md` up and below it
+ * on a phone. A hero with only media renders the media alone.
  */
 export function CampaignHero({ block }: CampaignHeroProps): ReactElement {
+  const hasHeading =
+    hasText(block.eyebrow) || hasText(block.title) || hasText(block.lede)
+
   return (
     <CampaignSectionBand block={block} align={block.align}>
-      <CampaignSectionHeading
-        eyebrow={block.eyebrow}
-        title={block.title}
-        lede={block.lede}
-        titleVariant="h1"
-        align={block.align}
+      <CampaignMediaSplit
+        media={block.media}
+        text={
+          hasHeading ? (
+            <CampaignSectionHeading
+              eyebrow={block.eyebrow}
+              title={block.title}
+              lede={block.lede}
+              titleVariant="h1"
+              align={block.align}
+            />
+          ) : null
+        }
       />
-      {block.media != null && (
-        <Box
-          data-testid="CampaignHeroMedia"
-          sx={{
-            width: '100%',
-            aspectRatio: '16 / 9',
-            borderRadius: 1,
-            backgroundColor: 'var(--campaign-band-card)'
-          }}
-        />
-      )}
     </CampaignSectionBand>
   )
 }
