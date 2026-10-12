@@ -592,6 +592,45 @@ describe('campaignStats', () => {
       expect(result.errors).toHaveLength(1)
       expect(result.data).toBeNull()
       expect(mockStatsCache.set).not.toHaveBeenCalled()
+      expect(mockStatsCache.deferRefresh).toHaveBeenCalledWith(
+        'campaignId',
+        null
+      )
+    })
+
+    it('fails fast on a failure marker without sweeping Plausible again', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockStatsCache.get.mockResolvedValue({
+        fresh: false,
+        backingOff: true,
+        sweptAt: Date.now(),
+        sweep: null
+      })
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toHaveLength(1)
+      expect(result.data).toBeNull()
+      expect(mockAxios.get).not.toHaveBeenCalled()
+      expect(mockStatsCache.set).not.toHaveBeenCalled()
+      expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
+    })
+
+    it('sweeps again once the failure marker has expired', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockStatsCache.get.mockResolvedValue(null)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(mockAxios.get).toHaveBeenCalledTimes(3)
+      expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
     })
 
     it('never caches a partial sweep', async () => {

@@ -238,27 +238,30 @@ function sweepMatchesCampaign(
  * The Campaign's visitor stats from its cached sweep, sweeping Plausible on a
  * miss, once the entry is stale, or when the entry no longer matches the
  * campaign (a journey linked or published since the sweep). When a sweep fails,
- * the last cached sweep is served and not retried for a few minutes; with
- * nothing cached the failure propagates.
+ * the last cached sweep is served and not retried for a few minutes. With
+ * nothing cached the failure propagates and a failure marker is cached, so
+ * requests in the next few minutes fail fast instead of sweeping again.
  */
 export async function getCampaignStats(
   campaignWithAllJourneys: CampaignStatsSubject
 ): Promise<CampaignStats> {
   const campaign = await withVisibleJourneys(campaignWithAllJourneys)
   const cached = await statsCache.get(campaign.id)
-  if (cached != null) {
+  if (cached?.sweep != null) {
     const servable =
       cached.backingOff ||
       (cached.fresh && sweepMatchesCampaign(campaign, cached.sweep))
     if (servable) return sumCampaignStats(campaign, cached.sweep)
   }
+  if (cached?.sweep == null && cached?.backingOff === true)
+    throw new Error('Campaign stats are temporarily unavailable')
 
   try {
     return sumCampaignStats(campaign, await refreshSweep(campaign))
   } catch (error) {
-    if (cached == null) throw error
     logger.error({ error, campaignId: campaign.id }, 'stats sweep failed')
     await statsCache.deferRefresh(campaign.id, cached)
+    if (cached?.sweep == null) throw error
     return sumCampaignStats(campaign, cached.sweep)
   }
 }
