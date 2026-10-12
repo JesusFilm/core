@@ -38,17 +38,17 @@ describe('QrCodeCanvas', () => {
 
   beforeEach(() => vi.clearAllMocks())
 
-  it('draws the value at level M, black on white, at 1024 px shown at the given size', () => {
+  it('draws the value at level M, black on white, at the size it is shown', () => {
     render(<QrCodeCanvas value="https://short.nextstep.is/eur-en" size={160} />)
 
     const canvas = screen.getByRole('img', {
       name: 'https://short.nextstep.is/eur-en'
     })
-    expect(canvas).toHaveAttribute('width', String(QR_CODE_PNG_SIZE))
+    expect(canvas).toHaveAttribute('width', '160')
     expect(canvas).toHaveStyle({ width: '160px', height: '160px' })
     expect(drawn.mock.calls[0][0]).toMatchObject({
       value: 'https://short.nextstep.is/eur-en',
-      size: 1024,
+      size: 160,
       level: 'M',
       fgColor: '#000000',
       bgColor: '#FFFFFF'
@@ -69,54 +69,81 @@ describe('QrCodeCanvas', () => {
   })
 
   describe('download', () => {
-    function drawnCanvas(width = QR_CODE_PNG_SIZE): HTMLCanvasElement {
-      const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = width
-      vi.spyOn(canvas, 'toDataURL').mockReturnValue('data:image/png;base64,QR')
-      return canvas
-    }
+    const url = 'https://short.nextstep.is/eur-en'
 
-    it('reads a 1024 px canvas back as a PNG', () => {
-      const canvas = drawnCanvas()
-
-      expect(qrCodePngDataUrl(canvas)).toBe('data:image/png;base64,QR')
-      expect(canvas.toDataURL).toHaveBeenCalledWith('image/png')
+    beforeEach(() => {
+      vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', false)
     })
 
-    it('redraws a bitmap of another size at 1024 px when a 2D context is available', () => {
-      // The source is spied before the prototype so its own spy stays separate.
-      const source = drawnCanvas(2048)
+    afterEach(() => {
+      vi.restoreAllMocks()
+      vi.unstubAllGlobals()
+    })
+
+    it('draws the code off-screen at 1024 px and reads it back as a PNG', () => {
+      const toDataURL = vi
+        .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
+        .mockReturnValue('data:image/png;base64,QR')
+
+      expect(qrCodePngDataUrl(url)).toBe('data:image/png;base64,QR')
+      expect(toDataURL).toHaveBeenCalledWith('image/png')
+      expect(drawn.mock.calls[0][0]).toMatchObject({
+        value: url,
+        size: QR_CODE_PNG_SIZE,
+        level: 'M',
+        fgColor: '#000000',
+        bgColor: '#FFFFFF'
+      })
+    })
+
+    it('redraws a high-density bitmap at 1024 px when a 2D context is available', () => {
+      vi.stubGlobal('devicePixelRatio', 2)
       const drawImage = vi.fn()
-      const getContext = vi
-        .spyOn(HTMLCanvasElement.prototype, 'getContext')
-        .mockReturnValue({ drawImage } as unknown as CanvasRenderingContext2D)
+      vi.stubGlobal('Path2D', vi.fn())
+      vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+        drawImage,
+        scale: vi.fn(),
+        fillRect: vi.fn(),
+        fill: vi.fn()
+      } as unknown as CanvasRenderingContext2D)
       const toDataURL = vi
         .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
         .mockReturnValue('data:image/png;base64,RESIZED')
 
-      expect(qrCodePngDataUrl(source)).toBe('data:image/png;base64,RESIZED')
-      expect(drawImage).toHaveBeenCalledWith(source, 0, 0, 1024, 1024)
-      expect(toDataURL).toHaveBeenCalledWith('image/png')
-      expect(source.toDataURL).not.toHaveBeenCalled()
-      getContext.mockRestore()
-      toDataURL.mockRestore()
+      expect(qrCodePngDataUrl(url)).toBe('data:image/png;base64,RESIZED')
+      expect(drawImage).toHaveBeenCalledWith(
+        expect.any(HTMLCanvasElement),
+        0,
+        0,
+        1024,
+        1024
+      )
+      expect(toDataURL).toHaveBeenCalledTimes(1)
+    })
+
+    it('leaves nothing on the page after drawing', () => {
+      vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('x')
+
+      qrCodePngDataUrl(url)
+
+      expect(document.querySelector('canvas')).toBeNull()
     })
 
     it('saves the PNG under the given file name through a transient link', () => {
-      const canvas = drawnCanvas()
+      vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue(
+        'data:image/png;base64,QR'
+      )
       const click = vi
         .spyOn(HTMLAnchorElement.prototype, 'click')
         .mockImplementation(() => undefined)
 
-      downloadQrCodePng(canvas, 'christmas-2026-eur-en.png')
+      downloadQrCodePng(url, 'christmas-2026-eur-en.png')
 
       expect(click).toHaveBeenCalledTimes(1)
       const clicked = click.mock.contexts[0] as HTMLAnchorElement
       expect(clicked.download).toBe('christmas-2026-eur-en.png')
       expect(clicked.href).toBe('data:image/png;base64,QR')
       expect(document.body.contains(clicked)).toBe(false)
-      click.mockRestore()
     })
   })
 })

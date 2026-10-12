@@ -170,7 +170,6 @@ function ShareLanguageRow({
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [pasting, setPasting] = useState(false)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const state = shareLanguageState(regionLanguage)
   const shortLink =
     state === 'live' ? campaignShareLink(regionLanguage.qrCode) : undefined
@@ -183,9 +182,11 @@ function ShareLanguageRow({
   }
 
   function handleDownload(): void {
-    const canvas = canvasRef.current
-    if (canvas == null) return
-    downloadQrCodePng(canvas, qrCodeFileName(campaign, region, regionLanguage))
+    if (shortLink == null) return
+    downloadQrCodePng(
+      shortLink,
+      qrCodeFileName(campaign, region, regionLanguage)
+    )
   }
 
   return (
@@ -335,7 +336,7 @@ function ShareLanguageRow({
             spacing={2}
             sx={{ alignItems: 'center', flexWrap: 'wrap' }}
           >
-            <QrCodeCanvas value={shortLink} size={72} canvasRef={canvasRef} />
+            <QrCodeCanvas value={shortLink} size={72} />
             <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
               <Button
                 size="small"

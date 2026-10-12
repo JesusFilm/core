@@ -30,7 +30,11 @@ builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
         const updated = await tx.campaignRegionLanguage.update({
           ...query,
           where: { id },
-          data: { title: journey.title, description: journey.description }
+          data: {
+            title: journey.title,
+            description: journey.description,
+            snapshotEdited: false
+          }
         })
         await touchCampaign(tx, regionLanguage.region.campaign.id)
         return updated

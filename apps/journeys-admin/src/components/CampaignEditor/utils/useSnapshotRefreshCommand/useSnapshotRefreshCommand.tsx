@@ -8,30 +8,10 @@ import { useCampaignRegionLanguageSnapshotRefreshMutation } from '../../../../li
 import { useCampaignRegionLanguageUpdateMutation } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 
-/**
- * Whether the author's snapshot differs from what the journey says now. The
- * row keeps no edited flag, so this is the one signal the editor has: a
- * snapshot that still matches the journey has nothing to lose and refreshes
- * without a word; one that differs is the author's wording until they say
- * otherwise, so it asks first.
- */
-export function snapshotEdited(
-  regionLanguage: Pick<
-    CampaignRegionLanguage,
-    'title' | 'description' | 'journey'
-  >
-): boolean {
-  const journey = regionLanguage.journey
-  if (journey == null) return false
-  return (
-    regionLanguage.title !== journey.title ||
-    regionLanguage.description !== journey.description
-  )
-}
-
 interface SnapshotParameters {
   title: string | null
   description: string | null
+  snapshotEdited: boolean
 }
 
 interface Focus {
@@ -53,11 +33,12 @@ export interface SnapshotRefreshCommand {
 /**
  * "Refresh from journey" as a Command: execute (and redo) re-reads the
  * snapshot title and description through `campaignRegionLanguageSnapshotRefresh`,
- * shown optimistically from the journey the editor already holds; undo
- * writes the previous title and description back through
- * `campaignRegionLanguageUpdate`. Both focus the page the request was made
- * on first. The Command is only added once the author has confirmed, when a
- * confirmation was needed at all.
+ * shown optimistically from the journey the editor already holds, which
+ * clears the row's edited flag; undo writes the previous title, description
+ * and edited flag back through `campaignRegionLanguageUpdate`. Both focus the
+ * page the request was made on first. A snapshot the author edited by hand
+ * (the row's `snapshotEdited`; a journey renamed since linking does not count)
+ * asks first, so the Command is only added once the author has confirmed.
  */
 export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
   const { add } = useCommand()
@@ -85,13 +66,18 @@ export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
     const target = currentFocus()
     add<SnapshotParameters>({
       parameters: {
-        execute: { title: journey.title, description: journey.description },
+        execute: {
+          title: journey.title,
+          description: journey.description,
+          snapshotEdited: false
+        },
         undo: {
           title: regionLanguage.title,
-          description: regionLanguage.description
+          description: regionLanguage.description,
+          snapshotEdited: regionLanguage.snapshotEdited
         }
       },
-      execute({ title, description }) {
+      execute({ title, description, snapshotEdited }) {
         focus(target)
         void snapshotRefresh({
           variables: { id: regionLanguage.id },
@@ -99,20 +85,25 @@ export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
             campaignRegionLanguageSnapshotRefresh: {
               ...regionLanguage,
               title,
-              description
+              description,
+              snapshotEdited
             }
           }
         })
       },
-      undo({ title, description }) {
+      undo({ title, description, snapshotEdited }) {
         focus(target)
         void languageUpdate({
-          variables: { id: regionLanguage.id, input: { title, description } },
+          variables: {
+            id: regionLanguage.id,
+            input: { title, description, snapshotEdited }
+          },
           optimisticResponse: {
             campaignRegionLanguageUpdate: {
               ...regionLanguage,
               title,
-              description
+              description,
+              snapshotEdited
             }
           }
         })
@@ -122,7 +113,7 @@ export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
 
   function requestRefresh(regionLanguage: CampaignRegionLanguage): void {
     if (regionLanguage.journey == null) return
-    if (snapshotEdited(regionLanguage)) {
+    if (regionLanguage.snapshotEdited) {
       setPending(regionLanguage)
       return
     }

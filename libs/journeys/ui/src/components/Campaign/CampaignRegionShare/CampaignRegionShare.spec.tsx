@@ -282,7 +282,7 @@ describe('CampaignRegionShare', () => {
     const canvas = screen.getByRole('img', {
       name: 'https://short.nextstep.is/eur-en'
     })
-    expect(canvas).toHaveAttribute('width', '1024')
+    expect(canvas).toHaveAttribute('width', '160')
 
     fireEvent.click(screen.getByRole('button', { name: 'Download QR code' }))
 

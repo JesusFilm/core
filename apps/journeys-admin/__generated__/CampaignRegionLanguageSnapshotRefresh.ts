@@ -69,6 +69,10 @@ export interface CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSna
    */
   title: string | null;
   description: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Linking, unlinking and refreshing from the journey clear it.
+   */
+  snapshotEdited: boolean;
   qrCodeId: string | null;
   order: number;
   language: CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSnapshotRefresh_language;

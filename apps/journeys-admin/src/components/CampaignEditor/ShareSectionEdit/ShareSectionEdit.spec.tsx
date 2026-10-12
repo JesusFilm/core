@@ -141,6 +141,7 @@ const linkMock = {
         journeyId: 'frJourneyId',
         title: 'Noël en Europe',
         description: null,
+        snapshotEdited: false,
         qrCodeId: 'frQrCodeId',
         journey,
         qrCode: {
@@ -198,6 +199,7 @@ const unlinkMock = {
         journeyId: null,
         title: null,
         description: null,
+        snapshotEdited: false,
         qrCodeId: null,
         journey: null,
         qrCode: null
@@ -210,6 +212,7 @@ const unlinkMock = {
 const editedEnglish = {
   ...eurEnglish,
   title: 'My Christmas title',
+  snapshotEdited: true,
   journey: {
     ...eurEnglish.journey!,
     title: 'Christmas in Europe 2026',
@@ -226,7 +229,8 @@ const refreshMock = {
     data: {
       campaignRegionLanguageSnapshotRefresh: {
         ...editedEnglish,
-        title: 'Christmas in Europe 2026'
+        title: 'Christmas in Europe 2026',
+        snapshotEdited: false
       }
     }
   }))
@@ -594,7 +598,12 @@ describe('ShareSectionEdit', () => {
   })
 
   it('refreshes an unedited snapshot from the journey at once, as a Command', async () => {
-    renderShare()
+    renderShare(
+      withEnglish({
+        ...eurEnglish,
+        journey: { ...eurEnglish.journey!, title: 'Renamed by its owner' }
+      })
+    )
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
     fireEvent.click(within(english).getByTestId('ShareLanguageRefresh'))

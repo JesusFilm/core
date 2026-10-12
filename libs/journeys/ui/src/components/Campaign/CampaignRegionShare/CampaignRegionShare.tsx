@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, ReactNode, useRef, useState } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import Download2Icon from '@core/shared/ui/icons/Download2'
@@ -162,7 +162,6 @@ export function CampaignRegionShare({
   const { campaign, region } = useCampaign()
   const [selectedId, setSelectedId] = useState<string>()
   const [copied, setCopied] = useState(false)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   const languages = region == null ? [] : shareLanguages(region)
   const selected =
     languages.find((language) => language.id === selectedId) ??
@@ -194,9 +193,8 @@ export function CampaignRegionShare({
 
   function handleDownload(event: MouseEvent<HTMLButtonElement>): void {
     event.preventDefault()
-    const canvas = canvasRef.current
-    if (canvas == null || region == null || selected == null) return
-    downloadQrCodePng(canvas, qrCodeFileName(campaign, region, selected))
+    if (shortLink == null || region == null || selected == null) return
+    downloadQrCodePng(shortLink, qrCodeFileName(campaign, region, selected))
   }
 
   return (
@@ -355,11 +353,7 @@ export function CampaignRegionShare({
                 </Button>
               </ShareStep>
               <ShareStep id={`${block.id}-step4`} label={strings.step4}>
-                <QrCodeCanvas
-                  value={shortLink}
-                  size={160}
-                  canvasRef={canvasRef}
-                />
+                <QrCodeCanvas value={shortLink} size={160} />
                 <Button
                   variant="outlined"
                   startIcon={<Download2Icon />}

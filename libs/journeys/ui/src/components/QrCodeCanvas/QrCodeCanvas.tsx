@@ -2,7 +2,9 @@ import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import { QRCodeCanvas } from 'qrcode.react'
-import { ReactElement, Ref } from 'react'
+import { ReactElement } from 'react'
+import { flushSync } from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 import GridEmptyIcon from '@core/shared/ui/icons/GridEmpty'
 
@@ -13,21 +15,44 @@ interface QrCodeCanvasProps {
   /** The URL the code encodes: a short link. Nothing is drawn without one. */
   value?: string
   loading?: boolean
-  /** The size the code is shown at, in pixels; the bitmap is always `QR_CODE_PNG_SIZE`. */
+  /** The size the code is shown at, in pixels; a download is always `QR_CODE_PNG_SIZE`. */
   size?: number
-  /** The DOM id a download reads the canvas back by. */
+  /** The DOM id of the canvas. */
   id?: string
-  /** The canvas, for a download that reads it back. */
-  canvasRef?: Ref<HTMLCanvasElement>
 }
 
+const QR_CODE_LEVEL = 'M'
+const QR_CODE_FOREGROUND = '#000000'
+const QR_CODE_BACKGROUND = '#FFFFFF'
+
 /**
- * The PNG of a drawn QR canvas at `QR_CODE_PNG_SIZE` square: the canvas's
- * own bitmap when it already is that size, else a copy drawn at that size
- * (the bitmap is `size × devicePixelRatio`, so a high-density screen draws
- * larger); without a 2D context the bitmap is used as drawn.
+ * The PNG data URL of `value` as a `QR_CODE_PNG_SIZE` square, drawn off-screen
+ * on demand so the canvases on the page stay at their display size. The
+ * off-screen bitmap is `QR_CODE_PNG_SIZE × devicePixelRatio` (qrcode.react
+ * scales by it), so it is copied down to exactly `QR_CODE_PNG_SIZE`; without
+ * a 2D context the bitmap is used as drawn.
  */
-export function qrCodePngDataUrl(canvas: HTMLCanvasElement): string {
+export function qrCodePngDataUrl(value: string): string | undefined {
+  const container = document.createElement('div')
+  const root = createRoot(container)
+  flushSync(() =>
+    root.render(
+      <QRCodeCanvas
+        value={value}
+        size={QR_CODE_PNG_SIZE}
+        level={QR_CODE_LEVEL}
+        fgColor={QR_CODE_FOREGROUND}
+        bgColor={QR_CODE_BACKGROUND}
+      />
+    )
+  )
+  const canvas = container.querySelector('canvas')
+  const dataUrl = canvas == null ? undefined : pngDataUrlAtSize(canvas)
+  flushSync(() => root.unmount())
+  return dataUrl
+}
+
+function pngDataUrlAtSize(canvas: HTMLCanvasElement): string {
   if (canvas.width === QR_CODE_PNG_SIZE) return canvas.toDataURL('image/png')
   const target = canvas.ownerDocument.createElement('canvas')
   target.width = QR_CODE_PNG_SIZE
@@ -38,15 +63,14 @@ export function qrCodePngDataUrl(canvas: HTMLCanvasElement): string {
   return target.toDataURL('image/png')
 }
 
-/** Save the drawn QR canvas as a PNG named `fileName`, through a transient download link. */
-export function downloadQrCodePng(
-  canvas: HTMLCanvasElement,
-  fileName: string
-): void {
-  const link = canvas.ownerDocument.createElement('a')
-  link.href = qrCodePngDataUrl(canvas)
+/** Save the QR code of `value` as a `QR_CODE_PNG_SIZE` PNG named `fileName`, through a transient download link. */
+export function downloadQrCodePng(value: string, fileName: string): void {
+  const href = qrCodePngDataUrl(value)
+  if (href == null) return
+  const link = document.createElement('a')
+  link.href = href
   link.download = fileName
-  canvas.ownerDocument.body.appendChild(link)
+  document.body.appendChild(link)
   link.click()
   link.remove()
 }
@@ -54,8 +78,8 @@ export function downloadQrCodePng(
 /**
  * A QR code of `value` drawn in the browser: error-correction level M, black
  * on white always (printed and projected codes must scan whatever the page's
- * colours), at `QR_CODE_PNG_SIZE` so a download is a crisp 1024 px PNG
- * however small the code is shown. Shared by the admin QR dialog and the
+ * colours), drawn at the size it is shown; a download draws its own
+ * crisp 1024 px PNG off-screen (`downloadQrCodePng`). Shared by the admin QR dialog and the
  * public campaign Share section. A skeleton while loading, an empty tile
  * without a value.
  */
@@ -63,8 +87,7 @@ export function QrCodeCanvas({
   value,
   loading = false,
   size = 174,
-  id,
-  canvasRef
+  id
 }: QrCodeCanvasProps): ReactElement {
   const showQrCode = value != null && !loading
   const showEmpty = value == null && !loading
@@ -86,16 +109,14 @@ export function QrCodeCanvas({
           }}
         >
           <QRCodeCanvas
-            ref={canvasRef}
             id={id}
             title="QR Code"
-            size={QR_CODE_PNG_SIZE}
-            level="M"
-            fgColor="#000000"
-            bgColor="#FFFFFF"
+            size={size}
+            level={QR_CODE_LEVEL}
+            fgColor={QR_CODE_FOREGROUND}
+            bgColor={QR_CODE_BACKGROUND}
             value={value}
             aria-label={value}
-            style={{ width: size, height: size }}
           />
         </Stack>
       )}

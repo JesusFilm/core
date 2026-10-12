@@ -11,16 +11,14 @@ import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaignWithRegions, eurEnglish } from '../../data'
 import { CommandProbe, QueriedEditor } from '../../testing'
 
-import {
-  snapshotEdited,
-  useSnapshotRefreshCommand
-} from './useSnapshotRefreshCommand'
+import { useSnapshotRefreshCommand } from './useSnapshotRefreshCommand'
 
 /** English, reworded by the author since it was linked; the journey itself says something newer. */
 const edited: CampaignRegionLanguage = {
   ...eurEnglish,
   title: 'My Christmas title',
   description: 'My own description.',
+  snapshotEdited: true,
   journey: {
     ...eurEnglish.journey!,
     title: 'Christmas in Europe 2026',
@@ -39,7 +37,8 @@ const refreshMock = {
       campaignRegionLanguageSnapshotRefresh: {
         ...edited,
         title: 'Christmas in Europe 2026',
-        description: 'The journey as it reads now.'
+        description: 'The journey as it reads now.',
+        snapshotEdited: false
       }
     }
   }))
@@ -50,7 +49,11 @@ const undoMock = {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: {
       id: 'eurRegionId-529',
-      input: { title: 'My Christmas title', description: 'My own description.' }
+      input: {
+        title: 'My Christmas title',
+        description: 'My own description.',
+        snapshotEdited: true
+      }
     }
   },
   result: vi.fn(() => ({ data: { campaignRegionLanguageUpdate: edited } }))
@@ -104,19 +107,29 @@ function renderHook(
   )
 }
 
-describe('snapshotEdited', () => {
-  it('is true only when the snapshot differs from the journey', () => {
-    expect(snapshotEdited(eurEnglish)).toBe(false)
-    expect(snapshotEdited(edited)).toBe(true)
-    expect(snapshotEdited({ ...edited, journey: null })).toBe(false)
-  })
-})
-
 describe('useSnapshotRefreshCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it('refreshes an unedited snapshot at once as a Command, with no confirmation', async () => {
     renderHook(eurEnglish)
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+
+    expect(screen.getByTestId('Pending')).toHaveTextContent('')
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('refreshes at once when the journey was only renamed, the author having edited nothing', async () => {
+    renderHook({
+      ...eurEnglish,
+      journey: {
+        ...eurEnglish.journey!,
+        title: 'Renamed by the journey owner',
+        description: 'Reworded by the journey owner.'
+      }
+    })
     await screen.findByText('Refresh')
 
     fireEvent.click(screen.getByText('Refresh'))

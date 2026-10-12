@@ -87,7 +87,8 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
         where: { id: 'eurRegionId-529' },
         data: {
           title: 'Christmas in Europe, 2026',
-          description: 'The reworded description.'
+          description: 'The reworded description.',
+          snapshotEdited: false
         }
       })
     )
