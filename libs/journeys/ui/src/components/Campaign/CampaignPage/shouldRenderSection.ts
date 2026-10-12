@@ -3,14 +3,33 @@ import { featuredMediaBullets } from '../CampaignFeaturedMedia'
 import { liveJourneyCards } from '../CampaignJourneyList'
 import { hasCampaignMedia } from '../CampaignMediaSlot'
 import { listedRegions } from '../CampaignRegionSwitcher'
+import { splitParagraphs } from '../CampaignRichText'
 import { hasCarouselCards } from '../CampaignVideoCarousel'
-import { hasText } from '../types'
-import type { CampaignRegion, CampaignSectionTree } from '../types'
+import { hasText, isCampaignSection } from '../types'
+import type {
+  CampaignRegion,
+  CampaignSectionTree,
+  CampaignTree
+} from '../types'
 
 export interface SectionRenderContext {
   pageKind: CampaignPageKind
   region: CampaignRegion | null
   regions: CampaignRegion[]
+}
+
+/**
+ * The section a Column Slot holds when it renders: the slot's one child, if it
+ * is a section that passes the empty-state matrix. Anything else leaves the
+ * slot empty.
+ */
+export function slotSection(
+  slot: CampaignTree,
+  context: SectionRenderContext
+): CampaignSectionTree | null {
+  const child = slot.children[0]
+  if (child == null || !isCampaignSection(child)) return null
+  return shouldRenderSection(child, context) ? child : null
 }
 
 function hasExtras(section: CampaignSectionTree): boolean {
@@ -33,8 +52,10 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * text if any, else is skipped — an expanded Video with no published
  * children is still its own card; a Journey List with no
  * live-published journeys renders its text if any, else is skipped;
- * Analytics always renders; Region Header and Region Share render
- * on a Region Page (Share needs text until a language is linked); an Image
+ * Analytics always renders; Region Header and Region Share render on a
+ * Region Page (Share needs text until a language is linked); Rich Text needs
+ * a title or a non-empty paragraph; Columns needs a Column Slot whose section
+ * itself renders, or an Extra, so two empty slots skip the band; an Image
  * section renders with a picture or an Extra, else is skipped.
  */
 export function shouldRenderSection(
@@ -88,6 +109,17 @@ export function shouldRenderSection(
       return (
         context.pageKind === CampaignPageKind.regionTemplate &&
         (hasText(section.title) || hasText(section.intro) || extras)
+      )
+    case 'CampaignRichTextBlock':
+      return (
+        hasText(section.title) ||
+        splitParagraphs(section.richTextContent).length > 0 ||
+        extras
+      )
+    case 'CampaignColumnsBlock':
+      return (
+        extras ||
+        section.children.some((slot) => slotSection(slot, context) != null)
       )
     case 'CampaignImageBlock':
       return hasText(section.src) || extras

@@ -20,7 +20,7 @@ builder.mutationField('campaignBlockDuplicate', (t) =>
     type: [CampaignBlock],
     nullable: false,
     description:
-      'Deep-copy a campaign block with its children, owned blocks and actions under new ids (`idMap` fixes any of them; the rest are fresh), remapping slot columns and action targets that point inside the copy, and insert the copy directly after the original. Returns the renumbered siblings with the copy among them, followed by the copied descendants.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live block.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block.',
+      'Deep-copy a campaign block with its children, owned blocks and actions under new ids (`idMap` fixes any of them; the rest are fresh), remapping slot columns and action targets that point inside the copy, and insert the copy directly after the original. Returns the renumbered siblings with the copy among them, followed by the copied descendants.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live block.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT (field: `id`): the header, the footer, a column slot, the section inside a column slot, a page, or an owned block.',
     args: {
       id: t.arg({ type: 'ID', required: true }),
       idMap: t.arg({

@@ -15,6 +15,7 @@ export const CAMPAIGN_JOURNEY_BLOCK_CREATE = gql`
     $id: ID
     $parentBlockId: ID!
     $url: String!
+    $languageId: ID
   ) {
     campaignJourneyBlockCreate(
       id: $id

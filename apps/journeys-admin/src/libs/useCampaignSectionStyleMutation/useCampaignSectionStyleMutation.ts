@@ -150,6 +150,30 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_STYLE = gql`
   }
 `
 
+export const CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_STYLE = gql`
+  ${CAMPAIGN_SECTION_STYLE_FIELDS}
+  mutation CampaignRichTextBlockUpdateStyle(
+    $id: ID!
+    $input: CampaignRichTextBlockUpdateInput!
+  ) {
+    campaignRichTextBlockUpdate(id: $id, input: $input) {
+      ...CampaignSectionStyleFields
+    }
+  }
+`
+
+export const CAMPAIGN_COLUMNS_BLOCK_UPDATE_STYLE = gql`
+  ${CAMPAIGN_SECTION_STYLE_FIELDS}
+  mutation CampaignColumnsBlockUpdateStyle(
+    $id: ID!
+    $input: CampaignColumnsBlockUpdateInput!
+  ) {
+    campaignColumnsBlockUpdate(id: $id, input: $input) {
+      ...CampaignSectionStyleFields
+    }
+  }
+`
+
 export const CAMPAIGN_IMAGE_BLOCK_UPDATE_STYLE = gql`
   ${CAMPAIGN_SECTION_STYLE_FIELDS}
   mutation CampaignImageBlockUpdateStyle(
@@ -234,6 +258,14 @@ export const SECTION_STYLE_OPERATIONS: Record<
   CampaignRegionShareBlock: {
     document: CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_STYLE,
     operation: 'campaignRegionShareBlockUpdate'
+  },
+  CampaignRichTextBlock: {
+    document: CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_STYLE,
+    operation: 'campaignRichTextBlockUpdate'
+  },
+  CampaignColumnsBlock: {
+    document: CAMPAIGN_COLUMNS_BLOCK_UPDATE_STYLE,
+    operation: 'campaignColumnsBlockUpdate'
   },
   CampaignImageBlock: {
     document: CAMPAIGN_IMAGE_BLOCK_UPDATE_STYLE,

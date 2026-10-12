@@ -35,6 +35,7 @@ export type CampaignSectionTypename = Exclude<
   CampaignBlock['__typename'],
   | 'CampaignTypographyBlock'
   | 'CampaignButtonBlock'
+  | 'CampaignColumnBlock'
   | 'CampaignJourneyBlock'
   | 'CampaignVideoBlock'
 >
@@ -47,6 +48,7 @@ export function isCampaignSection(
   return (
     block.__typename !== 'CampaignTypographyBlock' &&
     block.__typename !== 'CampaignButtonBlock' &&
+    block.__typename !== 'CampaignColumnBlock' &&
     block.__typename !== 'CampaignJourneyBlock' &&
     block.__typename !== 'CampaignVideoBlock'
   )

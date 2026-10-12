@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./globalTypes";
+import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignPublicFields
@@ -139,6 +139,25 @@ export interface CampaignPublicFields_regions_languages {
    */
   embedUrl: string | null;
   language: CampaignPublicFields_regions_languages_language;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignHeaderBlock {
@@ -604,6 +623,89 @@ export interface CampaignPublicFields_regions_lines_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignImageBlock {
   __typename: "CampaignImageBlock";
   id: string;
@@ -974,7 +1076,7 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock {
   action: CampaignPublicFields_regions_lines_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignImageBlock | CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock | CampaignPublicFields_regions_lines_CampaignJourneyBlock | CampaignPublicFields_regions_lines_CampaignVideoBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
+export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignColumnBlock | CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignRichTextBlock | CampaignPublicFields_regions_lines_CampaignColumnsBlock | CampaignPublicFields_regions_lines_CampaignImageBlock | CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock | CampaignPublicFields_regions_lines_CampaignJourneyBlock | CampaignPublicFields_regions_lines_CampaignVideoBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
 
 export interface CampaignPublicFields_regions {
   __typename: "CampaignRegionPublic";
@@ -1073,6 +1175,25 @@ export interface CampaignPublicFields_footer {
   buttonColor: string | null;
   buttonTextColor: string | null;
   accentColor: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
 }
 
 export interface CampaignPublicFields_chrome_CampaignHeaderBlock {
@@ -1538,6 +1659,89 @@ export interface CampaignPublicFields_chrome_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_chrome_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
 export interface CampaignPublicFields_chrome_CampaignImageBlock {
   __typename: "CampaignImageBlock";
   id: string;
@@ -1908,7 +2112,26 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock {
   action: CampaignPublicFields_chrome_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignImageBlock | CampaignPublicFields_chrome_CampaignFeaturedMediaBlock | CampaignPublicFields_chrome_CampaignJourneyBlock | CampaignPublicFields_chrome_CampaignVideoBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
+export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignColumnBlock | CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignRichTextBlock | CampaignPublicFields_chrome_CampaignColumnsBlock | CampaignPublicFields_chrome_CampaignImageBlock | CampaignPublicFields_chrome_CampaignFeaturedMediaBlock | CampaignPublicFields_chrome_CampaignJourneyBlock | CampaignPublicFields_chrome_CampaignVideoBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
+
+export interface CampaignPublicFields_pages_blocks_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+}
 
 export interface CampaignPublicFields_pages_blocks_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
@@ -2373,6 +2596,89 @@ export interface CampaignPublicFields_pages_blocks_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignImageBlock {
   __typename: "CampaignImageBlock";
   id: string;
@@ -2743,7 +3049,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock {
   action: CampaignPublicFields_pages_blocks_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignImageBlock | CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock | CampaignPublicFields_pages_blocks_CampaignJourneyBlock | CampaignPublicFields_pages_blocks_CampaignVideoBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
+export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignColumnBlock | CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignRichTextBlock | CampaignPublicFields_pages_blocks_CampaignColumnsBlock | CampaignPublicFields_pages_blocks_CampaignImageBlock | CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock | CampaignPublicFields_pages_blocks_CampaignJourneyBlock | CampaignPublicFields_pages_blocks_CampaignVideoBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
 
 export interface CampaignPublicFields_pages {
   __typename: "CampaignPagePublic";

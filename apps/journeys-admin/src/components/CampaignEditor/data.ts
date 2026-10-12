@@ -3,10 +3,12 @@ import {
   LANDING_PAGE_ID,
   REGION_PAGE_ID,
   chromeBlocks,
+  columnSlot,
   eurRegion as eurRegionPublic,
   landingBlocks,
   lightTheme,
-  regionPageBlocks
+  regionPageBlocks,
+  section
 } from '@core/journeys/ui/Campaign/testData'
 
 import {
@@ -17,6 +19,7 @@ import {
   GetCampaign_campaign_strings as CampaignString
 } from '../../../__generated__/GetCampaign'
 import {
+  CampaignColumnsRatio,
   CampaignPageKind,
   CampaignStatus,
   CampaignStringKey,
@@ -300,4 +303,39 @@ export const memberCampaign: Campaign = {
       }
     ]
   }
+}
+
+/**
+ * The seeded campaign plus a Columns section last on the landing page: the left
+ * slot holds a Rich text section, the right slot is empty.
+ */
+export const campaignWithColumns: Campaign = {
+  ...campaign,
+  blocks: [
+    ...campaign.blocks,
+    section('CampaignColumnsBlock', {
+      id: 'columnsId',
+      pageId: LANDING_PAGE_ID,
+      parentOrder: 5,
+      ratio: CampaignColumnsRatio.equal
+    }),
+    columnSlot({
+      id: 'slotLeftId',
+      parentBlockId: 'columnsId',
+      parentOrder: 0
+    }),
+    columnSlot({
+      id: 'slotRightId',
+      parentBlockId: 'columnsId',
+      parentOrder: 1
+    }),
+    section('CampaignRichTextBlock', {
+      id: 'slotRichTextId',
+      pageId: LANDING_PAGE_ID,
+      parentBlockId: 'slotLeftId',
+      parentOrder: 0,
+      title: 'Our story',
+      richTextContent: 'First.\n\nSecond.'
+    })
+  ]
 }

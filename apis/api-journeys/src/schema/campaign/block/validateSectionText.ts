@@ -5,6 +5,7 @@ export type SectionTextField =
   | 'title'
   | 'lede'
   | 'intro'
+  | 'content'
   | 'bullets'
 
 export const SECTION_TEXT_CAPS: Record<SectionTextField, number> = {
@@ -12,14 +13,15 @@ export const SECTION_TEXT_CAPS: Record<SectionTextField, number> = {
   title: TEXT_CAPS.title,
   lede: TEXT_CAPS.lede,
   intro: TEXT_CAPS.intro,
+  content: TEXT_CAPS.richTextContent,
   bullets: TEXT_CAPS.bullets
 }
 
 /**
  * The typed body text of a section: each given field trimmed and capped
- * (eyebrow 80, title 150, lede and intro 500, bullets 1000); empty is
- * allowed everywhere; omitted fields are left untouched. `BAD_USER_INPUT`
- * names the field.
+ * (eyebrow 80, title 150, lede and intro 500, rich text content 5000, bullets
+ * 1000); empty is allowed everywhere;
+ * omitted fields are left untouched. `BAD_USER_INPUT` names the field.
  */
 export function validateSectionText<F extends SectionTextField>(
   input: Partial<Record<F, string | null | undefined>>,

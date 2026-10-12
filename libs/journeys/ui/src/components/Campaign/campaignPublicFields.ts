@@ -2,13 +2,14 @@ import { gql } from '@apollo/client'
 
 /**
  * Every Campaign Block field the public page reads, as one flat-list item.
- * The three per-type `variant` fields are aliased because they return
- * different enums and GraphQL forbids one response name with two shapes.
- * A Campaign Video's and an expanded carousel's Watch titles (the carousel's
- * `video { children }` is the gateway's join) read the enclosing query's `$languageId`
- * (the Page Language), as do their `variant`s: the children are not resolved
- * through `resolveReference`, so without it the gateway falls back to English.
- * Every operation spreading this fragment declares it.
+ * The three per-type `variant` fields and the rich text `content` are
+ * aliased because they return different types and GraphQL forbids one
+ * response name with two shapes. A Campaign Video's and an expanded
+ * carousel's Watch titles (the carousel's `video { children }` is the
+ * gateway's join) read the enclosing query's `$languageId` (the Page
+ * Language), as do their `variant`s: the children are not resolved through
+ * `resolveReference`, so without it the gateway falls back to English. Every
+ * operation spreading this fragment declares it.
  */
 export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
   fragment CampaignPublicBlockFields on CampaignBlock {
@@ -116,6 +117,13 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignRegionShareBlock {
       title
       intro
+    }
+    ... on CampaignRichTextBlock {
+      title
+      richTextContent: content
+    }
+    ... on CampaignColumnsBlock {
+      ratio
     }
     ... on CampaignHeaderBlock {
       logoBlockId
