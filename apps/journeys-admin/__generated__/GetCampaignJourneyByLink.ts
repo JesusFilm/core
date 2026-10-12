@@ -16,6 +16,7 @@ export interface GetCampaignJourneyByLink_journey {
    * private title for creators
    */
   title: string;
+  description: string | null;
   slug: string;
   status: JourneyStatus;
 }

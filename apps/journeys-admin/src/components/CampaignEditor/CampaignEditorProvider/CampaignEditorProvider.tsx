@@ -124,6 +124,8 @@ export type CampaignSelectionKind =
   | 'chrome'
   | 'text'
   | 'button'
+  | 'card'
+  | 'journey'
   | 'region'
 
 export interface CampaignSelection {
@@ -145,12 +147,33 @@ function isChrome(block: CampaignBlock): boolean {
   )
 }
 
+/** A Video Carousel's explicit item: a CampaignVideoBlock ordered among its children. */
+export function isCarouselItem(
+  blocks: CampaignBlock[],
+  block: CampaignBlock
+): boolean {
+  if (block.__typename !== 'CampaignVideoBlock' || block.parentOrder == null)
+    return false
+  return blocks.some(
+    (candidate) =>
+      candidate.id === block.parentBlockId &&
+      candidate.__typename === 'CampaignVideoCarouselBlock'
+  )
+}
+
 /** The campaign's regions in switcher order. */
 export function sortedRegions(regions: CampaignRegion[]): CampaignRegion[] {
   return [...regions].sort((a, b) => a.order - b.order)
 }
 
 /** A region's Region Lines in line order. */
+/** A region needs a journey while any of its Share Languages is unlinked: its switcher card and page-selector entry carry the badge. */
+export function regionNeedsJourney(
+  region: Pick<CampaignRegion, 'languages'>
+): boolean {
+  return region.languages.some((language) => language.journeyId == null)
+}
+
 export function regionLines(
   blocks: CampaignBlock[],
   regionId: string
@@ -190,6 +213,12 @@ export function resolveSelection(
   if (selectedBlockId == null) return CAMPAIGN_SELECTION
   const block = blocks.find((candidate) => candidate.id === selectedBlockId)
   if (block == null) return CAMPAIGN_SELECTION
+  if (isCarouselItem(blocks, block)) {
+    const host = blocks.find(
+      (candidate) => candidate.id === block.parentBlockId
+    )
+    return { kind: 'card', block, host }
+  }
   if (
     block.__typename === 'CampaignTypographyBlock' ||
     block.__typename === 'CampaignButtonBlock'
@@ -209,6 +238,12 @@ export function resolveSelection(
       host
     }
   }
+  if (block.__typename === 'CampaignJourneyBlock')
+    return {
+      kind: 'journey',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
   return { kind: isChrome(block) ? 'chrome' : 'section', block, host: block }
 }
 
@@ -223,7 +258,7 @@ export interface CampaignEditorContextValue {
   selectBlock: (blockId?: string) => void
   /** Select a region card, naming the switcher it sits in when known. */
   selectRegion: (regionId: string, hostBlockId?: string) => void
-  /** Escape: an Extra steps up to its section, a line to its region, a region to its switcher, a section or chrome block to the campaign row. */
+  /** Escape: an Extra or a card steps up to its section, a line to its region, a region to its switcher, a section or chrome block to the campaign row. */
   escape: () => void
   /** The page a block sits on; undefined for chrome and Region Lines, which every page shows. */
   pageKindOf: (
@@ -311,7 +346,12 @@ export function CampaignEditorProvider({
       selectRegion(selection.region.id)
       return
     }
-    if (selection.kind === 'text' || selection.kind === 'button') {
+    if (
+      selection.kind === 'text' ||
+      selection.kind === 'button' ||
+      selection.kind === 'card' ||
+      selection.kind === 'journey'
+    ) {
       selectBlock(selection.host?.id)
       return
     }

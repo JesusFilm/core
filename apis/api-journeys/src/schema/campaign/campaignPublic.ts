@@ -41,6 +41,7 @@ export interface CampaignRegionLanguagePublicPayload {
   languageId: string
   order: number
   journeyStatus: PrismaJourneyStatus | null
+  title: string | null
   shortLinkUrl: string | null
   journeyUrl: string | null
   embedUrl: string | null
@@ -107,6 +108,11 @@ builder.objectType(CampaignRegionLanguagePublicRef, {
       description:
         'The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.',
       resolve: (regionLanguage) => regionLanguage.journeyStatus
+    }),
+    title: t.exposeString('title', {
+      nullable: true,
+      description:
+        'Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.'
     }),
     shortLinkUrl: t.exposeString('shortLinkUrl', {
       nullable: true,

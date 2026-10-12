@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./globalTypes";
+import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetCampaignPublic
@@ -122,6 +122,10 @@ export interface GetCampaignPublic_campaignPublic_regions_languages {
    * The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.
    */
   journeyStatus: JourneyStatus | null;
+  /**
+   * Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.
+   */
+  title: string | null;
   /**
    * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
    */
@@ -302,6 +306,95 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionSw
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_title[];
+  images: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_images[];
+  variant: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_title[];
+  images: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_images[];
+  variant: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_variant | null;
+  children: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -343,7 +436,14 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCar
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyListBlock {
@@ -557,6 +657,212 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignImageBlo
   height: number | null;
 }
 
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyBlock_journeyImage | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo = GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video | GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_MuxVideo | GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -668,7 +974,7 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBl
   action: GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock_action | null;
 }
 
-export type GetCampaignPublic_campaignPublic_regions_lines = GetCampaignPublic_campaignPublic_regions_lines_CampaignHeaderBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignFooterBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignHeroBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionSwitcherBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyListBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignAnalyticsBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionHeaderBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionShareBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignImageBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignTypographyBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock;
+export type GetCampaignPublic_campaignPublic_regions_lines = GetCampaignPublic_campaignPublic_regions_lines_CampaignHeaderBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignFooterBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignHeroBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionSwitcherBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCarouselBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyListBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignAnalyticsBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionHeaderBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignRegionShareBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignImageBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignFeaturedMediaBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignTypographyBlock | GetCampaignPublic_campaignPublic_regions_lines_CampaignButtonBlock;
 
 export interface GetCampaignPublic_campaignPublic_regions {
   __typename: "CampaignRegionPublic";
@@ -934,6 +1240,95 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignRegionSwitcherB
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_title[];
+  images: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_images[];
+  variant: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_title[];
+  images: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_images[];
+  variant: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_variant | null;
+  children: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -975,7 +1370,14 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBl
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignJourneyListBlock {
@@ -1189,6 +1591,212 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignImageBlock {
   height: number | null;
 }
 
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: GetCampaignPublic_campaignPublic_chrome_CampaignJourneyBlock_journeyImage | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo = GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video | GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_MuxVideo | GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -1300,7 +1908,7 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock {
   action: GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock_action | null;
 }
 
-export type GetCampaignPublic_campaignPublic_chrome = GetCampaignPublic_campaignPublic_chrome_CampaignHeaderBlock | GetCampaignPublic_campaignPublic_chrome_CampaignFooterBlock | GetCampaignPublic_campaignPublic_chrome_CampaignHeroBlock | GetCampaignPublic_campaignPublic_chrome_CampaignRegionSwitcherBlock | GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock | GetCampaignPublic_campaignPublic_chrome_CampaignJourneyListBlock | GetCampaignPublic_campaignPublic_chrome_CampaignAnalyticsBlock | GetCampaignPublic_campaignPublic_chrome_CampaignRegionHeaderBlock | GetCampaignPublic_campaignPublic_chrome_CampaignRegionShareBlock | GetCampaignPublic_campaignPublic_chrome_CampaignImageBlock | GetCampaignPublic_campaignPublic_chrome_CampaignTypographyBlock | GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock;
+export type GetCampaignPublic_campaignPublic_chrome = GetCampaignPublic_campaignPublic_chrome_CampaignHeaderBlock | GetCampaignPublic_campaignPublic_chrome_CampaignFooterBlock | GetCampaignPublic_campaignPublic_chrome_CampaignHeroBlock | GetCampaignPublic_campaignPublic_chrome_CampaignRegionSwitcherBlock | GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBlock | GetCampaignPublic_campaignPublic_chrome_CampaignJourneyListBlock | GetCampaignPublic_campaignPublic_chrome_CampaignAnalyticsBlock | GetCampaignPublic_campaignPublic_chrome_CampaignRegionHeaderBlock | GetCampaignPublic_campaignPublic_chrome_CampaignRegionShareBlock | GetCampaignPublic_campaignPublic_chrome_CampaignImageBlock | GetCampaignPublic_campaignPublic_chrome_CampaignFeaturedMediaBlock | GetCampaignPublic_campaignPublic_chrome_CampaignJourneyBlock | GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock | GetCampaignPublic_campaignPublic_chrome_CampaignTypographyBlock | GetCampaignPublic_campaignPublic_chrome_CampaignButtonBlock;
 
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
@@ -1467,6 +2075,95 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionSwi
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_title[];
+  images: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_images[];
+  variant: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_title[];
+  images: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_images[];
+  variant: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_variant | null;
+  children: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -1508,7 +2205,14 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCaro
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyListBlock {
@@ -1722,6 +2426,212 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignImageBloc
   height: number | null;
 }
 
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyBlock_journeyImage | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo = GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video | GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_MuxVideo | GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -1833,7 +2743,7 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlo
   action: GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock_action | null;
 }
 
-export type GetCampaignPublic_campaignPublic_pages_blocks = GetCampaignPublic_campaignPublic_pages_blocks_CampaignHeaderBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignFooterBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignHeroBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionSwitcherBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyListBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignAnalyticsBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionHeaderBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionShareBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignImageBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignTypographyBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock;
+export type GetCampaignPublic_campaignPublic_pages_blocks = GetCampaignPublic_campaignPublic_pages_blocks_CampaignHeaderBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignFooterBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignHeroBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionSwitcherBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCarouselBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyListBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignAnalyticsBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionHeaderBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignRegionShareBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignImageBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignFeaturedMediaBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignTypographyBlock | GetCampaignPublic_campaignPublic_pages_blocks_CampaignButtonBlock;
 
 export interface GetCampaignPublic_campaignPublic_pages {
   __typename: "CampaignPagePublic";

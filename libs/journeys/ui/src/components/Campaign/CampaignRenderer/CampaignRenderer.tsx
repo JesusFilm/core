@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 
 import { CampaignAnalytics } from '../CampaignAnalytics'
 import { CampaignButton } from '../CampaignButton'
+import { CampaignFeaturedMedia } from '../CampaignFeaturedMedia'
 import { CampaignHero } from '../CampaignHero'
 import { CampaignImage } from '../CampaignImage'
 import { CampaignJourneyList } from '../CampaignJourneyList'
@@ -19,7 +20,9 @@ interface CampaignRendererProps {
 /**
  * One component per campaign typename behind a single switch. Header and
  * footer are Campaign Chrome, rendered by the page's chrome slots rather
- * than as sections, so they and any unknown typename render nothing.
+ * than as sections, and a Campaign Video only ever fills a Media Slot
+ * (rendered by its section), so they and any unknown typename render
+ * nothing.
  */
 export function CampaignRenderer({
   block
@@ -31,6 +34,8 @@ export function CampaignRenderer({
       return <CampaignRegionSwitcher block={block} />
     case 'CampaignVideoCarouselBlock':
       return <CampaignVideoCarousel block={block} />
+    case 'CampaignFeaturedMediaBlock':
+      return <CampaignFeaturedMedia block={block} />
     case 'CampaignJourneyListBlock':
       return <CampaignJourneyList block={block} />
     case 'CampaignAnalyticsBlock':

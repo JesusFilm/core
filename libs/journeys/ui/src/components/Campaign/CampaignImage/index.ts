@@ -1,1 +1,1 @@
-export { CampaignImage } from './CampaignImage'
+export { CampaignImage, CampaignPicture } from './CampaignImage'

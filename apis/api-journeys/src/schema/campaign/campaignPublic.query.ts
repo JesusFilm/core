@@ -6,6 +6,11 @@ import { builder } from '../builder'
 import { logger } from '../logger'
 
 import {
+  CampaignJourneyLive,
+  isJourneyVisible,
+  loadCampaignJourneyLives
+} from './block/campaignJourneyBlock'
+import {
   CampaignPublicBlock,
   CampaignPublicPayload,
   CampaignPublicRef,
@@ -101,6 +106,25 @@ export async function resolveShortLinkUrls(
   return urls
 }
 
+/** The live journey read of every journey-list item, by journey id. */
+export type JourneyLives = ReadonlyMap<string, CampaignJourneyLive>
+
+/**
+ * Read the live status, address and image of every journey a journey-list
+ * item links, in one query; cards whose journey is not visible are left out of
+ * the public payload by this at request time.
+ */
+export async function resolveJourneyLives(
+  campaign: CampaignPublicRow
+): Promise<JourneyLives> {
+  const journeyIds = campaign.blocks.flatMap((block) =>
+    block.typename === 'CampaignJourneyBlock' && block.journeyId != null
+      ? [block.journeyId]
+      : []
+  )
+  return await loadCampaignJourneyLives(journeyIds)
+}
+
 /** Every translatable text column of CampaignBlock and its translations sibling, from the `CampaignTextField` map. */
 const BLOCK_TEXT_FIELDS = CAMPAIGN_BLOCK_TEXT_COLUMNS
 
@@ -138,6 +162,7 @@ function toRegionLanguage(
     languageId: regionLanguage.languageId,
     order: regionLanguage.order,
     journeyStatus: live,
+    title: published ? regionLanguage.title : null,
     shortLinkUrl:
       published && shortLinkId != null
         ? (shortLinkUrls.get(shortLinkId) ?? null)
@@ -155,7 +180,8 @@ function toRegionLanguage(
 export function toCampaignPublic(
   campaign: CampaignPublicRow,
   requestedLanguageId: string | null | undefined,
-  shortLinkUrls: ShortLinkUrls = new Map()
+  shortLinkUrls: ShortLinkUrls = new Map(),
+  journeyLives: JourneyLives = new Map()
 ): CampaignPublicPayload {
   const languageId =
     requestedLanguageId != null &&
@@ -165,9 +191,23 @@ export function toCampaignPublic(
       ? requestedLanguageId
       : campaign.defaultLanguageId
 
-  const blocks = campaign.blocks.map((block) =>
-    resolveBlockText(block, languageId)
+  const visibleBlocks = campaign.blocks.filter(
+    (block) =>
+      block.typename !== 'CampaignJourneyBlock' ||
+      (block.journeyId != null &&
+        isJourneyVisible(journeyLives.get(block.journeyId)?.status ?? null))
   )
+  const blocks = visibleBlocks.map((block) => {
+    const resolved = resolveBlockText(block, languageId)
+    if (block.typename !== 'CampaignJourneyBlock') return resolved
+    return {
+      ...resolved,
+      journeyLive:
+        block.journeyId == null
+          ? null
+          : (journeyLives.get(block.journeyId) ?? null)
+    }
+  })
   const chrome = blocks.filter(
     (block) => block.pageId == null && block.regionId == null
   )
@@ -270,10 +310,15 @@ builder.queryField('campaignPublic', (t) =>
           include: INCLUDE_CAMPAIGN_PUBLIC
         })
         if (campaign == null) throw notFound()
+        const [shortLinkUrls, journeyLives] = await Promise.all([
+          resolveShortLinkUrls(campaign),
+          resolveJourneyLives(campaign)
+        ])
         return toCampaignPublic(
           campaign,
           args.languageId == null ? null : String(args.languageId),
-          await resolveShortLinkUrls(campaign)
+          shortLinkUrls,
+          journeyLives
         )
       }
 

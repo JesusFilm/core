@@ -4,6 +4,11 @@ import { gql } from '@apollo/client'
  * Every Campaign Block field the public page reads, as one flat-list item.
  * The three per-type `variant` fields are aliased because they return
  * different enums and GraphQL forbids one response name with two shapes.
+ * A Campaign Video's and an expanded carousel's Watch titles (the carousel's
+ * `video { children }` is the gateway's join) read the enclosing query's `$languageId`
+ * (the Page Language), as do their `variant`s: the children are not resolved
+ * through `resolveReference`, so without it the gateway falls back to English.
+ * Every operation spreading this fragment declares it.
  */
 export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
   fragment CampaignPublicBlockFields on CampaignBlock {
@@ -41,12 +46,64 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       title
       videoId
       videoVariantLanguageId
+      video {
+        id
+        label
+        slug
+        childrenCount
+        title(languageId: $languageId, primary: true) {
+          value
+          primary
+          language {
+            id
+          }
+        }
+        images(aspectRatio: banner) {
+          mobileCinematicHigh
+        }
+        variant(languageId: $languageId) {
+          id
+          duration
+          slug
+        }
+        children {
+          id
+          label
+          slug
+          childrenCount
+          title(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          images(aspectRatio: banner) {
+            mobileCinematicHigh
+          }
+          variant(languageId: $languageId) {
+            id
+            duration
+            slug
+          }
+        }
+      }
     }
     ... on CampaignJourneyListBlock {
       eyebrow
       title
       lede
       display
+    }
+    ... on CampaignJourneyBlock {
+      title
+      description
+      journeyStatus
+      journeyUrl
+      journeyImage {
+        src
+        alt
+      }
     }
     ... on CampaignAnalyticsBlock {
       eyebrow
@@ -62,6 +119,55 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     }
     ... on CampaignHeaderBlock {
       logoBlockId
+    }
+    ... on CampaignFeaturedMediaBlock {
+      eyebrow
+      title
+      lede
+      bullets
+      mediaSide
+      mediaBlockId
+    }
+    ... on CampaignVideoBlock {
+      source
+      videoId
+      videoVariantLanguageId
+      title
+      description
+      image
+      duration
+      mediaVideo {
+        __typename
+        ... on Video {
+          id
+          label
+          slug
+          childrenCount
+          title(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          images(aspectRatio: banner) {
+            mobileCinematicHigh
+          }
+          variant {
+            id
+            hls
+            duration
+            slug
+          }
+        }
+        ... on MuxVideo {
+          id
+          playbackId
+        }
+        ... on YouTube {
+          id
+        }
+      }
     }
     ... on CampaignImageBlock {
       src
@@ -180,6 +286,7 @@ export const CAMPAIGN_PUBLIC_FIELDS = gql`
         languageId
         order
         journeyStatus
+        title
         shortLinkUrl
         journeyUrl
         embedUrl

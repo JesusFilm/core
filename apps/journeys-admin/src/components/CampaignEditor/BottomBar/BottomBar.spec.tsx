@@ -8,6 +8,9 @@ import {
 import userEvent from '@testing-library/user-event'
 import { v4 as uuidv4 } from 'uuid'
 
+import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
+
+import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
@@ -21,7 +24,7 @@ import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaign, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
-import { SelectionProbe, StaticEditor } from '../testing'
+import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
 
 import { BottomBar } from './BottomBar'
@@ -69,6 +72,43 @@ const deleteMock = {
     variables: { id: 'journeyListNoteId' }
   },
   result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+}
+
+const cardDeleteMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_DELETE,
+    variables: { id: 'landingJourneyId' }
+  },
+  result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+}
+
+const cardMoveLeftMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+    variables: { id: 'landingDraftJourneyId', parentOrder: 1 }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockOrderUpdate: [
+        {
+          __typename: 'CampaignTypographyBlock',
+          id: 'journeyListNoteId',
+          parentOrder: 0,
+          placement: 'above'
+        },
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'landingDraftJourneyId',
+          parentOrder: 1
+        },
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'landingJourneyId',
+          parentOrder: 2
+        }
+      ]
+    }
+  }))
 }
 
 const heroBelowMock = {
@@ -209,6 +249,8 @@ function renderBar(
       mocks={[
         createMock,
         deleteMock,
+        cardDeleteMock,
+        cardMoveLeftMock,
         heroBelowMock,
         regionShareAppendMock,
         moveUpMock,
@@ -376,6 +418,19 @@ describe('BottomBar', () => {
     expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled()
   })
 
+  it('opens the media editor in a drawer from a hero’s Edit', async () => {
+    renderBar({ selectedBlockId: 'heroId' })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(
+      await screen.findByTestId('CampaignMediaSectionEdit')
+    ).toHaveAttribute('data-block-id', 'heroId')
+    expect(
+      screen.getByRole('textbox', { name: 'Watch or YouTube link' })
+    ).toBeInTheDocument()
+  })
+
   it('disables Move down for the last section on the page', () => {
     renderBar({ selectedBlockId: 'landingAnalyticsId' })
 
@@ -502,7 +557,8 @@ describe('BottomBar', () => {
         'Video carousel',
         'Journey list',
         'Analytics',
-        'Image'
+        'Image',
+        'Featured media'
       ])
     )
 
@@ -513,7 +569,7 @@ describe('BottomBar', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('appends a section to the Region Page from the campaign row, offering all eight types', async () => {
+  it('appends a section to the Region Page from the campaign row, offering all nine types', async () => {
     renderBar({ pageKind: CampaignPageKind.regionTemplate })
 
     fireEvent.click(screen.getByRole('button', { name: 'Add section' }))
@@ -525,7 +581,8 @@ describe('BottomBar', () => {
       'Analytics',
       'Region header',
       'Region share',
-      'Image'
+      'Image',
+      'Featured media'
     ])
 
     fireEvent.click(screen.getByRole('menuitem', { name: 'Region share' }))
@@ -590,6 +647,71 @@ describe('BottomBar', () => {
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
   })
 
+  describe('journey card', () => {
+    it('shows Edit, the arrows, Refresh from journey and the bin, under the list in the breadcrumb', () => {
+      renderBar({ selectedBlockId: 'landingJourneyId' })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('journey')
+      expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+        'Campaign›Journey list›Journey'
+      )
+      expect(buttonNames()).toEqual([
+        'Campaign',
+        'Journey list',
+        'Edit',
+        'Move left',
+        'Move right',
+        'Refresh from journey',
+        'Delete'
+      ])
+    })
+
+    it('disables Move left on the first card and Move right on the last, counting only cards', () => {
+      const { unmount } = renderBar({ selectedBlockId: 'landingJourneyId' })
+      expect(screen.getByRole('button', { name: 'Move left' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Move right' })).toBeEnabled()
+      unmount()
+
+      renderBar({ selectedBlockId: 'landingDraftJourneyId' })
+      expect(screen.getByRole('button', { name: 'Move left' })).toBeEnabled()
+      expect(screen.getByRole('button', { name: 'Move right' })).toBeDisabled()
+    })
+
+    it('moves a card past its neighbour card as one order update', async () => {
+      renderBar({ selectedBlockId: 'landingDraftJourneyId' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Move left' }))
+
+      await waitFor(() => expect(cardMoveLeftMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingDraftJourneyId'
+      )
+    })
+
+    it('bins a card without confirmation and selects its list', async () => {
+      renderBar({ selectedBlockId: 'landingJourneyId' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      await waitFor(() => expect(cardDeleteMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyListId'
+      )
+    })
+
+    it('goes up to the list on Escape', () => {
+      renderBar({ selectedBlockId: 'landingJourneyId' })
+
+      fireEvent.keyDown(document, { key: 'Escape' })
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyListId'
+      )
+    })
+  })
+
   it('deletes an Extra from the bin without confirmation', async () => {
     renderBar({ selectedBlockId: 'journeyListNoteId' })
 
@@ -599,6 +721,189 @@ describe('BottomBar', () => {
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'landingJourneyListId'
+    )
+  })
+})
+
+describe('BottomBar for a Video Carousel and its cards', () => {
+  function carouselItem(
+    id: string,
+    parentOrder: number
+  ): GetCampaign_campaign_blocks {
+    return {
+      ...youTubeVideoBlock,
+      id,
+      videoId: `${id}YouTube`,
+      parentBlockId: 'carouselId',
+      parentOrder
+    }
+  }
+
+  const carouselCampaign = {
+    ...campaign,
+    blocks: [
+      ...campaign.blocks,
+      carouselItem('firstItemId', 0),
+      carouselItem('secondItemId', 1),
+      carouselItem('thirdItemId', 2)
+    ]
+  }
+
+  const moveRightMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+      variables: { id: 'firstItemId', parentOrder: 1 }
+    },
+    result: vi.fn(() => ({
+      data: {
+        campaignBlockOrderUpdate: [
+          {
+            __typename: 'CampaignVideoBlock',
+            id: 'secondItemId',
+            parentOrder: 0
+          },
+          {
+            __typename: 'CampaignVideoBlock',
+            id: 'firstItemId',
+            parentOrder: 1
+          },
+          {
+            __typename: 'CampaignVideoBlock',
+            id: 'thirdItemId',
+            parentOrder: 2
+          }
+        ]
+      }
+    }))
+  }
+
+  const moveLeftMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_ORDER_UPDATE,
+      variables: { id: 'thirdItemId', parentOrder: 1 }
+    },
+    result: vi.fn(() => ({ data: { campaignBlockOrderUpdate: [] } }))
+  }
+
+  const cardDeleteMock = {
+    request: {
+      query: CAMPAIGN_BLOCK_DELETE,
+      variables: { id: 'secondItemId' }
+    },
+    result: vi.fn(() => ({ data: { campaignBlockDelete: [] } }))
+  }
+
+  function renderCarouselBar(
+    selectedBlockId: string
+  ): ReturnType<typeof render> {
+    return render(
+      <StaticEditor
+        campaignProp={carouselCampaign}
+        initialState={{ selectedBlockId }}
+        mocks={[moveRightMock, moveLeftMock, cardDeleteMock]}
+      >
+        <Hotkeys />
+        <SelectionProbe />
+        <CommandProbe />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      </StaticEditor>
+    )
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('shows Edit, ← → arrows and bin for a selected card, under its carousel in the breadcrumb', () => {
+    renderCarouselBar('secondItemId')
+
+    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+      'data-selection',
+      'card'
+    )
+    expect(buttonNames()).toEqual([
+      'Campaign',
+      'Video carousel',
+      'Edit',
+      'Move left',
+      'Move right',
+      'Delete'
+    ])
+    expect(screen.getByRole('button', { name: 'Move left' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Move right' })).toBeEnabled()
+  })
+
+  it('disables ← on the first card and → on the last', () => {
+    const { unmount } = renderCarouselBar('firstItemId')
+    expect(screen.getByRole('button', { name: 'Move left' })).toBeDisabled()
+    unmount()
+
+    renderCarouselBar('thirdItemId')
+    expect(screen.getByRole('button', { name: 'Move right' })).toBeDisabled()
+  })
+
+  it('moves a card right past its neighbour as one order Command', async () => {
+    renderCarouselBar('firstItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move right' }))
+
+    await waitFor(() => expect(moveRightMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'firstItemId'
+    )
+  })
+
+  it('moves a card left to its neighbour’s position as one order Command', async () => {
+    renderCarouselBar('thirdItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move left' }))
+
+    await waitFor(() => expect(moveLeftMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('deletes a card from the bin as one Command, with no confirmation', async () => {
+    renderCarouselBar('secondItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    await waitFor(() => expect(cardDeleteMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'carouselId'
+    )
+  })
+
+  it('opens the card editor from a card’s Edit', async () => {
+    renderCarouselBar('secondItemId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(
+      await screen.findByTestId('CampaignCarouselCardEdit')
+    ).toHaveAttribute('data-block-id', 'secondItemId')
+  })
+
+  it('opens the carousel editor from the carousel’s Edit', async () => {
+    renderCarouselBar('carouselId')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    expect(await screen.findByTestId('CampaignCarouselEdit')).toHaveAttribute(
+      'data-block-id',
+      'carouselId'
+    )
+  })
+
+  it('steps up from a card to its carousel on Escape', async () => {
+    renderCarouselBar('secondItemId')
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'carouselId'
     )
   })
 })

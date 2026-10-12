@@ -2,6 +2,7 @@ import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generat
 import {
   CampaignBackgroundKind,
   CampaignJourneyListDisplay,
+  CampaignMediaSide,
   CampaignPageKind,
   CampaignSwitcherVariant
 } from '../../../__generated__/globalTypes'
@@ -87,6 +88,7 @@ export function newSectionBlock(
         title: null,
         videoId: null,
         videoVariantLanguageId: null,
+        video: null,
         eyebrowTranslations: [],
         titleTranslations: []
       }
@@ -136,6 +138,17 @@ export function newSectionBlock(
         alt: null,
         width: null,
         height: null
+      }
+    case 'CampaignFeaturedMediaBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        eyebrow: null,
+        title: null,
+        lede: null,
+        bullets: null,
+        mediaSide: CampaignMediaSide.right,
+        mediaBlockId: null
       }
   }
 }

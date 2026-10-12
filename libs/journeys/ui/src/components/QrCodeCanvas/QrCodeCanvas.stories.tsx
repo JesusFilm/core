@@ -4,20 +4,20 @@ import { ComponentProps } from 'react'
 
 import { simpleComponentConfig } from '@core/shared/ui/storybook'
 
-import { CodeCanvas } from './CodeCanvas'
+import { QrCodeCanvas } from './QrCodeCanvas'
 
-const meta: Meta<typeof CodeCanvas> = {
+const meta: Meta<typeof QrCodeCanvas> = {
   ...simpleComponentConfig,
-  component: CodeCanvas,
-  title: 'Journey-Admin/Editor/Toolbar/Items/ShareItem/QrCodeDialog/CodeCanvas'
+  component: QrCodeCanvas,
+  title: 'Journeys-Ui/QrCodeCanvas'
 }
 
-type Story = StoryObj<ComponentProps<typeof CodeCanvas>>
+type Story = StoryObj<ComponentProps<typeof QrCodeCanvas>>
 
 const Template: Story = {
   render: ({ ...args }) => (
-    <Box sx={{ height: 134, width: 134 }}>
-      <CodeCanvas {...args} />
+    <Box sx={{ height: 200, width: 200 }}>
+      <QrCodeCanvas {...args} />
     </Box>
   )
 }
@@ -25,21 +25,21 @@ const Template: Story = {
 export const Default = {
   ...Template,
   args: {
-    shortLink: 'url',
+    value: 'https://short.nextstep.is/eur-en',
     loading: false
   }
 }
 export const Loading = {
   ...Template,
   args: {
-    shortLink: 'url',
+    value: 'https://short.nextstep.is/eur-en',
     loading: true
   }
 }
 export const Empty = {
   ...Template,
   args: {
-    shortLink: undefined,
+    value: undefined,
     loading: false
   }
 }

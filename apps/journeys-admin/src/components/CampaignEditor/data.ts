@@ -174,6 +174,7 @@ export const eurEnglish: CampaignRegionLanguage = {
   journeyId: 'eurJourneyId',
   title: 'Christmas in Europe',
   description: 'A journey for Europe.',
+  snapshotEdited: false,
   qrCodeId: 'eurQrCodeId',
   order: 0,
   language: english,
@@ -181,7 +182,9 @@ export const eurEnglish: CampaignRegionLanguage = {
     __typename: 'Journey',
     id: 'eurJourneyId',
     slug: 'christmas-europe',
-    status: JourneyStatus.published
+    status: JourneyStatus.published,
+    title: 'Christmas in Europe',
+    description: 'A journey for Europe.'
   },
   qrCode: {
     __typename: 'QrCode',
@@ -204,6 +207,7 @@ export const eurFrench: CampaignRegionLanguage = {
   journeyId: null,
   title: null,
   description: null,
+  snapshotEdited: false,
   qrCodeId: null,
   order: 1,
   language: french,
@@ -255,6 +259,7 @@ export const afrRegion: CampaignRegion = {
       journeyId: null,
       title: null,
       description: null,
+      snapshotEdited: false,
       qrCodeId: null,
       journey: null,
       qrCode: null

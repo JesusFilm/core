@@ -26,6 +26,7 @@ describe('campaignHeroBlockUpdate', () => {
         title
         lede
         align
+        mediaBlockId
         backgroundKind
         backgroundColor
         coverBlockId
@@ -155,6 +156,62 @@ describe('campaignHeroBlockUpdate', () => {
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     }
   )
+
+  describe('mediaBlockId', () => {
+    it('swaps the Media Slot to a video the hero owns: the held block soft-deleted, the video restored, then the column written', async () => {
+      const hero = campaignBlockWithAcl(fixture, 'heroId', {
+        mediaBlockId: 'heroImageId'
+      })
+      prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(hero)
+        .mockResolvedValueOnce({
+          id: 'heroVideoId',
+          typename: 'CampaignVideoBlock'
+        } as never)
+
+      const result = await update({ mediaBlockId: 'heroVideoId' })
+
+      expect(result.data.campaignHeroBlockUpdate.mediaBlockId).toBe(
+        'heroVideoId'
+      )
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+        where: {
+          id: 'heroVideoId',
+          campaignId: 'campaignId',
+          parentBlockId: 'heroId'
+        },
+        select: { id: true, typename: true }
+      })
+      expect(
+        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+      ).toEqual([
+        { where: { id: 'heroImageId' }, data: { deletedAt: expect.any(Date) } },
+        { where: { id: 'heroVideoId' }, data: { deletedAt: null } },
+        {
+          where: { id: 'heroId' },
+          data: { mediaBlockId: 'heroVideoId' },
+          include: { action: true }
+        }
+      ])
+    })
+
+    it('rejects a block that is not a video or image the hero owns (BAD_USER_INPUT, mediaBlockId)', async () => {
+      prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'heroId'))
+        .mockResolvedValueOnce({
+          id: 'heroButtonId',
+          typename: 'CampaignButtonBlock'
+        } as never)
+
+      const result = await update({ mediaBlockId: 'heroButtonId' })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'mediaBlockId'
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+  })
 
   it('throws NOT_FOUND when the id is not a live hero block', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(

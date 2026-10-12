@@ -9,7 +9,7 @@ import { campaignBlockInsertUpdate } from '../campaignBlockCache'
 import { CAMPAIGN_IMAGE_BLOCK_CREATE } from '../useCampaignImageBlockCreateMutation'
 import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
-/** The section typenames "+Add section" offers: the seeded seven and the Image section. */
+/** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -18,7 +18,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
-  'CampaignImageBlock'
+  'CampaignImageBlock',
+  'CampaignFeaturedMediaBlock'
 ] as const
 
 export type CampaignSectionTypename =
@@ -40,7 +41,10 @@ export interface CampaignSectionCreateInput {
 export const CAMPAIGN_HERO_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
-  mutation CampaignHeroBlockCreate($input: CampaignHeroBlockCreateInput!) {
+  mutation CampaignHeroBlockCreate(
+    $input: CampaignHeroBlockCreateInput!
+    $languageId: ID
+  ) {
     campaignHeroBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
       ...CampaignBlockTranslationFields
@@ -53,6 +57,7 @@ export const CAMPAIGN_REGION_SWITCHER_BLOCK_CREATE = gql`
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignRegionSwitcherBlockCreate(
     $input: CampaignRegionSwitcherBlockCreateInput!
+    $languageId: ID
   ) {
     campaignRegionSwitcherBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
@@ -66,6 +71,7 @@ export const CAMPAIGN_VIDEO_CAROUSEL_BLOCK_CREATE = gql`
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignVideoCarouselBlockCreate(
     $input: CampaignVideoCarouselBlockCreateInput!
+    $languageId: ID
   ) {
     campaignVideoCarouselBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
@@ -79,6 +85,7 @@ export const CAMPAIGN_JOURNEY_LIST_BLOCK_CREATE = gql`
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignJourneyListBlockCreate(
     $input: CampaignJourneyListBlockCreateInput!
+    $languageId: ID
   ) {
     campaignJourneyListBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
@@ -92,6 +99,7 @@ export const CAMPAIGN_ANALYTICS_BLOCK_CREATE = gql`
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignAnalyticsBlockCreate(
     $input: CampaignAnalyticsBlockCreateInput!
+    $languageId: ID
   ) {
     campaignAnalyticsBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
@@ -105,6 +113,7 @@ export const CAMPAIGN_REGION_HEADER_BLOCK_CREATE = gql`
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignRegionHeaderBlockCreate(
     $input: CampaignRegionHeaderBlockCreateInput!
+    $languageId: ID
   ) {
     campaignRegionHeaderBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
@@ -118,10 +127,23 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_CREATE = gql`
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignRegionShareBlockCreate(
     $input: CampaignRegionShareBlockCreateInput!
+    $languageId: ID
   ) {
     campaignRegionShareBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
       ...CampaignBlockTranslationFields
+    }
+  }
+`
+
+export const CAMPAIGN_FEATURED_MEDIA_BLOCK_CREATE = gql`
+  ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  mutation CampaignFeaturedMediaBlockCreate(
+    $input: CampaignFeaturedMediaBlockCreateInput!
+    $languageId: ID
+  ) {
+    campaignFeaturedMediaBlockCreate(input: $input) {
+      ...CampaignPublicBlockFields
     }
   }
 `
@@ -167,6 +189,10 @@ export const SECTION_CREATE_OPERATIONS: Record<
   CampaignImageBlock: {
     document: CAMPAIGN_IMAGE_BLOCK_CREATE,
     operation: 'campaignImageBlockCreate'
+  },
+  CampaignFeaturedMediaBlock: {
+    document: CAMPAIGN_FEATURED_MEDIA_BLOCK_CREATE,
+    operation: 'campaignFeaturedMediaBlockCreate'
   }
 }
 
