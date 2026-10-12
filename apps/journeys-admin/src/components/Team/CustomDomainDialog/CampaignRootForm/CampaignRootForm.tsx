@@ -1,5 +1,5 @@
 import { ApolloCache, gql } from '@apollo/client'
-import { useMutation } from '@apollo/client/react'
+import { useMutation, useQuery } from '@apollo/client/react'
 import Autocomplete from '@mui/material/Autocomplete'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
@@ -16,6 +16,10 @@ import {
   CustomDomainCampaignUpdateVariables
 } from '../../../../../__generated__/CustomDomainCampaignUpdate'
 import { GetCampaigns_campaigns as Campaign } from '../../../../../__generated__/GetCampaigns'
+import {
+  GetCustomDomainCampaignRoot,
+  GetCustomDomainCampaignRootVariables
+} from '../../../../../__generated__/GetCustomDomainCampaignRoot'
 import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../__generated__/GetCustomDomains'
 import { useCampaignsQuery } from '../../../../libs/useCampaignsQuery'
 import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
@@ -23,6 +27,17 @@ import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 interface CampaignRootFormProps {
   customDomain: CustomDomain
 }
+
+// Kept out of GetCustomDomains: that query also feeds the journey editor, and
+// a field the API has not deployed yet would fail the whole editor.
+export const GET_CUSTOM_DOMAIN_CAMPAIGN_ROOT = gql`
+  query GetCustomDomainCampaignRoot($teamId: ID!) {
+    customDomains(teamId: $teamId) {
+      id
+      campaignId
+    }
+  }
+`
 
 export const CUSTOM_DOMAIN_CAMPAIGN_UPDATE = gql`
   mutation CustomDomainCampaignUpdate($id: ID!, $campaignId: ID) {
@@ -48,14 +63,23 @@ export function CampaignRootForm({
   const { data } = useCampaignsQuery(
     activeTeam?.id == null ? undefined : { teamId: activeTeam.id }
   )
+  const { data: campaignRootData } = useQuery<
+    GetCustomDomainCampaignRoot,
+    GetCustomDomainCampaignRootVariables
+  >(GET_CUSTOM_DOMAIN_CAMPAIGN_ROOT, {
+    variables: { teamId: activeTeam?.id ?? '' },
+    skip: activeTeam?.id == null
+  })
   const [customDomainUpdate] = useMutation<
     CustomDomainCampaignUpdate,
     CustomDomainCampaignUpdateVariables
   >(CUSTOM_DOMAIN_CAMPAIGN_UPDATE)
 
   const campaigns = data?.campaigns ?? []
-  const current =
-    campaigns.find(({ id }) => id === customDomain.campaignId) ?? null
+  const currentCampaignId =
+    campaignRootData?.customDomains.find(({ id }) => id === customDomain.id)
+      ?.campaignId ?? null
+  const current = campaigns.find(({ id }) => id === currentCampaignId) ?? null
 
   // Campaign.customDomains feeds the editor's address hint; drop the cached
   // field of both campaigns the change touches so open editors refetch it.
@@ -67,7 +91,7 @@ export function CampaignRootForm({
   }
 
   async function handleChange(campaign: Campaign | null): Promise<void> {
-    const previousCampaignId = customDomain.campaignId
+    const previousCampaignId = currentCampaignId
     try {
       await customDomainUpdate({
         variables: { id: customDomain.id, campaignId: campaign?.id ?? null },

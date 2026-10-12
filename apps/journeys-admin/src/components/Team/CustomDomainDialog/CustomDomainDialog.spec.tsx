@@ -17,13 +17,16 @@ import {
 
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { GetCampaigns } from '../../../../__generated__/GetCampaigns'
-import { GetCustomDomains } from '../../../../__generated__/GetCustomDomains'
+import { GetCustomDomainCampaignRoot } from '../../../../__generated__/GetCustomDomainCampaignRoot'
 import { CampaignStatus } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGNS } from '../../../libs/useCampaignsQuery/useCampaignsQuery'
 import { mockUseCurrentUserLazyQuery } from '../../../libs/useCurrentUserLazyQuery/useCurrentUserLazyQuery.mock'
 import { getCustomDomainMock } from '../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
 
-import { CUSTOM_DOMAIN_CAMPAIGN_UPDATE } from './CampaignRootForm'
+import {
+  CUSTOM_DOMAIN_CAMPAIGN_UPDATE,
+  GET_CUSTOM_DOMAIN_CAMPAIGN_ROOT
+} from './CampaignRootForm'
 import { CustomDomainDialog } from './CustomDomainDialog'
 import { CHECK_CUSTOM_DOMAIN } from './DNSConfigSection'
 
@@ -70,6 +73,24 @@ const campaignsMock: MockLink.MockedResponse<GetCampaigns> = {
           updatedAt: '2026-10-05T00:00:00.000Z'
         }
       ]
+    }
+  }
+}
+
+function getCampaignRootMock(
+  campaignId: string | null
+): MockLink.MockedResponse<GetCustomDomainCampaignRoot> {
+  return {
+    request: {
+      query: GET_CUSTOM_DOMAIN_CAMPAIGN_ROOT,
+      variables: { teamId: 'teamId' }
+    },
+    result: {
+      data: {
+        customDomains: [
+          { __typename: 'CustomDomain', id: 'customDomainId', campaignId }
+        ]
+      }
     }
   }
 }
@@ -184,6 +205,7 @@ describe('CustomDomainDialog', () => {
           mocks={[
             getLastActiveTeamIdAndTeamsMock,
             getCustomDomainMock,
+            getCampaignRootMock(null),
             campaignsMock,
             mockUseCurrentUserLazyQuery,
             checkCustomDomainMockConfiguredAndVerified,
@@ -227,29 +249,12 @@ describe('CustomDomainDialog', () => {
           }
         }
       })
-      const attachedDomain: MockLink.MockedResponse<GetCustomDomains> = {
-        request: getCustomDomainMock.request,
-        result: {
-          data: {
-            customDomains: [
-              {
-                __typename: 'CustomDomain',
-                id: 'customDomainId',
-                apexName: 'example.com',
-                name: 'example.com',
-                routeAllTeamJourneys: false,
-                campaignId: 'campaignId',
-                journeyCollection: null
-              }
-            ]
-          }
-        }
-      }
       render(
         <MockedProvider
           mocks={[
             getLastActiveTeamIdAndTeamsMock,
-            attachedDomain,
+            getCustomDomainMock,
+            getCampaignRootMock('campaignId'),
             campaignsMock,
             mockUseCurrentUserLazyQuery,
             checkCustomDomainMockConfiguredAndVerified,
