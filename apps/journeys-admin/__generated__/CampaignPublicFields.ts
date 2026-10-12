@@ -709,6 +709,51 @@ export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
   mediaBlockId: string | null;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicFields_regions_lines_CampaignJourneyBlock_journeyImage | null;
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_title_language {
   __typename: "Language";
   id: string;
@@ -929,7 +974,7 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock {
   action: CampaignPublicFields_regions_lines_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignImageBlock | CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock | CampaignPublicFields_regions_lines_CampaignVideoBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
+export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignImageBlock | CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock | CampaignPublicFields_regions_lines_CampaignJourneyBlock | CampaignPublicFields_regions_lines_CampaignVideoBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
 
 export interface CampaignPublicFields_regions {
   __typename: "CampaignRegionPublic";
@@ -1598,6 +1643,51 @@ export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
   mediaBlockId: string | null;
 }
 
+export interface CampaignPublicFields_chrome_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicFields_chrome_CampaignJourneyBlock_journeyImage | null;
+}
+
 export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_title_language {
   __typename: "Language";
   id: string;
@@ -1818,7 +1908,7 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock {
   action: CampaignPublicFields_chrome_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignImageBlock | CampaignPublicFields_chrome_CampaignFeaturedMediaBlock | CampaignPublicFields_chrome_CampaignVideoBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
+export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignImageBlock | CampaignPublicFields_chrome_CampaignFeaturedMediaBlock | CampaignPublicFields_chrome_CampaignJourneyBlock | CampaignPublicFields_chrome_CampaignVideoBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
 
 export interface CampaignPublicFields_pages_blocks_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
@@ -2388,6 +2478,51 @@ export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
   mediaBlockId: string | null;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicFields_pages_blocks_CampaignJourneyBlock_journeyImage | null;
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title_language {
   __typename: "Language";
   id: string;
@@ -2608,7 +2743,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock {
   action: CampaignPublicFields_pages_blocks_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignImageBlock | CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock | CampaignPublicFields_pages_blocks_CampaignVideoBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
+export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignImageBlock | CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock | CampaignPublicFields_pages_blocks_CampaignJourneyBlock | CampaignPublicFields_pages_blocks_CampaignVideoBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
 
 export interface CampaignPublicFields_pages {
   __typename: "CampaignPagePublic";

@@ -33,7 +33,10 @@ export type CampaignRegion = CampaignPublicFields_regions
  */
 export type CampaignSectionTypename = Exclude<
   CampaignBlock['__typename'],
-  'CampaignTypographyBlock' | 'CampaignButtonBlock' | 'CampaignVideoBlock'
+  | 'CampaignTypographyBlock'
+  | 'CampaignButtonBlock'
+  | 'CampaignJourneyBlock'
+  | 'CampaignVideoBlock'
 >
 export type CampaignSectionBlock = CampaignBlockOf<CampaignSectionTypename>
 export type CampaignSectionTree = CampaignTree<CampaignSectionBlock>
@@ -44,6 +47,7 @@ export function isCampaignSection(
   return (
     block.__typename !== 'CampaignTypographyBlock' &&
     block.__typename !== 'CampaignButtonBlock' &&
+    block.__typename !== 'CampaignJourneyBlock' &&
     block.__typename !== 'CampaignVideoBlock'
   )
 }

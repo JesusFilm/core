@@ -125,6 +125,7 @@ export type CampaignSelectionKind =
   | 'text'
   | 'button'
   | 'card'
+  | 'journey'
   | 'region'
 
 export interface CampaignSelection {
@@ -237,6 +238,12 @@ export function resolveSelection(
       host
     }
   }
+  if (block.__typename === 'CampaignJourneyBlock')
+    return {
+      kind: 'journey',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
   return { kind: isChrome(block) ? 'chrome' : 'section', block, host: block }
 }
 
@@ -342,7 +349,8 @@ export function CampaignEditorProvider({
     if (
       selection.kind === 'text' ||
       selection.kind === 'button' ||
-      selection.kind === 'card'
+      selection.kind === 'card' ||
+      selection.kind === 'journey'
     ) {
       selectBlock(selection.host?.id)
       return

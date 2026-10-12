@@ -7,11 +7,13 @@ import './campaignRegionLanguageOrderUpdate.mutation'
 
 export {
   INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL,
-  JOURNEY_NOT_FOUND_MESSAGE,
   authorizeRegionLanguageUpdate,
   deleteQrCodes,
   deleteShortLinks,
-  findRegionQrCodes,
+  findRegionQrCodes
+} from './service'
+export {
+  JOURNEY_NOT_FOUND_MESSAGE,
   parseJourneyLink,
   resolveJourneyLink
-} from './service'
+} from '../journeyLink'

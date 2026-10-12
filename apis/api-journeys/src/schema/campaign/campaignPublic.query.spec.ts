@@ -936,6 +936,246 @@ describe('campaignPublic', () => {
     expect(fetchShortLink).not.toHaveBeenCalled()
   })
 
+  describe('journey list items', () => {
+    const CAMPAIGN_PUBLIC_JOURNEYS = graphql(`
+      query CampaignPublicJourneys($slug: String, $languageId: ID) {
+        campaignPublic(slug: $slug, languageId: $languageId) {
+          pages {
+            blocks {
+              __typename
+              id
+              parentBlockId
+              parentOrder
+              ... on CampaignJourneyBlock {
+                journeyId
+                title
+                description
+                titleTranslations {
+                  languageId
+                }
+                journeyStatus
+                journeyUrl
+                journeyImage {
+                  src
+                  alt
+                }
+              }
+            }
+          }
+        }
+      }
+    `)
+
+    function journeyItem(
+      fixture: CampaignFixture,
+      id: string,
+      journeyId: string | null,
+      parentOrder: number
+    ): Record<string, unknown> {
+      return {
+        ...fixture.blocks[0],
+        id,
+        typename: 'CampaignJourneyBlock',
+        pageId: 'landingPageId',
+        parentBlockId: 'landingJourneyListId',
+        parentOrder,
+        eyebrow: null,
+        title: `${id} title`,
+        titleTranslations: {
+          [FRENCH]: { value: `${id} titre`, source: 'human' }
+        },
+        lede: null,
+        align: null,
+        description: `${id} description`,
+        journeyId,
+        action: null
+      }
+    }
+
+    function journeyLive(
+      id: string,
+      slug: string,
+      overrides: Record<string, unknown> = {}
+    ): Record<string, unknown> {
+      return {
+        ...journeyRow(id, slug),
+        primaryImageBlock: {
+          id: `${id}-image`,
+          src: `https://imagedelivery.net/${id}/public`,
+          alt: `${slug} image`
+        },
+        ...overrides
+      }
+    }
+
+    it('carries the live journeyStatus, the journeyUrl from getJourneyPublicUrl and the primary image src, with the snapshot text resolved', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'liveItem', 'liveJourneyId', 0),
+        journeyItem(fixture, 'domainItem', 'domainJourneyId', 1)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('liveJourneyId', 'live-journey'),
+        journeyLive('domainJourneyId', 'domain-journey', {
+          team: {
+            id: 'journeyTeamId',
+            customDomains: [
+              { name: 'journeys.example.org', routeAllTeamJourneys: true }
+            ]
+          }
+        })
+      ] as never)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'christmas-2026', languageId: FRENCH }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const items = result.data.campaignPublic.pages
+        .flatMap((page: any) => page.blocks)
+        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+      expect(items).toEqual([
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'liveItem',
+          parentBlockId: 'landingJourneyListId',
+          parentOrder: 0,
+          journeyId: 'liveJourneyId',
+          title: 'liveItem titre',
+          description: 'liveItem description',
+          titleTranslations: [],
+          journeyStatus: 'published',
+          journeyUrl: 'https://example.com/live-journey',
+          journeyImage: {
+            src: 'https://imagedelivery.net/liveJourneyId/public',
+            alt: 'live-journey image'
+          }
+        },
+        expect.objectContaining({
+          id: 'domainItem',
+          journeyStatus: 'published',
+          journeyUrl: 'https://journeys.example.org/domain-journey'
+        })
+      ])
+      expect(prismaMock.journey.findMany).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps a card whose journey is archived, with its address', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'archivedItem', 'archivedJourneyId', 0)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('archivedJourneyId', 'archived-journey', {
+          status: 'archived'
+        })
+      ] as never)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const items = result.data.campaignPublic.pages
+        .flatMap((page: any) => page.blocks)
+        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+      expect(items).toEqual([
+        expect.objectContaining({
+          id: 'archivedItem',
+          journeyStatus: 'archived',
+          journeyUrl: 'https://example.com/archived-journey'
+        })
+      ])
+    })
+
+    it('leaves out cards whose journey is draft, trashed, deleted, missing or unlinked', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'liveItem', 'liveJourneyId', 0),
+        journeyItem(fixture, 'draftItem', 'draftJourneyId', 1),
+        journeyItem(fixture, 'trashedItem', 'trashedJourneyId', 2),
+        journeyItem(fixture, 'deletedItem', 'deletedJourneyId', 3),
+        journeyItem(fixture, 'goneItem', 'goneJourneyId', 4),
+        journeyItem(fixture, 'unlinkedItem', null, 5)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('liveJourneyId', 'live-journey'),
+        journeyLive('draftJourneyId', 'draft-journey', { status: 'draft' }),
+        journeyLive('trashedJourneyId', 'trashed-journey', {
+          status: 'trashed'
+        }),
+        journeyLive('deletedJourneyId', 'deleted-journey', {
+          deletedAt: new Date()
+        })
+      ] as never)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const ids = result.data.campaignPublic.pages
+        .flatMap((page: any) => page.blocks)
+        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+        .map((block: any) => block.id)
+      expect(ids).toEqual(['liveItem'])
+      expect(JSON.stringify(result.data)).not.toMatch(
+        /draftJourneyId|trashedJourneyId|deletedJourneyId|goneJourneyId|draftItem|deletedItem/
+      )
+    })
+
+    it('reads no journeys when no item links one', async () => {
+      prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(prismaMock.journey.findMany).not.toHaveBeenCalled()
+    })
+
+    it('exposes no tag snapshot and nothing that leads back to the journey', async () => {
+      const INTROSPECT = graphql(`
+        query CampaignJourneyBlockShape {
+          item: __type(name: "CampaignJourneyBlock") {
+            fields {
+              name
+            }
+          }
+        }
+      `)
+
+      const result = (await publicClient({ document: INTROSPECT })) as any
+      const names: string[] = result.data.item.fields.map(
+        (field: any) => field.name
+      )
+
+      expect(names).not.toContain('tag')
+      expect(names).not.toContain('journey')
+      expect(names).toEqual(
+        expect.arrayContaining([
+          'journeyId',
+          'title',
+          'description',
+          'journeyStatus',
+          'journeyUrl',
+          'journeyImage'
+        ])
+      )
+    })
+  })
+
   it('is NOT_FOUND for a draft or unknown slug', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue(null)
 
