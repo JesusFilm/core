@@ -15,7 +15,7 @@ describe('journeysAccess', () => {
     it('should resolve when the user is a member of the team', async () => {
       journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
         id: 'userTeamId'
-      } as never)
+      })
 
       await expect(
         assertTeamMembership({ teamId: 'teamId', userId: 'userId' })
@@ -44,7 +44,7 @@ describe('journeysAccess', () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
         teamId: 'teamId',
         team: { userTeams: [{ id: 'userTeamId' }] }
-      } as never)
+      })
 
       const teamId = await resolveAuthorizedTeamId({
         journeyId: 'journeyId',
@@ -81,7 +81,7 @@ describe('journeysAccess', () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
         teamId: 'teamId',
         team: { userTeams: [] }
-      } as never)
+      })
 
       await expect(
         resolveAuthorizedTeamId({ journeyId: 'journeyId', userId: 'userId' })
@@ -97,7 +97,7 @@ describe('journeysAccess', () => {
     it('should return the given teamId once membership is asserted, ignoring journeyId', async () => {
       journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
         id: 'userTeamId'
-      } as never)
+      })
 
       const teamId = await resolveUploadTeamId({
         journeyId: 'journeyId',
@@ -139,7 +139,7 @@ describe('journeysAccess', () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
         teamId: 'journeyTeamId',
         team: { userTeams: [{ id: 'userTeamId' }] }
-      } as never)
+      })
 
       await expect(
         resolveUploadTeamId({ journeyId: 'journeyId', userId: 'userId' })
@@ -173,7 +173,7 @@ describe('journeysAccess', () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
         teamId: 'teamId',
         team: { userTeams: [{ id: 'userTeamId' }] }
-      } as never)
+      })
 
       const teamId = await maybeResolveTeamId({
         journeyId: 'journeyId',
@@ -187,7 +187,7 @@ describe('journeysAccess', () => {
       journeysPrismaMock.journey.findUnique.mockResolvedValue({
         teamId: 'teamId',
         team: { userTeams: [] }
-      } as never)
+      })
 
       const teamId = await maybeResolveTeamId({
         journeyId: 'journeyId',

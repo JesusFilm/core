@@ -46,9 +46,9 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { CanvasCarousel } from '../CanvasCarousel'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
+import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasMedia } from '../CanvasMedia'
 import { InlineText } from '../InlineText'
 
