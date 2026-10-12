@@ -372,7 +372,7 @@ describe('cloudflareImage', () => {
       it('should return the merged personal + team result when caller is a member', async () => {
         journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
           id: 'userTeamId'
-        })
+        } as never)
         prismaMock.cloudflareImage.findMany.mockResolvedValue([])
 
         await authClient({
@@ -394,7 +394,7 @@ describe('cloudflareImage', () => {
       it('should still apply isAi alongside the merged team predicate', async () => {
         journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
           id: 'userTeamId'
-        })
+        } as never)
         prismaMock.cloudflareImage.findMany.mockResolvedValue([])
 
         await authClient({
@@ -559,10 +559,10 @@ describe('cloudflareImage', () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [{ id: 'userTeamId' }] }
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
@@ -584,10 +584,10 @@ describe('cloudflareImage', () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
@@ -622,10 +622,10 @@ describe('cloudflareImage', () => {
         })
         journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
           id: 'userTeamId'
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_TEAM_MUTATION,
@@ -749,10 +749,10 @@ describe('cloudflareImage', () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [{ id: 'userTeamId' }] }
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
@@ -771,10 +771,10 @@ describe('cloudflareImage', () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
@@ -809,10 +809,10 @@ describe('cloudflareImage', () => {
         mockCreateImageFromUrl.mockResolvedValue({ id: 'id' })
         journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
           id: 'userTeamId'
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_TEAM_MUTATION,
@@ -949,10 +949,10 @@ describe('cloudflareImage', () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [{ id: 'userTeamId' }] }
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         await authClient({
           document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
@@ -972,10 +972,10 @@ describe('cloudflareImage', () => {
         journeysPrismaMock.journey.findUnique.mockResolvedValue({
           teamId: 'teamId',
           team: { userTeams: [] }
-        })
+        } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        })
+        } as unknown as CloudflareImage)
 
         const result = (await authClient({
           document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
@@ -1011,7 +1011,7 @@ describe('cloudflareImage', () => {
         })
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'notUser'
-        })
+        } as unknown as CloudflareImage)
         const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
@@ -1034,7 +1034,7 @@ describe('cloudflareImage', () => {
       it('should return true if not publisher', async () => {
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'testUserId'
-        })
+        } as unknown as CloudflareImage)
         const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })

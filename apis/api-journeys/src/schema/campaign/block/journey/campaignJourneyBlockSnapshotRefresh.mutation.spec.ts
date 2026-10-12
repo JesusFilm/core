@@ -64,7 +64,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       deletedAt: null,
       team: { id: 'otherTeamId', customDomains: [] },
       journeyCollectionJourneys: []
-    })
+    } as never)
   })
 
   async function refresh(id = 'journeyItemId'): Promise<any> {
@@ -106,7 +106,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       deletedAt: null,
       team: { id: 'otherTeamId', customDomains: [] },
       journeyCollectionJourneys: []
-    })
+    } as never)
 
     const result = await refresh()
 

@@ -303,7 +303,7 @@ describe('campaignImageBlockCreate', () => {
 
     it('defaults the slot to cover', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'heroId')
+        fixture.blocks.find((block) => block.id === 'heroId')!
       )
 
       await create({ parentBlockId: 'heroId', src: SRC })
@@ -316,7 +316,7 @@ describe('campaignImageBlockCreate', () => {
 
     it('creates the header logo with chrome scoping and points logoBlockId at it', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'headerId')
+        fixture.blocks.find((block) => block.id === 'headerId')!
       )
 
       const result = await create({
@@ -343,7 +343,7 @@ describe('campaignImageBlockCreate', () => {
 
     it('refuses the logo slot on anything but the header (BAD_USER_INPUT, logoBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'heroId')
+        fixture.blocks.find((block) => block.id === 'heroId')!
       )
 
       const result = await create({
@@ -361,7 +361,7 @@ describe('campaignImageBlockCreate', () => {
 
     it('refuses an Extra, a soft-deleted block or another campaign’s block as owner (BAD_USER_INPUT, parentBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(
-        fixture.blocks.find((block) => block.id === 'heroButtonId')
+        fixture.blocks.find((block) => block.id === 'heroButtonId')!
       )
       const extra = await create({ parentBlockId: 'heroButtonId', src: SRC })
       expect(extra.errors[0].extensions).toMatchObject({
