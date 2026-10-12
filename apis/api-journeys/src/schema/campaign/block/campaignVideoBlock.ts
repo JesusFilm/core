@@ -16,7 +16,7 @@ export const CampaignVideoBlock = builder.prismaObject('CampaignBlock', {
   interfaces: [CampaignBlock],
   isTypeOf: (block: any) => block.typename === 'CampaignVideoBlock',
   description:
-    'The Campaign Video: a reference to a Watch Video (`internal`), a YouTube video or an uploaded Mux video, with optional title and description overrides. Owned by a hero or Featured Media section through its `mediaBlockId` (`parentOrder: null`). YouTube and Mux text, poster and duration are captured once when the video is picked; Watch text is read live through `mediaVideo` in the campaign language, the row’s overrides winning.',
+    'The Campaign Video: a reference to a Watch Video (`internal`), a YouTube video or an uploaded Mux video, with optional title and description overrides. Owned by a hero or Featured Media section through its `mediaBlockId` (`parentOrder: null`), or an explicit item of a Video Carousel, ordered among its children by `parentOrder`. YouTube and Mux text, poster and duration are captured once when the video is picked; Watch text is read live through `mediaVideo` in the campaign language, the row’s overrides winning.',
   fields: (t) => ({
     source: t.field({
       type: VideoBlockSource,

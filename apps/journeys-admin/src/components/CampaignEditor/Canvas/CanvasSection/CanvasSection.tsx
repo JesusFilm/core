@@ -49,6 +49,7 @@ import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
+import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasMedia } from '../CanvasMedia'
 import { InlineText } from '../InlineText'
 
@@ -351,8 +352,9 @@ function CanvasStrings({
  * Strings its public rendering reads, then the Extras placed below. A hero
  * with media and a Featured Media section put their Media Slot beside that
  * text (Featured Media on its `mediaSide`, with a placeholder while empty),
- * stacked below `md`. Clicking anywhere selects the section; clicking an
- * Extra selects it. The selected block's text fields and strings become
+ * stacked below `md`; a Video Carousel shows its cards below its text.
+ * Clicking anywhere selects the section; clicking an Extra or a carousel
+ * item selects it. The selected block's text fields and strings become
  * inline inputs.
  */
 export function CanvasSection({
@@ -668,6 +670,9 @@ export function CanvasSection({
                   titleVariant={titleVariant}
                 />
               ))}
+            {block.__typename === 'CampaignVideoCarouselBlock' && (
+              <CanvasCarousel block={block} />
+            )}
             {block.__typename === 'CampaignRegionSwitcherBlock' && (
               <RegionSwitcherEdit block={block} />
             )}

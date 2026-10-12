@@ -9,7 +9,9 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
+import ArrowRightIcon from '@core/shared/ui/icons/ArrowRight'
 import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
@@ -45,6 +47,8 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { CarouselCardEdit } from '../CarouselCardEdit'
+import { CarouselEdit } from '../CarouselEdit'
 import { ChromeEdit } from '../ChromeEdit'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { LinkChip } from '../LinkChip'
@@ -59,7 +63,10 @@ import {
 import { StylePanel } from '../StylePanel'
 import { TextControls } from '../TextControls'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
-import { useCampaignBlockDeleteCommand } from '../utils/useCampaignBlockDeleteCommand'
+import {
+  siblingsOf,
+  useCampaignBlockDeleteCommand
+} from '../utils/useCampaignBlockDeleteCommand'
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
@@ -95,9 +102,11 @@ interface SectionInsert {
  * section. Section: Edit, Style, +Add (an Extra, or a section above or
  * below), move up/down, duplicate, bin behind a confirmation. Chrome: Edit,
  * Style, +Add only; the header's Edit opens the logo editor, an Image
- * section's Edit the picture editor and a hero's or Featured Media
- * section's Edit the media editor, all in a drawer. Text Extra: size,
- * align, colour, Style, bin. Button Extra adds the link chip and
+ * section's Edit the picture editor, a hero's or Featured Media section's
+ * Edit the media editor and a Video Carousel's Edit the carousel editor, all
+ * in a drawer. Carousel card: Edit (its title and description), ← → (one
+ * order Command each) and bin (a delete Command, no confirmation). Text
+ * Extra: size, align, colour, Style, bin. Button Extra adds the link chip and
  * variant/size/colours. Journey card: Edit, ← → among the list's cards,
  * Refresh from journey, bin. Region card: Open page, +Add line, Settings,
  * list/unlist and move. On an Orphan Page the campaign row adds the orphan
@@ -155,41 +164,55 @@ export function BottomBar({
     (candidate) => candidate.id === selectedSection?.id
   )
 
-  const selectedCard =
+  const selectedJourneyCard =
     selection.kind === 'journey' &&
     selection.block?.__typename === 'CampaignJourneyBlock'
       ? selection.block
       : undefined
-  const cardSiblings =
-    selectedCard != null
+  const journeyCardSiblings =
+    selectedJourneyCard != null
       ? campaign.blocks
           .filter(
             (candidate) =>
               candidate.__typename === 'CampaignJourneyBlock' &&
-              candidate.parentBlockId === selectedCard.parentBlockId &&
+              candidate.parentBlockId === selectedJourneyCard.parentBlockId &&
               candidate.parentOrder != null
           )
           .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
       : []
-  const cardIndex = cardSiblings.findIndex(
-    (candidate) => candidate.id === selectedCard?.id
+  const journeyCardIndex = journeyCardSiblings.findIndex(
+    (candidate) => candidate.id === selectedJourneyCard?.id
   )
 
   /** ← → move a card among the list's cards, past any Extras between them. */
-  function handleMoveCard(step: -1 | 1): void {
-    const target = cardSiblings[cardIndex + step]
-    if (selectedCard == null || target?.parentOrder == null) return
-    addBlockOrder(selectedCard, target.parentOrder)
+  function handleMoveJourneyCard(step: -1 | 1): void {
+    const target = journeyCardSiblings[journeyCardIndex + step]
+    if (selectedJourneyCard == null || target?.parentOrder == null) return
+    addBlockOrder(selectedJourneyCard, target.parentOrder)
   }
 
-  /** The header, an Image section and the sections with a Media Slot edit in a drawer (logo, picture, media); everything else edits its text in place. */
+  /** The header, an Image section, the sections with a Media Slot, a Video Carousel and its cards edit in a drawer (logo, picture, media, videos, card text); everything else edits its text in place. */
   const editedBlock =
     selection.block != null &&
     (selection.block.__typename === 'CampaignHeaderBlock' ||
       selection.block.__typename === 'CampaignImageBlock' ||
+      selection.block.__typename === 'CampaignVideoCarouselBlock' ||
+      selection.kind === 'card' ||
       isCampaignMediaOwner(selection.block))
       ? selection.block
       : undefined
+
+  /** A selected card's neighbours among its carousel's items, which the arrows swap it with. */
+  const selectedCard = selection.kind === 'card' ? selection.block : undefined
+  const cardItems =
+    selectedCard != null
+      ? [selectedCard, ...siblingsOf(campaign.blocks, selectedCard)]
+          .filter((candidate) => candidate.__typename === 'CampaignVideoBlock')
+          .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+      : []
+  const cardIndex = cardItems.findIndex(
+    (candidate) => candidate.id === selectedCard?.id
+  )
 
   function handleEdit(): void {
     if (editedBlock != null) {
@@ -320,6 +343,13 @@ export function BottomBar({
   function handleMove(step: -1 | 1): void {
     if (selectedSection?.parentOrder == null) return
     addBlockOrder(selectedSection, selectedSection.parentOrder + step)
+  }
+
+  /** ← / →: the card takes its neighbour item's position, one order Command. */
+  function handleCardMove(step: -1 | 1): void {
+    const neighbour = cardItems[cardIndex + step]
+    if (selectedCard == null || neighbour?.parentOrder == null) return
+    addBlockOrder(selectedCard, neighbour.parentOrder)
   }
 
   /** A region card's "+Add line": a Typography block scoped to the region, last among its lines. */
@@ -569,6 +599,31 @@ export function BottomBar({
             {addButton}
           </>
         )
+      case 'card':
+        return (
+          <>
+            <BarButton
+              label={t('Edit')}
+              icon={<Edit2Icon />}
+              onClick={handleEdit}
+            />
+            <IconButton
+              aria-label={t('Move left')}
+              disabled={cardIndex <= 0}
+              onClick={() => handleCardMove(-1)}
+            >
+              <ArrowLeftIcon />
+            </IconButton>
+            <IconButton
+              aria-label={t('Move right')}
+              disabled={cardIndex < 0 || cardIndex >= cardItems.length - 1}
+              onClick={() => handleCardMove(1)}
+            >
+              <ArrowRightIcon />
+            </IconButton>
+            {binButton}
+          </>
+        )
       case 'region':
         return selectedRegion == null ? null : (
           <>
@@ -618,7 +673,7 @@ export function BottomBar({
           </>
         )
       case 'journey':
-        return selectedCard == null ? null : (
+        return selectedJourneyCard == null ? null : (
           <>
             <BarButton
               label={t('Edit')}
@@ -627,15 +682,15 @@ export function BottomBar({
             />
             <IconButton
               aria-label={t('Move left')}
-              disabled={cardIndex <= 0}
-              onClick={() => handleMoveCard(-1)}
+              disabled={journeyCardIndex <= 0}
+              onClick={() => handleMoveJourneyCard(-1)}
             >
               <ChevronLeftIcon />
             </IconButton>
             <IconButton
               aria-label={t('Move right')}
-              disabled={cardIndex < 0 || cardIndex >= cardSiblings.length - 1}
-              onClick={() => handleMoveCard(1)}
+              disabled={journeyCardIndex < 0 || journeyCardIndex >= journeyCardSiblings.length - 1}
+              onClick={() => handleMoveJourneyCard(1)}
             >
               <ChevronRightIcon />
             </IconButton>
@@ -643,7 +698,7 @@ export function BottomBar({
               label={t('Refresh from journey')}
               icon={<ArrowRefresh6Icon />}
               onClick={() => {
-                void refreshSnapshot(selectedCard)
+                void refreshSnapshot(selectedJourneyCard)
               }}
             />
             {binButton}
@@ -724,6 +779,18 @@ export function BottomBar({
         )}
         {editedBlock?.__typename === 'CampaignImageBlock' && (
           <ImageSectionEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
+        )}
+        {editedBlock?.__typename === 'CampaignVideoCarouselBlock' && (
+          <CarouselEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
+        )}
+        {editedBlock?.__typename === 'CampaignVideoBlock' && (
+          <CarouselCardEdit
             block={editedBlock}
             onClose={() => setEditOpen(false)}
           />
