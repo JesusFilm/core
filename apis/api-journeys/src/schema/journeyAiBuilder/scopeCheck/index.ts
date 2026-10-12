@@ -1,1 +1,1 @@
-export { scopeCheck } from './scopeCheck'
+export { restoreKeptSteps, scopeCheck } from './scopeCheck'

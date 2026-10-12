@@ -358,7 +358,7 @@ describe('runPipeline', () => {
     })
   })
 
-  it('flags kept steps the builder changed', async () => {
+  it('puts back kept steps the builder retyped', async () => {
     const outOfScope = structuredClone(editedJourney)
     outOfScope.steps[0].card.theme = 'light'
     const generate = fakeGenerate({
@@ -371,10 +371,16 @@ describe('runPipeline', () => {
       generate
     )
 
-    expect(events).toContainEqual({
-      type: 'message',
-      text: 'I also changed `welcome`.'
-    })
+    expect(events).toContainEqual(
+      expect.objectContaining({
+        type: 'content',
+        kind: 'journey',
+        payload: expect.objectContaining({
+          journey: editedJourney,
+          outOfScope: []
+        })
+      })
+    )
   })
 
   it('folds overflow messages into the summary after the reply', async () => {

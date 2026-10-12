@@ -7,7 +7,7 @@ import { type GenerateJsonResult, generateJson } from '../generateJson'
 import { type ImageDeps, resolveImages } from '../images/resolveImages'
 import { type Journey, journeyInputSchema } from '../journeySchema'
 import { journeyToBlocks } from '../journeyToBlocks'
-import { scopeCheck } from '../scopeCheck'
+import { restoreKeptSteps, scopeCheck } from '../scopeCheck'
 import {
   BUILDER_INSTRUCTIONS,
   type ChatMessage,
@@ -206,6 +206,23 @@ export async function* runPipeline(
   yield { type: 'done' }
 
   async function* build(plan: Plan): AsyncGenerator<BuilderEvent> {
+    const previous = plan.kind === 'edit' ? input.journey : null
+    const keep = plan.kind === 'edit' ? plan.keep : []
+    // Kept steps come from the previous journey, not the model's copy of them.
+    // If putting them back breaks the journey (a kept step links to a removed
+    // one), the model's own version is used and scopeCheck flags the step.
+    function checkOutput(result: GenerateJsonResult<Journey>): CheckedOutput {
+      if (!result.ok)
+        return { journey: null, errors: [result.error], warnings: [] }
+      if (previous != null) {
+        const restored = restoreKeptSteps(result.value, previous, keep)
+        const restoredCheck = checkJourney(restored)
+        if (restoredCheck.errors.length === 0)
+          return { journey: restored, ...restoredCheck }
+      }
+      return { journey: result.value, ...checkJourney(result.value) }
+    }
+
     yield { type: 'progress', stage: 'builder', status: 'started' }
     const first = yield* call(
       'builder',
@@ -250,9 +267,7 @@ export async function* runPipeline(
     yield { type: 'progress', stage: 'images', status: 'done' }
 
     const outOfScope =
-      plan.kind === 'edit' && input.journey != null
-        ? scopeCheck(input.journey, journey, plan.keep)
-        : []
+      previous != null ? scopeCheck(previous, journey, keep) : []
 
     yield {
       type: 'content',
@@ -288,14 +303,10 @@ function logBuildFailure(
   )
 }
 
-function checkOutput(result: GenerateJsonResult<Journey>): {
+interface CheckedOutput {
   journey: Journey | null
   errors: string[]
   warnings: string[]
-} {
-  if (!result.ok) return { journey: null, errors: [result.error], warnings: [] }
-  const { errors, warnings } = checkJourney(result.value)
-  return { journey: result.value, errors, warnings }
 }
 
 /**
