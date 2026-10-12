@@ -1,7 +1,8 @@
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
 import type { CampaignPublic } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
@@ -15,7 +16,10 @@ import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import { fetchCampaignPublicByHostname } from '../../src/libs/getCampaignPublic'
+import {
+  campaignPageCacheControl,
+  fetchCampaignPublicInPageLanguageByHostname
+} from '../../src/libs/getCampaignPublic'
 import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
@@ -57,18 +61,36 @@ function HostJourneysPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
-  context
-) => {
+// The collection and journey branches keep the 60 s shared-cache window the
+// static page gave them.
+const SHARED_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=300'
+const NOT_FOUND_CACHE_CONTROL = 'public, s-maxage=1'
+
+// Rendered per request: a Campaign Root's landing page is decided in the
+// visitor's Page Language (`?lang` → cookie → `Accept-Language` → default),
+// exactly as at `/campaign/<slug>`, and cached per `campaignPageCacheControl`.
+export const getServerSideProps: GetServerSideProps<
+  HostJourneysPageProps
+> = async (context) => {
   const apolloClient = createApolloClient()
+  const hostname = context.params?.hostname as string
 
   // Campaign Root first: a published root campaign owns `/`, else today's
   // collection logic below runs unchanged.
-  const campaign = await fetchCampaignPublicByHostname(
+  const root = await fetchCampaignPublicInPageLanguageByHostname(
     apolloClient,
-    context.params?.hostname as string
+    hostname,
+    {
+      param: context.query.lang,
+      cookie: context.req.cookies[CAMPAIGN_LANGUAGE_COOKIE],
+      acceptLanguage: context.req.headers['accept-language']
+    }
   )
-  if (campaign != null) {
+  if (root != null) {
+    context.res.setHeader(
+      'Cache-Control',
+      campaignPageCacheControl(root.language, root.campaign.languages.length)
+    )
     return {
       props: {
         flags: await getFlags(),
@@ -78,9 +100,8 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           i18nConfig
         )),
         journeys: [],
-        campaign
-      },
-      revalidate: 60
+        campaign: root.campaign
+      }
     }
   }
 
@@ -91,7 +112,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
     query: GET_JOURNEYS,
     variables: {
       options: {
-        hostname: context.params?.hostname as string,
+        hostname,
         journeyCollection: true
       }
     }
@@ -102,6 +123,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   if (data == null) throw new Error('GetJourneysSummary returned no data')
 
   if (data.journeys === null) {
+    context.res.setHeader('Cache-Control', NOT_FOUND_CACHE_CONTROL)
     return {
       props: {
         ...(await serverSideTranslations(
@@ -110,8 +132,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           i18nConfig
         ))
       },
-      notFound: true,
-      revalidate: 1
+      notFound: true
     }
   } else if (data.journeys.length === 1) {
     try {
@@ -124,7 +145,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           id: data.journeys[0].slug.toString(),
           idType: IdType.slug,
           options: {
-            hostname: context.params?.hostname?.toString() ?? '',
+            hostname,
             status: JOURNEY_STATUS_EXCLUDE_DRAFT
           }
         }
@@ -134,6 +155,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
       // the type rather than guarding a reachable branch.
       if (journeyData == null) throw new Error('GetJourney returned no data')
 
+      context.res.setHeader('Cache-Control', SHARED_CACHE_CONTROL)
       return {
         props: {
           flags: await getFlags(),
@@ -145,10 +167,10 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           )),
           journey: journeyData.journey,
           journeys: []
-        },
-        revalidate: 60
+        }
       }
     } catch {
+      context.res.setHeader('Cache-Control', NOT_FOUND_CACHE_CONTROL)
       return {
         props: {
           ...(await serverSideTranslations(
@@ -157,11 +179,11 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true,
-        revalidate: 1
+        notFound: true
       }
     }
   }
+  context.res.setHeader('Cache-Control', SHARED_CACHE_CONTROL)
   return {
     props: {
       flags: await getFlags(),
@@ -171,15 +193,7 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
         i18nConfig
       )),
       journeys: data.journeys
-    },
-    revalidate: 60
-  }
-}
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  return {
-    paths: [],
-    fallback: 'blocking'
+    }
   }
 }
 

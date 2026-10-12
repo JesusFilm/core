@@ -1,10 +1,11 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
-import { GetStaticPropsContext } from 'next'
+import { GetServerSidePropsContext } from 'next'
 
+import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
 import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
-import { getStaticProps as getHostnameStaticProps } from '../../../pages/[hostname]'
-import { getStaticProps as getSlugStaticProps } from '../../../pages/[hostname]/[journeySlug]'
+import { getServerSideProps as getHostnameServerSideProps } from '../../../pages/[hostname]'
+import { getServerSideProps as getSlugServerSideProps } from '../../../pages/[hostname]/[journeySlug]'
 
 vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn().mockResolvedValue({})
@@ -29,8 +30,29 @@ function notFoundError(): CombinedGraphQLErrors {
   } as ConstructorParameters<typeof CombinedGraphQLErrors>[0])
 }
 
-function context(params: Record<string, string>): GetStaticPropsContext {
-  return { locale: 'en', params: { hostname: HOSTNAME, ...params } }
+const setHeader = vi.fn()
+
+interface RequestOptions {
+  query?: Record<string, string>
+  cookie?: string
+  acceptLanguage?: string
+}
+
+function context(
+  params: Record<string, string>,
+  { query = {}, cookie, acceptLanguage }: RequestOptions = {}
+): GetServerSidePropsContext {
+  return {
+    locale: 'en',
+    params: { hostname: HOSTNAME, ...params },
+    query,
+    req: {
+      cookies: cookie != null ? { [CAMPAIGN_LANGUAGE_COOKIE]: cookie } : {},
+      headers:
+        acceptLanguage != null ? { 'accept-language': acceptLanguage } : {}
+    },
+    res: { setHeader }
+  } as unknown as GetServerSidePropsContext
 }
 
 function journeyRow(slug: string): {
@@ -46,25 +68,63 @@ const region = campaignPublic.regions[0]
 describe('Campaign Root on a custom domain', () => {
   beforeEach(() => {
     mockQuery.mockReset()
+    setHeader.mockReset()
   })
 
   describe('/', () => {
     it('serves the root campaign landing page when one is published', async () => {
       mockQuery.mockResolvedValueOnce({ data: { campaignPublic } })
 
-      const result = await getHostnameStaticProps(context({}))
+      const result = await getHostnameServerSideProps(context({}))
 
       expect(mockQuery).toHaveBeenCalledTimes(1)
       expect(mockQuery.mock.calls[0][0].variables).toEqual({
         hostname: HOSTNAME,
         languageId: null
       })
-      expect(result).toEqual(
-        expect.objectContaining({
-          props: expect.objectContaining({ campaign: campaignPublic }),
-          revalidate: 60
-        })
+      expect(result).toEqual({
+        props: expect.objectContaining({ campaign: campaignPublic })
+      })
+    })
+
+    it('renders the campaign in the language named by ?lang', async () => {
+      const french = { ...campaignPublic, languageId: '496', title: 'Noël' }
+      mockQuery
+        .mockResolvedValueOnce({ data: { campaignPublic } })
+        .mockResolvedValueOnce({ data: { campaignPublic: french } })
+
+      const result = await getHostnameServerSideProps(
+        context({}, { query: { lang: 'fr' } })
       )
+
+      expect(mockQuery.mock.calls[1][0].variables).toEqual({
+        hostname: HOSTNAME,
+        languageId: '496'
+      })
+      expect(result).toEqual({
+        props: expect.objectContaining({ campaign: french })
+      })
+      expect(setHeader).toHaveBeenCalledWith(
+        'Cache-Control',
+        'public, s-maxage=60, stale-while-revalidate=300'
+      )
+    })
+
+    it('renders the campaign in the language of the cookie or Accept-Language', async () => {
+      const french = { ...campaignPublic, languageId: '496' }
+      mockQuery.mockResolvedValue({ data: { campaignPublic } })
+      mockQuery.mockResolvedValueOnce({ data: { campaignPublic } })
+      mockQuery.mockResolvedValueOnce({ data: { campaignPublic: french } })
+
+      await getHostnameServerSideProps(context({}, { cookie: 'fr' }))
+      expect(mockQuery.mock.calls[1][0].variables.languageId).toBe('496')
+      expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'private, no-cache')
+
+      mockQuery.mockClear()
+      mockQuery.mockResolvedValueOnce({ data: { campaignPublic } })
+      mockQuery.mockResolvedValueOnce({ data: { campaignPublic: french } })
+      await getHostnameServerSideProps(context({}, { acceptLanguage: 'fr' }))
+      expect(mockQuery.mock.calls[1][0].variables.languageId).toBe('496')
     })
 
     it('falls through to the journey collection logic for a draft or missing root', async () => {
@@ -72,7 +132,7 @@ describe('Campaign Root on a custom domain', () => {
         .mockRejectedValueOnce(notFoundError())
         .mockResolvedValueOnce({ data: { journeys: null } })
 
-      const result = await getHostnameStaticProps(context({}))
+      const result = await getHostnameServerSideProps(context({}))
 
       expect(mockQuery).toHaveBeenCalledTimes(2)
       expect(mockQuery.mock.calls[1][0].variables).toEqual({
@@ -86,17 +146,33 @@ describe('Campaign Root on a custom domain', () => {
     it('serves a region of the root campaign before any journey', async () => {
       mockQuery.mockResolvedValueOnce({ data: { campaignPublic } })
 
-      const result = await getSlugStaticProps(
+      const result = await getSlugServerSideProps(
         context({ journeySlug: region.slug })
       )
 
       expect(mockQuery).toHaveBeenCalledTimes(1)
-      expect(result).toEqual(
-        expect.objectContaining({
-          props: expect.objectContaining({ campaign: campaignPublic, region }),
-          revalidate: 60
-        })
+      expect(result).toEqual({
+        props: expect.objectContaining({ campaign: campaignPublic, region })
+      })
+    })
+
+    it('renders a region in the language named by ?lang', async () => {
+      const french = { ...campaignPublic, languageId: '496', title: 'Noël' }
+      mockQuery
+        .mockResolvedValueOnce({ data: { campaignPublic } })
+        .mockResolvedValueOnce({ data: { campaignPublic: french } })
+
+      const result = await getSlugServerSideProps(
+        context({ journeySlug: region.slug }, { query: { lang: 'fr' } })
       )
+
+      expect(mockQuery.mock.calls[1][0].variables).toEqual({
+        hostname: HOSTNAME,
+        languageId: '496'
+      })
+      expect(result).toEqual({
+        props: expect.objectContaining({ campaign: french, region })
+      })
     })
 
     it('falls through to the journey lookup when the segment is not a region', async () => {
@@ -106,7 +182,7 @@ describe('Campaign Root on a custom domain', () => {
           data: { journey: journeyRow('my-journey') }
         })
 
-      const result = await getSlugStaticProps(
+      const result = await getSlugServerSideProps(
         context({ journeySlug: 'my-journey' })
       )
 
@@ -131,7 +207,7 @@ describe('Campaign Root on a custom domain', () => {
         data: { journey: journeyRow(region.slug) }
       })
 
-      const result = await getSlugStaticProps(
+      const result = await getSlugServerSideProps(
         context({ journeySlug: region.slug })
       )
 

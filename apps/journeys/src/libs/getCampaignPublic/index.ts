@@ -4,6 +4,7 @@ export {
   fetchCampaignPublic,
   fetchCampaignPublicByHostname,
   fetchCampaignPublicInPageLanguage,
+  fetchCampaignPublicInPageLanguageByHostname,
   isValidCampaignSlug
 } from './getCampaignPublic'
 export type {

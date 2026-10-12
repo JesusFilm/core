@@ -115,20 +115,15 @@ export interface CampaignPublicInPageLanguage {
   language: ResolvedPageLanguage
 }
 
-/**
- * Read a published campaign in the visitor's Page Language: one read in the
- * campaign default yields the language list the request is resolved
- * against (`?lang` → cookie → `Accept-Language` → default), then a second
- * read unless the resolved language is the one the first read already used
- * for both the campaign text and the Watch video titles. Null when the
- * campaign is not published.
- */
-export async function fetchCampaignPublicInPageLanguage(
-  apolloClient: ApolloClient,
-  slug: string,
+type CampaignReader = (
+  languageId?: string | null
+) => Promise<CampaignPublic | null>
+
+async function readInPageLanguage(
+  read: CampaignReader,
   request: PageLanguageRequest
 ): Promise<CampaignPublicInPageLanguage | null> {
-  const inDefault = await fetchCampaignPublic(apolloClient, slug)
+  const inDefault = await read()
   if (inDefault == null) return null
   const language = resolvePageLanguage({
     languages: inDefault.languages.map((candidate) => ({
@@ -143,13 +138,45 @@ export async function fetchCampaignPublicInPageLanguage(
     language.languageId === WATCH_TEXT_FALLBACK_LANGUAGE_ID
   )
     return { campaign: inDefault, language }
-  const campaign = await fetchCampaignPublic(
-    apolloClient,
-    slug,
-    language.languageId
-  )
+  const campaign = await read(language.languageId)
   if (campaign == null) return null
   return { campaign, language }
+}
+
+/**
+ * Read a published campaign in the visitor's Page Language: one read in the
+ * campaign default yields the language list the request is resolved
+ * against (`?lang` → cookie → `Accept-Language` → default), then a second
+ * read unless the resolved language is the one the first read already used
+ * for both the campaign text and the Watch video titles. Null when the
+ * campaign is not published.
+ */
+export async function fetchCampaignPublicInPageLanguage(
+  apolloClient: ApolloClient,
+  slug: string,
+  request: PageLanguageRequest
+): Promise<CampaignPublicInPageLanguage | null> {
+  return await readInPageLanguage(
+    async (languageId) =>
+      await fetchCampaignPublic(apolloClient, slug, languageId),
+    request
+  )
+}
+
+/**
+ * The same read for the published Campaign Root of a custom domain. Null
+ * when the domain has no root campaign or it is a draft.
+ */
+export async function fetchCampaignPublicInPageLanguageByHostname(
+  apolloClient: ApolloClient,
+  hostname: string,
+  request: PageLanguageRequest
+): Promise<CampaignPublicInPageLanguage | null> {
+  return await readInPageLanguage(
+    async (languageId) =>
+      await fetchCampaignPublicByHostname(apolloClient, hostname, languageId),
+    request
+  )
 }
 
 /**
