@@ -335,7 +335,7 @@ describe('campaign block service', () => {
       expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({ parentBlockId: 'carouselId' }),
-          orderBy: { parentOrder: 'asc' }
+          orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }]
         })
       )
       expect(
