@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, JourneyStatus, CampaignStringKey } from "./globalTypes";
+import { CampaignCreateInput, CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignCreate
@@ -913,6 +913,55 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock
   mediaBlockId: string | null;
 }
 
+export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_journeyImage | null;
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
+}
+
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_title_language {
   __typename: "Language";
   id: string;
@@ -1155,7 +1204,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
   labelTranslations: CampaignCreate_campaignCreate_blocks_CampaignButtonBlock_labelTranslations[];
 }
 
-export type CampaignCreate_campaignCreate_blocks = CampaignCreate_campaignCreate_blocks_CampaignColumnBlock | CampaignCreate_campaignCreate_blocks_CampaignHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignFooterBlock | CampaignCreate_campaignCreate_blocks_CampaignHeroBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock | CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock | CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock | CampaignCreate_campaignCreate_blocks_CampaignColumnsBlock | CampaignCreate_campaignCreate_blocks_CampaignImageBlock | CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoBlock | CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock;
+export type CampaignCreate_campaignCreate_blocks = CampaignCreate_campaignCreate_blocks_CampaignColumnBlock | CampaignCreate_campaignCreate_blocks_CampaignHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignFooterBlock | CampaignCreate_campaignCreate_blocks_CampaignHeroBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock | CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock | CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock | CampaignCreate_campaignCreate_blocks_CampaignColumnsBlock | CampaignCreate_campaignCreate_blocks_CampaignImageBlock | CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoBlock | CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock;
 
 export interface CampaignCreate_campaignCreate_regions_languages_language_name {
   __typename: "LanguageName";

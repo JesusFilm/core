@@ -1,5 +1,6 @@
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { featuredMediaBullets } from '../CampaignFeaturedMedia'
+import { liveJourneyCards } from '../CampaignJourneyList'
 import { hasCampaignMedia } from '../CampaignMediaSlot'
 import { listedRegions } from '../CampaignRegionSwitcher'
 import { splitParagraphs } from '../CampaignRichText'
@@ -91,6 +92,7 @@ export function shouldRenderSection(
       )
     case 'CampaignJourneyListBlock':
       return (
+        liveJourneyCards(section).length > 0 ||
         hasText(section.eyebrow) ||
         hasText(section.title) ||
         hasText(section.lede) ||

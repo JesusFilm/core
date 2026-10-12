@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockRestore
@@ -833,6 +833,55 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
   mediaBlockId: string | null;
 }
 
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_journeyImage | null;
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
+}
+
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_title_language {
   __typename: "Language";
   id: string;
@@ -1075,7 +1124,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock {
   labelTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock_labelTranslations[];
 }
 
-export type CampaignBlockRestore_campaignBlockRestore = CampaignBlockRestore_campaignBlockRestore_CampaignColumnBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignFooterBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionSwitcherBlock | CampaignBlockRestore_campaignBlockRestore_CampaignVideoCarouselBlock | CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock | CampaignBlockRestore_campaignBlockRestore_CampaignAnalyticsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock | CampaignBlockRestore_campaignBlockRestore_CampaignColumnsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock | CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock | CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock | CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock | CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock;
+export type CampaignBlockRestore_campaignBlockRestore = CampaignBlockRestore_campaignBlockRestore_CampaignColumnBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignFooterBlock | CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionSwitcherBlock | CampaignBlockRestore_campaignBlockRestore_CampaignVideoCarouselBlock | CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock | CampaignBlockRestore_campaignBlockRestore_CampaignAnalyticsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionHeaderBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBlock | CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock | CampaignBlockRestore_campaignBlockRestore_CampaignColumnsBlock | CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock | CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock | CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock | CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock | CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock | CampaignBlockRestore_campaignBlockRestore_CampaignButtonBlock;
 
 export interface CampaignBlockRestore {
   /**

@@ -5,6 +5,7 @@ import { CampaignAnalyticsBlockUpdateText } from '../../../__generated__/Campaig
 import { CampaignButtonBlockUpdateLabel } from '../../../__generated__/CampaignButtonBlockUpdateLabel'
 import { CampaignFeaturedMediaBlockUpdateText } from '../../../__generated__/CampaignFeaturedMediaBlockUpdateText'
 import { CampaignHeroBlockUpdateText } from '../../../__generated__/CampaignHeroBlockUpdateText'
+import { CampaignJourneyBlockUpdateText } from '../../../__generated__/CampaignJourneyBlockUpdateText'
 import { CampaignJourneyListBlockUpdateText } from '../../../__generated__/CampaignJourneyListBlockUpdateText'
 import { CampaignRegionHeaderBlockUpdateText } from '../../../__generated__/CampaignRegionHeaderBlockUpdateText'
 import { CampaignRegionShareBlockUpdateText } from '../../../__generated__/CampaignRegionShareBlockUpdateText'
@@ -99,6 +100,19 @@ export const CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT = gql`
       eyebrow
       title
       lede
+    }
+  }
+`
+
+export const CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT = gql`
+  mutation CampaignJourneyBlockUpdateText(
+    $id: ID!
+    $input: CampaignJourneyBlockUpdateInput!
+  ) {
+    campaignJourneyBlockUpdate(id: $id, input: $input) {
+      id
+      title
+      description
     }
   }
 `
@@ -199,6 +213,10 @@ const TEXT_OPERATIONS: Record<CampaignTextTypename, TextOperation> = {
     document: CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT,
     operation: 'campaignJourneyListBlockUpdate'
   },
+  CampaignJourneyBlock: {
+    document: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
+    operation: 'campaignJourneyBlockUpdate'
+  },
   CampaignAnalyticsBlock: {
     document: CAMPAIGN_ANALYTICS_BLOCK_UPDATE_TEXT,
     operation: 'campaignAnalyticsBlockUpdate'
@@ -228,6 +246,7 @@ type CampaignTextResult =
   | CampaignRegionSwitcherBlockUpdateText
   | CampaignVideoCarouselBlockUpdateText
   | CampaignJourneyListBlockUpdateText
+  | CampaignJourneyBlockUpdateText
   | CampaignAnalyticsBlockUpdateText
   | CampaignRegionHeaderBlockUpdateText
   | CampaignRegionShareBlockUpdateText
@@ -299,6 +318,10 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignJourneyListBlockUpdateText,
     CampaignTextVariables
   >(CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT)[0]
+  const journey = useMutation<
+    CampaignJourneyBlockUpdateText,
+    CampaignTextVariables
+  >(CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT)[0]
   const analytics = useMutation<
     CampaignAnalyticsBlockUpdateText,
     CampaignTextVariables
@@ -328,6 +351,7 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignRegionSwitcherBlock: regionSwitcher,
     CampaignVideoCarouselBlock: videoCarousel,
     CampaignJourneyListBlock: journeyList,
+    CampaignJourneyBlock: journey,
     CampaignAnalyticsBlock: analytics,
     CampaignRegionHeaderBlock: regionHeader,
     CampaignRegionShareBlock: regionShare,

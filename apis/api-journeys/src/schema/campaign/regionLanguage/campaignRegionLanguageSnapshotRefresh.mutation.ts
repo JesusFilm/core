@@ -3,9 +3,10 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
+import { resolveJourneyId } from '../journeyLink'
 import { badUserInput } from '../validation'
 
-import { authorizeRegionLanguageUpdate, resolveJourneyId } from './service'
+import { authorizeRegionLanguageUpdate } from './service'
 
 builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({

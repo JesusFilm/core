@@ -128,6 +128,7 @@ export type CampaignSelectionKind =
   | 'slot'
   | 'column'
   | 'card'
+  | 'journey'
   | 'region'
 
 export interface CampaignSelection {
@@ -251,6 +252,12 @@ export function resolveSelection(
   }
   if (isInColumnSlot(blocks, block))
     return { kind: 'column', block, host: block }
+  if (block.__typename === 'CampaignJourneyBlock')
+    return {
+      kind: 'journey',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
   return { kind: isChrome(block) ? 'chrome' : 'section', block, host: block }
 }
 
@@ -360,7 +367,8 @@ export function CampaignEditorProvider({
     if (
       selection.kind === 'text' ||
       selection.kind === 'button' ||
-      selection.kind === 'card'
+      selection.kind === 'card' ||
+      selection.kind === 'journey'
     ) {
       selectBlock(selection.host?.id)
       return

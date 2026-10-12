@@ -47,6 +47,7 @@ import {
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { CanvasCarousel } from '../CanvasCarousel'
@@ -417,6 +418,7 @@ export function CanvasSection({
       block.__typename === 'CampaignTypographyBlock' ||
       block.__typename === 'CampaignButtonBlock' ||
       block.__typename === 'CampaignColumnBlock' ||
+      block.__typename === 'CampaignJourneyBlock' ||
       block.__typename === 'CampaignVideoBlock'
     )
       return null
@@ -486,9 +488,9 @@ export function CanvasSection({
     selectBlock(block.id)
   }
 
-  function selectExtra(child: CanvasBlock, field: CampaignTextField): void {
+  function selectChild(childId: string, field: CampaignTextField): void {
     setFocusField(field)
-    selectBlock(child.id)
+    selectBlock(childId)
   }
 
   function renderExtra(child: CanvasBlock): ReactElement | null {
@@ -499,7 +501,7 @@ export function CanvasSection({
         key={child.id}
         block={child}
         selected={selectedId === child.id}
-        onSelect={() => selectExtra(child, field)}
+        onSelect={() => selectChild(child.id, field)}
         focusField={focusField}
         focusRequest={focusRequest}
       />
@@ -606,6 +608,18 @@ export function CanvasSection({
         )}
         {block.__typename === 'CampaignRegionShareBlock' && (
           <ShareSectionEdit block={block} />
+        )}
+        {block.__typename === 'CampaignJourneyListBlock' && (
+          <JourneyListEdit
+            block={block}
+            active={
+              sectionSelected ||
+              (selection.kind === 'journey' && selection.host?.id === block.id)
+            }
+            focusField={focusField}
+            focusRequest={focusRequest}
+            onSelectCard={selectChild}
+          />
         )}
         <CanvasStrings
           strings={strings}
