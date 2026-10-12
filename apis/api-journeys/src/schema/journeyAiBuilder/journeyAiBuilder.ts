@@ -1,3 +1,4 @@
+import { APICallError } from 'ai'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
@@ -177,7 +178,9 @@ builder.subscriptionField('journeyAiBuilderSubscription', (t) =>
           type: 'error' as const,
           text: timedOut
             ? 'Sorry, that took too long. Your journey is unchanged.'
-            : 'Sorry, something went wrong. Your journey is unchanged.'
+            : APICallError.isInstance(error)
+              ? "The AI model isn't responding right now. Please try again in a few minutes. Your journey is unchanged."
+              : 'Sorry, something went wrong. Your journey is unchanged.'
         }
         yield { type: 'done' as const }
       } finally {

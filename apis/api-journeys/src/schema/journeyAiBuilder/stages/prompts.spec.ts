@@ -13,7 +13,7 @@ describe('BUILDER_INSTRUCTIONS', () => {
   // backgroundImage, which the schema no longer allowed after it.
   it('shows the example card keys in schema order', () => {
     const example = BUILDER_INSTRUCTIONS.slice(
-      BUILDER_INSTRUCTIONS.indexOf('{"title"')
+      BUILDER_INSTRUCTIONS.indexOf('Example of a valid journey')
     )
 
     expect(example.indexOf('"backgroundImage"')).toBeGreaterThan(-1)

@@ -157,7 +157,12 @@ export const contentItemSchema = z.discriminatedUnion('type', [
 
 export const cardSchema = z.object({
   name: nameSchema,
-  theme: z.enum(['light', 'dark']).optional(),
+  theme: z
+    .enum(['light', 'dark'])
+    .optional()
+    .describe(
+      'dark: light text on a dark card. light: dark text on a light card'
+    ),
   backgroundColor: z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/)
@@ -167,7 +172,9 @@ export const cardSchema = z.object({
   fullscreen: z
     .boolean()
     .optional()
-    .describe('Show the background image across the whole card'),
+    .describe(
+      'How the backgroundImage shows. false (the default): the photo is sharp and clear at the top of the card, with the content below it. true: the photo fills the whole card but is blurred, with the content on top of it.'
+    ),
   content: z.array(contentItemSchema).describe('Card content, top to bottom')
 })
 

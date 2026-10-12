@@ -1,3 +1,5 @@
+import { z } from 'zod'
+
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
 import { type Journey, journeySchema } from '../journeySchema'
@@ -32,6 +34,12 @@ const CONTENT_TYPES = `Supported content on a card:
 - spacer: vertical space
 Cards can be light or dark, have a background colour, and a background image (a stock photo from Unsplash).`
 
+// The gateway only uses an output schema to hold the JSON's shape; the model
+// never reads its descriptions. Every stage gets it as text instead, so the
+// field meanings (e.g. what fullscreen looks like) are actually seen.
+const JOURNEY_FORMAT = `Journey format (JSON Schema). The current journey and the builder's output follow it; the descriptions say what each field means and how it looks:
+${JSON.stringify(z.toJSONSchema(journeySchema))}`
+
 const UNSUPPORTED = `Not supported yet: Jesus Film library videos, video uploads, undo, translation or other languages, publishing or sharing, sign-up forms, email/phone/chat buttons, analytics, custom fonts.`
 
 export const GUIDE_INSTRUCTIONS = `${preSystemPrompt}
@@ -43,7 +51,7 @@ You are the guide. Read the user's latest message and choose one route:
 - ask: they want a change but neither the topic nor the purpose can be guessed. Ask one to three short questions.
 - unsupported: they want something we cannot do yet. Say what can't be done in one sentence and offer the nearest thing we can do.
 - change: they want the journey created or changed and enough can be guessed. Write a short confirmation as reply, a brief, and kind (create if there is no journey yet, else edit).
-- build: a plan is waiting for confirmation and they agree to it ("yes", "go", "looks good").
+- build: a plan is waiting for confirmation and they agree to it ("yes", "go", "looks good"). Only when a waiting plan is shown above; an answer to a question that was asked earlier is change, not build.
 
 Rules:
 - Prefer change over ask. "An Easter journey" is a change: assume the purpose is introducing the gospel.
@@ -54,7 +62,9 @@ Rules:
 
 ${CONTENT_TYPES}
 
-${UNSUPPORTED}`
+${UNSUPPORTED}
+
+${JOURNEY_FORMAT}`
 
 export const PLANNER_INSTRUCTIONS = `${preSystemPrompt}
 
@@ -72,9 +82,12 @@ For edit: list only the changes (add, update, remove, move), each naming the ste
 5. Use only supported content types. If the brief needs something unsupported, plan the nearest supported thing and say so in assumptions.
 
 List what you guessed in assumptions. If a plan is waiting and the brief adjusts it, return the revised whole plan.
-Only if the brief cannot be planned without guessing something important, return a question and no plan.
+NextSteps stores every answer to a poll, multiselect or text response by itself, so never ask where responses go or how they are collected.
+Prefer assumptions to questions. Only if the topic or the purpose cannot be guessed at all, return a question and no plan.
 
-${CONTENT_TYPES}`
+${CONTENT_TYPES}
+
+${JOURNEY_FORMAT}`
 
 // Parsed so its keys come out in the schema's order. The gateway holds the
 // output to that order, so an example in any other order teaches Qwen to
@@ -97,10 +110,12 @@ Rules:
 6. A video card holds only the video, and uses next to move on.
 7. A multiselect or textResponse must be followed by a button on the same card.
 8. For a new image write only search and alt. Never write src, width, height or blurhash yourself; keep them on images that already have them.
-9. Make journeys look good. On a create, give the first card and most other cards a backgroundImage, unless the plan says otherwise. On an edit, add images only where the plan says. Never on a video card. On a card with a background image, use the dark theme and set fullscreen true so the text stays readable over the photo.
+9. Make journeys look good. On a create, give the first card and most other cards a backgroundImage, unless the plan says otherwise. On an edit, add images only where the plan says. Never on a video card. Show photos sharp (fullscreen false) unless the user asks for a blurred background (fullscreen true).
 10. Write image searches as concrete, visual scenes a stock photo would show, 2 to 5 words, such as "sunrise over empty hillside" or "teenagers laughing outdoors". Avoid abstract words like "hope" or "salvation", and avoid anything that would need text in the photo.
 11. Keep text short: cards are read on a phone. A title or heading, one or two short body lines, then the interaction.
 12. Use light and dark themes deliberately; keep a journey visually consistent.
+
+${JOURNEY_FORMAT}
 
 Example of a valid journey, with a background image and an inline image:
 ${JSON.stringify(EXAMPLE_JOURNEY)}`

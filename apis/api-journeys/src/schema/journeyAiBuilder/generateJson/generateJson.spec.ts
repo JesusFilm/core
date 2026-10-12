@@ -51,6 +51,28 @@ describe('generateJson', () => {
   })
 })
 
+describe('generateJson errors', () => {
+  it('rethrows a failed request instead of reporting an empty answer', async () => {
+    const outage = new Error('HTTP 500')
+    mockStreamText.mockImplementation(((options: {
+      onError: (event: { error: unknown }) => void
+    }) => {
+      options.onError({ error: outage })
+      return streamOf([])
+    }) as never)
+
+    await expect(
+      generateJson({
+        model: {} as LanguageModel,
+        abortSignal: new AbortController().signal,
+        instructions: 'system',
+        prompt: 'hello',
+        schema
+      })
+    ).rejects.toBe(outage)
+  })
+})
+
 describe('parseJson', () => {
   it('reports invalid JSON', () => {
     expect(parseJson('not json', schema)).toEqual({

@@ -125,7 +125,14 @@ export async function* runPipeline(
   }
 
   let plan: Plan | null = null
-  switch (guide.route) {
+  // "Build" with nothing waiting is usually an answer to a question we asked
+  // (e.g. the planner's). Plan from it rather than dead-ending the chat.
+  const route =
+    guide.route === 'build' && input.pendingPlan == null
+      ? 'change'
+      : guide.route
+
+  switch (route) {
     case 'reply':
     case 'unsupported':
       yield { type: 'message', text: guide.reply }
@@ -137,13 +144,6 @@ export async function* runPipeline(
       }
       break
     case 'build':
-      if (input.pendingPlan == null) {
-        yield {
-          type: 'message',
-          text: "There's no plan waiting. Tell me what you'd like to build."
-        }
-        break
-      }
       plan = input.pendingPlan
       break
     case 'change': {
@@ -186,14 +186,21 @@ export async function* runPipeline(
   if (plan != null) yield* build(plan)
 
   if (input.toSummarise.length > 0) {
-    const summary = await generate({
-      model: deps.model,
-      abortSignal: deps.abortSignal,
-      instructions: SUMMARY_INSTRUCTIONS,
-      prompt: summaryPrompt(input.summary, input.toSummarise),
-      schema: summaryOutputSchema
-    })
-    if (summary.ok) yield { type: 'summary', text: summary.value.summary }
+    // Optional housekeeping: if it fails, the browser keeps the old summary
+    // and the same messages get folded in on the next run.
+    try {
+      const summary = await generate({
+        model: deps.model,
+        abortSignal: deps.abortSignal,
+        instructions: SUMMARY_INSTRUCTIONS,
+        prompt: summaryPrompt(input.summary, input.toSummarise),
+        schema: summaryOutputSchema
+      })
+      if (summary.ok) yield { type: 'summary', text: summary.value.summary }
+    } catch (error) {
+      if (deps.abortSignal.aborted) throw error
+      logger.warn({ error }, 'AI journey builder summary failed')
+    }
   }
 
   yield { type: 'done' }

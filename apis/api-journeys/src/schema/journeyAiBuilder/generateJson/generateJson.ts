@@ -31,13 +31,20 @@ export async function generateJson<T>({
   schema,
   onDelta
 }: GenerateJsonOptions<T>): Promise<GenerateJsonResult<T>> {
+  // streamText reports a failed request (gateway down, HTTP 500) through
+  // onError and just ends the stream. Rethrow it, or an outage would look
+  // like an empty, invalid answer and get blamed on the user's message.
+  let streamError: unknown
   const result = streamText({
     model,
     abortSignal,
     maxRetries: 0,
     instructions,
     messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }],
-    output: Output.object({ schema })
+    output: Output.object({ schema }),
+    onError: ({ error }) => {
+      streamError = error
+    }
   })
 
   let text = ''
@@ -45,6 +52,10 @@ export async function generateJson<T>({
     text += delta
     onDelta?.(delta)
   }
+  if (streamError != null)
+    throw streamError instanceof Error
+      ? streamError
+      : new Error('The AI model request failed', { cause: streamError })
 
   return parseJson(text, schema)
 }

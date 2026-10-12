@@ -15,6 +15,7 @@
  *     apis/api-journeys/src/schema/journeyAiBuilder/testSet/runTestSet.ts
  *
  * Options: --only create-01,edit-03   --no-images (skip Unsplash)
+ *          --message "..." (run one ad-hoc create instead of the test set)
  *
  * Writes to testSet/results/<timestamp>/ (gitignored):
  * - results.json: everything, including each final journey
@@ -99,13 +100,21 @@ async function main(): Promise<void> {
   const testSet = JSON.parse(
     readFileSync(join(TEST_SET_DIR, 'testSet.json'), 'utf8')
   ) as { creates: TestCase[]; edits: TestCase[] }
-  const cases = [
-    ...testSet.creates.map((testCase) => ({
-      ...testCase,
-      kind: 'create' as const
-    })),
-    ...testSet.edits.map((testCase) => ({ ...testCase, kind: 'edit' as const }))
-  ].filter((testCase) => only == null || only.includes(testCase.id))
+  const adHocMessage = valueOf(args, '--message')
+  const cases = (
+    adHocMessage != null
+      ? [{ id: 'ad-hoc', message: adHocMessage, kind: 'create' as const }]
+      : [
+          ...testSet.creates.map((testCase) => ({
+            ...testCase,
+            kind: 'create' as const
+          })),
+          ...testSet.edits.map((testCase) => ({
+            ...testCase,
+            kind: 'edit' as const
+          }))
+        ]
+  ).filter((testCase) => only == null || only.includes(testCase.id))
 
   const results: CaseResult[] = []
   for (const testCase of cases) {

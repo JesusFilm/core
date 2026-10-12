@@ -287,6 +287,23 @@ describe('runPipeline', () => {
     )
   })
 
+  it('plans, instead of dead-ending, when the guide says build but no plan is waiting', async () => {
+    const generate = fakeGenerate({
+      guide: [{ ok: true, value: { route: 'build', reply: 'Got it.' } }],
+      planner: [{ ok: true, value: { question: 'Who is it for?' } }]
+    })
+
+    const events = await collect(
+      input({ message: 'just acknowledge it with a thank-you card' }),
+      generate
+    )
+
+    expect(generate.prompts.planner[0]).toContain(
+      'Latest user message: «just acknowledge it with a thank-you card»'
+    )
+    expect(events).toContainEqual({ type: 'message', text: 'Who is it for?' })
+  })
+
   it('runs one repair round with the checker errors', async () => {
     const broken = structuredClone(editedJourney)
     broken.steps[1].card.content[2] = {
