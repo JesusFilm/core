@@ -24,7 +24,11 @@ builder.mutationField('campaignUnpublish', (t) =>
       const id = String(args.id)
       const campaign = await prisma.campaign.findUnique({
         where: { id },
-        include: { ...INCLUDE_CAMPAIGN_ACL, regions: true }
+        include: {
+          ...INCLUDE_CAMPAIGN_ACL,
+          regions: true,
+          customDomains: true
+        }
       })
       if (campaign == null)
         throw new GraphQLError('campaign not found', {
@@ -54,7 +58,12 @@ builder.mutationField('campaignUnpublish', (t) =>
           }
         )
         if (transitioned)
-          await enqueueCampaignRevalidation(campaignPagePaths(campaign))
+          await enqueueCampaignRevalidation(
+            campaignPagePaths({
+              ...campaign,
+              hostnames: campaign.customDomains.map(({ name }) => name)
+            })
+          )
         return result
       } catch (error) {
         if (

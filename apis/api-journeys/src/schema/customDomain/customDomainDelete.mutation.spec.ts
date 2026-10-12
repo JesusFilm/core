@@ -50,6 +50,7 @@ describe('customDomainDelete', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollectionId: null,
+    campaignId: null,
     routeAllTeamJourneys: true,
     team: {
       id: 'teamId',
@@ -108,6 +109,22 @@ describe('customDomainDelete', () => {
         name: 'example.com'
       })
     )
+  })
+
+  it('should change no campaign row when a domain with a Campaign Root is deleted', async () => {
+    const attached = { ...mockCustomDomain, campaignId: 'campaignId' }
+    prismaMock.customDomain.findUnique.mockResolvedValue(attached)
+    prismaMock.customDomain.delete.mockResolvedValue(attached)
+
+    await authClient({
+      document: CUSTOM_DOMAIN_DELETE_MUTATION,
+      variables: { id: 'customDomainId' }
+    })
+
+    expect(prismaMock.customDomain.delete).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
+    expect(prismaMock.campaign.delete).not.toHaveBeenCalled()
   })
 
   it('should return NOT_FOUND when custom domain does not exist', async () => {

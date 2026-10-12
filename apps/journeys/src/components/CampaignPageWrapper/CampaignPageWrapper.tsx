@@ -22,14 +22,18 @@ interface CampaignPageWrapperProps {
   campaign: CampaignPublic
   pageKind: CampaignPageKind
   region?: CampaignRegion | null
+  /**
+   * Where region links point: the root-domain `/campaign/<slug>` path by
+   * default, `''` on a Campaign Root domain where regions sit at `/<slug>`.
+   */
+  basePath?: string
   children?: ReactNode
 }
 
 /**
  * Everything a public campaign page shares: the campaign theme, the Google
- * Fonts link, SEO and social tags (`CampaignSeo`, canonical to the
- * root-domain path until a Campaign Root is attached), and Plausible page views on the campaign team's
- * existing site through the same `/plausible` proxy journeys use (page path
+ * Fonts link, SEO and social tags (`CampaignSeo`, canonical in the preferred
+ * address form), and Plausible page views on the campaign team's existing site through the same `/plausible` proxy journeys use (page path
  * as rendered; automatic page views, so nothing is reported from the admin
  * canvas, which uses its own components).
  */
@@ -37,6 +41,7 @@ export function CampaignPageWrapper({
   campaign,
   pageKind,
   region = null,
+  basePath = campaignBasePath(campaign.slug),
   children
 }: CampaignPageWrapperProps): ReactElement {
   const rtl = getLocaleRTL(campaign.language.bcp47 ?? '')
@@ -44,8 +49,6 @@ export function CampaignPageWrapper({
     () => createCampaignTheme(campaign.theme, rtl),
     [campaign.theme, rtl]
   )
-  const basePath = campaignBasePath(campaign.slug)
-
   return (
     <PlausibleProvider
       enabled
@@ -61,8 +64,7 @@ export function CampaignPageWrapper({
         campaign={campaign}
         pageKind={pageKind}
         region={region}
-        origin={`https://${ROOT_DOMAIN}`}
-        basePath={basePath}
+        rootDomain={ROOT_DOMAIN}
       />
       <ThemeProvider theme={theme}>
         <CssBaseline />

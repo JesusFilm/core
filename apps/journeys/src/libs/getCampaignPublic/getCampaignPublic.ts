@@ -43,6 +43,22 @@ function isNotFound(error: unknown): boolean {
   return networkError?.statusCode === 400
 }
 
+async function queryCampaignPublic(
+  apolloClient: ApolloClient,
+  variables: GetCampaignPublicVariables
+): Promise<CampaignPublic | null> {
+  try {
+    const { data } = await apolloClient.query<
+      GetCampaignPublic,
+      GetCampaignPublicVariables
+    >({ query: GET_CAMPAIGN_PUBLIC, variables })
+    return data?.campaignPublic ?? null
+  } catch (error) {
+    if (isNotFound(error)) return null
+    throw error
+  }
+}
+
 /**
  * Read a published campaign for the public page in one language. Null for a
  * draft, unknown or malformed slug (the route answers not found); any other
@@ -54,19 +70,27 @@ export async function fetchCampaignPublic(
   languageId?: string | null
 ): Promise<CampaignPublic | null> {
   if (!isValidCampaignSlug(slug)) return null
-  try {
-    const { data } = await apolloClient.query<
-      GetCampaignPublic,
-      GetCampaignPublicVariables
-    >({
-      query: GET_CAMPAIGN_PUBLIC,
-      variables: { slug, languageId: languageId ?? null }
-    })
-    return data?.campaignPublic ?? null
-  } catch (error) {
-    if (isNotFound(error)) return null
-    throw error
-  }
+  return await queryCampaignPublic(apolloClient, {
+    slug,
+    languageId: languageId ?? null
+  })
+}
+
+/**
+ * Read the published Campaign Root of a custom domain. Null when the domain
+ * has no root campaign or it is a draft, which the route reads as "serve
+ * today's journey behaviour"; any other failure is rethrown.
+ */
+export async function fetchCampaignPublicByHostname(
+  apolloClient: ApolloClient,
+  hostname: string,
+  languageId?: string | null
+): Promise<CampaignPublic | null> {
+  if (hostname === '') return null
+  return await queryCampaignPublic(apolloClient, {
+    hostname,
+    languageId: languageId ?? null
+  })
 }
 
 /**
@@ -91,20 +115,15 @@ export interface CampaignPublicInPageLanguage {
   language: ResolvedPageLanguage
 }
 
-/**
- * Read a published campaign in the visitor's Page Language: one read in the
- * campaign default yields the language list the request is resolved
- * against (`?lang` → cookie → `Accept-Language` → default), then a second
- * read unless the resolved language is the one the first read already used
- * for both the campaign text and the Watch video titles. Null when the
- * campaign is not published.
- */
-export async function fetchCampaignPublicInPageLanguage(
-  apolloClient: ApolloClient,
-  slug: string,
+type CampaignReader = (
+  languageId?: string | null
+) => Promise<CampaignPublic | null>
+
+async function readInPageLanguage(
+  read: CampaignReader,
   request: PageLanguageRequest
 ): Promise<CampaignPublicInPageLanguage | null> {
-  const inDefault = await fetchCampaignPublic(apolloClient, slug)
+  const inDefault = await read()
   if (inDefault == null) return null
   const language = resolvePageLanguage({
     languages: inDefault.languages.map((candidate) => ({
@@ -119,13 +138,45 @@ export async function fetchCampaignPublicInPageLanguage(
     language.languageId === WATCH_TEXT_FALLBACK_LANGUAGE_ID
   )
     return { campaign: inDefault, language }
-  const campaign = await fetchCampaignPublic(
-    apolloClient,
-    slug,
-    language.languageId
-  )
+  const campaign = await read(language.languageId)
   if (campaign == null) return null
   return { campaign, language }
+}
+
+/**
+ * Read a published campaign in the visitor's Page Language: one read in the
+ * campaign default yields the language list the request is resolved
+ * against (`?lang` → cookie → `Accept-Language` → default), then a second
+ * read unless the resolved language is the one the first read already used
+ * for both the campaign text and the Watch video titles. Null when the
+ * campaign is not published.
+ */
+export async function fetchCampaignPublicInPageLanguage(
+  apolloClient: ApolloClient,
+  slug: string,
+  request: PageLanguageRequest
+): Promise<CampaignPublicInPageLanguage | null> {
+  return await readInPageLanguage(
+    async (languageId) =>
+      await fetchCampaignPublic(apolloClient, slug, languageId),
+    request
+  )
+}
+
+/**
+ * The same read for the published Campaign Root of a custom domain. Null
+ * when the domain has no root campaign or it is a draft.
+ */
+export async function fetchCampaignPublicInPageLanguageByHostname(
+  apolloClient: ApolloClient,
+  hostname: string,
+  request: PageLanguageRequest
+): Promise<CampaignPublicInPageLanguage | null> {
+  return await readInPageLanguage(
+    async (languageId) =>
+      await fetchCampaignPublicByHostname(apolloClient, hostname, languageId),
+    request
+  )
 }
 
 /**

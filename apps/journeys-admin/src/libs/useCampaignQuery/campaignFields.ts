@@ -199,6 +199,10 @@ export const CAMPAIGN_FIELDS = gql`
     palette
     createdAt
     updatedAt
+    customDomains {
+      id
+      name
+    }
     team {
       id
       userTeams {

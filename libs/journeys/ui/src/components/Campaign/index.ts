@@ -74,6 +74,7 @@ export {
 export { CampaignSectionHeading } from './CampaignSectionHeading'
 export {
   CampaignSeo,
+  campaignPreferredLocation,
   campaignPagePath,
   campaignSeoProps,
   campaignSocialImage
@@ -100,6 +101,7 @@ export {
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
+export { VIEWER_OWNED_SEGMENTS, matchRegionSlug } from './libs/matchRegionSlug'
 export {
   CAMPAIGN_OVERLAY_ALPHA,
   bandCssVariables,
