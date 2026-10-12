@@ -6531,7 +6531,15 @@ input ButtonClickEventCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   actionValue: String
 }
 
-<<<<<<< HEAD
+"""
+One machine-translation run: the campaign, the campaign language to write into (never the default) and the mode.
+"""
+input CampaignAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  campaignId: ID!
+  languageId: ID!
+  mode: CampaignAiTranslateMode!
+}
+
 input CampaignAnalyticsBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID
   campaignId: ID!
@@ -6559,15 +6567,6 @@ input CampaignAnalyticsBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN) 
   Defaults to false.
   """
   showMap: Boolean
-=======
-"""
-One machine-translation run: the campaign, the campaign language to write into (never the default) and the mode.
-"""
-input CampaignAiTranslateInput @join__type(graph: API_JOURNEYS_MODERN)  {
-  campaignId: ID!
-  languageId: ID!
-  mode: CampaignAiTranslateMode!
->>>>>>> 40c8bd117 (Phoebe: Machine translation — campaignAiTranslateSubscription, Machine-translate missing and the add-language sweep (#9710, PRD #9657))
 }
 
 input CampaignAnalyticsBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
