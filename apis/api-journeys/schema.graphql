@@ -5788,6 +5788,7 @@ type Query {
   - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served and not retried for a few minutes.
   """
   campaignStats(id: ID!): CampaignStats!
+
   """
   The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
   

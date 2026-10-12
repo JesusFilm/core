@@ -1806,6 +1806,14 @@ type CampaignColumnsBlock implements CampaignBlock & CampaignSectionBlock @join_
 }
 
 """
+Visitors from one country. Codes are ISO alpha-2 exactly as Plausible reports them (so non-ISO codes such as `XK` and `A1` can appear); no names, the viewer labels with `Intl.DisplayNames`.
+"""
+type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
+  countryCode: String!
+  visitors: Int!
+}
+
+"""
 A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
@@ -1861,14 +1869,6 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
   """
   mediaBlockId: ID
-}
-
-"""
-Visitors from one country. Codes are ISO alpha-2 exactly as Plausible reports them (so non-ISO codes such as `XK` and `A1` can appear); no names, the viewer labels with `Intl.DisplayNames`.
-"""
-type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
-  countryCode: String!
-  visitors: Int!
 }
 
 """
