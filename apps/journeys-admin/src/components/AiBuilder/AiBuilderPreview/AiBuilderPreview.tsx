@@ -9,6 +9,8 @@ import { TreeBlock, transformer } from '@core/journeys/ui/block'
 import { BlockRenderer } from '@core/journeys/ui/BlockRenderer'
 import { CardWrapper } from '@core/journeys/ui/CardWrapper'
 import { FramePortal } from '@core/journeys/ui/FramePortal'
+import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 import { StepFooter } from '@core/journeys/ui/StepFooter'
 import { StepHeader } from '@core/journeys/ui/StepHeader'
 import { VideoWrapper } from '@core/journeys/ui/VideoWrapper'
@@ -25,6 +27,17 @@ import { ThemeMode, ThemeName } from '../../../../__generated__/globalTypes'
 
 const FRAME_WIDTH = 360
 const FRAME_HEIGHT = 640
+
+// Without a journey the footer shows share/like/dislike by default, but the
+// card only makes room for them when the journey turns them on. Turning them
+// on here keeps the two in step. Only the fields the card, header and footer
+// read are filled in.
+const PREVIEW_JOURNEY = {
+  language: { __typename: 'Language', id: '529', bcp47: 'en', iso3: 'eng' },
+  showShareButton: true,
+  showLikeButton: true,
+  showDislikeButton: true
+} as unknown as Journey
 
 interface AiBuilderPreviewProps {
   blocks: BlockFields[]
@@ -113,33 +126,35 @@ export function AiBuilderPreview({
           sx={{ width: FRAME_WIDTH, height: FRAME_HEIGHT }}
           dir="ltr"
         >
-          <ThemeProvider
-            themeName={SharedThemeName.journeyUi}
-            themeMode={themeMode}
-            rtl={false}
-            locale="en"
-          >
-            <Box sx={{ position: 'relative', height: '100%' }}>
-              <StepHeader
-                steps={steps}
-                selectedStep={step}
-                sx={{ mt: 2, px: 3 }}
-              />
-              <ThemeProvider
-                themeName={cardBlock?.themeName ?? ThemeName.base}
-                themeMode={themeMode}
-                rtl={false}
-                locale="en"
-                nested
-              >
-                <BlockRenderer
-                  block={step}
-                  wrappers={{ VideoWrapper, CardWrapper }}
+          <JourneyProvider value={{ journey: PREVIEW_JOURNEY }}>
+            <ThemeProvider
+              themeName={SharedThemeName.journeyUi}
+              themeMode={themeMode}
+              rtl={false}
+              locale="en"
+            >
+              <Box sx={{ position: 'relative', height: '100%' }}>
+                <StepHeader
+                  steps={steps}
+                  selectedStep={step}
+                  sx={{ mt: 2, px: 3 }}
                 />
-              </ThemeProvider>
-              <StepFooter selectedStep={step} />
-            </Box>
-          </ThemeProvider>
+                <ThemeProvider
+                  themeName={cardBlock?.themeName ?? ThemeName.base}
+                  themeMode={themeMode}
+                  rtl={false}
+                  locale="en"
+                  nested
+                >
+                  <BlockRenderer
+                    block={step}
+                    wrappers={{ VideoWrapper, CardWrapper }}
+                  />
+                </ThemeProvider>
+                <StepFooter selectedStep={step} />
+              </Box>
+            </ThemeProvider>
+          </JourneyProvider>
         </FramePortal>
       </Box>
     </Stack>
