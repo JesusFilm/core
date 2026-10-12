@@ -73,8 +73,12 @@ export function countMissingTranslations(
 /**
  * Promote `newDefaultLanguageId` to the campaign's default inside `tx`. The
  * campaign is read again here so the completeness gate and the swap see one
- * consistent snapshot: any missing text rejects with `CONFLICT`, field
- * `defaultLanguageId`, carrying the count, and rolls the transaction back.
+ * consistent snapshot: any missing text on a live block rejects with
+ * `CONFLICT`, field `defaultLanguageId`, carrying the count, and rolls the
+ * transaction back. Soft-deleted blocks are swapped too so a restore finds its
+ * text in the right language, but they are not gated: a deleted block with no
+ * entry in the new language has its text moved into `Translations[oldDefault]`
+ * and its column blanked, so it restores as Missing.
  * Returns the campaign's own swapped columns (`title`, `titleTranslations`);
  * the caller writes them with `defaultLanguageId`.
  */
@@ -85,11 +89,15 @@ export async function swapDefaultLanguage(
 ): Promise<SwappedColumns> {
   const campaign = await tx.campaign.findUniqueOrThrow({
     where: { id: campaignId },
-    include: INCLUDE_TRANSLATIONS_CAMPAIGN
+    include: { ...INCLUDE_TRANSLATIONS_CAMPAIGN, blocks: true }
   })
   const oldDefaultLanguageId = campaign.defaultLanguageId
+  const liveBlocks = campaign.blocks.filter((block) => block.deletedAt == null)
 
-  const count = countMissingTranslations(campaign, newDefaultLanguageId)
+  const count = countMissingTranslations(
+    { ...campaign, blocks: liveBlocks },
+    newDefaultLanguageId
+  )
   if (count > 0)
     throw new GraphQLError(
       `${count} ${count === 1 ? 'text has' : 'texts have'} no translation in the new default language`,

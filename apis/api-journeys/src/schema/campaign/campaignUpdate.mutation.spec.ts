@@ -528,6 +528,77 @@ describe('campaignUpdate', () => {
         expect(updatedBlockIds).not.toContain(block.id)
     })
 
+    describe('soft-deleted blocks', () => {
+      function withDeletedHero(
+        campaign: ReturnType<ReturnType<typeof campaignFactory>['build']>
+      ): typeof campaign {
+        return {
+          ...campaign,
+          blocks: campaign.blocks.map((block) =>
+            block.id === 'heroId'
+              ? { ...block, deletedAt: new Date('2026-01-01T00:00:00Z') }
+              : block
+          )
+        }
+      }
+
+      it('swaps a deleted block that has the new language and does not count it in the gate', async () => {
+        const campaign = campaignFactory({ role: 'member' })
+          .withLanguage(FRENCH)
+          .build()
+        const complete = withDeletedHero(translatedInto(campaign, FRENCH))
+        prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+        prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(complete)
+        prismaMock.campaign.update.mockResolvedValue(complete)
+        const hero = campaign.blocks.find((block) => block.id === 'heroId')
+
+        const result = await setDefault(FRENCH)
+
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+          where: { id: 'heroId' },
+          data: expect.objectContaining({
+            title: `FR ${hero?.title}`,
+            titleTranslations: {
+              [campaign.defaultLanguageId]: {
+                value: hero?.title,
+                source: 'human'
+              }
+            }
+          })
+        })
+      })
+
+      it('moves a deleted block’s text without the new language into Translations[oldDefault] and blanks the column', async () => {
+        const campaign = campaignFactory({ role: 'member' })
+          .withLanguage(FRENCH)
+          .build()
+        const complete = withDeletedHero(
+          translatedInto(campaign, FRENCH, { blockId: 'heroId' })
+        )
+        prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+        prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(complete)
+        prismaMock.campaign.update.mockResolvedValue(complete)
+        const hero = campaign.blocks.find((block) => block.id === 'heroId')
+
+        const result = await setDefault(FRENCH)
+
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+          where: { id: 'heroId' },
+          data: expect.objectContaining({
+            title: '',
+            titleTranslations: {
+              [campaign.defaultLanguageId]: {
+                value: hero?.title,
+                source: 'human'
+              }
+            }
+          })
+        })
+      })
+    })
+
     it('does nothing when the language is already the default', async () => {
       const campaign = campaignFactory({ role: 'member' }).build()
       prismaMock.campaign.findUnique.mockResolvedValue(campaign)
