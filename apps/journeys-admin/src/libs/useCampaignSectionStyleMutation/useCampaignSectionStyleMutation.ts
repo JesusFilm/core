@@ -162,6 +162,18 @@ export const CAMPAIGN_IMAGE_BLOCK_UPDATE_STYLE = gql`
   }
 `
 
+export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_STYLE = gql`
+  ${CAMPAIGN_SECTION_STYLE_FIELDS}
+  mutation CampaignFeaturedMediaBlockUpdateStyle(
+    $id: ID!
+    $input: CampaignFeaturedMediaBlockUpdateInput!
+  ) {
+    campaignFeaturedMediaBlockUpdate(id: $id, input: $input) {
+      ...CampaignSectionStyleFields
+    }
+  }
+`
+
 export const CAMPAIGN_HEADER_BLOCK_UPDATE_STYLE = gql`
   ${CAMPAIGN_SECTION_STYLE_FIELDS}
   mutation CampaignHeaderBlockUpdateStyle(
@@ -226,6 +238,10 @@ export const SECTION_STYLE_OPERATIONS: Record<
   CampaignImageBlock: {
     document: CAMPAIGN_IMAGE_BLOCK_UPDATE_STYLE,
     operation: 'campaignImageBlockUpdate'
+  },
+  CampaignFeaturedMediaBlock: {
+    document: CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_STYLE,
+    operation: 'campaignFeaturedMediaBlockUpdate'
   },
   CampaignHeaderBlock: {
     document: CAMPAIGN_HEADER_BLOCK_UPDATE_STYLE,

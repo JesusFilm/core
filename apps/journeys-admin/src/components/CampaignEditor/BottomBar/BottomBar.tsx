@@ -26,6 +26,7 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
 import { useCampaignButtonBlockCreateMutation } from '../../../libs/useCampaignButtonBlockCreateMutation'
+import { isCampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
 import {
   CampaignSectionTypename,
   useCampaignSectionCreateMutation
@@ -44,6 +45,7 @@ import {
 import { ChromeEdit } from '../ChromeEdit'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { LinkChip } from '../LinkChip'
+import { MediaSectionEdit } from '../MediaSectionEdit'
 import { OrphanPageBar } from '../OrphanPageBar'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import {
@@ -88,9 +90,10 @@ interface SectionInsert {
  * is selected. Campaign row: Settings, Theme, Languages, Translations, +Add
  * section. Section: Edit, Style, +Add (an Extra, or a section above or
  * below), move up/down, duplicate, bin behind a confirmation. Chrome: Edit,
- * Style, +Add only; the header's Edit opens the logo editor and an Image
- * section's Edit opens the picture editor, both in a drawer. Text Extra:
- * size, align, colour, Style, bin. Button Extra adds the link chip and
+ * Style, +Add only; the header's Edit opens the logo editor, an Image
+ * section's Edit the picture editor and a hero's or Featured Media
+ * section's Edit the media editor, all in a drawer. Text Extra: size,
+ * align, colour, Style, bin. Button Extra adds the link chip and
  * variant/size/colours. Region card: Open page, +Add line, Settings,
  * list/unlist and move. On an Orphan Page the campaign row adds the orphan
  * page bar. Controls that belong to later tickets render
@@ -146,10 +149,12 @@ export function BottomBar({
     (candidate) => candidate.id === selectedSection?.id
   )
 
-  /** The header and an Image section edit in a drawer (logo, picture); everything else edits its text in place. */
+  /** The header, an Image section and the sections with a Media Slot edit in a drawer (logo, picture, media); everything else edits its text in place. */
   const editedBlock =
-    selection.block?.__typename === 'CampaignHeaderBlock' ||
-    selection.block?.__typename === 'CampaignImageBlock'
+    selection.block != null &&
+    (selection.block.__typename === 'CampaignHeaderBlock' ||
+      selection.block.__typename === 'CampaignImageBlock' ||
+      isCampaignMediaOwner(selection.block))
       ? selection.block
       : undefined
 
@@ -653,6 +658,12 @@ export function BottomBar({
         )}
         {editedBlock?.__typename === 'CampaignImageBlock' && (
           <ImageSectionEdit
+            block={editedBlock}
+            onClose={() => setEditOpen(false)}
+          />
+        )}
+        {editedBlock != null && isCampaignMediaOwner(editedBlock) && (
+          <MediaSectionEdit
             block={editedBlock}
             onClose={() => setEditOpen(false)}
           />
