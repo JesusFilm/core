@@ -100,6 +100,24 @@ describe('campaign', () => {
     }
   `)
 
+  const CAMPAIGN_JOURNEY_CARDS = graphql(`
+    query CampaignJourneyCards($id: ID!) {
+      campaign(id: $id) {
+        blocks {
+          __typename
+          id
+          ... on CampaignJourneyBlock {
+            journeyStatus
+            journeyUrl
+            journeyImage {
+              src
+            }
+          }
+        }
+      }
+    }
+  `)
+
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
@@ -191,6 +209,68 @@ describe('campaign', () => {
       where: { id: 'campaignId' },
       include: { team: { include: { userTeams: true } } }
     })
+  })
+
+  it('reads the live journey of every journey card in one query', async () => {
+    const fixture = campaignFactory().build()
+    const card = (id: string, journeyId: string): any => ({
+      ...fixture.blocks[0],
+      id,
+      typename: 'CampaignJourneyBlock',
+      journeyId,
+      action: null
+    })
+    fixture.blocks = [
+      ...fixture.blocks,
+      card('cardOne', 'journeyOne'),
+      card('cardTwo', 'journeyTwo'),
+      card('cardThree', 'journeyThree')
+    ]
+    const journey = (id: string, status: string): any => ({
+      id,
+      slug: id,
+      status,
+      deletedAt: null,
+      team: { id: 'otherTeamId', customDomains: [] },
+      journeyCollectionJourneys: [],
+      primaryImageBlock: null
+    })
+    prismaMock.campaign.findUnique.mockResolvedValue(fixture)
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
+    prismaMock.journey.findMany.mockResolvedValue([
+      journey('journeyOne', 'published'),
+      journey('journeyTwo', 'draft'),
+      journey('journeyThree', 'archived')
+    ])
+
+    const result = (await authClient({
+      document: CAMPAIGN_JOURNEY_CARDS,
+      variables: { id: 'campaignId' }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(
+      result.data.campaign.blocks.filter(
+        (block: any) => block.__typename === 'CampaignJourneyBlock'
+      )
+    ).toEqual([
+      expect.objectContaining({
+        id: 'cardOne',
+        journeyStatus: 'published',
+        journeyUrl: expect.stringContaining('/journeyOne')
+      }),
+      expect.objectContaining({
+        id: 'cardTwo',
+        journeyStatus: 'draft',
+        journeyUrl: null
+      }),
+      expect.objectContaining({
+        id: 'cardThree',
+        journeyStatus: 'archived',
+        journeyUrl: expect.stringContaining('/journeyThree')
+      })
+    ])
+    expect(prismaMock.journey.findMany).toHaveBeenCalledTimes(1)
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {

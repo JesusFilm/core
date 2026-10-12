@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignButtonBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignButtonBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignButtonBlockCreate
@@ -34,7 +34,10 @@ export interface CampaignButtonBlockCreate_campaignButtonBlockCreate_action_Camp
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignButtonBlockCreate_campaignButtonBlockCreate_action = CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignLinkAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignScrollToBlockAction | CampaignButtonBlockCreate_campaignButtonBlockCreate_action_CampaignNavigateToRegionAction;
@@ -109,4 +112,5 @@ export interface CampaignButtonBlockCreate {
 
 export interface CampaignButtonBlockCreateVariables {
   input: CampaignButtonBlockCreateInput;
+  languageId?: string | null;
 }

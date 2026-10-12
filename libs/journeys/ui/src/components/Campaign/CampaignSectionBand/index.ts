@@ -1,5 +1,6 @@
 export { CampaignBandCover } from './CampaignBandCover'
 export { CampaignSectionBand } from './CampaignSectionBand'
+export { CampaignSlotContext, useCampaignSlot } from './CampaignSlotContext'
 export {
   CampaignSectionContext,
   useCampaignSection

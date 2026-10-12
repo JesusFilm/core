@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./../../../../__generated__/globalTypes";
+import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignPublicFields
@@ -71,6 +71,18 @@ export interface CampaignPublicFields_strings {
   value: string;
 }
 
+export interface CampaignPublicFields_regions_countries_country_name {
+  __typename: "CountryName";
+  value: string;
+}
+
+export interface CampaignPublicFields_regions_countries_country {
+  __typename: "Country";
+  id: string;
+  flagPngSrc: string | null;
+  name: CampaignPublicFields_regions_countries_country_name[];
+}
+
 export interface CampaignPublicFields_regions_countries {
   __typename: "CampaignRegionCountry";
   id: string;
@@ -79,6 +91,10 @@ export interface CampaignPublicFields_regions_countries {
    */
   countryId: string;
   order: number;
+  /**
+   * The api-languages Country, resolved through federation: flag and translated name live there.
+   */
+  country: CampaignPublicFields_regions_countries_country;
 }
 
 export interface CampaignPublicFields_regions_languages_language_name {
@@ -107,6 +123,14 @@ export interface CampaignPublicFields_regions_languages {
    */
   journeyStatus: JourneyStatus | null;
   /**
+   * Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.
+   */
+  title: string | null;
+  /**
+   * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
+   */
+  shortLinkUrl: string | null;
+  /**
    * The linked journey's public address, decided by its own team's domains; null unless the journey is live-published.
    */
   journeyUrl: string | null;
@@ -115,6 +139,25 @@ export interface CampaignPublicFields_regions_languages {
    */
   embedUrl: string | null;
   language: CampaignPublicFields_regions_languages_language;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignHeaderBlock {
@@ -282,6 +325,95 @@ export interface CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock 
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_title[];
+  images: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_images[];
+  variant: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_title[];
+  images: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_images[];
+  variant: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_variant | null;
+  children: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -323,7 +455,14 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock {
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignJourneyListBlock {
@@ -484,6 +623,348 @@ export interface CampaignPublicFields_regions_lines_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicFields_regions_lines_CampaignJourneyBlock_journeyImage | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo = CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video | CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_MuxVideo | CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -545,7 +1026,10 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock_action_C
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_regions_lines_CampaignButtonBlock_action = CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_regions_lines_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -592,7 +1076,7 @@ export interface CampaignPublicFields_regions_lines_CampaignButtonBlock {
   action: CampaignPublicFields_regions_lines_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
+export type CampaignPublicFields_regions_lines = CampaignPublicFields_regions_lines_CampaignColumnBlock | CampaignPublicFields_regions_lines_CampaignHeaderBlock | CampaignPublicFields_regions_lines_CampaignFooterBlock | CampaignPublicFields_regions_lines_CampaignHeroBlock | CampaignPublicFields_regions_lines_CampaignRegionSwitcherBlock | CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock | CampaignPublicFields_regions_lines_CampaignJourneyListBlock | CampaignPublicFields_regions_lines_CampaignAnalyticsBlock | CampaignPublicFields_regions_lines_CampaignRegionHeaderBlock | CampaignPublicFields_regions_lines_CampaignRegionShareBlock | CampaignPublicFields_regions_lines_CampaignRichTextBlock | CampaignPublicFields_regions_lines_CampaignColumnsBlock | CampaignPublicFields_regions_lines_CampaignImageBlock | CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock | CampaignPublicFields_regions_lines_CampaignJourneyBlock | CampaignPublicFields_regions_lines_CampaignVideoBlock | CampaignPublicFields_regions_lines_CampaignTypographyBlock | CampaignPublicFields_regions_lines_CampaignButtonBlock;
 
 export interface CampaignPublicFields_regions {
   __typename: "CampaignRegionPublic";
@@ -691,6 +1175,25 @@ export interface CampaignPublicFields_footer {
   buttonColor: string | null;
   buttonTextColor: string | null;
   accentColor: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
 }
 
 export interface CampaignPublicFields_chrome_CampaignHeaderBlock {
@@ -858,6 +1361,95 @@ export interface CampaignPublicFields_chrome_CampaignRegionSwitcherBlock {
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_title[];
+  images: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_images[];
+  variant: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_title[];
+  images: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_images[];
+  variant: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_variant | null;
+  children: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -899,7 +1491,14 @@ export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock {
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: CampaignPublicFields_chrome_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface CampaignPublicFields_chrome_CampaignJourneyListBlock {
@@ -1060,6 +1659,348 @@ export interface CampaignPublicFields_chrome_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_chrome_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
+export interface CampaignPublicFields_chrome_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicFields_chrome_CampaignJourneyBlock_journeyImage | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo = CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video | CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_MuxVideo | CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface CampaignPublicFields_chrome_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -1121,7 +2062,10 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock_action_Campaign
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_chrome_CampaignButtonBlock_action = CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_chrome_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1168,7 +2112,26 @@ export interface CampaignPublicFields_chrome_CampaignButtonBlock {
   action: CampaignPublicFields_chrome_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
+export type CampaignPublicFields_chrome = CampaignPublicFields_chrome_CampaignColumnBlock | CampaignPublicFields_chrome_CampaignHeaderBlock | CampaignPublicFields_chrome_CampaignFooterBlock | CampaignPublicFields_chrome_CampaignHeroBlock | CampaignPublicFields_chrome_CampaignRegionSwitcherBlock | CampaignPublicFields_chrome_CampaignVideoCarouselBlock | CampaignPublicFields_chrome_CampaignJourneyListBlock | CampaignPublicFields_chrome_CampaignAnalyticsBlock | CampaignPublicFields_chrome_CampaignRegionHeaderBlock | CampaignPublicFields_chrome_CampaignRegionShareBlock | CampaignPublicFields_chrome_CampaignRichTextBlock | CampaignPublicFields_chrome_CampaignColumnsBlock | CampaignPublicFields_chrome_CampaignImageBlock | CampaignPublicFields_chrome_CampaignFeaturedMediaBlock | CampaignPublicFields_chrome_CampaignJourneyBlock | CampaignPublicFields_chrome_CampaignVideoBlock | CampaignPublicFields_chrome_CampaignTypographyBlock | CampaignPublicFields_chrome_CampaignButtonBlock;
+
+export interface CampaignPublicFields_pages_blocks_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+}
 
 export interface CampaignPublicFields_pages_blocks_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
@@ -1335,6 +2298,95 @@ export interface CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock {
   switcherVariant: CampaignSwitcherVariant;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_title_language;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_title_language;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_variant {
+  __typename: "VideoVariant";
+  id: string;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_title[];
+  images: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_images[];
+  variant: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children_variant | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_title[];
+  images: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_images[];
+  variant: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_variant | null;
+  children: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video_children[];
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -1376,7 +2428,14 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock {
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
+  /**
+   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   */
   videoVariantLanguageId: string | null;
+  /**
+   * Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.
+   */
+  video: CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock_video | null;
 }
 
 export interface CampaignPublicFields_pages_blocks_CampaignJourneyListBlock {
@@ -1537,6 +2596,348 @@ export interface CampaignPublicFields_pages_blocks_CampaignRegionShareBlock {
   intro: string | null;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  lede: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignJourneyBlock_journeyImage {
+  __typename: "CampaignJourneyImage";
+  src: string;
+  alt: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Snapshot of the journey's title, editable; the default-language value.
+   */
+  title: string | null;
+  /**
+   * Snapshot of the journey's description, editable; the default-language value.
+   */
+  description: string | null;
+  /**
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
+   */
+  journeyStatus: JourneyStatus | null;
+  /**
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
+   */
+  journeyUrl: string | null;
+  /**
+   * The journey's primary image, read live; null when it has none.
+   */
+  journeyImage: CampaignPublicFields_pages_blocks_CampaignJourneyBlock_journeyImage | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title {
+  __typename: "VideoTitle";
+  value: string;
+  primary: boolean;
+  language: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_images {
+  __typename: "CloudflareImage";
+  mobileCinematicHigh: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant {
+  __typename: "VideoVariant";
+  id: string;
+  hls: string | null;
+  duration: number;
+  /**
+   * slug is a permanent link to the video variant.
+   */
+  slug: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video {
+  __typename: "Video";
+  id: string;
+  label: VideoLabel;
+  /**
+   * slug is a permanent link to the video.
+   */
+  slug: string;
+  /**
+   * The number of published child videos associated with this video
+   */
+  childrenCount: number;
+  title: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  images: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
+  variant: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_MuxVideo {
+  __typename: "MuxVideo";
+  id: string;
+  playbackId: string | null;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_YouTube {
+  __typename: "YouTube";
+  id: string;
+}
+
+export type CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo = CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video | CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_MuxVideo | CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  /**
+   * Always `internal`, `youTube` or `mux`.
+   */
+  source: VideoBlockSource | null;
+  /**
+   * The Watch Video id, the YouTube video id or the Mux video id, by `source`.
+   */
+  videoId: string | null;
+  /**
+   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   */
+  videoVariantLanguageId: string | null;
+  /**
+   * The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.
+   */
+  title: string | null;
+  /**
+   * The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.
+   */
+  description: string | null;
+  /**
+   * The poster captured at pick for YouTube and Mux; null for a Watch video (read through `mediaVideo`).
+   */
+  image: string | null;
+  /**
+   * Seconds, captured at pick for YouTube and Mux.
+   */
+  duration: number | null;
+  /**
+   * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
+   */
+  mediaVideo: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo | null;
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignTypographyBlock {
   __typename: "CampaignTypographyBlock";
   id: string;
@@ -1598,7 +2999,10 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_Ca
    * The CampaignButtonBlock this action belongs to.
    */
   parentBlockId: string;
-  regionId: string;
+  /**
+   * Null once the region has been deleted.
+   */
+  regionId: string | null;
 }
 
 export type CampaignPublicFields_pages_blocks_CampaignButtonBlock_action = CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignLinkAction | CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignScrollToBlockAction | CampaignPublicFields_pages_blocks_CampaignButtonBlock_action_CampaignNavigateToRegionAction;
@@ -1645,7 +3049,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignButtonBlock {
   action: CampaignPublicFields_pages_blocks_CampaignButtonBlock_action | null;
 }
 
-export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
+export type CampaignPublicFields_pages_blocks = CampaignPublicFields_pages_blocks_CampaignColumnBlock | CampaignPublicFields_pages_blocks_CampaignHeaderBlock | CampaignPublicFields_pages_blocks_CampaignFooterBlock | CampaignPublicFields_pages_blocks_CampaignHeroBlock | CampaignPublicFields_pages_blocks_CampaignRegionSwitcherBlock | CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock | CampaignPublicFields_pages_blocks_CampaignJourneyListBlock | CampaignPublicFields_pages_blocks_CampaignAnalyticsBlock | CampaignPublicFields_pages_blocks_CampaignRegionHeaderBlock | CampaignPublicFields_pages_blocks_CampaignRegionShareBlock | CampaignPublicFields_pages_blocks_CampaignRichTextBlock | CampaignPublicFields_pages_blocks_CampaignColumnsBlock | CampaignPublicFields_pages_blocks_CampaignImageBlock | CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock | CampaignPublicFields_pages_blocks_CampaignJourneyBlock | CampaignPublicFields_pages_blocks_CampaignVideoBlock | CampaignPublicFields_pages_blocks_CampaignTypographyBlock | CampaignPublicFields_pages_blocks_CampaignButtonBlock;
 
 export interface CampaignPublicFields_pages {
   __typename: "CampaignPagePublic";

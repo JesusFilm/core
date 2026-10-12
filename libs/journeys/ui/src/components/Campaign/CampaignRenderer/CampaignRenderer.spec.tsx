@@ -8,6 +8,9 @@ import { transformCampaignBlocks } from '../libs/transformer'
 import {
   campaignPublic,
   eurRegion,
+  featuredMediaImageBlock,
+  featuredMediaSectionBlock,
+  heroVideoBlock,
   landingBlocks,
   regionPageBlocks
 } from '../testData'
@@ -68,6 +71,30 @@ describe('CampaignRenderer', () => {
     expect(
       screen.getByTestId('CampaignSectionBand-carouselId')
     ).toHaveTextContent('Films for the season')
+  })
+
+  it('renders CampaignFeaturedMediaBlock through CampaignFeaturedMedia', () => {
+    renderBlock(
+      treeOf(
+        [featuredMediaSectionBlock, featuredMediaImageBlock],
+        'featuredMediaId'
+      )
+    )
+    expect(
+      screen.getByTestId('CampaignSectionBand-featuredMediaId')
+    ).toHaveTextContent('A story for every home')
+    expect(screen.getByTestId('CampaignMediaSlot')).toBeInTheDocument()
+  })
+
+  it('renders nothing for a Campaign Video, which only fills a Media Slot', () => {
+    const { container } = renderBlock({
+      ...heroVideoBlock,
+      children: [],
+      cover: null,
+      media: null,
+      logo: null
+    })
+    expect(container).toBeEmptyDOMElement()
   })
 
   it('renders CampaignJourneyListBlock through CampaignJourneyList', () => {

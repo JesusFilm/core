@@ -3,11 +3,14 @@ import { useMutation } from '@apollo/client/react'
 
 import { CampaignAnalyticsBlockUpdateText } from '../../../__generated__/CampaignAnalyticsBlockUpdateText'
 import { CampaignButtonBlockUpdateLabel } from '../../../__generated__/CampaignButtonBlockUpdateLabel'
+import { CampaignFeaturedMediaBlockUpdateText } from '../../../__generated__/CampaignFeaturedMediaBlockUpdateText'
 import { CampaignHeroBlockUpdateText } from '../../../__generated__/CampaignHeroBlockUpdateText'
+import { CampaignJourneyBlockUpdateText } from '../../../__generated__/CampaignJourneyBlockUpdateText'
 import { CampaignJourneyListBlockUpdateText } from '../../../__generated__/CampaignJourneyListBlockUpdateText'
 import { CampaignRegionHeaderBlockUpdateText } from '../../../__generated__/CampaignRegionHeaderBlockUpdateText'
 import { CampaignRegionShareBlockUpdateText } from '../../../__generated__/CampaignRegionShareBlockUpdateText'
 import { CampaignRegionSwitcherBlockUpdateText } from '../../../__generated__/CampaignRegionSwitcherBlockUpdateText'
+import { CampaignRichTextBlockUpdateText } from '../../../__generated__/CampaignRichTextBlockUpdateText'
 import { CampaignTypographyBlockUpdateContent } from '../../../__generated__/CampaignTypographyBlockUpdateContent'
 import { CampaignVideoCarouselBlockUpdateText } from '../../../__generated__/CampaignVideoCarouselBlockUpdateText'
 
@@ -15,7 +18,8 @@ import {
   CAMPAIGN_TEXT_FIELDS,
   CampaignTextBlock,
   CampaignTextField,
-  CampaignTextTypename
+  CampaignTextTypename,
+  campaignTextInputKey
 } from './campaignTextFields'
 
 /**
@@ -100,6 +104,19 @@ export const CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT = gql`
   }
 `
 
+export const CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT = gql`
+  mutation CampaignJourneyBlockUpdateText(
+    $id: ID!
+    $input: CampaignJourneyBlockUpdateInput!
+  ) {
+    campaignJourneyBlockUpdate(id: $id, input: $input) {
+      id
+      title
+      description
+    }
+  }
+`
+
 export const CAMPAIGN_ANALYTICS_BLOCK_UPDATE_TEXT = gql`
   mutation CampaignAnalyticsBlockUpdateText(
     $id: ID!
@@ -138,6 +155,34 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT = gql`
   }
 `
 
+export const CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_TEXT = gql`
+  mutation CampaignRichTextBlockUpdateText(
+    $id: ID!
+    $input: CampaignRichTextBlockUpdateInput!
+  ) {
+    campaignRichTextBlockUpdate(id: $id, input: $input) {
+      id
+      title
+      richTextContent: content
+    }
+  }
+`
+
+export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT = gql`
+  mutation CampaignFeaturedMediaBlockUpdateText(
+    $id: ID!
+    $input: CampaignFeaturedMediaBlockUpdateInput!
+  ) {
+    campaignFeaturedMediaBlockUpdate(id: $id, input: $input) {
+      id
+      eyebrow
+      title
+      lede
+      bullets
+    }
+  }
+`
+
 interface TextOperation {
   document: ReturnType<typeof gql>
   operation: string
@@ -168,6 +213,10 @@ const TEXT_OPERATIONS: Record<CampaignTextTypename, TextOperation> = {
     document: CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT,
     operation: 'campaignJourneyListBlockUpdate'
   },
+  CampaignJourneyBlock: {
+    document: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
+    operation: 'campaignJourneyBlockUpdate'
+  },
   CampaignAnalyticsBlock: {
     document: CAMPAIGN_ANALYTICS_BLOCK_UPDATE_TEXT,
     operation: 'campaignAnalyticsBlockUpdate'
@@ -179,6 +228,14 @@ const TEXT_OPERATIONS: Record<CampaignTextTypename, TextOperation> = {
   CampaignRegionShareBlock: {
     document: CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT,
     operation: 'campaignRegionShareBlockUpdate'
+  },
+  CampaignRichTextBlock: {
+    document: CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_TEXT,
+    operation: 'campaignRichTextBlockUpdate'
+  },
+  CampaignFeaturedMediaBlock: {
+    document: CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT,
+    operation: 'campaignFeaturedMediaBlockUpdate'
   }
 }
 
@@ -189,9 +246,12 @@ type CampaignTextResult =
   | CampaignRegionSwitcherBlockUpdateText
   | CampaignVideoCarouselBlockUpdateText
   | CampaignJourneyListBlockUpdateText
+  | CampaignJourneyBlockUpdateText
   | CampaignAnalyticsBlockUpdateText
   | CampaignRegionHeaderBlockUpdateText
   | CampaignRegionShareBlockUpdateText
+  | CampaignRichTextBlockUpdateText
+  | CampaignFeaturedMediaBlockUpdateText
 
 interface CampaignTextVariables {
   id: string
@@ -258,6 +318,10 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignJourneyListBlockUpdateText,
     CampaignTextVariables
   >(CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT)[0]
+  const journey = useMutation<
+    CampaignJourneyBlockUpdateText,
+    CampaignTextVariables
+  >(CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT)[0]
   const analytics = useMutation<
     CampaignAnalyticsBlockUpdateText,
     CampaignTextVariables
@@ -270,6 +334,15 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignRegionShareBlockUpdateText,
     CampaignTextVariables
   >(CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT)[0]
+  const featuredMedia = useMutation<
+    CampaignFeaturedMediaBlockUpdateText,
+    CampaignTextVariables
+  >(CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT)[0]
+
+  const richText = useMutation<
+    CampaignRichTextBlockUpdateText,
+    CampaignTextVariables
+  >(CAMPAIGN_RICH_TEXT_BLOCK_UPDATE_TEXT)[0]
 
   const mutations = {
     CampaignTypographyBlock: typography,
@@ -278,9 +351,12 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignRegionSwitcherBlock: regionSwitcher,
     CampaignVideoCarouselBlock: videoCarousel,
     CampaignJourneyListBlock: journeyList,
+    CampaignJourneyBlock: journey,
     CampaignAnalyticsBlock: analytics,
     CampaignRegionHeaderBlock: regionHeader,
-    CampaignRegionShareBlock: regionShare
+    CampaignRegionShareBlock: regionShare,
+    CampaignRichTextBlock: richText,
+    CampaignFeaturedMediaBlock: featuredMedia
   } as const
 
   return async function mutate(block, field, value, context = {}) {
@@ -290,7 +366,10 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
       context: Record<string, unknown>
     }) => Promise<ApolloLink.Result<CampaignTextResult>>
     return await run({
-      variables: { id: block.id, input: { [field]: value } },
+      variables: {
+        id: block.id,
+        input: { [campaignTextInputKey(field)]: value }
+      },
       optimisticResponse: campaignTextOptimisticResponse(block, field, value),
       context
     })

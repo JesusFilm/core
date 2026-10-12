@@ -9,6 +9,9 @@ export type CampaignTextField =
   | 'title'
   | 'lede'
   | 'intro'
+  | 'richTextContent'
+  | 'description'
+  | 'bullets'
 
 /** PRD §15 text caps, mirrored for the editor's pure pre-validation. */
 export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
@@ -17,7 +20,31 @@ export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
   eyebrow: 80,
   title: 150,
   lede: 500,
-  intro: 500
+  intro: 500,
+  richTextContent: 5000,
+  description: 1000,
+  bullets: 1000
+}
+
+/**
+ * The API input key a text field is written under. Rich text `content` is
+ * read as `richTextContent` because the public fragment aliases it away
+ * from the Typography block's `content`.
+ */
+export function campaignTextInputKey(field: CampaignTextField): string {
+  return field === 'richTextContent' ? 'content' : field
+}
+
+/**
+ * The cap of a field on a given typename where it differs from the field's
+ * default: a journey card's title holds 200 characters, a section's 150.
+ */
+export function campaignTextCap(
+  typename: CampaignTextTypename,
+  field: CampaignTextField
+): number {
+  if (typename === 'CampaignJourneyBlock' && field === 'title') return 200
+  return CAMPAIGN_TEXT_CAPS[field]
 }
 
 /** The text fields each typename carries, in render order. */
@@ -28,9 +55,12 @@ export const CAMPAIGN_TEXT_FIELDS = {
   CampaignRegionSwitcherBlock: ['title'],
   CampaignVideoCarouselBlock: ['eyebrow', 'title'],
   CampaignJourneyListBlock: ['eyebrow', 'title', 'lede'],
+  CampaignJourneyBlock: ['title', 'description'],
   CampaignAnalyticsBlock: ['eyebrow', 'title'],
   CampaignRegionHeaderBlock: ['intro'],
-  CampaignRegionShareBlock: ['title', 'intro']
+  CampaignRegionShareBlock: ['title', 'intro'],
+  CampaignRichTextBlock: ['title', 'richTextContent'],
+  CampaignFeaturedMediaBlock: ['eyebrow', 'title', 'lede', 'bullets']
 } as const satisfies Partial<
   Record<CampaignBlock['__typename'], readonly CampaignTextField[]>
 >

@@ -10,7 +10,7 @@ import { CampaignTextSource } from "./globalTypes";
 // ====================================================
 
 export interface CampaignBlockTranslationFields_CampaignHeaderBlock {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock";
+  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignVideoBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock" | "CampaignColumnBlock";
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations {
@@ -225,4 +225,12 @@ export interface CampaignBlockTranslationFields_CampaignButtonBlock {
   labelTranslations: CampaignBlockTranslationFields_CampaignButtonBlock_labelTranslations[];
 }
 
-export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignHeaderBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock;
+export interface CampaignBlockTranslationFields_CampaignJourneyBlock {
+  __typename: "CampaignJourneyBlock";
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
+}
+
+export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignHeaderBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock;

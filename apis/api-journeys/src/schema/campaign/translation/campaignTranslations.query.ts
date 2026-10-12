@@ -207,15 +207,16 @@ function byParentOrder(
   return (a.parentOrder ?? 0) - (b.parentOrder ?? 0)
 }
 
-/** Sections in order, each followed by its children in order. */
+/**
+ * Sections in order, each followed by its children in order. A block whose
+ * parent is not live (deleting a section only stamps the section) sits on no
+ * visible page, so it is dropped rather than promoted to a section.
+ */
 function inReadingOrder(blocks: CampaignBlock[]): CampaignBlock[] {
   const childrenOf = (id: string): CampaignBlock[] =>
     blocks.filter((block) => block.parentBlockId === id).sort(byParentOrder)
-  const ids = new Set(blocks.map((block) => block.id))
   return blocks
-    .filter(
-      (block) => block.parentBlockId == null || !ids.has(block.parentBlockId)
-    )
+    .filter((block) => block.parentBlockId == null)
     .sort(byParentOrder)
     .flatMap((section) => [section, ...childrenOf(section.id)])
 }

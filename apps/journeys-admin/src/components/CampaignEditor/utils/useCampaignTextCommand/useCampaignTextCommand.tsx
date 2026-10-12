@@ -1,5 +1,4 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
@@ -21,6 +20,7 @@ import {
 import { useCampaignStringUpdateMutation } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignTranslationSetMutation } from '../../../../libs/useCampaignTranslationSetMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { messageOf } from '../messageOf'
 
 /** One inline-editable text: a text field of a campaign block, or a Campaign String. */
 export type CampaignTextTarget =
@@ -60,14 +60,16 @@ export function textDebounceKey(
   field: string,
   languageId?: string | null
 ): string {
-  const base = `${target.__typename}:${target.id}:${field}`
+  const base = `${textDebounceKeyPrefix(target)}${field}`
   return languageId == null ? base : `${base}:${languageId}`
 }
 
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
+/** The prefix shared by the debounce keys of every field of one block. */
+export function textDebounceKeyPrefix(target: {
+  __typename: string
+  id: string
+}): string {
+  return `${target.__typename}:${target.id}:`
 }
 
 interface ResolvedTarget {
@@ -143,14 +145,22 @@ export function useCampaignTextCommand(
   const [stringUpdate] = useCampaignStringUpdateMutation()
   const [translationSet] = useCampaignTranslationSetMutation()
 
+  // The value an undo or redo of this field just wrote: the cache has not
+  // caught up when the effect below runs, so it is the field's new baseline.
+  const appliedValue = useRef<string | undefined>(undefined)
+
   useEffect(() => {
+    const applied = appliedValue.current
+    appliedValue.current = undefined
     if (undo == null || undo.id === commandInput.id) return
-    setCommandInput({ id: uuidv4(), value })
+    setCommandInput({ id: uuidv4(), value: applied ?? committed })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [undo?.id])
 
   useEffect(() => {
-    setValue(committed)
+    // The API trims what it stores, so a save that only trimmed what was
+    // typed must not rewrite the field while the user is still typing.
+    setValue((typed) => (typed.trim() === committed ? typed : committed))
   }, [committed])
 
   useEffect(() => {
@@ -272,6 +282,7 @@ export function useCampaignTextCommand(
         focus
       }) {
         if (focus) {
+          appliedValue.current = nextValue
           if (block != null)
             dispatch({
               type: 'SetEditorFocusAction',
