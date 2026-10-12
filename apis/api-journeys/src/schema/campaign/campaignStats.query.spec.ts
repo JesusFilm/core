@@ -506,17 +506,17 @@ describe('campaignStats', () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
         ...{
-        fresh: false,
-        backingOff: false,
-        sweptAt: Date.now() - 3600000,
-        sweep: {
-          from: '2026-10-05T00:00:00.000Z',
-          to: '2026-10-06T00:00:00.000Z',
-          journeys: {
-            enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
+          fresh: false,
+          backingOff: false,
+          sweptAt: Date.now() - 3600000,
+          sweep: {
+            from: '2026-10-05T00:00:00.000Z',
+            to: '2026-10-06T00:00:00.000Z',
+            journeys: {
+              enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
+            }
           }
-        }
-      },
+        },
         backingOff: true
       })
 
