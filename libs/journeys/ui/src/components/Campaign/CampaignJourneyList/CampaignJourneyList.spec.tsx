@@ -102,7 +102,7 @@ describe('CampaignJourneyList', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('omits a card whose journey is not live-published', () => {
+  it('omits a card whose journey is neither published nor archived, and keeps an archived one', () => {
     renderList(
       listTree([
         item('live', 0),
@@ -110,10 +110,7 @@ describe('CampaignJourneyList', () => {
           journeyStatus: JourneyStatus.draft,
           journeyUrl: null
         }),
-        item('archived', 2, {
-          journeyStatus: JourneyStatus.archived,
-          journeyUrl: null
-        }),
+        item('archived', 2, { journeyStatus: JourneyStatus.archived }),
         item('trashed', 3, { journeyStatus: null, journeyUrl: null })
       ])
     )
@@ -122,7 +119,7 @@ describe('CampaignJourneyList', () => {
       screen
         .getAllByTestId(/^CampaignJourneyCard-/)
         .map((card) => card.dataset.testid)
-    ).toEqual(['CampaignJourneyCard-live'])
+    ).toEqual(['CampaignJourneyCard-live', 'CampaignJourneyCard-archived'])
   })
 
   it('links each card to the journey’s own public address with the openTemplate string', () => {
@@ -194,17 +191,21 @@ describe('CampaignJourneyList', () => {
   })
 
   describe('liveJourneyCards', () => {
-    it('keeps only published items that have an address', () => {
+    it('keeps only published or archived items that have an address', () => {
       const tree = listTree([
         item('live', 0),
         item('noUrl', 1, { journeyUrl: null }),
         item('draft', 2, {
           journeyStatus: JourneyStatus.draft,
           journeyUrl: null
-        })
+        }),
+        item('archived', 3, { journeyStatus: JourneyStatus.archived })
       ])
 
-      expect(liveJourneyCards(tree).map((card) => card.id)).toEqual(['live'])
+      expect(liveJourneyCards(tree).map((card) => card.id)).toEqual([
+        'live',
+        'archived'
+      ])
     })
   })
 

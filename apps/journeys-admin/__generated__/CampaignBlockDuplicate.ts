@@ -659,10 +659,6 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBl
    */
   parentOrder: number | null;
   /**
-   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
-   */
-  journeyId: string | null;
-  /**
    * Snapshot of the journey's title, editable; the default-language value.
    */
   title: string | null;

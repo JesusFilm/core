@@ -637,10 +637,6 @@ export interface CampaignPublicFields_regions_lines_CampaignJourneyBlock {
    */
   parentOrder: number | null;
   /**
-   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
-   */
-  journeyId: string | null;
-  /**
    * Snapshot of the journey's title, editable; the default-language value.
    */
   title: string | null;
@@ -1479,10 +1475,6 @@ export interface CampaignPublicFields_chrome_CampaignJourneyBlock {
    */
   parentOrder: number | null;
   /**
-   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
-   */
-  journeyId: string | null;
-  /**
    * Snapshot of the journey's title, editable; the default-language value.
    */
   title: string | null;
@@ -2221,10 +2213,6 @@ export interface CampaignPublicFields_pages_blocks_CampaignJourneyBlock {
    * Order among siblings. Null on an owned block (a cover, logo or media slot).
    */
   parentOrder: number | null;
-  /**
-   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
-   */
-  journeyId: string | null;
   /**
    * Snapshot of the journey's title, editable; the default-language value.
    */

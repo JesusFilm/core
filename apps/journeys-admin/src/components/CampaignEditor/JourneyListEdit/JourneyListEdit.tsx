@@ -7,11 +7,13 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import {
+  type CampaignTreeBlock,
+  isJourneyCardVisible
+} from '@core/journeys/ui/Campaign'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
@@ -67,8 +69,8 @@ interface JourneyCardEditProps {
 /**
  * One journey card on the canvas: the journey's primary image read live, and
  * the snapshot title and description, which edit in place while the card is
- * selected. A card whose journey is no longer published carries a warning;
- * visitors never see it.
+ * selected. A card whose journey is neither published nor archived
+ * carries a warning; visitors never see it.
  */
 function JourneyCardEdit({
   card,
@@ -78,7 +80,7 @@ function JourneyCardEdit({
   onSelect
 }: JourneyCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const live = card.journeyStatus === JourneyStatus.published
+  const live = isJourneyCardVisible(card.journeyStatus)
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()

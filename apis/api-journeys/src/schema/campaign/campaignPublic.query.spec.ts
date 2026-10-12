@@ -898,11 +898,7 @@ describe('campaignPublic', () => {
       fixture.blocks = [
         ...fixture.blocks,
         journeyItem(fixture, 'liveItem', 'liveJourneyId', 0),
-        journeyItem(fixture, 'domainItem', 'domainJourneyId', 1),
-        journeyItem(fixture, 'draftItem', 'draftJourneyId', 2),
-        journeyItem(fixture, 'deletedItem', 'deletedJourneyId', 3),
-        journeyItem(fixture, 'goneItem', 'goneJourneyId', 4),
-        journeyItem(fixture, 'unlinkedItem', null, 5)
+        journeyItem(fixture, 'domainItem', 'domainJourneyId', 1)
       ] as never
       prismaMock.campaign.findFirst.mockResolvedValue(fixture)
       prismaMock.journey.findMany.mockResolvedValue([
@@ -914,10 +910,6 @@ describe('campaignPublic', () => {
               { name: 'journeys.example.org', routeAllTeamJourneys: true }
             ]
           }
-        }),
-        journeyLive('draftJourneyId', 'draft-journey', { status: 'draft' }),
-        journeyLive('deletedJourneyId', 'deleted-journey', {
-          deletedAt: new Date()
         })
       ] as never)
 
@@ -951,31 +943,79 @@ describe('campaignPublic', () => {
           id: 'domainItem',
           journeyStatus: 'published',
           journeyUrl: 'https://journeys.example.org/domain-journey'
-        }),
-        expect.objectContaining({
-          id: 'draftItem',
-          journeyStatus: 'draft',
-          journeyUrl: null
-        }),
-        expect.objectContaining({
-          id: 'deletedItem',
-          journeyStatus: null,
-          journeyUrl: null
-        }),
-        expect.objectContaining({
-          id: 'goneItem',
-          journeyStatus: null,
-          journeyUrl: null,
-          journeyImage: null
-        }),
-        expect.objectContaining({
-          id: 'unlinkedItem',
-          journeyId: null,
-          journeyStatus: null,
-          journeyUrl: null
         })
       ])
       expect(prismaMock.journey.findMany).toHaveBeenCalledTimes(1)
+    })
+
+    it('keeps a card whose journey is archived, with its address', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'archivedItem', 'archivedJourneyId', 0)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('archivedJourneyId', 'archived-journey', {
+          status: 'archived'
+        })
+      ] as never)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const items = result.data.campaignPublic.pages
+        .flatMap((page: any) => page.blocks)
+        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+      expect(items).toEqual([
+        expect.objectContaining({
+          id: 'archivedItem',
+          journeyStatus: 'archived',
+          journeyUrl: 'https://example.com/archived-journey'
+        })
+      ])
+    })
+
+    it('leaves out cards whose journey is draft, trashed, deleted, missing or unlinked', async () => {
+      const fixture = publishedFixture()
+      fixture.blocks = [
+        ...fixture.blocks,
+        journeyItem(fixture, 'liveItem', 'liveJourneyId', 0),
+        journeyItem(fixture, 'draftItem', 'draftJourneyId', 1),
+        journeyItem(fixture, 'trashedItem', 'trashedJourneyId', 2),
+        journeyItem(fixture, 'deletedItem', 'deletedJourneyId', 3),
+        journeyItem(fixture, 'goneItem', 'goneJourneyId', 4),
+        journeyItem(fixture, 'unlinkedItem', null, 5)
+      ] as never
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.journey.findMany.mockResolvedValue([
+        journeyLive('liveJourneyId', 'live-journey'),
+        journeyLive('draftJourneyId', 'draft-journey', { status: 'draft' }),
+        journeyLive('trashedJourneyId', 'trashed-journey', {
+          status: 'trashed'
+        }),
+        journeyLive('deletedJourneyId', 'deleted-journey', {
+          deletedAt: new Date()
+        })
+      ] as never)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC_JOURNEYS,
+        variables: { slug: 'christmas-2026' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      const ids = result.data.campaignPublic.pages
+        .flatMap((page: any) => page.blocks)
+        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+        .map((block: any) => block.id)
+      expect(ids).toEqual(['liveItem'])
+      expect(JSON.stringify(result.data)).not.toMatch(
+        /draftJourneyId|trashedJourneyId|deletedJourneyId|goneJourneyId|draftItem|deletedItem/
+      )
     })
 
     it('reads no journeys when no item links one', async () => {

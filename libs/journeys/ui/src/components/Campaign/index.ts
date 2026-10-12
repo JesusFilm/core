@@ -18,7 +18,11 @@ export {
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
 export { CampaignImage, CampaignPicture } from './CampaignImage'
-export { CampaignJourneyList, liveJourneyCards } from './CampaignJourneyList'
+export {
+  CampaignJourneyList,
+  isJourneyCardVisible,
+  liveJourneyCards
+} from './CampaignJourneyList'
 export {
   CampaignMediaSlot,
   CampaignMediaSplit,

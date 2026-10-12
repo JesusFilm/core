@@ -22,10 +22,17 @@ interface CampaignJourneyListProps {
 
 export type CampaignJourneyCard = CampaignBlockOf<'CampaignJourneyBlock'>
 
+/** Whether visitors can reach a journey with this live status: published or archived. */
+export function isJourneyCardVisible(
+  status: JourneyStatus | null | undefined
+): boolean {
+  return status === JourneyStatus.published || status === JourneyStatus.archived
+}
+
 /**
  * The cards a journey list shows: its CampaignJourneyBlock items, in order,
- * only while the journey behind each is live-published with an address. An
- * unpublished or deleted journey is omitted, with no placeholder.
+ * only while the journey behind each is published or archived with an
+ * address. A draft, trashed or deleted journey is omitted, with no placeholder.
  */
 export function liveJourneyCards(
   block: Pick<CampaignTreeOf<'CampaignJourneyListBlock'>, 'children'>
@@ -34,7 +41,7 @@ export function liveJourneyCards(
     .filter(
       (child): child is CampaignJourneyCard & typeof child =>
         child.__typename === 'CampaignJourneyBlock' &&
-        child.journeyStatus === JourneyStatus.published &&
+        isJourneyCardVisible(child.journeyStatus) &&
         child.journeyUrl != null
     )
     .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))

@@ -51,7 +51,6 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       display
     }
     ... on CampaignJourneyBlock {
-      journeyId
       title
       description
       journeyStatus

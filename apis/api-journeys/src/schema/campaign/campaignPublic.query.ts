@@ -7,6 +7,7 @@ import { logger } from '../logger'
 
 import {
   CampaignJourneyLive,
+  isJourneyVisible,
   loadCampaignJourneyLives
 } from './block/campaignJourneyBlock'
 import {
@@ -110,7 +111,8 @@ export type JourneyLives = ReadonlyMap<string, CampaignJourneyLive>
 
 /**
  * Read the live status, address and image of every journey a journey-list
- * item links, in one query; the cards are filtered by this at request time.
+ * item links, in one query; cards whose journey is not visible are left out of
+ * the public payload by this at request time.
  */
 export async function resolveJourneyLives(
   campaign: CampaignPublicRow
@@ -189,7 +191,13 @@ export function toCampaignPublic(
       ? requestedLanguageId
       : campaign.defaultLanguageId
 
-  const blocks = campaign.blocks.map((block) => {
+  const visibleBlocks = campaign.blocks.filter(
+    (block) =>
+      block.typename !== 'CampaignJourneyBlock' ||
+      (block.journeyId != null &&
+        isJourneyVisible(journeyLives.get(block.journeyId)?.status ?? null))
+  )
+  const blocks = visibleBlocks.map((block) => {
     const resolved = resolveBlockText(block, languageId)
     if (block.typename !== 'CampaignJourneyBlock') return resolved
     return {

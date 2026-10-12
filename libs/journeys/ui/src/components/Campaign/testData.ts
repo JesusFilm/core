@@ -100,7 +100,6 @@ export function journeyCard(
     pageId: null,
     regionId: null,
     parentOrder: 0,
-    journeyId: `${row.id}-journeyId`,
     title: 'The Christmas story',
     description: 'A short journey through the nativity.',
     journeyStatus: JourneyStatus.published,

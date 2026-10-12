@@ -23,7 +23,7 @@ export interface CampaignJourneyImagePayload {
 export interface CampaignJourneyLive {
   /** The journey's live status; null once the journey is deleted. */
   status: PrismaJourneyStatus | null
-  /** The journey's public address; null unless it is live-published. */
+  /** The journey's public address; null unless the journey is visible (published or archived). */
   url: string | null
   image: CampaignJourneyImagePayload | null
 }
@@ -33,6 +33,15 @@ export type CampaignJourneyBlockRow = CampaignBlockRow & {
   journeyLive?: CampaignJourneyLive | null
 }
 
+/**
+ * Whether a journey's live status lets visitors reach it: published or
+ * archived (the journeys app still serves archived journeys), never a draft,
+ * trashed or deleted one.
+ */
+export function isJourneyVisible(status: PrismaJourneyStatus | null): boolean {
+  return status === 'published' || status === 'archived'
+}
+
 const INCLUDE_JOURNEY_LIVE = {
   ...INCLUDE_JOURNEY_PUBLIC_URL,
   primaryImageBlock: true
@@ -40,7 +49,7 @@ const INCLUDE_JOURNEY_LIVE = {
 
 /**
  * Read the live state of the given journeys in one query: status (null when
- * deleted), public address (published only) and primary image. A journey that
+ * deleted), public address (visible journeys only) and primary image. A journey that
  * no longer exists has no entry.
  */
 export async function loadCampaignJourneyLives(
@@ -57,7 +66,7 @@ export async function loadCampaignJourneyLives(
     const image = journey.primaryImageBlock
     lives.set(journey.id, {
       status,
-      url: status === 'published' ? getJourneyPublicUrl(journey) : null,
+      url: isJourneyVisible(status) ? getJourneyPublicUrl(journey) : null,
       image: image?.src != null ? { src: image.src, alt: image.alt } : null
     })
   }
@@ -121,14 +130,14 @@ export const CampaignJourneyBlock = builder.prismaObject('CampaignBlock', {
       type: JourneyStatus,
       nullable: true,
       description:
-        'The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published`.',
+        'The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.',
       resolve: async (block) =>
         (await resolveLive(block as CampaignJourneyBlockRow))?.status ?? null
     }),
     journeyUrl: t.string({
       nullable: true,
       description:
-        "The journey's public address, decided by its own team's domains; null unless the journey is live-published.",
+        "The journey's public address, decided by its own team's domains; null unless the journey is published or archived.",
       resolve: async (block) =>
         (await resolveLive(block as CampaignJourneyBlockRow))?.url ?? null
     }),
