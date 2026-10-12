@@ -1,301 +1,193 @@
-import Button from '@mui/material/Button'
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within
-} from '@testing-library/react'
-import { GraphQLError } from 'graphql'
-import { SnackbarProvider } from 'notistack'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
-import { IdType, JourneyStatus } from '../../../../../__generated__/globalTypes'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../../libs/useCampaignBlockTextMutation'
-import { CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
-import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
-import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
+import { useCommand } from '@core/journeys/ui/CommandProvider'
+
+import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../../../__generated__/GetCampaign'
+import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
+import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
+import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaign } from '../../data'
-import { CommandProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import { campaignWithRegions, eurEnglish } from '../../data'
+import { CommandProbe, QueriedEditor } from '../../testing'
 
-import {
-  JourneyCardBlock,
-  isSnapshotEdited,
-  snapshotOf,
-  useSnapshotRefreshCommand
-} from './useSnapshotRefreshCommand'
+import { useSnapshotRefreshCommand } from './useSnapshotRefreshCommand'
 
-const CARD_ID = 'landingJourneyId'
-const JOURNEY_ID = 'landingJourneyId-journeyId'
-
-const card = campaign.blocks.find(
-  (block) => block.id === CARD_ID
-) as JourneyCardBlock
-
-function journeyMock(
-  journey: Record<string, unknown> | null
-): Record<string, unknown> {
-  return {
-    request: {
-      query: GET_CAMPAIGN_JOURNEY_BY_LINK,
-      variables: { id: JOURNEY_ID, idType: IdType.databaseId }
-    },
-    result: vi.fn(() => ({ data: { journey } }))
+/** English, reworded by the author since it was linked; the journey itself says something newer. */
+const edited: CampaignRegionLanguage = {
+  ...eurEnglish,
+  title: 'My Christmas title',
+  description: 'My own description.',
+  snapshotEdited: true,
+  journey: {
+    ...eurEnglish.journey!,
+    title: 'Christmas in Europe 2026',
+    description: 'The journey as it reads now.'
   }
-}
-
-const liveJourney = {
-  __typename: 'Journey',
-  id: JOURNEY_ID,
-  title: 'Christmas, straight from the journey',
-  description: 'What the journey says now.',
-  slug: 'christmas-story',
-  status: JourneyStatus.published
-}
-
-const sameJourney = {
-  ...liveJourney,
-  title: card.title,
-  description: card.description
 }
 
 const refreshMock = {
   request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH,
-    variables: { id: CARD_ID }
+    query: CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH,
+    variables: { id: 'eurRegionId-529' }
   },
+  maxUsageCount: 2,
   result: vi.fn(() => ({
     data: {
-      campaignJourneyBlockSnapshotRefresh: {
-        __typename: 'CampaignJourneyBlock',
-        id: CARD_ID,
-        title: liveJourney.title,
-        description: liveJourney.description
+      campaignRegionLanguageSnapshotRefresh: {
+        ...edited,
+        title: 'Christmas in Europe 2026',
+        description: 'The journey as it reads now.',
+        snapshotEdited: false
       }
     }
   }))
 }
 
-const restoreMock = {
+const undoMock = {
   request: {
-    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: {
-      id: CARD_ID,
-      input: { title: card.title, description: card.description }
-    }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignJourneyBlockUpdate: {
-        __typename: 'CampaignJourneyBlock',
-        id: CARD_ID,
-        title: card.title,
-        description: card.description
+      id: 'eurRegionId-529',
+      input: {
+        title: 'My Christmas title',
+        description: 'My own description.',
+        snapshotEdited: true
       }
     }
-  }))
+  },
+  result: vi.fn(() => ({ data: { campaignRegionLanguageUpdate: edited } }))
 }
 
-function Harness(): ReactElement {
-  const { campaign: current } = useCampaignEditor()
-  const { refreshSnapshot, confirmDialog } = useSnapshotRefreshCommand()
-  const currentCard = current.blocks.find(
-    (block) => block.id === CARD_ID
-  ) as JourneyCardBlock
+/** Shows the English snapshot the provider sees and drives the hook. */
+function Probe(): ReactElement {
+  const { campaign } = useCampaignEditor()
+  const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
+    useSnapshotRefreshCommand()
+  const { undo, redo } = useCommand()
+  const english = campaign.regions[0].languages[0]
   return (
     <>
-      <Button
-        onClick={() => {
-          void refreshSnapshot(currentCard)
-        }}
-      >
-        Refresh
-      </Button>
-      <span data-testid="CardText">
-        {[currentCard.title, currentCard.description].join('|')}
+      <span data-testid="Snapshot">
+        {english.title}|{english.description}
       </span>
-      {confirmDialog}
+      <span data-testid="Pending">{pending?.id ?? ''}</span>
+      <button onClick={() => requestRefresh(english)}>Refresh</button>
+      <button onClick={confirmRefresh}>Confirm</button>
+      <button onClick={cancelRefresh}>Cancel</button>
+      <button onClick={undo}>Undo</button>
+      <button onClick={redo}>Redo</button>
     </>
   )
 }
 
-async function renderHarness(
-  journeyResponse: ReturnType<typeof journeyMock>,
-  extraMocks: Array<Record<string, unknown>> = []
-): Promise<void> {
-  render(
-    <SnackbarProvider>
-      <QueriedEditor mocks={[journeyResponse, ...extraMocks]}>
-        <CommandUndoItem variant="button" />
-        <CommandProbe />
-        <SelectionProbe />
-        <Harness />
-      </QueriedEditor>
-    </SnackbarProvider>
+function renderHook(
+  english: CampaignRegionLanguage
+): ReturnType<typeof render> {
+  return render(
+    <QueriedEditor
+      campaignProp={{
+        ...campaignWithRegions,
+        regions: campaignWithRegions.regions.map((region) =>
+          region.id === 'eurRegionId'
+            ? { ...region, languages: [english, ...region.languages.slice(1)] }
+            : region
+        )
+      }}
+      initialState={{
+        pageKind: CampaignPageKind.regionTemplate,
+        regionId: 'eurRegionId',
+        selectedBlockId: 'regionShareId'
+      }}
+      mocks={[refreshMock, undoMock]}
+    >
+      <CommandProbe />
+      <Probe />
+    </QueriedEditor>
   )
-  await screen.findByTestId('CardText')
 }
-
-describe('isSnapshotEdited', () => {
-  it('is false while the card matches the journey, treating empty and missing descriptions alike', () => {
-    expect(
-      isSnapshotEdited(
-        { title: 'Title', description: null },
-        { title: 'Title', description: '' }
-      )
-    ).toBe(false)
-    expect(
-      isSnapshotEdited(
-        { title: 'Title', description: 'Text' },
-        { title: 'Title', description: 'Text' }
-      )
-    ).toBe(false)
-  })
-
-  it('is true when the title or the description differs', () => {
-    expect(
-      isSnapshotEdited(
-        { title: 'Mine', description: 'Text' },
-        { title: 'Title', description: 'Text' }
-      )
-    ).toBe(true)
-    expect(
-      isSnapshotEdited(
-        { title: 'Title', description: 'Mine' },
-        { title: 'Title', description: null }
-      )
-    ).toBe(true)
-  })
-})
-
-describe('snapshotOf', () => {
-  it('cuts a journey’s text to the caps the API snapshots to', () => {
-    expect(
-      snapshotOf({ title: 'x'.repeat(250), description: 'y'.repeat(1200) })
-    ).toEqual({ title: 'x'.repeat(200), description: 'y'.repeat(1000) })
-    expect(snapshotOf({ title: 'Title' })).toEqual({
-      title: 'Title',
-      description: null
-    })
-  })
-})
 
 describe('useSnapshotRefreshCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('confirms when the author edited the snapshot, then replaces both values as one Command', async () => {
-    const lookup = journeyMock(liveJourney)
-    await renderHarness(lookup, [refreshMock, restoreMock])
-    expect(screen.getByTestId('CardText')).toHaveTextContent(
-      'The Christmas story|A short journey through the nativity.'
-    )
+  it('refreshes an unedited snapshot at once as a Command, with no confirmation', async () => {
+    renderHook(eurEnglish)
+    await screen.findByText('Refresh')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+    fireEvent.click(screen.getByText('Refresh'))
 
-    const dialog = await screen.findByTestId('CampaignSnapshotRefreshDialog')
-    expect(dialog).toHaveTextContent('differs from the journey’s')
-    expect(dialog).toHaveTextContent('You can undo this afterwards.')
-    expect(refreshMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('Pending')).toHaveTextContent('')
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('refreshes at once when the journey was only renamed, the author having edited nothing', async () => {
+    renderHook({
+      ...eurEnglish,
+      journey: {
+        ...eurEnglish.journey!,
+        title: 'Renamed by the journey owner',
+        description: 'Reworded by the journey owner.'
+      }
+    })
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+
+    expect(screen.getByTestId('Pending')).toHaveTextContent('')
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('holds an edited snapshot for confirmation, refreshing on confirm and dropping it on cancel', async () => {
+    renderHook(edited)
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+    expect(screen.getByTestId('Pending')).toHaveTextContent('eurRegionId-529')
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
 
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Refresh' }))
+    fireEvent.click(screen.getByText('Cancel'))
+    expect(screen.getByTestId('Pending')).toHaveTextContent('')
+    expect(refreshMock.result).not.toHaveBeenCalled()
 
-    // Optimistic: the journey's text shows before the request returns.
+    fireEvent.click(screen.getByText('Refresh'))
+    fireEvent.click(screen.getByText('Confirm'))
+
+    expect(screen.getByTestId('Pending')).toHaveTextContent('')
     await waitFor(() =>
-      expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'Christmas, straight from the journey|What the journey says now.'
+      expect(screen.getByTestId('Snapshot')).toHaveTextContent(
+        'Christmas in Europe 2026|The journey as it reads now.'
       )
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
-    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(CARD_ID)
+  })
+
+  it('restores the previous title and description on undo and refreshes again on redo', async () => {
+    renderHook(edited)
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+    fireEvent.click(screen.getByText('Confirm'))
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalledTimes(1))
+
+    fireEvent.click(screen.getByText('Undo'))
 
     await waitFor(() =>
-      expect(
-        screen.queryByTestId('CampaignSnapshotRefreshDialog')
-      ).not.toBeInTheDocument()
-    )
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-
-    await waitFor(() =>
-      expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'The Christmas story|A short journey through the nativity.'
+      expect(screen.getByTestId('Snapshot')).toHaveTextContent(
+        'My Christmas title|My own description.'
       )
     )
-    await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
-  })
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalledTimes(1))
 
-  it('does nothing when the confirmation is cancelled', async () => {
-    await renderHarness(journeyMock(liveJourney), [refreshMock])
-
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
-    const dialog = await screen.findByTestId('CampaignSnapshotRefreshDialog')
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(screen.getByText('Redo'))
 
     await waitFor(() =>
-      expect(
-        screen.queryByTestId('CampaignSnapshotRefreshDialog')
-      ).not.toBeInTheDocument()
-    )
-    expect(refreshMock.result).not.toHaveBeenCalled()
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
-    expect(screen.getByTestId('CardText')).toHaveTextContent(
-      'The Christmas story|A short journey through the nativity.'
-    )
-  })
-
-  it('does not ask, or write, when the card already matches the journey', async () => {
-    await renderHarness(journeyMock(sameJourney), [refreshMock])
-
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
-
-    expect(await screen.findByText('Already matches the journey')).toBeVisible()
-    expect(
-      screen.queryByTestId('CampaignSnapshotRefreshDialog')
-    ).not.toBeInTheDocument()
-    expect(refreshMock.result).not.toHaveBeenCalled()
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
-  })
-
-  it('says so when the journey is no longer published', async () => {
-    await renderHarness(journeyMock(null), [refreshMock])
-
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
-
-    expect(
-      await screen.findByText('Journey not found or not published')
-    ).toBeVisible()
-    expect(
-      screen.queryByTestId('CampaignSnapshotRefreshDialog')
-    ).not.toBeInTheDocument()
-    expect(refreshMock.result).not.toHaveBeenCalled()
-  })
-
-  it('shows the API’s message and rolls the card back when the refresh fails', async () => {
-    const failing = {
-      request: refreshMock.request,
-      result: vi.fn(() => ({
-        errors: [
-          new GraphQLError('Journey not found or not published', {
-            extensions: { code: 'BAD_USER_INPUT', field: 'id' }
-          })
-        ]
-      }))
-    }
-    await renderHarness(journeyMock(liveJourney), [failing])
-
-    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
-    const dialog = await screen.findByTestId('CampaignSnapshotRefreshDialog')
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Refresh' }))
-
-    expect(
-      await screen.findByText('Journey not found or not published')
-    ).toBeVisible()
-    await waitFor(() =>
-      expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'The Christmas story|A short journey through the nativity.'
+      expect(screen.getByTestId('Snapshot')).toHaveTextContent(
+        'Christmas in Europe 2026|The journey as it reads now.'
       )
     )
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalledTimes(2))
   })
 })

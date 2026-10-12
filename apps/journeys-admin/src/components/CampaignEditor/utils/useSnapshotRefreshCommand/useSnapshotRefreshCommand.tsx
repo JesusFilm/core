@@ -1,199 +1,134 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
-import { useMutation } from '@apollo/client/react'
-import { useTranslation } from 'next-i18next/pages'
-import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { useState } from 'react'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
-import {
-  CampaignJourneyBlockUpdateText,
-  CampaignJourneyBlockUpdateTextVariables
-} from '../../../../../__generated__/CampaignJourneyBlockUpdateText'
-import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { IdType } from '../../../../../__generated__/globalTypes'
-import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../../libs/useCampaignBlockTextMutation'
-import { useCampaignJourneyBlockSnapshotRefreshMutation } from '../../../../libs/useCampaignJourneyBlockSnapshotRefreshMutation'
-import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
+import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../../../__generated__/GetCampaign'
+import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
+import { useCampaignRegionLanguageSnapshotRefreshMutation } from '../../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
+import { useCampaignRegionLanguageUpdateMutation } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 
-import { SnapshotRefreshDialog } from './SnapshotRefreshDialog'
-
-export type JourneyCardBlock = Extract<
-  CampaignBlock,
-  { __typename: 'CampaignJourneyBlock' }
->
-
-interface SnapshotText {
+interface SnapshotParameters {
   title: string | null
   description: string | null
+  snapshotEdited: boolean
 }
 
-/** The caps the API cuts a snapshot to, so an untouched card compares equal to its journey. */
-const TITLE_CAP = 200
-const DESCRIPTION_CAP = 1000
-
-function cut(value: string, max: number): string {
-  return [...value].slice(0, max).join('')
+interface Focus {
+  pageKind: CampaignPageKind
+  regionId?: string
+  selectedBlockId?: string
+  selectedRegionId?: string
 }
 
-/** The default-language values the API would snapshot from a journey. */
-export function snapshotOf(journey: {
-  title: string
-  description?: string | null
-}): SnapshotText {
-  return {
-    title: cut(journey.title, TITLE_CAP),
-    description:
-      journey.description == null
-        ? null
-        : cut(journey.description, DESCRIPTION_CAP)
-  }
+export interface SnapshotRefreshCommand {
+  /** Refresh at once, or hold the language for confirmation when the author edited its snapshot. */
+  requestRefresh: (regionLanguage: CampaignRegionLanguage) => void
+  /** The language whose refresh awaits the author's confirmation. */
+  pending?: CampaignRegionLanguage
+  confirmRefresh: () => void
+  cancelRefresh: () => void
 }
 
 /**
- * Whether the card's snapshot differs from the journey's current text: an
- * edit the author made (or a change the journey has had since), either of
- * which a refresh would overwrite. Empty and missing descriptions are the same.
+ * "Refresh from journey" as a Command: execute (and redo) re-reads the
+ * snapshot title and description through `campaignRegionLanguageSnapshotRefresh`,
+ * shown optimistically from the journey the editor already holds, which
+ * clears the row's edited flag; undo writes the previous title, description
+ * and edited flag back through `campaignRegionLanguageUpdate`. Both focus the
+ * page the request was made on first. A snapshot the author edited by hand
+ * (the row's `snapshotEdited`; a journey renamed since linking does not count)
+ * asks first, so the Command is only added once the author has confirmed.
  */
-export function isSnapshotEdited(
-  card: Pick<JourneyCardBlock, 'title' | 'description'>,
-  journey: SnapshotText
-): boolean {
-  return (
-    (card.title ?? '') !== (journey.title ?? '') ||
-    (card.description ?? '') !== (journey.description ?? '')
-  )
-}
-
-interface RefreshParameters {
-  mode: 'refresh' | 'restore'
-  text: SnapshotText
-}
-
-function messageOf(error: unknown, fallback: string): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : fallback
-}
-
-/**
- * "Refresh from journey" on a journey-list item. It re-reads the journey's
- * title and description; when they differ from the card's (the author edited
- * the snapshot) it asks before replacing them, otherwise there is nothing to
- * do. The replacement is one Command: execute writes the journey's text
- * through `campaignJourneyBlockSnapshotRefresh` (default language only,
- * translations kept) and undo writes the text the card had back through
- * `campaignJourneyBlockUpdate`.
- */
-export function useSnapshotRefreshCommand(): {
-  refreshSnapshot: (card: JourneyCardBlock) => Promise<void>
-  confirmDialog: ReactElement
-} {
-  const { t } = useTranslation('apps-journeys-admin')
-  const { enqueueSnackbar } = useSnackbar()
+export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
   const { add } = useCommand()
-  const {
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
-  const [lookup] = useCampaignJourneyByLinkLazyQuery()
-  const [refresh] = useCampaignJourneyBlockSnapshotRefreshMutation()
-  const [update] = useMutation<
-    CampaignJourneyBlockUpdateText,
-    CampaignJourneyBlockUpdateTextVariables
-  >(CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT)
-  const [pending, setPending] = useState<{
-    card: JourneyCardBlock
-    journey: SnapshotText
-  } | null>(null)
+  const { state, dispatch } = useCampaignEditor()
+  const [snapshotRefresh] = useCampaignRegionLanguageSnapshotRefreshMutation()
+  const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
+  const [pending, setPending] = useState<CampaignRegionLanguage>()
 
-  function notify(error: unknown, fallback: string): void {
-    enqueueSnackbar(messageOf(error, fallback), {
-      variant: 'error',
-      preventDuplicate: true
-    })
+  function currentFocus(): Focus {
+    return {
+      pageKind: state.pageKind,
+      regionId: state.regionId,
+      selectedBlockId: state.selectedBlockId,
+      selectedRegionId: state.selectedRegionId
+    }
   }
 
-  function addRefreshCommand(
-    card: JourneyCardBlock,
-    journey: SnapshotText
-  ): void {
-    const cardPageKind = pageKindOf(card) ?? pageKind
-    const before: SnapshotText = {
-      title: card.title,
-      description: card.description
-    }
+  function focus(target: Focus): void {
+    dispatch({ type: 'SetEditorFocusAction', ...target })
+  }
 
-    function run({ mode, text }: RefreshParameters): void {
-      dispatch({
-        type: 'SetEditorFocusAction',
-        pageKind: cardPageKind,
-        selectedBlockId: card.id
-      })
-      const optimistic = {
-        __typename: 'CampaignJourneyBlock' as const,
-        id: card.id,
-        ...text
-      }
-      const request =
-        mode === 'refresh'
-          ? refresh({
-              variables: { id: card.id },
-              optimisticResponse: {
-                campaignJourneyBlockSnapshotRefresh: optimistic
-              }
-            })
-          : update({
-              variables: { id: card.id, input: text },
-              optimisticResponse: { campaignJourneyBlockUpdate: optimistic }
-            })
-      void request.catch((error: unknown) =>
-        notify(error, t('Could not refresh from journey'))
-      )
-    }
-
-    add<RefreshParameters>({
+  function refresh(regionLanguage: CampaignRegionLanguage): void {
+    const journey = regionLanguage.journey
+    if (journey == null) return
+    const target = currentFocus()
+    add<SnapshotParameters>({
       parameters: {
-        execute: { mode: 'refresh', text: journey },
-        undo: { mode: 'restore', text: before }
+        execute: {
+          title: journey.title,
+          description: journey.description,
+          snapshotEdited: false
+        },
+        undo: {
+          title: regionLanguage.title,
+          description: regionLanguage.description,
+          snapshotEdited: regionLanguage.snapshotEdited
+        }
       },
-      execute: run
+      execute({ title, description, snapshotEdited }) {
+        focus(target)
+        void snapshotRefresh({
+          variables: { id: regionLanguage.id },
+          optimisticResponse: {
+            campaignRegionLanguageSnapshotRefresh: {
+              ...regionLanguage,
+              title,
+              description,
+              snapshotEdited
+            }
+          }
+        })
+      },
+      undo({ title, description, snapshotEdited }) {
+        focus(target)
+        void languageUpdate({
+          variables: {
+            id: regionLanguage.id,
+            input: { title, description, snapshotEdited }
+          },
+          optimisticResponse: {
+            campaignRegionLanguageUpdate: {
+              ...regionLanguage,
+              title,
+              description,
+              snapshotEdited
+            }
+          }
+        })
+      }
     })
   }
 
-  async function refreshSnapshot(card: JourneyCardBlock): Promise<void> {
-    if (card.journeyId == null) return
-    try {
-      const { data, error } = await lookup({
-        variables: { id: card.journeyId, idType: IdType.databaseId }
-      })
-      if (error != null || data?.journey == null) {
-        notify(error, t('Journey not found or not published'))
-        return
-      }
-      const journey = snapshotOf(data.journey)
-      if (!isSnapshotEdited(card, journey)) {
-        enqueueSnackbar(t('Already matches the journey'), { variant: 'info' })
-        return
-      }
-      setPending({ card, journey })
-    } catch (error) {
-      notify(error, t('Journey not found or not published'))
+  function requestRefresh(regionLanguage: CampaignRegionLanguage): void {
+    if (regionLanguage.journey == null) return
+    if (regionLanguage.snapshotEdited) {
+      setPending(regionLanguage)
+      return
     }
+    refresh(regionLanguage)
   }
 
-  const confirmDialog = (
-    <SnapshotRefreshDialog
-      open={pending != null}
-      onClose={() => setPending(null)}
-      onConfirm={() => {
-        if (pending != null) addRefreshCommand(pending.card, pending.journey)
-        setPending(null)
-      }}
-    />
-  )
+  function confirmRefresh(): void {
+    if (pending == null) return
+    setPending(undefined)
+    refresh(pending)
+  }
 
-  return { refreshSnapshot, confirmDialog }
+  function cancelRefresh(): void {
+    setPending(undefined)
+  }
+
+  return { requestRefresh, pending, confirmRefresh, cancelRefresh }
 }

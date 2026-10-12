@@ -4,7 +4,7 @@ import { ReactElement } from 'react'
 
 import { Dialog } from '@core/shared/ui/Dialog'
 
-interface SnapshotRefreshDialogProps {
+interface JourneyCardSnapshotRefreshDialogProps {
   open: boolean
   onClose: () => void
   onConfirm: () => void
@@ -15,11 +15,11 @@ interface SnapshotRefreshDialogProps {
  * title or description no longer matches the journey's: it replaces both, and
  * the copy points at undo.
  */
-export function SnapshotRefreshDialog({
+export function JourneyCardSnapshotRefreshDialog({
   open,
   onClose,
   onConfirm
-}: SnapshotRefreshDialogProps): ReactElement {
+}: JourneyCardSnapshotRefreshDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   return (
@@ -32,7 +32,7 @@ export function SnapshotRefreshDialog({
         submitLabel: t('Refresh'),
         closeLabel: t('Cancel')
       }}
-      testId="CampaignSnapshotRefreshDialog"
+      testId="CampaignJourneyCardSnapshotRefreshDialog"
     >
       <Typography gutterBottom>
         {t(

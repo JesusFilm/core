@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client/react'
 
 import { CampaignAnalyticsBlockUpdateText } from '../../../__generated__/CampaignAnalyticsBlockUpdateText'
 import { CampaignButtonBlockUpdateLabel } from '../../../__generated__/CampaignButtonBlockUpdateLabel'
+import { CampaignFeaturedMediaBlockUpdateText } from '../../../__generated__/CampaignFeaturedMediaBlockUpdateText'
 import { CampaignHeroBlockUpdateText } from '../../../__generated__/CampaignHeroBlockUpdateText'
 import { CampaignJourneyBlockUpdateText } from '../../../__generated__/CampaignJourneyBlockUpdateText'
 import { CampaignJourneyListBlockUpdateText } from '../../../__generated__/CampaignJourneyListBlockUpdateText'
@@ -152,6 +153,21 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT = gql`
   }
 `
 
+export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT = gql`
+  mutation CampaignFeaturedMediaBlockUpdateText(
+    $id: ID!
+    $input: CampaignFeaturedMediaBlockUpdateInput!
+  ) {
+    campaignFeaturedMediaBlockUpdate(id: $id, input: $input) {
+      id
+      eyebrow
+      title
+      lede
+      bullets
+    }
+  }
+`
+
 interface TextOperation {
   document: ReturnType<typeof gql>
   operation: string
@@ -197,6 +213,10 @@ const TEXT_OPERATIONS: Record<CampaignTextTypename, TextOperation> = {
   CampaignRegionShareBlock: {
     document: CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT,
     operation: 'campaignRegionShareBlockUpdate'
+  },
+  CampaignFeaturedMediaBlock: {
+    document: CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT,
+    operation: 'campaignFeaturedMediaBlockUpdate'
   }
 }
 
@@ -211,6 +231,7 @@ type CampaignTextResult =
   | CampaignAnalyticsBlockUpdateText
   | CampaignRegionHeaderBlockUpdateText
   | CampaignRegionShareBlockUpdateText
+  | CampaignFeaturedMediaBlockUpdateText
 
 interface CampaignTextVariables {
   id: string
@@ -293,6 +314,10 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignRegionShareBlockUpdateText,
     CampaignTextVariables
   >(CAMPAIGN_REGION_SHARE_BLOCK_UPDATE_TEXT)[0]
+  const featuredMedia = useMutation<
+    CampaignFeaturedMediaBlockUpdateText,
+    CampaignTextVariables
+  >(CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT)[0]
 
   const mutations = {
     CampaignTypographyBlock: typography,
@@ -304,7 +329,8 @@ export function useCampaignBlockTextMutation(): CampaignTextMutate {
     CampaignJourneyBlock: journey,
     CampaignAnalyticsBlock: analytics,
     CampaignRegionHeaderBlock: regionHeader,
-    CampaignRegionShareBlock: regionShare
+    CampaignRegionShareBlock: regionShare,
+    CampaignFeaturedMediaBlock: featuredMedia
   } as const
 
   return async function mutate(block, field, value, context = {}) {

@@ -13,7 +13,10 @@ import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignF
 export const CAMPAIGN_BUTTON_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
-  mutation CampaignButtonBlockCreate($input: CampaignButtonBlockCreateInput!) {
+  mutation CampaignButtonBlockCreate(
+    $input: CampaignButtonBlockCreateInput!
+    $languageId: ID
+  ) {
     campaignButtonBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
       ...CampaignBlockTranslationFields

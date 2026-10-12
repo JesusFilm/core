@@ -57,6 +57,7 @@ export function newRegion(campaign: Campaign, id: string): CampaignRegion {
         journeyId: null,
         title: null,
         description: null,
+        snapshotEdited: false,
         qrCodeId: null,
         order: 0,
         language: defaultLanguage?.language ?? {

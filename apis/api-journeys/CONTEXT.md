@@ -295,6 +295,10 @@ _Avoid_: journey link (the long address nobody hands out), campaign link (that i
 A **QR Code** row owned by the Campaign's Team and tied to one region language, created the moment a Journey is linked to that language and removed with it. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
+**Snapshot refresh**:
+Re-reading a Share Language's title and description from its linked Journey on request, replacing both; never automatic. The editor runs it as a Command whose undo writes the previous wording back, and asks first only when the snapshot differs from what the Journey says now, since the row keeps no record of who changed it.
+_Avoid_: sync (nothing runs on its own), re-link (the Journey stays the same)
+
 **Unlinked language**:
 A region language whose Journey has not been picked yet, or whose Journey is no longer published. Visitors never see it; the editor shows it with a prompt to pick a Journey.
 _Avoid_: empty language, missing journey, placeholder
@@ -346,6 +350,18 @@ _Avoid_: logo (the logo is one of its two forms), home button, title
 **Campaign Image**:
 The campaign picture block, one typename in two roles: an Image section (a full-width picture with its space reserved from the stored width and height, and translated alt text), or an owned block with no sibling order — a section's **Section Background** cover or the header's **Brand Mark** logo, named by the parent's slot column and replaced, never edited in place. Every picture lives on Cloudflare Images: an upload or a pasted image URL is fetched there under the Campaign's Team, so the stored address is always a Cloudflare one and the server measures its size.
 _Avoid_: image block (bare, where the Journey ImageBlock could be meant), photo, asset, media (that includes video)
+
+**Campaign Video**:
+The campaign media block: a reference to a Watch Video, a YouTube video or an uploaded Mux video, with optional title and description overrides. It is a card or an embedded player, never a journey-style player with trims and triggers. Watch text is read live in the campaign language; YouTube and Mux text is captured once when the video is picked.
+_Avoid_: video block (bare, where the Journey VideoBlock could be meant), clip, media item
+
+**Media Slot**:
+The one owned block a hero or Featured Media section shows beside its text — a **Campaign Video** or a **Campaign Image**, named by the section's `mediaBlockId`. Zero or one per section; filling it replaces (soft-deletes) the block it held, and pointing it back at that block restores it, which is how undo works. A Watch Video with children shows as a poster card linking to Watch; any other video plays inline.
+_Avoid_: hero video, featured video (the slot may hold an image)
+
+**Media paste**:
+The only way media enters a Campaign: paste a Watch or YouTube link, or upload an image or video. There is no browsing or searching; the editor shows what a link resolved to before it is kept, and the server resolves it again on save.
+_Avoid_: picker (implies browsing), library, search
 
 **Campaign Public Page**:
 How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rendered per request from one read of the published Campaign in the visitor's Page Language (the request's `lang` parameter, saved cookie and `Accept-Language` decide it, so the page cannot be pre-built; a response the link's `lang` parameter alone decided is shared-cacheable for a minute, every other one is private). A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.

@@ -26,6 +26,11 @@ export const CampaignRegionLanguageRef = builder.prismaObject(
           "Snapshot of the linked journey's title; the journey's own language, not translated."
       }),
       description: t.exposeString('description', { nullable: true }),
+      snapshotEdited: t.exposeBoolean('snapshotEdited', {
+        nullable: false,
+        description:
+          'True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Linking, unlinking and refreshing from the journey clear it.'
+      }),
       qrCodeId: t.exposeID('qrCodeId', { nullable: true }),
       qrCode: t.relation('qrCode', {
         nullable: true,

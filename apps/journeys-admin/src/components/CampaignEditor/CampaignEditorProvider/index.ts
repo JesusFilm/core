@@ -1,6 +1,7 @@
 export {
   CampaignEditorProvider,
   regionLines,
+  regionNeedsJourney,
   resolveSelection,
   sortedRegions,
   useCampaignEditor

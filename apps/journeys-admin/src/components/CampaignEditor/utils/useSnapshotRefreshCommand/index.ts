@@ -1,6 +1,2 @@
-export {
-  isSnapshotEdited,
-  snapshotOf,
-  useSnapshotRefreshCommand
-} from './useSnapshotRefreshCommand'
-export type { JourneyCardBlock } from './useSnapshotRefreshCommand'
+export { useSnapshotRefreshCommand } from './useSnapshotRefreshCommand'
+export type { SnapshotRefreshCommand } from './useSnapshotRefreshCommand'

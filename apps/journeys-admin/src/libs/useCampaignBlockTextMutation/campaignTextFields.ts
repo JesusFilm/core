@@ -10,6 +10,7 @@ export type CampaignTextField =
   | 'lede'
   | 'intro'
   | 'description'
+  | 'bullets'
 
 /** PRD §15 text caps, mirrored for the editor's pure pre-validation. */
 export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
@@ -19,7 +20,8 @@ export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
   title: 150,
   lede: 500,
   intro: 500,
-  description: 1000
+  description: 1000,
+  bullets: 1000
 }
 
 /**
@@ -45,7 +47,8 @@ export const CAMPAIGN_TEXT_FIELDS = {
   CampaignJourneyBlock: ['title', 'description'],
   CampaignAnalyticsBlock: ['eyebrow', 'title'],
   CampaignRegionHeaderBlock: ['intro'],
-  CampaignRegionShareBlock: ['title', 'intro']
+  CampaignRegionShareBlock: ['title', 'intro'],
+  CampaignFeaturedMediaBlock: ['eyebrow', 'title', 'lede', 'bullets']
 } as const satisfies Partial<
   Record<CampaignBlock['__typename'], readonly CampaignTextField[]>
 >
