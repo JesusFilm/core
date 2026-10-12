@@ -1475,6 +1475,12 @@
   "This cannot be undone.": "This cannot be undone.",
   "Add line": "Add line",
   "Unlist": "Unlist",
+  "Campaign root cleared": "Campaign root cleared",
+  "Campaign root set": "Campaign root set",
+  "Could not save campaign root": "Could not save campaign root",
+  "Campaign Root": "Campaign Root",
+  "Clear campaign root": "Clear campaign root",
+  "The campaign will be available at {{ customDomain }}, with its regions beside your journeys": "The campaign will be available at {{ customDomain }}, with its regions beside your journeys",
   "Hidden until a journey is linked": "Hidden until a journey is linked",
   "Journey unpublished": "Journey unpublished",
   "Remove language": "Remove language",
@@ -1636,5 +1642,9 @@
   "Paste a jesusfilm.org/watch link, or a YouTube video or playlist link": "Paste a jesusfilm.org/watch link, or a YouTube video or playlist link",
   "Add videos": "Add videos",
   "Add videos from Edit": "Add videos from Edit",
-  "See all on Watch": "See all on Watch"
+  "See all on Watch": "See all on Watch",
+  "Manual only: machine translation does not cover this language, so write each line yourself.": "Manual only: machine translation does not cover this language, so write each line yourself.",
+  "Machine-translate missing": "Machine-translate missing",
+  "Starting translation...": "Starting translation...",
+  "Manual only": "Manual only"
 }

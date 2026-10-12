@@ -4,7 +4,8 @@ import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
 import {
   campaignPageCacheControl,
-  fetchCampaignPublicInPageLanguage
+  fetchCampaignPublicInPageLanguage,
+  fetchCampaignPublicInPageLanguageByHostname
 } from './getCampaignPublic'
 
 const french = {
@@ -127,6 +128,46 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     ).toBeNull()
     expect(
       await fetchCampaignPublicInPageLanguage(apollo, 'Not A Slug', {})
+    ).toBeNull()
+  })
+})
+
+describe('fetchCampaignPublicInPageLanguageByHostname', () => {
+  it('resolves the Page Language against the root campaign of the hostname', async () => {
+    const apollo = client()
+    const result = await fetchCampaignPublicInPageLanguageByHostname(
+      apollo,
+      'christmas.example.org',
+      { param: 'fr' }
+    )
+    expect(result?.campaign.title).toBe('Noël 2026')
+    expect(result?.language).toEqual({
+      languageId: '496',
+      bcp47: 'fr',
+      source: 'param'
+    })
+    expect(apollo.query.mock.calls[0][0].variables).toEqual({
+      hostname: 'christmas.example.org',
+      languageId: null
+    })
+    expect(apollo.query.mock.calls[1][0].variables).toEqual({
+      hostname: 'christmas.example.org',
+      languageId: '496'
+    })
+  })
+
+  it('is null when the domain has no published root campaign', async () => {
+    const apollo = client()
+    apollo.query.mockResolvedValueOnce({ data: { campaignPublic: null } })
+    expect(
+      await fetchCampaignPublicInPageLanguageByHostname(
+        apollo,
+        'christmas.example.org',
+        {}
+      )
+    ).toBeNull()
+    expect(
+      await fetchCampaignPublicInPageLanguageByHostname(apollo, '', {})
     ).toBeNull()
   })
 })

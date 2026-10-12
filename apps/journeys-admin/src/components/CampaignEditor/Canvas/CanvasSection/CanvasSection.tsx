@@ -17,6 +17,7 @@ import {
 } from 'react'
 
 import {
+  CampaignAnalyticsPanel,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,

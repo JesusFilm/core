@@ -185,3 +185,29 @@ export async function fetchShortLink(
 export function shortLinkUrl(shortLink: GatewayShortLink): string {
   return `https://${shortLink.hostname}/${shortLink.pathname}`
 }
+
+/**
+ * The English name of an api-languages Language, for machine-translation
+ * prompts; `null` when the language does not exist.
+ */
+export async function fetchLanguageName(id: string): Promise<string | null> {
+  const query = `
+    query CampaignLanguageName($id: ID!) {
+      language(id: $id) {
+        id
+        name(languageId: "529") {
+          value
+          primary
+        }
+      }
+    }
+  `
+  const data = await graphqlRequest(query, { id })
+  const language = data.language as
+    | { name: Array<{ value: string; primary: boolean }> }
+    | null
+    | undefined
+  if (language == null) return null
+  const names = language.name
+  return (names.find((name) => !name.primary) ?? names[0])?.value ?? null
+}

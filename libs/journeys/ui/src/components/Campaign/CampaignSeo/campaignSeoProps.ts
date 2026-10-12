@@ -1,6 +1,7 @@
 import type { NextSeoProps } from 'next-seo'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { campaignBasePath } from '../CampaignProvider'
 import { campaignImageSource } from '../libs/campaignImageSource'
 import type { CampaignImageSource } from '../libs/campaignImageSource'
 import { hasText } from '../types'
@@ -11,6 +12,30 @@ export interface CampaignSeoOptions {
   origin: string
   /** Where the landing page is served under it: `/campaign/<slug>`, or `` on a Campaign Root. */
   basePath: string
+}
+
+interface CampaignPreferredLocationOptions {
+  campaign: Pick<CampaignPublic, 'slug' | 'customDomainNames'>
+  rootDomain: string
+}
+
+/**
+ * Where a campaign's preferred public address lives: the domain root of an
+ * attached Custom Domain when one names the campaign as its Campaign Root,
+ * else the root-domain `/campaign/<slug>` path. Both forms stay served;
+ * nothing redirects between them and this is the one the canonical names.
+ */
+export function campaignPreferredLocation({
+  campaign,
+  rootDomain
+}: CampaignPreferredLocationOptions): CampaignSeoOptions {
+  const customDomain = campaign.customDomainNames[0]
+  if (customDomain != null)
+    return { origin: `https://${customDomain}`, basePath: '' }
+  return {
+    origin: `https://${rootDomain}`,
+    basePath: campaignBasePath(campaign.slug)
+  }
 }
 
 function heroOf(

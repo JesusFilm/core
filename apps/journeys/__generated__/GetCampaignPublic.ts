@@ -3078,6 +3078,10 @@ export interface GetCampaignPublic_campaignPublic {
    * The Page Language every text field was resolved to: the requested campaign language, else the default.
    */
   languageId: string;
+  /**
+   * Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+   */
+  customDomainNames: string[];
   publishedAt: any | null;
   language: GetCampaignPublic_campaignPublic_language;
   /**
@@ -3111,7 +3115,7 @@ export interface GetCampaignPublic {
    * 
    * Errors:
    * - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
-   * - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).
+   * - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a hostname with no Campaign Root or a draft one).
    */
   campaignPublic: GetCampaignPublic_campaignPublic;
 }

@@ -69,7 +69,8 @@ describe('customDomainCreate', () => {
     apexName: 'example.com',
     teamId: 'teamId',
     routeAllTeamJourneys: true,
-    journeyCollectionId: null
+    journeyCollectionId: null,
+    campaignId: null
   }
 
   beforeEach(() => {

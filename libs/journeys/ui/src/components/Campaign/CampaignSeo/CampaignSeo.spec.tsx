@@ -15,7 +15,7 @@ import {
 import type { CampaignBlock, CampaignPublic } from '../types'
 
 import { CampaignSeo } from './CampaignSeo'
-import { campaignSeoProps } from './campaignSeoProps'
+import { campaignPreferredLocation, campaignSeoProps } from './campaignSeoProps'
 
 const seoCalls: NextSeoProps[] = []
 vi.mock('next-seo', () => ({
@@ -354,8 +354,7 @@ describe('CampaignSeo', () => {
         campaign={campaignPublic}
         pageKind={CampaignPageKind.regionTemplate}
         region={eurRegion}
-        origin="https://your.nextstep.is"
-        basePath="/campaign/christmas-2026"
+        rootDomain="your.nextstep.is"
       />
     )
     expect(seoCalls).toHaveLength(1)
@@ -368,5 +367,42 @@ describe('CampaignSeo', () => {
       )
     )
     expect(seoCalls[0].title).toBe('Europe · Christmas 2026')
+  })
+
+  it('canonicalises to the domain-root form when a Campaign Root is attached', () => {
+    render(
+      <CampaignSeo
+        campaign={{
+          ...campaignPublic,
+          customDomainNames: ['christmas.example.org', 'other.example.org']
+        }}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={eurRegion}
+        rootDomain="your.nextstep.is"
+      />
+    )
+    expect(seoCalls[0].canonical).toBe('https://christmas.example.org/eur')
+  })
+})
+
+describe('campaignPreferredLocation', () => {
+  const rootDomain = 'your.nextstep.is'
+
+  it('names the root-domain campaign path when no Campaign Root is attached', () => {
+    expect(
+      campaignPreferredLocation({ campaign: campaignPublic, rootDomain })
+    ).toEqual(ROOT)
+  })
+
+  it('names the first attached domain as the preferred address', () => {
+    expect(
+      campaignPreferredLocation({
+        campaign: {
+          ...campaignPublic,
+          customDomainNames: ['christmas.example.org', 'other.example.org']
+        },
+        rootDomain
+      })
+    ).toEqual(CAMPAIGN_ROOT)
   })
 })

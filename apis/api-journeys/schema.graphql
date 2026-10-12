@@ -249,6 +249,11 @@ type Campaign {
 
   """The seventeen Campaign Strings."""
   strings: [CampaignString!]!
+
+  """
+  Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.
+  """
+  customDomains: [CustomDomain!]!
 }
 
 """
@@ -258,6 +263,39 @@ interface CampaignAction {
   """The CampaignButtonBlock this action belongs to."""
   parentBlockId: ID!
   parentBlock: CampaignBlock!
+}
+
+"""
+One machine-translation run: the campaign, the campaign language to write into (never the default) and the mode.
+"""
+input CampaignAiTranslateInput {
+  campaignId: ID!
+  languageId: ID!
+  mode: CampaignAiTranslateMode!
+}
+
+"""
+What a machine-translation run writes: `missing` fills only the texts the language has no entry for; `all` also replaces the machine’s earlier translations. A person’s are never replaced.
+"""
+enum CampaignAiTranslateMode {
+  all
+  missing
+}
+
+"""
+One progress report of a machine-translation run; `campaign` is present only on the final report.
+"""
+type CampaignAiTranslateProgress {
+  """Translation progress as a percentage (0-100)"""
+  progress: Float
+
+  """Current translation step message"""
+  message: String
+
+  """
+  The campaign with its translations written (only present when complete)
+  """
+  campaign: Campaign
 }
 
 """
@@ -1564,6 +1602,11 @@ type CampaignPublic {
 
   """Every Campaign Region, listed and orphan, in switcher order."""
   regions: [CampaignRegionPublic!]!
+
+  """
+  Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+  """
+  customDomainNames: [String!]!
   header: CampaignHeaderBlock!
   footer: CampaignFooterBlock!
 
@@ -3020,6 +3063,11 @@ type CustomDomain
   routeAllTeamJourneys: Boolean!
   team: Team!
   journeyCollection: JourneyCollection
+
+  """
+  Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none.
+  """
+  campaignId: ID
 }
 
 type CustomDomainCheck
@@ -3042,6 +3090,11 @@ input CustomDomainCreateInput {
 input CustomDomainUpdateInput {
   journeyCollectionId: ID
   routeAllTeamJourneys: Boolean
+
+  """
+  Campaign Root: the team's campaign this domain serves at `/` and `/<regionSlug>`; null clears it. Omit to leave it unchanged. Independent of `routeAllTeamJourneys` and `journeyCollectionId`.
+  """
+  campaignId: ID
 }
 
 type CustomDomainVerification
@@ -5761,7 +5814,7 @@ type Query {
   
   Errors:
   - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
-  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug).
+  - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a hostname with no Campaign Root or a draft one).
   """
   campaignPublic(
     """
@@ -6245,6 +6298,17 @@ input StepViewEventCreateInput {
 }
 
 type Subscription {
+  """
+  Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: campaign does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.
+  """
+  campaignAiTranslateSubscription(input: CampaignAiTranslateInput!): CampaignAiTranslateProgress!
   journeyAiTranslateCreateSubscription(input: JourneyAiTranslateInput!): JourneyAiTranslateProgress!
 }
 
