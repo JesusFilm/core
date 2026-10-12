@@ -10,7 +10,7 @@ import { CampaignChildPlacement } from "./globalTypes";
 // ====================================================
 
 export interface CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignHeaderBlock {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignHeroBlock" | "CampaignRegionSwitcherBlock" | "CampaignVideoCarouselBlock" | "CampaignJourneyListBlock" | "CampaignAnalyticsBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignVideoBlock" | "CampaignFeaturedMediaBlock" | "CampaignColumnBlock";
+  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignHeroBlock" | "CampaignRegionSwitcherBlock" | "CampaignVideoCarouselBlock" | "CampaignVideoBlock" | "CampaignJourneyListBlock" | "CampaignAnalyticsBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock" | "CampaignColumnBlock";
   id: string;
   /**
    * Order among siblings. Null on an owned block (a cover, logo or media slot).

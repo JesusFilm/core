@@ -59,7 +59,10 @@ export function CampaignSectionBand({
     (child) => child.__typename !== 'CampaignColumnBlock'
   )
   const above = extras.filter(isAbove)
-  const below = extras.filter((child) => !isAbove(child))
+  // A carousel's CampaignVideoBlock items are its body's cards, not Extras.
+  const below = extras.filter(
+    (child) => !isAbove(child) && child.__typename !== 'CampaignVideoBlock'
+  )
   const body = (
     <Stack spacing={3} sx={{ position: 'relative' }}>
       {above.map((child) => (

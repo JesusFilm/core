@@ -1,5 +1,6 @@
 export {
   CampaignEditorProvider,
+  isCarouselItem,
   regionLines,
   regionNeedsJourney,
   resolveSelection,

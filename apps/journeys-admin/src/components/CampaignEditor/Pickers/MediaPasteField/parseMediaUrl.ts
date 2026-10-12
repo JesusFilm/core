@@ -98,3 +98,34 @@ export function parseMediaUrl(value: string): ParsedMediaUrl | null {
   if (videoId != null) return { source: VideoBlockSource.youTube, videoId }
   return null
 }
+
+/** A pasted YouTube playlist link: its first 12 videos become carousel items. */
+export interface ParsedPlaylistUrl {
+  source: 'youTubePlaylist'
+  /** The address as pasted (trimmed): what the server re-resolves. */
+  url: string
+  playlistId: string
+}
+
+const PLAYLIST_ID = /^[\w-]{10,}$/
+
+/**
+ * The editor's pure shape check for a pasted playlist link,
+ * `https://(www|m.)youtube.com/playlist?list=<id>`, as the server reads it.
+ * A video link that also carries `list=` is a video, not a playlist.
+ */
+export function parsePlaylistUrl(value: string): ParsedPlaylistUrl | null {
+  const trimmed = value.trim()
+  let url: URL
+  try {
+    url = new URL(trimmed)
+  } catch {
+    return null
+  }
+  if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
+  if (!YOUTUBE_HOSTS.includes(url.hostname)) return null
+  if (url.pathname.replace(/\/$/, '') !== '/playlist') return null
+  const playlistId = url.searchParams.get('list')
+  if (playlistId == null || !PLAYLIST_ID.test(playlistId)) return null
+  return { source: 'youTubePlaylist', url: trimmed, playlistId }
+}
