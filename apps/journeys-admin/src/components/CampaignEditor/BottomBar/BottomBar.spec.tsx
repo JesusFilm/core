@@ -701,7 +701,7 @@ describe('BottomBar for a Video Carousel and its cards', () => {
         <Hotkeys />
         <SelectionProbe />
         <CommandProbe />
-        <BottomBar onSettingsClick={vi.fn()} />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </StaticEditor>
     )
   }

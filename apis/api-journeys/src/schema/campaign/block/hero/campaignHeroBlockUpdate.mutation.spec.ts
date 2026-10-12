@@ -167,7 +167,7 @@ describe('campaignHeroBlockUpdate', () => {
         .mockResolvedValueOnce({
           id: 'heroVideoId',
           typename: 'CampaignVideoBlock'
-        })
+        } as never)
 
       const result = await update({ mediaBlockId: 'heroVideoId' })
 
@@ -201,7 +201,7 @@ describe('campaignHeroBlockUpdate', () => {
         .mockResolvedValueOnce({
           id: 'heroButtonId',
           typename: 'CampaignButtonBlock'
-        })
+        } as never)
 
       const result = await update({ mediaBlockId: 'heroButtonId' })
 

@@ -14,7 +14,7 @@ function journey(
     team: { id: 'journeyTeamId', customDomains: [] },
     journeyCollectionJourneys: [],
     ...overrides
-  }
+  } as unknown as JourneyWithPublicUrl
 }
 
 describe('getJourneyPublicUrl', () => {
@@ -28,7 +28,7 @@ describe('getJourneyPublicUrl', () => {
               { name: 'journeys.example.org', routeAllTeamJourneys: true }
             ]
           }
-        })
+        } as never)
       )
     ).toBe('https://journeys.example.org/christmas-europe')
   })
@@ -50,7 +50,7 @@ describe('getJourneyPublicUrl', () => {
               }
             }
           ]
-        })
+        } as never)
       )
     ).toBe('https://collection.example.org/christmas-europe')
   })
@@ -73,7 +73,7 @@ describe('getJourneyPublicUrl', () => {
               }
             }
           ]
-        })
+        } as never)
       )
     ).toBe('https://journeys.example.org/christmas-europe')
   })
@@ -88,7 +88,7 @@ describe('getJourneyPublicUrl', () => {
           journeyCollectionJourneys: [
             { journeyCollection: { customDomains: [] } }
           ]
-        })
+        } as never)
       )
     ).toBe('https://example.com/christmas-europe')
   })

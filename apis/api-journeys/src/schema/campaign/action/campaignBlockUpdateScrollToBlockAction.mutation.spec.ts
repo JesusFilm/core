@@ -40,7 +40,7 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
   function mockButton(blockId: string, target: { id: string } | null): void {
     prismaMock.campaignBlock.findFirst
       .mockResolvedValueOnce(campaignBlockWithAcl(fixture, blockId))
-      .mockResolvedValueOnce(target)
+      .mockResolvedValueOnce(target as never)
   }
 
   async function update(blockId: string, id = 'footerTermsId'): Promise<any> {
