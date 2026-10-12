@@ -310,6 +310,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     title: 'Films for the season',
     videoId: null,
     videoVariantLanguageId: null,
+    video: null,
     backgroundKind: CampaignBackgroundKind.surface
   }),
   section('CampaignJourneyListBlock', {

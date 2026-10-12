@@ -29,12 +29,22 @@ function watchVideo(block: CampaignVideoBlock): WatchVideo | null {
   return block.mediaVideo?.__typename === 'Video' ? block.mediaVideo : null
 }
 
+/** A Watch title as the gateway returns it with `title(languageId, primary: true)`. */
+export interface WatchTitle {
+  value: string
+  primary: boolean
+  language: { id: string }
+}
+
 /** The Watch title in the Page Language, else the primary, else the first. */
-function watchTitle(video: WatchVideo, languageId: string): string | null {
+export function watchTitle(
+  titles: WatchTitle[],
+  languageId: string
+): string | null {
   const title =
-    video.title.find((candidate) => candidate.language.id === languageId) ??
-    video.title.find((candidate) => candidate.primary) ??
-    video.title[0]
+    titles.find((candidate) => candidate.language.id === languageId) ??
+    titles.find((candidate) => candidate.primary) ??
+    titles[0]
   return title?.value ?? null
 }
 
@@ -54,7 +64,7 @@ export function campaignVideoDetails(
       ? block.title
       : video == null
         ? null
-        : watchTitle(video, languageId),
+        : watchTitle(video.title, languageId),
     description: hasText(block.description) ? block.description : null,
     poster: campaignImageSource(block)?.src ?? null,
     childrenCount: video?.childrenCount ?? 0,

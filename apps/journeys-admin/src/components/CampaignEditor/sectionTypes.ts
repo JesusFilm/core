@@ -88,6 +88,7 @@ export function newSectionBlock(
         title: null,
         videoId: null,
         videoVariantLanguageId: null,
+        video: null,
         eyebrowTranslations: [],
         titleTranslations: []
       }

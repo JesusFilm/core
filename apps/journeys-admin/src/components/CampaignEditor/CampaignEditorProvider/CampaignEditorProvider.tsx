@@ -124,6 +124,7 @@ export type CampaignSelectionKind =
   | 'chrome'
   | 'text'
   | 'button'
+  | 'card'
   | 'region'
 
 export interface CampaignSelection {
@@ -142,6 +143,20 @@ function isChrome(block: CampaignBlock): boolean {
   return (
     block.__typename === 'CampaignHeaderBlock' ||
     block.__typename === 'CampaignFooterBlock'
+  )
+}
+
+/** A Video Carousel's explicit item: a CampaignVideoBlock ordered among its children. */
+export function isCarouselItem(
+  blocks: CampaignBlock[],
+  block: CampaignBlock
+): boolean {
+  if (block.__typename !== 'CampaignVideoBlock' || block.parentOrder == null)
+    return false
+  return blocks.some(
+    (candidate) =>
+      candidate.id === block.parentBlockId &&
+      candidate.__typename === 'CampaignVideoCarouselBlock'
   )
 }
 
@@ -197,6 +212,12 @@ export function resolveSelection(
   if (selectedBlockId == null) return CAMPAIGN_SELECTION
   const block = blocks.find((candidate) => candidate.id === selectedBlockId)
   if (block == null) return CAMPAIGN_SELECTION
+  if (isCarouselItem(blocks, block)) {
+    const host = blocks.find(
+      (candidate) => candidate.id === block.parentBlockId
+    )
+    return { kind: 'card', block, host }
+  }
   if (
     block.__typename === 'CampaignTypographyBlock' ||
     block.__typename === 'CampaignButtonBlock'
@@ -230,7 +251,7 @@ export interface CampaignEditorContextValue {
   selectBlock: (blockId?: string) => void
   /** Select a region card, naming the switcher it sits in when known. */
   selectRegion: (regionId: string, hostBlockId?: string) => void
-  /** Escape: an Extra steps up to its section, a line to its region, a region to its switcher, a section or chrome block to the campaign row. */
+  /** Escape: an Extra or a card steps up to its section, a line to its region, a region to its switcher, a section or chrome block to the campaign row. */
   escape: () => void
   /** The page a block sits on; undefined for chrome and Region Lines, which every page shows. */
   pageKindOf: (
@@ -318,7 +339,11 @@ export function CampaignEditorProvider({
       selectRegion(selection.region.id)
       return
     }
-    if (selection.kind === 'text' || selection.kind === 'button') {
+    if (
+      selection.kind === 'text' ||
+      selection.kind === 'button' ||
+      selection.kind === 'card'
+    ) {
       selectBlock(selection.host?.id)
       return
     }

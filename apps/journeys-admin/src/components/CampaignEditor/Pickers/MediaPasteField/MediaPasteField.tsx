@@ -19,6 +19,7 @@ import {
   VideoBlockSource,
   VideoLabel
 } from '../../../../../__generated__/globalTypes'
+import { fetchYouTubePlaylist } from '../../../../libs/fetchYouTubePlaylist'
 import { fetchYouTubeVideo } from '../../../../libs/fetchYouTubeVideo'
 import { parseISO8601Duration } from '../../../../libs/parseISO8601Duration'
 import type { CampaignVideoPick } from '../../../../libs/useCampaignVideoBlockCreateMutation'
@@ -27,12 +28,22 @@ import { AddByFile } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/V
 import { messageOf } from '../../utils/useCampaignStyleCommand'
 import { ImagePicker } from '../ImagePicker'
 
-import { ParsedMediaUrl, parseMediaUrl } from './parseMediaUrl'
+import {
+  ParsedMediaUrl,
+  ParsedPlaylistUrl,
+  parseMediaUrl,
+  parsePlaylistUrl
+} from './parseMediaUrl'
 
 /** What a Media Slot pick names: a Watch, YouTube or Mux video, or an image's stored address. */
 export type CampaignMediaPick = CampaignVideoPick | { src: string }
 
 type MediaTab = 'link' | 'upload' | 'image'
+
+/** A playlist import brings in this many videos (the server's limit). */
+const PLAYLIST_IMPORT_LIMIT = 12
+
+type Candidate = ParsedMediaUrl | ParsedPlaylistUrl
 
 type Translate = (key: string, options?: Record<string, unknown>) => string
 
@@ -73,11 +84,12 @@ interface Resolution {
 
 /**
  * Resolve the link being previewed: a Watch address through the gateway by
- * its variant slug, a YouTube link as the journey video library resolves
- * one. Errors are the source's message, verbatim.
+ * its variant slug, a YouTube video as the journey video library resolves
+ * one, a YouTube playlist through the Data API's playlist (with how many of
+ * its videos an import brings in). Errors are the source's message, verbatim.
  */
 function useResolution(
-  candidate: ParsedMediaUrl | undefined,
+  candidate: Candidate | undefined,
   t: Translate
 ): Resolution {
   const watch = useCampaignWatchVideoQuery(
@@ -87,7 +99,41 @@ function useResolution(
     candidate?.source === VideoBlockSource.youTube ? candidate.videoId : null,
     fetchYouTubeVideo
   )
+  const playlist = useSWR(
+    candidate?.source === 'youTubePlaylist'
+      ? ['youTubePlaylist', candidate.playlistId]
+      : null,
+    async ([, id]: [string, string]) => await fetchYouTubePlaylist(id)
+  )
   if (candidate == null) return { loading: false }
+
+  if (candidate.source === 'youTubePlaylist') {
+    if (playlist.error != null)
+      return { error: messageOf(playlist.error), loading: false }
+    if (playlist.isLoading) return { loading: true }
+    const data = playlist.data
+    if (data == null)
+      return {
+        error: t('That YouTube playlist could not be found'),
+        loading: false
+      }
+    return {
+      video: {
+        title: data.title,
+        image: data.image,
+        details: [
+          t('YouTube playlist'),
+          data.itemCount > PLAYLIST_IMPORT_LIMIT
+            ? t('First {{limit}} of {{count}} videos', {
+                limit: PLAYLIST_IMPORT_LIMIT,
+                count: data.itemCount
+              })
+            : t('{{count}} videos', { count: data.itemCount })
+        ]
+      },
+      loading: false
+    }
+  }
 
   if (candidate.source === VideoBlockSource.internal) {
     if (watch.error != null)
@@ -184,6 +230,10 @@ interface MediaPasteFieldProps {
   uploadKey: string
   /** One call when the author keeps a video or an image. */
   onPick: (pick: CampaignMediaPick) => void
+  /** Accept a YouTube playlist link too: one call with the address when it is kept. */
+  onPickPlaylist?: (url: string) => void
+  /** Offer the Image tab (a carousel takes videos only). */
+  allowImage?: boolean
   testId?: string
 }
 
@@ -193,21 +243,27 @@ interface MediaPasteFieldProps {
  * for its shape here and shown resolved (title, label, children count or
  * duration) before it is kept: a Watch address through the gateway's
  * `video(id, idType: slug)`, a YouTube link as the journey video library
- * resolves one. Upload is the video library's Mux upload, picked when Mux
- * has finished; an image goes through the image picker.
+ * resolves one, and (with `onPickPlaylist`) a YouTube playlist with how many
+ * of its videos an import brings in. Upload is the video library's Mux
+ * upload, picked when Mux has finished; an image goes through the image
+ * picker.
  */
 export function MediaPasteField({
   teamId,
   uploadKey,
   onPick,
+  onPickPlaylist,
+  allowImage = true,
   testId = 'CampaignMediaPasteField'
 }: MediaPasteFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [tab, setTab] = useState<MediaTab>('link')
   const [url, setUrl] = useState('')
-  const [candidate, setCandidate] = useState<ParsedMediaUrl>()
+  const [candidate, setCandidate] = useState<Candidate>()
 
-  const parsed = parseMediaUrl(url)
+  const parsed: Candidate | null =
+    parseMediaUrl(url) ??
+    (onPickPlaylist != null ? parsePlaylistUrl(url) : null)
   const resolution = useResolution(candidate, t)
   const urlValid = url.trim() === '' || parsed != null
 
@@ -223,7 +279,9 @@ export function MediaPasteField({
 
   function handleKeep(): void {
     if (candidate == null || resolution.video == null) return
-    if (candidate.source === VideoBlockSource.internal) {
+    if (candidate.source === 'youTubePlaylist') {
+      onPickPlaylist?.(candidate.url)
+    } else if (candidate.source === VideoBlockSource.internal) {
       onPick({ source: VideoBlockSource.internal, url: candidate.url })
     } else {
       onPick({ source: VideoBlockSource.youTube, videoId: candidate.videoId })
@@ -254,13 +312,17 @@ export function MediaPasteField({
       >
         <Tab value="link" label={t('Paste a link')} />
         <Tab value="upload" label={t('Upload')} />
-        <Tab value="image" label={t('Image')} />
+        {allowImage && <Tab value="image" label={t('Image')} />}
       </Tabs>
       {tab === 'link' && (
         <Stack spacing={3}>
           <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
             <TextField
-              label={t('Watch or YouTube link')}
+              label={
+                onPickPlaylist != null
+                  ? t('Watch, YouTube video or playlist link')
+                  : t('Watch or YouTube link')
+              }
               value={url}
               onChange={handleUrlChange}
               onKeyDown={(event) => {
@@ -273,7 +335,11 @@ export function MediaPasteField({
               helperText={
                 urlValid
                   ? undefined
-                  : t('Paste a jesusfilm.org/watch or YouTube video link')
+                  : onPickPlaylist != null
+                    ? t(
+                        'Paste a jesusfilm.org/watch link, or a YouTube video or playlist link'
+                      )
+                    : t('Paste a jesusfilm.org/watch or YouTube video link')
               }
               size="small"
               fullWidth
@@ -314,7 +380,9 @@ export function MediaPasteField({
                   onClick={handleKeep}
                   disabled={resolution.video == null}
                 >
-                  {t('Use video')}
+                  {candidate.source === 'youTubePlaylist'
+                    ? t('Add videos')
+                    : t('Use video')}
                 </Button>
                 <Button
                   variant="text"
@@ -333,7 +401,7 @@ export function MediaPasteField({
           <AddByFile onChange={handleUploadComplete} />
         </EditorProvider>
       )}
-      {tab === 'image' && (
+      {allowImage && tab === 'image' && (
         <ImagePicker
           teamId={teamId}
           onPick={(src) => onPick({ src })}
