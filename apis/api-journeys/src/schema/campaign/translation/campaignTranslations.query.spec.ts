@@ -302,6 +302,36 @@ describe('campaignTranslations', () => {
     })
   })
 
+  it('leaves out live blocks whose parent section was deleted', async () => {
+    const current = build()
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...current,
+      blocks: [
+        ...current.blocks,
+        {
+          ...hero,
+          id: 'orphanId',
+          parentBlockId: 'deletedSectionId',
+          parentOrder: 0,
+          title: 'Orphaned title'
+        }
+      ]
+    } as never)
+
+    const result = await translations()
+
+    expect(
+      result.data.campaignTranslations.some(
+        (row: any) => row.target.blockId === 'orphanId'
+      )
+    ).toBe(false)
+    expect(
+      result.data.campaignTranslations.some(
+        (row: any) => row.target.blockId === 'heroId'
+      )
+    ).toBe(true)
+  })
+
   it('skips fields that have no default-language text', async () => {
     const result = await translations()
 

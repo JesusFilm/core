@@ -3,15 +3,20 @@ import { render, screen } from '@testing-library/react'
 
 import {
   CampaignBackgroundKind,
+  CampaignBackgroundOverlay,
   CampaignChildPlacement,
   CampaignPageKind,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
-import { bandCssVariables, resolveBand } from '../libs/resolveBand'
+import {
+  bandCssVariables,
+  contrastText,
+  resolveBand
+} from '../libs/resolveBand'
 import { transformCampaignBlocks } from '../libs/transformer'
-import { campaignPublic, landingBlocks } from '../testData'
+import { campaignPublic, heroCoverBlock, landingBlocks } from '../testData'
 import type { CampaignSectionTree } from '../types'
 
 import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
@@ -102,6 +107,65 @@ describe('CampaignSectionBand', () => {
     )
   })
 
+  it('layers the five overrides over the kind’s defaults in the CSS variables', () => {
+    const section = {
+      ...sectionWithExtras(),
+      backgroundKind: CampaignBackgroundKind.contrast,
+      headingColor: '#112233',
+      textColor: '#445566',
+      buttonColor: '#778899',
+      buttonTextColor: '#AABBCC',
+      accentColor: '#DDEEFF'
+    }
+    renderBand(section)
+    const band = screen.getByTestId('CampaignSectionBand-heroId')
+    const read = (name: string): string => band.style.getPropertyValue(name)
+
+    // The contrast row's own values would be the theme's contrast text and accent.
+    expect(read('--campaign-band-background')).toBe('#26262E')
+    expect(read('--campaign-band-heading')).toBe('#112233')
+    expect(read('--campaign-band-text')).toBe('#445566')
+    expect(read('--campaign-band-button')).toBe('#778899')
+    expect(read('--campaign-band-button-label')).toBe('#AABBCC')
+    expect(read('--campaign-band-accent')).toBe('#DDEEFF')
+    expect(read('--campaign-band-eyebrow')).toBe('#DDEEFF')
+  })
+
+  it('paints a custom background from the section’s own colour with computed contrast text', () => {
+    const section = {
+      ...sectionWithExtras(),
+      backgroundKind: CampaignBackgroundKind.custom,
+      backgroundColor: '#123456'
+    }
+    renderBand(section)
+    const band = screen.getByTestId('CampaignSectionBand-heroId')
+
+    expect(band.style.getPropertyValue('--campaign-band-background')).toBe(
+      '#123456'
+    )
+    expect(band.style.getPropertyValue('--campaign-band-text')).toBe(
+      contrastText('#123456')
+    )
+  })
+
+  it('lets a heading override beat the custom band’s computed text', () => {
+    const section = {
+      ...sectionWithExtras(),
+      backgroundKind: CampaignBackgroundKind.custom,
+      backgroundColor: '#123456',
+      headingColor: '#FFEEDD'
+    }
+    renderBand(section)
+    const band = screen.getByTestId('CampaignSectionBand-heroId')
+
+    expect(band.style.getPropertyValue('--campaign-band-heading')).toBe(
+      '#FFEEDD'
+    )
+    expect(band.style.getPropertyValue('--campaign-band-text')).toBe(
+      contrastText('#123456')
+    )
+  })
+
   it('orders above children by parentOrder, then the body, then below children by parentOrder', () => {
     renderBand(sectionWithExtras())
     const band = screen.getByTestId('CampaignSectionBand-heroId')
@@ -161,6 +225,50 @@ describe('CampaignSectionBand', () => {
       backgroundColor: 'rgba(0, 0, 0, 0.55)'
     })
     expect(screen.getByTestId('Body')).toBeInTheDocument()
+  })
+
+  it.each([
+    [CampaignBackgroundOverlay.light, 0.3],
+    [CampaignBackgroundOverlay.medium, 0.55],
+    [CampaignBackgroundOverlay.heavy, 0.75]
+  ])(
+    'paints the %s overlay at %d over the cover, with white text and dark translucent cards',
+    (overlay, alphaValue) => {
+      const section = sectionWithExtras()
+      renderBand({
+        ...section,
+        backgroundKind: CampaignBackgroundKind.image,
+        coverBlockId: heroCoverBlock.id,
+        backgroundOverlay: overlay,
+        cover: {
+          ...heroCoverBlock,
+          children: [],
+          cover: null,
+          media: null,
+          logo: null
+        }
+      })
+      expect(screen.getByTestId('CampaignBandOverlay')).toHaveStyle({
+        backgroundColor: `rgba(0, 0, 0, ${alphaValue})`
+      })
+      const band = screen.getByTestId('CampaignSectionBand-heroId')
+      expect(band.style.getPropertyValue('--campaign-band-text')).toBe(
+        '#FFFFFF'
+      )
+      expect(band.style.getPropertyValue('--campaign-band-card')).toBe(
+        'rgba(0, 0, 0, 0.4)'
+      )
+    }
+  )
+
+  it('renders no cover for the image kind when the slot is empty', () => {
+    renderBand({
+      ...sectionWithExtras(),
+      backgroundKind: CampaignBackgroundKind.image,
+      coverBlockId: null
+    })
+    expect(screen.queryByTestId('CampaignBandCover')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignBandOverlay')).not.toBeInTheDocument()
   })
 
   it('applies the body alignment to the band', () => {

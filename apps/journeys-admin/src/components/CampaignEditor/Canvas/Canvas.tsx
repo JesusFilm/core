@@ -1,8 +1,21 @@
+import {
+  ClientRect,
+  CollisionDetection,
+  DndContext,
+  DragEndEvent,
+  DragMoveEvent,
+  MouseSensor,
+  TouchSensor,
+  closestCenter,
+  pointerWithin,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo } from 'react'
+import { ReactElement, useMemo, useState } from 'react'
 
 import {
   createCampaignTheme,
@@ -13,8 +26,12 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { FontLoader } from '../../Editor/FontLoader'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
+import { slotSection } from '../sectionTypes'
+import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
+import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
 import { CanvasSection } from './CanvasSection'
 
@@ -22,6 +39,96 @@ export type CanvasView = 'desktop' | 'phone'
 
 /** Phone view: the frame is 390 px wide so the campaign's breakpoints follow the canvas width. */
 export const PHONE_FRAME_WIDTH = 390
+
+export type DropEdge = 'before' | 'after'
+
+export interface DropTarget {
+  /** The section under the pointer. */
+  overId: string
+  edge: DropEdge
+}
+
+/** Which side of the section under the pointer a drop lands on: its midpoint decides. */
+export function dropEdgeFor(
+  pointerY: number,
+  rect: { top: number; height: number }
+): DropEdge {
+  return pointerY < rect.top + rect.height / 2 ? 'before' : 'after'
+}
+
+/**
+ * The `parentOrder` a drop produces among the page's sections (in order), or
+ * undefined when the section would land where it already is.
+ */
+export function dropParentOrder(
+  sectionIds: string[],
+  activeId: string,
+  target: DropTarget
+): number | undefined {
+  const from = sectionIds.indexOf(activeId)
+  const overIndex = sectionIds.indexOf(target.overId)
+  if (from < 0 || overIndex < 0) return undefined
+  let to = target.edge === 'before' ? overIndex : overIndex + 1
+  if (from < to) to -= 1
+  return to === from ? undefined : to
+}
+
+/** The drag data a Column Slot carries, set by `CanvasColumnSlot`. */
+interface SlotDragData {
+  slot?: boolean
+  columnsId?: string | null
+}
+
+function slotDataOf(
+  data: { current?: SlotDragData } | undefined
+): SlotDragData {
+  return data?.current ?? {}
+}
+
+/**
+ * The section under the pointer, falling back to the nearest centre at the
+ * page's edges. A section only collides with sections; a Column Slot only
+ * with the other slot of its own Columns section.
+ */
+const collisionDetection: CollisionDetection = (args) => {
+  const active = slotDataOf(args.active?.data)
+  const droppableContainers = args.droppableContainers.filter((container) => {
+    const candidate = slotDataOf(container.data)
+    if (active.slot !== true) return candidate.slot !== true
+    return candidate.slot === true && candidate.columnsId === active.columnsId
+  })
+  const scoped = { ...args, droppableContainers }
+  const within = pointerWithin(scoped)
+  return within.length > 0 ? within : closestCenter(scoped)
+}
+
+function pointerYOf(event: DragMoveEvent | DragEndEvent): number | undefined {
+  const activator = event.activatorEvent as Partial<MouseEvent> &
+    Partial<TouchEvent>
+  const start = activator.clientY ?? activator.touches?.[0]?.clientY
+  return start == null ? undefined : start + event.delta.y
+}
+
+/**
+ * The section under the pointer and the side of it the drop lands on. Read
+ * from the first collision rather than `over`, which lags a render behind.
+ */
+function dropTargetOf(
+  event: DragMoveEvent | DragEndEvent
+): DropTarget | undefined {
+  const collision = event.collisions?.[0]
+  const rect: ClientRect | null | undefined =
+    collision?.data?.droppableContainer?.rect?.current
+  const pointerY = pointerYOf(event)
+  if (
+    collision == null ||
+    rect == null ||
+    pointerY == null ||
+    collision.id === event.active.id
+  )
+    return undefined
+  return { overId: String(collision.id), edge: dropEdgeFor(pointerY, rect) }
+}
 
 interface CanvasProps {
   campaign: Campaign
@@ -33,9 +140,12 @@ interface CanvasProps {
  * The campaign canvas: the chosen page rendered inside a FramePortal iframe
  * with the editor's own section components under the campaign's theme, in
  * the Preview Language the top bar chose (its text direction follows that
- * language's bcp47). Desktop/Phone is a view toggle held by the shell, never
- * a Command. The frame carries its own Hotkeys, since its key events never
- * leave it, and a click on the empty frame returns to the campaign row.
+ * language's bcp47), the header above and the footer below as on the public
+ * page. Desktop/Phone is a view toggle held by the shell, never a Command.
+ * The frame carries its own Hotkeys, since its key events never leave it, and
+ * a click on the empty frame returns to the campaign row. A section is
+ * dragged by its handle only; the drop lands before or after the section
+ * under the pointer by its midpoint, as one reorder Command.
  */
 export function Canvas({
   campaign,
@@ -47,6 +157,9 @@ export function Canvas({
     selectBlock,
     state: { previewLanguageId }
   } = useCampaignEditor()
+  const { addBlockOrder } = useCampaignBlockOrderCommand()
+  const { addColumnSwap } = useColumnSwapCommand()
+  const [dropTarget, setDropTarget] = useState<DropTarget>()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const pageId = page?.id
   const sections = useMemo(
@@ -55,6 +168,21 @@ export function Canvas({
         campaign.blocks.filter((block) => block.pageId === pageId)
       ),
     [campaign.blocks, pageId]
+  )
+  const chrome = useMemo(
+    () =>
+      transformCampaignBlocks(
+        campaign.blocks.filter(
+          (block) => block.pageId == null && block.regionId == null
+        )
+      ),
+    [campaign.blocks]
+  )
+  const header = chrome.find(
+    (block) => block.__typename === 'CampaignHeaderBlock'
+  )
+  const footer = chrome.find(
+    (block) => block.__typename === 'CampaignFooterBlock'
   )
   const language = campaign.languages.find(
     (candidate) => candidate.languageId === previewLanguageId
@@ -72,6 +200,55 @@ export function Canvas({
     }),
     [campaign.theme]
   )
+  const fonts = useMemo(
+    () => [
+      fontFamilies.headerFont,
+      fontFamilies.bodyFont,
+      fontFamilies.labelFont
+    ],
+    [fontFamilies]
+  )
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 5 }
+    })
+  )
+
+  function handleDragMove(event: DragMoveEvent): void {
+    if (slotDataOf(event.active.data).slot === true) return
+    setDropTarget(dropTargetOf(event))
+  }
+
+  /** A slot dropped on the other slot of its Columns section swaps the two. */
+  function handleSlotDragEnd(event: DragEndEvent): void {
+    const overId = event.collisions?.[0]?.id
+    if (overId == null || overId === event.active.id) return
+    const slot = campaign.blocks.find(
+      (candidate) => candidate.id === String(event.active.id)
+    )
+    if (slot == null) return
+    addColumnSwap(slot, slotSection(campaign.blocks, slot.id)?.id)
+  }
+
+  function handleDragEnd(event: DragEndEvent): void {
+    setDropTarget(undefined)
+    if (slotDataOf(event.active.data).slot === true) {
+      handleSlotDragEnd(event)
+      return
+    }
+    const target = dropTargetOf(event)
+    if (target == null) return
+    const activeId = String(event.active.id)
+    const parentOrder = dropParentOrder(
+      sections.map((section) => section.id),
+      activeId,
+      target
+    )
+    const block = campaign.blocks.find((candidate) => candidate.id === activeId)
+    if (parentOrder == null || block == null) return
+    addBlockOrder(block, parentOrder)
+  }
 
   return (
     <Box
@@ -87,6 +264,7 @@ export function Canvas({
         py: 3
       }}
     >
+      <FontLoader fonts={fonts} />
       <Box
         sx={{
           width: view === 'phone' ? PHONE_FRAME_WIDTH : '100%',
@@ -120,13 +298,42 @@ export function Canvas({
                   color: 'text.primary'
                 }}
               >
-                {sections.map((section) => (
-                  <CanvasSection
-                    key={section.id}
-                    block={section}
-                    theme={campaign.theme}
-                  />
-                ))}
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={collisionDetection}
+                  onDragMove={handleDragMove}
+                  onDragEnd={handleDragEnd}
+                  onDragCancel={() => setDropTarget(undefined)}
+                >
+                  {header != null && (
+                    <CanvasSection
+                      block={header}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                    />
+                  )}
+                  {sections.map((section) => (
+                    <CanvasSection
+                      key={section.id}
+                      block={section}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                      draggable
+                      dropEdge={
+                        dropTarget?.overId === section.id
+                          ? dropTarget.edge
+                          : undefined
+                      }
+                    />
+                  ))}
+                  {footer != null && (
+                    <CanvasSection
+                      block={footer}
+                      theme={campaign.theme}
+                      previewLanguageId={previewLanguageId}
+                    />
+                  )}
+                </DndContext>
               </Box>
             </ThemeProvider>
           )}

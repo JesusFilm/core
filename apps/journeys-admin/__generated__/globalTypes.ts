@@ -107,11 +107,37 @@ export enum CampaignChildPlacement {
 }
 
 /**
+ * The width ratio of the two Column Slots of a Columns section.
+ */
+export enum CampaignColumnsRatio {
+  equal = "equal",
+  wideLeft = "wideLeft",
+  wideRight = "wideRight",
+}
+
+/**
+ * Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, the header `logo` (the Brand Mark), or the `media` slot of a hero or Featured Media section. An owned image has `parentOrder: null` and replaces the slot’s previous block.
+ */
+export enum CampaignImageSlot {
+  cover = "cover",
+  logo = "logo",
+  media = "media",
+}
+
+/**
  * How a Journey List renders its items: a card grid or a list.
  */
 export enum CampaignJourneyListDisplay {
   grid = "grid",
   list = "list",
+}
+
+/**
+ * Which side of a Featured Media section the Media Slot renders on.
+ */
+export enum CampaignMediaSide {
+  left = "left",
+  right = "right",
 }
 
 /**
@@ -535,6 +561,17 @@ export enum VideoBlockSource {
   youTube = "youTube",
 }
 
+export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+  trailer = "trailer",
+}
+
 export enum VisitorStatus {
   checkMarkSymbol = "checkMarkSymbol",
   partyPopper = "partyPopper",
@@ -605,10 +642,38 @@ export interface ButtonClickEventCreateInput {
   actionValue?: string | null;
 }
 
+export interface CampaignAnalyticsBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  showMap?: boolean | null;
+}
+
 export interface CampaignAnalyticsBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   showMap?: boolean | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+/**
+ * A client-chosen id for one block of the copy, so the editor can show the duplicate before the response arrives.
+ */
+export interface CampaignBlockDuplicateIdMapInput {
+  oldId: string;
+  newId: string;
 }
 
 export interface CampaignButtonBlockCreateInput {
@@ -634,6 +699,29 @@ export interface CampaignButtonBlockUpdateInput {
   placement?: CampaignChildPlacement | null;
 }
 
+export interface CampaignColumnsBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  ratio?: CampaignColumnsRatio | null;
+  slotIds?: string[] | null;
+}
+
+export interface CampaignColumnsBlockUpdateInput {
+  ratio?: CampaignColumnsRatio | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
 /**
  * Input for creating a Campaign. Nothing else is taken: the slug, language row, theme, pages, chrome, strings and starter sections are all seeded (the Campaign Seed).
  */
@@ -643,11 +731,140 @@ export interface CampaignCreateInput {
   defaultLanguageId: string;
 }
 
+export interface CampaignFeaturedMediaBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  bullets?: string | null;
+  mediaSide?: CampaignMediaSide | null;
+}
+
+export interface CampaignFeaturedMediaBlockUpdateInput {
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  bullets?: string | null;
+  mediaSide?: CampaignMediaSide | null;
+  mediaBlockId?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+/**
+ * The footer’s Section Background and colour overrides: the shared section fields and nothing else.
+ */
+export interface CampaignFooterBlockUpdateInput {
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+/**
+ * The header’s Section Background and colour overrides (the shared section fields) and its logo slot.
+ */
+export interface CampaignHeaderBlockUpdateInput {
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+  logoBlockId?: string | null;
+}
+
+export interface CampaignHeroBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  align?: TypographyAlign | null;
+}
+
 export interface CampaignHeroBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
   lede?: string | null;
   align?: TypographyAlign | null;
+  mediaBlockId?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+/**
+ * One of two roles: an Image section (`pageId`, optional `parentOrder`), or an owned image (`parentBlockId` and `slot`) that replaces the parent’s current cover, logo or media and gets `parentOrder: null`. Exactly one of `pageId` and `parentBlockId`.
+ */
+export interface CampaignImageBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId?: string | null;
+  parentOrder?: number | null;
+  parentBlockId?: string | null;
+  slot?: CampaignImageSlot | null;
+  src?: string | null;
+  alt?: string | null;
+}
+
+export interface CampaignImageBlockUpdateInput {
+  src?: string | null;
+  alt?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+export interface CampaignJourneyBlockUpdateInput {
+  title?: string | null;
+  description?: string | null;
+}
+
+export interface CampaignJourneyListBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
+  lede?: string | null;
+  display?: CampaignJourneyListDisplay | null;
 }
 
 export interface CampaignJourneyListBlockUpdateInput {
@@ -655,20 +872,156 @@ export interface CampaignJourneyListBlockUpdateInput {
   title?: string | null;
   lede?: string | null;
   display?: CampaignJourneyListDisplay | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+export interface CampaignLinkActionInput {
+  url: string;
+  target?: string | null;
+}
+
+export interface CampaignNavigateToRegionActionInput {
+  regionId: string;
+}
+
+export interface CampaignRegionHeaderBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  intro?: string | null;
 }
 
 export interface CampaignRegionHeaderBlockUpdateInput {
+  intro?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+export interface CampaignRegionLanguageUpdateInput {
+  url?: string | null;
+  journeyId?: string | null;
+  title?: string | null;
+  description?: string | null;
+  snapshotEdited?: boolean | null;
+}
+
+export interface CampaignRegionShareBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  title?: string | null;
   intro?: string | null;
 }
 
 export interface CampaignRegionShareBlockUpdateInput {
   title?: string | null;
   intro?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+export interface CampaignRegionSwitcherBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  title?: string | null;
+  variant?: CampaignSwitcherVariant | null;
 }
 
 export interface CampaignRegionSwitcherBlockUpdateInput {
   title?: string | null;
   variant?: CampaignSwitcherVariant | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+export interface CampaignRegionUpdateInput {
+  name?: string | null;
+  slug?: string | null;
+  listed?: boolean | null;
+}
+
+export interface CampaignRichTextBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  title?: string | null;
+  content?: string | null;
+}
+
+export interface CampaignRichTextBlockUpdateInput {
+  title?: string | null;
+  content?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
+}
+
+export interface CampaignScrollToBlockActionInput {
+  blockId: string;
+}
+
+/**
+ * The Campaign Theme columns. Every field is optional: an omitted field leaves the stored value alone. The eight colour columns and the three enum columns are non-null, so null is rejected for them; a font set to null returns to the base theme default. Each change (and each Theme Preset application, which sends the mode and the eight colours together) is one Command in the editor.
+ */
+export interface CampaignThemeUpdateInput {
+  themeMode?: ThemeMode | null;
+  headerFont?: string | null;
+  bodyFont?: string | null;
+  labelFont?: string | null;
+  primaryColor?: string | null;
+  accentColor?: string | null;
+  backgroundColor?: string | null;
+  surfaceColor?: string | null;
+  textColor?: string | null;
+  mutedColor?: string | null;
+  contrastBackgroundColor?: string | null;
+  contrastTextColor?: string | null;
+  radius?: CampaignRadius | null;
+  buttonRadius?: CampaignButtonRadius | null;
 }
 
 /**
@@ -694,7 +1047,8 @@ export interface CampaignTranslationTargetInput {
 export interface CampaignTypographyBlockCreateInput {
   id?: string | null;
   campaignId: string;
-  parentBlockId: string;
+  parentBlockId?: string | null;
+  regionId?: string | null;
   content?: string | null;
   variant?: TypographyVariant | null;
   align?: TypographyAlign | null;
@@ -711,17 +1065,62 @@ export interface CampaignTypographyBlockUpdateInput {
 }
 
 /**
- * Campaign settings. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.
+ * Campaign settings and the Palette. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.
  */
 export interface CampaignUpdateInput {
   title?: string | null;
   slug?: string | null;
   defaultLanguageId?: string | null;
+  palette?: string[] | null;
+}
+
+/**
+ * A Campaign Video for the Media Slot of a hero or Featured Media section (`parentBlockId`), replacing the block the slot held with `parentOrder: null`, or the next explicit item of a Video Carousel. A Watch video is a pasted `url` (`source: internal`); a YouTube or Mux video is its `videoId`.
+ */
+export interface CampaignVideoBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  parentBlockId: string;
+  source: VideoBlockSource;
+  videoId?: string | null;
+  url?: string | null;
+  title?: string | null;
+  description?: string | null;
+}
+
+/**
+ * The author’s default-language overrides. Null (or empty) falls back to the source text: read live for a Watch video, re-read from YouTube or Mux otherwise.
+ */
+export interface CampaignVideoBlockUpdateInput {
+  title?: string | null;
+  description?: string | null;
+}
+
+export interface CampaignVideoCarouselBlockCreateInput {
+  id?: string | null;
+  campaignId: string;
+  pageId: string;
+  parentBlockId?: string | null;
+  parentOrder?: number | null;
+  eyebrow?: string | null;
+  title?: string | null;
 }
 
 export interface CampaignVideoCarouselBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
+  url?: string | null;
+  videoId?: string | null;
+  videoVariantLanguageId?: string | null;
+  backgroundKind?: CampaignBackgroundKind | null;
+  backgroundColor?: string | null;
+  coverBlockId?: string | null;
+  backgroundOverlay?: CampaignBackgroundOverlay | null;
+  headingColor?: string | null;
+  textColor?: string | null;
+  buttonColor?: string | null;
+  buttonTextColor?: string | null;
+  accentColor?: string | null;
 }
 
 export interface CardBlockCreateInput {

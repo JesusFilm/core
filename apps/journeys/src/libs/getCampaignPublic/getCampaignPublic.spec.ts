@@ -69,6 +69,28 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     })
   })
 
+  it('reads again with the language id when the campaign default is not the fallback Watch text language', async () => {
+    const inFrench = { ...french, defaultLanguageId: '496' }
+    const query = vi.fn(async () => ({
+      data: { campaignPublic: inFrench }
+    }))
+    const apollo = { query } as unknown as ApolloClient
+
+    const result = await fetchCampaignPublicInPageLanguage(
+      apollo,
+      'christmas-2026',
+      {}
+    )
+
+    expect(result?.language.languageId).toBe('496')
+    expect(query).toHaveBeenCalledTimes(2)
+    expect(query.mock.calls[1]).toEqual([
+      expect.objectContaining({
+        variables: { slug: 'christmas-2026', languageId: '496' }
+      })
+    ])
+  })
+
   it('follows the ?lang → cookie → Accept-Language → default order against the campaign languages', async () => {
     const apollo = client()
     const header = await fetchCampaignPublicInPageLanguage(
@@ -112,32 +134,57 @@ describe('fetchCampaignPublicInPageLanguage', () => {
 describe('campaignPageCacheControl', () => {
   it('shares the cache only when the URL alone decided the language', () => {
     expect(
-      campaignPageCacheControl({
-        languageId: '529',
-        bcp47: 'en',
-        source: 'param'
-      })
+      campaignPageCacheControl(
+        {
+          languageId: '529',
+          bcp47: 'en',
+          source: 'param'
+        },
+        2
+      )
     ).toBe('public, s-maxage=60, stale-while-revalidate=300')
     expect(
-      campaignPageCacheControl({
-        languageId: '529',
-        bcp47: 'en',
-        source: 'default'
-      })
+      campaignPageCacheControl(
+        {
+          languageId: '529',
+          bcp47: 'en',
+          source: 'default'
+        },
+        2
+      )
     ).toBe('private, no-cache')
     expect(
-      campaignPageCacheControl({
-        languageId: '496',
-        bcp47: 'fr',
-        source: 'cookie'
-      })
+      campaignPageCacheControl(
+        {
+          languageId: '496',
+          bcp47: 'fr',
+          source: 'cookie'
+        },
+        2
+      )
     ).toBe('private, no-cache')
     expect(
-      campaignPageCacheControl({
-        languageId: '496',
-        bcp47: 'fr',
-        source: 'acceptLanguage'
-      })
+      campaignPageCacheControl(
+        {
+          languageId: '496',
+          bcp47: 'fr',
+          source: 'acceptLanguage'
+        },
+        2
+      )
     ).toBe('private, no-cache')
+  })
+
+  it('shares the cache on a single-language campaign whatever decided the language', () => {
+    expect(
+      campaignPageCacheControl(
+        {
+          languageId: '529',
+          bcp47: 'en',
+          source: 'default'
+        },
+        1
+      )
+    ).toBe('public, s-maxage=60, stale-while-revalidate=300')
   })
 })

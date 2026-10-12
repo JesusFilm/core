@@ -2,7 +2,7 @@ import { builder } from '../../builder'
 
 export const CampaignUpdateInput = builder.inputType('CampaignUpdateInput', {
   description:
-    'Campaign settings. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.',
+    'Campaign settings and the Palette. Every field is optional: an omitted field leaves the stored value alone. None is a Command in the editor.',
   fields: (t) => ({
     title: t.string({
       required: false,
@@ -18,6 +18,11 @@ export const CampaignUpdateInput = builder.inputType('CampaignUpdateInput', {
       required: false,
       description:
         'api-languages Language id of the new default language, one of the campaign’s languages. Refused with CONFLICT until every text exists in it; when complete, each field’s default text moves to the old default’s translation and the new language’s translation becomes the field.'
+    }),
+    palette: t.stringList({
+      required: false,
+      description:
+        'The Palette, newest first: each entry a hex colour (stored as `#RRGGBB` uppercase), deduplicated, at most eight kept. Picker chrome, committed on picker blur and never undone.'
     })
   })
 })

@@ -111,3 +111,99 @@ export function campaignBlockRestoreUpdate(
   campaignBlocksReorder(cache, blocks)
   campaignBlocksAdd(cache, campaignId, blocks)
 }
+
+/** The scoping columns that decide which cached blocks are a block's siblings. */
+export type CampaignBlockScopeRef = CampaignBlockRef & {
+  pageId: string | null
+  regionId: string | null
+  parentBlockId: string | null
+  parentOrder: number | null
+}
+
+/**
+ * Insert a block into `Campaign.blocks` at its own `parentOrder`: the
+ * siblings at or after that position shift down by one, as the API
+ * renumbered them. An appended block (nothing after it) shifts nothing.
+ */
+export function campaignBlocksInsert(
+  cache: ApolloCache,
+  campaignId: string,
+  block: CampaignBlockScopeRef
+): void {
+  const shifted: CampaignBlockOrder[] = []
+  cache.modify({
+    id: campaignCacheId(cache, campaignId),
+    fields: {
+      blocks(existing: readonly Reference[] = [], { readField, toReference }) {
+        if (block.parentOrder != null) {
+          for (const candidate of existing) {
+            const id = readField<string>('id', candidate)
+            const parentOrder = readField<number | null>(
+              'parentOrder',
+              candidate
+            )
+            if (
+              id == null ||
+              id === block.id ||
+              parentOrder == null ||
+              parentOrder < block.parentOrder ||
+              (readField<string | null>('parentBlockId', candidate) ?? null) !==
+                block.parentBlockId ||
+              (readField<string | null>('pageId', candidate) ?? null) !==
+                block.pageId ||
+              (readField<string | null>('regionId', candidate) ?? null) !==
+                block.regionId
+            )
+              continue
+            shifted.push({
+              __typename: readField<string>('__typename', candidate) ?? '',
+              id,
+              parentOrder: parentOrder + 1
+            })
+          }
+        }
+        const ref = toReference(block)
+        if (
+          ref == null ||
+          existing.some((candidate) => candidate.__ref === ref.__ref)
+        )
+          return existing
+        return [...existing, ref]
+      }
+    }
+  })
+  campaignBlocksReorder(cache, shifted)
+}
+
+export function campaignBlockInsertUpdate(
+  cache: ApolloCache,
+  campaignId: string,
+  block: CampaignBlockScopeRef | null | undefined
+): void {
+  if (block == null) return
+  campaignBlocksInsert(cache, campaignId, block)
+}
+
+/** The slot columns a create points at its new owned block on the server. */
+export type CampaignSlotColumn = 'coverBlockId' | 'mediaBlockId' | 'logoBlockId'
+
+/**
+ * Point an owner's slot column at a block in the cache, as the create that
+ * filled the slot did on the server, so the canvas trees the new block into
+ * the slot with the create's optimistic response.
+ */
+export function campaignBlockSlotWrite(
+  cache: ApolloCache,
+  owner: CampaignBlockRef,
+  column: CampaignSlotColumn,
+  blockId: string
+): void {
+  cache.modify({
+    id: cache.identify(owner),
+    fields: {
+      [column]() {
+        return blockId
+      }
+    }
+  })
+}

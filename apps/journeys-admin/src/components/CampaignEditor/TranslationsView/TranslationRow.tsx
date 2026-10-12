@@ -6,6 +6,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { getLocaleRTL } from '@core/shared/ui/rtl'
+
 import {
   CampaignTranslations,
   CampaignTranslationsVariables,
@@ -37,6 +39,8 @@ const MULTILINE_FIELDS: CampaignTextField[] = [
 interface TranslationRowProps {
   row: TranslationRow
   languageId: string
+  /** The language's bcp47 code, so the field reads in its own direction. */
+  bcp47: string
   /** The variables of the query that lists the rows, so a write can update it in place. */
   queryVariables: CampaignTranslationsVariables
 }
@@ -116,6 +120,7 @@ export function useRowLabel(): (row: TranslationRow) => string {
 export function TranslationRowItem({
   row,
   languageId,
+  bcp47,
   queryVariables
 }: TranslationRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -232,7 +237,13 @@ export function TranslationRowItem({
         onBlur={handleBlur}
         error={error != null || draft.length > row.maxLength}
         helperText={error ?? `${draft.length} / ${row.maxLength}`}
-        slotProps={{ htmlInput: { 'aria-label': rowLabel(row) } }}
+        slotProps={{
+          htmlInput: {
+            'aria-label': rowLabel(row),
+            lang: bcp47,
+            dir: getLocaleRTL(bcp47) ? 'rtl' : 'ltr'
+          }
+        }}
       />
     </Stack>
   )

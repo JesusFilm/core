@@ -140,7 +140,7 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   }
 }
 
-function parseISO8601Duration(duration: string): number {
+export function parseISO8601Duration(duration: string): number {
   const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
 
   if (match == null) {

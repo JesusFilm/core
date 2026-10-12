@@ -1,0 +1,1 @@
+export { CampaignJourneyBlockUpdateInput } from './campaignJourneyBlockUpdateInput'

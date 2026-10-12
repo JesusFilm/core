@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -16,7 +17,10 @@ import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
-import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign as Campaign,
+  GetCampaign_campaign_regions as CampaignRegion
+} from '../../../../__generated__/GetCampaign'
 import {
   CampaignPageKind,
   CampaignStatus
@@ -28,6 +32,7 @@ import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { Item } from '../../Editor/Toolbar/Items/Item/Item'
 import { LabelChip } from '../../LabelChip'
 import { campaignPermanentAddress } from '../campaignAddress'
+import { regionNeedsJourney, sortedRegions } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 
 import { UnpublishDialog } from './UnpublishDialog'
@@ -35,13 +40,36 @@ import { UnpublishDialog } from './UnpublishDialog'
 interface TopBarProps {
   campaign: Campaign
   pageKind: CampaignPageKind
-  onPageKindChange: (pageKind: CampaignPageKind) => void
+  /** The region the Region Page is rendered for; undefined on the landing page or with no regions. */
+  regionId?: string
+  onPageKindChange: (pageKind: CampaignPageKind, regionId?: string) => void
   previewLanguageId: string
   onPreviewLanguageChange: (languageId: string) => void
   view: CanvasView
   onViewChange: (view: CanvasView) => void
   /** Publish and Unpublish are campaign Manage: a manager of the team only. */
   isManager: boolean
+}
+
+/** The page selector's value: the landing page, or the Region Page rendered for one region. */
+export function pageSelectValue(
+  pageKind: CampaignPageKind,
+  regionId?: string
+): string {
+  if (pageKind === CampaignPageKind.landing) return CampaignPageKind.landing
+  return regionId == null
+    ? CampaignPageKind.regionTemplate
+    : `region:${regionId}`
+}
+
+/** The page selector entry for a region: its name, with " · not listed" for an orphan. */
+export function regionPageLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  region: Pick<CampaignRegion, 'name' | 'listed'>
+): string {
+  return region.listed
+    ? region.name
+    : t('{{name}} · not listed', { name: region.name })
 }
 
 function languageLabel(language: Campaign['languages'][number]): string {
@@ -60,6 +88,7 @@ function languageLabel(language: Campaign['languages'][number]): string {
 export function TopBar({
   campaign,
   pageKind,
+  regionId,
   onPageKindChange,
   previewLanguageId,
   onPreviewLanguageChange,
@@ -75,6 +104,12 @@ export function TopBar({
   const [campaignUnpublish, { loading: unpublishing }] =
     useCampaignUnpublishMutation()
   const published = campaign.status === CampaignStatus.published
+  const regions = sortedRegions(campaign.regions)
+  const currentRegion = regions.find((region) => region.id === regionId)
+  const openPageHref =
+    pageKind === CampaignPageKind.regionTemplate && currentRegion != null
+      ? `${campaignPermanentAddress(campaign.slug)}/${currentRegion.slug}`
+      : campaignPermanentAddress(campaign.slug)
 
   function showError(error: unknown, fallback: string): void {
     enqueueSnackbar(error instanceof Error ? error.message : fallback, {
@@ -100,8 +135,16 @@ export function TopBar({
     }
   }
 
-  function handlePageChange(event: SelectChangeEvent<CampaignPageKind>): void {
-    onPageKindChange(event.target.value)
+  function handlePageChange(event: SelectChangeEvent<string>): void {
+    const value = event.target.value
+    if (value === CampaignPageKind.landing) {
+      onPageKindChange(CampaignPageKind.landing)
+      return
+    }
+    onPageKindChange(
+      CampaignPageKind.regionTemplate,
+      value.startsWith('region:') ? value.slice('region:'.length) : undefined
+    )
   }
 
   function handleLanguageChange(event: SelectChangeEvent<string>): void {
@@ -141,7 +184,7 @@ export function TopBar({
         <Select
           labelId="campaign-page-select-label"
           label={t('Page')}
-          value={pageKind}
+          value={pageSelectValue(pageKind, currentRegion?.id)}
           onChange={handlePageChange}
           inputProps={{ 'aria-label': t('Page') }}
           data-testid="CampaignPageSelect"
@@ -149,9 +192,25 @@ export function TopBar({
           <MenuItem value={CampaignPageKind.landing}>
             {t('Landing page')}
           </MenuItem>
-          <MenuItem value={CampaignPageKind.regionTemplate}>
-            {t('Region page')}
-          </MenuItem>
+          {regions.length === 0 && (
+            <MenuItem value={CampaignPageKind.regionTemplate}>
+              {t('Region page')}
+            </MenuItem>
+          )}
+          {regions.map((region) => (
+            <MenuItem key={region.id} value={`region:${region.id}`}>
+              {regionPageLabel(t, region)}
+              {regionNeedsJourney(region) && (
+                <Chip
+                  size="small"
+                  color="warning"
+                  label={t('Needs journey')}
+                  data-testid="RegionNeedsJourney"
+                  sx={{ ml: 1 }}
+                />
+              )}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       <FormControl size="small" sx={{ minWidth: 160 }}>
@@ -195,7 +254,7 @@ export function TopBar({
         variant="icon-button"
         label={t('Open page')}
         icon={<LinkExternalIcon />}
-        href={campaignPermanentAddress(campaign.slug)}
+        href={openPageHref}
       />
       <Divider orientation="vertical" flexItem />
       {published ? (

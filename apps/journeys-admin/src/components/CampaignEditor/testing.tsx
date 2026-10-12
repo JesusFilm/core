@@ -21,10 +21,17 @@ export function campaignCache(): InMemoryCache {
   return new InMemoryCache({ possibleTypes: CAMPAIGN_POSSIBLE_TYPES })
 }
 
-export const getCampaignMock = {
-  request: { query: GET_CAMPAIGN, variables: { id: campaign.id } },
-  result: { data: { campaign } }
+/** The `GetCampaign` mock for a campaign fixture. */
+export function getCampaignMockFor(
+  campaignProp: Campaign
+): Record<string, unknown> {
+  return {
+    request: { query: GET_CAMPAIGN, variables: { id: campaignProp.id } },
+    result: { data: { campaign: campaignProp } }
+  }
 }
+
+export const getCampaignMock = getCampaignMockFor(campaign)
 
 /** Shows the selection kind, selected block id and page the provider holds. */
 export function SelectionProbe(): ReactElement {
@@ -33,7 +40,9 @@ export function SelectionProbe(): ReactElement {
     <>
       <span data-testid="SelectionKind">{selection.kind}</span>
       <span data-testid="SelectedBlockId">{state.selectedBlockId ?? ''}</span>
+      <span data-testid="SelectedRegionId">{state.selectedRegionId ?? ''}</span>
       <span data-testid="PageKind">{state.pageKind}</span>
+      <span data-testid="RegionId">{state.regionId ?? ''}</span>
     </>
   )
 }
@@ -46,6 +55,28 @@ export function CommandProbe(): ReactElement {
       <span data-testid="CommandCount">{state.commands.length}</span>
       <span data-testid="UndoCommandId">{state.undo?.id ?? ''}</span>
     </>
+  )
+}
+
+/** Lists the campaign's regions the provider sees, one line per region, in order. */
+export function RegionsProbe(): ReactElement {
+  const { campaign: current } = useCampaignEditor()
+  return (
+    <ul data-testid="Regions">
+      {[...current.regions]
+        .sort((a, b) => a.order - b.order)
+        .map((region) => (
+          <li key={region.id} data-testid={`Region-${region.id}`}>
+            {[
+              region.name,
+              region.slug,
+              String(region.order),
+              String(region.listed),
+              region.countries.map((country) => country.countryId).join(',')
+            ].join('|')}
+          </li>
+        ))}
+    </ul>
   )
 }
 
@@ -96,9 +127,13 @@ function QueriedEditorInner({
 
 interface RenderEditorProps extends QueriedEditorProps {
   mocks?: Array<Record<string, unknown>>
+  /** The campaign `GetCampaign` resolves to; defaults to the seeded fixture. */
+  campaignData?: Campaign
   cache?: InMemoryCache
   /** A custom link (for instance with the DebounceLink); it must serve GetCampaign itself. */
   link?: ApolloLink
+  /** The campaign the query mock serves; the seeded fixture by default. */
+  campaignProp?: Campaign
 }
 
 /**
@@ -110,14 +145,21 @@ export function QueriedEditor({
   children,
   initialState,
   mocks = [],
+  campaignData,
   cache = campaignCache(),
-  link
+  link,
+  campaignProp = campaign
 }: RenderEditorProps): ReactElement {
   return (
     <MockedProvider
       {...(link != null
         ? { link }
-        : { mocks: [getCampaignMock, ...mocks] as never })}
+        : {
+            mocks: [
+              getCampaignMockFor(campaignData ?? campaignProp),
+              ...mocks
+            ] as never
+          })}
       cache={cache}
     >
       <CommandProvider>
@@ -136,7 +178,7 @@ export function StaticEditor({
   mocks = [],
   cache = campaignCache(),
   campaignProp = campaign
-}: RenderEditorProps & { campaignProp?: Campaign }): ReactElement {
+}: RenderEditorProps): ReactElement {
   return (
     <MockedProvider mocks={mocks as never} cache={cache}>
       <CommandProvider>

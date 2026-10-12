@@ -69,6 +69,13 @@ export async function fetchCampaignPublic(
   }
 }
 
+/**
+ * The language api-media reads a Watch video's title in when a query sends no
+ * `languageId`. A read made without one is only right for Watch text when the
+ * Page Language is this one.
+ */
+const WATCH_TEXT_FALLBACK_LANGUAGE_ID = '529'
+
 /** What the request carries that decides the Page Language (PRD §2). */
 export interface PageLanguageRequest {
   /** The `lang` query param. */
@@ -88,8 +95,9 @@ export interface CampaignPublicInPageLanguage {
  * Read a published campaign in the visitor's Page Language: one read in the
  * campaign default yields the language list the request is resolved
  * against (`?lang` → cookie → `Accept-Language` → default), then a second
- * read only when the resolved language differs. Null when the campaign is
- * not published.
+ * read unless the resolved language is the one the first read already used
+ * for both the campaign text and the Watch video titles. Null when the
+ * campaign is not published.
  */
 export async function fetchCampaignPublicInPageLanguage(
   apolloClient: ApolloClient,
@@ -106,7 +114,10 @@ export async function fetchCampaignPublicInPageLanguage(
     defaultLanguageId: inDefault.defaultLanguageId,
     ...request
   })
-  if (language.languageId === inDefault.languageId)
+  if (
+    language.languageId === inDefault.languageId &&
+    language.languageId === WATCH_TEXT_FALLBACK_LANGUAGE_ID
+  )
     return { campaign: inDefault, language }
   const campaign = await fetchCampaignPublic(
     apolloClient,
@@ -118,17 +129,20 @@ export async function fetchCampaignPublicInPageLanguage(
 }
 
 /**
- * The `Cache-Control` a campaign page answers with: shared caching only when
- * the `lang` param decided the language, so the response is a function of
- * the URL alone. Every other outcome depends on the visitor's cookie or
- * `Accept-Language` (a default-language answer included: the next visitor at
- * the same URL may carry a cookie), so it is private. Every in-campaign link
- * and the header select carry the param, so only a first visit is uncached.
+ * The `Cache-Control` a campaign page answers with: shared caching when the
+ * response is a function of the URL alone — the `lang` param decided the
+ * language, or the campaign has one language so nothing can vary. Every
+ * other outcome depends on the visitor's cookie or `Accept-Language` (a
+ * default-language answer included: the next visitor at the same URL may
+ * carry a cookie), so it is private. Every in-campaign link and the header
+ * select carry the param on a multi-language campaign, so only a first
+ * visit there is uncached.
  */
 export function campaignPageCacheControl(
-  language: ResolvedPageLanguage
+  language: ResolvedPageLanguage,
+  campaignLanguageCount: number
 ): string {
-  return language.source === 'param'
+  return language.source === 'param' || campaignLanguageCount <= 1
     ? 'public, s-maxage=60, stale-while-revalidate=300'
     : 'private, no-cache'
 }

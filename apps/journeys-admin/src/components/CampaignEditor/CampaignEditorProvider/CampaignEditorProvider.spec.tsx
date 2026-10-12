@@ -9,7 +9,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { BottomBar } from '../BottomBar'
 import { Canvas } from '../Canvas'
-import { campaign } from '../data'
+import { campaign, campaignWithColumns } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { SelectionProbe, StaticEditor, frameBody } from '../testing'
 
@@ -65,10 +65,11 @@ function renderEditor(
   return render(
     <StaticEditor initialState={initialState} mocks={[deleteMock]}>
       <Hotkeys />
+      <input aria-label="Shell field" />
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
-      <BottomBar onSettingsClick={vi.fn()} />
+      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </StaticEditor>
   )
 }
@@ -101,6 +102,28 @@ describe('CampaignEditorProvider', () => {
       expect(
         resolveSelection(campaign.blocks, 'journeyListNoteId')
       ).toMatchObject({ kind: 'text', host: { id: 'landingJourneyListId' } })
+    })
+  })
+
+  describe('resolveSelection in a Columns section', () => {
+    it('resolves a slot with its Columns section as host, and the section in a slot as a column child', () => {
+      expect(
+        resolveSelection(campaignWithColumns.blocks, 'slotRightId')
+      ).toMatchObject({
+        kind: 'slot',
+        block: { id: 'slotRightId' },
+        host: { id: 'columnsId' }
+      })
+      expect(
+        resolveSelection(campaignWithColumns.blocks, 'slotRichTextId')
+      ).toMatchObject({
+        kind: 'column',
+        block: { id: 'slotRichTextId' },
+        host: { id: 'slotRichTextId' }
+      })
+      expect(
+        resolveSelection(campaignWithColumns.blocks, 'columnsId')
+      ).toMatchObject({ kind: 'section' })
     })
   })
 
@@ -202,6 +225,46 @@ describe('CampaignEditorProvider', () => {
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
   })
 
+  it('steps up from a column child and from a slot to the Columns section', async () => {
+    render(
+      <StaticEditor
+        campaignProp={campaignWithColumns}
+        initialState={{ selectedBlockId: 'slotRichTextId' }}
+      >
+        <Hotkeys />
+        <SelectionProbe />
+        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+      'Campaign›Columns›Column›Rich text'
+    )
+
+    await userEvent.keyboard('{Escape}')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('columnsId')
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Campaign' }))
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
+  })
+
+  it('steps up from a slot to the Columns section on Escape', async () => {
+    render(
+      <StaticEditor
+        campaignProp={campaignWithColumns}
+        initialState={{ selectedBlockId: 'slotRightId' }}
+      >
+        <Hotkeys />
+        <SelectionProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('slot')
+
+    await userEvent.keyboard('{Escape}')
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('columnsId')
+  })
+
   it('selects a level from the breadcrumb', () => {
     renderEditor({ selectedBlockId: 'heroButtonId' })
 
@@ -232,6 +295,18 @@ describe('CampaignEditorProvider', () => {
     expect(onUndo).toHaveBeenCalledTimes(1)
   })
 
+  it('leaves ⌘Z to a focused field in the shell, which is not a Command', async () => {
+    const onUndo = vi.fn()
+    const { baseElement } = renderEditor({ selectedBlockId: 'heroId' }, onUndo)
+    await frameBody(baseElement, 'CanvasSection-heroId')
+    fireEvent.click(screen.getByRole('button', { name: 'Edit region intro' }))
+
+    screen.getByRole('textbox', { name: 'Shell field' }).focus()
+    await userEvent.keyboard('{Meta>}z{/Meta}')
+
+    expect(onUndo).not.toHaveBeenCalled()
+  })
+
   it('has no other shortcuts: Delete and Backspace leave a selected Extra alone', async () => {
     renderEditor({ selectedBlockId: 'heroButtonId' })
 
@@ -240,6 +315,39 @@ describe('CampaignEditorProvider', () => {
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('button')
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'heroButtonId'
+    )
+  })
+
+  it('falls back to the default language when the previewed language is removed', () => {
+    function PreviewProbe(): ReactElement {
+      const {
+        state: { previewLanguageId }
+      } = useCampaignEditor()
+      return <span data-testid="PreviewLanguage">{previewLanguageId}</span>
+    }
+    const withoutFrench = {
+      ...campaign,
+      languages: campaign.languages.filter(
+        (language) => language.languageId !== '496'
+      )
+    }
+    const { rerender } = render(
+      <StaticEditor initialState={{ previewLanguageId: '496' }}>
+        <PreviewProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
+
+    rerender(
+      <StaticEditor
+        initialState={{ previewLanguageId: '496' }}
+        campaignProp={withoutFrench}
+      >
+        <PreviewProbe />
+      </StaticEditor>
+    )
+    expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent(
+      campaign.defaultLanguageId
     )
   })
 

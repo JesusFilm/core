@@ -112,6 +112,10 @@ export function TranslationsView({
     edited: t('Edited')
   }
 
+  const bcp47 =
+    languages.find((language) => language.languageId === languageId)?.language
+      .bcp47 ?? ''
+
   if (languageId == null || queryVariables == null)
     return (
       <Stack
@@ -260,6 +264,7 @@ export function TranslationsView({
                 key={rowKey(row)}
                 row={row}
                 languageId={languageId}
+                bcp47={bcp47}
                 queryVariables={queryVariables}
               />
             ))}

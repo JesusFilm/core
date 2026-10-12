@@ -24,6 +24,8 @@ export type CampaignBandKind =
 export interface CampaignBandSection {
   backgroundKind: CampaignBandKind
   backgroundColor?: string | null
+  /** Read by the cover layer, not the table: the overlay alpha over an `image` cover. */
+  backgroundOverlay?: CampaignBandOverlay | null
   headingColor?: string | null
   textColor?: string | null
   buttonColor?: string | null

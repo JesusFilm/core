@@ -4,6 +4,7 @@ import Stack from '@mui/material/Stack'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import {
+  CampaignBackgroundKind,
   CampaignChildPlacement,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
@@ -15,6 +16,7 @@ import type { CampaignSectionTree, CampaignTree } from '../types'
 import { CampaignBandCover } from './CampaignBandCover'
 import { CAMPAIGN_HEADER_HEIGHT } from './campaignHeaderHeight'
 import { CampaignSectionContext } from './CampaignSectionContext'
+import { useCampaignSlot } from './CampaignSlotContext'
 
 interface CampaignSectionBandProps {
   block: CampaignSectionTree
@@ -33,11 +35,13 @@ function isAbove(child: CampaignTree): boolean {
 }
 
 /**
- * The one wrapper every section renders through: paints the band from the
- * §4 table as CSS variables (with the `image` cover and overlay behind),
- * anchors the band by block id under the sticky header, and orders the
- * Extras placed above, then the typed body, then the Extras placed below,
- * each group by parentOrder. The chrome paints the same band through
+ * The one wrapper every section and chrome block renders through: paints the
+ * band from the §4 table as CSS variables (with the `image` cover and overlay
+ * behind), anchors the band by block id under the sticky header, and orders
+ * the Extras placed above, then the typed body, then the Extras placed below,
+ * each group by parentOrder. In a Column Slot the band is not a container: no
+ * page container or section rhythm, and a section with a background of its
+ * own gets padding and a radius. The chrome paints the same band through
  * `CampaignHeader` and `CampaignFooter`.
  */
 export function CampaignSectionBand({
@@ -50,8 +54,26 @@ export function CampaignSectionBand({
     () => resolveBand(block, campaign.theme),
     [block, campaign.theme]
   )
-  const above = block.children.filter(isAbove)
-  const below = block.children.filter((child) => !isAbove(child))
+  const inSlot = useCampaignSlot()
+  const extras = block.children.filter(
+    (child) => child.__typename !== 'CampaignColumnBlock'
+  )
+  const above = extras.filter(isAbove)
+  // A carousel's CampaignVideoBlock items are its body's cards, not Extras.
+  const below = extras.filter(
+    (child) => !isAbove(child) && child.__typename !== 'CampaignVideoBlock'
+  )
+  const body = (
+    <Stack spacing={3} sx={{ position: 'relative' }}>
+      {above.map((child) => (
+        <CampaignRenderer key={child.id} block={child} />
+      ))}
+      {children}
+      {below.map((child) => (
+        <CampaignRenderer key={child.id} block={child} />
+      ))}
+    </Stack>
+  )
 
   return (
     <CampaignSectionContext.Provider value={{ band, align }}>
@@ -66,21 +88,15 @@ export function CampaignSectionBand({
           color: 'var(--campaign-band-text)',
           textAlign: align ?? undefined,
           scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
-          py: { xs: 6, md: 10 }
+          ...(inSlot
+            ? block.backgroundKind !== CampaignBackgroundKind.none
+              ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
+              : {}
+            : { py: { xs: 6, md: 10 } })
         }}
       >
         <CampaignBandCover block={block} />
-        <Container maxWidth="lg" sx={{ position: 'relative' }}>
-          <Stack spacing={3}>
-            {above.map((child) => (
-              <CampaignRenderer key={child.id} block={child} />
-            ))}
-            {children}
-            {below.map((child) => (
-              <CampaignRenderer key={child.id} block={child} />
-            ))}
-          </Stack>
-        </Container>
+        {inSlot ? body : <Container maxWidth="lg">{body}</Container>}
       </Box>
     </CampaignSectionContext.Provider>
   )

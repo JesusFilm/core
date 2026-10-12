@@ -12,6 +12,7 @@ import { swapDefaultLanguage } from './translation/defaultLanguageSwap'
 import {
   TEXT_CAPS,
   assertLength,
+  assertPalette,
   badUserInput,
   validateCampaignSlug
 } from './validation'
@@ -21,7 +22,7 @@ const DEFAULT_LANGUAGE_SWAP_TIMEOUT_MS = 30_000
 builder.mutationField('campaignUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Update the campaign settings: the default-language title, the Campaign Address slug and the default language. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title`): empty or over 100 characters.\n- BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).\n- BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages.\n- CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.',
+      'Update the campaign settings — the default-language title, the Campaign Address slug and the default language — or the Palette. Allowed on draft and published campaigns alike. The slug never follows a title change; it moves only when given here, and existing links to the old address stop resolving. The Palette is picker chrome: each entry assertHex-normalised, deduplicated, the first eight kept newest first; saved outside any Command.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title`): empty or over 100 characters.\n- BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).\n- BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.\n- BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages.\n- CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.',
     type: CampaignRef,
     nullable: false,
     args: {
@@ -53,6 +54,7 @@ builder.mutationField('campaignUpdate', (t) =>
         )
       if (input.slug != null)
         data.slug = await validateCampaignSlug(input.slug, id)
+      if (input.palette != null) data.palette = assertPalette(input.palette)
 
       const newDefaultLanguageId =
         input.defaultLanguageId == null ? null : String(input.defaultLanguageId)

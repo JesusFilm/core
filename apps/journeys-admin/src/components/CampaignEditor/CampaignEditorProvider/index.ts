@@ -1,6 +1,10 @@
 export {
   CampaignEditorProvider,
+  isCarouselItem,
+  regionLines,
+  regionNeedsJourney,
   resolveSelection,
+  sortedRegions,
   useCampaignEditor
 } from './CampaignEditorProvider'
 export type {
