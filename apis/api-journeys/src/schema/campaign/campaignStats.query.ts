@@ -11,7 +11,7 @@ import { getCampaignStats } from './stats/campaignStats'
 builder.queryField('campaignStats', (t) =>
   t.field({
     description:
-      "The Campaign's visitor stats from one cached Plausible sweep over every linked journey, summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.\n\nAuth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.\n\nErrors:\n- NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.\n- Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served.",
+      "The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is published or archived (a draft, trashed or deleted journey does not count), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.\n\nAuth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.\n\nErrors:\n- NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.\n- Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served and not retried for a few minutes.",
     type: CampaignStatsRef,
     nullable: false,
     args: {

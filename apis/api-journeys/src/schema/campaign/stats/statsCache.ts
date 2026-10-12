@@ -20,11 +20,19 @@ export interface CampaignStatsSweep {
 
 export interface CachedCampaignStatsSweep {
   sweep: CampaignStatsSweep
+  /** When the sweep was taken, epoch ms. */
+  sweptAt: number
   /** Within the TTL; a stale sweep is only served when a refresh fails. */
   fresh: boolean
+  /** A refresh failed recently; serve this sweep without sweeping again until the backoff passes. */
+  backingOff: boolean
 }
 
 export const STATS_CACHE_TTL_SECONDS = 30 * 60
+
+// After a failed refresh the stale sweep is served without sweeping again for
+// this long, so an outage or a rate-limited key is not hit on every page view.
+export const STATS_REFRESH_BACKOFF_SECONDS = 5 * 60
 
 // Redis keeps an entry long after it stops being fresh so the last sweep is
 // still there to serve when Plausible is down.
@@ -32,6 +40,8 @@ const STATS_CACHE_RETENTION_SECONDS = 24 * 60 * 60
 
 interface StatsCacheEntry {
   sweptAt: number
+  /** Epoch ms before which a failed refresh is not retried. */
+  retryAfter?: number
   sweep: CampaignStatsSweep
 }
 
@@ -65,9 +75,12 @@ export const statsCache = {
       const raw = await getClient().get(key(campaignId))
       if (raw == null) return null
       const entry = JSON.parse(raw) as StatsCacheEntry
+      const now = Date.now()
       return {
         sweep: entry.sweep,
-        fresh: Date.now() - entry.sweptAt < STATS_CACHE_TTL_SECONDS * 1000
+        sweptAt: entry.sweptAt,
+        fresh: now - entry.sweptAt < STATS_CACHE_TTL_SECONDS * 1000,
+        backingOff: entry.retryAfter != null && now < entry.retryAfter
       }
     } catch (error) {
       logger.error({ error, campaignId }, 'stats cache read failed')
@@ -86,6 +99,35 @@ export const statsCache = {
       )
     } catch (error) {
       logger.error({ error, campaignId }, 'stats cache write failed')
+    }
+  },
+
+  /**
+   * Record a failed refresh against the entry: it keeps its sweep, `sweptAt`
+   * and original retention, but is not retried until the backoff passes.
+   */
+  async deferRefresh(
+    campaignId: string,
+    cached: CachedCampaignStatsSweep
+  ): Promise<void> {
+    const remainingSeconds = Math.floor(
+      STATS_CACHE_RETENTION_SECONDS - (Date.now() - cached.sweptAt) / 1000
+    )
+    if (remainingSeconds <= 0) return
+    const entry: StatsCacheEntry = {
+      sweptAt: cached.sweptAt,
+      retryAfter: Date.now() + STATS_REFRESH_BACKOFF_SECONDS * 1000,
+      sweep: cached.sweep
+    }
+    try {
+      await getClient().set(
+        key(campaignId),
+        JSON.stringify(entry),
+        'EX',
+        remainingSeconds
+      )
+    } catch (error) {
+      logger.error({ error, campaignId }, 'stats cache backoff write failed')
     }
   }
 }

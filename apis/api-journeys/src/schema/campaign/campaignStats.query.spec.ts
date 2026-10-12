@@ -22,7 +22,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 
 vi.mock('./stats/statsCache', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./stats/statsCache')>()),
-  statsCache: { get: vi.fn(), set: vi.fn() }
+  statsCache: { get: vi.fn(), set: vi.fn(), deferRefresh: vi.fn() }
 }))
 
 const mockAxios = axios as Mocked<typeof axios>
@@ -129,6 +129,9 @@ describe('campaignStats', () => {
     })
     mockStatsCache.get.mockResolvedValue(null)
     mockStatsCache.set.mockResolvedValue(undefined)
+    mockStatsCache.deferRefresh.mockResolvedValue(undefined)
+    prismaMock.journey.findMany.mockImplementation((async (args: any) =>
+      (args.where.id.in as string[]).map((id) => ({ id }))) as any)
     mockAxios.get.mockImplementation(plausibleCountryRowsBySite(rowsByJourney))
   })
 
@@ -268,6 +271,37 @@ describe('campaignStats', () => {
     expect(mockAxios.get).not.toHaveBeenCalled()
   })
 
+  describe('journey status', () => {
+    it('counts only published and archived journeys', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'enJourneyId' },
+        { id: 'swJourneyId' }
+      ] as any)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            id: { in: expect.arrayContaining(['enJourneyId', 'frJourneyId']) },
+            deletedAt: null,
+            status: { in: ['published', 'archived'] }
+          }
+        })
+      )
+      expect(result.errors).toBeUndefined()
+      // frJourneyId is unpublished: it is neither requested nor summed.
+      expect(mockAxios.get).toHaveBeenCalledTimes(2)
+      expect(result.data.campaignStats.regions[0].totalVisitors).toBe(17)
+      expect(result.data.campaignStats.regions[1].totalVisitors).toBe(10)
+      expect(result.data.campaignStats.all.totalVisitors).toBe(27)
+    })
+  })
+
   describe('auth', () => {
     it('serves a published campaign to an anonymous caller', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
@@ -381,11 +415,15 @@ describe('campaignStats', () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
+        backingOff: false,
+        sweptAt: Date.now(),
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
           journeys: {
-            enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
+            enJourneyId: [{ countryCode: 'NZ', visitors: 4 }],
+            frJourneyId: [],
+            swJourneyId: []
           }
         }
       })
@@ -411,6 +449,8 @@ describe('campaignStats', () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
         fresh: false,
+        backingOff: false,
+        sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
@@ -429,10 +469,12 @@ describe('campaignStats', () => {
       expect(result.data.campaignStats.all.totalVisitors).toBe(48)
     })
 
-    it('serves the last cached sweep and retries in the background when Plausible fails', async () => {
+    it('serves the last cached sweep and defers the next refresh when Plausible fails', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
-      mockStatsCache.get.mockResolvedValue({
+      const cached = {
         fresh: false,
+        backingOff: false,
+        sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
@@ -440,7 +482,8 @@ describe('campaignStats', () => {
             enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
           }
         }
-      })
+      }
+      mockStatsCache.get.mockResolvedValue(cached)
       mockAxios.get.mockRejectedValue(new Error('timeout of 10000ms exceeded'))
 
       const result = (await publicClient({
@@ -451,37 +494,90 @@ describe('campaignStats', () => {
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.regions[0].totalVisitors).toBe(4)
       expect(mockStatsCache.set).not.toHaveBeenCalled()
-
-      // The failed foreground sweep and the background refresh both ask Plausible.
-      await vi.waitFor(() =>
-        expect(mockAxios.get.mock.calls.length).toBeGreaterThan(3)
+      expect(mockStatsCache.deferRefresh).toHaveBeenCalledWith(
+        'campaignId',
+        cached
       )
+      // Only the one foreground sweep asks Plausible; there is no background retry.
+      expect(mockAxios.get).toHaveBeenCalledTimes(3)
     })
 
-    it('refreshes in the background so the next read is fresh once Plausible recovers', async () => {
+    it('serves a backing-off entry without sweeping Plausible again', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
+        ...{
         fresh: false,
+        backingOff: false,
+        sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
-          journeys: {}
+          journeys: {
+            enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
+          }
         }
+      },
+        backingOff: true
       })
-      mockAxios.get
-        .mockRejectedValueOnce(new Error('timeout'))
-        .mockRejectedValueOnce(new Error('timeout'))
-        .mockRejectedValueOnce(new Error('timeout'))
-        .mockImplementation(plausibleCountryRowsBySite(rowsByJourney))
 
-      await publicClient({
+      const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.campaignStats.regions[0].totalVisitors).toBe(4)
+      expect(mockAxios.get).not.toHaveBeenCalled()
+      expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
+    })
+
+    it('treats a fresh entry missing a linked journey as a miss', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockStatsCache.get.mockResolvedValue({
+        fresh: true,
+        backingOff: false,
+        sweptAt: Date.now(),
+        sweep: {
+          from: '2026-10-05T00:00:00.000Z',
+          to: '2026-10-06T00:00:00.000Z',
+          journeys: {
+            enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
+          }
+        }
       })
 
-      await vi.waitFor(() =>
-        expect(mockStatsCache.set).toHaveBeenCalledTimes(1)
-      )
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(mockAxios.get).toHaveBeenCalledTimes(3)
+      expect(mockStatsCache.set).toHaveBeenCalledTimes(1)
+      expect(result.data.campaignStats.all.totalVisitors).toBe(48)
+    })
+
+    it('treats a fresh entry swept from a different start as a miss', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockStatsCache.get.mockResolvedValue({
+        fresh: true,
+        backingOff: false,
+        sweptAt: Date.now(),
+        sweep: {
+          from: '2026-09-01T00:00:00.000Z',
+          to: '2026-10-06T00:00:00.000Z',
+          journeys: { enJourneyId: [], frJourneyId: [], swJourneyId: [] }
+        }
+      })
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(mockAxios.get).toHaveBeenCalledTimes(3)
+      expect(result.data.campaignStats.from).toBe('2026-10-05T00:00:00.000Z')
     })
 
     it('errors when Plausible fails and nothing is cached', async () => {

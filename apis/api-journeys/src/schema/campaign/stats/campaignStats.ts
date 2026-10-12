@@ -1,3 +1,5 @@
+import { prisma } from '@core/prisma/journeys/client'
+
 import { logger as parentLogger } from '../../logger'
 import { getJourneyStatsBreakdown } from '../../plausible/service'
 
@@ -185,28 +187,78 @@ async function refreshSweep(
 }
 
 /**
+ * The campaign restricted to journeys visitors can reach right now: published
+ * or archived, never draft, trashed or deleted. Read live, so a journey that is
+ * unpublished drops out and counts again once it is published.
+ */
+async function withVisibleJourneys(
+  campaign: CampaignStatsSubject
+): Promise<CampaignStatsSubject> {
+  const linkedIds = linkedJourneyIds(
+    campaign.regions.flatMap((region) => region.languages)
+  )
+  if (linkedIds.length === 0) return campaign
+  const visible = await prisma.journey.findMany({
+    where: {
+      id: { in: linkedIds },
+      deletedAt: null,
+      status: { in: ['published', 'archived'] }
+    },
+    select: { id: true }
+  })
+  const visibleIds = new Set(visible.map(({ id }) => id))
+  return {
+    ...campaign,
+    regions: campaign.regions.map((region) => ({
+      id: region.id,
+      languages: region.languages.filter(
+        ({ journeyId }) => journeyId != null && visibleIds.has(journeyId)
+      )
+    }))
+  }
+}
+
+/** Whether a cached sweep still describes this campaign: same window start and a row set for every counted journey. */
+function sweepMatchesCampaign(
+  campaign: CampaignStatsSubject,
+  sweep: CampaignStatsSweep
+): boolean {
+  const start = campaign.publishedAt ?? campaign.createdAt
+  const expectedFrom =
+    start.getTime() > new Date(sweep.to).getTime()
+      ? sweep.to
+      : start.toISOString()
+  if (sweep.from !== expectedFrom) return false
+  return linkedJourneyIds(
+    campaign.regions.flatMap((region) => region.languages)
+  ).every((journeyId) => sweep.journeys[journeyId] != null)
+}
+
+/**
  * The Campaign's visitor stats from its cached sweep, sweeping Plausible on a
- * miss or once the entry is stale. When that sweep fails, the last cached sweep
- * is served and a refresh retries in the background; with nothing cached the
- * failure propagates.
+ * miss, once the entry is stale, or when the entry no longer matches the
+ * campaign (a journey linked or published since the sweep). When a sweep fails,
+ * the last cached sweep is served and not retried for a few minutes; with
+ * nothing cached the failure propagates.
  */
 export async function getCampaignStats(
-  campaign: CampaignStatsSubject
+  campaignWithAllJourneys: CampaignStatsSubject
 ): Promise<CampaignStats> {
+  const campaign = await withVisibleJourneys(campaignWithAllJourneys)
   const cached = await statsCache.get(campaign.id)
-  if (cached?.fresh === true) return sumCampaignStats(campaign, cached.sweep)
+  if (cached != null) {
+    const servable =
+      cached.backingOff ||
+      (cached.fresh && sweepMatchesCampaign(campaign, cached.sweep))
+    if (servable) return sumCampaignStats(campaign, cached.sweep)
+  }
 
   try {
     return sumCampaignStats(campaign, await refreshSweep(campaign))
   } catch (error) {
     if (cached == null) throw error
     logger.error({ error, campaignId: campaign.id }, 'stats sweep failed')
-    refreshSweep(campaign).catch((refreshError) => {
-      logger.error(
-        { error: refreshError, campaignId: campaign.id },
-        'background stats refresh failed'
-      )
-    })
+    await statsCache.deferRefresh(campaign.id, cached)
     return sumCampaignStats(campaign, cached.sweep)
   }
 }
