@@ -27,6 +27,11 @@ export interface CampaignRegionCreate_campaignRegionCreate_languages_journey {
   id: string;
   slug: string;
   status: JourneyStatus;
+  /**
+   * private title for creators
+   */
+  title: string;
+  description: string | null;
 }
 
 export interface CampaignRegionCreate_campaignRegionCreate_languages_qrCode_shortLink_domain {
@@ -64,6 +69,10 @@ export interface CampaignRegionCreate_campaignRegionCreate_languages {
    */
   title: string | null;
   description: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Linking, unlinking and refreshing from the journey clear it.
+   */
+  snapshotEdited: boolean;
   qrCodeId: string | null;
   order: number;
   language: CampaignRegionCreate_campaignRegionCreate_languages_language;
@@ -134,9 +143,12 @@ export interface CampaignRegionCreate {
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
+   * Idempotent per id: a retry with the id of an existing region of the same campaign returns that region.
+   * 
    * Errors:
    * - NOT_FOUND: campaignId does not resolve.
    * - FORBIDDEN: caller is not in the team.
+   * - CONFLICT: a concurrent create took the id or the derived slug; retry.
    */
   campaignRegionCreate: CampaignRegionCreate_campaignRegionCreate;
 }

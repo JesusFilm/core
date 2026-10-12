@@ -1196,6 +1196,8 @@ model CampaignRegionLanguage {
   journeyId   String?
   title       String?
   description String?
+  /// True once an author changed the snapshot title or description by hand; cleared when the snapshot is re-read from the journey.
+  snapshotEdited Boolean     @default(false)
   qrCodeId    String?
   order       Int
   region      CampaignRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)

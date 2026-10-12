@@ -2,7 +2,11 @@ import { TypographyAlign } from '../../../block/typography/enums/typographyAlign
 import { builder } from '../../../builder'
 import { assertEnumOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
-import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
+import {
+  SECTION_CREATE_ERRORS,
+  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
+  createSection
+} from '../createSection'
 import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
 import { validateSectionText } from '../validateSectionText'
 
@@ -13,6 +17,10 @@ export const CampaignHeroBlockCreateInput = builder.inputType(
       id: t.id({ required: false }),
       campaignId: t.id({ required: true }),
       pageId: t.id({ required: true, description: 'A page of the campaign.' }),
+      parentBlockId: t.id({
+        required: false,
+        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
+      }),
       parentOrder: t.int({
         required: false,
         description:

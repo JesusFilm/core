@@ -246,6 +246,25 @@ describe('campaignBlockDuplicate', () => {
     expect(ids).toContain('heroButtonCopyId')
   })
 
+  it('leaves a slot empty when its owned block is not live, instead of reusing the original’s id', async () => {
+    setLive(
+      fixture.blocks.map((block) =>
+        block.id === 'heroId'
+          ? { ...block, mediaBlockId: 'deletedMediaId' }
+          : block
+      )
+    )
+
+    await duplicate('heroId', [{ oldId: 'heroId', newId: 'heroCopyId' }])
+
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'heroCopyId' },
+        data: expect.objectContaining({ mediaBlockId: expect.anything() })
+      })
+    )
+  })
+
   it('generates ids for blocks the idMap leaves out', async () => {
     setLive(fixture.blocks)
 
@@ -274,6 +293,63 @@ describe('campaignBlockDuplicate', () => {
     }
   )
 
+  it('copies both slots of a Columns section with the section each one holds', async () => {
+    const template = fixture.blocks[0]
+    const row = (
+      id: string,
+      typename: string,
+      parentBlockId: string | null,
+      parentOrder: number
+    ): CampaignBlockRow => ({
+      ...template,
+      id,
+      typename,
+      parentBlockId,
+      parentOrder,
+      pageId: 'landingPageId',
+      coverBlockId: null,
+      mediaBlockId: null,
+      logoBlockId: null,
+      action: null
+    })
+    const columns = [
+      row('columnsId', 'CampaignColumnsBlock', null, 0),
+      row('slotLeftId', 'CampaignColumnBlock', 'columnsId', 0),
+      row('slotRightId', 'CampaignColumnBlock', 'columnsId', 1),
+      row('slotHeroId', 'CampaignHeroBlock', 'slotLeftId', 0)
+    ]
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', columns[0])
+    )
+    fixture.blocks.push(...columns)
+    setLive(columns)
+
+    const result = await duplicate('columnsId', [
+      { oldId: 'columnsId', newId: 'columnsCopyId' },
+      { oldId: 'slotLeftId', newId: 'slotLeftCopyId' },
+      { oldId: 'slotRightId', newId: 'slotRightCopyId' },
+      { oldId: 'slotHeroId', newId: 'slotHeroCopyId' }
+    ])
+
+    expect(result.errors).toBeUndefined()
+    expect(
+      result.data.campaignBlockDuplicate
+        .filter((block: { id: string }) => block.id.endsWith('CopyId'))
+        .map(
+          (block: {
+            id: string
+            parentBlockId: string | null
+            parentOrder: number
+          }) => [block.id, block.parentBlockId, block.parentOrder]
+        )
+    ).toEqual([
+      ['columnsCopyId', null, 1],
+      ['slotLeftCopyId', 'columnsCopyId', 0],
+      ['slotRightCopyId', 'columnsCopyId', 1],
+      ['slotHeroCopyId', 'slotLeftCopyId', 0]
+    ])
+  })
+
   it('refuses to duplicate a column slot (CONFLICT, id)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroId', {
@@ -288,6 +364,43 @@ describe('campaignBlockDuplicate', () => {
       code: 'CONFLICT',
       field: 'id'
     })
+  })
+
+  it('refuses to duplicate the section inside a column slot (CONFLICT, id)', async () => {
+    const template = fixture.blocks[0]
+    const row = (
+      id: string,
+      typename: string,
+      parentBlockId: string | null
+    ): CampaignBlockRow => ({
+      ...template,
+      id,
+      typename,
+      parentBlockId,
+      parentOrder: 0,
+      pageId: 'landingPageId',
+      coverBlockId: null,
+      mediaBlockId: null,
+      logoBlockId: null,
+      action: null
+    })
+    const slotted = [
+      row('columnsId', 'CampaignColumnsBlock', null),
+      row('slotLeftId', 'CampaignColumnBlock', 'columnsId'),
+      row('slotHeroId', 'CampaignHeroBlock', 'slotLeftId')
+    ]
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', slotted[2])
+    )
+    setLive(slotted)
+
+    const result = await duplicate('slotHeroId')
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'CONFLICT',
+      field: 'id'
+    })
+    expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
   it('refuses to duplicate a page (CONFLICT, id)', async () => {

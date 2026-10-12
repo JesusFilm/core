@@ -1,4 +1,7 @@
+import { VideoBlockSource } from '@core/prisma/journeys/client'
+
 import { builder } from '../../builder'
+import { Video } from '../../mediaVideo/mediaVideo'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock } from './campaignBlock'
@@ -30,7 +33,24 @@ export const CampaignVideoCarouselBlock = builder.prismaObject(
         description: 'The Watch Video to expand; null for explicit children.'
       }),
       videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
-        nullable: true
+        nullable: true,
+        description:
+          'The campaign language when the Watch Video was linked; the language the expansion resolves in.'
+      }),
+      video: t.field({
+        type: Video,
+        nullable: true,
+        description:
+          'Watch expansion: the federated `Video` reference (`id`, `primaryLanguageId`) the gateway joins for `children` and `childrenCount`; api-journeys never fetches or caches it. Null in explicit mode.',
+        resolve: (block) => {
+          if (block.videoId == null || block.videoVariantLanguageId == null)
+            return null
+          return {
+            id: block.videoId,
+            primaryLanguageId: block.videoVariantLanguageId,
+            source: VideoBlockSource.internal
+          }
+        }
       })
     })
   }

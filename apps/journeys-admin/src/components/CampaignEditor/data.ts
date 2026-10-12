@@ -2,28 +2,80 @@ import {
   CAMPAIGN_ID,
   LANDING_PAGE_ID,
   REGION_PAGE_ID,
-  campaignStrings,
   chromeBlocks,
+  columnSlot,
   eurRegion as eurRegionPublic,
   landingBlocks,
   lightTheme,
-  regionPageBlocks
+  regionPageBlocks,
+  section
 } from '@core/journeys/ui/Campaign/testData'
 
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_regions as CampaignRegion,
-  GetCampaign_campaign_regions_languages as CampaignRegionLanguage
+  GetCampaign_campaign_regions_languages as CampaignRegionLanguage,
+  GetCampaign_campaign_strings as CampaignString
 } from '../../../__generated__/GetCampaign'
 import {
+  CampaignColumnsRatio,
   CampaignPageKind,
   CampaignStatus,
+  CampaignStringKey,
   JourneyStatus,
   UserTeamRole
 } from '../../../__generated__/globalTypes'
+import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
 
 export const CURRENT_USER_ID = 'userId'
+
+/** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field. */
+export function withEmptyTranslations(block: {
+  __typename: string
+}): CampaignBlock {
+  const fields: readonly string[] =
+    block.__typename in CAMPAIGN_TEXT_FIELDS
+      ? CAMPAIGN_TEXT_FIELDS[
+          block.__typename as keyof typeof CAMPAIGN_TEXT_FIELDS
+        ]
+      : []
+  const translations = Object.fromEntries(
+    fields.map((field) => [`${field}Translations`, []])
+  )
+  return { ...block, ...translations } as CampaignBlock
+}
+
+const STRING_SEED: Array<[CampaignStringKey, string]> = [
+  [CampaignStringKey.allRegions, 'All regions'],
+  [CampaignStringKey.step1, 'Pick a language your friend understands.'],
+  [CampaignStringKey.step2, 'Preview what they will see.'],
+  [CampaignStringKey.step2help, 'Tap through the preview like they would.'],
+  [CampaignStringKey.step3, 'Share this link with them.'],
+  [CampaignStringKey.step4, 'Or download a QR code for print.'],
+  [CampaignStringKey.copy, 'Copy link'],
+  [CampaignStringKey.copied, 'Link copied'],
+  [CampaignStringKey.downloadQr, 'Download QR code'],
+  [CampaignStringKey.open, 'Open'],
+  [CampaignStringKey.watch, 'Watch'],
+  [CampaignStringKey.openTemplate, 'Open journey'],
+  [CampaignStringKey.youtube, 'Watch on YouTube'],
+  [CampaignStringKey.totalVisitors, 'Total visitors'],
+  [CampaignStringKey.topCountry, 'Top country'],
+  [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
+  [CampaignStringKey.videos, 'videos']
+]
+
+/** The seventeen seeded Campaign Strings, untranslated. */
+export const campaignStrings: CampaignString[] = STRING_SEED.map(
+  ([key, value]) => ({
+    __typename: 'CampaignString',
+    id: `string-${key}`,
+    key,
+    value,
+    valueTranslations: []
+  })
+)
 
 /** The seeded campaign as `campaign(id)` returns it to a manager, drawn from the shared viewer test data. */
 export const campaign: Campaign = {
@@ -31,10 +83,12 @@ export const campaign: Campaign = {
   id: CAMPAIGN_ID,
   teamId: 'teamId',
   title: 'Christmas 2026',
+  titleTranslations: [],
   slug: 'christmas-2026',
   status: CampaignStatus.draft,
   defaultLanguageId: '529',
   publishedAt: null,
+  palette: ['#C52D3A', '#F2B544', '#FBF7F1', '#FFFFFF', '#26262E', '#6D6F81'],
   createdAt: '2026-10-05T00:00:00.000Z',
   updatedAt: '2026-10-05T00:00:00.000Z',
   team: {
@@ -88,9 +142,11 @@ export const campaign: Campaign = {
       kind: CampaignPageKind.regionTemplate
     }
   ],
-  strings: campaignStrings,
-  blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks],
-  regions: []
+  blocks: [...landingBlocks, ...regionPageBlocks, ...chromeBlocks].map(
+    withEmptyTranslations
+  ),
+  regions: [],
+  strings: campaignStrings
 }
 
 const english = {
@@ -121,6 +177,7 @@ export const eurEnglish: CampaignRegionLanguage = {
   journeyId: 'eurJourneyId',
   title: 'Christmas in Europe',
   description: 'A journey for Europe.',
+  snapshotEdited: false,
   qrCodeId: 'eurQrCodeId',
   order: 0,
   language: english,
@@ -128,7 +185,9 @@ export const eurEnglish: CampaignRegionLanguage = {
     __typename: 'Journey',
     id: 'eurJourneyId',
     slug: 'christmas-europe',
-    status: JourneyStatus.published
+    status: JourneyStatus.published,
+    title: 'Christmas in Europe',
+    description: 'A journey for Europe.'
   },
   qrCode: {
     __typename: 'QrCode',
@@ -151,6 +210,7 @@ export const eurFrench: CampaignRegionLanguage = {
   journeyId: null,
   title: null,
   description: null,
+  snapshotEdited: false,
   qrCodeId: null,
   order: 1,
   language: french,
@@ -202,6 +262,7 @@ export const afrRegion: CampaignRegion = {
       journeyId: null,
       title: null,
       description: null,
+      snapshotEdited: false,
       qrCodeId: null,
       journey: null,
       qrCode: null
@@ -211,7 +272,9 @@ export const afrRegion: CampaignRegion = {
 }
 
 /** The Region Line of `eurRegion`, as the flat block list carries it. */
-export const eurLine: CampaignBlock = eurRegionPublic.lines[0]
+export const eurLine: CampaignBlock = withEmptyTranslations(
+  eurRegionPublic.lines[0]
+)
 
 /** The seeded campaign with two regions: Europe (listed, one line, one country) and Africa (unlisted). */
 export const campaignWithRegions: Campaign = {
@@ -240,4 +303,39 @@ export const memberCampaign: Campaign = {
       }
     ]
   }
+}
+
+/**
+ * The seeded campaign plus a Columns section last on the landing page: the left
+ * slot holds a Rich text section, the right slot is empty.
+ */
+export const campaignWithColumns: Campaign = {
+  ...campaign,
+  blocks: [
+    ...campaign.blocks,
+    section('CampaignColumnsBlock', {
+      id: 'columnsId',
+      pageId: LANDING_PAGE_ID,
+      parentOrder: 5,
+      ratio: CampaignColumnsRatio.equal
+    }),
+    columnSlot({
+      id: 'slotLeftId',
+      parentBlockId: 'columnsId',
+      parentOrder: 0
+    }),
+    columnSlot({
+      id: 'slotRightId',
+      parentBlockId: 'columnsId',
+      parentOrder: 1
+    }),
+    section('CampaignRichTextBlock', {
+      id: 'slotRichTextId',
+      pageId: LANDING_PAGE_ID,
+      parentBlockId: 'slotLeftId',
+      parentOrder: 0,
+      title: 'Our story',
+      richTextContent: 'First.\n\nSecond.'
+    })
+  ]
 }

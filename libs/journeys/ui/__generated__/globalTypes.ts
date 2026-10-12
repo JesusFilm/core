@@ -94,11 +94,28 @@ export enum CampaignChildPlacement {
 }
 
 /**
+ * The width ratio of the two Column Slots of a Columns section.
+ */
+export enum CampaignColumnsRatio {
+  equal = "equal",
+  wideLeft = "wideLeft",
+  wideRight = "wideRight",
+}
+
+/**
  * How a Journey List renders its items: a card grid or a list.
  */
 export enum CampaignJourneyListDisplay {
   grid = "grid",
   list = "list",
+}
+
+/**
+ * Which side of a Featured Media section the Media Slot renders on.
+ */
+export enum CampaignMediaSide {
+  left = "left",
+  right = "right",
 }
 
 /**
@@ -348,6 +365,17 @@ export enum VideoBlockSource {
   internal = "internal",
   mux = "mux",
   youTube = "youTube",
+}
+
+export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+  trailer = "trailer",
 }
 
 export interface ButtonClickEventCreateInput {

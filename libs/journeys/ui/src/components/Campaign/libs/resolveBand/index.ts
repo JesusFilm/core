@@ -1,6 +1,13 @@
-export { bandCssVariables, contrastText, resolveBand } from './resolveBand'
+export {
+  CAMPAIGN_OVERLAY_ALPHA,
+  bandCssVariables,
+  contrastText,
+  overlayAlpha,
+  resolveBand
+} from './resolveBand'
 export type {
   CampaignBandKind,
+  CampaignBandOverlay,
   CampaignBandSection,
   CampaignBandTheme,
   ResolvedBand

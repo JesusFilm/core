@@ -23,6 +23,11 @@ export const CampaignRegionLanguageUpdateInput = builder.inputType(
         required: false,
         description:
           'Edit the snapshotted description; at most 1000 characters. Null clears it.'
+      }),
+      snapshotEdited: t.boolean({
+        required: false,
+        description:
+          'Set the edited flag outright, for an undo that writes a previous title and description back together with the flag they had. Without it, editing `title` or `description` marks the snapshot edited and linking or unlinking clears the mark.'
       })
     })
   }

@@ -105,7 +105,7 @@ export async function updateTeamShortLinks(
   const apollo = createApolloClient()
 
   const qrCodes = await prisma.qrCode.findMany({
-    where: { teamId }
+    where: { teamId, campaignRegionLanguages: { none: {} } }
   })
 
   for (const qrCode of qrCodes) {

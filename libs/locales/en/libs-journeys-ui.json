@@ -151,5 +151,11 @@
   "since {{date}}": "since {{date}}",
   "No visits yet": "No visits yet",
   "Visitors by country": "Visitors by country",
-  "{{visitors}} visitors": "{{visitors}} visitors"
+  "{{visitors}} visitors": "{{visitors}} visitors",
+  "Open": "Open",
+  "Copied": "Copied",
+  "Copy link": "Copy link",
+  "Download QR code": "Download QR code",
+  "Language": "Language",
+  "Open menu": "Open menu"
 }

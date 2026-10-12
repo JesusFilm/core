@@ -1,4 +1,5 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
+import { CampaignTextSource } from '../../../__generated__/globalTypes'
 
 /** Every inline-editable default-language text column of a campaign block. */
 export type CampaignTextField =
@@ -8,6 +9,9 @@ export type CampaignTextField =
   | 'title'
   | 'lede'
   | 'intro'
+  | 'richTextContent'
+  | 'description'
+  | 'bullets'
 
 /** PRD §15 text caps, mirrored for the editor's pure pre-validation. */
 export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
@@ -16,7 +20,31 @@ export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
   eyebrow: 80,
   title: 150,
   lede: 500,
-  intro: 500
+  intro: 500,
+  richTextContent: 5000,
+  description: 1000,
+  bullets: 1000
+}
+
+/**
+ * The API input key a text field is written under. Rich text `content` is
+ * read as `richTextContent` because the public fragment aliases it away
+ * from the Typography block's `content`.
+ */
+export function campaignTextInputKey(field: CampaignTextField): string {
+  return field === 'richTextContent' ? 'content' : field
+}
+
+/**
+ * The cap of a field on a given typename where it differs from the field's
+ * default: a journey card's title holds 200 characters, a section's 150.
+ */
+export function campaignTextCap(
+  typename: CampaignTextTypename,
+  field: CampaignTextField
+): number {
+  if (typename === 'CampaignJourneyBlock' && field === 'title') return 200
+  return CAMPAIGN_TEXT_CAPS[field]
 }
 
 /** The text fields each typename carries, in render order. */
@@ -27,9 +55,12 @@ export const CAMPAIGN_TEXT_FIELDS = {
   CampaignRegionSwitcherBlock: ['title'],
   CampaignVideoCarouselBlock: ['eyebrow', 'title'],
   CampaignJourneyListBlock: ['eyebrow', 'title', 'lede'],
+  CampaignJourneyBlock: ['title', 'description'],
   CampaignAnalyticsBlock: ['eyebrow', 'title'],
   CampaignRegionHeaderBlock: ['intro'],
-  CampaignRegionShareBlock: ['title', 'intro']
+  CampaignRegionShareBlock: ['title', 'intro'],
+  CampaignRichTextBlock: ['title', 'richTextContent'],
+  CampaignFeaturedMediaBlock: ['eyebrow', 'title', 'lede', 'bullets']
 } as const satisfies Partial<
   Record<CampaignBlock['__typename'], readonly CampaignTextField[]>
 >
@@ -54,4 +85,58 @@ export function primaryTextField(
 ): CampaignTextField {
   const fields: readonly CampaignTextField[] = CAMPAIGN_TEXT_FIELDS[typename]
   return fields.includes('title') ? 'title' : fields[0]
+}
+
+export interface CampaignTranslatedValue {
+  __typename: 'TranslatedValue'
+  languageId: string
+  value: string
+  source: CampaignTextSource
+}
+
+/** The `<field>Translations` list a block carries beside `field`. */
+export function blockTranslations(
+  block: CampaignTextBlock,
+  field: CampaignTextField
+): CampaignTranslatedValue[] {
+  const list = (block as unknown as Record<string, unknown>)[
+    `${field}Translations`
+  ]
+  return Array.isArray(list) ? (list as CampaignTranslatedValue[]) : []
+}
+
+/** The stored translation of a field in one language, or empty when there is none. */
+export function translationValue(
+  translations: readonly CampaignTranslatedValue[],
+  languageId: string
+): string {
+  return (
+    translations.find((translation) => translation.languageId === languageId)
+      ?.value ?? ''
+  )
+}
+
+/**
+ * The translations list after `campaignTranslationSet` writes `value` for
+ * `languageId` as a human entry (or clears it when empty): the optimistic
+ * shape of the mutation's result.
+ */
+export function withTranslationValue(
+  translations: readonly CampaignTranslatedValue[],
+  languageId: string,
+  value: string
+): CampaignTranslatedValue[] {
+  const others = translations.filter(
+    (translation) => translation.languageId !== languageId
+  )
+  if (value === '') return others
+  return [
+    ...others,
+    {
+      __typename: 'TranslatedValue',
+      languageId,
+      value,
+      source: CampaignTextSource.human
+    }
+  ]
 }

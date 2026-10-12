@@ -1,7 +1,9 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
+  CampaignColumnsRatio,
   CampaignJourneyListDisplay,
+  CampaignMediaSide,
   CampaignPageKind,
   CampaignSwitcherVariant
 } from '../../../__generated__/globalTypes'
@@ -28,11 +30,29 @@ export function sectionTypesForPage(
   )
 }
 
+/** Sections a Column Slot's type picker never offers: no nesting, the share panel reads a whole page, and an Image section is created on a page (its `parentBlockId` names an owner, not a slot). */
+export const SLOT_DISALLOWED_TYPENAMES: readonly CampaignSectionTypename[] = [
+  'CampaignColumnsBlock',
+  'CampaignRegionShareBlock',
+  'CampaignImageBlock'
+]
+
+/** The section types a Column Slot's type picker offers on a page, in menu order. */
+export function sectionTypesForSlot(
+  pageKind: CampaignPageKind
+): CampaignSectionTypename[] {
+  return sectionTypesForPage(pageKind).filter(
+    (typename) => !SLOT_DISALLOWED_TYPENAMES.includes(typename)
+  )
+}
+
 interface NewSectionBase {
   id: string
   campaignId: string
   pageId: string
   parentOrder: number
+  /** The Column Slot the section sits in; omitted for a top-level section. */
+  parentBlockId?: string
 }
 
 /**
@@ -46,7 +66,7 @@ export function newSectionBlock(
   const shared = {
     ...base,
     regionId: null,
-    parentBlockId: null,
+    parentBlockId: base.parentBlockId ?? null,
     backgroundKind: CampaignBackgroundKind.none,
     backgroundColor: null,
     coverBlockId: null,
@@ -66,14 +86,18 @@ export function newSectionBlock(
         title: null,
         lede: null,
         align: null,
-        mediaBlockId: null
+        mediaBlockId: null,
+        eyebrowTranslations: [],
+        titleTranslations: [],
+        ledeTranslations: []
       }
     case 'CampaignRegionSwitcherBlock':
       return {
         __typename: typename,
         ...shared,
         title: null,
-        switcherVariant: CampaignSwitcherVariant.cards
+        switcherVariant: CampaignSwitcherVariant.cards,
+        titleTranslations: []
       }
     case 'CampaignVideoCarouselBlock':
       return {
@@ -82,7 +106,10 @@ export function newSectionBlock(
         eyebrow: null,
         title: null,
         videoId: null,
-        videoVariantLanguageId: null
+        videoVariantLanguageId: null,
+        video: null,
+        eyebrowTranslations: [],
+        titleTranslations: []
       }
     case 'CampaignJourneyListBlock':
       return {
@@ -91,7 +118,10 @@ export function newSectionBlock(
         eyebrow: null,
         title: null,
         lede: null,
-        display: CampaignJourneyListDisplay.grid
+        display: CampaignJourneyListDisplay.grid,
+        eyebrowTranslations: [],
+        titleTranslations: [],
+        ledeTranslations: []
       }
     case 'CampaignAnalyticsBlock':
       return {
@@ -99,13 +129,115 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        showMap: false
+        showMap: false,
+        eyebrowTranslations: [],
+        titleTranslations: []
       }
     case 'CampaignRegionHeaderBlock':
-      return { __typename: typename, ...shared, intro: null }
+      return {
+        __typename: typename,
+        ...shared,
+        intro: null,
+        introTranslations: []
+      }
     case 'CampaignRegionShareBlock':
-      return { __typename: typename, ...shared, title: null, intro: null }
+      return {
+        __typename: typename,
+        ...shared,
+        title: null,
+        intro: null,
+        titleTranslations: [],
+        introTranslations: []
+      }
+    case 'CampaignRichTextBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        title: null,
+        richTextContent: null
+      }
+    case 'CampaignColumnsBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        ratio: CampaignColumnsRatio.equal
+      }
+    case 'CampaignImageBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        src: null,
+        alt: null,
+        width: null,
+        height: null
+      }
+    case 'CampaignFeaturedMediaBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        eyebrow: null,
+        title: null,
+        lede: null,
+        bullets: null,
+        mediaSide: CampaignMediaSide.right,
+        mediaBlockId: null
+      }
   }
+}
+
+type ColumnSlotBlock = Extract<
+  CampaignBlock,
+  { __typename: 'CampaignColumnBlock' }
+>
+
+/** The two empty Column Slots a new Columns section is created with, at parentOrder 0 and 1. */
+export function newColumnSlots(
+  columns: Pick<CampaignBlock, 'id' | 'campaignId' | 'pageId' | 'regionId'>,
+  slotIds: [string, string]
+): ColumnSlotBlock[] {
+  return slotIds.map((id, parentOrder) => ({
+    __typename: 'CampaignColumnBlock',
+    id,
+    campaignId: columns.campaignId,
+    pageId: columns.pageId,
+    regionId: columns.regionId,
+    parentBlockId: columns.id,
+    parentOrder
+  }))
+}
+
+/** A Columns section's live slots in order. */
+export function columnSlots(
+  blocks: CampaignBlock[],
+  columnsId: string
+): CampaignBlock[] {
+  return blocks
+    .filter(
+      (block) =>
+        block.__typename === 'CampaignColumnBlock' &&
+        block.parentBlockId === columnsId
+    )
+    .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+}
+
+/** The one section a Column Slot holds, if any. */
+export function slotSection(
+  blocks: CampaignBlock[],
+  slotId: string
+): CampaignBlock | undefined {
+  return blocks.find((block) => block.parentBlockId === slotId)
+}
+
+/** True for a section that sits in a Column Slot. */
+export function isInColumnSlot(
+  blocks: CampaignBlock[],
+  block: CampaignBlock
+): boolean {
+  if (block.parentBlockId == null) return false
+  return (
+    blocks.find((candidate) => candidate.id === block.parentBlockId)
+      ?.__typename === 'CampaignColumnBlock'
+  )
 }
 
 /** The ordered sections of one page: top-level blocks with that `pageId`. */

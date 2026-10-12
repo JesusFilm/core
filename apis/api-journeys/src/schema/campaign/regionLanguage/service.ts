@@ -8,6 +8,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { logger } from '../../logger'
 import {
   createShortLink,
   deleteShortLink,
@@ -17,12 +18,7 @@ import {
 } from '../../qrCode/qrCode.service'
 import { touchCampaign } from '../block/service'
 import { Action, campaignAcl } from '../campaign.acl'
-import {
-  INCLUDE_JOURNEY_PUBLIC_URL,
-  JourneyWithPublicUrl
-} from '../getJourneyPublicUrl'
 import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
-import { badUserInput } from '../validation'
 
 /**
  * The Share Language service: every region language mutation is campaign
@@ -40,8 +36,6 @@ export type CampaignRegionLanguageWithCampaignAcl =
   Prisma.CampaignRegionLanguageGetPayload<{
     include: typeof INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL
   }>
-
-export const JOURNEY_NOT_FOUND_MESSAGE = 'Journey not found or not published'
 
 function notFound(message: string): GraphQLError {
   return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
@@ -66,126 +60,157 @@ export async function authorizeRegionLanguageUpdate(
   return regionLanguage
 }
 
-/** How a pasted journey link addresses the journey: an admin link by id, a public URL by slug. */
-export type JourneyLink = { id: string } | { slug: string }
-
 /**
- * Parse a pasted journey link: an admin link (`/journeys/<id>`), the embed
- * route (`/embed/<slug>`) or a public URL on any domain (`/<slug>`). Anything
- * that is not an http(s) URL with a path, or that names nothing, is
- * `BAD_USER_INPUT` on `url`.
+ * A short-link gateway call held back to the end of the transaction that
+ * decides it, with the call that undoes it. The gateway cannot roll back with
+ * the database: running the call last means a failed call rolls the
+ * transaction back with nothing changed, and `revert` restores the gateway
+ * should the commit itself then fail.
  */
-export function parseJourneyLink(url: string): JourneyLink {
-  let parsed: URL
-  try {
-    parsed = new URL(url.trim())
-  } catch {
-    throw badUserInput('url must be a journey link', 'url')
-  }
-  if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:')
-    throw badUserInput('url must be a journey link', 'url')
-  const segments = parsed.pathname
-    .split('/')
-    .filter((segment) => segment !== '')
-  const [first, second] = segments
-  if (first == null) throw badUserInput('url must be a journey link', 'url')
-  if (first === 'journeys' && second != null) return { id: second }
-  if (first === 'embed' && second != null) return { slug: second }
-  return { slug: first }
+export interface ShortLinkStep {
+  apply: () => Promise<void>
+  revert: () => Promise<void>
 }
 
 /**
- * Resolve a pasted link to a live-published journey of any team, with the
- * routing filter skipped (PRD §5): an unknown journey and an unpublished one
- * are the same `BAD_USER_INPUT` on `url`, never `NOT_FOUND`.
+ * Take the row lock that serialises concurrent mutations of one Share
+ * Language, so a second "Use this journey" waits and re-reads `qrCodeId`
+ * instead of minting a second QR row and short link.
  */
-export async function resolveJourneyLink(
-  url: string
-): Promise<JourneyWithPublicUrl> {
-  const link = parseJourneyLink(url)
-  const journey = await prisma.journey.findFirst({
-    where: {
-      ...('id' in link ? { id: link.id } : { slug: link.slug }),
-      status: 'published',
-      deletedAt: null
-    },
-    include: INCLUDE_JOURNEY_PUBLIC_URL
-  })
-  if (journey == null) throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, 'url')
-  return journey
-}
-
-/** A journey addressed by id must likewise be live-published. */
-export async function resolveJourneyId(
-  journeyId: string
-): Promise<JourneyWithPublicUrl> {
-  const journey = await prisma.journey.findFirst({
-    where: { id: journeyId, status: 'published', deletedAt: null },
-    include: INCLUDE_JOURNEY_PUBLIC_URL
-  })
-  if (journey == null)
-    throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, 'journeyId')
-  return journey
+export async function lockRegionLanguage(
+  tx: Prisma.TransactionClient,
+  id: string
+): Promise<void> {
+  await tx.$queryRaw`SELECT "id" FROM "CampaignRegionLanguage" WHERE "id" = ${id} FOR UPDATE`
 }
 
 /**
  * Create the Campaign QR Code for a freshly linked journey: a `QrCode` row in
- * the campaign's team targeting the journey (no block, default colours) and
- * its short link through the existing short-link create, in the same
- * transaction as the link. Returns the QR row id.
+ * the campaign's team targeting the journey (no block, default colours),
+ * written in `tx`, and the short link through the existing short-link create
+ * as the returned step. Returns the QR row id and that step.
  */
 export async function createRegionLanguageQrCode(
   tx: Prisma.TransactionClient,
   teamId: string,
   journeyId: string
-): Promise<string> {
+): Promise<{ qrCodeId: string; step: ShortLinkStep }> {
   const shortLinkId = uuidv4()
   const to = await getTo({ shortLinkId, teamId, toJourneyId: journeyId })
-  const hostname = getShortLinkDomain()
-  const shortLink = await createShortLink({
-    id: shortLinkId,
-    hostname,
-    to,
-    service: 'apiJourneys'
-  })
   const qrCode = await tx.qrCode.create({
-    data: {
-      teamId,
-      journeyId,
-      toJourneyId: journeyId,
-      shortLinkId: shortLink.id
-    }
+    data: { teamId, journeyId, toJourneyId: journeyId, shortLinkId }
   })
-  return qrCode.id
+  return {
+    qrCodeId: qrCode.id,
+    step: {
+      apply: async () => {
+        await createShortLink({
+          id: shortLinkId,
+          hostname: getShortLinkDomain(),
+          to,
+          service: 'apiJourneys'
+        })
+      },
+      revert: async () => await deleteShortLink(shortLinkId)
+    }
+  }
 }
 
-/** Swap the journey behind an existing Campaign QR Code: the same short link is retargeted, the row kept. */
+/**
+ * Swap the journey behind an existing Campaign QR Code: the row is updated in
+ * `tx` and the same short link is retargeted by the returned step, so printed
+ * codes stay valid.
+ */
 export async function retargetRegionLanguageQrCode(
   tx: Prisma.TransactionClient,
-  qrCode: { id: string; teamId: string; shortLinkId: string },
+  qrCode: {
+    id: string
+    teamId: string
+    shortLinkId: string
+    toJourneyId: string
+  },
   journeyId: string
-): Promise<void> {
+): Promise<ShortLinkStep> {
   const to = await getTo({
     shortLinkId: qrCode.shortLinkId,
     teamId: qrCode.teamId,
     toJourneyId: journeyId
   })
-  await updateShortLink({ id: qrCode.shortLinkId, to })
+  const previousTo = await getTo({
+    shortLinkId: qrCode.shortLinkId,
+    teamId: qrCode.teamId,
+    toJourneyId: qrCode.toJourneyId
+  })
   await tx.qrCode.update({
     where: { id: qrCode.id },
     data: { journeyId, toJourneyId: journeyId }
   })
+  return {
+    apply: async () => await updateShortLink({ id: qrCode.shortLinkId, to }),
+    revert: async () =>
+      await updateShortLink({ id: qrCode.shortLinkId, to: previousTo })
+  }
 }
 
-/** Delete Campaign QR Codes with their short links, as `qrCodeDelete` does. */
+/** Holds the step a transaction decides so it can be applied last and undone if the commit fails. */
+export interface ShortLinkStepRunner {
+  defer: (step: ShortLinkStep) => void
+  /** Apply the deferred step; call it as the last statement of the transaction. */
+  apply: () => Promise<void>
+}
+
+/** Run `transaction` with a step runner; if it fails after the step was applied, undo the step. */
+export async function runWithShortLinkStep<T>(
+  transaction: (runner: ShortLinkStepRunner) => Promise<T>
+): Promise<T> {
+  let deferred: ShortLinkStep | undefined
+  let applied = false
+  try {
+    return await transaction({
+      defer: (step) => {
+        deferred = step
+      },
+      apply: async () => {
+        await deferred?.apply()
+        applied = deferred != null
+      }
+    })
+  } catch (error) {
+    if (applied && deferred != null)
+      await deferred.revert().catch((revertError) => {
+        logger.error({ error: revertError }, 'short link revert failed')
+      })
+    throw error
+  }
+}
+
+/** Delete Campaign QR Code rows in `tx`; returns their short link ids for `deleteShortLinks` once the transaction has committed. */
 export async function deleteQrCodes(
   tx: Prisma.TransactionClient,
   qrCodes: Array<{ id: string; shortLinkId: string }>
-): Promise<void> {
-  if (qrCodes.length === 0) return
-  for (const qrCode of qrCodes) await deleteShortLink(qrCode.shortLinkId)
+): Promise<string[]> {
+  if (qrCodes.length === 0) return []
   await tx.qrCode.deleteMany({
     where: { id: { in: qrCodes.map((qrCode) => qrCode.id) } }
+  })
+  return qrCodes.map((qrCode) => qrCode.shortLinkId)
+}
+
+/**
+ * Delete the short links of Campaign QR Codes whose rows are already gone,
+ * after the transaction has committed and in parallel: a gateway failure then
+ * leaves an unreachable short link, not a rolled-back delete.
+ */
+export async function deleteShortLinks(shortLinkIds: string[]): Promise<void> {
+  const results = await Promise.allSettled(
+    shortLinkIds.map(async (id) => await deleteShortLink(id))
+  )
+  results.forEach((result, index) => {
+    if (result.status === 'rejected')
+      logger.error(
+        { error: result.reason, shortLinkId: shortLinkIds[index] },
+        'short link delete failed'
+      )
   })
 }
 
