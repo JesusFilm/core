@@ -56,7 +56,7 @@ export const CampaignTranslationGroup = builder.enumType(
   }
 )
 
-interface CampaignTranslationTargetShape {
+export interface CampaignTranslationTargetShape {
   typename: string
   blockId: string | null
   regionId: string | null
@@ -64,7 +64,7 @@ interface CampaignTranslationTargetShape {
   campaignId: string | null
 }
 
-interface CampaignTranslationRowShape {
+export interface CampaignTranslationRowShape {
   target: CampaignTranslationTargetShape
   group: CampaignTranslationGroupValue
   field: CampaignTextFieldName
@@ -137,7 +137,7 @@ builder.objectType(CampaignTranslationRowRef, {
   })
 })
 
-const INCLUDE_TRANSLATIONS_CAMPAIGN = {
+export const INCLUDE_TRANSLATIONS_CAMPAIGN = {
   ...INCLUDE_CAMPAIGN_ACL,
   languages: true,
   pages: true,
