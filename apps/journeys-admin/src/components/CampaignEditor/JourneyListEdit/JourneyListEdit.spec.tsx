@@ -108,6 +108,7 @@ function ListHarness(): ReactElement {
     <JourneyListEdit
       block={list}
       active={selection.host?.id === list.id}
+      focusRequest={0}
       onSelectCard={(cardId) => selectBlock(cardId)}
     />
   )
@@ -184,12 +185,25 @@ describe('JourneyListEdit', () => {
   it('caps the title at 200 characters and the description at 1000', async () => {
     await renderList('landingJourneyId')
 
-    expect(
-      screen.getByRole('textbox', { name: 'Journey title' })
-    ).toHaveAttribute('maxlength', '201')
-    expect(
-      screen.getByRole('textbox', { name: 'Journey description' })
-    ).toHaveAttribute('maxlength', '1001')
+    fireEvent.change(screen.getByRole('textbox', { name: 'Journey title' }), {
+      target: { value: 'a'.repeat(201) }
+    })
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Max 200 characters'
+    )
+    expect(screen.getByRole('textbox', { name: 'Journey title' })).toHaveValue(
+      'The Christmas story'
+    )
+
+    fireEvent.change(
+      screen.getByRole('textbox', { name: 'Journey description' }),
+      { target: { value: 'a'.repeat(1001) } }
+    )
+    await waitFor(() =>
+      expect(
+        screen.getAllByRole('alert').map((alert) => alert.textContent)
+      ).toContain('Max 1000 characters_other')
+    )
   })
 
   it('offers the journey paste field only while the list or one of its cards is selected', async () => {
