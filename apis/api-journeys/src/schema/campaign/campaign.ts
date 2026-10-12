@@ -2,6 +2,7 @@ import { builder } from '../builder'
 import { Language } from '../language'
 
 import { CampaignBlock } from './block'
+import { loadCampaignJourneyLives } from './block/campaignJourneyBlock'
 import { CampaignStatus } from './enums'
 import { TranslatedValueRef, toTranslatedValues } from './translatedValue'
 
@@ -86,7 +87,26 @@ export const CampaignRef = builder.prismaObject('Campaign', {
           include: { action: true }
         }
       },
-      resolve: (campaign) => campaign.blocks
+      resolve: async (campaign) => {
+        const lives = await loadCampaignJourneyLives(
+          campaign.blocks.flatMap((block) =>
+            block.typename === 'CampaignJourneyBlock' && block.journeyId != null
+              ? [block.journeyId]
+              : []
+          )
+        )
+        return campaign.blocks.map((block) =>
+          block.typename === 'CampaignJourneyBlock'
+            ? {
+                ...block,
+                journeyLive:
+                  block.journeyId == null
+                    ? null
+                    : (lives.get(block.journeyId) ?? null)
+              }
+            : block
+        )
+      }
     }),
     regions: t.relation('regions', {
       nullable: false,

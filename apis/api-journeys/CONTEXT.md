@@ -192,7 +192,7 @@ What a Campaign Section sits on: nothing, the theme surface, the contrast band, 
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:
-One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section. A slot may be empty; a Columns section and a Region Share section may not sit in a slot. Mirrors GridContainer → GridItem.
+One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section. A slot may be empty; a Columns section and a Region Share section may not sit in a slot. The section in a slot is its only child, created with the section create's `parentBlockId`, and "bin" soft-deletes that section, never the slot. Mirrors GridContainer → GridItem.
 _Avoid_: column (ambiguous with the Columns section), cell, pane
 
 **Media Slot**:
@@ -208,7 +208,7 @@ Which side of the Section Body an Extra renders on: `above` or `below`. Sibling 
 _Avoid_: position, slot, side
 
 **Protected Block**:
-A Campaign Block the structural mutations refuse with `CONFLICT`: the header and footer (a campaign has exactly one of each, so a second is refused on create too), a **Column Slot**, and the two Campaign Pages themselves. A protected block is edited and styled like any other but is never deleted, moved or duplicated. Every other section and Extra is added, moved (`campaignBlockOrderUpdate`), duplicated with its subtree (`campaignBlockDuplicate`), soft-deleted and restored by the editor's structural Commands.
+A Campaign Block the structural mutations refuse with `CONFLICT`: the header and footer (a campaign has exactly one of each, so a second is refused on create too), a **Column Slot**, and the two Campaign Pages themselves. A protected block is edited and styled like any other but is never deleted or duplicated, and only the header, footer and pages are never moved: a Column Slot takes an order update, which is how the editor swaps the two slots (a slot never changes parent, and the Extras of a Columns section stay after its slots). Every other section and Extra is added, moved (`campaignBlockOrderUpdate`), duplicated with its subtree (`campaignBlockDuplicate`), soft-deleted and restored by the editor's structural Commands.
 _Avoid_: locked, fixed block, system block
 
 **Campaign Typography**:
@@ -295,6 +295,10 @@ _Avoid_: journey link (the long address nobody hands out), campaign link (that i
 A **QR Code** row owned by the Campaign's Team and tied to one region language, created the moment a Journey is linked to that language and removed with it. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
+**Snapshot refresh**:
+Re-reading a Share Language's title and description from its linked Journey on request, replacing both; never automatic. The editor runs it as a Command whose undo writes the previous wording back, and asks first only when the snapshot differs from what the Journey says now, since the row keeps no record of who changed it.
+_Avoid_: sync (nothing runs on its own), re-link (the Journey stays the same)
+
 **Unlinked language**:
 A region language whose Journey has not been picked yet, or whose Journey is no longer published. Visitors never see it; the editor shows it with a prompt to pick a Journey.
 _Avoid_: empty language, missing journey, placeholder
@@ -342,6 +346,26 @@ _Avoid_: nav bar, site header/footer, layout, shell
 **Brand Mark**:
 The fixed leading element of the Campaign header: the logo image when one is set, otherwise the Campaign's title as text, always linking to the landing page in the visitor's Page Language. On a region page it is preceded by the "All regions" chip.
 _Avoid_: logo (the logo is one of its two forms), home button, title
+
+**Campaign Image**:
+The campaign picture block, one typename in two roles: an Image section (a full-width picture with its space reserved from the stored width and height, and translated alt text), or an owned block with no sibling order — a section's **Section Background** cover or the header's **Brand Mark** logo, named by the parent's slot column and replaced, never edited in place. Every picture lives on Cloudflare Images: an upload or a pasted image URL is fetched there under the Campaign's Team, so the stored address is always a Cloudflare one and the server measures its size.
+_Avoid_: image block (bare, where the Journey ImageBlock could be meant), photo, asset, media (that includes video)
+
+**Campaign Video**:
+The campaign media block: a reference to a Watch Video, a YouTube video or an uploaded Mux video, with optional title and description overrides. It is a card or an embedded player, never a journey-style player with trims and triggers. Watch text is read live in the campaign language; YouTube and Mux text is captured once when the video is picked.
+_Avoid_: video block (bare, where the Journey VideoBlock could be meant), clip, media item
+
+**Media Slot**:
+The one owned block a hero or Featured Media section shows beside its text — a **Campaign Video** or a **Campaign Image**, named by the section's `mediaBlockId`. Zero or one per section; filling it replaces (soft-deletes) the block it held, and pointing it back at that block restores it, which is how undo works. A Watch Video with children shows as a poster card linking to Watch; any other video plays inline.
+_Avoid_: hero video, featured video (the slot may hold an image)
+
+**Video Carousel**:
+The section that shows a shelf of video cards, in one of two modes decided by its nullable `videoId` alone (there is no mode column). Set, it is a **Watch expansion** of that Video, whatever its label: the Video's children as cards in Watch's order — the first 12, then a "See all on Watch" card — or the Video itself when it has none; the join is the gateway's, through the carousel's federated `video`. Null, its cards are its explicit items: ordered **Campaign Video** children, unbounded, reordered like any sibling. A YouTube playlist paste imports the playlist's first 12 videos as explicit items in one bulk create.
+_Avoid_: collection carousel, playlist carousel, YouTube carousel (one typename takes every source)
+
+**Media paste**:
+The only way media enters a Campaign: paste a Watch link, a YouTube video or playlist link, or upload an image or video. There is no browsing or searching; the editor shows what a link resolved to before it is kept, and the server resolves it again on save.
+_Avoid_: picker (implies browsing), library, search
 
 **Campaign Public Page**:
 How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, rendered per request from one read of the published Campaign in the visitor's Page Language (the request's `lang` parameter, saved cookie and `Accept-Language` decide it, so the page cannot be pre-built; a response the link's `lang` parameter alone decided is shared-cacheable for a minute, every other one is private). A draft is never served. Empty text renders nothing and a section with nothing in it is skipped, so visitors never see editor hints or empty frames.

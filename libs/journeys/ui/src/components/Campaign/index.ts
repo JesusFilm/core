@@ -4,6 +4,11 @@ export {
 } from './campaignPublicFields'
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
+export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
+export {
+  CampaignFeaturedMedia,
+  featuredMediaBullets
+} from './CampaignFeaturedMedia'
 export { CampaignFooter } from './CampaignFooter'
 export {
   CampaignHeader,
@@ -13,7 +18,17 @@ export {
   writeCampaignLanguageCookie
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
-export { CampaignJourneyList } from './CampaignJourneyList'
+export { CampaignImage, CampaignPicture } from './CampaignImage'
+export {
+  CampaignJourneyList,
+  isJourneyCardVisible,
+  liveJourneyCards
+} from './CampaignJourneyList'
+export {
+  CampaignMediaSlot,
+  CampaignMediaSplit,
+  hasCampaignMedia
+} from './CampaignMediaSlot'
 export {
   CampaignPage,
   campaignChromeTrees,
@@ -28,7 +43,13 @@ export {
   useOptionalCampaign
 } from './CampaignProvider'
 export { CampaignRegionHeader } from './CampaignRegionHeader'
-export { CampaignRegionShare } from './CampaignRegionShare'
+export {
+  CampaignRegionShare,
+  PREVIEW_IFRAME_ALLOW,
+  PREVIEW_IFRAME_SANDBOX,
+  previewEmbedUrl,
+  qrCodeFileName
+} from './CampaignRegionShare'
 export {
   CampaignRegionCountries,
   CampaignRegionSwitcher,
@@ -37,11 +58,14 @@ export {
   switcherRegions
 } from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
+export { CampaignRichText, splitParagraphs } from './CampaignRichText'
 export {
   CAMPAIGN_HEADER_HEIGHT,
   CampaignBandCover,
   CampaignSectionBand,
-  useCampaignSection
+  CampaignSlotContext,
+  useCampaignSection,
+  useCampaignSlot
 } from './CampaignSectionBand'
 export { CampaignSectionHeading } from './CampaignSectionHeading'
 export {
@@ -52,7 +76,12 @@ export {
   campaignSocialImage
 } from './CampaignSeo'
 export { CampaignTypography } from './CampaignTypography'
-export { CampaignVideoCarousel } from './CampaignVideoCarousel'
+export { CampaignVideo } from './CampaignVideo'
+export {
+  CampaignVideoCarousel,
+  carouselCards,
+  hasCarouselCards
+} from './CampaignVideoCarousel'
 export {
   campaignFontsHref,
   CAMPAIGN_DEFAULT_FONTS
@@ -86,6 +115,7 @@ export {
   presetColors
 } from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
+export { watchUrl } from './libs/watchUrl'
 export { hasText, isCampaignSection } from './types'
 export type {
   CampaignBlock,
@@ -98,6 +128,10 @@ export type {
   CampaignTreeOf
 } from './types'
 export type { CampaignChromeTrees } from './CampaignPage'
+export type {
+  CampaignCarouselCard,
+  CampaignCarouselVideoCard
+} from './CampaignVideoCarousel'
 export type { CampaignSeoOptions } from './CampaignSeo'
 export type { CampaignImageSource } from './libs/campaignImageSource'
 export type {

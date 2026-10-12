@@ -6,11 +6,16 @@ import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+import {
+  deleteQrCodes,
+  deleteShortLinks,
+  findRegionQrCodes
+} from './regionLanguage/service'
 
 builder.mutationField('campaignDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; a Custom Domain naming it as Campaign Root is released, and the linked journeys and their QR codes are untouched. Returns the deleted campaign as its last canonical view.\n\nAuth: campaign Delete — a manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not a manager of the team.',
+      'Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.\n\nAuth: campaign Delete — a manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not a manager of the team.',
     type: CampaignRef,
     nullable: false,
     args: {
@@ -31,7 +36,16 @@ builder.mutationField('campaignDelete', (t) =>
           extensions: { code: 'FORBIDDEN' }
         })
 
-      return await prisma.campaign.delete({ ...query, where: { id } })
+      let shortLinkIds: string[] = []
+      const deleted = await prisma.$transaction(async (tx) => {
+        shortLinkIds = await deleteQrCodes(
+          tx,
+          await findRegionQrCodes(tx, { region: { campaignId: id } })
+        )
+        return await tx.campaign.delete({ ...query, where: { id } })
+      })
+      await deleteShortLinks(shortLinkIds)
+      return deleted
     }
   })
 )

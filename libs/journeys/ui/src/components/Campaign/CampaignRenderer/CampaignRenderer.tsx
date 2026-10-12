@@ -2,11 +2,15 @@ import { ReactElement } from 'react'
 
 import { CampaignAnalytics } from '../CampaignAnalytics'
 import { CampaignButton } from '../CampaignButton'
+import { CampaignColumns } from '../CampaignColumns'
+import { CampaignFeaturedMedia } from '../CampaignFeaturedMedia'
 import { CampaignHero } from '../CampaignHero'
+import { CampaignImage } from '../CampaignImage'
 import { CampaignJourneyList } from '../CampaignJourneyList'
 import { CampaignRegionHeader } from '../CampaignRegionHeader'
 import { CampaignRegionShare } from '../CampaignRegionShare'
 import { CampaignRegionSwitcher } from '../CampaignRegionSwitcher'
+import { CampaignRichText } from '../CampaignRichText'
 import { CampaignTypography } from '../CampaignTypography'
 import { CampaignVideoCarousel } from '../CampaignVideoCarousel'
 import type { CampaignTree } from '../types'
@@ -18,7 +22,9 @@ interface CampaignRendererProps {
 /**
  * One component per campaign typename behind a single switch. Header and
  * footer are Campaign Chrome, rendered by the page's chrome slots rather
- * than as sections, so they and any unknown typename render nothing.
+ * than as sections, and a Campaign Video only ever fills a Media Slot
+ * (rendered by its section), so they and any unknown typename render
+ * nothing.
  */
 export function CampaignRenderer({
   block
@@ -30,6 +36,8 @@ export function CampaignRenderer({
       return <CampaignRegionSwitcher block={block} />
     case 'CampaignVideoCarouselBlock':
       return <CampaignVideoCarousel block={block} />
+    case 'CampaignFeaturedMediaBlock':
+      return <CampaignFeaturedMedia block={block} />
     case 'CampaignJourneyListBlock':
       return <CampaignJourneyList block={block} />
     case 'CampaignAnalyticsBlock':
@@ -38,6 +46,12 @@ export function CampaignRenderer({
       return <CampaignRegionHeader block={block} />
     case 'CampaignRegionShareBlock':
       return <CampaignRegionShare block={block} />
+    case 'CampaignRichTextBlock':
+      return <CampaignRichText block={block} />
+    case 'CampaignColumnsBlock':
+      return <CampaignColumns block={block} />
+    case 'CampaignImageBlock':
+      return <CampaignImage block={block} />
     case 'CampaignTypographyBlock':
       return <CampaignTypography block={block} />
     case 'CampaignButtonBlock':

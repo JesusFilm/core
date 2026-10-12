@@ -93,6 +93,13 @@ export async function fetchCampaignPublicByHostname(
   })
 }
 
+/**
+ * The language api-media reads a Watch video's title in when a query sends no
+ * `languageId`. A read made without one is only right for Watch text when the
+ * Page Language is this one.
+ */
+const WATCH_TEXT_FALLBACK_LANGUAGE_ID = '529'
+
 /** What the request carries that decides the Page Language (PRD §2). */
 export interface PageLanguageRequest {
   /** The `lang` query param. */
@@ -112,8 +119,9 @@ export interface CampaignPublicInPageLanguage {
  * Read a published campaign in the visitor's Page Language: one read in the
  * campaign default yields the language list the request is resolved
  * against (`?lang` → cookie → `Accept-Language` → default), then a second
- * read only when the resolved language differs. Null when the campaign is
- * not published.
+ * read unless the resolved language is the one the first read already used
+ * for both the campaign text and the Watch video titles. Null when the
+ * campaign is not published.
  */
 export async function fetchCampaignPublicInPageLanguage(
   apolloClient: ApolloClient,
@@ -130,7 +138,10 @@ export async function fetchCampaignPublicInPageLanguage(
     defaultLanguageId: inDefault.defaultLanguageId,
     ...request
   })
-  if (language.languageId === inDefault.languageId)
+  if (
+    language.languageId === inDefault.languageId &&
+    language.languageId === WATCH_TEXT_FALLBACK_LANGUAGE_ID
+  )
     return { campaign: inDefault, language }
   const campaign = await fetchCampaignPublic(
     apolloClient,

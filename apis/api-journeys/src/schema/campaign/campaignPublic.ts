@@ -41,6 +41,8 @@ export interface CampaignRegionLanguagePublicPayload {
   languageId: string
   order: number
   journeyStatus: PrismaJourneyStatus | null
+  title: string | null
+  shortLinkUrl: string | null
   journeyUrl: string | null
   embedUrl: string | null
 }
@@ -88,7 +90,7 @@ export const CampaignRegionLanguagePublicRef =
 
 builder.objectType(CampaignRegionLanguagePublicRef, {
   description:
-    "A Share Language of a Campaign Region as the public page reads it: the language, whether its linked journey is live, and the journey's resolved public and embed addresses. Nothing here leads to the journey row itself.",
+    "A Share Language of a Campaign Region as the public page reads it: the language, whether its linked journey is live, the Share Link and the journey's resolved public and embed addresses. Nothing here leads to the journey row itself.",
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     languageId: t.exposeID('languageId', {
@@ -107,6 +109,16 @@ builder.objectType(CampaignRegionLanguagePublicRef, {
       description:
         'The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.',
       resolve: (regionLanguage) => regionLanguage.journeyStatus
+    }),
+    title: t.exposeString('title', {
+      nullable: true,
+      description:
+        'Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.'
+    }),
+    shortLinkUrl: t.exposeString('shortLinkUrl', {
+      nullable: true,
+      description:
+        'The Share Link: the short link the Campaign QR Code encodes, `https://<short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.'
     }),
     journeyUrl: t.exposeString('journeyUrl', {
       nullable: true,

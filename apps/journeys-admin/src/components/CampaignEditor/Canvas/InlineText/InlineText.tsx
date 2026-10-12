@@ -10,7 +10,7 @@ import {
   useState
 } from 'react'
 
-import { CAMPAIGN_TEXT_CAPS } from '../../../../libs/useCampaignBlockTextMutation'
+import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
@@ -75,7 +75,7 @@ export function InlineText({
   const max =
     target.string != null
       ? CAMPAIGN_STRING_CAP
-      : CAMPAIGN_TEXT_CAPS[target.field]
+      : campaignTextCap(target.block.__typename, target.field)
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)

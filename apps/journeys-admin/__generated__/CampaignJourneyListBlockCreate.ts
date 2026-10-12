@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignJourneyListBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, CampaignJourneyListDisplay, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignJourneyListBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignJourneyListBlockCreate
@@ -94,6 +94,7 @@ export interface CampaignJourneyListBlockCreate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
+   * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
    */
   campaignJourneyListBlockCreate: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate;
@@ -101,4 +102,5 @@ export interface CampaignJourneyListBlockCreate {
 
 export interface CampaignJourneyListBlockCreateVariables {
   input: CampaignJourneyListBlockCreateInput;
+  languageId?: string | null;
 }
