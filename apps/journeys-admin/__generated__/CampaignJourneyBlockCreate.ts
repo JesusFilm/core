@@ -41,11 +41,11 @@ export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate {
    */
   description: string | null;
   /**
-   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published`.
+   * The journey’s live status, read at request time; null when the journey was deleted. The public page shows a card only while this is `published` or `archived`.
    */
   journeyStatus: JourneyStatus | null;
   /**
-   * The journey's public address, decided by its own team's domains; null unless the journey is live-published.
+   * The journey's public address, decided by its own team's domains; null unless the journey is published or archived.
    */
   journeyUrl: string | null;
   /**
