@@ -55,7 +55,9 @@ describe('customDomain.service', () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue({
         id: 'journeyId',
         slug: 'my-journey'
-      })
+      } as unknown as Awaited<
+        ReturnType<typeof prismaMock.journey.findUniqueOrThrow>
+      >)
       prismaMock.customDomain.findMany.mockResolvedValue([])
 
       await updateTeamShortLinks('teamId', 'christmas.org')

@@ -101,7 +101,7 @@ describe('campaignBlockRestore', () => {
           deletedAt: new Date()
         })
       )
-      prismaMock.campaignBlock.findUnique.mockResolvedValue(slot)
+      prismaMock.campaignBlock.findUnique.mockResolvedValue(slot as never)
     })
 
     it('is refused while the slot holds another section (CONFLICT, id)', async () => {

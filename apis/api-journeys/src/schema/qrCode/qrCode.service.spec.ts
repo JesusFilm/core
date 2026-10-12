@@ -19,7 +19,7 @@ describe('qrCode.service', () => {
   describe('getTo', () => {
     it('keeps the existing target format exactly: journey public URL + utm_source and utm_campaign', async () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
-        journeyRow('christmas-europe')
+        journeyRow('christmas-europe') as never
       )
 
       const to = await getTo({
@@ -47,7 +47,7 @@ describe('qrCode.service', () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
         journeyRow('christmas-europe', [
           { name: 'journeys.example.org', routeAllTeamJourneys: true }
-        ])
+        ]) as never
       )
 
       const to = await getTo({
@@ -65,7 +65,7 @@ describe('qrCode.service', () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
         journeyRow('christmas-europe', [
           { name: 'journeys.example.org', routeAllTeamJourneys: true }
-        ])
+        ]) as never
       )
 
       const to = await getTo({
@@ -81,12 +81,12 @@ describe('qrCode.service', () => {
 
     it('appends the block path before the attribution parameters', async () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
-        journeyRow('christmas-europe')
+        journeyRow('christmas-europe') as never
       )
       prismaMock.block.findUniqueOrThrow.mockResolvedValue({
         id: 'blockId',
         journeyId: 'journeyId'
-      })
+      } as never)
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
