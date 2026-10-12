@@ -2,7 +2,11 @@ import { z } from 'zod'
 
 import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 
-import { type Journey, journeySchema } from '../journeySchema'
+import {
+  type Journey,
+  journeyForModel,
+  journeyInputSchema
+} from '../journeySchema'
 import { mediaJourney } from '../journeySchema/examples'
 
 import type { Plan } from './stageSchemas'
@@ -36,9 +40,11 @@ Cards can be light or dark, have a background colour, and a background image (a 
 
 // The gateway only uses an output schema to hold the JSON's shape; the model
 // never reads its descriptions. Every stage gets it as text instead, so the
-// field meanings (e.g. what fullscreen looks like) are actually seen.
+// field meanings (e.g. what fullscreen looks like) are actually seen. It is
+// the input schema: the photo fields the server fills in are not in it, so
+// the model cannot write them.
 const JOURNEY_FORMAT = `Journey format (JSON Schema). The current journey and the builder's output follow it; the descriptions say what each field means and how it looks:
-${JSON.stringify(z.toJSONSchema(journeySchema))}`
+${JSON.stringify(z.toJSONSchema(journeyInputSchema))}`
 
 const UNSUPPORTED = `Not supported yet: Jesus Film library videos, video uploads, undo, translation or other languages, publishing or sharing, sign-up forms, email/phone/chat buttons, analytics, custom fonts.`
 
@@ -93,7 +99,7 @@ ${JOURNEY_FORMAT}`
 // output to that order, so an example in any other order teaches Qwen to
 // write a key too late, where the schema no longer allows it (it then drops
 // backgroundImage after writing fullscreen).
-const EXAMPLE_JOURNEY = journeySchema.parse(mediaJourney)
+const EXAMPLE_JOURNEY = journeyInputSchema.parse(mediaJourney)
 
 export const BUILDER_INSTRUCTIONS = `${preSystemPrompt}
 
@@ -102,14 +108,14 @@ ${PRODUCT}
 You are the builder. Write the complete journey as JSON that carries out the plan exactly.
 
 Rules:
-1. Steps listed in keep are copied exactly: same names, same content, same image objects.
+1. Steps listed in keep are copied exactly: same names, same content, same image searches.
 2. Only what the plan changes may differ from the current journey.
 3. Every goTo and next must name a step that exists. Names are unique across the whole journey, lowercase-with-dashes.
 4. Write the whole journey, never a diff.
 5. Every step except the last needs a way forward: a button, a poll, or next.
 6. A video card holds only the video, and uses next to move on.
 7. A multiselect or textResponse must be followed by a button on the same card.
-8. For a new image write only search and alt. Never write src, width, height or blurhash yourself; keep them on images that already have them.
+8. An image is its search and alt; the server finds the photo. Keep the search of an existing image unless the plan changes that image: a new search means a new photo.
 9. Make journeys look good. On a create, give the first card and most other cards a backgroundImage, unless the plan says otherwise. On an edit, add images only where the plan says. Never on a video card. Show photos sharp (fullscreen false) unless the user asks for a blurred background (fullscreen true).
 10. Write image searches as concrete, visual scenes a stock photo would show, 2 to 5 words, such as "sunrise over empty hillside" or "teenagers laughing outdoors". Avoid abstract words like "hope" or "salvation", and avoid anything that would need text in the photo.
 11. Keep text short: cards are read on a phone. A title or heading, one or two short body lines, then the interaction.
@@ -190,7 +196,7 @@ function contextBlock(
       `Recent messages:\n${context.messages.length === 0 ? '(none)' : formatMessages(context.messages)}`
     )
   parts.push(
-    `Current journey: ${context.journey == null ? '(none yet)' : JSON.stringify(context.journey)}`
+    `Current journey: ${context.journey == null ? '(none yet)' : JSON.stringify(journeyForModel(context.journey))}`
   )
   if (context.pendingPlan != null)
     parts.push(

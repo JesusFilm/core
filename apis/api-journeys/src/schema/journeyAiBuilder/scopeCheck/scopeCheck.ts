@@ -5,8 +5,8 @@ import type { Journey } from '../journeySchema'
 /**
  * Returns the names of steps the plan said to keep that came back changed or
  * missing. It only flags (ENG-3767 decision 3); it never undoes the change.
- * Run it after `resolveImages`, which restores a src the builder dropped from
- * an unchanged image, so that drop is not counted as a change.
+ * Run it after `resolveImages`, which puts the photo back on every unchanged
+ * image, so the model's search-and-alt view is not counted as a change.
  */
 export function scopeCheck(
   before: Journey,

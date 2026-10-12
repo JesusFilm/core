@@ -62,7 +62,7 @@ describe('resolveImages', () => {
     expect(imageDeps.triggerDownload).toHaveBeenCalledTimes(2)
   })
 
-  it('keeps images that already have a src', async () => {
+  it('does not search again for an image that already has a photo', async () => {
     const journey = structuredClone(mediaJourney)
     journey.steps[0].card.backgroundImage = {
       search: 'x',
@@ -79,7 +79,7 @@ describe('resolveImages', () => {
     )
   })
 
-  it('copies a dropped src from the previous journey when the search is unchanged', async () => {
+  it('copies the photo from the previous journey when the search is unchanged', async () => {
     const previous: Journey = structuredClone(mediaJourney)
     await resolveImages(previous, null, deps())
     const next = structuredClone(mediaJourney)
@@ -90,6 +90,28 @@ describe('resolveImages', () => {
     expect(imageDeps.searchPhotos).not.toHaveBeenCalled()
     expect(next.steps[0].card.backgroundImage?.src).toBe(
       previous.steps[0].card.backgroundImage?.src
+    )
+  })
+
+  it('searches again when the search changed', async () => {
+    const previous: Journey = structuredClone(mediaJourney)
+    await resolveImages(previous, null, deps())
+    const next = structuredClone(mediaJourney)
+    next.steps[0].card.backgroundImage = {
+      search: 'snowy village at night',
+      alt: 'A snowy village'
+    }
+    const imageDeps = deps()
+
+    await resolveImages(next, previous, imageDeps)
+
+    expect(imageDeps.searchPhotos).toHaveBeenCalledTimes(1)
+    expect(imageDeps.searchPhotos).toHaveBeenCalledWith(
+      'snowy village at night',
+      'portrait'
+    )
+    expect(next.steps[0].card.backgroundImage?.src).toBe(
+      'https://images.unsplash.com/1'
     )
   })
 

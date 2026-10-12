@@ -35,13 +35,14 @@ interface ImageSlot {
 const CANDIDATES_PER_IMAGE = 5
 
 /**
- * Fills src, width, height and blurhash on every image the builder left
- * without one (ENG-3767 "Images"). Mutates `journey` in place.
+ * Fills src, width, height and blurhash on every image (ENG-3767 "Images").
+ * The model writes only search and alt, so the photo fields are the server's
+ * to add. Mutates `journey` in place.
  *
- * - An image that already has a src is kept.
- * - An image without one is first copied from the previous journey when the
- *   same name had the same search there, so a builder that dropped the src
- *   does not cause a new search.
+ * - An image that already carries a photo is kept, so resolving a journey
+ *   twice does not search twice.
+ * - An image is copied from the previous journey when the same name had the
+ *   same search there. A changed search means a new photo.
  * - The rest are searched, and one model call chooses among the top results.
  *
  * Failures leave the image without a src rather than failing the run; the

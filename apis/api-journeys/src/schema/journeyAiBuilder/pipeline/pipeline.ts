@@ -5,7 +5,7 @@ import { logger } from '../../../logger'
 import { checkJourney } from '../checkJourney'
 import { type GenerateJsonResult, generateJson } from '../generateJson'
 import { type ImageDeps, resolveImages } from '../images/resolveImages'
-import { type Journey, journeySchema } from '../journeySchema'
+import { type Journey, journeyInputSchema } from '../journeySchema'
 import { journeyToBlocks } from '../journeyToBlocks'
 import { scopeCheck } from '../scopeCheck'
 import {
@@ -211,7 +211,7 @@ export async function* runPipeline(
       'builder',
       BUILDER_INSTRUCTIONS,
       builderPrompt(context, plan),
-      journeySchema
+      journeyInputSchema
     )
     let checked = checkOutput(first)
 
@@ -222,7 +222,7 @@ export async function* runPipeline(
         'repair',
         BUILDER_INSTRUCTIONS,
         repairPrompt(context, plan, first.text, checked.errors),
-        journeySchema
+        journeyInputSchema
       )
       checked = checkOutput(second)
       if (checked.errors.length > 0)
@@ -237,6 +237,9 @@ export async function* runPipeline(
     }
     yield { type: 'progress', stage: 'builder', status: 'done' }
 
+    // The model wrote only search and alt for each image. This copies the
+    // photo across for images the previous journey already had, and finds one
+    // for the rest.
     const journey = checked.journey
     yield { type: 'progress', stage: 'images', status: 'started' }
     const imageWarnings = await resolveImages(
