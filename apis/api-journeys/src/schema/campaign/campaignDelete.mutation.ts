@@ -6,7 +6,11 @@ import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
-import { deleteQrCodes, findRegionQrCodes } from './regionLanguage/service'
+import {
+  deleteQrCodes,
+  deleteShortLinks,
+  findRegionQrCodes
+} from './regionLanguage/service'
 
 builder.mutationField('campaignDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -32,13 +36,16 @@ builder.mutationField('campaignDelete', (t) =>
           extensions: { code: 'FORBIDDEN' }
         })
 
-      return await prisma.$transaction(async (tx) => {
-        await deleteQrCodes(
+      let shortLinkIds: string[] = []
+      const deleted = await prisma.$transaction(async (tx) => {
+        shortLinkIds = await deleteQrCodes(
           tx,
           await findRegionQrCodes(tx, { region: { campaignId: id } })
         )
         return await tx.campaign.delete({ ...query, where: { id } })
       })
+      await deleteShortLinks(shortLinkIds)
+      return deleted
     }
   })
 )

@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   CampaignAction,
+  CampaignBackgroundKind,
+  CampaignBackgroundOverlay,
   CampaignBlock,
   CampaignPage,
   CampaignRegion,
@@ -17,7 +19,12 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
-import { assertEnum, badUserInput } from '../validation'
+import {
+  assertEnum,
+  assertEnumOrNull,
+  assertHexOrNull,
+  badUserInput
+} from '../validation'
 
 /**
  * The campaign block service: the Block service's shape, authorised through
@@ -55,6 +62,7 @@ export const CAMPAIGN_HOST_TYPENAMES = [
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock',
+  'CampaignImageBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
 ] as const
@@ -65,7 +73,7 @@ export const CAMPAIGN_CHROME_TYPENAMES = [
   'CampaignFooterBlock'
 ] as const
 
-/** The seeded section typenames: what "+Add section" offers today. */
+/** The section typenames "+Add section" offers: the seeded seven and the Image section. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -73,7 +81,8 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignJourneyListBlock',
   'CampaignAnalyticsBlock',
   'CampaignRegionHeaderBlock',
-  'CampaignRegionShareBlock'
+  'CampaignRegionShareBlock',
+  'CampaignImageBlock'
 ] as const
 export type CampaignSectionTypename =
   (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
@@ -275,7 +284,7 @@ export async function getSiblings(
       deletedAt: null,
       ...where
     },
-    orderBy: { parentOrder: 'asc' },
+    orderBy: [{ parentOrder: 'asc' }, { id: 'asc' }],
     include: { action: true }
   })
 }
@@ -359,17 +368,26 @@ export async function updateBlock(
 }
 
 /**
- * Soft-delete a block: stamp `deletedAt` and renumber the remaining siblings
- * contiguously. Children keep their rows and fall out of the tree with the
- * parent, so restore brings them back untouched. Returns the renumbered
+ * Soft-delete a block: stamp `deletedAt` on it and on everything it owns
+ * (live descendants and owned blocks) with one shared timestamp, then
+ * renumber the remaining siblings contiguously. Restore matches that
+ * timestamp, so rows deleted earlier stay deleted. Returns the renumbered
  * siblings.
  */
 export async function removeBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
-    await tx.campaignBlock.update({
-      where: { id: block.id },
+    const live = await tx.campaignBlock.findMany({
+      where: { campaignId: block.campaignId, deletedAt: null },
+      include: { action: true }
+    })
+    const subtreeIds = [
+      block.id,
+      ...collectSubtree(block.id, live).map((row) => row.id)
+    ]
+    await tx.campaignBlock.updateMany({
+      where: { id: { in: [...new Set(subtreeIds)] } },
       data: { deletedAt: new Date() }
     })
     const siblings =
@@ -394,15 +412,25 @@ function getDescendants(
 }
 
 /**
- * Restore a soft-deleted block: clear `deletedAt` and re-insert it among its
- * siblings at its own `parentOrder`, renumbering again. Returns the restored
- * block with its siblings and its live descendants, so the editor cache can
- * take the whole subtree back in one write.
+ * Restore a soft-deleted block: clear `deletedAt` on it and on the rows
+ * deleted with it (same timestamp), and re-insert it among its siblings at
+ * its own `parentOrder`, renumbering again. Returns the restored block with
+ * its siblings and its live descendants, so the editor cache can take the
+ * whole subtree back in one write.
  */
 export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    if (block.deletedAt != null)
+      await tx.campaignBlock.updateMany({
+        where: {
+          campaignId: block.campaignId,
+          deletedAt: block.deletedAt,
+          id: { not: block.id }
+        },
+        data: { deletedAt: null }
+      })
     const restored = await tx.campaignBlock.update({
       where: { id: block.id },
       data: { deletedAt: null },
@@ -747,6 +775,8 @@ export async function duplicateBlock(
       )
     const remap = (id: string | null): string | null =>
       id == null ? null : (ids.get(id) ?? id)
+    const remapSlot = (id: string | null): string | null =>
+      id == null ? null : (ids.get(id) ?? null)
     const siblings = await getSiblings(block, tx)
 
     const copies: CampaignBlockWithAction[] = []
@@ -769,7 +799,7 @@ export async function duplicateBlock(
     for (const [index, row] of subtree.entries()) {
       const slots: Partial<Record<(typeof SLOT_COLUMNS)[number], string>> = {}
       for (const column of SLOT_COLUMNS) {
-        const target = remap(row[column])
+        const target = remapSlot(row[column])
         if (target != null) slots[column] = target
       }
       if (Object.keys(slots).length === 0 && row.action == null) continue
@@ -802,4 +832,233 @@ export async function duplicateBlock(
     await touchCampaign(tx, block.campaignId)
     return [...reordered, ...copies.slice(1)]
   })
+}
+
+// ---------------------------------------------------------------------------
+// Section style: the nine shared section fields, validated once for every
+// section and chrome update mutation.
+// ---------------------------------------------------------------------------
+
+export const CAMPAIGN_BACKGROUND_KINDS = Object.values(CampaignBackgroundKind)
+export const CAMPAIGN_BACKGROUND_OVERLAYS = Object.values(
+  CampaignBackgroundOverlay
+)
+
+/** The six nullable hex columns of a section row. */
+export const SECTION_COLOR_COLUMNS = [
+  'backgroundColor',
+  'headingColor',
+  'textColor',
+  'buttonColor',
+  'buttonTextColor',
+  'accentColor'
+] as const
+export type SectionColorColumn = (typeof SECTION_COLOR_COLUMNS)[number]
+
+/** The owned image typename a cover slot points at (the images ticket adds its mutations). */
+export const CAMPAIGN_IMAGE_TYPENAME = 'CampaignImageBlock'
+
+export type SectionStyleInput = Partial<
+  Record<SectionColorColumn, string | null | undefined>
+> & {
+  backgroundKind?: string | null
+  backgroundOverlay?: string | null
+  coverBlockId?: string | number | null
+}
+
+export type SectionStyleColumns = Partial<
+  Record<SectionColorColumn, string | null>
+> & {
+  backgroundKind?: CampaignBackgroundKind
+  backgroundOverlay?: CampaignBackgroundOverlay | null
+  coverBlockId?: string | null
+}
+
+/**
+ * The pure part of the section style contract: `backgroundKind` is one of
+ * the six kinds and never null; `backgroundOverlay` light, medium, heavy or
+ * null; the six hex columns `assertHex`-normalised or null, never `""`.
+ * Omitted fields are left untouched, and the kind is written exactly as
+ * given — never derived from which columns are populated — so a leftover
+ * `backgroundColor` or cover survives a switch to another kind.
+ */
+export function sectionStyleColumns(
+  input: SectionStyleInput
+): SectionStyleColumns {
+  const data: SectionStyleColumns = {}
+  if (input.backgroundKind !== undefined) {
+    if (input.backgroundKind == null)
+      throw badUserInput(
+        `backgroundKind must be one of ${CAMPAIGN_BACKGROUND_KINDS.join(', ')}`,
+        'backgroundKind'
+      )
+    data.backgroundKind = assertEnum(
+      input.backgroundKind,
+      'backgroundKind',
+      CAMPAIGN_BACKGROUND_KINDS
+    )
+  }
+  if (input.backgroundOverlay !== undefined)
+    data.backgroundOverlay = assertEnumOrNull(
+      input.backgroundOverlay,
+      'backgroundOverlay',
+      CAMPAIGN_BACKGROUND_OVERLAYS
+    )
+  if (input.coverBlockId !== undefined)
+    data.coverBlockId =
+      input.coverBlockId == null ? null : String(input.coverBlockId)
+  for (const column of SECTION_COLOR_COLUMNS) {
+    const value = input[column]
+    if (value === undefined) continue
+    data[column] = assertHexOrNull(value, column)
+  }
+  return data
+}
+
+/** The two slot columns an owned image fills; `mediaBlockId` belongs to the videos ticket. */
+export const CAMPAIGN_IMAGE_SLOT_COLUMNS = [
+  'coverBlockId',
+  'logoBlockId'
+] as const
+export type CampaignImageSlotColumn =
+  (typeof CAMPAIGN_IMAGE_SLOT_COLUMNS)[number]
+
+/**
+ * A slot column (`coverBlockId`, `logoBlockId`) names a live
+ * CampaignImageBlock of the same campaign owned by `ownerBlockId` and
+ * nothing else: `BAD_USER_INPUT` with the slot column as `field`. Ownership
+ * keeps the unique slot column from colliding with another block's image.
+ * Null clears without a lookup.
+ */
+export async function validateImageSlotTarget(
+  imageBlockId: string | number | null | undefined,
+  campaignId: string,
+  field: CampaignImageSlotColumn,
+  ownerBlockId: string
+): Promise<string | null> {
+  if (imageBlockId == null) return null
+  const image = await prisma.campaignBlock.findFirst({
+    where: {
+      id: String(imageBlockId),
+      campaignId,
+      parentBlockId: ownerBlockId,
+      typename: CAMPAIGN_IMAGE_TYPENAME,
+      deletedAt: null
+    },
+    select: { id: true }
+  })
+  if (image == null)
+    throw badUserInput(
+      `${field} must be a live image block owned by this block`,
+      field
+    )
+  return image.id
+}
+
+/**
+ * The shared section style helper every section and chrome update runs:
+ * the pure rules above, then a given cover resolved to a live
+ * CampaignImageBlock owned by this section (`BAD_USER_INPUT` /
+ * `coverBlockId`). Ownership keeps the unique `coverBlockId` slot from
+ * colliding with another section's cover.
+ */
+export async function validateSectionStyle(
+  input: SectionStyleInput,
+  block: Pick<CampaignBlock, 'id' | 'campaignId'>
+): Promise<SectionStyleColumns> {
+  const data = sectionStyleColumns(input)
+  if (data.coverBlockId == null) return data
+  await validateImageSlotTarget(
+    data.coverBlockId,
+    block.campaignId,
+    'coverBlockId',
+    block.id
+  )
+  return data
+}
+
+// ---------------------------------------------------------------------------
+// Owned images: a section's background cover or the header logo, one block
+// per slot, replaced rather than edited in place.
+// ---------------------------------------------------------------------------
+
+export type CampaignImageSlotName = 'cover' | 'logo'
+
+const IMAGE_SLOT_COLUMN: Record<
+  CampaignImageSlotName,
+  CampaignImageSlotColumn
+> = { cover: 'coverBlockId', logo: 'logoBlockId' }
+
+/**
+ * An owned image's parent is a live section or chrome block of the same
+ * campaign (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the image can
+ * copy its scoping down.
+ */
+export async function validateImageOwner(
+  parentBlockId: string,
+  campaignId: string
+): Promise<CampaignBlock> {
+  const owner = await prisma.campaignBlock.findFirst({
+    where: { id: parentBlockId, campaignId, deletedAt: null }
+  })
+  if (owner == null || !isCampaignHostTypename(owner.typename))
+    throw badUserInput(
+      'parentBlockId must be a section or chrome block of this campaign',
+      'parentBlockId'
+    )
+  return owner
+}
+
+/**
+ * The slot an owned image fills, `cover` when omitted. Every section and
+ * chrome block has a cover; only the header has a logo (`BAD_USER_INPUT` /
+ * `logoBlockId`, the slot column, as the field).
+ */
+export function assertImageSlot(
+  owner: Pick<CampaignBlock, 'typename'>,
+  slot: string | null | undefined
+): CampaignImageSlotName {
+  const name = assertEnum(slot ?? 'cover', 'slot', ['cover', 'logo'] as const)
+  if (name === 'logo' && owner.typename !== 'CampaignHeaderBlock')
+    throw badUserInput('only the header has a logo', 'logoBlockId')
+  return name
+}
+
+/**
+ * Create an owned image inside `tx`: `parentOrder: null`, the owner's
+ * scoping copied down, the owner's slot column pointed at the new row, and
+ * the image the slot held before soft-deleted (restore brings it back as a
+ * row, not as the slot's image). Returns the new image.
+ */
+export async function createOwnedImageBlock(
+  tx: Prisma.TransactionClient,
+  owner: CampaignBlock,
+  slot: CampaignImageSlotName,
+  data: Omit<CampaignChildCreateData, 'typename'>
+): Promise<CampaignBlockWithAction> {
+  const column = IMAGE_SLOT_COLUMN[slot]
+  const previousId = owner[column]
+  if (previousId != null)
+    await tx.campaignBlock.updateMany({
+      where: { id: previousId, parentBlockId: owner.id },
+      data: { deletedAt: new Date() }
+    })
+  const image = await tx.campaignBlock.create({
+    data: {
+      ...data,
+      typename: CAMPAIGN_IMAGE_TYPENAME,
+      campaignId: owner.campaignId,
+      pageId: owner.pageId,
+      regionId: owner.regionId,
+      parentBlockId: owner.id,
+      parentOrder: null
+    },
+    include: { action: true }
+  })
+  await tx.campaignBlock.update({
+    where: { id: owner.id },
+    data: { [column]: image.id }
+  })
+  await touchCampaign(tx, owner.campaignId)
+  return image
 }

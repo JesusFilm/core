@@ -4,6 +4,7 @@ import {
   CampaignBandTheme,
   bandCssVariables,
   contrastText,
+  overlayAlpha,
   resolveBand
 } from './resolveBand'
 
@@ -66,6 +67,24 @@ describe('resolveBand', () => {
         button: '#F2B544',
         buttonLabel: onAccent,
         eyebrow: '#F2B544'
+      })
+    })
+
+    it('image → the contrast background behind the cover, white text and dark translucent cards', () => {
+      expect(
+        resolveBand(
+          { backgroundKind: 'image', backgroundOverlay: 'heavy' },
+          light
+        )
+      ).toMatchObject({
+        background: '#26262E',
+        text: '#FFFFFF',
+        heading: '#FFFFFF',
+        muted: alpha('#FFFFFF', 0.7),
+        card: 'rgba(0, 0, 0, 0.4)',
+        eyebrow: '#F2B544',
+        button: '#C52D3A',
+        buttonLabel: onPrimary
       })
     })
 
@@ -184,5 +203,13 @@ describe('resolveBand', () => {
       '--campaign-band-button': '#F2B544',
       '--campaign-band-button-label': onAccent
     })
+  })
+
+  it('maps backgroundOverlay to the cover overlay alpha, medium when null', () => {
+    expect(overlayAlpha('light')).toBe(0.3)
+    expect(overlayAlpha('medium')).toBe(0.55)
+    expect(overlayAlpha('heavy')).toBe(0.75)
+    expect(overlayAlpha(null)).toBe(0.55)
+    expect(overlayAlpha(undefined)).toBe(0.55)
   })
 })

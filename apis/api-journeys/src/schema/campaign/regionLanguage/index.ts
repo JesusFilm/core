@@ -8,6 +8,7 @@ export {
   INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL,
   authorizeRegionLanguageUpdate,
   deleteQrCodes,
+  deleteShortLinks,
   findRegionQrCodes
 } from './service'
 export {

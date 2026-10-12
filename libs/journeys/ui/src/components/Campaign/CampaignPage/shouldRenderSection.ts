@@ -27,7 +27,8 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * explicit mode with nothing renders its text if any, else is skipped; a
  * Journey List with no live-published journeys renders its text if any, else
  * is skipped; Analytics always renders; Region Header and Region Share render
- * on a Region Page (Share needs text until a language is linked).
+ * on a Region Page (Share needs text until a language is linked); an Image
+ * section renders with a picture or an Extra, else is skipped.
  */
 export function shouldRenderSection(
   section: CampaignSectionTree,
@@ -72,6 +73,8 @@ export function shouldRenderSection(
         context.pageKind === CampaignPageKind.regionTemplate &&
         (hasText(section.title) || hasText(section.intro) || extras)
       )
+    case 'CampaignImageBlock':
+      return hasText(section.src) || extras
     case 'CampaignHeaderBlock':
     case 'CampaignFooterBlock':
     default:

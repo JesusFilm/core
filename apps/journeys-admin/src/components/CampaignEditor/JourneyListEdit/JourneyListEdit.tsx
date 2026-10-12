@@ -39,6 +39,7 @@ interface JourneyListEditProps {
   active: boolean
   /** The card field the bar's Edit asked to focus. */
   focusField?: CampaignTextField
+  focusRequest: number
   /** Select a card, naming the field that was clicked. */
   onSelectCard: (cardId: string, field: CampaignTextField) => void
 }
@@ -59,6 +60,7 @@ interface JourneyCardEditProps {
   card: JourneyCardBlock
   selected: boolean
   focusField?: CampaignTextField
+  focusRequest: number
   onSelect: (field: CampaignTextField) => void
 }
 
@@ -72,6 +74,7 @@ function JourneyCardEdit({
   card,
   selected,
   focusField,
+  focusRequest,
   onSelect
 }: JourneyCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -124,23 +127,23 @@ function JourneyCardEdit({
           />
         )}
         <InlineText
-          block={card}
-          field="title"
+          target={{ block: card, field: 'title' }}
           placeholder={t('Journey title')}
           editing={selected}
           autoFocus={selected && focusField === 'title'}
-          onSelect={onSelect}
+          focusRequest={focusRequest}
+          onSelect={() => onSelect('title')}
           variant="h5"
           component="h3"
           sx={{ color: 'var(--campaign-band-heading)' }}
         />
         <InlineText
-          block={card}
-          field="description"
+          target={{ block: card, field: 'description' }}
           placeholder={t('Journey description')}
           editing={selected}
           autoFocus={selected && focusField === 'description'}
-          onSelect={onSelect}
+          focusRequest={focusRequest}
+          onSelect={() => onSelect('description')}
           variant="body2"
           sx={{ color: 'var(--campaign-band-muted)' }}
         />
@@ -160,6 +163,7 @@ export function JourneyListEdit({
   block,
   active,
   focusField,
+  focusRequest,
   onSelectCard
 }: JourneyListEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -189,6 +193,7 @@ export function JourneyListEdit({
               card={card}
               selected={selectedId === card.id}
               focusField={focusField}
+              focusRequest={focusRequest}
               onSelect={(field) => onSelectCard(card.id, field)}
             />
           ))}

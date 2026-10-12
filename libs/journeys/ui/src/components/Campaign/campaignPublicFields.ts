@@ -74,6 +74,12 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignHeaderBlock {
       logoBlockId
     }
+    ... on CampaignImageBlock {
+      src
+      alt
+      width
+      height
+    }
     ... on CampaignTypographyBlock {
       content
       typographyVariant: variant
