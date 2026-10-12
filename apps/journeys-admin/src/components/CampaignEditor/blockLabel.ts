@@ -30,6 +30,10 @@ export function blockLabel(
       return t('Column')
     case 'CampaignImageBlock':
       return t('Image')
+    case 'CampaignFeaturedMediaBlock':
+      return t('Featured media')
+    case 'CampaignVideoBlock':
+      return t('Video')
     case 'CampaignHeaderBlock':
       return t('Header')
     case 'CampaignFooterBlock':

@@ -1,4 +1,6 @@
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { featuredMediaBullets } from '../CampaignFeaturedMedia'
+import { hasCampaignMedia } from '../CampaignMediaSlot'
 import { listedRegions } from '../CampaignRegionSwitcher'
 import { splitParagraphs } from '../CampaignRichText'
 import { hasText, isCampaignSection } from '../types'
@@ -40,15 +42,17 @@ function hasExtras(section: CampaignSectionTree): boolean {
 /**
  * The public empty-state matrix (PRD §11): a section with no body content
  * and no Extras is skipped, band and all, so visitors never see editor hints
- * or empty frames. Per type: Hero renders with any text, media or Extra; a
- * Region Switcher with no listed regions is skipped; a Video Carousel in
- * explicit mode with nothing renders its text if any, else is skipped; a
- * Journey List with no live-published journeys renders its text if any, else
- * is skipped; Analytics always renders; Region Header and Region Share render
- * on a Region Page (Share needs text until a language is linked); Rich Text
- * needs a title or a non-empty paragraph; Columns needs a Column Slot whose
- * section itself renders, or an Extra, so two empty slots skip the band; an
- * Image section renders with a picture or an Extra, else is skipped.
+ * or empty frames. Per type: Hero renders with any text, media or Extra;
+ * Featured Media renders with any text, bullet, media or Extra (text alone
+ * full width, media alone, both empty skipped); a Region Switcher with no
+ * listed regions is skipped; a Video Carousel in explicit mode with nothing
+ * renders its text if any, else is skipped; a Journey List with no
+ * live-published journeys renders its text if any, else is skipped;
+ * Analytics always renders; Region Header and Region Share render on a
+ * Region Page (Share needs text until a language is linked); Rich Text needs
+ * a title or a non-empty paragraph; Columns needs a Column Slot whose section
+ * itself renders, or an Extra, so two empty slots skip the band; an Image
+ * section renders with a picture or an Extra, else is skipped.
  */
 export function shouldRenderSection(
   section: CampaignSectionTree,
@@ -61,7 +65,16 @@ export function shouldRenderSection(
         hasText(section.eyebrow) ||
         hasText(section.title) ||
         hasText(section.lede) ||
-        section.media != null ||
+        hasCampaignMedia(section.media) ||
+        extras
+      )
+    case 'CampaignFeaturedMediaBlock':
+      return (
+        hasText(section.eyebrow) ||
+        hasText(section.title) ||
+        hasText(section.lede) ||
+        featuredMediaBullets(section.bullets).length > 0 ||
+        hasCampaignMedia(section.media) ||
         extras
       )
     case 'CampaignRegionSwitcherBlock':

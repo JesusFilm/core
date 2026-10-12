@@ -3,6 +3,7 @@ import {
   CampaignBackgroundKind,
   CampaignColumnsRatio,
   CampaignJourneyListDisplay,
+  CampaignMediaSide,
   CampaignPageKind,
   CampaignSwitcherVariant
 } from '../../../__generated__/globalTypes'
@@ -168,6 +169,17 @@ export function newSectionBlock(
         alt: null,
         width: null,
         height: null
+      }
+    case 'CampaignFeaturedMediaBlock':
+      return {
+        __typename: typename,
+        ...shared,
+        eyebrow: null,
+        title: null,
+        lede: null,
+        bullets: null,
+        mediaSide: CampaignMediaSide.right,
+        mediaBlockId: null
       }
   }
 }

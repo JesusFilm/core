@@ -60,6 +60,39 @@ export async function fetchLanguage(
   return language ?? null
 }
 
+export interface GatewayWatchVideo {
+  id: string
+  label: string
+  childrenCount: number
+}
+
+/**
+ * Resolve a Watch variant slug (`<videoSlug>/<languageSlug>`) to its Video
+ * through api-media's `video(id, idType: slug)`, which serves published
+ * videos only; `null` when the slug resolves to nothing.
+ */
+export async function fetchWatchVideoBySlug(
+  slug: string
+): Promise<GatewayWatchVideo | null> {
+  const query = `
+    query CampaignWatchVideo($id: ID!) {
+      video(id: $id, idType: slug) {
+        id
+        label
+        childrenCount
+      }
+    }
+  `
+  try {
+    const data = await graphqlRequest(query, { id: slug })
+    const video = data.video as GatewayWatchVideo | null | undefined
+    return video ?? null
+  } catch (error) {
+    if (error instanceof GraphQLError) return null
+    throw error
+  }
+}
+
 export interface GatewayCountry {
   id: string
 }
@@ -76,4 +109,52 @@ export async function fetchCountry(id: string): Promise<GatewayCountry | null> {
   const data = await graphqlRequest(query, { id })
   const country = data.country as GatewayCountry | null | undefined
   return country ?? null
+}
+
+export interface GatewayShortLink {
+  id: string
+  pathname: string
+  hostname: string
+}
+
+/**
+ * Resolve an api-media ShortLink by id to the pieces of its public address;
+ * `null` when it no longer exists. The Share Link a region hands out is
+ * `https://<hostname>/<pathname>`.
+ */
+export async function fetchShortLink(
+  id: string
+): Promise<GatewayShortLink | null> {
+  const query = `
+    query CampaignShortLink($id: String!) {
+      shortLink(id: $id) {
+        ... on QueryShortLinkSuccess {
+          data {
+            id
+            pathname
+            domain {
+              hostname
+            }
+          }
+        }
+      }
+    }
+  `
+  const data = await graphqlRequest(query, { id })
+  const result = data.shortLink as
+    | { data?: { id: string; pathname: string; domain: { hostname: string } } }
+    | null
+    | undefined
+  const shortLink = result?.data
+  if (shortLink == null) return null
+  return {
+    id: shortLink.id,
+    pathname: shortLink.pathname,
+    hostname: shortLink.domain.hostname
+  }
+}
+
+/** The public address of a resolved short link. */
+export function shortLinkUrl(shortLink: GatewayShortLink): string {
+  return `https://${shortLink.hostname}/${shortLink.pathname}`
 }

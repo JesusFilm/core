@@ -19,7 +19,7 @@ export interface CampaignHeroBlockUpdateText_campaignHeroBlockUpdate {
 
 export interface CampaignHeroBlockUpdateText {
   /**
-   * Update the hero’s default-language eyebrow, title, lede or alignment, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+   * Update the hero’s default-language eyebrow, title, lede or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -28,6 +28,7 @@ export interface CampaignHeroBlockUpdateText {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
    * - BAD_USER_INPUT (field: `align`): not left, center or right.
+   * - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
    * - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
