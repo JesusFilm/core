@@ -220,7 +220,7 @@ describe('campaignVideoBlockCreate', () => {
 
     it('refuses a section without a Media Slot (BAD_USER_INPUT, mediaBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'landingJourneyListId')!
+        fixture.blocks.find((block) => block.id === 'landingJourneyListId')
       )
 
       const result = await create({
@@ -275,7 +275,7 @@ describe('campaignVideoBlockCreate', () => {
 
     it('refuses an Extra or a missing parent (BAD_USER_INPUT, parentBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(
-        fixture.blocks.find((block) => block.id === 'heroButtonId')!
+        fixture.blocks.find((block) => block.id === 'heroButtonId')
       )
       const extra = await create({
         parentBlockId: 'heroButtonId',

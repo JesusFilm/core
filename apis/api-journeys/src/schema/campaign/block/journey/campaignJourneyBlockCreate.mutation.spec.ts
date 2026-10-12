@@ -62,7 +62,7 @@ describe('campaignJourneyBlockCreate', () => {
     const list = campaignBlockWithAcl(fixture, 'landingJourneyListId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(list)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
-    prismaMock.journey.findFirst.mockResolvedValue(journeyRow() as never)
+    prismaMock.journey.findFirst.mockResolvedValue(journeyRow())
     prismaMock.campaignBlock.create.mockImplementation((async ({
       data
     }: any) => ({
@@ -167,7 +167,7 @@ describe('campaignJourneyBlockCreate', () => {
       journeyRow({
         title: 'x'.repeat(250),
         description: 'y'.repeat(1200)
-      }) as never
+      })
     )
 
     const result = await create('https://admin.nextstep.is/journeys/journeyId')

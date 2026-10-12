@@ -118,7 +118,10 @@ describe('Campaign Root on a custom domain', () => {
 
       await getHostnameServerSideProps(context({}, { cookie: 'fr' }))
       expect(mockQuery.mock.calls[1][0].variables.languageId).toBe('496')
-      expect(setHeader).toHaveBeenCalledWith('Cache-Control', 'private, no-cache')
+      expect(setHeader).toHaveBeenCalledWith(
+        'Cache-Control',
+        'private, no-cache'
+      )
 
       mockQuery.mockClear()
       mockQuery.mockResolvedValueOnce({ data: { campaignPublic } })
