@@ -13,7 +13,8 @@ export const TRANSLATED_VALUE_FIELDS = gql`
 /**
  * The translation list beside every text field of a campaign block: what the
  * canvas shows while previewing a non-default language and what
- * `campaignTranslationSet` updates. Admin only; the public read omits them.
+ * `campaignTranslationSet` updates, plus the journey a journey card links
+ * (what refreshing its snapshot reads). Admin only; the public read omits them.
  */
 export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
   ${TRANSLATED_VALUE_FIELDS}
@@ -83,6 +84,9 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       labelTranslations {
         ...TranslatedValueFields
       }
+    }
+    ... on CampaignJourneyBlock {
+      journeyId
     }
   }
 `

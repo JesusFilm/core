@@ -758,6 +758,10 @@ export interface CampaignFields_blocks_CampaignJourneyBlock {
    * The journey's primary image, read live; null when it has none.
    */
   journeyImage: CampaignFields_blocks_CampaignJourneyBlock_journeyImage | null;
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
 }
 
 export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title_language {

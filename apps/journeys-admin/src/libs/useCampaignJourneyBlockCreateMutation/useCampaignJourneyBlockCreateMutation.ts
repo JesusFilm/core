@@ -22,6 +22,9 @@ export const CAMPAIGN_JOURNEY_BLOCK_CREATE = gql`
       url: $url
     ) {
       ...CampaignPublicBlockFields
+      ... on CampaignJourneyBlock {
+        journeyId
+      }
     }
   }
 `

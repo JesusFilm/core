@@ -90,16 +90,21 @@ type JourneyBlock = Extract<
   { __typename: 'CampaignJourneyBlock' }
 >
 
+/** A journey card as the editor reads it: the public fields plus the linked journey's id, which the public page never receives. */
+type JourneyCardFixture = JourneyBlock & { journeyId: string | null }
+
 /** A journey-list item: a live-published journey with its snapshot and primary image. */
 export function journeyCard(
-  row: Pick<JourneyBlock, 'id' | 'parentBlockId'> & Partial<JourneyBlock>
-): JourneyBlock {
+  row: Pick<JourneyCardFixture, 'id' | 'parentBlockId'> &
+    Partial<JourneyCardFixture>
+): JourneyCardFixture {
   return {
     __typename: 'CampaignJourneyBlock',
     campaignId: CAMPAIGN_ID,
     pageId: null,
     regionId: null,
     parentOrder: 0,
+    journeyId: `${row.id}-journeyId`,
     title: 'The Christmas story',
     description: 'A short journey through the nativity.',
     journeyStatus: JourneyStatus.published,

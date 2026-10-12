@@ -52,6 +52,10 @@ export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate {
    * The journey's primary image, read live; null when it has none.
    */
   journeyImage: CampaignJourneyBlockCreate_campaignJourneyBlockCreate_journeyImage | null;
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
 }
 
 export interface CampaignJourneyBlockCreate {

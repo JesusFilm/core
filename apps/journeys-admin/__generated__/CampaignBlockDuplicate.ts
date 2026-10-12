@@ -678,6 +678,10 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBl
    * The journey's primary image, read live; null when it has none.
    */
   journeyImage: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBlock_journeyImage | null;
+  /**
+   * The linked journey. Null only if the row predates the link; never exposes the journey itself.
+   */
+  journeyId: string | null;
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock_mediaVideo_Video_title_language {
