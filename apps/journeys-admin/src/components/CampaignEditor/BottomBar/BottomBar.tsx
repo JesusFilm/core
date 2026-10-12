@@ -689,7 +689,10 @@ export function BottomBar({
             </IconButton>
             <IconButton
               aria-label={t('Move right')}
-              disabled={journeyCardIndex < 0 || journeyCardIndex >= journeyCardSiblings.length - 1}
+              disabled={
+                journeyCardIndex < 0 ||
+                journeyCardIndex >= journeyCardSiblings.length - 1
+              }
               onClick={() => handleMoveJourneyCard(1)}
             >
               <ChevronRightIcon />
