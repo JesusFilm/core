@@ -21,6 +21,8 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
+import Layout1Icon from '@core/shared/ui/icons/Layout1'
+import LinkIcon from '@core/shared/ui/icons/Link'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -56,9 +58,13 @@ import { MediaSectionEdit } from '../MediaSectionEdit'
 import { OrphanPageBar } from '../OrphanPageBar'
 import { SectionDeleteDialog } from '../SectionDeleteDialog'
 import {
+  columnSlots,
+  newColumnSlots,
   newSectionBlock,
   pageSections,
-  sectionTypesForPage
+  sectionTypesForPage,
+  sectionTypesForSlot,
+  slotSection
 } from '../sectionTypes'
 import { StylePanel } from '../StylePanel'
 import { TextControls } from '../TextControls'
@@ -70,9 +76,14 @@ import {
 import { useCampaignBlockDuplicateCommand } from '../utils/useCampaignBlockDuplicateCommand'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
+import { useChangeTypeCommand } from '../utils/useChangeTypeCommand'
+import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 import { useJourneyCardSnapshotRefreshCommand } from '../utils/useJourneyCardSnapshotRefreshCommand'
 
 import { Breadcrumb } from './Breadcrumb'
+
+/** The ⇄ glyph of the column swap control; a symbol, not copy to translate. */
+const SWAP_GLYPH = '\u21c4'
 
 /** The label a new button Extra is born with (PRD §14); campaign content, not UI copy. */
 export const NEW_BUTTON_LABEL = 'Button'
@@ -90,10 +101,14 @@ interface BottomBarProps {
 
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
-/** Where "+Add section" puts the new section: a page and a position among its sections. */
+/**
+ * Where a new section goes: a page and a position among its sections, or a
+ * Column Slot, whose one section is always at position 0.
+ */
 interface SectionInsert {
   pageId: string
   parentOrder: number
+  parentBlockId?: string
 }
 
 /**
@@ -105,8 +120,11 @@ interface SectionInsert {
  * section's Edit the picture editor, a hero's or Featured Media section's
  * Edit the media editor and a Video Carousel's Edit the carousel editor, all
  * in a drawer. Carousel card: Edit (its title and description), ← → (one
- * order Command each) and bin (a delete Command, no confirmation). Text
- * Extra: size, align, colour, Style, bin. Button Extra adds the link chip and
+ * order Command each) and bin (a delete Command, no confirmation). Column
+ * child (the section in a Column Slot): Edit, Style, Change type, +Add
+ * (Extras only), ⇄ swap the two slots, bin behind a confirmation that empties
+ * the column. Column Slot: a type picker while empty, ⇄ swap. Text Extra:
+ * size, align, colour, Style, bin. Button Extra adds the link chip and
  * variant/size/colours. Journey card: Edit, ← → among the list's cards,
  * Refresh from journey, bin. Region card: Open page, +Add line, Settings,
  * list/unlist and move. On an Orphan Page the campaign row adds the orphan
@@ -133,6 +151,8 @@ export function BottomBar({
   const { addBlockDelete } = useCampaignBlockDeleteCommand()
   const { addBlockDuplicate } = useCampaignBlockDuplicateCommand()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
+  const { addColumnSwap } = useColumnSwapCommand()
+  const { addChangeType } = useChangeTypeCommand()
   const { refreshSnapshot, confirmDialog } =
     useJourneyCardSnapshotRefreshCommand()
   const [typographyCreate] = useCampaignTypographyBlockCreateMutation(
@@ -145,6 +165,9 @@ export function BottomBar({
     anchor: HTMLElement
     insert: SectionInsert
   } | null>(null)
+  const [changeTypeAnchor, setChangeTypeAnchor] = useState<HTMLElement | null>(
+    null
+  )
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [styleOpen, setStyleOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
@@ -164,6 +187,21 @@ export function BottomBar({
     (candidate) => candidate.id === selectedSection?.id
   )
 
+  const selectedSlot =
+    selection.kind === 'slot'
+      ? selection.block
+      : selection.kind === 'column'
+        ? campaign.blocks.find(
+            (candidate) => candidate.id === selection.block?.parentBlockId
+          )
+        : undefined
+  const slotIsEmpty =
+    selectedSlot != null &&
+    slotSection(campaign.blocks, selectedSlot.id) == null
+  const columnsSlotCount =
+    selectedSlot?.parentBlockId != null
+      ? columnSlots(campaign.blocks, selectedSlot.parentBlockId).length
+      : 0
   const selectedJourneyCard =
     selection.kind === 'journey' &&
     selection.block?.__typename === 'CampaignJourneyBlock'
@@ -332,12 +370,45 @@ export function BottomBar({
       campaignId: campaign.id,
       ...insert
     })
+    const slotIds: [string, string] | undefined =
+      typename === 'CampaignColumnsBlock' ? [uuidv4(), uuidv4()] : undefined
+    const input = {
+      id,
+      campaignId: campaign.id,
+      ...insert,
+      ...(slotIds != null ? { slotIds } : {})
+    }
+    const slots = slotIds != null ? newColumnSlots(block, slotIds) : []
     addBlock({
       block,
       execute() {
-        void sectionCreate(block, { id, campaignId: campaign.id, ...insert })
+        void sectionCreate(block, input, slots)
       }
     })
+  }
+
+  /** An empty slot's "Choose type": the picked section is the slot's only child. */
+  function handleChooseSlotType(event: MouseEvent<HTMLButtonElement>): void {
+    if (selectedSlot?.pageId == null) return
+    setSectionMenu({
+      anchor: event.currentTarget,
+      insert: {
+        pageId: selectedSlot.pageId,
+        parentBlockId: selectedSlot.id,
+        parentOrder: 0
+      }
+    })
+  }
+
+  function handleChangeType(typename: CampaignSectionTypename): void {
+    setChangeTypeAnchor(null)
+    if (selection.block == null) return
+    addChangeType(selection.block, typename)
+  }
+
+  function handleSwap(): void {
+    if (selectedSlot == null) return
+    addColumnSwap(selectedSlot, selection.block?.id)
   }
 
   function handleMove(step: -1 | 1): void {
@@ -489,12 +560,46 @@ export function BottomBar({
       transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
       data-testid="CampaignSectionTypeMenu"
     >
-      {sectionTypesForPage(sectionMenuPageKind).map((typename) => (
+      {(sectionMenu?.insert.parentBlockId != null
+        ? sectionTypesForSlot(sectionMenuPageKind)
+        : sectionTypesForPage(sectionMenuPageKind)
+      ).map((typename) => (
         <MenuItem key={typename} onClick={() => handleAddSection(typename)}>
           {blockLabel(t, typename)}
         </MenuItem>
       ))}
     </Menu>
+  )
+
+  const changeTypeMenu = (
+    <Menu
+      anchorEl={changeTypeAnchor}
+      open={changeTypeAnchor != null}
+      onClose={() => setChangeTypeAnchor(null)}
+      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      data-testid="CampaignChangeTypeMenu"
+    >
+      {sectionTypesForSlot(
+        pageKindOf(selection.block ?? { pageId: null }) ?? pageKind
+      )
+        .filter((typename) => typename !== selection.block?.__typename)
+        .map((typename) => (
+          <MenuItem key={typename} onClick={() => handleChangeType(typename)}>
+            {blockLabel(t, typename)}
+          </MenuItem>
+        ))}
+    </Menu>
+  )
+
+  const swapButton = (
+    <IconButton
+      aria-label={t('Swap columns')}
+      disabled={columnsSlotCount < 2}
+      onClick={handleSwap}
+    >
+      {SWAP_GLYPH}
+    </IconButton>
   )
 
   const styleButton = (
@@ -585,6 +690,43 @@ export function BottomBar({
             >
               <Trash2Icon />
             </IconButton>
+          </>
+        )
+      case 'column':
+        return (
+          <>
+            <BarButton
+              label={t('Edit')}
+              icon={<Edit2Icon />}
+              onClick={handleEdit}
+            />
+            {styleButton}
+            <BarButton
+              label={t('Change type')}
+              icon={<Layout1Icon />}
+              onClick={(event) => setChangeTypeAnchor(event.currentTarget)}
+            />
+            {addButton}
+            {swapButton}
+            <IconButton
+              aria-label={t('Empty column')}
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2Icon />
+            </IconButton>
+          </>
+        )
+      case 'slot':
+        return (
+          <>
+            {slotIsEmpty && (
+              <BarButton
+                label={t('Choose type')}
+                icon={<Plus2Icon />}
+                onClick={handleChooseSlotType}
+              />
+            )}
+            {swapButton}
           </>
         )
       case 'chrome':
@@ -752,12 +894,14 @@ export function BottomBar({
       <Divider orientation="vertical" flexItem />
       {renderControls()}
       {sectionTypeMenu}
+      {changeTypeMenu}
       {confirmDialog}
       <SectionDeleteDialog
-        open={deleteOpen && selectedSection != null}
+        open={deleteOpen && selection.block != null}
+        variant={selection.kind === 'column' ? 'column' : 'section'}
         pageKind={
-          selectedSection != null
-            ? (pageKindOf(selectedSection) ?? pageKind)
+          selection.block != null
+            ? (pageKindOf(selection.block) ?? pageKind)
             : pageKind
         }
         onClose={() => setDeleteOpen(false)}

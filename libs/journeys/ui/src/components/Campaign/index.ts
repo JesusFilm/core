@@ -4,6 +4,7 @@ export {
 } from './campaignPublicFields'
 export { CampaignAnalytics } from './CampaignAnalytics'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
+export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
 export {
   CampaignFeaturedMedia,
   featuredMediaBullets
@@ -57,11 +58,14 @@ export {
   switcherRegions
 } from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
+export { CampaignRichText, splitParagraphs } from './CampaignRichText'
 export {
   CAMPAIGN_HEADER_HEIGHT,
   CampaignBandCover,
   CampaignSectionBand,
-  useCampaignSection
+  CampaignSlotContext,
+  useCampaignSection,
+  useCampaignSlot
 } from './CampaignSectionBand'
 export { CampaignSectionHeading } from './CampaignSectionHeading'
 export {

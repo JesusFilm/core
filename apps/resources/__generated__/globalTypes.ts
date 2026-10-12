@@ -94,6 +94,15 @@ export enum CampaignChildPlacement {
 }
 
 /**
+ * The width ratio of the two Column Slots of a Columns section.
+ */
+export enum CampaignColumnsRatio {
+  equal = "equal",
+  wideLeft = "wideLeft",
+  wideRight = "wideRight",
+}
+
+/**
  * How a Journey List renders its items: a card grid or a list.
  */
 export enum CampaignJourneyListDisplay {

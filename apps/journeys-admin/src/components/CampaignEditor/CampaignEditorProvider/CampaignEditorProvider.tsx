@@ -15,6 +15,7 @@ import {
   GetCampaign_campaign_regions as CampaignRegion
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import { isInColumnSlot } from '../sectionTypes'
 
 export interface CampaignEditorState {
   /** The page the canvas shows; a view choice, never a Command. */
@@ -124,6 +125,8 @@ export type CampaignSelectionKind =
   | 'chrome'
   | 'text'
   | 'button'
+  | 'slot'
+  | 'column'
   | 'card'
   | 'journey'
   | 'region'
@@ -132,7 +135,10 @@ export interface CampaignSelection {
   kind: CampaignSelectionKind
   /** The selected block; undefined on the campaign row or a region card. */
   block?: CampaignBlock
-  /** The section or chrome block hosting the selection; the block itself when one is selected. */
+  /**
+   * The section or chrome block hosting the selection; the block itself when
+   * one is selected, and the Columns section for a selected Column Slot.
+   */
   host?: CampaignBlock
   /** The selected region card, or the region a selected Region Line belongs to. */
   region?: CampaignRegion
@@ -213,6 +219,12 @@ export function resolveSelection(
   if (selectedBlockId == null) return CAMPAIGN_SELECTION
   const block = blocks.find((candidate) => candidate.id === selectedBlockId)
   if (block == null) return CAMPAIGN_SELECTION
+  if (block.__typename === 'CampaignColumnBlock')
+    return {
+      kind: 'slot',
+      block,
+      host: blocks.find((candidate) => candidate.id === block.parentBlockId)
+    }
   if (isCarouselItem(blocks, block)) {
     const host = blocks.find(
       (candidate) => candidate.id === block.parentBlockId
@@ -238,6 +250,8 @@ export function resolveSelection(
       host
     }
   }
+  if (isInColumnSlot(blocks, block))
+    return { kind: 'column', block, host: block }
   if (block.__typename === 'CampaignJourneyBlock')
     return {
       kind: 'journey',
@@ -258,7 +272,11 @@ export interface CampaignEditorContextValue {
   selectBlock: (blockId?: string) => void
   /** Select a region card, naming the switcher it sits in when known. */
   selectRegion: (regionId: string, hostBlockId?: string) => void
-  /** Escape: an Extra or a card steps up to its section, a line to its region, a region to its switcher, a section or chrome block to the campaign row. */
+  /**
+   * Escape: an Extra or a card steps up to its section, a line to its region,
+   * a region to its switcher, a Column Slot or the section in one to its
+   * Columns section, a section or chrome block to the campaign row.
+   */
   escape: () => void
   /** The page a block sits on; undefined for chrome and Region Lines, which every page shows. */
   pageKindOf: (
@@ -355,8 +373,19 @@ export function CampaignEditorProvider({
       selectBlock(selection.host?.id)
       return
     }
+    if (selection.kind === 'slot') {
+      selectBlock(selection.host?.id)
+      return
+    }
+    if (selection.kind === 'column') {
+      const slot = campaign.blocks.find(
+        (candidate) => candidate.id === selection.block?.parentBlockId
+      )
+      selectBlock(slot?.parentBlockId ?? undefined)
+      return
+    }
     selectBlock(undefined)
-  }, [selection, selectBlock, selectRegion])
+  }, [selection, selectBlock, selectRegion, campaign.blocks])
   const pageKindOf = useCallback(
     (block: Pick<CampaignBlock, 'pageId'>) =>
       campaign.pages.find((page) => page.id === block.pageId)?.kind,
