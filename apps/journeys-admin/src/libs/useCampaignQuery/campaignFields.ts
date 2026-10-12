@@ -101,6 +101,7 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
     journeyId
     title
     description
+    snapshotEdited
     qrCodeId
     order
     language {
@@ -115,6 +116,8 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
       id
       slug
       status
+      title
+      description
     }
     qrCode {
       id

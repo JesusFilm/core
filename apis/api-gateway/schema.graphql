@@ -826,7 +826,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionLanguageCreate(regionId: ID!, languageId: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot.
+  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -837,6 +837,18 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
   """
   campaignRegionLanguageUpdate(id: ID!, input: CampaignRegionLanguageUpdateInput!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
+  """
+  "Refresh from journey": re-read the linked journey’s title and description from the public journey and replace the Share Language’s snapshot with them. The snapshot is the journey’s own language, so only those two values change; nothing else on the row is touched. Never automatic — the editor runs it on request, as a Command whose undo writes the previous snapshot back through `campaignRegionLanguageUpdate`.
+  
+  Auth: campaign Update — any member or manager of the campaign’s team.
+  
+  Errors:
+  - NOT_FOUND: id does not resolve.
+  - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `journeyId`): no journey is linked.
+  - BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.
+  """
+  campaignRegionLanguageSnapshotRefresh(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Remove a Share Language from a Campaign Region. Its Campaign QR Code and short link are deleted with it, as `qrCodeDelete` does; the linked journey is untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.
   
@@ -2109,6 +2121,10 @@ type CampaignRegionLanguage @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   title: String
   description: String
+  """
+  True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Linking, unlinking and refreshing from the journey clear it.
+  """
+  snapshotEdited: Boolean!
   qrCodeId: ID
   """
   The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
@@ -2132,6 +2148,10 @@ type CampaignRegionLanguagePublic @join__type(graph: API_JOURNEYS_MODERN)  {
   The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.
   """
   journeyStatus: JourneyStatus
+  """
+  Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.
+  """
+  title: String
   """
   The Share Link: the short link the Campaign QR Code encodes, `https://<short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
   """
@@ -6836,6 +6856,10 @@ input CampaignRegionLanguageUpdateInput @join__type(graph: API_JOURNEYS_MODERN) 
   Edit the snapshotted description; at most 1000 characters. Null clears it.
   """
   description: String
+  """
+  Set the edited flag outright, for an undo that writes a previous title and description back together with the flag they had. Without it, editing `title` or `description` marks the snapshot edited and linking or unlinking clears the mark.
+  """
+  snapshotEdited: Boolean
 }
 
 input CampaignRegionShareBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {

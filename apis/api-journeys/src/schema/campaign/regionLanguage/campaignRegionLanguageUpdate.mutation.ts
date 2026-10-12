@@ -22,7 +22,7 @@ import {
 builder.mutationField('campaignRegionLanguageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".\n- BAD_USER_INPUT (field: `title` / `description`): over the length cap.',
+      'Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".\n- BAD_USER_INPUT (field: `title` / `description`): over the length cap.',
     type: CampaignRegionLanguageRef,
     nullable: false,
     args: {
@@ -50,6 +50,10 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
           'description',
           TEXT_CAPS.journeyDescription
         )
+      if (input.title !== undefined || input.description !== undefined)
+        data.snapshotEdited = true
+      if (input.snapshotEdited != null)
+        data.snapshotEdited = input.snapshotEdited
 
       let journey: JourneyWithPublicUrl | null | undefined
       if (input.url != null) journey = await resolveJourneyLink(input.url)
@@ -79,10 +83,12 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
               data.qrCodeId = null
               data.title = null
               data.description = null
+              data.snapshotEdited = false
             } else if (journey != null) {
               data.journeyId = journey.id
               data.title = journey.title
               data.description = journey.description
+              data.snapshotEdited = false
               if (current.qrCode == null) {
                 const created = await createRegionLanguageQrCode(
                   tx,

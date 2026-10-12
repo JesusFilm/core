@@ -123,6 +123,10 @@ export interface CampaignPublicFields_regions_languages {
    */
   journeyStatus: JourneyStatus | null;
   /**
+   * Snapshot of the linked journey’s title, in the journey’s own language: the phone frame’s accessible title; null unless the journey is live-published.
+   */
+  title: string | null;
+  /**
    * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
    */
   shortLinkUrl: string | null;
