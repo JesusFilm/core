@@ -9,7 +9,11 @@ import {
   CAMPAIGN_LANGUAGE_COOKIE,
   matchRegionSlug
 } from '@core/journeys/ui/Campaign'
-import type { CampaignPublic, CampaignRegion } from '@core/journeys/ui/Campaign'
+import type {
+  CampaignPublic,
+  CampaignRegion,
+  WorldMapShapes
+} from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -29,6 +33,7 @@ import {
   fetchCampaignPublicInPageLanguageByHostname
 } from '../../src/libs/getCampaignPublic'
 import { getFlags } from '../../src/libs/getFlags'
+import { getWorldMap } from '../../src/libs/getWorldMap'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 
@@ -46,6 +51,7 @@ interface HostSlugPageProps {
   rtl?: boolean
   campaign?: CampaignPublic
   region?: CampaignRegion
+  worldMap?: WorldMapShapes
 }
 
 export function HostJourneyPage({
@@ -110,6 +116,7 @@ export function HostJourneyPage({
 function HostSlugPage({
   campaign,
   region,
+  worldMap,
   journey,
   host,
   locale,
@@ -121,6 +128,7 @@ function HostSlugPage({
         campaign={campaign}
         pageKind={CampaignPageKind.regionTemplate}
         region={region}
+        worldMap={worldMap}
         basePath=""
       />
     )
@@ -182,7 +190,8 @@ export const getServerSideProps: GetServerSideProps<HostSlugPageProps> = async (
           i18nConfig
         )),
         campaign: root.campaign,
-        region
+        region,
+        worldMap: await getWorldMap()
       }
     }
   }

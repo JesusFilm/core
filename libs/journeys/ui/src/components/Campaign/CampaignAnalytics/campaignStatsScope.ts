@@ -15,6 +15,20 @@ export interface CampaignStatsView {
   countries: CampaignCountryStat[]
 }
 
+function scopeForTab(stats: CampaignStats, tab: string) {
+  return tab === ALL_REGIONS
+    ? stats.all
+    : stats.regions.find((region) => region.regionId === tab)
+}
+
+/** Every country the tab's scope has visitors from (the map reads all of them, not the top ten). */
+export function countriesForTab(
+  stats: CampaignStats,
+  tab: string
+): CampaignCountryStat[] {
+  return scopeForTab(stats, tab)?.countries ?? []
+}
+
 /**
  * The numbers one tab shows: `all` is the whole campaign, any other id the
  * region's own sums; a region the sweep has not seen yet reads as no visits.
@@ -23,14 +37,13 @@ export function statsForTab(
   stats: CampaignStats,
   tab: string
 ): CampaignStatsView {
-  const scope =
-    tab === ALL_REGIONS
-      ? stats.all
-      : stats.regions.find((region) => region.regionId === tab)
-  const countries = [...(scope?.countries ?? [])]
+  const countries = [...countriesForTab(stats, tab)]
     .sort((a, b) => b.visitors - a.visitors)
     .slice(0, RANKED_COUNTRY_LIMIT)
-  return { totalVisitors: scope?.totalVisitors ?? 0, countries }
+  return {
+    totalVisitors: scopeForTab(stats, tab)?.totalVisitors ?? 0,
+    countries
+  }
 }
 
 /**

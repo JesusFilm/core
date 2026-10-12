@@ -3,6 +3,7 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { ReactElement } from 'react'
 
 import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
+import type { WorldMapShapes } from '@core/journeys/ui/Campaign'
 
 import { GetCampaignPublic_campaignPublic as CampaignPublic } from '../../../../__generated__/GetCampaignPublic'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
@@ -14,17 +15,21 @@ import {
   fetchCampaignPublicInPageLanguage
 } from '../../../../src/libs/getCampaignPublic'
 import { getFlags } from '../../../../src/libs/getFlags'
+import { getWorldMap } from '../../../../src/libs/getWorldMap'
 
 interface CampaignLandingPageProps {
   campaign: CampaignPublic
+  worldMap: WorldMapShapes
 }
 
 function CampaignLandingPage({
-  campaign
+  campaign,
+  worldMap
 }: CampaignLandingPageProps): ReactElement {
   return (
     <CampaignPageWrapper
       campaign={campaign}
+      worldMap={worldMap}
       pageKind={CampaignPageKind.landing}
     />
   )
@@ -64,7 +69,8 @@ export const getServerSideProps: GetServerSideProps<
     props: {
       flags: await getFlags(),
       ...translations,
-      campaign: result.campaign
+      campaign: result.campaign,
+      worldMap: await getWorldMap()
     }
   }
 }

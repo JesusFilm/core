@@ -11,6 +11,12 @@ vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn().mockResolvedValue({})
 }))
 
+vi.mock('../../../src/libs/getWorldMap', () => ({
+  getWorldMap: vi
+    .fn()
+    .mockResolvedValue({ width: 960, height: 500, countries: [] })
+}))
+
 const mockQuery = vi.fn()
 vi.mock('../../../src/libs/apolloClient', () => ({
   createApolloClient: () => ({ query: mockQuery })

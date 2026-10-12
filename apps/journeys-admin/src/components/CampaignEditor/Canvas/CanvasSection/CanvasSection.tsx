@@ -47,6 +47,7 @@ import {
   isCampaignTextBlock,
   primaryTextField
 } from '../../../../libs/useCampaignBlockTextMutation'
+import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
@@ -387,7 +388,6 @@ export function CanvasSection({
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
-    currentRegion,
     selection,
     selectBlock,
     state: { editRequest }
@@ -612,12 +612,7 @@ export function CanvasSection({
           <ShareSectionEdit block={block} />
         )}
         {block.__typename === 'CampaignAnalyticsBlock' && (
-          <CampaignAnalyticsPanel
-            campaignId={campaign.id}
-            regions={campaign.regions}
-            fixedRegion={currentRegion}
-            strings={campaign.strings}
-          />
+          <AnalyticsEdit block={block} />
         )}
         {block.__typename === 'CampaignJourneyListBlock' && (
           <JourneyListEdit

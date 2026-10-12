@@ -7,6 +7,7 @@ import {
 } from 'react'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import type { WorldMapShapes } from '../CampaignAnalytics/WorldMap'
 import type { CampaignPublic, CampaignRegion } from '../types'
 
 export interface CampaignContextValue {
@@ -17,6 +18,8 @@ export interface CampaignContextValue {
   region: CampaignRegion | null
   /** The path the landing page is served at (`/campaign/<slug>` or `` on a Campaign Root). */
   basePath: string
+  /** The projected world map for the Analytics section; null when the page has none (the section then skips the map). */
+  worldMap?: WorldMapShapes | null
   /** Ids of every block on the current page, for same-page anchors. */
   pageBlockIds: ReadonlySet<string>
 }

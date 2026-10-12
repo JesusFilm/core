@@ -3,7 +3,7 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { ReactElement } from 'react'
 
 import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
-import type { CampaignPublic } from '@core/journeys/ui/Campaign'
+import type { CampaignPublic, WorldMapShapes } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -21,6 +21,7 @@ import {
   fetchCampaignPublicInPageLanguageByHostname
 } from '../../src/libs/getCampaignPublic'
 import { getFlags } from '../../src/libs/getFlags'
+import { getWorldMap } from '../../src/libs/getWorldMap'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
@@ -31,12 +32,14 @@ interface HostJourneysPageProps {
   journeys: GetJourneysSummary['journeys']
   journey?: GetJourney['journey']
   campaign?: CampaignPublic
+  worldMap?: WorldMapShapes
 }
 
 function HostJourneysPage({
   journeys,
   journey,
   campaign,
+  worldMap,
   host
 }: HostJourneysPageProps): ReactElement {
   if (campaign != null)
@@ -44,6 +47,7 @@ function HostJourneysPage({
       <CampaignPageWrapper
         campaign={campaign}
         pageKind={CampaignPageKind.landing}
+        worldMap={worldMap}
         basePath=""
       />
     )
@@ -100,7 +104,8 @@ export const getServerSideProps: GetServerSideProps<
           i18nConfig
         )),
         journeys: [],
-        campaign: root.campaign
+        campaign: root.campaign,
+        worldMap: await getWorldMap()
       }
     }
   }

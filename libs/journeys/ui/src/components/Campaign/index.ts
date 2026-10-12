@@ -7,6 +7,7 @@ export {
   CampaignAnalyticsPanel,
   GET_CAMPAIGN_STATS
 } from './CampaignAnalytics'
+export { buildWorldMap } from './CampaignAnalytics/WorldMap'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
 export {
@@ -132,6 +133,10 @@ export type {
   CampaignTreeOf
 } from './types'
 export type { CampaignAnalyticsRegion } from './CampaignAnalytics'
+export type {
+  WorldAtlasTopology,
+  WorldMapShapes
+} from './CampaignAnalytics/WorldMap'
 export type { CampaignChromeTrees } from './CampaignPage'
 export type {
   CampaignCarouselCard,

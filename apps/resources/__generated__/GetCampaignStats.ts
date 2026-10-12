@@ -60,13 +60,13 @@ export interface GetCampaignStats_campaignStats {
 
 export interface GetCampaignStats {
   /**
-   * The Campaign's visitor stats from one cached Plausible sweep over every linked journey, summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
+   * The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is published or archived (a draft, trashed or deleted journey does not count), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
    * 
    * Auth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.
-   * - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served.
+   * - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served and not retried for a few minutes.
    */
   campaignStats: GetCampaignStats_campaignStats;
 }
