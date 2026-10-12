@@ -61,13 +61,11 @@ export function journeyToBlocks(journey: Journey): PreviewBlock[] {
     if (card.backgroundImage != null && coverId != null)
       blocks.push(imageBlock(coverId, card.name, null, card.backgroundImage))
 
-    const collectsInput = card.content.some(
-      (item) => item.type === 'textResponse' || item.type === 'multiselect'
-    )
+    const submitButtonName = findSubmitButton(card.content)
     card.content.forEach((item, order) => {
       blocks.push(
         ...itemBlocks(item, card.name, order, {
-          collectsInput,
+          submitButtonName,
           next: step.next
         })
       )
@@ -91,7 +89,7 @@ function itemBlocks(
   item: ContentItem,
   cardId: string,
   parentOrder: number,
-  context: { collectsInput: boolean; next: string | undefined }
+  context: { submitButtonName: string | null; next: string | undefined }
 ): PreviewBlock[] {
   const base = { id: item.name, parentBlockId: cardId, parentOrder }
 
@@ -119,7 +117,7 @@ function itemBlocks(
         size: 'large',
         startIconId: iconId,
         endIconId: null,
-        submitEnabled: context.collectsInput,
+        submitEnabled: item.name === context.submitButtonName,
         action: toAction(item.action, item.name),
         settings: null,
         eventLabel: null
@@ -241,6 +239,22 @@ function itemBlocks(
         }
       ]
   }
+}
+
+/**
+ * The one button that submits the card's input, as the editor would make it:
+ * the first button after the first text response or multiselect. Every other
+ * button on the card stays an ordinary button.
+ */
+function findSubmitButton(content: ContentItem[]): string | null {
+  const inputIndex = content.findIndex(
+    (item) => item.type === 'textResponse' || item.type === 'multiselect'
+  )
+  if (inputIndex === -1) return null
+  const button = content
+    .slice(inputIndex + 1)
+    .find((item) => item.type === 'button')
+  return button?.name ?? null
 }
 
 function imageBlock(

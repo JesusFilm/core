@@ -252,7 +252,7 @@ export const mediaJourney: Journey = {
       card: {
         name: 'cover-card',
         theme: 'dark',
-        fullscreen: true,
+        fullscreen: false,
         backgroundImage: {
           search: 'starry night over a small village',
           alt: 'A starry night sky over a quiet village'

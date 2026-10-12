@@ -66,13 +66,64 @@ describe('journeyToBlocks', () => {
     })
   })
 
-  it('turns on submit for buttons on cards that collect input', () => {
+  it('turns on submit for the first button after an input only', () => {
     const blocks = journeyToBlocks(typicalJourney)
 
     expect(blocks.find((block) => block.id === 'request-send')).toMatchObject({
       submitEnabled: true,
       startIconId: 'request-send:icon'
     })
+
+    const twoButtons = journeyToBlocks({
+      title: 'Form',
+      description: '',
+      steps: [
+        {
+          name: 'form',
+          card: {
+            name: 'form-card',
+            content: [
+              {
+                type: 'button',
+                name: 'form-back',
+                label: 'Back',
+                style: 'secondary',
+                action: { url: 'https://example.com' }
+              },
+              {
+                type: 'textResponse',
+                name: 'form-name',
+                label: 'Name',
+                kind: 'name'
+              },
+              {
+                type: 'button',
+                name: 'form-send',
+                label: 'Send',
+                style: 'primary',
+                action: { url: 'https://example.com' }
+              },
+              {
+                type: 'button',
+                name: 'form-skip',
+                label: 'Skip',
+                style: 'secondary',
+                action: { url: 'https://example.com' }
+              }
+            ]
+          }
+        }
+      ]
+    })
+    expect(
+      twoButtons
+        .filter((block) => block.__typename === 'ButtonBlock')
+        .map((block) => [block.id, block.submitEnabled])
+    ).toEqual([
+      ['form-back', false],
+      ['form-send', true],
+      ['form-skip', false]
+    ])
     expect(
       blocks.find((block) => block.id === 'request-send:icon')
     ).toMatchObject({
@@ -104,7 +155,7 @@ describe('journeyToBlocks', () => {
 
     expect(blocks.find((block) => block.id === 'cover-card')).toMatchObject({
       coverBlockId: 'cover-card:cover',
-      fullscreen: true
+      fullscreen: false
     })
     expect(
       blocks.find((block) => block.id === 'cover-card:cover')
