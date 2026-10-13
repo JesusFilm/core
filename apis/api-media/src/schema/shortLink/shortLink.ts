@@ -23,16 +23,16 @@ import {
   isProtectedAssetClass
 } from './lib/access'
 import {
-  isPublicHttpsUrl,
-  isPublicWebUrl,
   PUBLIC_HTTPS_URL_MESSAGE,
-  PUBLIC_WEB_URL_MESSAGE
+  PUBLIC_WEB_URL_MESSAGE,
+  isPublicHttpsUrl,
+  isPublicWebUrl
 } from './lib/destination'
 import {
   HTTPS_URL_MESSAGE,
+  REDIRECT_STATUS_MESSAGE,
   inputValidationError,
-  isRedirectStatus,
-  REDIRECT_STATUS_MESSAGE
+  isRedirectStatus
 } from './lib/errors'
 import { buildQrUrl, buildShortUrl } from './lib/shortUrl'
 import { normalizePathname, validatePathname } from './lib/slug'
@@ -796,7 +796,8 @@ builder.mutationFields((t) => ({
       const statusChanged =
         input.status != null && input.status !== existing.status
       const fallbackChanged =
-        input.fallbackTo !== undefined && input.fallbackTo !== existing.fallbackTo
+        input.fallbackTo !== undefined &&
+        input.fallbackTo !== existing.fallbackTo
       if (
         (statusChanged || fallbackChanged) &&
         isProtectedAssetClass(existing.assetClass)

@@ -5,7 +5,6 @@ import { MediaRole, Prisma } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
-import { PUBLIC_WEB_URL_MESSAGE } from './lib/destination'
 import { prismaMock } from '../../../test/prismaMock'
 import {
   buildShortLink,
@@ -17,6 +16,7 @@ import {
 } from '../../../test/shortLinkFixtures'
 
 import { publishLink, unpublishLink } from './edge'
+import { PUBLIC_WEB_URL_MESSAGE } from './lib/destination'
 
 vi.mock('nanoid')
 vi.mock('uuid')

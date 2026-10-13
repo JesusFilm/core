@@ -305,11 +305,11 @@ function writeBack(
           expirationTtl: WRITE_BACK_TTL_SECONDS
         })
         .catch((error: unknown) => {
-        console.error(
-          JSON.stringify({ event: 'kv_write_back_failed', key }),
-          error
-        )
-      })
+          console.error(
+            JSON.stringify({ event: 'kv_write_back_failed', key }),
+            error
+          )
+        })
     )
   } catch (error) {
     console.error(JSON.stringify({ event: 'kv_write_back_failed', key }), error)

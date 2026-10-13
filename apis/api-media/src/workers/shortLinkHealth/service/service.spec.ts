@@ -175,9 +175,7 @@ describe('shortLinkHealth/service', () => {
       data: { healthStatus: 'serverError', healthCheckedAt: expect.any(Date) }
     })
     expect(publishLinkMock).not.toHaveBeenCalled()
-    expect(slackMock.mock.calls[0][0].body.text).toContain(
-      '*Action*: none'
-    )
+    expect(slackMock.mock.calls[0][0].body.text).toContain('*Action*: none')
   })
 
   it('resumes a link it paused once the destination is healthy again', async () => {

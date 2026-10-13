@@ -12,15 +12,12 @@ import {
 import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
 import { assertSuperAdmin } from '../lib/access'
-import {
-  isPublicHttpsUrl,
-  PUBLIC_HTTPS_URL_MESSAGE
-} from '../lib/destination'
+import { PUBLIC_HTTPS_URL_MESSAGE, isPublicHttpsUrl } from '../lib/destination'
 import {
   HTTPS_URL_MESSAGE,
+  REDIRECT_STATUS_MESSAGE,
   inputValidationError,
-  isRedirectStatus,
-  REDIRECT_STATUS_MESSAGE
+  isRedirectStatus
 } from '../lib/errors'
 import {
   PATH_PREFIX_MESSAGE,

@@ -13,12 +13,12 @@ import {
 import type { Env } from './env'
 import type { ShortLinkByPathData } from './graphql'
 import {
+  LINK_API_CACHE_TTL_MS,
+  WRITE_BACK_TTL_SECONDS,
   clearDomainCache,
   clearMissingBindingLog,
   domainNamespace,
-  LINK_API_CACHE_TTL_MS,
-  lookupLink,
-  WRITE_BACK_TTL_SECONDS
+  lookupLink
 } from './store'
 
 const jesusFilm = domainRecord({
@@ -472,7 +472,11 @@ describe('two-tier namespaces', () => {
 
       const ctx = createExecutionContext()
       const hit = await lookupLink(
-        { ...bindings, CORE_GRAPHQL_ENDPOINT: graphQlEndpoint, KV_JESUS_FILM: broken },
+        {
+          ...bindings,
+          CORE_GRAPHQL_ENDPOINT: graphQlEndpoint,
+          KV_JESUS_FILM: broken
+        },
         ctx,
         jesusFilm,
         'outage'

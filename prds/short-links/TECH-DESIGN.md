@@ -43,41 +43,41 @@ Migration: `20260926045620_short_links_service`. All additive.
 
 ### `ShortLinkDomain` (new fields)
 
-| Field               | Type                | Default       | Meaning                                                                                         |
-| ------------------- | ------------------- | ------------- | ----------------------------------------------------------------------------------------------- |
-| `redirectStatus`    | Int                 | 307           | 301, 302, 307 or 308. arc.gt uses 302 to match the Arclight keyword route.                      |
-| `slugAllowedChars`  | String              | `A-Za-z0-9_-` | Regex character-class body. Validated on create.                                                |
-| `slugMinLength`     | Int                 | 1             |                                                                                                 |
-| `slugMaxLength`     | Int                 | 64            |                                                                                                 |
-| `slugCaseSensitive` | Boolean             | true          | When false, pathnames are lower-cased on create and looked up lower-cased at the edge.          |
-| `reservedPaths`     | String[]            | []            | First path segments never minted (`admin`, `api`, `.well-known`, arc.gt's `s`, `hls`, `dl`…).   |
-| `fallbackTo`        | String?             | null          | Where unresolved traffic goes when `notFound = fallback`; where paused links go.                |
-| `notFound`          | `ShortLinkNotFound` | `lostPage`    | `lostPage`, `fallback`, `passthrough`.                                                          |
-| `passthroughOrigin` | String?             | null          | For `passthrough`: origin that receives the untouched path + query (arc.gt → api.arclight.org). |
+| Field               | Type                | Default       | Meaning                                                                                                                                                              |
+| ------------------- | ------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `redirectStatus`    | Int                 | 307           | 301, 302, 307 or 308. arc.gt uses 302 to match the Arclight keyword route.                                                                                           |
+| `slugAllowedChars`  | String              | `A-Za-z0-9_-` | Regex character-class body. Validated on create.                                                                                                                     |
+| `slugMinLength`     | Int                 | 1             |                                                                                                                                                                      |
+| `slugMaxLength`     | Int                 | 64            |                                                                                                                                                                      |
+| `slugCaseSensitive` | Boolean             | true          | When false, pathnames are lower-cased on create and looked up lower-cased at the edge.                                                                               |
+| `reservedPaths`     | String[]            | []            | First path segments never minted (`admin`, `api`, `.well-known`, arc.gt's `s`, `hls`, `dl`…).                                                                        |
+| `fallbackTo`        | String?             | null          | Where unresolved traffic goes when `notFound = fallback`; where paused links go.                                                                                     |
+| `notFound`          | `ShortLinkNotFound` | `lostPage`    | `lostPage`, `fallback`, `passthrough`.                                                                                                                               |
+| `passthroughOrigin` | String?             | null          | For `passthrough`: origin that receives the untouched path + query (arc.gt → api.arclight.org).                                                                      |
 | `autoFailover`      | Boolean             | false         | Health check may pause a link whose destination failed two hourly checks in a row (never `videoEmbedded`), and resumes it itself once the destination answers again. |
-| `edgePublishedAt`   | DateTime?           | null          | Last successful edge write.                                                                     |
+| `edgePublishedAt`   | DateTime?           | null          | Last successful edge write.                                                                                                                                          |
 
 ### `ShortLink` (new fields)
 
-| Field                 | Type                  | Notes                                                                                |
-| --------------------- | --------------------- | ------------------------------------------------------------------------------------ |
-| `name`, `description` | String?               | Labels.                                                                              |
-| `assetClass`          | `ShortLinkAssetClass` | `standard` (default), `permanent`, `videoEmbedded`.                                  |
-| `status`              | `ShortLinkStatus`     | `active` (default), `paused`, `retired`.                                             |
-| `redirectStatus`      | Int?                  | Per-link override.                                                                   |
-| `fallbackTo`          | String?               | Per-link override, used while paused.                                                |
-| `placement`           | `ShortLinkPlacement?` | `description`, `endScreen`, `card`, `communityPost`, `inVideoQr`, `other`.           |
-| `language`            | String?               | BCP-47.                                                                              |
-| `tags`                | String[]              |                                                                                      |
-| `videoId`             | String? → `Video`     | Core video. `SetNull` on video delete.                                               |
-| `youtubeVideoId`      | String?               | YouTube's own id. Not a foreign key.                                                 |
-| `campaigns`           | `ShortLinkCampaign[]` | Many-to-many.                                                                        |
-| `destinationHistory`  | history rows          |                                                                                      |
-| `deletedAt`           | DateTime?             | Soft delete only. `@@unique([pathname, domainId])` keeps the slug reserved.          |
-| `edgePublishedAt`     | DateTime?             |                                                                                      |
-| `healthStatus`        | `ShortLinkHealth?`    | `ok`, `notFound`, `serverError`, `timeout`, `dns`, `tls`, `redirectLoop`, `unknown`. |
-| `healthCheckedAt`     | DateTime?             |                                                                                      |
-| `pausedByHealthCheckAt` | DateTime?         |                                                                                      | set while paused by the health check; cleared by a manual status change or by the check when the link resumes |
+| Field                   | Type                  | Notes                                                                                |
+| ----------------------- | --------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| `name`, `description`   | String?               | Labels.                                                                              |
+| `assetClass`            | `ShortLinkAssetClass` | `standard` (default), `permanent`, `videoEmbedded`.                                  |
+| `status`                | `ShortLinkStatus`     | `active` (default), `paused`, `retired`.                                             |
+| `redirectStatus`        | Int?                  | Per-link override.                                                                   |
+| `fallbackTo`            | String?               | Per-link override, used while paused.                                                |
+| `placement`             | `ShortLinkPlacement?` | `description`, `endScreen`, `card`, `communityPost`, `inVideoQr`, `other`.           |
+| `language`              | String?               | BCP-47.                                                                              |
+| `tags`                  | String[]              |                                                                                      |
+| `videoId`               | String? → `Video`     | Core video. `SetNull` on video delete.                                               |
+| `youtubeVideoId`        | String?               | YouTube's own id. Not a foreign key.                                                 |
+| `campaigns`             | `ShortLinkCampaign[]` | Many-to-many.                                                                        |
+| `destinationHistory`    | history rows          |                                                                                      |
+| `deletedAt`             | DateTime?             | Soft delete only. `@@unique([pathname, domainId])` keeps the slug reserved.          |
+| `edgePublishedAt`       | DateTime?             |                                                                                      |
+| `healthStatus`          | `ShortLinkHealth?`    | `ok`, `notFound`, `serverError`, `timeout`, `dns`, `tls`, `redirectLoop`, `unknown`. |
+| `healthCheckedAt`       | DateTime?             |                                                                                      |
+| `pausedByHealthCheckAt` | DateTime?             |                                                                                      | set while paused by the health check; cleared by a manual status change or by the check when the link resumes |
 
 `ShortLinkCampaign { id, name, description?, startsAt?, endsAt?, tags[], ownerId?, createdAt, updatedAt, shortLinks[] }`
 
@@ -169,7 +169,7 @@ Bindings: `SHORT_LINKS_KV` (KV), `SHORT_LINKS_EVENTS` (Queue producer + consumer
 
 Request flow for `GET`/`HEAD` `https://<host>/<path>?<query>`:
 
-1. Load `domain:<host>` from KV, else api-media `shortLinkDomainByHostname` (hit → write back to KV, log `publish_gap`). Unknown host → 404 lost page. A KV read *error* is not a miss: api-media is still asked, but nothing is written back over a record that may well be there.
+1. Load `domain:<host>` from KV, else api-media `shortLinkDomainByHostname` (hit → write back to KV, log `publish_gap`). Unknown host → 404 lost page. A KV read _error_ is not a miss: api-media is still asked, but nothing is written back over a record that may well be there.
 2. Strip a leading slash; if the path is empty, contains `/`, or its first segment is in `reservedPaths`, or it fails a cheap grammar check (`^[A-Za-z0-9_.~-]{1,64}$`) → not-found behaviour (`lostPage` 404 / `fallback` redirect / `passthrough` redirect to `passthroughOrigin + original path + query`).
 3. Look up `link:<host>/<path>` (lower-cased when the domain is case-insensitive): KV → api-media `shortLinkByPath` with a 2 s timeout (hit → write back to KV, log `publish_gap`) → not-found behaviour. api-media's answer, hit or miss, is remembered per isolate for 30 s so scanner paths and unknown keywords do not become one api-media call each. Write-backs carry a 1 h TTL: they are repairs, and a record written from a lookup that raced an edit or delete expires instead of shadowing api-media's later write.
 4. `paused` → redirect to link `fallbackTo`, else domain `fallbackTo`, else not-found behaviour.
