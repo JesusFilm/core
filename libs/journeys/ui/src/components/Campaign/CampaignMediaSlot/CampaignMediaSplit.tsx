@@ -16,8 +16,9 @@ interface CampaignMediaSplitProps {
 /**
  * A section body with its Media Slot beside its text: two columns from `md`
  * up with the media on `mediaSide`, a single column below it in the same
- * order. An empty slot leaves the text full width; empty text leaves the
- * media alone.
+ * order. `below` stacks the text on top and gives the media the full width
+ * at every size. An empty slot leaves the text full width; empty text leaves
+ * the media alone.
  */
 export function CampaignMediaSplit({
   text,
@@ -34,6 +35,7 @@ export function CampaignMediaSplit({
   if (text == null) return mediaColumn
 
   const textColumn = <Box sx={{ minWidth: 0 }}>{text}</Box>
+  const below = mediaSide === CampaignMediaSide.below
   return (
     <Box
       data-testid="CampaignMediaSplit"
@@ -42,7 +44,7 @@ export function CampaignMediaSplit({
         display: 'grid',
         gap: { xs: 4, md: 6 },
         alignItems: 'center',
-        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }
+        gridTemplateColumns: below ? '1fr' : { xs: '1fr', md: '1fr 1fr' }
       }}
     >
       {mediaSide === CampaignMediaSide.left ? mediaColumn : textColumn}

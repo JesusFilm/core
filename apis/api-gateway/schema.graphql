@@ -5863,7 +5863,8 @@ Which side of a Featured Media section the Media Slot renders on.
 """
 enum CampaignMediaSide @join__type(graph: API_JOURNEYS_MODERN)  {
   left @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  right @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  right @join__enumValue(graph: API_JOURNEYS_MODERN)
+  below @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """

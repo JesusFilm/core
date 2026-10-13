@@ -1520,6 +1520,7 @@ input CampaignLinkActionInput {
 enum CampaignMediaSide {
   left
   right
+  below
 }
 
 """

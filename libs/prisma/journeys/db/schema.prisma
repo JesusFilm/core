@@ -931,6 +931,7 @@ enum CampaignChildPlacement {
 enum CampaignMediaSide {
   left
   right
+  below
 }
 
 enum CampaignSwitcherVariant {

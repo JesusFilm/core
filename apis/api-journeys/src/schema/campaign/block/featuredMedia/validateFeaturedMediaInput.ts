@@ -22,7 +22,8 @@ export interface FeaturedMediaInput {
 
 /**
  * The Featured Media body: eyebrow ≤ 80, title ≤ 150, lede ≤ 500 and
- * bullets ≤ 1000 (one per line) trimmed and capped; `mediaSide` left or
+ * bullets ≤ 1000 (one per line) trimmed and capped; `mediaSide` left, right
+ * (beside the text) or below (text on top, media full width); left or
  * right and never null. Omitted fields are left untouched. `BAD_USER_INPUT`
  * names the field.
  */

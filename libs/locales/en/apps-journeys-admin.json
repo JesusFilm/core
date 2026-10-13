@@ -1658,5 +1658,6 @@
   "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} texts have no translation in {{language}} yet, so it cannot become the default.",
   "Machine translation does not cover this language. Write the missing lines in the Translations view, then try again.": "Machine translation does not cover this language. Write the missing lines in the Translations view, then try again.",
   "Machine-translate missing into {{language}}": "Machine-translate missing into {{language}}",
-  "All campaigns": "All campaigns"
+  "All campaigns": "All campaigns",
+  "Below": "Below"
 }

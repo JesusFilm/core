@@ -152,6 +152,9 @@ export function MediaSectionEdit({
             <ToggleButton value={CampaignMediaSide.right}>
               {t('Right')}
             </ToggleButton>
+            <ToggleButton value={CampaignMediaSide.below}>
+              {t('Below')}
+            </ToggleButton>
           </ToggleButtonGroup>
         </Stack>
       )}

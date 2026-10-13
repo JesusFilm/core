@@ -136,6 +136,7 @@ export enum CampaignJourneyListDisplay {
  * Which side of a Featured Media section the Media Slot renders on.
  */
 export enum CampaignMediaSide {
+  below = "below",
   left = "left",
   right = "right",
 }

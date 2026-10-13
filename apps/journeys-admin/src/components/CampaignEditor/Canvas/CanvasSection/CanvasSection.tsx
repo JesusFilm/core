@@ -502,6 +502,10 @@ export function CanvasSection({
   const mediaLeft =
     block.__typename === 'CampaignFeaturedMediaBlock' &&
     block.mediaSide === CampaignMediaSide.left
+  /** `below`: text on top, the media full width under it, at every size. */
+  const mediaBelow =
+    block.__typename === 'CampaignFeaturedMediaBlock' &&
+    block.mediaSide === CampaignMediaSide.below
 
   function handleSelectField(field: CampaignTextField): void {
     setFocusField(field)
@@ -530,7 +534,11 @@ export function CanvasSection({
 
   const sectionBody = (
     <Stack
-      direction={{ xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }}
+      direction={
+        mediaBelow
+          ? 'column'
+          : { xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }
+      }
       spacing={6}
       sx={{ alignItems: 'center', position: 'relative' }}
     >
