@@ -8,9 +8,9 @@ import { CAMPAIGN_ANALYTICS_BLOCK_CREATE } from '../../../../libs/useCampaignSec
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { ContextBar } from '../../ContextBar'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
+import { ContextBar } from '../../ContextBar'
 import { campaign } from '../../data'
 import {
   BlocksProbe,

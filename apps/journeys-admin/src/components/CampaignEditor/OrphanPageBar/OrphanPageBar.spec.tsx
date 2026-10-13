@@ -10,8 +10,8 @@ import { SnackbarProvider } from 'notistack'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
-import { ContextBar } from '../ContextBar'
 import { CampaignEditorState } from '../CampaignEditorProvider'
+import { ContextBar } from '../ContextBar'
 import { campaignWithRegions } from '../data'
 import {
   CommandProbe,

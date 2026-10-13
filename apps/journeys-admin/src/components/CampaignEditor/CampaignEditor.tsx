@@ -17,13 +17,13 @@ import {
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
-import { ContextBar } from './ContextBar'
 import {
   CampaignEditorProvider,
   useCampaignEditor
 } from './CampaignEditorProvider'
 import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
+import { ContextBar } from './ContextBar'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
 import { LanguagesPanel } from './LanguagesPanel'
