@@ -21,6 +21,19 @@ export const DOMAIN_CACHE_TTL_MS = 60_000
  * isolate in that time.
  */
 export const UNKNOWN_DOMAIN_CACHE_TTL_MS = 10_000
+/**
+ * How long an api-media answer for a link (hit or miss) is remembered per
+ * isolate. KV reads are cheap; this only shields api-media from repeated
+ * lookups of the same unknown slug (scanner paths on a root domain, unknown
+ * keywords on a passthrough domain) and of a link KV does not have yet.
+ */
+export const LINK_API_CACHE_TTL_MS = 30_000
+/**
+ * Write-backs are repairs, not publishes: they expire so a record written
+ * from a lookup that raced an edit or a delete heals itself, instead of
+ * shadowing api-media's later write until someone republishes.
+ */
+export const WRITE_BACK_TTL_SECONDS = 3600
 
 /** The one piece of the execution context the store needs (Hono's context type is narrower than workers-types'). */
 export type BackgroundContext = Pick<ExecutionContext, 'waitUntil'>
@@ -37,12 +50,22 @@ interface CachedDomain {
 /** Per-isolate domain cache: one KV read per host per minute at most. */
 const domainCache = new Map<string, CachedDomain>()
 
+interface CachedLinkLookup {
+  /** null: api-media has no such link */
+  hit: LinkLookupHit | null
+  expiresAt: number
+}
+
+/** Per-isolate cache of api-media link answers (see `LINK_API_CACHE_TTL_MS`). */
+const linkApiCache = new Map<string, CachedLinkLookup>()
+
 /** Bindings already reported as missing, so each is logged once per isolate. */
 const reportedMissingBindings = new Set<string>()
 
 /** Test and local edge API hook; production never needs it. */
 export function clearDomainCache(): void {
   domainCache.clear()
+  linkApiCache.clear()
 }
 
 /** Test hook; production never needs it. */
@@ -90,17 +113,26 @@ export function domainNamespace(
   return null
 }
 
+/** A KV read that failed, as opposed to one that found nothing. */
+const KV_READ_FAILED = Symbol('kv-read-failed')
+type KvReadFailed = typeof KV_READ_FAILED
+
+/**
+ * null: KV has no such key. `KV_READ_FAILED`: KV could not be read, which must
+ * not be mistaken for a miss: an api-media answer fetched on a read failure
+ * is served but never written back over a record that may well be there.
+ */
 async function readKv<T>(
   namespace: KVNamespace,
   key: string,
   validate: (value: unknown) => value is T
-): Promise<T | null> {
+): Promise<T | null | KvReadFailed> {
   try {
     const value: unknown = await namespace.get(key, 'json')
     return parseRecord(value, validate)
   } catch (error) {
     console.error(JSON.stringify({ event: 'kv_read_failed', key }), error)
-    return null
+    return KV_READ_FAILED
   }
 }
 
@@ -120,13 +152,14 @@ export async function loadDomain(
   if (cached != null && cached.expiresAt > now) return cached.record
 
   const key = `domain:${host}`
-  let record = await readKv(env.SHORT_LINKS_KV, key, isDomainRecord)
+  const fromKv = await readKv(env.SHORT_LINKS_KV, key, isDomainRecord)
+  let record = fromKv === KV_READ_FAILED ? null : fromKv
   if (record == null) {
     record = await fetchDomainRecord({
       endpoint: env.CORE_GRAPHQL_ENDPOINT,
       hostname: host
     })
-    if (record != null) {
+    if (record != null && fromKv !== KV_READ_FAILED) {
       writeBack(ctx, env.SHORT_LINKS_KV, key, record)
       console.log(
         JSON.stringify({ event: 'publish_gap', key, target: GLOBAL_BINDING })
@@ -154,12 +187,16 @@ export async function lookupLink(
   env: Env,
   ctx: BackgroundContext,
   domain: DomainRecord,
-  slug: string
+  slug: string,
+  now: number = Date.now()
 ): Promise<LinkLookupHit | null> {
+  let kvReadFailed = false
+
   const ownNamespace = domainNamespace(env, domain)
   if (ownNamespace != null) {
     const fromDomainKv = await readKv(ownNamespace, slug, isRoutingRecord)
-    if (fromDomainKv != null) {
+    if (fromDomainKv === KV_READ_FAILED) kvReadFailed = true
+    else if (fromDomainKv != null) {
       return { record: fromDomainKv, resolvedFrom: 'kv' }
     }
   }
@@ -169,10 +206,35 @@ export async function lookupLink(
     globalLinkKey(slug),
     isRoutingRecord
   )
-  if (fromGlobalKv != null) {
+  if (fromGlobalKv === KV_READ_FAILED) kvReadFailed = true
+  else if (fromGlobalKv != null) {
     return { record: fromGlobalKv, resolvedFrom: 'kv-global' }
   }
 
+  const cacheKey = domainLinkKey(domain.hostname, slug)
+  const cached = linkApiCache.get(cacheKey)
+  if (cached != null && cached.expiresAt > now) return cached.hit
+
+  const hit = await lookupLinkFromApi(
+    env,
+    ctx,
+    domain,
+    slug,
+    ownNamespace,
+    kvReadFailed
+  )
+  linkApiCache.set(cacheKey, { hit, expiresAt: now + LINK_API_CACHE_TTL_MS })
+  return hit
+}
+
+async function lookupLinkFromApi(
+  env: Env,
+  ctx: BackgroundContext,
+  domain: DomainRecord,
+  slug: string,
+  ownNamespace: KVNamespace | null,
+  kvReadFailed: boolean
+): Promise<LinkLookupHit | null> {
   const link = await fetchShortLinkByPath({
     endpoint: env.CORE_GRAPHQL_ENDPOINT,
     hostname: domain.hostname,
@@ -182,6 +244,10 @@ export async function lookupLink(
 
   const record = toRoutingRecord(link, domain, slug)
   if (record == null) return null
+
+  // A KV outage is not a publish gap: the record may well be there, so it is
+  // served from api-media but not written back over it.
+  if (kvReadFailed) return { record, resolvedFrom: 'api' }
 
   const target = writeBackTarget(env, domain, record, slug, ownNamespace)
   if (target != null) writeBack(ctx, target.namespace, target.key, record)
@@ -234,7 +300,11 @@ function writeBack(
 ): void {
   try {
     ctx.waitUntil(
-      namespace.put(key, JSON.stringify(record)).catch((error: unknown) => {
+      namespace
+        .put(key, JSON.stringify(record), {
+          expirationTtl: WRITE_BACK_TTL_SECONDS
+        })
+        .catch((error: unknown) => {
         console.error(
           JSON.stringify({ event: 'kv_write_back_failed', key }),
           error

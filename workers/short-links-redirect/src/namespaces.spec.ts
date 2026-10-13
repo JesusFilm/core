@@ -1,4 +1,4 @@
-import { createExecutionContext } from 'cloudflare:test'
+import { createExecutionContext, waitOnExecutionContext } from 'cloudflare:test'
 
 import { fetchMock } from '../test/fetchMock'
 import { domainRecord, routingRecord } from '../test/fixtures'
@@ -16,7 +16,9 @@ import {
   clearDomainCache,
   clearMissingBindingLog,
   domainNamespace,
-  lookupLink
+  LINK_API_CACHE_TTL_MS,
+  lookupLink,
+  WRITE_BACK_TTL_SECONDS
 } from './store'
 
 const jesusFilm = domainRecord({
@@ -435,6 +437,88 @@ describe('two-tier namespaces', () => {
       const { response } = await workerRequest('https://jesus.film/api-status')
 
       expect(response.status).toBe(302)
+    })
+  })
+
+  describe('write-back safety', () => {
+    it('expires write-backs so a record written from a raced lookup heals itself', async () => {
+      const log = vi.spyOn(console, 'log').mockImplementation(() => undefined)
+      graphQlReply(apiLink({ id: 'link-ttl' }))
+
+      await workerRequest('https://jesus.film/ttl')
+
+      const { keys } = await bindings.KV_JESUS_FILM!.list({ prefix: 'ttl' })
+      expect(keys).toHaveLength(1)
+      expect(keys[0].expiration).toBeGreaterThan(Date.now() / 1000)
+      expect(keys[0].expiration).toBeLessThanOrEqual(
+        Date.now() / 1000 + WRITE_BACK_TTL_SECONDS + 60
+      )
+      log.mockRestore()
+    })
+
+    it('serves api-media during a KV outage but writes nothing back', async () => {
+      const error = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
+      const put = vi.fn()
+      const broken = {
+        get: () => Promise.reject(new Error('kv unavailable')),
+        put,
+        delete: vi.fn(),
+        list: vi.fn(),
+        getWithMetadata: vi.fn()
+      } as unknown as KVNamespace
+      graphQlReply(apiLink({ id: 'link-outage' }))
+
+      const ctx = createExecutionContext()
+      const hit = await lookupLink(
+        { ...bindings, CORE_GRAPHQL_ENDPOINT: graphQlEndpoint, KV_JESUS_FILM: broken },
+        ctx,
+        jesusFilm,
+        'outage'
+      )
+      await waitOnExecutionContext(ctx)
+
+      expect(hit).toMatchObject({
+        resolvedFrom: 'api',
+        record: { id: 'link-outage' }
+      })
+      expect(put).not.toHaveBeenCalled()
+      expect(error).toHaveBeenCalledWith(
+        JSON.stringify({ event: 'kv_read_failed', key: 'outage' }),
+        expect.any(Error)
+      )
+      error.mockRestore()
+    })
+
+    it('remembers an api-media answer per isolate for a short while', async () => {
+      const error = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined)
+      const ctx = createExecutionContext()
+      const env: Env = { ...bindings, CORE_GRAPHQL_ENDPOINT: graphQlEndpoint }
+      const now = Date.now()
+      graphQlReply(null)
+
+      expect(await lookupLink(env, ctx, jesusFilm, 'nothing', now)).toBeNull()
+      // no interceptor is registered now: a second fetch would fail and log
+      expect(
+        await lookupLink(env, ctx, jesusFilm, 'nothing', now + 1000)
+      ).toBeNull()
+      expect(error).not.toHaveBeenCalled()
+
+      graphQlReply(apiLink({ id: 'link-later' }))
+      expect(
+        await lookupLink(
+          env,
+          ctx,
+          jesusFilm,
+          'nothing',
+          now + LINK_API_CACHE_TTL_MS + 1
+        )
+      ).toMatchObject({ record: { id: 'link-later' } })
+      await waitOnExecutionContext(ctx)
+      error.mockRestore()
     })
   })
 

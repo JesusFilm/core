@@ -54,7 +54,7 @@ Migration: `20260926045620_short_links_service`. All additive.
 | `fallbackTo`        | String?             | null          | Where unresolved traffic goes when `notFound = fallback`; where paused links go.                |
 | `notFound`          | `ShortLinkNotFound` | `lostPage`    | `lostPage`, `fallback`, `passthrough`.                                                          |
 | `passthroughOrigin` | String?             | null          | For `passthrough`: origin that receives the untouched path + query (arc.gt → api.arclight.org). |
-| `autoFailover`      | Boolean             | false         | Health check may pause a failing link (never `videoEmbedded`).                                  |
+| `autoFailover`      | Boolean             | false         | Health check may pause a link whose destination failed two hourly checks in a row (never `videoEmbedded`), and resumes it itself once the destination answers again. |
 | `edgePublishedAt`   | DateTime?           | null          | Last successful edge write.                                                                     |
 
 ### `ShortLink` (new fields)
@@ -77,6 +77,7 @@ Migration: `20260926045620_short_links_service`. All additive.
 | `edgePublishedAt`     | DateTime?             |                                                                                      |
 | `healthStatus`        | `ShortLinkHealth?`    | `ok`, `notFound`, `serverError`, `timeout`, `dns`, `tls`, `redirectLoop`, `unknown`. |
 | `healthCheckedAt`     | DateTime?             |                                                                                      |
+| `pausedByHealthCheckAt` | DateTime?         |                                                                                      | set while paused by the health check; cleared by a manual status change or by the check when the link resumes |
 
 `ShortLinkCampaign { id, name, description?, startsAt?, endsAt?, tags[], ownerId?, createdAt, updatedAt, shortLinks[] }`
 
@@ -90,11 +91,18 @@ Migration: `20260926045620_short_links_service`. All additive.
 | ----------------------------------------- | ----------------------------------------------- | ----------------- | ----------------------- |
 | Change `pathname`                         | never (pathnames are immutable for every class) | never             | never                   |
 | Change `to`                               | editor                                          | admin             | admin + `note` required |
+| Change `status` or `fallbackTo`           | editor                                          | admin             | admin                   |
 | Delete (soft)                             | editor                                          | admin             | admin                   |
 | Automatic failover on failed health check | if domain opts in                               | if domain opts in | never                   |
 | QR error-correction default               | M                                               | M                 | H                       |
 
-"editor" = `shortLinkEditor`, `shortLinkAdmin`, `publisher`, or a valid interop token. "admin" = `shortLinkAdmin` or `publisher`. Interop callers (api-journeys, Arclight, YouTube Studio) create `standard` links only.
+"editor" = `shortLinkEditor`, `shortLinkAdmin`, `publisher`, or a valid interop token. "admin" = `shortLinkAdmin` or `publisher`. Interop callers (api-journeys, Arclight, YouTube Studio) create `standard` links only and may not set any other asset class. `shortLinkBulkUpdate` takes at most 100 ids and applies the same status rule: a protected link in the set needs an admin.
+
+`to`, `fallbackTo` (link and domain) and `passthroughOrigin` must point at the public internet: `to` is http(s), the others https, and none may name an IP literal, `localhost`, a bare or `.internal`/`.local` host, or a private, loopback, link-local, carrier-grade-NAT or cloud-metadata address. The health check fetches destinations from inside the VPC and applies the same rule to every redirect hop, so it can never be used to probe internal services.
+
+**Public read surface.** `shortLinkByPath` and `shortLinkDomainByHostname` are public (the Worker calls them unauthenticated), so the `ShortLink` type gates everything the edge does not need behind the editor scopes: `name`, `description`, `tags`, `userId`, `campaigns`, `destinationHistory`, `edgePublishedAt`, `healthStatus`, `healthCheckedAt` and `pausedByHealthCheckAt` answer only for editors.
+
+**Database first, edge second.** A single link's create, update and delete publish inside their transaction, which is one bounded KV call. `shortLinkBulkUpdate` and `shortLinkDomainUpdate` commit first and publish afterwards (one call per link, or the bulk republish of a whole domain), because that work is far longer than an interactive transaction may stay open and a failed publish must never roll the database back under records already written to KV. A failed publish leaves `edgePublishedAt` unchanged, which the admin shows as "not published"; Republish repairs it.
 
 ## Edge store contracts
 
@@ -161,9 +169,9 @@ Bindings: `SHORT_LINKS_KV` (KV), `SHORT_LINKS_EVENTS` (Queue producer + consumer
 
 Request flow for `GET`/`HEAD` `https://<host>/<path>?<query>`:
 
-1. Load `domain:<host>` from KV, else api-media `shortLinkDomainByHostname` (hit → write back to KV, log `publish_gap`). Unknown host → 404 lost page.
+1. Load `domain:<host>` from KV, else api-media `shortLinkDomainByHostname` (hit → write back to KV, log `publish_gap`). Unknown host → 404 lost page. A KV read *error* is not a miss: api-media is still asked, but nothing is written back over a record that may well be there.
 2. Strip a leading slash; if the path is empty, contains `/`, or its first segment is in `reservedPaths`, or it fails a cheap grammar check (`^[A-Za-z0-9_.~-]{1,64}$`) → not-found behaviour (`lostPage` 404 / `fallback` redirect / `passthrough` redirect to `passthroughOrigin + original path + query`).
-3. Look up `link:<host>/<path>` (lower-cased when the domain is case-insensitive): KV → api-media `shortLinkByPath` with a 2 s timeout (hit → write back to KV, log `publish_gap`) → not-found behaviour.
+3. Look up `link:<host>/<path>` (lower-cased when the domain is case-insensitive): KV → api-media `shortLinkByPath` with a 2 s timeout (hit → write back to KV, log `publish_gap`) → not-found behaviour. api-media's answer, hit or miss, is remembered per isolate for 30 s so scanner paths and unknown keywords do not become one api-media call each. Write-backs carry a 1 h TTL: they are repairs, and a record written from a lookup that raced an edit or delete expires instead of shadowing api-media's later write.
 4. `paused` → redirect to link `fallbackTo`, else domain `fallbackTo`, else not-found behaviour.
 5. Build the destination: parse `to`; append every incoming query parameter except `qr` (UTMs pass through; existing destination params are kept). Redirect with `status`. `Cache-Control: no-store`.
 6. `ctx.waitUntil(SHORT_LINKS_EVENTS.send(event))` after the response is built. Failures never affect the response.
