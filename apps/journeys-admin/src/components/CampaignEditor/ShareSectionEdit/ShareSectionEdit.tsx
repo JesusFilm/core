@@ -118,8 +118,12 @@ interface PhoneFrameProps {
 /** The public phone's screen width (300px frame less the bezel); the canvas iframe renders at this width and scales. */
 const PUBLIC_SCREEN_WIDTH = 284
 const PUBLIC_SCREEN_HEIGHT = 584
-/** The canvas phone's screen width (220px frame less the 6px bezel). */
+/** The canvas phone's screen (220px frame less the 6px bezel), at the public screen's aspect. */
 const CANVAS_SCREEN_WIDTH = 208
+const CANVAS_SCREEN_HEIGHT = Math.round(
+  (PUBLIC_SCREEN_HEIGHT * CANVAS_SCREEN_WIDTH) / PUBLIC_SCREEN_WIDTH
+)
+const CANVAS_BEZEL = 6
 
 /** The phone-shaped frame the public page previews a journey in; on the canvas it also holds the empty states. */
 function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
@@ -127,20 +131,22 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
     <Box
       data-testid="ShareLanguagePhone"
       sx={{
-        width: 220,
+        // Fixed sizes rather than an aspect ratio: in a column layout the
+        // scaled iframe's unscaled box would otherwise stretch the frame.
+        width: CANVAS_SCREEN_WIDTH + CANVAS_BEZEL * 2,
+        height: CANVAS_SCREEN_HEIGHT + CANVAS_BEZEL * 2,
         flexShrink: 0,
-        aspectRatio: '9 / 18',
         // The journey embed rounds itself at 16px; scaled to the canvas that
         // is 12px, so the screen clips there and the bezel adds its 6px.
-        p: '6px',
+        p: `${CANVAS_BEZEL}px`,
         borderRadius: '18px',
         backgroundColor: 'var(--campaign-band-heading)'
       }}
     >
       <Box
         sx={{
-          width: '100%',
-          height: '100%',
+          width: CANVAS_SCREEN_WIDTH,
+          height: CANVAS_SCREEN_HEIGHT,
           borderRadius: '12px',
           overflow: 'hidden',
           clipPath: 'inset(0 round 12px)',
@@ -263,7 +269,14 @@ function ShareLanguageRow({
           {state === 'live' && slug != null && (
             // Fills the screen so the scaled iframe starts at its top-left
             // corner rather than being centred by its larger layout box.
-            <Box sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+            <Box
+              sx={{
+                position: 'relative',
+                width: CANVAS_SCREEN_WIDTH,
+                height: CANVAS_SCREEN_HEIGHT,
+                overflow: 'hidden'
+              }}
+            >
               <Box
                 component="iframe"
                 data-testid="ShareLanguagePhoneIframe"
@@ -277,6 +290,9 @@ function ShareLanguageRow({
                   // down, so the journey lays out as it does on the public
                   // page (filling the screen) rather than in a narrower
                   // layout with its own square-cornered card.
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
                   display: 'block',
                   width: PUBLIC_SCREEN_WIDTH,
                   height: PUBLIC_SCREEN_HEIGHT,
