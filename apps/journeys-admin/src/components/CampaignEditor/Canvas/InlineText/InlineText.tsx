@@ -169,16 +169,19 @@ export function InlineText({
         // sizer alone decides the cell's width.
         ...(autoWidth ? { size: 1 } : {})
       }}
-      sx={
-        autoWidth
+      sx={{
+        // The shared input paints its caret in the admin red, which vanishes
+        // on a red campaign button; the text colour always contrasts.
+        caretColor: 'currentColor',
+        ...(autoWidth
           ? {
               gridArea: '1 / 1',
               minWidth: 0,
               width: '100%',
               '& .MuiInputBase-input': { minWidth: 0, width: '100%' }
             }
-          : undefined
-      }
+          : {})
+      }}
     />
   )
 
