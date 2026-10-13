@@ -11,10 +11,7 @@ import {
 } from '../../error'
 import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
-import {
-  assertSuperAdmin,
-  editorScopes
-} from '../lib/access'
+import { assertSuperAdmin, editorScopes } from '../lib/access'
 import { PUBLIC_HTTPS_URL_MESSAGE, isPublicHttpsUrl } from '../lib/destination'
 import {
   HTTPS_URL_MESSAGE,
