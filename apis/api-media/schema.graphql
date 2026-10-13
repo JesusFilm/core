@@ -581,6 +581,7 @@ type MutationPlaylistUpdateSuccess {
 }
 
 input MutationShortLinkBulkUpdateInput {
+  """at most 100 ids"""
   ids: [String!]!
   status: ShortLinkStatus
   addTags: [String!]
@@ -1339,6 +1340,11 @@ type ShortLink
   edgePublishedAt: DateTime
   healthStatus: ShortLinkHealth
   healthCheckedAt: DateTime
+
+  """
+  set while the link is paused by the health check (auto failover); it resumes on its own when the destination recovers, and a manual status change clears this
+  """
+  pausedByHealthCheckAt: DateTime
 
   """
   when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued

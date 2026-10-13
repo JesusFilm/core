@@ -1847,6 +1847,10 @@ type ShortLink @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: tru
   healthStatus: ShortLinkHealth @join__field(graph: API_MEDIA) 
   healthCheckedAt: DateTime @join__field(graph: API_MEDIA) 
   """
+  set while the link is paused by the health check (auto failover); it resumes on its own when the destination recovers, and a manual status change clears this
+  """
+  pausedByHealthCheckAt: DateTime @join__field(graph: API_MEDIA) 
+  """
   when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued
   """
   global: Boolean! @join__field(graph: API_MEDIA) 
@@ -5711,6 +5715,9 @@ input MutationBibleCitationUpdateInput @join__type(graph: API_MEDIA)  {
 }
 
 input MutationShortLinkBulkUpdateInput @join__type(graph: API_MEDIA)  {
+  """
+  at most 100 ids
+  """
   ids: [String!]!
   status: ShortLinkStatus
   addTags: [String!]
