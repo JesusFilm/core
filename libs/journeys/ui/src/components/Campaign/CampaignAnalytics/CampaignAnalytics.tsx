@@ -16,7 +16,7 @@ interface CampaignAnalyticsProps {
  * which fetches `campaignStats` client-side after render so the stats cache
  * stays independent of the page payload. A Region Page is fixed to its region;
  * the landing page has region tabs. The world map shows only when the block's
- * `showMap` is on.
+ * `showMap` is on, shaded in the section's Accent override or the theme accent.
  */
 export function CampaignAnalytics({
   block
@@ -32,7 +32,8 @@ export function CampaignAnalytics({
         strings={campaign.strings}
         showMap={block.showMap}
         worldMap={worldMap}
-        accentColor={campaign.theme.accentColor}
+        // The section's Accent override recolours the map; else the theme accent.
+        accentColor={block.accentColor ?? campaign.theme.accentColor}
       />
     </CampaignSectionBand>
   )
