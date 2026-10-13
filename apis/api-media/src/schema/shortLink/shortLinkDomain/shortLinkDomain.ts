@@ -11,7 +11,10 @@ import {
 } from '../../error'
 import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
-import { assertSuperAdmin } from '../lib/access'
+import {
+  assertSuperAdmin,
+  editorScopes
+} from '../lib/access'
 import { PUBLIC_HTTPS_URL_MESSAGE, isPublicHttpsUrl } from '../lib/destination'
 import {
   HTTPS_URL_MESSAGE,
@@ -125,6 +128,7 @@ builder.prismaObject('ShortLinkDomain', {
       description: 'when the domain record was last written to the edge store'
     }),
     kvNamespaceId: t.exposeString('kvNamespaceId', {
+      authScopes: editorScopes,
       nullable: true,
       description:
         'id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge'
@@ -135,6 +139,7 @@ builder.prismaObject('ShortLinkDomain', {
         'name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)'
     }),
     linkCount: t.relationCount('shortLinks', {
+      authScopes: editorScopes,
       nullable: false,
       description: 'live (not soft-deleted) links on this domain',
       where: { deletedAt: null }
