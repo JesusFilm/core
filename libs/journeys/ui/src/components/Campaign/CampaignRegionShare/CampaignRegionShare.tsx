@@ -368,7 +368,7 @@ export function CampaignRegionShare({
                 </Button>
               </ShareStep>
               <ShareStep id={`${block.id}-step4`} label={strings.step4}>
-                <QrCodeCanvas value={shortLink} size={160} />
+                <QrCodeCanvas value={shortLink} size={160} cornerRadius="6px" />
                 <Button
                   variant="outlined"
                   startIcon={<Download2Icon />}

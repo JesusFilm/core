@@ -347,7 +347,7 @@ function ShareLanguageRow({
             spacing={2}
             sx={{ alignItems: 'center', flexWrap: 'wrap' }}
           >
-            <QrCodeCanvas value={shortLink} size={72} />
+            <QrCodeCanvas value={shortLink} size={72} cornerRadius="6px" />
             <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
               <Button
                 size="small"
