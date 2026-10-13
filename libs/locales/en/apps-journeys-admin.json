@@ -1654,8 +1654,8 @@
   "Change default language?": "Change default language?",
   "Change": "Change",
   "Every text moves to {{current}} as its translation, and {{language}} becomes the language you write in. Machine translations that become the default lose their machine-translated mark.": "Every text moves to {{current}} as its translation, and {{language}} becomes the language you write in. Machine translations that become the default lose their machine-translated mark.",
-  "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._one": "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._one",
-  "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other",
+  "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._one": "{{count}} text has no translation in {{language}} yet, so it cannot become the default.",
+  "{{count}} texts have no translation in {{language}} yet, so it cannot become the default._other": "{{count}} texts have no translation in {{language}} yet, so it cannot become the default.",
   "Machine translation does not cover this language. Write the missing lines in the Translations view, then try again.": "Machine translation does not cover this language. Write the missing lines in the Translations view, then try again.",
   "Machine-translate missing into {{language}}": "Machine-translate missing into {{language}}"
 }
