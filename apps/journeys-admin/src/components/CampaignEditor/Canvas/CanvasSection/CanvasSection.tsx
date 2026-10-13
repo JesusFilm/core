@@ -195,6 +195,7 @@ function CanvasExtra({
               onSelect={onSelect}
               variant="inherit"
               component="span"
+              autoWidth
             />
           </Button>
         </Box>
