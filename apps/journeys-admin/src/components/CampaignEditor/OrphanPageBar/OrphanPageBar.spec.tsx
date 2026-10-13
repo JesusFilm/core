@@ -10,7 +10,7 @@ import { SnackbarProvider } from 'notistack'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
-import { BottomBar } from '../BottomBar'
+import { ContextBar } from '../ContextBar'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaignWithRegions } from '../data'
 import {
@@ -60,7 +60,7 @@ function renderBar(
         <SelectionProbe />
         <CommandProbe />
         <RegionsProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </QueriedEditor>
     </SnackbarProvider>
   )

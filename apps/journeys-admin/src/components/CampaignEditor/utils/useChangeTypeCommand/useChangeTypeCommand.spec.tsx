@@ -5,7 +5,7 @@ import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestore
 import { CAMPAIGN_HERO_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
+import { ContextBar } from '../../ContextBar'
 import { campaignWithColumns } from '../../data'
 import { newSectionBlock } from '../../sectionTypes'
 import {
@@ -98,7 +98,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </QueriedEditor>
   )
 }
@@ -178,7 +178,7 @@ describe('useChangeTypeCommand', () => {
         mocks={[deleteOldMock, failingCreate, restoreOldMock]}
       >
         <BlocksProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -213,7 +213,7 @@ describe('useChangeTypeCommand', () => {
       >
         <CommandUndoItem variant="button" />
         <BlocksProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </QueriedEditor>
     )
     await waitFor(() =>

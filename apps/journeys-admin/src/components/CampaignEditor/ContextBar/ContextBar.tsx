@@ -88,7 +88,7 @@ const SWAP_GLYPH = '\u21c4'
 /** The label a new button Extra is born with (PRD §14); campaign content, not UI copy. */
 export const NEW_BUTTON_LABEL = 'Button'
 
-interface BottomBarProps {
+interface ContextBarProps {
   onSettingsClick: () => void
   onThemeClick: () => void
   /** Opens the Languages panel (add and remove campaign languages). */
@@ -112,7 +112,8 @@ interface SectionInsert {
 }
 
 /**
- * The one contextual bottom bar: the breadcrumb, then the controls for what
+ * The one contextual bar, floating under the top bar: the breadcrumb, then
+ * the controls for what
  * is selected. Campaign row: Settings, Theme, Languages, Translations, +Add
  * section. Section: Edit, Style, +Add (an Extra, or a section above or
  * below), move up/down, duplicate, bin behind a confirmation. Chrome: Edit,
@@ -130,13 +131,13 @@ interface SectionInsert {
  * list/unlist and move. On an Orphan Page the campaign row adds the orphan
  * page bar. Controls that belong to later tickets render disabled.
  */
-export function BottomBar({
+export function ContextBar({
   onSettingsClick,
   onThemeClick,
   onLanguagesClick,
   onTranslationsClick,
   onRegionSettingsClick
-}: BottomBarProps): ReactElement {
+}: ContextBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
@@ -499,8 +500,8 @@ export function BottomBar({
         anchorEl={addAnchor}
         open={addAnchor != null}
         onClose={() => setAddAnchor(null)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       >
         <MenuItem
           onClick={() =>
@@ -556,8 +557,8 @@ export function BottomBar({
       anchorEl={sectionMenu?.anchor}
       open={sectionMenu != null}
       onClose={() => setSectionMenu(null)}
-      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-      transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       data-testid="CampaignSectionTypeMenu"
     >
       {(sectionMenu?.insert.parentBlockId != null
@@ -576,8 +577,8 @@ export function BottomBar({
       anchorEl={changeTypeAnchor}
       open={changeTypeAnchor != null}
       onClose={() => setChangeTypeAnchor(null)}
-      anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-      transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      transformOrigin={{ vertical: 'top', horizontal: 'left' }}
       data-testid="CampaignChangeTypeMenu"
     >
       {sectionTypesForSlot(
@@ -879,15 +880,20 @@ export function BottomBar({
     <Stack
       direction="row"
       spacing={2}
-      data-testid="CampaignBottomBar"
+      data-testid="CampaignContextBar"
       data-selection={selection.kind}
       sx={{
-        px: 4,
-        py: 2,
+        mx: 4,
+        mt: 2,
+        px: 2,
+        py: 1,
         alignItems: 'center',
-        borderTop: 1,
-        borderColor: 'divider',
-        bgcolor: 'background.paper'
+        flexShrink: 0,
+        position: 'relative',
+        zIndex: 1,
+        bgcolor: 'background.paper',
+        borderRadius: 2,
+        boxShadow: 3
       }}
     >
       <Breadcrumb />

@@ -29,7 +29,7 @@ import { newSectionBlock } from '../sectionTypes'
 import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
 
-import { BottomBar } from './BottomBar'
+import { ContextBar } from './ContextBar'
 
 vi.mock('uuid', () => ({ v4: vi.fn(() => 'newId') }))
 
@@ -265,7 +265,7 @@ function renderBar(
     >
       <Hotkeys />
       <SelectionProbe />
-      <BottomBar
+      <ContextBar
         onSettingsClick={onSettingsClick}
         onRegionSettingsClick={onRegionSettingsClick}
         onThemeClick={onThemeClick}
@@ -285,7 +285,7 @@ function menuItemNames(): string[] {
   return screen.getAllByRole('menuitem').map((item) => item.textContent ?? '')
 }
 
-describe('BottomBar', () => {
+describe('ContextBar', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
@@ -296,7 +296,7 @@ describe('BottomBar', () => {
     const onThemeClick = vi.fn()
     renderBar(undefined, onSettingsClick, campaign, vi.fn(), onThemeClick)
 
-    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+    expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
       'data-selection',
       'campaign'
     )
@@ -326,7 +326,7 @@ describe('BottomBar', () => {
       onRegionSettingsClick
     )
 
-    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+    expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
       'data-selection',
       'region'
     )
@@ -369,7 +369,7 @@ describe('BottomBar', () => {
   it('shows a Region Line as text in its region, with a bin and no section host', () => {
     renderBar({ selectedBlockId: 'eurLineId' }, vi.fn(), campaignWithRegions)
 
-    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+    expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
       'data-selection',
       'text'
     )
@@ -386,7 +386,7 @@ describe('BottomBar', () => {
     const onTranslationsClick = vi.fn()
     render(
       <StaticEditor mocks={[createMock, deleteMock]}>
-        <BottomBar
+        <ContextBar
           onSettingsClick={vi.fn()}
           onThemeClick={vi.fn()}
           onTranslationsClick={onTranslationsClick}
@@ -447,7 +447,7 @@ describe('BottomBar', () => {
 
     expect(buttonNames()).toEqual(['Campaign', 'Edit', 'Style', 'Add'])
     expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent('Footer')
-    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+    expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
       'data-selection',
       'chrome'
     )
@@ -863,7 +863,7 @@ describe('BottomBar', () => {
     it('shows Edit, Style, Change type, Add, swap and the emptying bin for a section in a slot', () => {
       renderColumnBar('slotRichTextId')
 
-      expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+      expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
         'data-selection',
         'column'
       )
@@ -965,7 +965,7 @@ describe('BottomBar', () => {
     it('offers an empty slot a type picker without Columns or Region share', async () => {
       renderColumnBar('slotRightId')
 
-      expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+      expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
         'data-selection',
         'slot'
       )
@@ -1017,7 +1017,7 @@ describe('BottomBar', () => {
   })
 })
 
-describe('BottomBar for a Video Carousel and its cards', () => {
+describe('ContextBar for a Video Carousel and its cards', () => {
   function carouselItem(
     id: string,
     parentOrder: number
@@ -1097,7 +1097,7 @@ describe('BottomBar for a Video Carousel and its cards', () => {
         <Hotkeys />
         <SelectionProbe />
         <CommandProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       </StaticEditor>
     )
   }
@@ -1109,7 +1109,7 @@ describe('BottomBar for a Video Carousel and its cards', () => {
   it('shows Edit, ← → arrows and bin for a selected card, under its carousel in the breadcrumb', () => {
     renderCarouselBar('secondItemId')
 
-    expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
+    expect(screen.getByTestId('CampaignContextBar')).toHaveAttribute(
       'data-selection',
       'card'
     )

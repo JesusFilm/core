@@ -17,7 +17,7 @@ import {
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
-import { BottomBar } from './BottomBar'
+import { ContextBar } from './ContextBar'
 import {
   CampaignEditorProvider,
   useCampaignEditor
@@ -45,7 +45,7 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the bars, the hint, the canvas and the settings drawer. */
+/** Everything inside the providers: the top bar, the hint, the context bar, the canvas and the drawers. */
 function CampaignEditorShell({
   campaign,
   isManager
@@ -95,14 +95,14 @@ function CampaignEditorShell({
         isManager={isManager}
       />
       <FirstRunHint campaignId={campaign.id} />
-      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
-      <BottomBar
+      <ContextBar
         onSettingsClick={() => setSettingsOpen(true)}
         onThemeClick={() => setThemeOpen(true)}
         onLanguagesClick={() => setLanguagesOpen(true)}
         onRegionSettingsClick={() => setRegionSettingsOpen(true)}
         onTranslationsClick={() => setTranslationsOpen(true)}
       />
+      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
       <Drawer
         anchor="right"
         open={settingsOpen}
@@ -158,8 +158,8 @@ function CampaignEditorShell({
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
  * the Mux upload queue (so a Media Slot upload outlives its drawer), the
- * top bar, the first-run hint, the canvas and the contextual bottom
- * bar. First open after create shows the landing page, nothing selected,
+ * top bar, the first-run hint, the contextual bar floating under it and
+ * the canvas. First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
  * replaces Save.
  */

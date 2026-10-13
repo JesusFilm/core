@@ -85,7 +85,7 @@ describe('CampaignEditor', () => {
     expect(
       screen.getByRole('combobox', { name: /^Preview language/ })
     ).toHaveTextContent('English')
-    expect(screen.getByTestId('CampaignBottomBar')).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignContextBar')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument()
     expect(baseElement.getElementsByTagName('iframe')).toHaveLength(1)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()

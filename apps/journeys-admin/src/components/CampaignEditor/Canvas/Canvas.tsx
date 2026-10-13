@@ -261,7 +261,8 @@ export function Canvas({
         alignItems: 'stretch',
         bgcolor: 'background.default',
         px: 4,
-        py: 3
+        pt: 2,
+        pb: 3
       }}
     >
       <FontLoader fonts={fonts} />

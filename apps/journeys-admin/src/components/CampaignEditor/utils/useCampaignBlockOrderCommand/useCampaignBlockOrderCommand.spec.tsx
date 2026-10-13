@@ -5,7 +5,7 @@ import { ReactElement } from 'react'
 import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
+import { ContextBar } from '../../ContextBar'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
@@ -126,7 +126,7 @@ function renderEditor(children?: ReactElement): ReturnType<typeof render> {
       <CommandUndoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
       {children}
     </QueriedEditor>
   )

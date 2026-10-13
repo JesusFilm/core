@@ -10,7 +10,7 @@ export interface BarButtonProps {
   active?: boolean
 }
 
-/** One control of the contextual bottom bar. */
+/** One control of the contextual context bar. */
 export function BarButton({
   label,
   icon,

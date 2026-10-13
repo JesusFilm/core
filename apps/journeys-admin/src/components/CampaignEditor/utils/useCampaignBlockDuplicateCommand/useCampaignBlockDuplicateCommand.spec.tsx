@@ -6,7 +6,7 @@ import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../../libs/useCampaignBlockDupli
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
+import { ContextBar } from '../../ContextBar'
 import { campaign } from '../../data'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
@@ -83,7 +83,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandRedoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </QueriedEditor>
   )
 }

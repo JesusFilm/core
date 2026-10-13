@@ -8,7 +8,7 @@ import { CAMPAIGN_ANALYTICS_BLOCK_CREATE } from '../../../../libs/useCampaignSec
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
+import { ContextBar } from '../../ContextBar'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
 import { campaign } from '../../data'
@@ -118,7 +118,7 @@ function renderEditor(): ReturnType<typeof render> {
       <SelectionProbe />
       <BlocksProbe />
       <PageCanvas />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
     </QueriedEditor>
   )
 }
@@ -260,7 +260,7 @@ describe('useCampaignBlockCreateCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+          <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
         </QueriedEditor>
       )
     }
