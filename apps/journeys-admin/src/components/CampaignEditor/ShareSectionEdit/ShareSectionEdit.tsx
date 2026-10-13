@@ -117,6 +117,7 @@ interface PhoneFrameProps {
 
 /** The public phone's screen width (300px frame less the bezel); the canvas iframe renders at this width and scales. */
 const PUBLIC_SCREEN_WIDTH = 284
+const PUBLIC_SCREEN_HEIGHT = 584
 /** The canvas phone's screen width (220px frame less the 6px bezel). */
 const CANVAS_SCREEN_WIDTH = 208
 
@@ -129,8 +130,10 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
         width: 220,
         flexShrink: 0,
         aspectRatio: '9 / 18',
+        // The journey embed rounds itself at 16px; scaled to the canvas that
+        // is 12px, so the screen clips there and the bezel adds its 6px.
         p: '6px',
-        borderRadius: '26px',
+        borderRadius: '18px',
         backgroundColor: 'var(--campaign-band-heading)'
       }}
     >
@@ -138,9 +141,9 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
         sx={{
           width: '100%',
           height: '100%',
-          borderRadius: '20px',
+          borderRadius: '12px',
           overflow: 'hidden',
-          clipPath: 'inset(0 round 20px)',
+          clipPath: 'inset(0 round 12px)',
           backgroundColor: 'var(--campaign-band-card)',
           display: 'flex',
           alignItems: 'center',
@@ -276,7 +279,7 @@ function ShareLanguageRow({
                   // layout with its own square-cornered card.
                   display: 'block',
                   width: PUBLIC_SCREEN_WIDTH,
-                  height: PUBLIC_SCREEN_WIDTH * 2,
+                  height: PUBLIC_SCREEN_HEIGHT,
                   transform: `scale(${CANVAS_SCREEN_WIDTH / PUBLIC_SCREEN_WIDTH})`,
                   transformOrigin: 'top left',
                   border: 0,
