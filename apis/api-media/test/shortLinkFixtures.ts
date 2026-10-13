@@ -63,6 +63,7 @@ export function buildShortLink(overrides: Partial<ShortLink> = {}): ShortLink {
     edgePublishedAt: null,
     healthStatus: null,
     healthCheckedAt: null,
+    pausedByHealthCheckAt: null,
     ...overrides
   }
 }
