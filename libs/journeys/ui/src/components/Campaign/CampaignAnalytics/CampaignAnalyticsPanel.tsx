@@ -28,6 +28,7 @@ import { GET_CAMPAIGN_STATS } from './getCampaignStats'
 import { MOTION_MS, REDUCED_MOTION } from './motion'
 import { WorldMap, WorldMapShapes } from './WorldMap'
 
+/** Chips and rows keep a near-square 4px corner regardless of the theme radius. */
 const ROW_HEIGHT = 36
 /** The gap between ranked rows, in px. */
 const ROW_GAP = 6
@@ -171,7 +172,7 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
               width: '100%',
               height: ROW_HEIGHT,
               px: 1.5,
-              borderRadius: 1,
+              borderRadius: '4px',
               border: '1px solid var(--campaign-band-border)',
               backgroundColor: 'var(--campaign-band-card)',
               display: 'grid',
@@ -304,7 +305,7 @@ export function CampaignAnalyticsPanel({
           px: 1,
           py: 0.5,
           minHeight: 30,
-          borderRadius: 1,
+          borderRadius: '4px',
           typography: 'overline',
           fontSize: '0.6875rem',
           lineHeight: 1.3,
