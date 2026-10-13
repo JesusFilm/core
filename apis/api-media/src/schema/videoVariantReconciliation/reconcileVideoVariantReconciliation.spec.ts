@@ -6,6 +6,7 @@ import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVaria
 import {
   addLanguageToVideo,
   findContainerParentIds,
+  removeLanguageFromVideoIfUnused,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
 
@@ -293,6 +294,157 @@ describe('reconcileVideoVariantReconciliation', () => {
       })
     })
     expect(result).toEqual({ publicationReady: true, status: 'complete' })
+  })
+
+  describe('when parent-language synchronization fails', () => {
+    it('records the failure as parentSync, not algoliaVideo, for a published Variant', async () => {
+      const reconciliation: ReconciliationRecord = {
+        reason: 'video-variant-publication-change',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: true,
+        videoVariantId: 'variant-1',
+        processingStages: {},
+        createdAt: new Date(),
+        videoVariant: {
+          id: 'variant-1',
+          videoId: 'episode-1',
+          languageId: '20770',
+          slug: 'episode-1/20770',
+          published: false,
+          downloadable: false,
+          hls: '',
+          share: '',
+          muxVideo: { readyToStream: true }
+        }
+      }
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        reconciliation as never
+      )
+      vi.mocked(addLanguageToVideo).mockRejectedValueOnce(
+        new Error('database unavailable')
+      )
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(updateVideoVariantInAlgolia).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            status: 'degraded',
+            processingStages: expect.objectContaining({
+              parentSync: expect.objectContaining({
+                state: 'failed',
+                error: 'database unavailable',
+                attempts: 1
+              }),
+              algoliaVideo: expect.not.objectContaining({ state: 'failed' })
+            })
+          })
+        }
+      )
+      expect(result).toEqual({ publicationReady: false, status: 'degraded' })
+    })
+
+    it('records the failure as parentSync for a delete reconciliation', async () => {
+      const reconciliation: ReconciliationRecord = {
+        reason: 'video-variant-delete',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: false,
+        videoVariantId: null,
+        processingStages: {},
+        createdAt: new Date(),
+        videoVariant: null
+      }
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        reconciliation as never
+      )
+      vi.mocked(removeLanguageFromVideoIfUnused).mockRejectedValueOnce(
+        new Error('database unavailable')
+      )
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            status: 'degraded',
+            processingStages: expect.objectContaining({
+              parentSync: expect.objectContaining({
+                state: 'failed',
+                attempts: 1
+              })
+            })
+          })
+        }
+      )
+      expect(result).toMatchObject({
+        publicationReady: false,
+        status: 'degraded',
+        failure: { stageName: 'parentSync' }
+      })
+    })
+
+    it('records the failure as parentSync when unpublishing a Variant', async () => {
+      const reconciliation: ReconciliationRecord = {
+        reason: 'video-variant-publication-change',
+        videoId: 'episode-1',
+        languageId: '20770',
+        published: false,
+        videoVariantId: 'variant-1',
+        processingStages: {},
+        createdAt: new Date(),
+        videoVariant: {
+          id: 'variant-1',
+          videoId: 'episode-1',
+          languageId: '20770',
+          slug: 'episode-1/20770',
+          published: true,
+          downloadable: false,
+          hls: '',
+          share: '',
+          muxVideo: { readyToStream: true }
+        }
+      }
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        reconciliation as never
+      )
+      vi.mocked(removeLanguageFromVideoIfUnused).mockRejectedValueOnce(
+        new Error('database unavailable')
+      )
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: 'variant-1' },
+        data: { published: false }
+      })
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            status: 'degraded',
+            processingStages: expect.objectContaining({
+              parentSync: expect.objectContaining({
+                state: 'failed',
+                attempts: 1
+              })
+            })
+          })
+        }
+      )
+      expect(result).toMatchObject({
+        publicationReady: false,
+        status: 'degraded',
+        failure: { stageName: 'parentSync' }
+      })
+    })
   })
 
   describe('when the Video record fails to index', () => {

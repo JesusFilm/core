@@ -62,8 +62,8 @@ export type ReasonSpecificReconciliationResult = {
   publicationReady: boolean
   status: ReconciliationStatus
   failure?: {
-    stageName: 'algoliaVideo' | 'algoliaVariant'
-    stage: ProcessingStages['algoliaVideo' | 'algoliaVariant']
+    stageName: 'parentSync' | 'algoliaVideo' | 'algoliaVariant'
+    stage: ProcessingStages['parentSync' | 'algoliaVideo' | 'algoliaVariant']
   }
 }
 
@@ -132,20 +132,23 @@ async function reconcileDeleteVariant({
     )
     await updateParentCollectionLanguages(reconciliation.videoId)
   } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
+    // generatedParentStages() seeds parentSync's attempts assuming success
+    // (previousAttempts + 1), so the failure here reuses that count rather
+    // than incrementing again.
+    stages.parentSync = failedStage(error, stages.parentSync.attempts)
     await persistReconciliationStatus({
       store,
       reconciliationId,
       status: 'degraded',
       stages,
-      failedStageValue: stages.algoliaVideo
+      failedStageValue: stages.parentSync
     })
     return {
       publicationReady: false,
       status: 'degraded',
       failure: {
-        stageName: 'algoliaVideo',
-        stage: stages.algoliaVideo
+        stageName: 'parentSync',
+        stage: stages.parentSync
       }
     }
   }
@@ -223,20 +226,23 @@ async function reconcileUnpublishVariant({
     await removeLanguageFromVideoIfUnused(variant.videoId, variant.languageId)
     await updateParentCollectionLanguages(variant.videoId)
   } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
+    // generatedParentStages() seeds parentSync's attempts assuming success
+    // (previousAttempts + 1), so the failure here reuses that count rather
+    // than incrementing again.
+    stages.parentSync = failedStage(error, stages.parentSync.attempts)
     await persistReconciliationStatus({
       store,
       reconciliationId,
       status: 'degraded',
       stages,
-      failedStageValue: stages.algoliaVideo
+      failedStageValue: stages.parentSync
     })
     return {
       publicationReady: false,
       status: 'degraded',
       failure: {
-        stageName: 'algoliaVideo',
-        stage: stages.algoliaVideo
+        stageName: 'parentSync',
+        stage: stages.parentSync
       }
     }
   }

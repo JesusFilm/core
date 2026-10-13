@@ -170,8 +170,8 @@ export async function reconcileVideoVariantReconciliation(
     await addLanguageToVideo(variant.videoId, variant.languageId)
     await updateParentCollectionLanguages(variant.videoId)
   } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
-    await persistStatus('degraded', stages.algoliaVideo)
+    stages.parentSync = failedStage(error, stages.parentSync.attempts + 1)
+    await persistStatus('degraded', stages.parentSync)
     return { publicationReady: false, status: 'degraded' }
   }
   stages.algoliaVideo = await syncVideoRecordStage(
