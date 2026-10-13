@@ -27,7 +27,7 @@ describe('runCatalogParentLanguageAudit', () => {
   it('discovers parents in batches and reports findings without applying by default', async () => {
     const deps = dependencies()
 
-    const summary = await runCatalogParentLanguageAudit({}, deps as never)
+    const summary = await runCatalogParentLanguageAudit({}, deps)
 
     expect(deps.auditAndRepairParent).toHaveBeenCalledWith('parent-1', {
       apply: false
@@ -55,7 +55,7 @@ describe('runCatalogParentLanguageAudit', () => {
 
     await runCatalogParentLanguageAudit(
       { apply: true, batchSize: 1 },
-      deps as never
+      deps
     )
 
     expect(deps.auditAndRepairParent).toHaveBeenNthCalledWith(1, 'parent-1', {
@@ -75,7 +75,7 @@ describe('runCatalogParentLanguageAudit', () => {
 
     await runCatalogParentLanguageAudit(
       { parentId: 'single-parent' },
-      deps as never
+      deps
     )
 
     expect(deps.findParentIdsBatch).not.toHaveBeenCalled()
@@ -113,7 +113,7 @@ describe('runCatalogParentLanguageAudit', () => {
 
     const summary = await runCatalogParentLanguageAudit(
       { apply: true },
-      deps as never
+      deps
     )
 
     expect(summary.indexFailures).toBe(1)

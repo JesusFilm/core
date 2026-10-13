@@ -251,7 +251,7 @@ describe('parentLanguageAudit', () => {
         ] as never)
         .mockResolvedValueOnce([] as never)
       prismaMock.videoVariant.findFirst
-        .mockResolvedValueOnce(null as never) // createEmptyParentVariant existing check
+        .mockResolvedValueOnce(null) // createEmptyParentVariant existing check
         .mockResolvedValueOnce({ slug: 'parent-slug/english' } as never) // language slug lookup
       prismaMock.$transaction.mockImplementation(async (callback: any) =>
         callback(prismaMock)
@@ -293,7 +293,7 @@ describe('parentLanguageAudit', () => {
         ] as never)
         .mockResolvedValueOnce([] as never)
       prismaMock.videoVariant.findFirst
-        .mockResolvedValueOnce(null as never)
+        .mockResolvedValueOnce(null)
         .mockResolvedValueOnce({ slug: 'parent-slug/english' } as never)
       prismaMock.$transaction.mockImplementation(async (callback: any) =>
         callback(prismaMock)
