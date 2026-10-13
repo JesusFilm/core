@@ -35,6 +35,12 @@ interface InlineTextProps
   /** Clicking the text selects its block. */
   onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
+  /**
+   * Size the input to its text (a button label): it grows as the author
+   * types, single line, never wider than its container, instead of taking
+   * the full width like a text field.
+   */
+  autoWidth?: boolean
 }
 
 /** Count text the way the API does: Unicode code points after trim. */
@@ -69,7 +75,8 @@ export function InlineText({
   component,
   align,
   sx,
-  variantMapping
+  variantMapping,
+  autoWidth = false
 }: InlineTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const max =
@@ -136,9 +143,43 @@ export function InlineText({
         ? t('{{length}} / {{max}}', { length, max })
         : undefined)
 
+  const input = (
+    <InlineEditInput
+      name={target.string != null ? target.string.key : target.field}
+      fullWidth
+      multiline={!autoWidth}
+      autoFocus={autoFocus}
+      inputRef={inputRef}
+      value={value}
+      placeholder={fallback !== '' ? fallback : placeholder}
+      onChange={handleInputChange}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      inputProps={{
+        'aria-label': placeholder,
+        // size 1 drops the native input's default width, so the hidden
+        // sizer alone decides the cell's width.
+        ...(autoWidth ? { size: 1 } : {})
+      }}
+      sx={
+        autoWidth
+          ? {
+              gridArea: '1 / 1',
+              minWidth: 0,
+              width: '100%',
+              '& .MuiInputBase-input': { minWidth: 0, width: '100%' }
+            }
+          : undefined
+      }
+    />
+  )
+
   return (
     <Box
-      sx={{ width: '100%', ...sx }}
+      sx={{
+        ...(autoWidth ? { maxWidth: '100%', minWidth: 0 } : { width: '100%' }),
+        ...sx
+      }}
       data-testid={testId}
       onClick={(event) => event.stopPropagation()}
     >
@@ -149,19 +190,32 @@ export function InlineText({
         variantMapping={variantMapping}
         sx={{ color: 'inherit' }}
       >
-        <InlineEditInput
-          name={target.string != null ? target.string.key : target.field}
-          fullWidth
-          multiline
-          autoFocus={autoFocus}
-          inputRef={inputRef}
-          value={value}
-          placeholder={fallback !== '' ? fallback : placeholder}
-          onChange={handleInputChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          inputProps={{ 'aria-label': placeholder }}
-        />
+        {autoWidth ? (
+          // A hidden copy of the text sets the cell's width; the input fills
+          // the same cell, so it is exactly as wide as what is typed.
+          <Box sx={{ display: 'inline-grid', maxWidth: '100%' }}>
+            <Box
+              component="span"
+              aria-hidden
+              data-testid="InlineTextSizer"
+              sx={{
+                gridArea: '1 / 1',
+                visibility: 'hidden',
+                whiteSpace: 'pre',
+                overflow: 'hidden'
+              }}
+            >
+              {value === ''
+                ? fallback !== ''
+                  ? fallback
+                  : placeholder
+                : value}
+            </Box>
+            {input}
+          </Box>
+        ) : (
+          input
+        )}
       </Typography>
       {helper != null && (
         <Typography
