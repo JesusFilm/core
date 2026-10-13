@@ -19,6 +19,8 @@ interface QrCodeCanvasProps {
   size?: number
   /** The DOM id of the canvas. */
   id?: string
+  /** The tile's corner radius; theme units by default, or a CSS length such as `'6px'` where the theme radius would round the code's corners away. */
+  cornerRadius?: number | string
 }
 
 const QR_CODE_LEVEL = 'M'
@@ -87,7 +89,8 @@ export function QrCodeCanvas({
   value,
   loading = false,
   size = 174,
-  id
+  id,
+  cornerRadius = 2
 }: QrCodeCanvasProps): ReactElement {
   const showQrCode = value != null && !loading
   const showEmpty = value == null && !loading
@@ -101,7 +104,7 @@ export function QrCodeCanvas({
           sx={{
             borderWidth: '2px',
             borderStyle: 'solid',
-            borderRadius: 2,
+            borderRadius: cornerRadius,
             borderColor: 'divider',
             backgroundColor: '#FFFFFF',
             p: 1,
@@ -126,7 +129,7 @@ export function QrCodeCanvas({
             minHeight: tileSize,
             minWidth: tileSize,
             backgroundColor: 'divider',
-            borderRadius: 2,
+            borderRadius: cornerRadius,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
@@ -139,7 +142,11 @@ export function QrCodeCanvas({
         <Skeleton
           variant="rectangular"
           aria-label="Loading QR code"
-          sx={{ borderRadius: 2, minHeight: tileSize, minWidth: tileSize }}
+          sx={{
+            borderRadius: cornerRadius,
+            minHeight: tileSize,
+            minWidth: tileSize
+          }}
         />
       )}
     </>
