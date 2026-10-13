@@ -115,6 +115,11 @@ interface PhoneFrameProps {
   children: ReactNode
 }
 
+/** The public phone's screen width (300px frame less the bezel); the canvas iframe renders at this width and scales. */
+const PUBLIC_SCREEN_WIDTH = 284
+/** The canvas phone's screen width (220px frame less the 6px bezel). */
+const CANVAS_SCREEN_WIDTH = 208
+
 /** The phone-shaped frame the public page previews a journey in; on the canvas it also holds the empty states. */
 function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
   return (
@@ -253,22 +258,32 @@ function ShareLanguageRow({
       >
         <PhoneFrame>
           {state === 'live' && slug != null && (
-            <Box
-              component="iframe"
-              data-testid="ShareLanguagePhoneIframe"
-              src={journeyPreviewAddress(slug)}
-              title={regionLanguage.title ?? slug}
-              sandbox={PREVIEW_IFRAME_SANDBOX}
-              allow={PREVIEW_IFRAME_ALLOW}
-              loading="lazy"
-              sx={{
-                display: 'block',
-                width: '100%',
-                height: '100%',
-                border: 0,
-                backgroundColor: '#000000'
-              }}
-            />
+            // Fills the screen so the scaled iframe starts at its top-left
+            // corner rather than being centred by its larger layout box.
+            <Box sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+              <Box
+                component="iframe"
+                data-testid="ShareLanguagePhoneIframe"
+                src={journeyPreviewAddress(slug)}
+                title={regionLanguage.title ?? slug}
+                sandbox={PREVIEW_IFRAME_SANDBOX}
+                allow={PREVIEW_IFRAME_ALLOW}
+                loading="lazy"
+                sx={{
+                  // Rendered at the public phone's screen width and scaled
+                  // down, so the journey lays out as it does on the public
+                  // page (filling the screen) rather than in a narrower
+                  // layout with its own square-cornered card.
+                  display: 'block',
+                  width: PUBLIC_SCREEN_WIDTH,
+                  height: PUBLIC_SCREEN_WIDTH * 2,
+                  transform: `scale(${CANVAS_SCREEN_WIDTH / PUBLIC_SCREEN_WIDTH})`,
+                  transformOrigin: 'top left',
+                  border: 0,
+                  backgroundColor: '#000000'
+                }}
+              />
+            </Box>
           )}
           {state === 'unlinked' && (
             <Button
