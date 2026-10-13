@@ -28,6 +28,8 @@ const STEP_TONES: ReadonlyArray<(accent: string) => string> = [
 ]
 
 interface WorldMapProps {
+  /** `contain` letterboxes the whole drawing; `cover` fills the box, trimming the edges. */
+  fit?: 'contain' | 'cover'
   shapes: WorldMapShapes
   /** The selected tab's Region Countries (ALL: every region's), as alpha-2 codes; only these are coloured. */
   highlightedCodes: ReadonlyArray<string>
@@ -66,7 +68,8 @@ export function WorldMap({
   visitors,
   accentColor,
   neutralColor = 'var(--campaign-band-card)',
-  locale
+  locale,
+  fit = 'contain'
 }: WorldMapProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale])
@@ -111,6 +114,7 @@ export function WorldMap({
       component="svg"
       data-testid="WorldMap"
       viewBox={`0 0 ${shapes.width} ${shapes.height}`}
+      preserveAspectRatio={fit === 'cover' ? 'xMidYMid slice' : 'xMidYMid meet'}
       role="img"
       aria-label={t('Visitors by country')}
       sx={{

@@ -28,9 +28,9 @@ import { GET_CAMPAIGN_STATS } from './getCampaignStats'
 import { MOTION_MS, REDUCED_MOTION } from './motion'
 import { WorldMap, WorldMapShapes } from './WorldMap'
 
-const ROW_HEIGHT = 48
+const ROW_HEIGHT = 36
 /** The gap between ranked rows, in px. */
-const ROW_GAP = 10
+const ROW_GAP = 6
 const ROW_PITCH = ROW_HEIGHT + ROW_GAP
 
 const rowEnter = keyframes`
@@ -42,7 +42,7 @@ type CampaignAnalyticsCountries = ReadonlyArray<CampaignCountryStat>
 
 export type CampaignAnalyticsRegion = Pick<
   CampaignRegion,
-  'id' | 'name' | 'listed' | 'order'
+  'id' | 'slug' | 'name' | 'listed' | 'order'
 > & {
   countries?: ReadonlyArray<{ countryId: string }>
 }
@@ -170,14 +170,14 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
               left: 0,
               width: '100%',
               height: ROW_HEIGHT,
-              px: 2,
+              px: 1.5,
               borderRadius: 1,
               border: '1px solid var(--campaign-band-border)',
               backgroundColor: 'var(--campaign-band-card)',
               display: 'grid',
-              gridTemplateColumns: '2rem minmax(0, 1fr) auto',
+              gridTemplateColumns: '1.75rem minmax(0, 1fr) auto',
               alignItems: 'center',
-              columnGap: 2,
+              columnGap: 1.5,
               transform: `translateY(${rank * ROW_PITCH}px)`,
               transition: `transform ${MOTION_MS}ms ease`,
               animation: `${rowEnter} ${MOTION_MS}ms ease`,
@@ -203,14 +203,14 @@ function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
               {String(rank + 1).padStart(2, '0')}
             </Typography>
             <Typography
-              variant="body1"
+              variant="body2"
               noWrap
               sx={{ color: 'var(--campaign-band-text)', fontWeight: 600 }}
             >
               {countryName(country.countryCode, locale)}
             </Typography>
             <Typography
-              variant="body1"
+              variant="body2"
               sx={{
                 color: 'var(--campaign-band-heading)',
                 fontVariantNumeric: 'tabular-nums'
@@ -285,21 +285,29 @@ export function CampaignAnalyticsPanel({
   const activeRegion =
     fixedRegion ?? tabRegions.find((region) => region.id === activeTab)
 
-  const chipFor = (value: string, label: string): ReactElement => {
+  /** A region chip shows the region's code (its slug, upper-cased) and is named by its full name for assistive tech. */
+  const chipFor = (
+    value: string,
+    label: string,
+    name: string = label
+  ): ReactElement => {
     const selected = activeTab === value
     return (
       <ButtonBase
         key={value}
         role="tab"
         aria-selected={selected}
+        aria-label={name}
         onClick={() => setSelectedTab(value)}
         data-testid={`CampaignAnalyticsChip-${value}`}
         sx={{
-          px: 1.5,
-          py: 1.25,
+          px: 1,
+          py: 0.5,
+          minHeight: 30,
           borderRadius: 1,
           typography: 'overline',
-          lineHeight: 1.4,
+          fontSize: '0.6875rem',
+          lineHeight: 1.3,
           textAlign: 'center',
           border: '1px solid',
           borderColor: selected
@@ -333,10 +341,12 @@ export function CampaignAnalyticsPanel({
       sx={{
         display: 'grid',
         gap: 1,
-        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'
+        gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))'
       }}
     >
-      {tabRegions.map((region) => chipFor(region.id, region.name))}
+      {tabRegions.map((region) =>
+        chipFor(region.id, region.slug.toUpperCase(), region.name)
+      )}
       {chipFor(
         ALL_REGIONS,
         stringValue(strings, CampaignStringKey.allRegions, t('All'))
@@ -359,6 +369,7 @@ export function CampaignAnalyticsPanel({
         visitors={visitors}
         accentColor={accentColor}
         locale={locale}
+        fit="cover"
       />
     ) : null
 
@@ -385,28 +396,34 @@ export function CampaignAnalyticsPanel({
         border: '1px solid var(--campaign-band-border)',
         display: 'grid',
         gap: 3,
-        alignItems: 'start',
+        alignItems: 'stretch',
         gridTemplateColumns:
           layout === 'map' ? { xs: '1fr', md: '3fr 2fr' } : '1fr'
       }}
     >
       {layout === 'map' ? (
         <>
-          <Stack spacing={3}>
+          <Stack spacing={2} sx={{ height: '100%' }}>
             {top}
             <Box
               data-testid="CampaignAnalyticsMap"
               sx={{
+                flex: 1,
+                minHeight: 240,
+                display: 'flex',
+                alignItems: 'center',
                 p: 2,
                 borderRadius: 1,
                 border: '1px solid var(--campaign-band-border)',
-                backgroundColor: 'var(--campaign-band-card)'
+                backgroundColor: 'var(--campaign-band-card)',
+                // The map fits whatever height the ranks leave beside it.
+                '& svg': { height: '100%', maxHeight: '100%' }
               }}
             >
               {mapFor(mapVisitors)}
             </Box>
           </Stack>
-          <Stack spacing={3}>
+          <Stack spacing={2}>
             {tabs}
             {ranks}
           </Stack>
