@@ -276,11 +276,13 @@ export function CampaignRegionShare({
                     width: 300,
                     maxWidth: '100%',
                     aspectRatio: '9 / 18',
-                    // A phone bezel: a modest outer radius, the screen
-                    // clipped on its own layer so the journey's square
-                    // corners never poke past the rounded screen edge.
+                    // A phone bezel around the screen. The journey embed
+                    // rounds its own outer corners at 16px and is
+                    // transparent beyond them, so the screen clips at that
+                    // same radius: a larger one shows a black sliver in each
+                    // corner, a smaller one a square notch.
                     p: '8px',
-                    borderRadius: '32px',
+                    borderRadius: '24px',
                     backgroundColor: 'var(--campaign-band-heading)',
                     boxShadow: 6
                   }}
@@ -290,11 +292,11 @@ export function CampaignRegionShare({
                     sx={{
                       width: '100%',
                       height: '100%',
-                      borderRadius: '24px',
+                      borderRadius: '16px',
                       overflow: 'hidden',
                       // Safari (and some Chrome builds) do not clip an iframe
                       // to a rounded overflow box; a clip-path always does.
-                      clipPath: 'inset(0 round 24px)',
+                      clipPath: 'inset(0 round 16px)',
                       backgroundColor: '#000000'
                     }}
                   >
