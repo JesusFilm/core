@@ -145,6 +145,7 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
     >
       <Box
         sx={{
+          position: 'relative',
           width: CANVAS_SCREEN_WIDTH,
           height: CANVAS_SCREEN_HEIGHT,
           borderRadius: '12px',
@@ -153,7 +154,20 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
           backgroundColor: 'var(--campaign-band-card)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          // A composited iframe ignores both the overflow clip and the
+          // clip-path on some displays, so the bezel is also painted over
+          // the screen's corners from above: a rounded hole whose spread
+          // shadow covers everything outside it.
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            borderRadius: '12px',
+            boxShadow: '0 0 0 20px var(--campaign-band-heading)',
+            pointerEvents: 'none',
+            zIndex: 1
+          }
         }}
       >
         {children}
