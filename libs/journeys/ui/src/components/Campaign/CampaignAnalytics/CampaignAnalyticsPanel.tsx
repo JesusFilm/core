@@ -6,7 +6,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import type { CampaignRegion } from '../types'
@@ -28,9 +28,9 @@ import { GET_CAMPAIGN_STATS } from './getCampaignStats'
 import { MOTION_MS, REDUCED_MOTION } from './motion'
 import { WorldMap, WorldMapShapes } from './WorldMap'
 
-const ROW_HEIGHT = 40
+const ROW_HEIGHT = 48
 /** The gap between ranked rows, in px. */
-const ROW_GAP = 12
+const ROW_GAP = 10
 const ROW_PITCH = ROW_HEIGHT + ROW_GAP
 
 const rowEnter = keyframes`
@@ -121,99 +121,107 @@ function Tile({ testId, label, value, caption }: TileProps): ReactElement {
 interface RankedListProps {
   view: CampaignStatsView
   locale: string
+  /** Two columns from `md` up (read across then down), or one beside the map. */
+  columns: 1 | 2
 }
 
 /**
- * The ranked list: two columns from `md` up, read across then down (01 left,
- * 02 right, 03 left), one column below. Rows are absolutely positioned by
- * rank, so a tab switch is a CSS transition of each kept row's transform (a
- * hand FLIP: the DOM order never moves, only the translate); a row new to
- * the list fades in.
+ * The ranked list: numbered rows as bordered cards. Rows are absolutely
+ * positioned by rank, so a tab switch is a CSS transition of each kept
+ * row's transform (a hand FLIP: the DOM order never moves, only the
+ * translate); a row new to the list fades in.
  */
-function RankedList({ view, locale }: RankedListProps): ReactElement {
-  const { t } = useTranslation('libs-journeys-ui')
+function RankedList({ view, locale, columns }: RankedListProps): ReactElement {
   const numberFormat = new Intl.NumberFormat(locale)
   const count = view.countries.length
+  const twoUp = columns === 2
   return (
-    <Stack spacing={1.5} data-testid="CampaignAnalyticsRanked">
-      <Typography
-        variant="overline"
-        component="p"
-        sx={{ color: 'var(--campaign-band-muted)' }}
-      >
-        {t('Top countries by views')}
-      </Typography>
-      <Box
-        component="ol"
-        data-testid="CampaignAnalyticsList"
-        sx={(theme) => ({
-          position: 'relative',
-          listStyle: 'none',
-          m: 0,
-          p: 0,
-          height: count * ROW_PITCH - ROW_GAP,
-          [theme.breakpoints.up('md')]: {
-            height: Math.ceil(count / 2) * ROW_PITCH - ROW_GAP
-          }
-        })}
-      >
-        {view.countries.map((country, rank) => {
-          const column = rank % 2
-          const row = Math.floor(rank / 2)
-          return (
-            <Box
-              component="li"
-              key={country.countryCode}
-              data-testid={`CampaignAnalyticsRow-${country.countryCode}`}
-              data-rank={rank}
-              sx={(theme) => ({
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: ROW_HEIGHT,
-                px: 2,
-                borderRadius: 1,
-                backgroundColor: 'var(--campaign-band-card)',
-                display: 'grid',
-                gridTemplateColumns: '1.5rem minmax(0, 1fr) auto',
-                alignItems: 'center',
-                columnGap: 1.5,
-                transform: `translateY(${rank * ROW_PITCH}px)`,
-                transition: `transform ${MOTION_MS}ms ease`,
-                animation: `${rowEnter} ${MOTION_MS}ms ease`,
-                ...REDUCED_MOTION,
-                [theme.breakpoints.up('md')]: {
-                  left: column === 1 ? '50%' : 0,
-                  width: `calc(50% - ${ROW_GAP / 2}px)`,
-                  transform: `translate(${column === 1 ? `${ROW_GAP / 2}px` : 0}, ${row * ROW_PITCH}px)`
-                }
-              })}
+    <Box
+      component="ol"
+      data-testid="CampaignAnalyticsList"
+      data-columns={columns}
+      sx={(theme) => ({
+        position: 'relative',
+        listStyle: 'none',
+        m: 0,
+        p: 0,
+        height: count * ROW_PITCH - ROW_GAP,
+        ...(twoUp
+          ? {
+              [theme.breakpoints.up('md')]: {
+                height: Math.ceil(count / 2) * ROW_PITCH - ROW_GAP
+              }
+            }
+          : {})
+      })}
+    >
+      {view.countries.map((country, rank) => {
+        const column = rank % 2
+        const row = Math.floor(rank / 2)
+        return (
+          <Box
+            component="li"
+            key={country.countryCode}
+            data-testid={`CampaignAnalyticsRow-${country.countryCode}`}
+            data-rank={rank}
+            sx={(theme) => ({
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: ROW_HEIGHT,
+              px: 2,
+              borderRadius: 1,
+              border: '1px solid var(--campaign-band-border)',
+              backgroundColor: 'var(--campaign-band-card)',
+              display: 'grid',
+              gridTemplateColumns: '2rem minmax(0, 1fr) auto',
+              alignItems: 'center',
+              columnGap: 2,
+              transform: `translateY(${rank * ROW_PITCH}px)`,
+              transition: `transform ${MOTION_MS}ms ease`,
+              animation: `${rowEnter} ${MOTION_MS}ms ease`,
+              ...REDUCED_MOTION,
+              ...(twoUp
+                ? {
+                    [theme.breakpoints.up('md')]: {
+                      left: column === 1 ? '50%' : 0,
+                      width: `calc(50% - ${ROW_GAP / 2}px)`,
+                      transform: `translate(${column === 1 ? `${ROW_GAP / 2}px` : 0}, ${row * ROW_PITCH}px)`
+                    }
+                  }
+                : {})
+            })}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'var(--campaign-band-muted)',
+                fontVariantNumeric: 'tabular-nums'
+              }}
             >
-              <Typography
-                variant="caption"
-                sx={{ color: 'var(--campaign-band-muted)' }}
-              >
-                {String(rank + 1).padStart(2, '0')}
-              </Typography>
-              <Typography
-                variant="body2"
-                noWrap
-                sx={{ color: 'var(--campaign-band-text)' }}
-              >
-                {countryName(country.countryCode, locale)}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{ color: 'var(--campaign-band-heading)' }}
-              >
-                {numberFormat.format(country.visitors)}
-              </Typography>
-            </Box>
-          )
-        })}
-      </Box>
-    </Stack>
+              {String(rank + 1).padStart(2, '0')}
+            </Typography>
+            <Typography
+              variant="body1"
+              noWrap
+              sx={{ color: 'var(--campaign-band-text)', fontWeight: 600 }}
+            >
+              {countryName(country.countryCode, locale)}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                color: 'var(--campaign-band-heading)',
+                fontVariantNumeric: 'tabular-nums'
+              }}
+            >
+              {numberFormat.format(country.visitors)}
+            </Typography>
+          </Box>
+        )
+      })}
+    </Box>
   )
 }
 
@@ -288,21 +296,25 @@ export function CampaignAnalyticsPanel({
         data-testid={`CampaignAnalyticsChip-${value}`}
         sx={{
           px: 1.5,
-          py: 0.5,
+          py: 1.25,
           borderRadius: 1,
           typography: 'overline',
-          lineHeight: 1.6,
+          lineHeight: 1.4,
+          textAlign: 'center',
           border: '1px solid',
           borderColor: selected
             ? 'var(--campaign-band-accent)'
             : 'var(--campaign-band-border)',
           backgroundColor: selected
             ? 'var(--campaign-band-accent)'
-            : 'transparent',
+            : 'var(--campaign-band-card)',
           color: selected
             ? 'var(--campaign-band-background)'
             : 'var(--campaign-band-muted)',
-          transition: `background-color ${MOTION_MS}ms ease, color ${MOTION_MS}ms ease`,
+          boxShadow: selected
+            ? '0 0 0 3px color-mix(in srgb, var(--campaign-band-accent) 35%, transparent)'
+            : 'none',
+          transition: `background-color ${MOTION_MS}ms ease, color ${MOTION_MS}ms ease, box-shadow ${MOTION_MS}ms ease`,
           ...REDUCED_MOTION
         }}
       >
@@ -311,25 +323,24 @@ export function CampaignAnalyticsPanel({
     )
   }
 
-  // The region selector: wrapping chips on the right, ALL first, so every
-  // region stays visible instead of scrolling off a tab strip.
+  // The region selector: a grid of equal chips, every region then ALL, so
+  // every region stays visible instead of scrolling off a tab strip.
   const tabs = tabsShown && (
     <Box
       role="tablist"
       aria-label={t('Regions')}
       data-testid="CampaignAnalyticsRegionChips"
       sx={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-end',
-        gap: 1
+        display: 'grid',
+        gap: 1,
+        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))'
       }}
     >
+      {tabRegions.map((region) => chipFor(region.id, region.name))}
       {chipFor(
         ALL_REGIONS,
         stringValue(strings, CampaignStringKey.allRegions, t('All'))
       )}
-      {tabRegions.map((region) => chipFor(region.id, region.name))}
     </Box>
   )
 
@@ -351,14 +362,77 @@ export function CampaignAnalyticsPanel({
       />
     ) : null
 
-  if (data == null && loading)
-    return (
-      <Stack spacing={2}>
-        {tabs}
-        {mapFor()}
-        <LoadingState />
-      </Stack>
-    )
+  const layout = showMap && worldMap != null ? 'map' : 'stacked'
+
+  /**
+   * One frame for the loading and loaded states, so the chips keep their
+   * DOM nodes while the stats arrive. With the map: tiles and map on the
+   * left, the region chips and a single column of ranks on the right
+   * (stacked below `md`). Without it: chips, tiles, then the ranks in two
+   * columns under their heading.
+   */
+  const frame = (
+    top: ReactNode,
+    ranks: ReactNode,
+    mapVisitors?: CampaignAnalyticsCountries
+  ): ReactElement => (
+    <Box
+      data-testid="CampaignAnalyticsStats"
+      data-layout={layout}
+      sx={{
+        p: { xs: 2, md: 3 },
+        borderRadius: 2,
+        border: '1px solid var(--campaign-band-border)',
+        display: 'grid',
+        gap: 3,
+        alignItems: 'start',
+        gridTemplateColumns:
+          layout === 'map' ? { xs: '1fr', md: '3fr 2fr' } : '1fr'
+      }}
+    >
+      {layout === 'map' ? (
+        <>
+          <Stack spacing={3}>
+            {top}
+            <Box
+              data-testid="CampaignAnalyticsMap"
+              sx={{
+                p: 2,
+                borderRadius: 1,
+                border: '1px solid var(--campaign-band-border)',
+                backgroundColor: 'var(--campaign-band-card)'
+              }}
+            >
+              {mapFor(mapVisitors)}
+            </Box>
+          </Stack>
+          <Stack spacing={3}>
+            {tabs}
+            {ranks}
+          </Stack>
+        </>
+      ) : (
+        <>
+          {tabs}
+          {top}
+          {ranks != null && (
+            <Stack spacing={1.5}>
+              <Typography
+                variant="overline"
+                component="p"
+                sx={{ color: 'var(--campaign-band-muted)' }}
+              >
+                {t('Top countries by views')}
+              </Typography>
+              {ranks}
+            </Stack>
+          )}
+        </>
+      )}
+    </Box>
+  )
+
+  if (data == null && loading) return frame(<LoadingState />, null)
 
   if (data == null)
     return (
@@ -384,54 +458,55 @@ export function CampaignAnalyticsPanel({
         )
       : t('{{region}} visitors', { region: activeRegion.name })
 
-  return (
-    <Stack spacing={3} data-testid="CampaignAnalyticsStats">
-      {tabs}
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 2,
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }
-        }}
-      >
-        <Tile
-          testId="CampaignAnalyticsTopCountry"
-          label={stringValue(
-            strings,
-            CampaignStringKey.topCountry,
-            t('Top country')
-          )}
-          value={
-            topCountry == null
-              ? '—'
-              : countryName(topCountry.countryCode, locale)
-          }
-        />
-        <Tile
-          testId="CampaignAnalyticsVisitors"
-          label={visitorsLabel}
-          value={
-            view.totalVisitors === 0
-              ? t('0 visitors')
-              : numberFormat.format(view.totalVisitors)
-          }
-          caption={t('since {{date}}', {
-            date: formatSince(stats.from, locale, new Date())
-          })}
-        />
-      </Box>
-      {mapFor(countriesForTab(stats, activeTab))}
-      {view.totalVisitors === 0 ? (
-        <Typography
-          variant="body2"
-          data-testid="CampaignAnalyticsEmpty"
-          sx={{ color: 'var(--campaign-band-muted)' }}
-        >
-          {t('No visits yet')}
-        </Typography>
-      ) : (
-        <RankedList view={view} locale={locale} />
-      )}
-    </Stack>
+  const tiles = (
+    <Box
+      sx={{
+        display: 'grid',
+        gap: 2,
+        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }
+      }}
+    >
+      <Tile
+        testId="CampaignAnalyticsTopCountry"
+        label={stringValue(
+          strings,
+          CampaignStringKey.topCountry,
+          t('Top country')
+        )}
+        value={
+          topCountry == null ? '—' : countryName(topCountry.countryCode, locale)
+        }
+      />
+      <Tile
+        testId="CampaignAnalyticsVisitors"
+        label={visitorsLabel}
+        value={
+          view.totalVisitors === 0
+            ? t('0 visitors')
+            : numberFormat.format(view.totalVisitors)
+        }
+        caption={t('since {{date}}', {
+          date: formatSince(stats.from, locale, new Date())
+        })}
+      />
+    </Box>
   )
+  const ranks =
+    view.totalVisitors === 0 ? (
+      <Typography
+        variant="body2"
+        data-testid="CampaignAnalyticsEmpty"
+        sx={{ color: 'var(--campaign-band-muted)' }}
+      >
+        {t('No visits yet')}
+      </Typography>
+    ) : (
+      <RankedList
+        view={view}
+        locale={locale}
+        columns={layout === 'map' ? 1 : 2}
+      />
+    )
+
+  return frame(tiles, ranks, countriesForTab(stats, activeTab))
 }

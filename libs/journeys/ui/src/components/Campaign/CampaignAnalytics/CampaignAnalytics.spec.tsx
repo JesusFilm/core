@@ -305,7 +305,11 @@ describe('CampaignAnalytics', () => {
       expect(
         list.querySelector('[data-testid="CampaignAnalyticsBar"]')
       ).not.toBeInTheDocument()
-      expect(screen.getByText('Top countries by views')).toBeInTheDocument()
+      expect(list).toHaveAttribute('data-columns', '1')
+      expect(screen.getByTestId('CampaignAnalyticsStats')).toHaveAttribute(
+        'data-layout',
+        'map'
+      )
     })
 
     it('still lists codes with no map shape: microstates, XK and A1', async () => {
@@ -330,7 +334,7 @@ describe('CampaignAnalytics', () => {
       const list = await screen.findByTestId('CampaignAnalyticsList')
       const nigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
       expect(nigeria).toHaveAttribute('data-rank', '1')
-      expect(nigeria).toHaveStyle({ transform: 'translateY(52px)' })
+      expect(nigeria).toHaveStyle({ transform: 'translateY(58px)' })
 
       fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
       const africaNigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
@@ -342,7 +346,7 @@ describe('CampaignAnalytics', () => {
   })
 
   describe('tabs', () => {
-    it('on the landing page lists ALL first, then every listed region', async () => {
+    it('on the landing page lists every listed region, then ALL', async () => {
       await renderAnalytics({
         campaign: {
           ...campaignPublic,
@@ -355,11 +359,11 @@ describe('CampaignAnalytics', () => {
       })
       const tabs = await screen.findAllByRole('tab')
       expect(tabs.map((tab) => tab.textContent)).toEqual([
-        'All regions',
         'Europe',
-        'Africa'
+        'Africa',
+        'All regions'
       ])
-      expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+      expect(tabs[2]).toHaveAttribute('aria-selected', 'true')
     })
 
     it('on a region page is fixed to the region with no tabs', async () => {
