@@ -195,6 +195,9 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
             exclusive
             fullWidth
             size="small"
+            // Six kinds in a 360px drawer: stacked, so the panel never
+            // scrolls sideways.
+            orientation="vertical"
             value={
               choosingCover
                 ? CampaignBackgroundKind.image

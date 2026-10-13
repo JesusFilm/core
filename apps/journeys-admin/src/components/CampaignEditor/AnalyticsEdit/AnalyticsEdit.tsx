@@ -9,7 +9,10 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 
 interface AnalyticsEditProps {
   /** The Analytics section this editor sits in. */
-  block: Pick<CampaignBlock, 'id'> & { showMap: boolean }
+  block: Pick<CampaignBlock, 'id'> & {
+    showMap: boolean
+    accentColor?: string | null
+  }
 }
 
 /**
@@ -33,7 +36,7 @@ export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
         strings={campaign.strings}
         showMap={block.showMap}
         worldMap={worldMap}
-        accentColor={campaign.theme.accentColor}
+        accentColor={block.accentColor ?? campaign.theme.accentColor}
       />
     </Box>
   )
