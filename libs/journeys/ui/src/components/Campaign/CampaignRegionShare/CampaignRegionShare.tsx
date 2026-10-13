@@ -292,8 +292,9 @@ export function CampaignRegionShare({
                       height: '100%',
                       borderRadius: '24px',
                       overflow: 'hidden',
-                      isolation: 'isolate',
-                      transform: 'translateZ(0)',
+                      // Safari (and some Chrome builds) do not clip an iframe
+                      // to a rounded overflow box; a clip-path always does.
+                      clipPath: 'inset(0 round 24px)',
                       backgroundColor: '#000000'
                     }}
                   >
