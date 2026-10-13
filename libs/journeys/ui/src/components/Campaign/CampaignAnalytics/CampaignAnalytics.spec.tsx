@@ -334,7 +334,7 @@ describe('CampaignAnalytics', () => {
       const list = await screen.findByTestId('CampaignAnalyticsList')
       const nigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
       expect(nigeria).toHaveAttribute('data-rank', '1')
-      expect(nigeria).toHaveStyle({ transform: 'translateY(58px)' })
+      expect(nigeria).toHaveStyle({ transform: 'translateY(42px)' })
 
       fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
       const africaNigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
@@ -359,8 +359,8 @@ describe('CampaignAnalytics', () => {
       })
       const tabs = await screen.findAllByRole('tab')
       expect(tabs.map((tab) => tab.textContent)).toEqual([
-        'Europe',
-        'Africa',
+        'EUR',
+        'AFR',
         'All regions'
       ])
       expect(tabs[2]).toHaveAttribute('aria-selected', 'true')
