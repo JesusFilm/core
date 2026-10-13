@@ -38,6 +38,10 @@ describe('shortLinkHealth/service', () => {
       SLACK_SHORT_LINKS_CHANNEL_ID: 'channel'
     }
     prismaMock.shortLink.update.mockResolvedValue(buildShortLinkWithDomain())
+    prismaMock.$transaction.mockImplementation(
+      async (fn: (tx: typeof prismaMock) => Promise<unknown>) =>
+        await fn(prismaMock)
+    )
     publishLinkMock.mockResolvedValue(new Date())
   })
 
@@ -58,9 +62,12 @@ describe('shortLinkHealth/service', () => {
     expect(prismaMock.shortLink.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          status: 'active',
+          OR: [
+            { status: 'active' },
+            { status: 'paused', pausedByHealthCheckAt: { not: null } }
+          ],
           deletedAt: null,
-          OR: [{ brightcoveId: null }, { redirectType: null }]
+          AND: [{ OR: [{ brightcoveId: null }, { redirectType: null }] }]
         },
         include: { domain: true }
       })
@@ -129,9 +136,9 @@ describe('shortLinkHealth/service', () => {
     expect(slackMock).not.toHaveBeenCalled()
   })
 
-  it('pauses and republishes a failing link when the domain opts into failover', async () => {
+  it('pauses and republishes a link failing for the second time when the domain opts into failover', async () => {
     const link = buildShortLinkWithDomain(
-      { id: 'l1', to: 'https://down.example' },
+      { id: 'l1', to: 'https://down.example', healthStatus: 'timeout' },
       { autoFailover: true, fallbackTo: 'https://fallback.example' }
     )
     prismaMock.shortLink.findMany.mockResolvedValueOnce([link])
@@ -144,13 +151,103 @@ describe('shortLinkHealth/service', () => {
       data: {
         healthStatus: 'serverError',
         healthCheckedAt: expect.any(Date),
-        status: 'paused'
+        status: 'paused',
+        pausedByHealthCheckAt: expect.any(Date)
       }
     })
     expect(publishLinkMock).toHaveBeenCalledWith('l1', prismaMock, logger)
-    expect(slackMock.mock.calls[0][0].body.text).toContain(
-      'paused, traffic now goes to https://fallback.example'
+    // already failing last hour: no new alert
+    expect(slackMock).not.toHaveBeenCalled()
+  })
+
+  it('does not fail over on the first failing check', async () => {
+    const link = buildShortLinkWithDomain(
+      { id: 'l1', to: 'https://down.example', healthStatus: 'ok' },
+      { autoFailover: true, fallbackTo: 'https://fallback.example' }
     )
+    prismaMock.shortLink.findMany.mockResolvedValueOnce([link])
+    checkDestinationMock.mockResolvedValue('serverError')
+
+    await service(logger)
+
+    expect(prismaMock.shortLink.update).toHaveBeenCalledWith({
+      where: { id: 'l1' },
+      data: { healthStatus: 'serverError', healthCheckedAt: expect.any(Date) }
+    })
+    expect(publishLinkMock).not.toHaveBeenCalled()
+    expect(slackMock.mock.calls[0][0].body.text).toContain(
+      '*Action*: none'
+    )
+  })
+
+  it('resumes a link it paused once the destination is healthy again', async () => {
+    const link = buildShortLinkWithDomain(
+      {
+        id: 'l1',
+        status: 'paused',
+        healthStatus: 'serverError',
+        pausedByHealthCheckAt: new Date('2026-10-01T00:00:00Z')
+      },
+      { autoFailover: true, fallbackTo: 'https://fallback.example' }
+    )
+    prismaMock.shortLink.findMany.mockResolvedValueOnce([link])
+    checkDestinationMock.mockResolvedValue('ok')
+
+    await service(logger)
+
+    expect(prismaMock.shortLink.update).toHaveBeenCalledWith({
+      where: { id: 'l1' },
+      data: {
+        healthStatus: 'ok',
+        healthCheckedAt: expect.any(Date),
+        status: 'active',
+        pausedByHealthCheckAt: null
+      }
+    })
+    expect(publishLinkMock).toHaveBeenCalledWith('l1', prismaMock, logger)
+  })
+
+  it('leaves a link a person paused alone even when its destination is healthy', async () => {
+    const link = buildShortLinkWithDomain({
+      id: 'l1',
+      status: 'paused',
+      pausedByHealthCheckAt: null
+    })
+    prismaMock.shortLink.findMany.mockResolvedValueOnce([link])
+    checkDestinationMock.mockResolvedValue('ok')
+
+    await service(logger)
+
+    expect(prismaMock.shortLink.update).toHaveBeenCalledWith({
+      where: { id: 'l1' },
+      data: { healthStatus: 'ok', healthCheckedAt: expect.any(Date) }
+    })
+    expect(publishLinkMock).not.toHaveBeenCalled()
+  })
+
+  it('keeps checking the batch when one link fails to publish', async () => {
+    prismaMock.shortLink.findMany.mockResolvedValueOnce([
+      buildShortLinkWithDomain(
+        { id: 'l1', healthStatus: 'timeout' },
+        { autoFailover: true, fallbackTo: 'https://fallback.example' }
+      ),
+      buildShortLinkWithDomain({ id: 'l2', to: 'https://ok.example' })
+    ])
+    checkDestinationMock
+      .mockResolvedValueOnce('timeout')
+      .mockResolvedValueOnce('ok')
+    publishLinkMock.mockRejectedValueOnce(new Error('KV down'))
+
+    await service(logger)
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.objectContaining({ shortLinkId: 'l1' }),
+      'short link health check failed for this link'
+    )
+    expect(prismaMock.shortLink.update).toHaveBeenCalledWith({
+      where: { id: 'l2' },
+      data: { healthStatus: 'ok', healthCheckedAt: expect.any(Date) }
+    })
   })
 
   it('never fails over a videoEmbedded link', async () => {

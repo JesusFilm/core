@@ -13,11 +13,14 @@ import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
 import { assertSuperAdmin } from '../lib/access'
 import {
+  isPublicHttpsUrl,
+  PUBLIC_HTTPS_URL_MESSAGE
+} from '../lib/destination'
+import {
   HTTPS_URL_MESSAGE,
-  REDIRECT_STATUS_MESSAGE,
   inputValidationError,
-  isHttpsUrl,
-  isRedirectStatus
+  isRedirectStatus,
+  REDIRECT_STATUS_MESSAGE
 } from '../lib/errors'
 import {
   PATH_PREFIX_MESSAGE,
@@ -393,7 +396,9 @@ builder.mutationFields((t) => ({
       reservedPaths: t.input.stringList({ required: false }),
       fallbackTo: t.input.string({
         required: false,
-        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+        validate: {
+          refine: [isPublicHttpsUrl, { message: PUBLIC_HTTPS_URL_MESSAGE }]
+        }
       }),
       notFound: t.input.field({
         type: ShortLinkNotFound,
@@ -403,7 +408,9 @@ builder.mutationFields((t) => ({
       passthroughOrigin: t.input.string({
         required: false,
         description: 'required when notFound is passthrough',
-        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+        validate: {
+          refine: [isPublicHttpsUrl, { message: PUBLIC_HTTPS_URL_MESSAGE }]
+        }
       }),
       kvNamespaceId: t.input.string({
         required: false,
@@ -532,13 +539,17 @@ builder.mutationFields((t) => ({
       reservedPaths: t.input.stringList({ required: false }),
       fallbackTo: t.input.string({
         required: false,
-        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+        validate: {
+          refine: [isPublicHttpsUrl, { message: PUBLIC_HTTPS_URL_MESSAGE }]
+        }
       }),
       notFound: t.input.field({ type: ShortLinkNotFound, required: false }),
       passthroughOrigin: t.input.string({
         required: false,
         description: 'required when notFound is passthrough',
-        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+        validate: {
+          refine: [isPublicHttpsUrl, { message: PUBLIC_HTTPS_URL_MESSAGE }]
+        }
       }),
       kvNamespaceId: t.input.string({
         required: false,
@@ -581,34 +592,37 @@ builder.mutationFields((t) => ({
         slugMaxLength: input.slugMaxLength ?? existing.slugMaxLength
       })
 
-      return await prisma.$transaction(async (tx) => {
-        const shortLinkDomain = await tx.shortLinkDomain.update({
-          ...query,
-          where: { id: input.id },
-          data: {
-            services: input.services,
-            pathPrefix,
-            redirectStatus: input.redirectStatus ?? undefined,
-            slugAllowedChars: input.slugAllowedChars ?? undefined,
-            slugMinLength: input.slugMinLength ?? undefined,
-            slugMaxLength: input.slugMaxLength ?? undefined,
-            slugCaseSensitive: input.slugCaseSensitive ?? undefined,
-            reservedPaths: input.reservedPaths ?? undefined,
-            fallbackTo: input.fallbackTo,
-            notFound: input.notFound ?? undefined,
-            passthroughOrigin: input.passthroughOrigin,
-            autoFailover: input.autoFailover ?? undefined,
-            kvNamespaceId,
-            kvBinding
-          }
-        })
-        const edgePublishedAt = routingChanged(existing, shortLinkDomain)
-          ? await publishDomainWithLinks(input.id, tx)
-          : await publishDomain(input.id, tx)
-        return edgePublishedAt == null
-          ? shortLinkDomain
-          : { ...shortLinkDomain, edgePublishedAt }
+      const shortLinkDomain = await prisma.shortLinkDomain.update({
+        ...query,
+        where: { id: input.id },
+        data: {
+          services: input.services,
+          pathPrefix,
+          redirectStatus: input.redirectStatus ?? undefined,
+          slugAllowedChars: input.slugAllowedChars ?? undefined,
+          slugMinLength: input.slugMinLength ?? undefined,
+          slugMaxLength: input.slugMaxLength ?? undefined,
+          slugCaseSensitive: input.slugCaseSensitive ?? undefined,
+          reservedPaths: input.reservedPaths ?? undefined,
+          fallbackTo: input.fallbackTo,
+          notFound: input.notFound ?? undefined,
+          passthroughOrigin: input.passthroughOrigin,
+          autoFailover: input.autoFailover ?? undefined,
+          kvNamespaceId,
+          kvBinding
+        }
       })
+      // Published after the update is committed, like shortLinkDomainPublish:
+      // republishing every link on a domain is far longer than a transaction
+      // may stay open, and a failed publish must not roll the settings back
+      // under records already written to the namespace. The toast shows an
+      // unchanged edgePublishedAt and Republish domain repairs it.
+      const edgePublishedAt = routingChanged(existing, shortLinkDomain)
+        ? await publishDomainWithLinks(input.id)
+        : await publishDomain(input.id)
+      return edgePublishedAt == null
+        ? shortLinkDomain
+        : { ...shortLinkDomain, edgePublishedAt }
     }
   }),
   shortLinkDomainDelete: t.withAuth(superAdminScopes).prismaField({

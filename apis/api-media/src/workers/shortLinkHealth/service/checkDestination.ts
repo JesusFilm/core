@@ -1,5 +1,7 @@
 import type { ShortLinkHealth } from '@core/prisma/media/client'
 
+import { isPublicWebUrl } from '../../../schema/shortLink/lib/destination'
+
 export const REQUEST_TIMEOUT_MS = 10_000
 export const MAX_REDIRECTS = 10
 
@@ -58,10 +60,21 @@ export function classifyStatus(status: number): ShortLinkHealth {
   return 'ok'
 }
 
+class PrivateDestinationError extends Error {
+  code = 'ERR_PRIVATE_DESTINATION'
+  constructor(url: string) {
+    super(`refusing to fetch a non-public destination: ${url}`)
+    this.name = 'PrivateDestinationError'
+  }
+}
+
 async function fetchWithTimeout(
   url: string,
   method: 'HEAD' | 'GET'
 ): Promise<Response> {
+  // Every hop, not just the stored `to`: a public destination may redirect
+  // to an internal address, and this runs inside the VPC.
+  if (!isPublicWebUrl(url)) throw new PrivateDestinationError(url)
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
   try {

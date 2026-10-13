@@ -42,15 +42,31 @@ function effectiveFallbackTo(link: LinkWithDomain): string | null {
   return link.fallbackTo ?? link.domain.fallbackTo
 }
 
+/**
+ * Failover needs two consecutive failing checks (an hour apart), so one
+ * timeout or DNS hiccup never pauses a link.
+ */
 function shouldFailOver(
   link: LinkWithDomain,
   health: ShortLinkHealth
 ): boolean {
   return (
     health !== 'ok' &&
+    link.healthStatus != null &&
+    link.healthStatus !== 'ok' &&
+    link.status === 'active' &&
     link.domain.autoFailover &&
     link.assetClass !== 'videoEmbedded' &&
     effectiveFallbackTo(link) != null
+  )
+}
+
+/** A link the health check paused resumes as soon as its destination answers. */
+function shouldResume(link: LinkWithDomain, health: ShortLinkHealth): boolean {
+  return (
+    health === 'ok' &&
+    link.status === 'paused' &&
+    link.pausedByHealthCheckAt != null
   )
 }
 
@@ -60,24 +76,53 @@ async function checkLink(
 ): Promise<CheckOutcome> {
   const health = await checkDestination(link.to)
   const pausedByFailover = shouldFailOver(link, health)
+  const resumed = shouldResume(link, health)
+  const now = new Date()
 
-  await prisma.shortLink.update({
-    where: { id: link.id },
-    data: {
-      healthStatus: health,
-      healthCheckedAt: new Date(),
-      ...(pausedByFailover ? { status: 'paused' } : {})
-    }
+  // The status change and its edge publish succeed or fail together, the
+  // same way a person's status change does.
+  await prisma.$transaction(async (tx) => {
+    await tx.shortLink.update({
+      where: { id: link.id },
+      data: {
+        healthStatus: health,
+        healthCheckedAt: now,
+        ...(pausedByFailover
+          ? { status: 'paused', pausedByHealthCheckAt: now }
+          : {}),
+        ...(resumed ? { status: 'active', pausedByHealthCheckAt: null } : {})
+      }
+    })
+    if (pausedByFailover || resumed) await publishLink(link.id, tx, logger)
   })
-  if (pausedByFailover) {
-    await publishLink(link.id, prisma, logger)
+  if (pausedByFailover)
     logger.warn(
       { shortLinkId: link.id, hostname: link.domain.hostname, health },
       'short link paused by health-check failover'
     )
-  }
+  if (resumed)
+    logger.info(
+      { shortLinkId: link.id, hostname: link.domain.hostname },
+      'short link resumed: destination healthy again'
+    )
 
   return { link, previous: link.healthStatus, health, pausedByFailover }
+}
+
+/** One link's failure (KV down, a Prisma error) must not abort the batch. */
+async function checkLinkSafely(
+  link: LinkWithDomain,
+  logger: Logger
+): Promise<CheckOutcome | null> {
+  try {
+    return await checkLink(link, logger)
+  } catch (error) {
+    logger.error(
+      { error, shortLinkId: link.id, hostname: link.domain.hostname },
+      'short link health check failed for this link'
+    )
+    return null
+  }
 }
 
 async function alertNewlyFailing(
@@ -127,9 +172,10 @@ async function mapWithConcurrency<T, R>(
 
 /**
  * Hourly destination health check: HEAD (then GET) every active link that
- * redirects to a plain URL, record the result, pause failing links on domains
- * that opted into failover (never videoEmbedded), and alert Slack about links
- * that just started failing.
+ * redirects to a plain URL, plus every link the check itself paused, record
+ * the result, pause links that failed twice in a row on domains that opted
+ * into failover (never videoEmbedded), resume paused ones whose destination
+ * is back, and alert Slack about links that just started failing.
  */
 export async function service(logger: Logger = defaultLogger): Promise<void> {
   const slackConfig = getShortLinksSlackConfig()
@@ -144,10 +190,13 @@ export async function service(logger: Logger = defaultLogger): Promise<void> {
   while (true) {
     const links = await prisma.shortLink.findMany({
       where: {
-        status: 'active',
+        OR: [
+          { status: 'active' },
+          { status: 'paused', pausedByHealthCheckAt: { not: null } }
+        ],
         deletedAt: null,
         // Brightcove redirects resolve through the Arclight API, not `to`
-        OR: [{ brightcoveId: null }, { redirectType: null }]
+        AND: [{ OR: [{ brightcoveId: null }, { redirectType: null }] }]
       },
       include: { domain: true },
       orderBy: { id: 'asc' },
@@ -156,9 +205,11 @@ export async function service(logger: Logger = defaultLogger): Promise<void> {
     })
     if (links.length === 0) break
 
-    const outcomes = await mapWithConcurrency(links, CONCURRENCY, (link) =>
-      checkLink(link, logger)
-    )
+    const outcomes = (
+      await mapWithConcurrency(links, CONCURRENCY, (link) =>
+        checkLinkSafely(link, logger)
+      )
+    ).filter((outcome): outcome is CheckOutcome => outcome != null)
     await alertNewlyFailing(outcomes, slackConfig, logger)
 
     checked += outcomes.length

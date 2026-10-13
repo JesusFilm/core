@@ -16,6 +16,9 @@ export interface ClickHouseConfig {
 
 export type ClickHouseParams = Record<string, string | number>
 
+/** A dashboard query that takes longer than this is abandoned, not awaited. */
+export const QUERY_TIMEOUT_MS = 10_000
+
 /** Null when `SHORT_LINKS_CLICKHOUSE_URL` is unset (stats return zeros). */
 export function getClickHouseConfig(): ClickHouseConfig | null {
   const env = readShortLinksEnv()
@@ -53,7 +56,8 @@ export async function clickHouseQuery<Row>(
   const response = await fetch(`${config.url}/?${search.toString()}`, {
     method: 'POST',
     headers,
-    body: `${sql} FORMAT JSON`
+    body: `${sql} FORMAT JSON`,
+    signal: AbortSignal.timeout(QUERY_TIMEOUT_MS)
   })
   if (!response.ok)
     throw new Error(

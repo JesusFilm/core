@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import {
   ClickHouseConfig,
   ClickHouseParams,
@@ -63,6 +65,27 @@ interface WhereClause {
  * The WHERE clause is assembled from fixed fragments only; every value goes
  * through a named parameter.
  */
+/** The widest range one stats query may scan. */
+export const MAX_RANGE_DAYS = 400
+const MAX_RANGE_MS = MAX_RANGE_DAYS * 24 * 60 * 60 * 1000
+
+/**
+ * The range must run forwards and may not exceed `MAX_RANGE_DAYS`, so one
+ * request cannot start nine all-time scans.
+ */
+export function assertStatsRange(filter: ShortLinkStatsFilterInput): void {
+  const span = filter.to.getTime() - filter.from.getTime()
+  if (span <= 0)
+    throw new GraphQLError('filter.to must be after filter.from', {
+      extensions: { code: 'BAD_USER_INPUT' }
+    })
+  if (span > MAX_RANGE_MS)
+    throw new GraphQLError(
+      `filter range may not exceed ${MAX_RANGE_DAYS} days`,
+      { extensions: { code: 'BAD_USER_INPUT' } }
+    )
+}
+
 export function buildWhere(filter: ShortLinkStatsFilterInput): WhereClause {
   const conditions = [
     'ts >= parseDateTime64BestEffort({from:String}, 3)',
@@ -140,6 +163,7 @@ async function breakdown(
 export async function getShortLinkStats(
   filter: ShortLinkStatsFilterInput
 ): Promise<ShortLinkStats> {
+  assertStatsRange(filter)
   const config = getClickHouseConfig()
   if (config == null) return emptyShortLinkStats()
 

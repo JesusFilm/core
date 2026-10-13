@@ -5,6 +5,7 @@ import { MediaRole, Prisma } from '@core/prisma/media/client'
 import { graphql } from '@core/shared/gql'
 
 import { getClient } from '../../../test/client'
+import { PUBLIC_WEB_URL_MESSAGE } from './lib/destination'
 import { prismaMock } from '../../../test/prismaMock'
 import {
   buildShortLink,
@@ -1320,6 +1321,11 @@ describe('shortLink', () => {
                     format: 'url',
                     path: ['input', 'to'],
                     message: 'Invalid URL'
+                  },
+                  {
+                    code: 'custom',
+                    path: ['input', 'to'],
+                    message: PUBLIC_WEB_URL_MESSAGE
                   }
                 ],
                 null,
@@ -1328,6 +1334,10 @@ describe('shortLink', () => {
               fieldErrors: [
                 {
                   message: 'Invalid URL',
+                  path: ['input', 'to']
+                },
+                {
+                  message: PUBLIC_WEB_URL_MESSAGE,
                   path: ['input', 'to']
                 }
               ]
@@ -1548,6 +1558,7 @@ describe('shortLink', () => {
             to: 'https://example.com',
             name: 'Renamed',
             status: 'paused',
+            pausedByHealthCheckAt: null,
             tags: ['a'],
             placement: 'card',
             campaigns: { set: [{ id: 'c1' }] }
@@ -1874,6 +1885,11 @@ describe('shortLink', () => {
                     format: 'url',
                     path: ['input', 'to'],
                     message: 'Invalid URL'
+                  },
+                  {
+                    code: 'custom',
+                    path: ['input', 'to'],
+                    message: PUBLIC_WEB_URL_MESSAGE
                   }
                 ],
                 null,
@@ -1882,6 +1898,10 @@ describe('shortLink', () => {
               fieldErrors: [
                 {
                   message: 'Invalid URL',
+                  path: ['input', 'to']
+                },
+                {
+                  message: PUBLIC_WEB_URL_MESSAGE,
                   path: ['input', 'to']
                 }
               ]

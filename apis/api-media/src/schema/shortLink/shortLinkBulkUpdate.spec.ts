@@ -110,12 +110,13 @@ describe('shortLinkBulkUpdate', () => {
     })
     expect(prismaMock.shortLink.findMany).toHaveBeenCalledWith({
       where: { id: { in: ['l1', 'l2'] }, deletedAt: null },
-      select: { id: true, tags: true }
+      select: { id: true, tags: true, assetClass: true }
     })
     expect(prismaMock.shortLink.update).toHaveBeenCalledWith({
       where: { id: 'l1' },
       data: {
         status: 'paused',
+        pausedByHealthCheckAt: null,
         tags: ['keep', 'new'],
         campaigns: { connect: [{ id: 'c1' }], disconnect: [{ id: 'c2' }] }
       }
@@ -124,13 +125,14 @@ describe('shortLinkBulkUpdate', () => {
       where: { id: 'l2' },
       data: {
         status: 'paused',
+        pausedByHealthCheckAt: null,
         tags: ['new'],
         campaigns: { connect: [{ id: 'c1' }], disconnect: [{ id: 'c2' }] }
       }
     })
     expect(publishLinkMock).toHaveBeenCalledTimes(2)
-    expect(publishLinkMock).toHaveBeenCalledWith('l1', prismaMock)
-    expect(publishLinkMock).toHaveBeenCalledWith('l2', prismaMock)
+    expect(publishLinkMock).toHaveBeenCalledWith('l1')
+    expect(publishLinkMock).toHaveBeenCalledWith('l2')
   })
 
   it('returns a NotFoundError listing the missing ids without writing', async () => {

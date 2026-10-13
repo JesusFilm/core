@@ -797,12 +797,17 @@ describe('shortLinkDomain', () => {
         [
           { fallbackTo: 'http://insecure.example' },
           'fallbackTo',
-          'must be an https URL'
+          'must be a public https URL (no IP addresses, localhost or internal hosts)'
         ],
         [
           { passthroughOrigin: 'not a url' },
           'passthroughOrigin',
-          'must be an https URL'
+          'must be a public https URL (no IP addresses, localhost or internal hosts)'
+        ],
+        [
+          { fallbackTo: 'https://10.0.0.1/' },
+          'fallbackTo',
+          'must be a public https URL (no IP addresses, localhost or internal hosts)'
         ],
         [
           { slugAllowedChars: 'z-a' },
@@ -1059,7 +1064,7 @@ describe('shortLinkDomain', () => {
             services: ['apiJourneys']
           }
         })
-        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+        expect(publishDomainMock).toHaveBeenCalledWith('testId')
         expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
       })
 
@@ -1084,7 +1089,7 @@ describe('shortLinkDomain', () => {
           where: { id: 'testId' },
           data: { services: [], pathPrefix: 's' }
         })
-        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+        expect(publishDomainMock).toHaveBeenCalledWith('testId')
         expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
       })
 
@@ -1103,7 +1108,7 @@ describe('shortLinkDomain', () => {
           where: { id: 'testId' },
           data: { services: [], pathPrefix: '' }
         })
-        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+        expect(publishDomainMock).toHaveBeenCalledWith('testId')
       })
 
       it('should return a ZodError for an invalid path prefix', async () => {
@@ -1150,7 +1155,7 @@ describe('shortLinkDomain', () => {
           where: { id: 'testId' },
           data: { services: [], redirectStatus: 301 }
         })
-        expect(publishDomainMock).toHaveBeenCalledWith('testId', prismaMock)
+        expect(publishDomainMock).toHaveBeenCalledWith('testId')
         expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
       })
 
@@ -1182,10 +1187,7 @@ describe('shortLinkDomain', () => {
             where: { id: 'testId' },
             data: { services: [], ...change }
           })
-          expect(publishDomainWithLinksMock).toHaveBeenCalledWith(
-            'testId',
-            prismaMock
-          )
+          expect(publishDomainWithLinksMock).toHaveBeenCalledWith('testId')
           expect(publishDomainMock).not.toHaveBeenCalled()
         }
       )
@@ -1216,10 +1218,7 @@ describe('shortLinkDomain', () => {
           where: { id: 'testId' },
           data: { services: [], kvNamespaceId: null, kvBinding: null }
         })
-        expect(publishDomainWithLinksMock).toHaveBeenCalledWith(
-          'testId',
-          prismaMock
-        )
+        expect(publishDomainWithLinksMock).toHaveBeenCalledWith('testId')
       })
 
       it.each([

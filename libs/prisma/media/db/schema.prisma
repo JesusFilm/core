@@ -789,6 +789,10 @@ model ShortLink {
   edgePublishedAt    DateTime?
   healthStatus       ShortLinkHealth?
   healthCheckedAt    DateTime?
+  /// set when the health check paused this link (auto failover); cleared by a
+  /// manual status change, or by the health check when the destination
+  /// recovers and the link is resumed
+  pausedByHealthCheckAt DateTime?
   /// when true the pathname also resolves on every domain that has no link
   /// of its own for it (published to the global namespace); global pathnames
   /// are unique across all domains, see ShortLinkGlobalSlug

@@ -23,11 +23,16 @@ import {
   isProtectedAssetClass
 } from './lib/access'
 import {
+  isPublicHttpsUrl,
+  isPublicWebUrl,
+  PUBLIC_HTTPS_URL_MESSAGE,
+  PUBLIC_WEB_URL_MESSAGE
+} from './lib/destination'
+import {
   HTTPS_URL_MESSAGE,
-  REDIRECT_STATUS_MESSAGE,
   inputValidationError,
-  isHttpsUrl,
-  isRedirectStatus
+  isRedirectStatus,
+  REDIRECT_STATUS_MESSAGE
 } from './lib/errors'
 import { buildQrUrl, buildShortUrl } from './lib/shortUrl'
 import { normalizePathname, validatePathname } from './lib/slug'
@@ -87,10 +92,14 @@ export const ShortLink = builder.prismaObject('ShortLink', {
       description: SOURCE_REF_DESCRIPTION
     }),
     name: t.exposeString('name', {
+      authScopes: editorScopes,
       nullable: true,
       description: 'human label shown in the admin app'
     }),
-    description: t.exposeString('description', { nullable: true }),
+    description: t.exposeString('description', {
+      authScopes: editorScopes,
+      nullable: true
+    }),
     assetClass: t.expose('assetClass', {
       type: ShortLinkAssetClass,
       nullable: false,
@@ -115,7 +124,10 @@ export const ShortLink = builder.prismaObject('ShortLink', {
       nullable: true,
       description: 'BCP-47 language tag'
     }),
-    tags: t.exposeStringList('tags', { nullable: false }),
+    tags: t.exposeStringList('tags', {
+      authScopes: editorScopes,
+      nullable: false
+    }),
     videoId: t.exposeString('videoId', {
       nullable: true,
       description: 'core Video this link belongs to'
@@ -125,15 +137,18 @@ export const ShortLink = builder.prismaObject('ShortLink', {
       description: 'YouTube video id the link is placed in'
     }),
     campaigns: t.relation('campaigns', {
+      authScopes: editorScopes,
       nullable: false,
       query: { orderBy: { name: 'asc' } }
     }),
     destinationHistory: t.relation('destinationHistory', {
+      authScopes: editorScopes,
       nullable: false,
       description: 'every change to `to`, newest first',
       query: { orderBy: { changedAt: 'desc' } }
     }),
     userId: t.exposeString('userId', {
+      authScopes: editorScopes,
       nullable: true,
       description:
         'the user that created this short link (empty when created by a subgraph)'
@@ -142,17 +157,27 @@ export const ShortLink = builder.prismaObject('ShortLink', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     deletedAt: t.expose('deletedAt', { type: 'DateTime', nullable: true }),
     edgePublishedAt: t.expose('edgePublishedAt', {
+      authScopes: editorScopes,
       type: 'DateTime',
       nullable: true,
       description: 'when the routing record was last written to the edge store'
     }),
     healthStatus: t.expose('healthStatus', {
+      authScopes: editorScopes,
       type: ShortLinkHealth,
       nullable: true
     }),
     healthCheckedAt: t.expose('healthCheckedAt', {
+      authScopes: editorScopes,
       type: 'DateTime',
       nullable: true
+    }),
+    pausedByHealthCheckAt: t.expose('pausedByHealthCheckAt', {
+      authScopes: editorScopes,
+      type: 'DateTime',
+      nullable: true,
+      description:
+        'set while the link is paused by the health check (auto failover); it resumes on its own when the destination recovers, and a manual status change clears this'
     }),
     global: t.exposeBoolean('global', {
       nullable: false,
@@ -472,7 +497,10 @@ builder.mutationFields((t) => ({
         description: TO_DESCRIPTION,
         validate: {
           url: true,
-          refine: [isNotBlocklisted, { message: BLOCKLIST_MESSAGE }]
+          refine: [
+            [isPublicWebUrl, { message: PUBLIC_WEB_URL_MESSAGE }],
+            [isNotBlocklisted, { message: BLOCKLIST_MESSAGE }]
+          ]
         }
       }),
       hostname: t.input.string({
@@ -525,7 +553,12 @@ builder.mutationFields((t) => ({
         required: false,
         description:
           'per-link override of the domain fallbackTo, used while paused',
-        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+        validate: {
+          refine: [
+            [isPublicHttpsUrl, { message: PUBLIC_HTTPS_URL_MESSAGE }],
+            [isNotBlocklisted, { message: BLOCKLIST_MESSAGE }]
+          ]
+        }
       }),
       placement: t.input.field({ type: ShortLinkPlacement, required: false }),
       language: t.input.string({
@@ -656,7 +689,10 @@ builder.mutationFields((t) => ({
         description: TO_DESCRIPTION,
         validate: {
           url: true,
-          refine: [isNotBlocklisted, { message: BLOCKLIST_MESSAGE }]
+          refine: [
+            [isPublicWebUrl, { message: PUBLIC_WEB_URL_MESSAGE }],
+            [isNotBlocklisted, { message: BLOCKLIST_MESSAGE }]
+          ]
         }
       }),
       brightcoveId: t.input.string({
@@ -692,7 +728,12 @@ builder.mutationFields((t) => ({
         required: false,
         description:
           'per-link override of the domain fallbackTo, used while paused',
-        validate: { refine: [isHttpsUrl, { message: HTTPS_URL_MESSAGE }] }
+        validate: {
+          refine: [
+            [isPublicHttpsUrl, { message: PUBLIC_HTTPS_URL_MESSAGE }],
+            [isNotBlocklisted, { message: BLOCKLIST_MESSAGE }]
+          ]
+        }
       }),
       placement: t.input.field({ type: ShortLinkPlacement, required: false }),
       language: t.input.string({
@@ -752,6 +793,18 @@ builder.mutationFields((t) => ({
           context,
           `only a short link admin may change the asset class of a ${existing.assetClass} link`
         )
+      const statusChanged =
+        input.status != null && input.status !== existing.status
+      const fallbackChanged =
+        input.fallbackTo !== undefined && input.fallbackTo !== existing.fallbackTo
+      if (
+        (statusChanged || fallbackChanged) &&
+        isProtectedAssetClass(existing.assetClass)
+      )
+        assertShortLinkAdmin(
+          context,
+          `only a short link admin may pause, retire or set the fallback of a ${existing.assetClass} link`
+        )
       const globalChange =
         input.global != null && input.global !== existing.global
           ? input.global
@@ -779,6 +832,8 @@ builder.mutationFields((t) => ({
             description: input.description,
             assetClass: input.assetClass ?? undefined,
             status: input.status ?? undefined,
+            // a person deciding the status overrides the health check's pause
+            pausedByHealthCheckAt: input.status != null ? null : undefined,
             redirectStatus: input.redirectStatus,
             fallbackTo: input.fallbackTo,
             placement: input.placement,
