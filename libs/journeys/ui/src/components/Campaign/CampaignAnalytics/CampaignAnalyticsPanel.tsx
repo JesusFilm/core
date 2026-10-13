@@ -339,9 +339,12 @@ export function CampaignAnalyticsPanel({
       aria-label={t('Regions')}
       data-testid="CampaignAnalyticsRegionChips"
       sx={{
-        display: 'grid',
+        display: 'flex',
+        flexWrap: 'wrap',
         gap: 1,
-        gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))'
+        // Each chip is at least as wide as its code and shares the rest of
+        // the row, so a long code never spills past its chip.
+        '& > *': { flex: '1 1 72px', whiteSpace: 'nowrap' }
       }}
     >
       {tabRegions.map((region) =>
