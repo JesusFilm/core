@@ -290,14 +290,27 @@ export function CampaignRegionShare({
                   <Box
                     data-testid="CampaignRegionSharePhoneScreen"
                     sx={{
+                      position: 'relative',
                       width: '100%',
                       height: '100%',
                       borderRadius: '16px',
                       overflow: 'hidden',
-                      // Safari (and some Chrome builds) do not clip an iframe
-                      // to a rounded overflow box; a clip-path always does.
                       clipPath: 'inset(0 round 16px)',
-                      backgroundColor: '#000000'
+                      backgroundColor: '#000000',
+                      // A composited iframe ignores both the overflow clip and
+                      // the clip-path on some displays, so the bezel is also
+                      // painted over the screen's corners from above: a
+                      // rounded hole whose spread shadow covers everything
+                      // outside it.
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        inset: 0,
+                        borderRadius: '16px',
+                        boxShadow: '0 0 0 24px var(--campaign-band-heading)',
+                        pointerEvents: 'none',
+                        zIndex: 1
+                      }
                     }}
                   >
                     {selected.embedUrl != null && (
