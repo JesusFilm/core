@@ -90,7 +90,7 @@ describe('visitor', () => {
       team: { id: 'teamId', userTeams: [] },
       journeyVisitors: []
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
     ;(prismaMock.visitor as any).findUniqueOrThrow?.mockResolvedValue?.(visitor)
 
     const result = (await authClient({
@@ -116,7 +116,7 @@ describe('visitor', () => {
       },
       journeyVisitors: []
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
     ;(prismaMock.visitor as any).findUniqueOrThrow?.mockResolvedValue?.(visitor)
 
     const result = (await authClient({
@@ -141,7 +141,7 @@ describe('visitor', () => {
       },
       journeyVisitors: []
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
     ;(prismaMock.visitor as any).findUniqueOrThrow?.mockResolvedValue?.(visitor)
 
     const result = (await authClient({
@@ -166,7 +166,7 @@ describe('visitor', () => {
         }
       ]
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
     ;(prismaMock.visitor as any).findUniqueOrThrow?.mockResolvedValue?.(visitor)
 
     const result = (await authClient({
@@ -191,7 +191,7 @@ describe('visitor', () => {
         }
       ]
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
     ;(prismaMock.visitor as any).findUniqueOrThrow?.mockResolvedValue?.(visitor)
 
     const result = (await authClient({
@@ -224,7 +224,7 @@ describe('visitor', () => {
       team: { id: 'teamId', userTeams: [] },
       journeyVisitors: []
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
 
     const result = (await authClient({
       document: VISITOR_QUERY,
@@ -260,7 +260,7 @@ describe('visitor', () => {
       team: { id: 'teamId', userTeams: [] },
       journeyVisitors: []
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
 
     await authClient({
       document: VISITOR_QUERY,
@@ -277,7 +277,7 @@ describe('visitor', () => {
       team: { id: 'teamId', userTeams: [] },
       journeyVisitors: []
     }
-    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl as any)
+    prismaMock.visitor.findUnique.mockResolvedValue(visitorWithAcl)
     ;(prismaMock.visitor as any).findUniqueOrThrow?.mockResolvedValue?.(visitor)
 
     await authClient({

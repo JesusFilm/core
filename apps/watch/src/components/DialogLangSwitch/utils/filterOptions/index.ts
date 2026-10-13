@@ -1,1 +1,0 @@
-export { filterOptions } from './filterOptions'

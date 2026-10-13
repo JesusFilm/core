@@ -243,7 +243,7 @@ describe('videoSlack', () => {
       ],
       startDate: new Date('2026-01-01T00:00:00.000Z'),
       endDate: new Date('2026-02-28T00:00:00.000Z'),
-      childLogger: logger as any
+      childLogger: logger
     })
 
     expect(mockFetch).toHaveBeenCalledTimes(1)
@@ -270,7 +270,7 @@ describe('videoSlack', () => {
       ),
       startDate: new Date('2026-11-01T00:00:00.000Z'),
       endDate: new Date('2026-11-30T00:00:00.000Z'),
-      childLogger: logger as any
+      childLogger: logger
     })
 
     expect(mockFetch.mock.calls.length).toBeGreaterThan(1)

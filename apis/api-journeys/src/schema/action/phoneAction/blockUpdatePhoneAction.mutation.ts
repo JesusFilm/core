@@ -41,9 +41,7 @@ builder.mutationField('blockUpdatePhoneAction', (t) =>
         })
       }
 
-      if (
-        !ability(Action.Update, subject('Journey', block.journey as any), user)
-      ) {
+      if (!ability(Action.Update, subject('Journey', block.journey), user)) {
         throw new GraphQLError('user is not allowed to update block', {
           extensions: { code: 'FORBIDDEN' }
         })

@@ -84,7 +84,6 @@ async function* getJourneyVisitors(
       }
     })
     if (journeyVisitors.length === 0) {
-      hasMore = false
       break
     }
     for (const journeyVisitor of journeyVisitors) {
@@ -261,7 +260,7 @@ builder.queryField('journeyVisitorExport', (t) => {
         const normalizedBlockHeaders = Array.from(headerMap.values())
 
         const getCardHeading = (blockId: string | null | undefined) =>
-          getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
+          getCardHeadingHelper(idToBlock, journeyBlocks, blockId)
 
         const baseColumns: JourneyExportColumn[] = [
           { key: 'date', label: 'Date', blockId: null, typename: '' }

@@ -10,12 +10,11 @@ export function createConcurrencyLimiter(limit: number) {
       `createConcurrencyLimiter requires a finite positive integer, got ${limit}`
     )
   }
-  const boundedLimit = limit
   let active = 0
   const queue: Array<() => void> = []
 
   function next(): void {
-    if (active >= boundedLimit) return
+    if (active >= limit) return
     const run = queue.shift()
     if (run == null) return
     active++

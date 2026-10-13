@@ -470,7 +470,6 @@ builder.mutationField('journeyDuplicate', (t) =>
             if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
               slug = slugify(`${slug}-${duplicateJourneyId}`)
             } else {
-              retry = false
               throw err
             }
           }

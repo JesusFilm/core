@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 
@@ -26,13 +27,13 @@ const muxMedia = (
   ...overrides
 })
 
-function successMock(url: string, embedUrl: string): MockedResponse {
+function successMock(url: string, embedUrl: string): MockLink.MockedResponse {
   return {
     request: { query: TEMPLATE_GALLERY_PAGE_EMBED_PREVIEW, variables: { url } },
     result: { data: { templateGalleryPageEmbedPreview: embedUrl } }
   }
 }
-function errorMock(url: string, reason: string): MockedResponse {
+function errorMock(url: string, reason: string): MockLink.MockedResponse {
   return {
     request: { query: TEMPLATE_GALLERY_PAGE_EMBED_PREVIEW, variables: { url } },
     result: {
@@ -50,7 +51,7 @@ function renderPreview(
   {
     mocks = [],
     compact = false
-  }: { mocks?: MockedResponse[]; compact?: boolean } = {}
+  }: { mocks?: MockLink.MockedResponse[]; compact?: boolean } = {}
 ): void {
   render(
     <MockedProvider mocks={mocks}>

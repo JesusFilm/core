@@ -125,13 +125,10 @@ export function keyify({
   target,
   journeyId
 }: KeyifyProps): string {
-  let targetId = ''
-
-  if (typeof target === 'string' || target == null) {
-    targetId = target ?? ''
-  } else {
-    targetId = generateActionTargetKey(target)
-  }
+  const targetId =
+    typeof target === 'string' || target == null
+      ? (target ?? '')
+      : generateActionTargetKey(target)
 
   return JSON.stringify({
     stepId,
@@ -176,13 +173,10 @@ export function templateKeyify({
   target,
   journeyId
 }: TemplateKeyifyProps): string {
-  let targetId = ''
-
-  if (typeof target === 'string' || target == null) {
-    targetId = target ?? ''
-  } else {
-    targetId = generateActionTargetKey(target)
-  }
+  const targetId =
+    typeof target === 'string' || target == null
+      ? (target ?? '')
+      : generateActionTargetKey(target)
 
   return JSON.stringify({
     event,
@@ -256,7 +250,7 @@ export function fireCaptureEvent<TInput extends object>(
         target: templateTarget,
         journeyId
       })
-    } as Props
+    }
   })
 }
 

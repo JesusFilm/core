@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
@@ -34,7 +35,7 @@ describe('CustomImage', () => {
     customizable: null
   }
 
-  const myImagesMock: MockedResponse = {
+  const myImagesMock: MockLink.MockedResponse = {
     request: {
       query: GET_MY_CLOUDFLARE_IMAGES,
       variables: { offset: 0, limit: 11, isAi: false }
@@ -94,7 +95,7 @@ describe('CustomImage', () => {
     mockUseTeam.mockReturnValue({
       activeTeam: { id: 'team-1', title: 'Team 1' }
     })
-    const teamImagesMock: MockedResponse = {
+    const teamImagesMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: false, teamId: 'team-1' }

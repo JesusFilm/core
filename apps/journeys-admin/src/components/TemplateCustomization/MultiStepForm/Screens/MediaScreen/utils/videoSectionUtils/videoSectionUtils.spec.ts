@@ -40,7 +40,7 @@ function createBaseVideoBlock(overrides: Partial<VideoBlock> = {}): VideoBlock {
     customizable: null,
     notes: null,
     ...overrides
-  } as VideoBlock
+  }
 }
 
 describe('videoSectionUtils', () => {

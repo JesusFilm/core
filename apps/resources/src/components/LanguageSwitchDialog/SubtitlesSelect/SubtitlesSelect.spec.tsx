@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { MockedFunction } from 'vitest'
@@ -80,7 +80,7 @@ describe('SubtitlesSelect', () => {
 
   it('should display native name and display name when subtitleLanguageId matches a language', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <WatchProvider>
           <SubtitlesSelect subtitleLanguageId="496" />
         </WatchProvider>
@@ -97,7 +97,7 @@ describe('SubtitlesSelect', () => {
   describe('helper text', () => {
     it('should show helper text', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleLanguageId="529" />
           </WatchProvider>
@@ -118,7 +118,7 @@ describe('SubtitlesSelect', () => {
       })
 
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleLanguageId="529" />
           </WatchProvider>
@@ -132,7 +132,7 @@ describe('SubtitlesSelect', () => {
 
     it('should show available languages text when videoSubtitleLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect
               subtitleLanguageId="529"
@@ -151,7 +151,7 @@ describe('SubtitlesSelect', () => {
 
     it('should show not available languages text when videoSubtitleLanguageIds is not null and subtitleLanguageId does not match', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect
               subtitleLanguageId="529"
@@ -174,7 +174,7 @@ describe('SubtitlesSelect', () => {
   describe('native name', () => {
     it('should display native name when audioLanguageId matches a language', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleLanguageId="496" />
           </WatchProvider>
@@ -192,7 +192,7 @@ describe('SubtitlesSelect', () => {
 
     it('should not display native name when it matches the display name', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleLanguageId="529" />
           </WatchProvider>
@@ -212,7 +212,7 @@ describe('SubtitlesSelect', () => {
   describe('autocomplete', () => {
     it('should show available languages text when videoSubtitleLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect
               subtitleLanguageId="529"
@@ -239,7 +239,7 @@ describe('SubtitlesSelect', () => {
 
     it('should call updateSubtitleLanguage when a language is selected', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleLanguageId="529" />
           </WatchProvider>
@@ -260,7 +260,7 @@ describe('SubtitlesSelect', () => {
   describe('checkbox', () => {
     it('should call updateSubtitleOn when checkbox is changed', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleOn />
           </WatchProvider>
@@ -278,7 +278,7 @@ describe('SubtitlesSelect', () => {
   describe('languages list', () => {
     it('should show all languages when videoSubtitleLanguageIds is not null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect
               subtitleOn
@@ -302,7 +302,7 @@ describe('SubtitlesSelect', () => {
 
     it('should show filtered languages when videoSubtitleLanguageIds is null', async () => {
       render(
-        <MockedProvider mocks={[]} addTypename={false}>
+        <MockedProvider mocks={[]}>
           <WatchProvider>
             <SubtitlesSelect subtitleOn subtitleLanguageId="529" />
           </WatchProvider>

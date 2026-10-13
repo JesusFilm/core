@@ -125,15 +125,15 @@ Error: Prisma Migrate has detected that the environment is non-interactive, whic
 Run the migration manually by combining the database URL env var with the prisma command:
 
 ```bash
-PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
+PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@localhost:5432/<domain>?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/<domain>/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
 
-The `--name` flag is required to avoid an interactive prompt for the migration name. The database URL above uses the default devcontainer values (`db` hostname, `postgres`/`postgres` credentials) — substitute your actual values if your local setup differs.
+The `--name` flag is required to avoid an interactive prompt for the migration name. The database URL above uses the default local values (`localhost` hostname, `postgres`/`postgres` credentials) — substitute your actual values if your local setup differs.
 
 For example, for the journeys domain:
 
 ```bash
-PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@db:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
+PG_DATABASE_URL_JOURNEYS=postgresql://postgres:postgres@localhost:5432/journeys?schema=public bash -c 'pnpm exec prisma migrate dev --config libs/prisma/journeys/prisma.config.ts --name "$(date +"%Y%m%d%H%M%S")"'
 ```
 
 ##### `P3006`: a historical migration fails to apply to the shadow database
@@ -142,7 +142,7 @@ If `nx prisma-migrate prisma-<domain>` fails with `P3006` on a migration **unrel
 
 ```bash
 cd libs/prisma/<domain>
-export PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@db:5432/<domain>?schema=public
+export PG_DATABASE_URL_<DOMAIN>=postgresql://postgres:postgres@localhost:5432/<domain>?schema=public
 pnpm exec prisma migrate diff --from-config-datasource prisma.config.ts --to-schema db/schema.prisma --script
 ```
 

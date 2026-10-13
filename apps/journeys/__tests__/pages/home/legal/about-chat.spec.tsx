@@ -23,7 +23,7 @@ vi.mock('next-i18next/pages/serverSideTranslations', () => ({
 // off whether its own copy translated) without re-mocking per test.
 const i18nState = vi.hoisted(() => ({
   language: 'en',
-  translations: {} as Record<string, string>
+  translations: {}
 }))
 
 function resetI18nState(): void {

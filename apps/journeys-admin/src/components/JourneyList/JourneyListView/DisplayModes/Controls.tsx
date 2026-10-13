@@ -10,17 +10,21 @@ import type { SharedControlProps } from './shared'
 // Status filter component
 export const StatusFilterControl = ({
   selectedStatus,
-  handleStatusChange
-}: Pick<
-  SharedControlProps,
-  'selectedStatus' | 'handleStatusChange'
->): ReactElement => (
+  handleStatusChange,
+  menuMarginRight
+}: Pick<SharedControlProps, 'selectedStatus' | 'handleStatusChange'> & {
+  // Set when Sort/Menu no longer follow this control in the row (Team
+  // Templates + teamTemplateCollection, NES-1872) — this becomes the last
+  // element, so it inherits the edge-hugging negative margin they used to
+  // carry instead of sitting inset from the row's true edge.
+  menuMarginRight?: { xs: number; sm: number }
+}): ReactElement => (
   <Box
     sx={{
       display: 'flex',
       alignItems: 'center',
       ml: 'auto',
-      mr: 0
+      mr: menuMarginRight ?? 0
     }}
   >
     <JourneyStatusFilter

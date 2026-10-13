@@ -170,7 +170,7 @@ describe('useImageUpload', () => {
     }
 
     await act(async () => {
-      await onDrop?.([], [fileRejection] as any, {} as any)
+      await onDrop?.([], [fileRejection], {} as any)
     })
 
     expect(onUploadError).toHaveBeenCalledWith(
@@ -189,7 +189,7 @@ describe('useImageUpload', () => {
     }
 
     await act(async () => {
-      await onDrop?.([], [fileRejection] as any, {} as any)
+      await onDrop?.([], [fileRejection], {} as any)
     })
 
     expect(onUploadError).toHaveBeenCalledWith(

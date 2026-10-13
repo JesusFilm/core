@@ -16,7 +16,8 @@ export async function getVideoMetadata(
     metadata = JSON.parse(stdout)
   } catch (error) {
     throw new Error(
-      `Failed to parse ffprobe output: ${(error as Error).message}`
+      `Failed to parse ffprobe output: ${(error as Error).message}`,
+      { cause: error }
     )
   }
 
@@ -76,7 +77,8 @@ export async function getAudioMetadata(
     metadata = JSON.parse(stdout)
   } catch (error) {
     throw new Error(
-      `Failed to parse ffprobe output: ${(error as Error).message}`
+      `Failed to parse ffprobe output: ${(error as Error).message}`,
+      { cause: error }
     )
   }
 

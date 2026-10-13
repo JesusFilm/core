@@ -95,8 +95,8 @@ describe('integrationGoogleUpdate', () => {
     prismaMock.integration.findUnique.mockResolvedValue(
       mockExistingIntegration as any
     )
-    mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
-    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
+    mockAxios.post.mockResolvedValueOnce(mockTokenResponse)
+    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse)
     mockEncryptSymmetric.mockResolvedValue({
       ciphertext: 'encrypted-secret',
       iv: 'iv',
@@ -155,7 +155,7 @@ describe('integrationGoogleUpdate', () => {
   })
 
   it('should throw error when user is not authenticated', async () => {
-    mockGetUserFromPayload.mockReturnValue(null as any)
+    mockGetUserFromPayload.mockReturnValue(null)
     const unauthClient = getClient({
       headers: { authorization: 'token' },
       context: { currentUser: null }
@@ -293,8 +293,8 @@ describe('integrationGoogleUpdate', () => {
     prismaMock.integration.findUnique.mockResolvedValue(
       mockExistingIntegration as any
     )
-    mockAxios.post.mockResolvedValueOnce(mockTokenResponse as any)
-    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse as any)
+    mockAxios.post.mockResolvedValueOnce(mockTokenResponse)
+    mockAxios.get.mockResolvedValueOnce(mockUserInfoResponse)
 
     const result = await authClient({
       document: INTEGRATION_GOOGLE_UPDATE_MUTATION,

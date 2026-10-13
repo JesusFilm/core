@@ -164,12 +164,11 @@ mediaLanguage.openapi(route, async (c) => {
   ])
 
   const response = await getWithStaleCacheForRequest(c, cacheKey, async () => {
-    const { data } = await getApolloClient().query<
-      ResultOf<typeof GET_LANGUAGE>
-    >({
+    const { data } = await getApolloClient().query({
       query: GET_LANGUAGE,
+      errorPolicy: 'none',
       variables: {
-        id: languageId,
+        id: languageId ?? '',
         metadataLanguageId,
         fallbackLanguageId
       }

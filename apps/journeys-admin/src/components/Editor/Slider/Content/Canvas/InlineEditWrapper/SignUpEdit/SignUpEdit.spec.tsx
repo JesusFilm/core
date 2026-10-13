@@ -1,14 +1,15 @@
 import { ApolloLink } from '@apollo/client'
-import { MockLink, MockedProvider } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import DebounceLink from 'apollo-link-debounce'
 import { SnackbarProvider } from 'notistack'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 import { EditorProvider } from '@core/journeys/ui/EditorProvider'
 
 import { SignUpFields } from '../../../../../../../../__generated__/SignUpFields'
+import { DebounceLink } from '../../../../../../../libs/apolloClient/DebounceLink'
 import { CommandRedoItem } from '../../../../../Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../../../Toolbar/Items/CommandUndoItem'
 

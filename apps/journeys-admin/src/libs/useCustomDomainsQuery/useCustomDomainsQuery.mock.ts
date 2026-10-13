@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   GetCustomDomains,
@@ -7,7 +7,7 @@ import {
 
 import { GET_CUSTOM_DOMAINS } from './useCustomDomainsQuery'
 
-export const getCustomDomainMock: MockedResponse<
+export const getCustomDomainMock: MockLink.MockedResponse<
   GetCustomDomains,
   GetCustomDomainsVariables
 > = {

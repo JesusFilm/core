@@ -44,7 +44,7 @@ describe('multiselectBlockCreate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findMany.mockResolvedValue([])
     // Prevent Pothos Prisma plugin from attempting to call unmocked prisma methods
     prismaMock.block.findUnique.mockResolvedValue({
       id: 'blockId',

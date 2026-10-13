@@ -1,4 +1,5 @@
-import { gql, useLazyQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
@@ -94,9 +95,9 @@ export function ScanCount({ shortLinkId }: ScanCountProps): ReactElement {
           <Typography variant="subtitle3">{t('scans')}</Typography>
         </>
       ) : (
-        <Trans t={t} scanCount={scanCount}>
+        <Trans t={t} values={{ scanCount }}>
           <Typography variant="subtitle3" sx={{ ml: 1 }}>
-            {scanCount}
+            {'{{scanCount}}'}
           </Typography>
         </Trans>
       )}

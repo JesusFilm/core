@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
@@ -69,7 +69,7 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
       endAt: number
     }
 > {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys-modern',
@@ -83,7 +83,8 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
 
   const { data } = await apollo.query({
     query: GET_MUX_VIDEO_QUERY,
-    variables: { id: videoId }
+    variables: { id: videoId },
+    errorPolicy: 'none'
   })
 
   if (data.getMuxVideo == null) {

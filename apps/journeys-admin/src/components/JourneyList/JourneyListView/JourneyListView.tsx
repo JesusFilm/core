@@ -43,6 +43,15 @@ export interface JourneyListViewProps {
    * this prop go.
    */
   infoPanelActive?: boolean
+  /**
+   * True when TemplateGalleryPageList (which owns its own Sort/bulk-actions
+   * menu, scoped to the All Templates section) renders in place of
+   * JourneyListContent — i.e. templates tab + teamTemplateCollection on.
+   * Computed once in JourneyList and forwarded to TeamMode so it can hide
+   * the shared row's Sort/⋮ without re-deriving the same flag+route check
+   * itself (NES-1872 review).
+   */
+  listControlsOwnedByContent?: boolean
 }
 
 // Re-export ContentTypeOption for external use
@@ -65,7 +74,8 @@ export function JourneyListView({
   setActiveEvent,
   setSortOrder,
   sortOrder,
-  infoPanelActive = false
+  infoPanelActive = false,
+  listControlsOwnedByContent = false
 }: JourneyListViewProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
@@ -220,6 +230,7 @@ export function JourneyListView({
       router={router}
       renderList={renderList}
       infoPanelActive={infoPanelActive}
+      listControlsOwnedByContent={listControlsOwnedByContent}
     />
   )
 }

@@ -28,20 +28,35 @@ function resolveFromRenditionMetadata(
   const resolution = extractMuxResolutionFromUrl(url)
   if (resolution == null) return null
 
-  const file = muxAsset?.static_renditions?.files?.find(
-    (candidate) => candidate?.resolution === resolution
-  )
-  if (file == null) return null
   // Only a `ready` rendition is download-ready; `preparing`, `skipped`, and
   // `errored` renditions must fall back to HTTP verification.
-  if (file.status !== 'ready') return null
+  const readyFiles = (muxAsset?.static_renditions?.files ?? []).filter(
+    (file) => file?.resolution === resolution && file.status === 'ready'
+  )
+  if (readyFiles.length === 0) return null
 
-  const filesize = parseMuxFilesize(file.filesize)
-  if (filesize != null) {
-    return { size: filesize, errorCode: null }
+  const filesizes = new Set<number>()
+  let hasUnparseableFilesize = false
+  for (const file of readyFiles) {
+    const filesize = parseMuxFilesize(file?.filesize)
+    if (filesize == null) hasUnparseableFilesize = true
+    else filesizes.add(filesize)
   }
 
-  return null
+  // No ready rendition reports a usable filesize — fall back to HTTP
+  // verification rather than treating an absence of data as a conflict.
+  if (filesizes.size === 0) return null
+
+  // A parseable filesize alongside either a disagreeing filesize or an
+  // unparseable one on another ready rendition is inconsistent metadata,
+  // not a value to guess between — skip and report it rather than
+  // silently trusting whichever rendition happened to parse.
+  if (filesizes.size > 1 || hasUnparseableFilesize) {
+    return { size: null, errorCode: 'sizeConflict' }
+  }
+
+  const [filesize] = filesizes
+  return { size: filesize, errorCode: null }
 }
 
 /**

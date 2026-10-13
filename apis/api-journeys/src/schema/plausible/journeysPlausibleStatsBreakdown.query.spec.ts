@@ -83,7 +83,7 @@ describe('journeysPlausibleStatsBreakdown', () => {
           }
         ]
       }
-    } as any)
+    })
     mockIsAxiosError.mockReturnValue(false)
   })
 
@@ -150,12 +150,12 @@ describe('journeysPlausibleStatsBreakdown', () => {
             visitors: 1
           }))
         }
-      } as any)
+      })
       .mockResolvedValueOnce({
         data: {
           results: [{ goal: 'event-1000', visitors: 1 }]
         }
-      } as any)
+      })
 
     await authClient({
       document: QUERY,
@@ -225,7 +225,7 @@ describe('journeysPlausibleStatsBreakdown', () => {
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid property' } }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,

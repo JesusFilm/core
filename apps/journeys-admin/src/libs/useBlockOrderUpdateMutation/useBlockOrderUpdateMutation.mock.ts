@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   BlockOrderUpdate,
@@ -7,7 +7,7 @@ import {
 
 import { BLOCK_ORDER_UPDATE } from './useBlockOrderUpdateMutation'
 
-export const blockOrderUpdateMock: MockedResponse<
+export const blockOrderUpdateMock: MockLink.MockedResponse<
   BlockOrderUpdate,
   BlockOrderUpdateVariables
 > = {

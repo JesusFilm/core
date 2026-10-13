@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
@@ -89,7 +90,7 @@ describe('Host', () => {
     }
   } as unknown as Journey
 
-  const getUserTeamMock: MockedResponse<GetUserTeamsAndInvites> = {
+  const getUserTeamMock: MockLink.MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
       variables: {
@@ -105,7 +106,7 @@ describe('Host', () => {
     }
   }
 
-  const getAllTeamHosts: MockedResponse<
+  const getAllTeamHosts: MockLink.MockedResponse<
     GetAllTeamHosts,
     GetAllTeamHostsVariables
   > = {

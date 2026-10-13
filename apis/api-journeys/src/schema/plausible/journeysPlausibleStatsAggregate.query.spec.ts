@@ -84,7 +84,7 @@ describe('journeysPlausibleStatsAggregate', () => {
           events: { value: 3 }
         }
       }
-    } as any)
+    })
     mockIsAxiosError.mockReturnValue(false)
   })
 
@@ -179,7 +179,7 @@ describe('journeysPlausibleStatsAggregate', () => {
     mockIsAxiosError.mockReturnValueOnce(true)
     mockAxios.get.mockRejectedValueOnce({
       response: { data: { error: 'Invalid filters' } }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,

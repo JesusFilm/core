@@ -117,7 +117,6 @@ async function* getJourneyVisitors(
     })
 
     if (journeyVisitors.length === 0) {
-      hasMore = false
       break
     }
 
@@ -267,7 +266,7 @@ export async function backfillService(
   const normalizedBlockHeaders = Array.from(headerMap.values())
 
   const getCardHeading = (blockId: string | null | undefined) =>
-    getCardHeadingHelper(idToBlock as any, journeyBlocks as any, blockId)
+    getCardHeadingHelper(idToBlock, journeyBlocks, blockId)
 
   const baseColumns: JourneyExportColumn[] = [
     { key: 'visitorId', label: 'Visitor ID', blockId: null, typename: '' },

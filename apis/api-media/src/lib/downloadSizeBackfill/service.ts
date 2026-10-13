@@ -1,5 +1,6 @@
 import { Prisma, prisma } from '@core/prisma/media/client'
 
+import { logger } from '../../logger'
 import { getVideo } from '../../schema/mux/video/service'
 
 import { MUX_STREAM_BASE_URL, classifyProvider } from './classifyProvider'
@@ -11,6 +12,7 @@ import { resolveR2Size } from './resolveR2Size'
 import type {
   BackfillAuditRecord,
   BackfillProvider,
+  BackfillProviderSummary,
   BackfillSummary,
   DownloadCandidate,
   HttpSizeClient,
@@ -30,12 +32,8 @@ export type DownloadSizeBackfillOptions = {
   batchSize?: number
   startAfterId?: string | null
   filters?: DownloadSizeBackfillFilters
-  muxConcurrency?: number
-  r2Concurrency?: number
-  legacyConcurrency?: number
   httpClient?: HttpSizeClient
   muxAssetFetcher?: MuxAssetFetcher
-  onRecord?: (record: BackfillAuditRecord) => void
 }
 
 export type DownloadSizeBackfillResult = {
@@ -70,15 +68,25 @@ function createDefaultMuxAssetFetcher(): MuxAssetFetcher {
   return {
     async getAsset(muxAssetId) {
       try {
-        return (await getVideo(muxAssetId, false)) as unknown as MuxAssetLike
-      } catch {
+        return await getVideo(muxAssetId, false)
+      } catch (error) {
+        // A null asset is not a dead end: resolveMuxSize treats it as "no
+        // rendition metadata" and falls back to HTTP sizing, which usually
+        // still resolves the length. So keep returning null rather than
+        // letting this throw -- but log it, because an outage and an asset
+        // that genuinely has no renditions are otherwise indistinguishable
+        // in the audit report.
+        logger.warn(
+          { error, muxAssetId },
+          'Mux asset lookup failed; falling back to HTTP size resolution'
+        )
         return null
       }
     }
   }
 }
 
-function emptyProviderSummary(): BackfillSummary['byProvider']['mux'] {
+function emptyProviderSummary(): BackfillProviderSummary {
   return {
     totalCandidates: 0,
     repairable: 0,
@@ -89,20 +97,31 @@ function emptyProviderSummary(): BackfillSummary['byProvider']['mux'] {
   }
 }
 
-function emptySummary(): BackfillSummary {
+/** The zero-valued summary shape, shared with the CLI script so both start every run from the same shape. */
+export function emptyBackfillSummary(): BackfillSummary {
   return {
-    totalCandidates: 0,
-    repairable: 0,
-    applied: 0,
-    alreadyCorrected: 0,
-    skipped: 0,
-    failed: 0,
+    ...emptyProviderSummary(),
     byProvider: {
       mux: emptyProviderSummary(),
       r2: emptyProviderSummary(),
       legacy: emptyProviderSummary()
     }
   }
+}
+
+function toDownloadCandidate(row: {
+  id: string
+  size: number | null
+  url: string
+  assetId: string | null
+  videoVariantId: string | null
+  asset: { contentLength: bigint } | null
+  videoVariant: {
+    muxVideoId: string | null
+    muxVideo: { assetId: string | null } | null
+  } | null
+}): DownloadCandidate {
+  return row
 }
 
 function accumulate(
@@ -117,20 +136,21 @@ function accumulate(
   providerSummary[record.outcome]++
 }
 
+const NOT_MUX = { url: { not: { startsWith: MUX_STREAM_BASE_URL } } }
+
+const PROVIDER_WHERE: Record<
+  BackfillProvider,
+  Prisma.VideoVariantDownloadWhereInput
+> = {
+  mux: { url: { startsWith: MUX_STREAM_BASE_URL } },
+  r2: { AND: [NOT_MUX, { assetId: { not: null } }] },
+  legacy: { AND: [NOT_MUX, { assetId: null }] }
+}
+
 function buildProviderWhere(
   provider: BackfillProvider | undefined
 ): Prisma.VideoVariantDownloadWhereInput | undefined {
-  const notMux = { url: { not: { startsWith: MUX_STREAM_BASE_URL } } }
-  switch (provider) {
-    case 'mux':
-      return { url: { startsWith: MUX_STREAM_BASE_URL } }
-    case 'r2':
-      return { AND: [notMux, { assetId: { not: null } }] }
-    case 'legacy':
-      return { AND: [notMux, { assetId: null }] }
-    default:
-      return undefined
-  }
+  return provider != null ? PROVIDER_WHERE[provider] : undefined
 }
 
 type ProviderResolutionContext = {
@@ -139,30 +159,42 @@ type ProviderResolutionContext = {
   muxAssetCache: Map<string, Promise<MuxAssetLike | null>>
 }
 
+async function resolveMux(
+  candidate: DownloadCandidate,
+  ctx: ProviderResolutionContext
+): Promise<ResolveSizeResult> {
+  const muxAssetId = candidate.videoVariant?.muxVideo?.assetId ?? null
+  let muxAsset: MuxAssetLike | null = null
+  if (muxAssetId != null) {
+    let pending = ctx.muxAssetCache.get(muxAssetId)
+    if (pending == null) {
+      pending = ctx.muxAssetFetcher.getAsset(muxAssetId)
+      ctx.muxAssetCache.set(muxAssetId, pending)
+    }
+    muxAsset = await pending
+  }
+  return resolveMuxSize(candidate.url, muxAsset, ctx.httpClient)
+}
+
+const PROVIDER_RESOLVERS: Record<
+  BackfillProvider,
+  (
+    candidate: DownloadCandidate,
+    ctx: ProviderResolutionContext
+  ) => Promise<ResolveSizeResult>
+> = {
+  mux: resolveMux,
+  r2: async (candidate) => resolveR2Size(candidate.asset),
+  legacy: async (candidate, ctx) =>
+    resolveLegacySize(candidate.url, ctx.httpClient)
+}
+
 async function resolveForProvider(
   candidate: DownloadCandidate,
   provider: BackfillProvider,
   ctx: ProviderResolutionContext
 ): Promise<ResolveSizeResult> {
-  if (provider === 'mux') {
-    const muxAssetId = candidate.videoVariant?.muxVideo?.assetId ?? null
-    let muxAsset: MuxAssetLike | null = null
-    if (muxAssetId != null) {
-      let pending = ctx.muxAssetCache.get(muxAssetId)
-      if (pending == null) {
-        pending = ctx.muxAssetFetcher.getAsset(muxAssetId)
-        ctx.muxAssetCache.set(muxAssetId, pending)
-      }
-      muxAsset = await pending
-    }
-    return resolveMuxSize(candidate.url, muxAsset, ctx.httpClient)
-  }
-
-  if (provider === 'r2') {
-    return resolveR2Size(candidate.asset)
-  }
-
-  return resolveLegacySize(candidate.url, ctx.httpClient)
+  return PROVIDER_RESOLVERS[provider](candidate, ctx)
 }
 
 async function processCandidate(
@@ -181,7 +213,11 @@ async function processCandidate(
   let resolved: ResolveSizeResult
   try {
     resolved = await resolveForProvider(candidate, provider, ctx)
-  } catch {
+  } catch (error) {
+    logger.error(
+      { error, downloadId: candidate.id, provider },
+      'Download size resolution failed'
+    )
     return {
       ...base,
       verifiedSize: null,
@@ -235,7 +271,11 @@ async function processCandidate(
       outcome: 'applied',
       errorCode: null
     }
-  } catch {
+  } catch (error) {
+    logger.error(
+      { error, downloadId: candidate.id, provider },
+      'Download size write failed'
+    )
     return {
       ...base,
       verifiedSize: resolved.size,
@@ -259,15 +299,14 @@ export async function runDownloadSizeBackfill(
   const httpClient = options.httpClient ?? createFetchHttpSizeClient()
   const muxAssetFetcher =
     options.muxAssetFetcher ?? createDefaultMuxAssetFetcher()
-  const muxLimit = createConcurrencyLimiter(
-    options.muxConcurrency ?? DEFAULT_MUX_CONCURRENCY
-  )
-  const r2Limit = createConcurrencyLimiter(
-    options.r2Concurrency ?? DEFAULT_R2_CONCURRENCY
-  )
-  const legacyLimit = createConcurrencyLimiter(
-    options.legacyConcurrency ?? DEFAULT_LEGACY_CONCURRENCY
-  )
+  const limiters: Record<
+    BackfillProvider,
+    ReturnType<typeof createConcurrencyLimiter>
+  > = {
+    mux: createConcurrencyLimiter(DEFAULT_MUX_CONCURRENCY),
+    r2: createConcurrencyLimiter(DEFAULT_R2_CONCURRENCY),
+    legacy: createConcurrencyLimiter(DEFAULT_LEGACY_CONCURRENCY)
+  }
 
   const filters = options.filters ?? {}
   const providerWhere = buildProviderWhere(filters.provider)
@@ -281,7 +320,7 @@ export async function runDownloadSizeBackfill(
     ...(providerWhere ?? {})
   }
 
-  const candidates = (await prisma.videoVariantDownload.findMany({
+  const rows = await prisma.videoVariantDownload.findMany({
     where,
     orderBy: { id: 'asc' },
     ...(options.startAfterId != null
@@ -302,23 +341,18 @@ export async function runDownloadSizeBackfill(
         }
       }
     }
-  })) as unknown as DownloadCandidate[]
+  })
+  const candidates: DownloadCandidate[] = rows.map(toDownloadCandidate)
 
-  const summary = emptySummary()
+  const summary = emptyBackfillSummary()
   const records: BackfillAuditRecord[] = []
   const muxAssetCache = new Map<string, Promise<MuxAssetLike | null>>()
 
   await Promise.all(
     candidates.map((candidate) => {
       const provider = classifyProvider(candidate)
-      const limiter =
-        provider === 'mux'
-          ? muxLimit
-          : provider === 'r2'
-            ? r2Limit
-            : legacyLimit
 
-      return limiter(async () => {
+      return limiters[provider](async () => {
         const record = await processCandidate(
           candidate,
           provider,
@@ -327,7 +361,6 @@ export async function runDownloadSizeBackfill(
         )
         records.push(record)
         accumulate(summary, record)
-        options.onRecord?.(record)
       })
     })
   )

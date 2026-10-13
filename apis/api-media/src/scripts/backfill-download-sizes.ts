@@ -11,9 +11,12 @@ import {
   type BackfillSummary,
   type DownloadSizeBackfillFilters,
   assertValidBatchSize,
+  emptyBackfillSummary,
   runDownloadSizeBackfill
 } from '../lib/downloadSizeBackfill'
 import { logger } from '../logger'
+
+import { hasFlag } from './cliFlags'
 
 const REPORT_DIR = path.resolve('.cache/api-media')
 const REPORT_PATH = path.join(REPORT_DIR, 'download-size-backfill-report.jsonl')
@@ -181,56 +184,18 @@ function mergeSummary(target: BackfillSummary, batch: BackfillSummary): void {
   }
 }
 
-function emptySummary(): BackfillSummary {
-  return {
-    totalCandidates: 0,
-    repairable: 0,
-    applied: 0,
-    alreadyCorrected: 0,
-    skipped: 0,
-    failed: 0,
-    byProvider: {
-      mux: {
-        totalCandidates: 0,
-        repairable: 0,
-        applied: 0,
-        alreadyCorrected: 0,
-        skipped: 0,
-        failed: 0
-      },
-      r2: {
-        totalCandidates: 0,
-        repairable: 0,
-        applied: 0,
-        alreadyCorrected: 0,
-        skipped: 0,
-        failed: 0
-      },
-      legacy: {
-        totalCandidates: 0,
-        repairable: 0,
-        applied: 0,
-        alreadyCorrected: 0,
-        skipped: 0,
-        failed: 0
-      }
-    }
-  }
-}
-
 /**
  * Standalone Download-size backfill command. Repairs null/nonpositive
  * `size` values on existing Downloads from authoritative Mux, R2, and
  * legacy-URL provider data.
  *
  * Defaults to dry-run and processes all eligible rows globally in
- * resumable batches. Set DOWNLOAD_SIZE_BACKFILL_APPLY=true to write.
- * Optional filters (DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID,
- * DOWNLOAD_SIZE_BACKFILL_VARIANT_ID, DOWNLOAD_SIZE_BACKFILL_PROVIDER)
- * scope a run for focused validation.
+ * resumable batches. Pass --apply to write. Optional filters
+ * (DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID, DOWNLOAD_SIZE_BACKFILL_VARIANT_ID,
+ * DOWNLOAD_SIZE_BACKFILL_PROVIDER) scope a run for focused validation.
  */
 async function main(): Promise<void> {
-  const apply = process.env.DOWNLOAD_SIZE_BACKFILL_APPLY === 'true'
+  const apply = hasFlag(process.argv, 'apply')
   const resume = process.env.DOWNLOAD_SIZE_BACKFILL_RESUME === 'true'
   // Validate at the command boundary, before any I/O — an invalid batch
   // size must never reach the query loop, where it can return zero rows
@@ -244,7 +209,9 @@ async function main(): Promise<void> {
       process.env.DOWNLOAD_SIZE_BACKFILL_DOWNLOAD_ID?.trim() || undefined,
     videoVariantId:
       process.env.DOWNLOAD_SIZE_BACKFILL_VARIANT_ID?.trim() || undefined,
-    provider: parseProviderFilter(process.env.DOWNLOAD_SIZE_BACKFILL_PROVIDER)
+    provider: parseProviderFilter(
+      process.env.DOWNLOAD_SIZE_BACKFILL_PROVIDER?.trim()
+    )
   }
 
   logger.info(
@@ -257,7 +224,21 @@ async function main(): Promise<void> {
     flags: resume ? 'a' : 'w'
   })
 
-  const totalSummary = emptySummary()
+  // Without a listener, an async stream failure (disk full, path made
+  // unwritable) is emitted as an unhandled 'error' event and aborts the
+  // process before the summary log and the final cursor save -- leaving a
+  // resume that cannot tell how far the audit report actually got. Record it
+  // and let the run finish and report honestly instead.
+  let reportStreamError: Error | null = null
+  reportStream.on('error', (error) => {
+    reportStreamError ??= error
+    logger.error(
+      { error, reportPath: REPORT_PATH },
+      'Audit report write failed'
+    )
+  })
+
+  const totalSummary = emptyBackfillSummary()
   let startAfterId = resume ? await loadCursor(apply, filters) : null
   let hasMore = true
   let batchNumber = 0
@@ -302,6 +283,24 @@ async function main(): Promise<void> {
 
   logger.info({ summary: totalSummary }, 'Download size backfill summary')
   logger.info({ reportPath: REPORT_PATH }, 'Audit report written')
+
+  // Match the contract in recover-parent-variants.ts so a CI or Job wrapper
+  // can tell a partially failed run from a clean one.
+  if (totalSummary.failed > 0) {
+    logger.error(
+      { failed: totalSummary.failed },
+      'Download size backfill completed with failures'
+    )
+    process.exitCode = 1
+  }
+
+  if (reportStreamError != null) {
+    logger.error(
+      { error: reportStreamError, reportPath: REPORT_PATH },
+      'Audit report is incomplete; treat this run as unverified'
+    )
+    process.exitCode = 1
+  }
 }
 
 if (require.main === module) {

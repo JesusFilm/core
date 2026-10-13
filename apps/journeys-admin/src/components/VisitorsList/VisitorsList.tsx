@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -6,7 +7,7 @@ import { styled } from '@mui/material/styles'
 import { DataGrid } from '@mui/x-data-grid'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import {
   GetVisitors,
@@ -67,16 +68,19 @@ export function VisitorsList(): ReactElement {
   const [endCursor, setEndCursor] = useState<string | null>()
   const columns = getColDefs(t)
 
-  const { fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
+  const { data, fetchMore, loading } = useQuery<GetVisitors>(GET_VISITORS, {
     variables: {
       first: 100
-    },
-    onCompleted: (data) => {
-      setVisitors(data.visitors.edges)
-      setHasNextPage(data.visitors.pageInfo.hasNextPage)
-      setEndCursor(data.visitors.pageInfo.endCursor)
     }
   })
+
+  // Apollo Client 4 removed `useQuery`'s `onCompleted` option.
+  useEffect(() => {
+    if (data == null) return
+    setVisitors(data.visitors.edges)
+    setHasNextPage(data.visitors.pageInfo.hasNextPage)
+    setEndCursor(data.visitors.pageInfo.endCursor)
+  }, [data])
 
   async function handleFetchNext(): Promise<void> {
     if (hasNextPage) {

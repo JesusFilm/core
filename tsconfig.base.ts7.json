@@ -14,7 +14,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es2015",
-    "lib": ["es2021", "dom"],
+    "lib": ["es2021", "es2022.error", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "strictNullChecks": true,
@@ -42,7 +42,6 @@
         "./libs/shared/ui/src/components/*",
         "./libs/shared/ui/src/libs/*"
       ],
-      "@core/shared/ui-modern/*": ["./libs/shared/ui-modern/src/*"],
       "@core/yoga/*": ["./libs/yoga/src/*"]
     }
   },

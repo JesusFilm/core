@@ -1,9 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   JourneyCustomizationDescriptionUpdate,
@@ -35,11 +31,11 @@ export const JOURNEY_CUSTOMIZATION_DESCRIPTION_UPDATE = gql`
  * fresh on reopen.
  */
 export function useJourneyCustomizationDescriptionUpdateMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     JourneyCustomizationDescriptionUpdate,
     JourneyCustomizationDescriptionUpdateVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   JourneyCustomizationDescriptionUpdate,
   JourneyCustomizationDescriptionUpdateVariables
 > {

@@ -1,1 +1,0 @@
-export { getFlags } from './getFlags'

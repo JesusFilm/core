@@ -26,7 +26,6 @@ onlyBuiltDependencies:
   - nx
   - prisma
   - protobufjs
-  - puppeteer
   - sharp
   - unrs-resolver
   - vue-demi

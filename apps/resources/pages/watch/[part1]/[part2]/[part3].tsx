@@ -1,4 +1,4 @@
-import { ApolloError, gql } from '@apollo/client'
+import { CombinedGraphQLErrors, gql } from '@apollo/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { SnackbarProvider } from 'notistack'
@@ -155,7 +155,7 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
         }
       })
     ])
-    if (containerData.container == null || contentData.content == null) {
+    if (containerData?.container == null || contentData?.content == null) {
       return {
         revalidate: 1,
         notFound: true
@@ -196,8 +196,8 @@ export const getStaticProps: GetStaticProps<Part3PageProps> = async (
     }
   } catch (error) {
     if (
-      error instanceof ApolloError &&
-      error.graphQLErrors.some(
+      CombinedGraphQLErrors.is(error) &&
+      error.errors.some(
         ({ extensions, message }) =>
           extensions?.code === 'NOT_FOUND' ||
           message?.startsWith('Video not found')

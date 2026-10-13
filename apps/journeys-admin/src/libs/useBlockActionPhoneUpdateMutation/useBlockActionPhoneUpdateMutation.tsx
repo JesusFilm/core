@@ -1,10 +1,5 @@
-import {
-  FetchResult,
-  MutationFunctionOptions,
-  MutationResult,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { ApolloLink, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   BlockActionPhoneUpdate,
@@ -28,7 +23,7 @@ export const BLOCK_ACTION_PHONE_UPDATE = gql`
 `
 
 export function useBlockActionPhoneUpdateMutation(
-  options?: MutationFunctionOptions<
+  options?: useMutation.MutationFunctionOptions<
     BlockActionPhoneUpdate,
     BlockActionPhoneUpdateVariables
   >
@@ -40,12 +35,12 @@ export function useBlockActionPhoneUpdateMutation(
     contactAction: ContactActionType,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
     >
-  ) => Promise<FetchResult<BlockActionPhoneUpdate> | undefined>,
-  MutationResult<BlockActionPhoneUpdate>
+  ) => Promise<ApolloLink.Result<BlockActionPhoneUpdate> | undefined>,
+  useMutation.Result<BlockActionPhoneUpdate>
 ] {
   const [blockActionPhoneUpdate, result] = useMutation<
     BlockActionPhoneUpdate,
@@ -59,11 +54,11 @@ export function useBlockActionPhoneUpdateMutation(
     contactAction: ContactActionType,
     customizable: boolean | null,
     parentStepId: string | null,
-    options?: MutationFunctionOptions<
+    options?: useMutation.MutationFunctionOptions<
       BlockActionPhoneUpdate,
       BlockActionPhoneUpdateVariables
     >
-  ): Promise<FetchResult<BlockActionPhoneUpdate> | undefined> {
+  ): Promise<ApolloLink.Result<BlockActionPhoneUpdate> | undefined> {
     return await blockActionPhoneUpdate({
       ...options,
       variables: {

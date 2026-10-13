@@ -13,17 +13,16 @@ vi.mock('next-i18next/pages', () => ({
 const createStepBlock = (
   id: string,
   parentOrder: number
-): TreeBlock<StepBlock> =>
-  ({
-    id,
-    __typename: 'StepBlock',
-    parentBlockId: null,
-    parentOrder,
-    locked: false,
-    nextBlockId: null,
-    slug: null,
-    children: []
-  }) as TreeBlock<StepBlock>
+): TreeBlock<StepBlock> => ({
+  id,
+  __typename: 'StepBlock',
+  parentBlockId: null,
+  parentOrder,
+  locked: false,
+  nextBlockId: null,
+  slug: null,
+  children: []
+})
 
 describe('CardsSection', () => {
   const step1 = createStepBlock('step1.id', 0)

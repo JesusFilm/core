@@ -149,7 +149,7 @@ export default async function Page(props: {
     )
     .map((subtitle) => ({
       key: subtitle.id,
-      language: subtitle.language?.name?.[0]?.value,
+      language: subtitle.language?.name?.[0]?.value ?? '',
       bcp47: subtitle.language?.bcp47,
       vttSrc: subtitle.vttSrc,
       langId: subtitle.language?.id ?? '',
@@ -167,11 +167,11 @@ export default async function Page(props: {
   return (
     <VideoPlayer
       hlsUrl={hlsUrl}
-      videoTitle={videoTitle}
+      videoTitle={videoTitle ?? ''}
       thumbnail={thumbnail}
       startTime={startTime}
       endTime={endTime}
-      subtitles={subtitles}
+      subtitles={subtitles ?? []}
     />
   )
 }

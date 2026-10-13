@@ -6,13 +6,13 @@ Every Vitest workspace has a `vitest.config.mts` at its own root — there is no
 root-level config, and no workspace/projects file. To find the config for a spec,
 walk up from the spec to the nearest `vitest.config.mts`:
 
-| Area       | Workspaces                                                                                                              |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `apps/`    | `arclight`, `journeys`, `journeys-admin`, `player`, `resources`, `short-links`, `videos-admin`, `watch`, `watch-modern` |
-| `apis/`    | `api-analytics`, `api-journeys`, `api-languages`, `api-media`, `api-users`                                              |
-| `libs/`    | `journeys/ui`, `shared/ai`, `shared/dev-hosts`, `shared/ui`, `shared/ui-dynamic`, `yoga`                                |
-| `workers/` | `jf-proxy` (Cloudflare Workers pool — see [Vitest 4 notes](#vitest-4-notes))                                            |
-| `tools/`   | `langfuse-export`                                                                                                       |
+| Area       | Workspaces                                                                                     |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| `apps/`    | `arclight`, `journeys`, `journeys-admin`, `player`, `resources`, `short-links`, `videos-admin` |
+| `apis/`    | `api-analytics`, `api-journeys`, `api-languages`, `api-media`, `api-users`                     |
+| `libs/`    | `journeys/ui`, `shared/ai`, `shared/dev-hosts`, `shared/ui`, `shared/ui-dynamic`, `yoga`       |
+| `workers/` | `jf-proxy` (Cloudflare Workers pool — see [Vitest 4 notes](#vitest-4-notes))                   |
+| `tools/`   | `langfuse-export`                                                                              |
 
 ## Use `npx vitest run` directly — never `npx nx test`
 

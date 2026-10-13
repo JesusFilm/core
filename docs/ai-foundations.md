@@ -62,7 +62,6 @@ Usage: open Claude Code in the core repo and type the command. Parameters are th
 | `backend/workers.md`             | Background job patterns                                                                                    |
 | `backend/customizable-blocks.md` | Custom block sync guardrails                                                                               |
 | `frontend/apps.md`               | React application conventions                                                                              |
-| `frontend/watch-modern.md`       | Watch Modern app-specific rules                                                                            |
 | `infra/kubernetes.md`            | Kubernetes deployment conventions                                                                          |
 | `infra/terraform.md`             | Infrastructure-as-code patterns                                                                            |
 | `running-jest-tests.md`          | Jest testing workflow for apps with `jest.config.ts` (use `npx jest` directly, never `nx test`)            |

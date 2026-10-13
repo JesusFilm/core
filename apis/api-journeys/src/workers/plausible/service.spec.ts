@@ -64,7 +64,7 @@ describe('plausible worker service', () => {
               }
             }
           }
-        } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+        })
 
       await service(journeyJob, logger)
 
@@ -88,7 +88,7 @@ describe('plausible worker service', () => {
             message: 'failed'
           }
         }
-      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+      })
 
       await service(journeyJob, logger)
 
@@ -129,7 +129,7 @@ describe('plausible worker service', () => {
               }
             }
           }
-        } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+        })
 
       await service(teamJob, logger)
 
@@ -153,7 +153,7 @@ describe('plausible worker service', () => {
             message: 'failed'
           }
         }
-      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+      })
 
       await service(teamJob, logger)
 
@@ -196,7 +196,7 @@ describe('plausible worker service', () => {
               data: {}
             }
           }
-        } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+        })
 
       await service(templateJob, logger)
 
@@ -242,7 +242,7 @@ describe('plausible worker service', () => {
             message: 'failed'
           }
         }
-      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+      })
 
       await service(templateJob, logger)
 
@@ -276,7 +276,7 @@ describe('plausible worker service', () => {
             }
           }
         }
-      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+      })
 
       prismaMock.team.findMany.mockResolvedValueOnce([
         {
@@ -291,11 +291,7 @@ describe('plausible worker service', () => {
         .mockResolvedValueOnce([{ id: 'journey-1' }] as unknown as Awaited<
           ReturnType<typeof prismaMock.journey.findMany>
         >)
-        .mockResolvedValueOnce(
-          [] as unknown as Awaited<
-            ReturnType<typeof prismaMock.journey.findMany>
-          >
-        )
+        .mockResolvedValueOnce([])
 
       await service(createSitesJob, logger)
 
@@ -327,18 +323,12 @@ describe('plausible worker service', () => {
             data: {}
           }
         }
-      } as unknown as Awaited<ReturnType<ApolloClient<unknown>['mutate']>>)
+      })
 
-      prismaMock.team.findMany.mockResolvedValueOnce(
-        [] as unknown as Awaited<ReturnType<typeof prismaMock.team.findMany>>
-      )
+      prismaMock.team.findMany.mockResolvedValueOnce([])
 
       prismaMock.journey.findMany
-        .mockResolvedValueOnce(
-          [] as unknown as Awaited<
-            ReturnType<typeof prismaMock.journey.findMany>
-          >
-        )
+        .mockResolvedValueOnce([])
         .mockResolvedValueOnce([
           { id: 'template-1' },
           { id: 'template-2' }

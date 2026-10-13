@@ -1,17 +1,17 @@
-import { ApolloClient, createHttpLink } from '@apollo/client'
-import { type MockedClass, type MockedFunction } from 'vitest'
+import { ApolloClient, HttpLink } from '@apollo/client'
+import { type MockedClass } from 'vitest'
 
 import { createApolloClient } from '../apolloClient'
 
+// Apollo Client 4 replaced the `createHttpLink` factory with the `HttpLink`
+// class, so the mock exposes the class instead.
 vi.mock('@apollo/client', () => ({
   ApolloClient: vi.fn(),
   InMemoryCache: vi.fn(),
-  createHttpLink: vi.fn()
+  HttpLink: vi.fn()
 }))
 
-const mockCreateHttpLink = createHttpLink as MockedFunction<
-  typeof createHttpLink
->
+const mockHttpLink = HttpLink as MockedClass<typeof HttpLink>
 
 describe('apolloClient', () => {
   const originalEnv = { ...process.env }
@@ -20,7 +20,6 @@ describe('apolloClient', () => {
   beforeEach(() => {
     process.env = { ...originalEnv }
     vi.clearAllMocks()
-    mockCreateHttpLink.mockReturnValue({} as any)
   })
 
   afterEach(() => {
@@ -62,7 +61,7 @@ describe('apolloClient', () => {
 
       createApolloClient(apiName)
 
-      expect(mockCreateHttpLink).toHaveBeenCalledWith({
+      expect(mockHttpLink).toHaveBeenCalledWith({
         uri: 'https://gateway.example.com/graphql',
         headers: {
           'interop-token': 'test-interop-token',
@@ -82,7 +81,7 @@ describe('apolloClient', () => {
       createApolloClient(apiName1)
       createApolloClient(apiName2)
 
-      expect(mockCreateHttpLink).toHaveBeenNthCalledWith(1, {
+      expect(mockHttpLink).toHaveBeenNthCalledWith(1, {
         uri: 'https://gateway.example.com/graphql',
         headers: {
           'interop-token': 'test-token',
@@ -90,7 +89,7 @@ describe('apolloClient', () => {
           'x-graphql-client-version': '1.0.0'
         }
       })
-      expect(mockCreateHttpLink).toHaveBeenNthCalledWith(2, {
+      expect(mockHttpLink).toHaveBeenNthCalledWith(2, {
         uri: 'https://gateway.example.com/graphql',
         headers: {
           'interop-token': 'test-token',

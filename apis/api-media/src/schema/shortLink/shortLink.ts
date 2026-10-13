@@ -10,6 +10,13 @@ import { NotFoundError, NotUniqueError } from '../error'
 
 import { RedirectType } from './enums/redirectType'
 
+// The convention lives in the field description so every future writer sees it.
+// Deliberately unvalidated: new schemes get registered by documenting them here,
+// not by editing a regex. If a link ever needs two attributions, that is the
+// moment for a real column — not a delimiter grammar packed into this string.
+const SOURCE_REF_DESCRIPTION =
+  'a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`'
+
 const ShortLink = builder.prismaObject('ShortLink', {
   description: 'A short link that redirects to a full URL',
   fields: (t) => ({
@@ -41,6 +48,10 @@ const ShortLink = builder.prismaObject('ShortLink', {
     bitrate: t.exposeInt('bitrate', {
       nullable: true,
       description: 'bitrate of the video variant download'
+    }),
+    sourceRef: t.exposeString('sourceRef', {
+      nullable: true,
+      description: SOURCE_REF_DESCRIPTION
     })
   })
 })
@@ -218,6 +229,10 @@ builder.mutationFields((t) => ({
         bitrate: t.input.int({
           required: false,
           description: 'bitrate of the video variant download'
+        }),
+        sourceRef: t.input.string({
+          required: false,
+          description: SOURCE_REF_DESCRIPTION
         })
       },
       validate: [
@@ -252,7 +267,8 @@ builder.mutationFields((t) => ({
             service,
             brightcoveId,
             redirectType,
-            bitrate
+            bitrate,
+            sourceRef
           }
         },
         context
@@ -272,7 +288,8 @@ builder.mutationFields((t) => ({
                 context.type === 'authenticated' ? context.user.id : undefined,
               brightcoveId,
               redirectType,
-              bitrate
+              bitrate,
+              sourceRef
             }
           })
         } catch (e) {

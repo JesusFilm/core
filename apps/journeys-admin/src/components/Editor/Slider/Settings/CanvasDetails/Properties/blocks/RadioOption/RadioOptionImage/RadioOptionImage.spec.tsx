@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -164,7 +165,7 @@ describe('RadioOptionImage', () => {
     ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
-  const radioOptionImageDeleteMock: MockedResponse<
+  const radioOptionImageDeleteMock: MockLink.MockedResponse<
     RadioOptionImageDelete,
     RadioOptionImageDeleteVariables
   > = {
@@ -193,7 +194,7 @@ describe('RadioOptionImage', () => {
     }
   }
 
-  const radioOptionImageRestoreMock: MockedResponse<
+  const radioOptionImageRestoreMock: MockLink.MockedResponse<
     RadioOptionImageRestore,
     RadioOptionImageRestoreVariables
   > = {
@@ -241,7 +242,7 @@ describe('RadioOptionImage', () => {
     const createResult = vi.fn(() => ({
       data: response
     }))
-    const radioOptionImageCreateMock: MockedResponse<
+    const radioOptionImageCreateMock: MockLink.MockedResponse<
       RadioOptionImageCreate,
       RadioOptionImageCreateVariables
     > = {
@@ -357,7 +358,7 @@ describe('RadioOptionImage', () => {
           }
         }
       }))
-      const radioOptionImageUpdateMock: MockedResponse<
+      const radioOptionImageUpdateMock: MockLink.MockedResponse<
         RadioOptionImageUpdate,
         RadioOptionImageUpdateVariables
       > = {
@@ -370,7 +371,7 @@ describe('RadioOptionImage', () => {
         },
         result: updateResult
       }
-      const radioOptionImageUpdateUndoMock: MockedResponse<
+      const radioOptionImageUpdateUndoMock: MockLink.MockedResponse<
         RadioOptionImageUpdate,
         RadioOptionImageUpdateVariables
       > = {

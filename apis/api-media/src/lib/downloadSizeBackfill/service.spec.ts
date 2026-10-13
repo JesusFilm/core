@@ -89,7 +89,7 @@ describe('runDownloadSizeBackfill', () => {
     ] as any)
     prismaMock.videoVariantDownload.updateMany.mockResolvedValue({
       count: 1
-    } as any)
+    })
 
     const httpClient = unreachableHttpClient()
     httpClient.head = vi
@@ -112,13 +112,59 @@ describe('runDownloadSizeBackfill', () => {
     expect(result.summary.applied).toBe(1)
   })
 
+  it('performs no additional writes when apply runs a second time against the same row', async () => {
+    // Models the row's real size in a mutable fixture rather than
+    // pre-scripting mock return values, so findMany and updateMany stay
+    // consistent with each other the way the actual conditional
+    // `OR: [{ size: null }, { size: { lte: 0 } }]` selection would: once
+    // the row is fixed, findMany stops returning it as a candidate at all.
+    // A selection query that failed to re-exclude a corrected row, or an
+    // update that failed to gate on the condition, would make this test
+    // fail — a scripted mock-return-value sequence would not catch either.
+    const row = { size: null as number | null }
+
+    ;(prismaMock.videoVariantDownload.findMany as any).mockImplementation(
+      async () =>
+        row.size == null || row.size <= 0
+          ? [candidate({ id: 'd1', size: row.size })]
+          : []
+    )
+    ;(prismaMock.videoVariantDownload.updateMany as any).mockImplementation(
+      async (args: any) => {
+        if (row.size != null && row.size > 0) return { count: 0 }
+        row.size = args.data.size
+        return { count: 1 }
+      }
+    )
+
+    const httpClient = unreachableHttpClient()
+    httpClient.head = vi
+      .fn()
+      .mockResolvedValue(makeHeaders({ contentLength: '500' }))
+
+    const first = await runDownloadSizeBackfill({ apply: true, httpClient })
+    expect(first.records[0]).toMatchObject({
+      outcome: 'applied',
+      verifiedSize: 500
+    })
+    expect(first.summary.applied).toBe(1)
+    expect(row.size).toBe(500)
+
+    const second = await runDownloadSizeBackfill({ apply: true, httpClient })
+
+    expect(prismaMock.videoVariantDownload.updateMany).toHaveBeenCalledTimes(1)
+    expect(second.records).toEqual([])
+    expect(second.summary.totalCandidates).toBe(0)
+    expect(second.summary.applied).toBe(0)
+  })
+
   it('records alreadyCorrected without overwriting when the row was corrected concurrently', async () => {
     prismaMock.videoVariantDownload.findMany.mockResolvedValue([
       candidate({ id: 'd1' })
     ] as any)
     prismaMock.videoVariantDownload.updateMany.mockResolvedValue({
       count: 0
-    } as any)
+    })
 
     const httpClient = unreachableHttpClient()
     httpClient.head = vi

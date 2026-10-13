@@ -65,7 +65,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
       roles: []
     } as any)
     mockAbility.mockReturnValue(true)
-    mockAxios.get.mockResolvedValue({ data: 7 } as any)
+    mockAxios.get.mockResolvedValue({ data: 7 })
     mockIsAxiosError.mockReturnValue(false)
   })
 
@@ -180,7 +180,7 @@ describe('journeysPlausibleStatsRealtimeVisitors', () => {
     mockAxios.get.mockRejectedValueOnce({
       message: 'Invalid site id',
       response: { data: 'Invalid site id' }
-    } as any)
+    })
 
     const result = await authClient({
       document: QUERY,

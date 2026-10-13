@@ -86,7 +86,7 @@ export async function validateLanguage(rawLanguageId: string): Promise<void> {
       languageId
     })
   } catch (error) {
-    throw new Error(describeGraphQLError(error))
+    throw new Error(describeGraphQLError(error), { cause: error })
   }
 
   if (!response.language) {
@@ -134,7 +134,7 @@ export async function validateVideoAndEdition(
       languageId
     })
   } catch (error) {
-    throw new Error(describeGraphQLError(error))
+    throw new Error(describeGraphQLError(error), { cause: error })
   }
 
   if (!response.video) {

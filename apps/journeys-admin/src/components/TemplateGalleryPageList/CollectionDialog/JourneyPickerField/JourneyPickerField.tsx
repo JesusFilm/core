@@ -70,7 +70,7 @@ function JourneyPickerFieldImpl({
         multiple
         disableCloseOnSelect
         disabled={disabled}
-        options={availableJourneys as Journey[]}
+        options={availableJourneys}
         getOptionLabel={(option) => option.title}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         value={selectedJourneysOrdered}

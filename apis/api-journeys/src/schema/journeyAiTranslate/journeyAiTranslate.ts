@@ -1024,7 +1024,9 @@ builder.mutationField('journeyAiTranslateCreate', (t) =>
         logger.error({ error }, 'Error analyzing journey with Gemini')
         const errorMessage =
           error instanceof Error ? error.message : 'Unknown error occurred'
-        throw new Error(`Failed to analyze journey: ${errorMessage}`)
+        throw new Error(`Failed to analyze journey: ${errorMessage}`, {
+          cause: error
+        })
       }
 
       // Fetch and return the updated journey with all necessary relations
