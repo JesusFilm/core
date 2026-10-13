@@ -124,16 +124,27 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
         width: 220,
         flexShrink: 0,
         aspectRatio: '9 / 18',
-        borderRadius: 6,
-        border: '8px solid var(--campaign-band-heading)',
-        backgroundColor: 'var(--campaign-band-card)',
-        overflow: 'hidden',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        p: '6px',
+        borderRadius: '26px',
+        backgroundColor: 'var(--campaign-band-heading)'
       }}
     >
-      {children}
+      <Box
+        sx={{
+          width: '100%',
+          height: '100%',
+          borderRadius: '20px',
+          overflow: 'hidden',
+          isolation: 'isolate',
+          transform: 'translateZ(0)',
+          backgroundColor: 'var(--campaign-band-card)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   )
 }

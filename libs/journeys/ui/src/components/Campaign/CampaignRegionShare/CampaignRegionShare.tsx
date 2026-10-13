@@ -276,32 +276,47 @@ export function CampaignRegionShare({
                     width: 300,
                     maxWidth: '100%',
                     aspectRatio: '9 / 18',
-                    borderRadius: 7,
-                    border: '10px solid var(--campaign-band-heading)',
-                    backgroundColor: '#000000',
-                    overflow: 'hidden',
+                    // A phone bezel: a modest outer radius, the screen
+                    // clipped on its own layer so the journey's square
+                    // corners never poke past the rounded screen edge.
+                    p: '8px',
+                    borderRadius: '32px',
+                    backgroundColor: 'var(--campaign-band-heading)',
                     boxShadow: 6
                   }}
                 >
-                  {selected.embedUrl != null && (
-                    <Box
-                      component="iframe"
-                      key={selected.id}
-                      data-testid="CampaignRegionSharePhoneIframe"
-                      src={previewEmbedUrl(selected.embedUrl)}
-                      title={selected.title ?? shareLanguageLabel(selected)}
-                      sandbox={PREVIEW_IFRAME_SANDBOX}
-                      allow={PREVIEW_IFRAME_ALLOW}
-                      loading="lazy"
-                      sx={{
-                        display: 'block',
-                        width: '100%',
-                        height: '100%',
-                        border: 0,
-                        backgroundColor: '#000000'
-                      }}
-                    />
-                  )}
+                  <Box
+                    data-testid="CampaignRegionSharePhoneScreen"
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '24px',
+                      overflow: 'hidden',
+                      isolation: 'isolate',
+                      transform: 'translateZ(0)',
+                      backgroundColor: '#000000'
+                    }}
+                  >
+                    {selected.embedUrl != null && (
+                      <Box
+                        component="iframe"
+                        key={selected.id}
+                        data-testid="CampaignRegionSharePhoneIframe"
+                        src={previewEmbedUrl(selected.embedUrl)}
+                        title={selected.title ?? shareLanguageLabel(selected)}
+                        sandbox={PREVIEW_IFRAME_SANDBOX}
+                        allow={PREVIEW_IFRAME_ALLOW}
+                        loading="lazy"
+                        sx={{
+                          display: 'block',
+                          width: '100%',
+                          height: '100%',
+                          border: 0,
+                          backgroundColor: '#000000'
+                        }}
+                      />
+                    )}
+                  </Box>
                 </Box>
                 {shortLink != null && (
                   <Stack
