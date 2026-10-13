@@ -292,27 +292,20 @@ describe('CampaignAnalytics', () => {
   })
 
   describe('ranked list', () => {
-    it('lists only the top 10 countries, each bar relative to the first row', async () => {
+    it('lists only the top 10 countries, numbered by rank with no bars', async () => {
       await renderAnalytics({ mocks: [statsMock(withCountries(12))] })
       const list = await screen.findByTestId('CampaignAnalyticsList')
       const rows = Array.from(list.children)
       expect(rows).toHaveLength(10)
       expect(rows[0]).toHaveAttribute('data-testid', 'CampaignAnalyticsRow-AZ')
+      expect(rows[0]).toHaveAttribute('data-rank', '0')
+      expect(rows[0]).toHaveTextContent('01')
       expect(rows[9]).toHaveAttribute('data-testid', 'CampaignAnalyticsRow-JZ')
-      const widths = rows.map(
-        (row) =>
-          (
-            row.querySelector(
-              '[data-testid="CampaignAnalyticsBar"]'
-            ) as HTMLElement
-          ).style.width ||
-          getComputedStyle(
-            row.querySelector('[data-testid="CampaignAnalyticsBar"]') as Element
-          ).width
-      )
-      expect(widths[0]).toBe('100%')
-      expect(widths[1]).toBe('90%')
-      expect(widths[9]).toBe('10%')
+      expect(rows[9]).toHaveTextContent('10')
+      expect(
+        list.querySelector('[data-testid="CampaignAnalyticsBar"]')
+      ).not.toBeInTheDocument()
+      expect(screen.getByText('Top countries by views')).toBeInTheDocument()
     })
 
     it('still lists codes with no map shape: microstates, XK and A1', async () => {
@@ -337,7 +330,7 @@ describe('CampaignAnalytics', () => {
       const list = await screen.findByTestId('CampaignAnalyticsList')
       const nigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
       expect(nigeria).toHaveAttribute('data-rank', '1')
-      expect(nigeria).toHaveStyle({ transform: 'translateY(40px)' })
+      expect(nigeria).toHaveStyle({ transform: 'translateY(52px)' })
 
       fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
       const africaNigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
