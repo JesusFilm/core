@@ -185,8 +185,9 @@ export function RegionSwitcherEdit({
     )
 
   return (
-    <Stack spacing={2} data-testid="RegionSwitcherEdit">
+    <Stack spacing={2} data-testid="RegionSwitcherEdit" sx={{ width: '100%' }}>
       <Box
+        data-testid="RegionSwitcherEditGrid"
         sx={{
           display: 'grid',
           gap: 2,

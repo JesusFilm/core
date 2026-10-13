@@ -17,6 +17,7 @@ import {
 } from 'react'
 
 import {
+  CAMPAIGN_HEADER_HEIGHT,
   CampaignAnalyticsPanel,
   bandCssVariables,
   campaignImageSource,
@@ -25,7 +26,9 @@ import {
   resolveBand
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import DragIcon from '@core/shared/ui/icons/Drag'
+import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
@@ -375,7 +378,9 @@ function CanvasStrings({
  * stacked below `md`; a Video Carousel shows its cards below its text.
  * Clicking anywhere selects the section; clicking an Extra or a carousel
  * item selects it. The selected block's text fields and strings become
- * inline inputs.
+ * inline inputs. The chrome follows the public layout instead: the header
+ * is a sticky row (Brand Mark, nav buttons on the right, a static language
+ * select); the footer a row of lines left and links right.
  */
 export function CanvasSection({
   block,
@@ -510,7 +515,7 @@ export function CanvasSection({
     )
   }
 
-  const body = (
+  const sectionBody = (
     <Stack
       direction={{ xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }}
       spacing={6}
@@ -520,36 +525,6 @@ export function CanvasSection({
         spacing={3}
         sx={{ alignItems, flex: 1, minWidth: 0, width: '100%' }}
       >
-        {block.__typename === 'CampaignHeaderBlock' && (
-          <Box
-            data-testid="CanvasBrandMark"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              alignSelf: 'stretch'
-            }}
-          >
-            {logo != null ? (
-              <Box
-                component="img"
-                src={logo.src}
-                alt={logo.alt ?? campaign.title}
-                data-testid="CanvasBrandMarkLogo"
-                sx={{ height: 40, maxWidth: 200, objectFit: 'contain' }}
-              />
-            ) : (
-              <Typography
-                variant="h6"
-                component="span"
-                noWrap
-                data-testid="CanvasBrandMarkTitle"
-                sx={{ color: 'var(--campaign-band-text)' }}
-              >
-                {campaign.title}
-              </Typography>
-            )}
-          </Box>
-        )}
         {above.map(renderExtra)}
         {block.__typename === 'CampaignImageBlock' &&
           (picture != null ? (
@@ -671,6 +646,182 @@ export function CanvasSection({
     </Stack>
   )
 
+  const chrome =
+    block.__typename === 'CampaignHeaderBlock'
+      ? 'header'
+      : block.__typename === 'CampaignFooterBlock'
+        ? 'footer'
+        : null
+  const previewLanguage = campaign.languages.find(
+    (language) => language.languageId === previewLanguageId
+  )
+  const previewLanguageLabel =
+    previewLanguage == null
+      ? ''
+      : (previewLanguage.language.name.find((name) => name.primary)?.value ??
+        previewLanguage.language.name[0]?.value ??
+        previewLanguage.language.bcp47 ??
+        previewLanguage.languageId)
+
+  /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language select. */
+  const headerBody = (
+    <Stack
+      direction="row"
+      spacing={2}
+      data-testid="CanvasHeaderRow"
+      sx={{ alignItems: 'center', height: CAMPAIGN_HEADER_HEIGHT }}
+    >
+      <Box
+        data-testid="CanvasBrandMark"
+        sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}
+      >
+        {logo != null ? (
+          <Box
+            component="img"
+            src={logo.src}
+            alt={logo.alt ?? campaign.title}
+            data-testid="CanvasBrandMarkLogo"
+            sx={{
+              display: 'block',
+              height: CAMPAIGN_HEADER_HEIGHT - 24,
+              maxWidth: 200,
+              objectFit: 'contain'
+            }}
+          />
+        ) : (
+          <Typography
+            variant="h6"
+            component="span"
+            noWrap
+            data-testid="CanvasBrandMarkTitle"
+            sx={{ color: 'var(--campaign-band-text)' }}
+          >
+            {campaign.title}
+          </Typography>
+        )}
+      </Box>
+      <Box sx={{ flexGrow: 1 }} />
+      {extras.length > 0 && (
+        <Box
+          component="nav"
+          data-testid="CanvasHeaderNav"
+          sx={{
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+            gap: 1
+          }}
+        >
+          {extras.map(renderExtra)}
+        </Box>
+      )}
+      {campaign.languages.length >= 2 && (
+        <Box
+          data-testid="CanvasLanguageSelect"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            px: 1.5,
+            py: 0.75,
+            borderRadius: 1,
+            border: '1px solid var(--campaign-band-border)',
+            color: 'var(--campaign-band-text)',
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <Typography variant="body1" component="span">
+            {previewLanguageLabel}
+          </Typography>
+          <ChevronDownIcon
+            fontSize="small"
+            sx={{ color: 'var(--campaign-band-accent)' }}
+          />
+        </Box>
+      )}
+      {extras.length > 0 && (
+        <Box
+          data-testid="CanvasHeaderMenuButton"
+          sx={{
+            display: { xs: 'inline-flex', md: 'none' },
+            p: 1,
+            color: 'var(--campaign-band-text)'
+          }}
+        >
+          <Menu1Icon />
+        </Box>
+      )}
+    </Stack>
+  )
+
+  const footerLines = extras.filter(
+    (child) => child.__typename === 'CampaignTypographyBlock'
+  )
+  const footerLinks = extras.filter(
+    (child) => child.__typename === 'CampaignButtonBlock'
+  )
+  const footerEmpty = footerLines.length === 0 && footerLinks.length === 0
+
+  /** The footer row as the public `CampaignFooter` lays it out: lines left, links right, stacked below `md`. */
+  const footerBody = footerEmpty ? null : (
+    <Stack
+      direction={{ xs: 'column', md: 'row' }}
+      spacing={{ xs: 2, md: 4 }}
+      data-testid="CanvasFooterRow"
+      sx={{
+        alignItems: { xs: 'flex-start', md: 'center' },
+        justifyContent: 'space-between'
+      }}
+    >
+      {footerLines.length > 0 && (
+        <Stack spacing={0.5} data-testid="CanvasFooterLines">
+          {footerLines.map(renderExtra)}
+        </Stack>
+      )}
+      {footerLinks.length > 0 && (
+        <Box
+          component="nav"
+          data-testid="CanvasFooterLinks"
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: { xs: 1, md: 2 }
+          }}
+        >
+          {footerLinks.map(renderExtra)}
+        </Box>
+      )}
+    </Stack>
+  )
+
+  const body =
+    chrome === 'header'
+      ? headerBody
+      : chrome === 'footer'
+        ? footerBody
+        : sectionBody
+
+  const rhythmSx =
+    chrome === 'header'
+      ? {
+          position: 'sticky' as const,
+          top: 0,
+          zIndex: 2,
+          overflow: 'hidden',
+          borderBottom: '1px solid var(--campaign-band-border)'
+        }
+      : chrome === 'footer'
+        ? {
+            minHeight: footerEmpty ? 24 : undefined,
+            py: footerEmpty ? 0 : { xs: 4, md: 5 },
+            borderTop: '1px solid var(--campaign-band-border)'
+          }
+        : inSlot
+          ? 'backgroundKind' in block &&
+            block.backgroundKind !== CampaignBackgroundKind.none
+            ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
+            : {}
+          : { py: { xs: 6, md: 10 } }
+
   return (
     <Box
       ref={setSectionRef}
@@ -689,12 +840,7 @@ export function CanvasSection({
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
-        ...(inSlot
-          ? 'backgroundKind' in block &&
-            block.backgroundKind !== CampaignBackgroundKind.none
-            ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
-            : {}
-          : { py: { xs: 6, md: 10 } }),
+        ...rhythmSx,
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
         ...(sectionSelected ? SELECTED_OUTLINE : {})
@@ -772,7 +918,13 @@ export function CanvasSection({
           }}
         />
       )}
-      {inSlot ? body : <Container maxWidth="lg">{body}</Container>}
+      {inSlot ? (
+        body
+      ) : (
+        <Container maxWidth="lg" sx={{ position: 'relative' }}>
+          {body}
+        </Container>
+      )}
     </Box>
   )
 }
