@@ -5,6 +5,18 @@
   "name": "Core",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
+  // Listed explicitly so the profile-gated analytics services (clickhouse,
+  // plausible) still start in the dev container. Naming a service on
+  // `docker compose up` activates it regardless of its profile.
+  "runServices": [
+    "app",
+    "db",
+    "redis",
+    "serverless-redis-http",
+    "maildev",
+    "clickhouse",
+    "plausible"
+  ],
   "workspaceFolder": "/workspaces/core",
   "customizations": {
     "vscode": {

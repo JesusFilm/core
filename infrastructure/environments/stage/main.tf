@@ -204,6 +204,16 @@ module "redis" {
   vpc_id            = module.stage.vpc.id
 }
 
+# ClickHouse Cloud service for short-link scan events (the redirect Worker
+# inserts, api-media reads). # Idles when stage is quiet; only storage is billed while paused.
+module "short_links_clickhouse" {
+  source               = "../../modules/clickhouse/service"
+  env                  = "stage"
+  idle_scaling         = true
+  idle_timeout_minutes = 15
+  doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
+}
+
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"
@@ -225,5 +235,23 @@ module "eks" {
   subnet_ids_2a      = ["subnet-03bd7850c8bbe2ce9", "subnet-01f4e86883462b5ce"]
   subnet_ids_2b      = ["subnet-0a609b33cdac65789", "subnet-09cbfc19be5214a8b"]
   subnet_ids_2c      = ["subnet-062de12e3e3639eff", "subnet-0c394639d255c3261"]
+}
+
+# Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 3 daily
+# snapshots, replacing the former SnapScheduler schedule, whose EBS
+# snapshots were never deleted (the VolumeSnapshotClass uses deletionPolicy:
+# Retain).
+module "plausible_clickhouse_snapshots" {
+  source       = "../../modules/aws/ebs-snapshot-policy"
+  env          = "stage"
+  name         = "plausible-clickhouse"
+  cluster_name = module.eks.cluster_name
+  pvc_names = [
+    "plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0",
+    "plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0"
+  ]
+  schedules = [
+    { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 3 }
+  ]
 }
 
