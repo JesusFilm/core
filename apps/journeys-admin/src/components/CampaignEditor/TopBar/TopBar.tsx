@@ -2,17 +2,21 @@ import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Divider from '@mui/material/Divider'
 import FormControl from '@mui/material/FormControl'
+import IconButton from '@mui/material/IconButton'
 import InputLabel from '@mui/material/InputLabel'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
+import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
@@ -80,7 +84,8 @@ function languageLabel(language: Campaign['languages'][number]): string {
 }
 
 /**
- * The editor's top bar: page selector, preview language, Desktop/Phone,
+ * The editor's top bar: back to the campaign list, page selector, preview
+ * language, Desktop/Phone,
  * undo/redo, Open page, Publish/Unpublish and the status chip. Nothing here
  * replaces Save: there is no Save button, no Unsaved chip and no save
  * indicator; publish and unpublish are explicit actions, never Commands.
@@ -172,6 +177,17 @@ export function TopBar({
         bgcolor: 'background.paper'
       }}
     >
+      <Tooltip title={t('All campaigns')} placement="bottom" arrow>
+        <IconButton
+          component={NextLink}
+          href="/campaigns"
+          aria-label={t('All campaigns')}
+          data-testid="CampaignBackButton"
+          edge="start"
+        >
+          <ChevronLeftIcon />
+        </IconButton>
+      </Tooltip>
       <Typography
         variant="subtitle1"
         noWrap
