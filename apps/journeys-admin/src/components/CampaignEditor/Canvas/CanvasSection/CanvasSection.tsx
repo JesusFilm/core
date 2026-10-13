@@ -174,6 +174,9 @@ function CanvasExtra({
             size={block.size ?? 'medium'}
             data-testid="CanvasButton"
             tabIndex={-1}
+            // Selecting is not a press: no ripple, and the hover only dims
+            // the campaign colour as the public CampaignButton does.
+            disableRipple
             sx={{
               bgcolor:
                 buttonVariant === 'contained'
@@ -183,7 +186,16 @@ function CanvasExtra({
                 buttonVariant === 'contained'
                   ? (block.labelColor ?? 'var(--campaign-band-button-label)')
                   : (block.color ?? 'var(--campaign-band-button)'),
-              borderColor: block.color ?? 'var(--campaign-band-button)'
+              borderColor: block.color ?? 'var(--campaign-band-button)',
+              '&:hover': {
+                bgcolor:
+                  buttonVariant === 'contained'
+                    ? (block.color ?? 'var(--campaign-band-button)')
+                    : undefined,
+                borderColor: block.color ?? 'var(--campaign-band-button)',
+                filter:
+                  buttonVariant === 'contained' ? 'brightness(0.92)' : undefined
+              }
             }}
           >
             <InlineText
