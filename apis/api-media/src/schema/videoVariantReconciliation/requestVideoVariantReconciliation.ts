@@ -48,9 +48,13 @@ export async function requestVideoVariantReconciliation(
   }
 
   if (existingReconciliation != null) {
+    // A re-request is a fresh intent. createdAt is what the reconciler's
+    // time windows (the two-hour Mux wait, the 24-hour Downloads retry) count
+    // from, so leaving the original value would let a record that has sat
+    // around for days fail its "two hours" on the very first sweep.
     await prisma.videoVariantReconciliation.update({
       where: { id: existingReconciliation.id },
-      data
+      data: { ...data, createdAt: new Date() }
     })
     return
   }

@@ -15,9 +15,11 @@ import {
   failedStage,
   generatedParentStages,
   notApplicableStage,
-  persistReconciliationStatus
+  persistReconciliationStatus,
+  syncVideoRecordStage
 } from './reconciliationStages'
 import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
+import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
 type ReconciledVariant = {
   id: string
@@ -25,6 +27,26 @@ type ReconciledVariant = {
   languageId: string
   published: boolean
   muxVideo: { readyToStream: boolean } | null
+  hls?: string | null
+  share?: string | null
+  video?: { label: string } | null
+}
+
+const CONTAINER_LABELS = new Set(['collection', 'series', 'featureFilm'])
+
+// A generated parent Variant is recognisable by shape: it belongs to a
+// container Video and has no media of its own. requestVideoVariantReconciliation
+// overwrites `reason` on re-request (a publish toggle, a childIds edit on the
+// grandparent), so relying on the reason alone sent these down the general
+// path, where the Mux check can never pass.
+export function isGeneratedParentVariant(variant: ReconciledVariant): boolean {
+  if (variant.video == null || !CONTAINER_LABELS.has(variant.video.label)) {
+    return false
+  }
+  return (
+    variant.muxVideo == null &&
+    !videoVariantContainsMedia({ hls: variant.hls, share: variant.share })
+  )
 }
 
 type ReasonSpecificReconciliation = {
@@ -64,11 +86,15 @@ export async function reconcileReasonSpecificVariant({
     })
   }
 
+  // The generated-parent path always publishes, so a shape-detected parent is
+  // only routed there when publication is the intent; an unpublish of a parent
+  // Variant falls through to reconcileUnpublishVariant below.
   if (
     variant != null &&
-    ['generated-parent', 'backfill-generated-parent'].includes(
+    (['generated-parent', 'backfill-generated-parent'].includes(
       reconciliation.reason
-    )
+    ) ||
+      (reconciliation.published && isGeneratedParentVariant(variant)))
   ) {
     return await reconcileGeneratedParentVariant({
       reconciliationId,
@@ -105,8 +131,6 @@ async function reconcileDeleteVariant({
       reconciliation.languageId
     )
     await updateParentCollectionLanguages(reconciliation.videoId)
-    await updateVideoInAlgolia(reconciliation.videoId)
-    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
   } catch (error) {
     stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
     await persistReconciliationStatus({
@@ -125,6 +149,11 @@ async function reconcileDeleteVariant({
       }
     }
   }
+
+  stages.algoliaVideo = await syncVideoRecordStage(
+    reconciliation.videoId,
+    stages.algoliaVideo
+  )
 
   try {
     if (reconciliation.videoVariantId != null) {
@@ -152,6 +181,13 @@ async function reconcileDeleteVariant({
       }
     }
   }
+
+  const videoRecordFailure = await persistVideoRecordFailure({
+    store,
+    reconciliationId,
+    stages
+  })
+  if (videoRecordFailure != null) return videoRecordFailure
 
   await persistReconciliationStatus({
     store,
@@ -186,8 +222,6 @@ async function reconcileUnpublishVariant({
     })
     await removeLanguageFromVideoIfUnused(variant.videoId, variant.languageId)
     await updateParentCollectionLanguages(variant.videoId)
-    await updateVideoInAlgolia(variant.videoId)
-    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
   } catch (error) {
     stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
     await persistReconciliationStatus({
@@ -206,6 +240,11 @@ async function reconcileUnpublishVariant({
       }
     }
   }
+
+  stages.algoliaVideo = await syncVideoRecordStage(
+    variant.videoId,
+    stages.algoliaVideo
+  )
 
   try {
     await updateVideoVariantInAlgolia(variant.id)
@@ -232,6 +271,13 @@ async function reconcileUnpublishVariant({
     }
   }
 
+  const videoRecordFailure = await persistVideoRecordFailure({
+    store,
+    reconciliationId,
+    stages
+  })
+  if (videoRecordFailure != null) return videoRecordFailure
+
   await persistReconciliationStatus({
     store,
     reconciliationId,
@@ -239,6 +285,33 @@ async function reconcileUnpublishVariant({
     stages
   })
   return { publicationReady: true, status: 'complete' }
+}
+
+// The Variant's own record is written by now; a Video record that failed
+// still leaves the reconciliation degraded so it is retried and alerted on.
+async function persistVideoRecordFailure({
+  store,
+  reconciliationId,
+  stages
+}: {
+  store: ReconciliationStore
+  reconciliationId: string
+  stages: ProcessingStages
+}): Promise<ReasonSpecificReconciliationResult | null> {
+  if (stages.algoliaVideo.state !== 'failed') return null
+
+  await persistReconciliationStatus({
+    store,
+    reconciliationId,
+    status: 'degraded',
+    stages,
+    failedStageValue: stages.algoliaVideo
+  })
+  return {
+    publicationReady: false,
+    status: 'degraded',
+    failure: { stageName: 'algoliaVideo', stage: stages.algoliaVideo }
+  }
 }
 
 export async function reconcileGeneratedParentVariant({

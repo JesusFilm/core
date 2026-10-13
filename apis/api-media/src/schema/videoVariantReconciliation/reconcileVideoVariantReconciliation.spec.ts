@@ -21,7 +21,8 @@ vi.mock('../../lib/algolia/algoliaVideoVariantUpdate', () => ({
 vi.mock('../video/lib/updateAvailableLanguages', () => ({
   addLanguageToVideo: vi.fn(),
   updateParentCollectionLanguages: vi.fn(),
-  findContainerParentIds: vi.fn()
+  findContainerParentIds: vi.fn(),
+  removeLanguageFromVideoIfUnused: vi.fn()
 }))
 
 describe('reconcileVideoVariantReconciliation', () => {
@@ -292,5 +293,197 @@ describe('reconcileVideoVariantReconciliation', () => {
       })
     })
     expect(result).toEqual({ publicationReady: true, status: 'complete' })
+  })
+
+  describe('when the Video record fails to index', () => {
+    const publishReconciliation = (): ReconciliationRecord => ({
+      reason: 'process-video-upload',
+      videoId: '2_0-La-Liberte',
+      languageId: '20899',
+      published: true,
+      videoVariantId: '2_20899-0-La-Liberte',
+      processingStages: {},
+      createdAt: new Date(),
+      videoVariant: {
+        id: '2_20899-0-La-Liberte',
+        videoId: '2_0-La-Liberte',
+        languageId: '20899',
+        slug: 'freedom/central-asian-russian',
+        published: false,
+        downloadable: false,
+        hls: 'https://stream.mux.com/playback.m3u8',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    })
+    const recordTooBig = Object.assign(
+      new Error(
+        'Record at the position 0 objectID=2_0-La-Liberte is too big size=102973/100000 bytes.'
+      ),
+      { status: 400 }
+    )
+
+    it('still publishes and indexes the Variant, and stops retrying a rejected record', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        publishReconciliation() as never
+      )
+      vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(recordTooBig)
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: '2_20899-0-La-Liberte' },
+        data: { published: true }
+      })
+      expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+        '2_20899-0-La-Liberte'
+      )
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            status: 'degraded',
+            retryAt: null,
+            errorMessage: recordTooBig.message,
+            processingStages: expect.objectContaining({
+              algoliaVideo: expect.objectContaining({
+                state: 'failed',
+                retryable: false
+              }),
+              algoliaVariant: expect.objectContaining({ state: 'complete' })
+            })
+          })
+        }
+      )
+      expect(result).toEqual({ publicationReady: false, status: 'degraded' })
+    })
+
+    it('schedules a retry when the failure is transient', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        publishReconciliation() as never
+      )
+      vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(
+        Object.assign(new Error('Service Unavailable'), { status: 503 })
+      )
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+        '2_20899-0-La-Liberte'
+      )
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            status: 'degraded',
+            retryAt: expect.any(Date),
+            processingStages: expect.objectContaining({
+              algoliaVideo: expect.not.objectContaining({ retryable: false })
+            })
+          })
+        }
+      )
+    })
+
+    it('still removes an unpublished Variant from the variants index', async () => {
+      const reconciliation = publishReconciliation()
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        {
+          ...reconciliation,
+          reason: 'video-variant-publication-change',
+          published: false,
+          videoVariant: { ...reconciliation.videoVariant, published: true }
+        } as never
+      )
+      vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(recordTooBig)
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: '2_20899-0-La-Liberte' },
+        data: { published: false }
+      })
+      expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
+        '2_20899-0-La-Liberte'
+      )
+      expect(result).toMatchObject({
+        publicationReady: false,
+        status: 'degraded',
+        failure: { stageName: 'algoliaVideo' }
+      })
+    })
+  })
+
+  describe('parent Variants whose reason was overwritten by a re-request', () => {
+    // 53424_Rescue: a generated parent Variant on the "Rescue" collection,
+    // re-requested as video-relationship-change when its grandparent's childIds
+    // changed. It has no media by design, so the general path's Mux check can
+    // never pass — it must be recognised as a parent by shape.
+    const parentReconciliation = (
+      published: boolean
+    ): ReconciliationRecord => ({
+      reason: 'video-relationship-change',
+      videoId: 'Rescue',
+      languageId: '53424',
+      published,
+      videoVariantId: '53424_Rescue',
+      processingStages: {},
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      videoVariant: {
+        id: '53424_Rescue',
+        videoId: 'Rescue',
+        languageId: '53424',
+        slug: 'rescue/french-african',
+        published: true,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: null,
+        video: { label: 'collection' }
+      }
+    })
+
+    it('reconciles a media-less container Variant as a generated parent', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        parentReconciliation(true) as never
+      )
+
+      const result = await reconcileVideoVariantReconciliation('status-1')
+
+      expect(updateVideoInAlgolia).toHaveBeenCalledWith('Rescue')
+      expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('53424_Rescue')
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'status-1' },
+          data: expect.objectContaining({
+            status: 'complete',
+            processingStages: expect.objectContaining({
+              mux: { state: 'notApplicable', attempts: 0 }
+            })
+          })
+        }
+      )
+      expect(result).toEqual({ publicationReady: true, status: 'complete' })
+    })
+
+    it('still unpublishes a parent Variant when that is the intent', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        parentReconciliation(false) as never
+      )
+
+      const result = await reconcileVideoVariantReconciliation('status-1')
+
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: '53424_Rescue' },
+        data: { published: false }
+      })
+      expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith({
+        where: { id: '53424_Rescue' },
+        data: { published: true }
+      })
+      expect(result).toEqual({ publicationReady: true, status: 'complete' })
+    })
   })
 })
