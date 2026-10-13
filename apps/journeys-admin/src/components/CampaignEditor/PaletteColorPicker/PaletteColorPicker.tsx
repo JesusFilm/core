@@ -10,6 +10,7 @@ import {
   KeyboardEvent,
   ReactElement,
   useEffect,
+  useRef,
   useState
 } from 'react'
 import { HexColorPicker } from 'react-colorful'
@@ -75,7 +76,8 @@ interface PaletteColorPickerProps {
 /**
  * The one colour picker every campaign colour goes through: a hex area, a
  * hex field and the campaign's Palette as eight swatches, newest first. The
- * colour commits on blur (or Enter, or a swatch), as one call to `onCommit`;
+ * colour commits when a drag on the area ends, on blur (or Enter, or a
+ * swatch), as one call to `onCommit`;
  * the Palette is saved through `campaignUpdate` at the same moment, outside
  * undo. The only pre-validation is the pure hex rule.
  */
@@ -96,6 +98,8 @@ export function PaletteColorPicker({
   const [text, setText] = useState(committed)
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState<string>()
+  /** The last colour the area produced, read when the drag ends. */
+  const areaDraft = useRef<string>()
 
   useEffect(() => {
     setDraft(committed)
@@ -148,10 +152,19 @@ export function PaletteColorPicker({
 
   function handlePickerChange(next: string): void {
     const hex = next.toUpperCase()
+    areaDraft.current = hex
     setDraft(hex)
     setText(hex)
     setDirty(true)
     setError(undefined)
+  }
+
+  /** A drag (or arrow-key step) on the area ends: commit at once, no click-out needed. */
+  function handleAreaEnd(): void {
+    const hex = areaDraft.current
+    if (hex == null) return
+    areaDraft.current = undefined
+    commitHex(hex)
   }
 
   function handleTextChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -183,12 +196,14 @@ export function PaletteColorPicker({
       aria-label={label}
       onBlur={handleBlur}
     >
-      <HexColorPicker
-        color={draft}
-        onChange={handlePickerChange}
-        style={{ width: '100%', height: 140 }}
-        data-testid={`${testId}-area`}
-      />
+      <Box onPointerUp={handleAreaEnd} onKeyUp={handleAreaEnd}>
+        <HexColorPicker
+          color={draft}
+          onChange={handlePickerChange}
+          style={{ width: '100%', height: 140 }}
+          data-testid={`${testId}-area`}
+        />
+      </Box>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <Box
           data-testid={`${testId}-swatch`}
