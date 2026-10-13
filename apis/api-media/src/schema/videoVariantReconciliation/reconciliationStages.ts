@@ -1,3 +1,5 @@
+import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
+
 export type ProcessingStage = {
   state:
     | 'pending'
@@ -10,6 +12,8 @@ export type ProcessingStage = {
   error?: string
   lastAttemptAt?: string
   lastSuccessAt?: string
+  // Set (to false) only when the failure will recur on every retry.
+  retryable?: boolean
 }
 
 export type ProcessingStages = {
@@ -55,7 +59,35 @@ export function failedStage(error: unknown, attempts = 1): ProcessingStage {
     state: 'failed',
     attempts,
     error: error instanceof Error ? error.message : String(error),
-    lastAttemptAt: new Date().toISOString()
+    lastAttemptAt: new Date().toISOString(),
+    ...(isRetryableError(error) ? {} : { retryable: false })
+  }
+}
+
+// Algolia's ApiError carries the HTTP status. A 4xx other than a timeout or
+// rate limit means the request itself was rejected (e.g. a record over the
+// size limit), so retrying the same payload can only fail again.
+export function isRetryableError(error: unknown): boolean {
+  if (error == null || typeof error !== 'object' || !('status' in error)) {
+    return true
+  }
+  const { status } = error
+  if (typeof status !== 'number') return true
+  return status < 400 || status >= 500 || status === 408 || status === 429
+}
+
+// The Video record lives in the videos index (Arclight search), not the
+// variants index Watch reads, so a failure here is recorded and retried but
+// never stops the Variant's own record from being written.
+export async function syncVideoRecordStage(
+  videoId: string,
+  stage: ProcessingStage
+): Promise<ProcessingStage> {
+  try {
+    await updateVideoInAlgolia(videoId)
+    return completedStage(stage.attempts + 1)
+  } catch (error) {
+    return failedStage(error, stage.attempts + 1)
   }
 }
 
@@ -125,7 +157,9 @@ export async function persistReconciliationStatus({
       status,
       processingStages: stages,
       retryAt:
-        failedStageValue != null ? retryAtFor(failedStageValue.attempts) : null,
+        failedStageValue != null && failedStageValue.retryable !== false
+          ? retryAtFor(failedStageValue.attempts)
+          : null,
       errorMessage: failedStageValue?.error ?? null
     }
   })
