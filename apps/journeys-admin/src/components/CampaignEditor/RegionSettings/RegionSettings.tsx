@@ -4,7 +4,6 @@ import Avatar from '@mui/material/Avatar'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -198,8 +197,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
   }
 
   return (
-    <Stack spacing={5} sx={{ p: 6, width: 400 }} data-testid="RegionSettings">
-      <Typography variant="h6">{t('Region settings')}</Typography>
+    <Stack spacing={5} data-testid="RegionSettings">
       <TextField
         label={t('Name')}
         value={name}

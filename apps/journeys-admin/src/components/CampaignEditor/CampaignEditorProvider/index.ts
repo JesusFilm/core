@@ -10,6 +10,8 @@ export {
 export type {
   CampaignEditorAction,
   CampaignEditorState,
+  CampaignInspectorTab,
+  CampaignPanel,
   CampaignSelection,
   CampaignSelectionKind
 } from './CampaignEditorProvider'

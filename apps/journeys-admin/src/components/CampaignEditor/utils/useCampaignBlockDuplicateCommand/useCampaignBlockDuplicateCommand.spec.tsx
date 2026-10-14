@@ -6,8 +6,8 @@ import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../../libs/useCampaignBlockDupli
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
 import { campaign } from '../../data'
+import { Inspector } from '../../Inspector'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
 import { duplicateBlocks, subtreeOf } from './useCampaignBlockDuplicateCommand'
@@ -83,7 +83,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandRedoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <Inspector isManager={false} />
     </QueriedEditor>
   )
 }

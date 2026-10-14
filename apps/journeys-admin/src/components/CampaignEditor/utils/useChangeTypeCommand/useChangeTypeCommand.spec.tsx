@@ -5,8 +5,8 @@ import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestore
 import { CAMPAIGN_HERO_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
 import { campaignWithColumns } from '../../data'
+import { Inspector } from '../../Inspector'
 import { newSectionBlock } from '../../sectionTypes'
 import {
   BlocksProbe,
@@ -83,7 +83,10 @@ function renderEditor(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       campaignData={campaignWithColumns}
-      initialState={{ selectedBlockId: 'slotRichTextId' }}
+      initialState={{
+        selectedBlockId: 'slotRichTextId',
+        inspectorTab: 'settings'
+      }}
       mocks={[
         deleteOldMock,
         createMock,
@@ -98,7 +101,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <Inspector isManager={false} />
     </QueriedEditor>
   )
 }
@@ -174,11 +177,14 @@ describe('useChangeTypeCommand', () => {
     render(
       <QueriedEditor
         campaignData={campaignWithColumns}
-        initialState={{ selectedBlockId: 'slotRichTextId' }}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
         mocks={[deleteOldMock, failingCreate, restoreOldMock]}
       >
         <BlocksProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <Inspector isManager={false} />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -202,7 +208,10 @@ describe('useChangeTypeCommand', () => {
     render(
       <QueriedEditor
         campaignData={campaignWithColumns}
-        initialState={{ selectedBlockId: 'slotRichTextId' }}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
         mocks={[
           deleteOldMock,
           failingCreate,
@@ -213,7 +222,7 @@ describe('useChangeTypeCommand', () => {
       >
         <CommandUndoItem variant="button" />
         <BlocksProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <Inspector isManager={false} />
       </QueriedEditor>
     )
     await waitFor(() =>

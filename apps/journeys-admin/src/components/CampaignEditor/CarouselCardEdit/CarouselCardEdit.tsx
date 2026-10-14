@@ -1,13 +1,8 @@
 import Alert from '@mui/material/Alert'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
-
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import {
@@ -25,7 +20,6 @@ type VideoTextField = keyof CampaignVideoTextInput
 
 interface CarouselCardEditProps {
   block: CampaignVideoBlock
-  onClose?: () => void
 }
 
 /**
@@ -34,8 +28,7 @@ interface CarouselCardEditProps {
  * Command; an empty field falls back to the video's own text.
  */
 export function CarouselCardEdit({
-  block,
-  onClose
+  block
 }: CarouselCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { addStyle, error } = useCampaignStyleCommand()
@@ -67,23 +60,9 @@ export function CarouselCardEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 6, width: 400 }}
       data-testid="CampaignCarouselCardEdit"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Edit')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t('Video card')}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
       {error != null && (
         <Alert severity="error" role="alert">
           {error}

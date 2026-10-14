@@ -1,15 +1,12 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
-
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignMediaSide } from '../../../../__generated__/globalTypes'
@@ -18,7 +15,6 @@ import {
   useCampaignFeaturedMediaBlockUpdateMutation
 } from '../../../libs/useCampaignFeaturedMediaBlockUpdateMutation'
 import { CampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
 import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
@@ -26,7 +22,6 @@ import { useCampaignMediaCommand } from '../utils/useCampaignMediaCommand'
 
 interface MediaSectionEditProps {
   block: CampaignMediaOwner
-  onClose?: () => void
 }
 
 /**
@@ -37,8 +32,7 @@ interface MediaSectionEditProps {
  * Command; the section's text stays inline on the canvas.
  */
 export function MediaSectionEdit({
-  block,
-  onClose
+  block
 }: MediaSectionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
@@ -75,23 +69,9 @@ export function MediaSectionEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 6, width: 400 }}
       data-testid="CampaignMediaSectionEdit"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Edit')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {blockLabel(t, block.__typename)}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
       {error != null && (
         <Alert severity="error" role="alert">
           {error}

@@ -69,7 +69,7 @@ function renderEditor(
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <BottomBar />
     </StaticEditor>
   )
 }
@@ -132,7 +132,9 @@ describe('CampaignEditorProvider', () => {
       pageKind: CampaignPageKind.landing,
       previewLanguageId: '529',
       selectedBlockId: 'heroId',
-      editRequest: 0
+      editRequest: 0,
+      panel: 'none',
+      inspectorTab: 'style'
     }
 
     it('changes the preview language without touching the selection', () => {
@@ -154,7 +156,9 @@ describe('CampaignEditorProvider', () => {
         pageKind: CampaignPageKind.regionTemplate,
         previewLanguageId: '529',
         selectedBlockId: undefined,
-        editRequest: 0
+        editRequest: 0,
+        panel: 'none',
+        inspectorTab: 'style'
       })
     })
 
@@ -182,6 +186,26 @@ describe('CampaignEditorProvider', () => {
 
     it('counts edit requests', () => {
       expect(reducer(state, { type: 'RequestEditAction' }).editRequest).toBe(1)
+    })
+
+    it('opens a rail panel and closes it when the same one is named again', () => {
+      const opened = reducer(state, { type: 'SetPanelAction', panel: 'add' })
+      expect(opened.panel).toBe('add')
+      expect(
+        reducer(opened, { type: 'SetPanelAction', panel: 'navigator' }).panel
+      ).toBe('navigator')
+      expect(
+        reducer(opened, { type: 'SetPanelAction', panel: 'add' }).panel
+      ).toBe('none')
+    })
+
+    it('sets the Inspector tab without touching the selection', () => {
+      expect(
+        reducer(state, {
+          type: 'SetInspectorTabAction',
+          inspectorTab: 'settings'
+        })
+      ).toEqual({ ...state, inspectorTab: 'settings' })
     })
   })
 
@@ -233,7 +257,7 @@ describe('CampaignEditorProvider', () => {
       >
         <Hotkeys />
         <SelectionProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <BottomBar />
       </StaticEditor>
     )
     expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(

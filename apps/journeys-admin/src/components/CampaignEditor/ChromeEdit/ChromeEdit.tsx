@@ -1,26 +1,22 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { campaignImageSource } from '@core/journeys/ui/Campaign'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import { GetCampaign_campaign_blocks_CampaignHeaderBlock as CampaignHeaderBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignImageSlot } from '../../../../__generated__/globalTypes'
 import { useCampaignHeaderLogoMutation } from '../../../libs/useCampaignHeaderLogoMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
 
 interface ChromeEditProps {
   block: CampaignHeaderBlock
-  onClose?: () => void
 }
 
 /**
@@ -29,7 +25,7 @@ interface ChromeEditProps {
  * to set one, and Clear logo to go back to the title. Each is one Command
  * through `campaignImageBlockCreate` and `campaignHeaderBlockUpdate`.
  */
-export function ChromeEdit({ block, onClose }: ChromeEditProps): ReactElement {
+export function ChromeEdit({ block }: ChromeEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
@@ -67,23 +63,9 @@ export function ChromeEdit({ block, onClose }: ChromeEditProps): ReactElement {
   return (
     <Stack
       spacing={4}
-      sx={{ p: 6, width: 360 }}
       data-testid="CampaignChromeEdit"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Edit')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {blockLabel(t, block.__typename)}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
       {error != null && (
         <Alert severity="error" role="alert">
           {error}

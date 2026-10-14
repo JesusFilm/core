@@ -15,7 +15,7 @@ import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 
 import {
   createCampaignTheme,
@@ -128,6 +128,18 @@ function dropTargetOf(
   )
     return undefined
   return { overId: String(collision.id), edge: dropEdgeFor(pointerY, rect) }
+}
+
+/** Publishes the frame's document to the editor provider while the frame is mounted. */
+function FrameDocument({ document }: { document: Document }): ReactElement {
+  const { frameDocumentRef } = useCampaignEditor()
+  useEffect(() => {
+    frameDocumentRef.current = document
+    return () => {
+      frameDocumentRef.current = null
+    }
+  }, [document, frameDocumentRef])
+  return <></>
 }
 
 interface CanvasProps {
@@ -256,6 +268,7 @@ export function Canvas({
       sx={{
         flexGrow: 1,
         minHeight: 0,
+        minWidth: 0,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'stretch',
@@ -287,6 +300,7 @@ export function Canvas({
           {({ document }) => (
             <ThemeProvider theme={theme}>
               <CssBaseline />
+              <FrameDocument document={document} />
               <Hotkeys document={document} />
               <Box
                 data-testid="CampaignCanvasPage"

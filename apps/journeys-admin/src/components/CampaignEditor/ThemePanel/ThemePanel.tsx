@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
@@ -28,7 +27,6 @@ import {
 import Header1Icon from '@core/shared/ui/icons/Header1'
 import Type2Icon from '@core/shared/ui/icons/Type2'
 import Type3Icon from '@core/shared/ui/icons/Type3'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import {
   CampaignButtonRadius,
@@ -67,10 +65,6 @@ const SWATCH_COLUMNS: readonly CampaignThemePresetColumn[] = [
   'accentColor'
 ]
 
-interface ThemePanelProps {
-  onClose?: () => void
-}
-
 /**
  * The campaign row's Theme: the Light and Dark Theme Preset swatches, the
  * six base colours and the two contrast colours as swatch plus hex, the three
@@ -81,7 +75,7 @@ interface ThemePanelProps {
  * constants; nothing is stored. A preset replaces the mode and the eight
  * colours only; fonts, both radii and the Palette stay.
  */
-export function ThemePanel({ onClose }: ThemePanelProps): ReactElement {
+export function ThemePanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const theme = campaign.theme
@@ -158,29 +152,14 @@ export function ThemePanel({ onClose }: ThemePanelProps): ReactElement {
   }
 
   return (
-    <Stack
-      spacing={5}
-      sx={{ p: 6, width: 360, overflowY: 'auto' }}
-      data-testid="CampaignThemePanel"
-      data-preset={active}
-    >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Theme')}</Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            data-testid="CampaignThemePreset"
-          >
-            {presetLabels[active]}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
+    <Stack spacing={5} data-testid="CampaignThemePanel" data-preset={active}>
+      <Typography
+        variant="body2"
+        color="text.secondary"
+        data-testid="CampaignThemePreset"
+      >
+        {presetLabels[active]}
+      </Typography>
       <Stack spacing={2}>
         <Typography variant="subtitle2">{t('Theme preset')}</Typography>
         <ToggleButtonGroup
