@@ -58,7 +58,7 @@ describe('LeftRail', () => {
     ).toHaveAttribute('href', '/campaigns')
   })
 
-  it('toggles the Pages and Localize panels, one open at a time', () => {
+  it('toggles the Pages, Add and Localize panels, one open at a time', () => {
     render(<Harness />)
     const pages = screen.getByRole('button', { name: 'Pages' })
     const localize = screen.getByRole('button', { name: 'Localize' })
@@ -67,6 +67,10 @@ describe('LeftRail', () => {
     fireEvent.click(pages)
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('pages')
     expect(pages).toHaveAttribute('aria-pressed', 'true')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('add')
+    expect(pages).toHaveAttribute('aria-pressed', 'false')
 
     fireEvent.click(localize)
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('localize')

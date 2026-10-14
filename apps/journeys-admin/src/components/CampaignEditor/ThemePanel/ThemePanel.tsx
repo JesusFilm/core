@@ -63,7 +63,7 @@ const SWATCH_COLUMNS: readonly CampaignThemePresetColumn[] = [
 ]
 
 /**
- * The campaign row's Theme: the Light and Dark Theme Preset swatches, the
+ * The campaign Theme: the Light and Dark Theme Preset swatches, the
  * six base colours and the two contrast colours as swatch plus hex, the three
  * font selects over the journeys theme dialog's curated lists, the four
  * corner radii and the two button shapes. Every change is one Command

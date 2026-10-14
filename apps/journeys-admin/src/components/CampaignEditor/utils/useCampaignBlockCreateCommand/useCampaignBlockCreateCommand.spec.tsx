@@ -8,7 +8,7 @@ import { CAMPAIGN_ANALYTICS_BLOCK_CREATE } from '../../../../libs/useCampaignSec
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
+import { AddPanel } from '../../AddPanel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
 import { campaign } from '../../data'
@@ -118,14 +118,17 @@ function renderEditor(): ReturnType<typeof render> {
       <SelectionProbe />
       <BlocksProbe />
       <PageCanvas />
-      <BottomBar />
+      <AddPanel />
     </QueriedEditor>
   )
 }
 
-async function addExtra(item: string): Promise<void> {
-  fireEvent.click(await screen.findByRole('button', { name: 'Add' }))
-  fireEvent.click(screen.getByRole('menuitem', { name: item }))
+async function addExtra(
+  item: 'Text' | 'Button',
+  placement: 'Above text' | 'Below text'
+): Promise<void> {
+  fireEvent.click(await screen.findByRole('button', { name: placement }))
+  fireEvent.click(screen.getByRole('button', { name: item }))
 }
 
 describe('useCampaignBlockCreateCommand', () => {
@@ -134,7 +137,7 @@ describe('useCampaignBlockCreateCommand', () => {
   it('adds an empty text Extra with the chosen placement, following the section, and selects it', async () => {
     const { baseElement } = renderEditor()
 
-    await addExtra('Text above')
+    await addExtra('Text', 'Above text')
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
     await waitFor(() =>
@@ -153,7 +156,7 @@ describe('useCampaignBlockCreateCommand', () => {
   it('adds a "Button" Extra below the body with no action', async () => {
     renderEditor()
 
-    await addExtra('Button below')
+    await addExtra('Button', 'Below text')
 
     await waitFor(() =>
       expect(screen.getByTestId('Block-newId')).toHaveTextContent(
@@ -165,7 +168,7 @@ describe('useCampaignBlockCreateCommand', () => {
 
   it('undoes by deleting the Extra and restoring the previous selection; redo recreates it', async () => {
     renderEditor()
-    await addExtra('Text above')
+    await addExtra('Text', 'Above text')
     await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -260,7 +263,7 @@ describe('useCampaignBlockCreateCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <BottomBar />
+          <AddPanel />
         </QueriedEditor>
       )
     }
@@ -269,9 +272,7 @@ describe('useCampaignBlockCreateCommand', () => {
       renderSectionEditor()
       expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
-      fireEvent.click(screen.getByRole('menuitem', { name: 'Section below' }))
-      fireEvent.click(screen.getByRole('menuitem', { name: 'Analytics' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Analytics' }))
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
       await waitFor(() =>

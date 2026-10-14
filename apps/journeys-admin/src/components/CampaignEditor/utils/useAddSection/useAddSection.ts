@@ -20,7 +20,7 @@ export interface SectionInsert {
 
 /**
  * The create Command of a new section at an insert point: a Columns section
- * is born with its two empty slots. Shared by the bottom bar's Add menus and
+ * is born with its two empty slots. Shared by the Add Panel's add hook and
  * the Inspector's column type picker.
  */
 export function useAddSection(): (

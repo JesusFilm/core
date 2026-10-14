@@ -7,7 +7,7 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
-import { BottomBar } from '../BottomBar'
+import { Breadcrumb } from '../Breadcrumb'
 import { Canvas } from '../Canvas'
 import { campaign, campaignWithColumns } from '../data'
 import { Hotkeys } from '../Hotkeys'
@@ -69,7 +69,7 @@ function renderEditor(
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
-      <BottomBar />
+      <Breadcrumb />
     </StaticEditor>
   )
 }
@@ -257,7 +257,7 @@ describe('CampaignEditorProvider', () => {
       >
         <Hotkeys />
         <SelectionProbe />
-        <BottomBar />
+        <Breadcrumb />
       </StaticEditor>
     )
     expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(

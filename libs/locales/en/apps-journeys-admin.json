@@ -1674,5 +1674,12 @@
   "Publish status": "Publish status",
   "Campaign tools": "Campaign tools",
   "Back to campaigns": "Back to campaigns",
-  "Pick anything on the page or in the Navigator, then change it in the Inspector.": "Pick anything on the page or in the Navigator, then change it in the Inspector."
+  "Pick anything on the page or in the Navigator, then change it in the Inspector.": "Pick anything on the page or in the Navigator, then change it in the Inspector.",
+  "Sections": "Sections",
+  "Select an empty column, or a section not in a column.": "Select an empty column, or a section not in a column.",
+  "Extras": "Extras",
+  "Placement": "Placement",
+  "Above text": "Above text",
+  "Below text": "Below text",
+  "Select a section to add text or a button to it.": "Select a section to add text or a button to it."
 }
