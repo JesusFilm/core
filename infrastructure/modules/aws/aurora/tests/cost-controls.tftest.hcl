@@ -103,3 +103,41 @@ run "reject_reversed_capacity_bounds" {
 
   expect_failures = [var.serverlessv2_capacity]
 }
+
+run "upgrade_with_a_new_compatible_parameter_group" {
+  command = plan
+  variables {
+    engine_version                  = "17.11"
+    db_cluster_parameter_group_name = null
+    managed_parameter_group_family  = "aurora-postgresql17"
+    db_parameter_group_name         = "default.aurora-postgresql17"
+    apply_immediately               = true
+    managed_cluster_parameters = {
+      "rds.logical_replication"    = { value = "1", apply_method = "pending-reboot" }
+      "log_min_duration_statement" = { value = "5000", apply_method = "immediate" }
+      "rds.force_ssl"              = { value = "0", apply_method = "immediate" }
+    }
+  }
+  assert {
+    condition = (
+      aws_rds_cluster_parameter_group.upgrade[0].family == "aurora-postgresql17" &&
+      aws_rds_cluster_parameter_group.upgrade[0].name == "test-core-stage-aurora-postgresql17" &&
+      aws_rds_cluster.default.engine_version == "17.11" &&
+      aws_rds_cluster_instance.default.db_parameter_group_name == "default.aurora-postgresql17" &&
+      aws_rds_cluster.default.apply_immediately &&
+      aws_rds_cluster_instance.default.apply_immediately &&
+      aws_rds_cluster.default.backup_retention_period == 5 &&
+      length(aws_rds_cluster_parameter_group.upgrade[0].parameter) == 3
+    )
+    error_message = "The major upgrade must use a new matching group, preserve settings and backups, and complete cluster changes before instance changes in the approved rollout window."
+  }
+}
+
+run "reject_parameter_group_for_a_different_major" {
+  command = plan
+  variables {
+    engine_version                 = "17.11"
+    managed_parameter_group_family = "aurora-postgresql16"
+  }
+  expect_failures = [aws_rds_cluster.default]
+}

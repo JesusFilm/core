@@ -60,6 +60,38 @@ variable "node_version" {
   }
 }
 
+variable "enforce_sequential_upgrade" {
+  type        = bool
+  description = "Validate the requested minor against an existing live cluster before planning an upgrade."
+  default     = false
+}
+
+variable "node_ami_type" {
+  type        = string
+  description = "Managed-node AMI type; existing clusters use AL2023 rather than unsupported AL2 AMIs."
+  default     = null
+
+  validation {
+    condition     = var.node_ami_type == null ? true : contains(["AL2023_x86_64_STANDARD", "AL2023_ARM_64_STANDARD"], var.node_ami_type)
+    error_message = "node_ami_type must be null or a supported standard AL2023 architecture."
+  }
+}
+
+variable "addons" {
+  type = map(object({
+    version              = string
+    configuration_values = optional(string)
+    existing             = optional(bool, false)
+  }))
+  description = "Pinned EKS add-ons. Existing managed add-ons retain their live configuration and service-account IAM role."
+  default     = {}
+
+  validation {
+    condition     = alltrue([for name, addon in var.addons : contains(["kube-proxy", "vpc-cni", "coredns", "eks-node-monitoring-agent", "aws-ebs-csi-driver"], name) && can(regex("^v[0-9]+\\.[0-9]+\\.[0-9]+-eksbuild\\.[0-9]+$", addon.version))])
+    error_message = "Use a pinned eksbuild version for a reviewed EKS add-on."
+  }
+}
+
 variable "node_scaling_config" {
   type = object({
     desired_size = number

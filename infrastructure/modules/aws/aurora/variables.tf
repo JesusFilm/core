@@ -45,9 +45,40 @@ variable "db_cluster_parameter_group_name" {
   default     = "aurora-postgresql13-cluster-replication"
 
   validation {
-    condition     = length(trimspace(var.db_cluster_parameter_group_name)) > 0
+    condition     = var.db_cluster_parameter_group_name == null ? var.managed_parameter_group_family != null : length(trimspace(var.db_cluster_parameter_group_name)) > 0
     error_message = "db_cluster_parameter_group_name must not be empty."
   }
+}
+
+variable "managed_parameter_group_family" {
+  type        = string
+  description = "Create a new cluster parameter group for this family without changing the shared legacy group."
+  default     = null
+
+  validation {
+    condition     = var.managed_parameter_group_family == null ? true : can(regex("^aurora-postgresql[0-9]+$", var.managed_parameter_group_family))
+    error_message = "Use an Aurora PostgreSQL parameter-group family, or null to keep an existing group."
+  }
+}
+
+variable "managed_cluster_parameters" {
+  type = map(object({
+    value        = string
+    apply_method = string
+  }))
+  description = "Carry forward reviewed cluster parameter overrides to the new engine family."
+  default     = {}
+
+  validation {
+    condition     = alltrue([for parameter in values(var.managed_cluster_parameters) : contains(["immediate", "pending-reboot"], parameter.apply_method)])
+    error_message = "Parameter apply_method must be immediate or pending-reboot."
+  }
+}
+
+variable "db_parameter_group_name" {
+  type        = string
+  description = "DB instance parameter group compatible with the selected engine."
+  default     = null
 }
 
 variable "storage_type" {
