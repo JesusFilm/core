@@ -18,7 +18,6 @@ import {
 import { blockIcon } from './blockIcon'
 import { InspectorActions } from './InspectorActions'
 import { InspectorSettings } from './InspectorSettings'
-import type { InspectorInlineView } from './InspectorSettings'
 import { InspectorStyle } from './InspectorStyle'
 
 /** The Inspector's width: the journey editor's drawer width. */
@@ -26,9 +25,8 @@ export const INSPECTOR_WIDTH = 328
 
 interface InspectorProps {
   isManager: boolean
-  /** The Languages or Translations view the nothing-selected Settings tab shows in place of the campaign settings. */
-  inline?: InspectorInlineView
-  onInlineChange?: (inline?: InspectorInlineView) => void
+  /** The default language was swapped; the shell opens Localize on Translations. */
+  onDefaultLanguageChanged?: () => void
 }
 
 /**
@@ -42,8 +40,7 @@ interface InspectorProps {
  */
 export function Inspector({
   isManager,
-  inline,
-  onInlineChange
+  onDefaultLanguageChanged
 }: InspectorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -150,8 +147,7 @@ export function Inspector({
             key={bodyKey}
             campaign={campaign}
             isManager={isManager}
-            inline={inline}
-            onInlineChange={onInlineChange}
+            onDefaultLanguageChanged={onDefaultLanguageChanged}
           />
         )}
       </Box>

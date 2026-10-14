@@ -6,11 +6,9 @@ import {
   within
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
-import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampaign'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
@@ -22,7 +20,6 @@ import {
   CAMPAIGN_HERO_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
-import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { Hotkeys } from '../Hotkeys'
@@ -31,26 +28,12 @@ import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
 
 import { Inspector } from './Inspector'
-import type { InspectorInlineView } from './InspectorSettings'
 
 vi.mock('uuid', () => ({ v4: vi.fn(() => 'newId') }))
 
 const countriesMock = {
   request: { query: GET_CAMPAIGN_COUNTRIES },
   result: { data: { countries: [] } }
-}
-
-const languagesMock = {
-  request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
-  result: { data: { languages: [] } }
-}
-
-const translationsMock = {
-  request: {
-    query: CAMPAIGN_TRANSLATIONS,
-    variables: { campaignId: 'campaignId', languageId: '496', filter: 'all' }
-  },
-  result: { data: { campaignTranslations: [] } }
 }
 
 const hero = campaign.blocks.find((block) => block.id === 'heroId')!
@@ -364,7 +347,7 @@ describe('Inspector', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('shows the campaign settings on Settings, with Languages and Translations buttons', () => {
+    it('shows the campaign settings on Settings, with no Languages or Translations buttons', () => {
       renderInspector({ inspectorTab: 'settings' })
 
       expect(screen.getByTestId('CampaignSettings')).toBeInTheDocument()
@@ -372,43 +355,11 @@ describe('Inspector', () => {
         campaign.title
       )
       expect(
-        screen.getByRole('button', { name: 'Languages' })
-      ).toBeInTheDocument()
+        screen.queryByRole('button', { name: 'Languages' })
+      ).not.toBeInTheDocument()
       expect(
-        screen.getByRole('button', { name: 'Translations' })
-      ).toBeInTheDocument()
-    })
-
-    it('opens Languages and Translations inline and goes back to the settings', async () => {
-      function Harness(): ReactElement {
-        const [inline, setInline] = useState<InspectorInlineView>()
-        return (
-          <StaticEditor
-            initialState={{ inspectorTab: 'settings' }}
-            mocks={[languagesMock, translationsMock]}
-          >
-            <Inspector
-              isManager={false}
-              inline={inline}
-              onInlineChange={setInline}
-            />
-          </StaticEditor>
-        )
-      }
-      render(<Harness />)
-
-      fireEvent.click(screen.getByRole('button', { name: 'Languages' }))
-      expect(
-        await screen.findByTestId('CampaignLanguagesPanel')
-      ).toBeInTheDocument()
-      expect(screen.queryByTestId('CampaignSettings')).not.toBeInTheDocument()
-
-      fireEvent.click(screen.getByRole('button', { name: 'Back to settings' }))
-      fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
-      expect(await screen.findByTestId('TranslationsView')).toBeInTheDocument()
-
-      fireEvent.click(screen.getByRole('button', { name: 'Back to settings' }))
-      expect(screen.getByTestId('CampaignSettings')).toBeInTheDocument()
+        screen.queryByRole('button', { name: 'Translations' })
+      ).not.toBeInTheDocument()
     })
   })
 

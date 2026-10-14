@@ -1667,5 +1667,12 @@
   "Equal": "Equal",
   "Wide left": "Wide left",
   "Wide right": "Wide right",
-  "Ratio": "Ratio"
+  "Ratio": "Ratio",
+  "Pages": "Pages",
+  "Localize": "Localize",
+  "The campaign editor needs a window at least 1280 pixels wide.": "The campaign editor needs a window at least 1280 pixels wide.",
+  "Publish status": "Publish status",
+  "Campaign tools": "Campaign tools",
+  "Back to campaigns": "Back to campaigns",
+  "Pick anything on the page or in the Navigator, then change it in the Inspector.": "Pick anything on the page or in the Navigator, then change it in the Inspector."
 }

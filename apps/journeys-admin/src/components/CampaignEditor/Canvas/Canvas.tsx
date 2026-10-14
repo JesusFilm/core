@@ -151,7 +151,7 @@ interface CanvasProps {
 /**
  * The campaign canvas: the chosen page rendered inside a FramePortal iframe
  * with the editor's own section components under the campaign's theme, in
- * the Preview Language the top bar chose (its text direction follows that
+ * the Preview Language the Pages panel chose (its text direction follows that
  * language's bcp47), the header above and the footer below as on the public
  * page. Desktop/Phone is a view toggle held by the shell, never a Command.
  * The frame carries its own Hotkeys, since its key events never leave it, and
