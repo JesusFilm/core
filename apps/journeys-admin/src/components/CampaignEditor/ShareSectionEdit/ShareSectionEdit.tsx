@@ -131,6 +131,7 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
     <Box
       data-testid="ShareLanguagePhone"
       sx={{
+        position: 'relative',
         // Fixed sizes rather than an aspect ratio: in a column layout the
         // scaled iframe's unscaled box would otherwise stretch the frame.
         width: CANVAS_SCREEN_WIDTH + CANVAS_BEZEL * 2,
@@ -154,24 +155,27 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
           backgroundColor: 'var(--campaign-band-card)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          // A composited iframe ignores both the overflow clip and the
-          // clip-path on some displays, so the bezel is also painted over
-          // the screen's corners from above: a rounded hole whose spread
-          // shadow covers everything outside it.
-          '&::after': {
-            content: '""',
-            position: 'absolute',
-            inset: 0,
-            borderRadius: '12px',
-            boxShadow: '0 0 0 20px var(--campaign-band-heading)',
-            pointerEvents: 'none',
-            zIndex: 1
-          }
+          justifyContent: 'center'
         }}
       >
         {children}
       </Box>
+      <Box
+        aria-hidden
+        data-testid="ShareLanguagePhoneBezel"
+        sx={{
+          // A composited iframe escapes the screen's rounded clip on some
+          // displays, so the bezel is also painted over the screen's corners
+          // from above. This must sit outside the clipping box: a spread
+          // shadow inside it would be clipped away with the corners.
+          position: 'absolute',
+          inset: `${CANVAS_BEZEL}px`,
+          borderRadius: '12px',
+          boxShadow: `0 0 0 ${CANVAS_BEZEL}px var(--campaign-band-heading)`,
+          pointerEvents: 'none',
+          zIndex: 1
+        }}
+      />
     </Box>
   )
 }

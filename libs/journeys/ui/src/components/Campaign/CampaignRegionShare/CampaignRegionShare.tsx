@@ -273,6 +273,7 @@ export function CampaignRegionShare({
               >
                 <Box
                   sx={{
+                    position: 'relative',
                     width: 300,
                     maxWidth: '100%',
                     aspectRatio: '9 / 18',
@@ -296,21 +297,7 @@ export function CampaignRegionShare({
                       borderRadius: '16px',
                       overflow: 'hidden',
                       clipPath: 'inset(0 round 16px)',
-                      backgroundColor: '#000000',
-                      // A composited iframe ignores both the overflow clip and
-                      // the clip-path on some displays, so the bezel is also
-                      // painted over the screen's corners from above: a
-                      // rounded hole whose spread shadow covers everything
-                      // outside it.
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        inset: 0,
-                        borderRadius: '16px',
-                        boxShadow: '0 0 0 24px var(--campaign-band-heading)',
-                        pointerEvents: 'none',
-                        zIndex: 1
-                      }
+                      backgroundColor: '#000000'
                     }}
                   >
                     {selected.embedUrl != null && (
@@ -333,6 +320,23 @@ export function CampaignRegionShare({
                       />
                     )}
                   </Box>
+                  <Box
+                    aria-hidden
+                    data-testid="CampaignRegionSharePhoneBezel"
+                    sx={{
+                      // A composited iframe escapes the screen's rounded clip
+                      // on some displays, so the bezel is also painted over the
+                      // screen's corners from above. This must sit outside the
+                      // clipping box: a spread shadow inside it would be
+                      // clipped away with the corners.
+                      position: 'absolute',
+                      inset: '8px',
+                      borderRadius: '16px',
+                      boxShadow: '0 0 0 8px var(--campaign-band-heading)',
+                      pointerEvents: 'none',
+                      zIndex: 1
+                    }}
+                  />
                 </Box>
                 {shortLink != null && (
                   <Stack
