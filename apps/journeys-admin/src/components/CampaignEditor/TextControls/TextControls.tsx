@@ -16,7 +16,6 @@ import {
   TypographyAlign,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
-import { BarButton } from '../BarButton'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { PaletteColorPicker } from '../PaletteColorPicker'
 import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
@@ -112,24 +111,33 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
 
   return (
     <>
-      <BarButton
-        label={t('Size')}
-        icon={<Type1Icon />}
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<Type1Icon />}
         onClick={openControl('size')}
-        active={open?.control === 'size'}
-      />
-      <BarButton
-        label={t('Align')}
-        icon={<AlignCenterIcon />}
+        aria-pressed={open?.control === 'size' ? true : undefined}
+      >
+        {t('Size')}
+      </Button>
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<AlignCenterIcon />}
         onClick={openControl('align')}
-        active={open?.control === 'align'}
-      />
-      <BarButton
-        label={t('Colour')}
-        icon={<PaletteIcon />}
+        aria-pressed={open?.control === 'align' ? true : undefined}
+      >
+        {t('Align')}
+      </Button>
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<PaletteIcon />}
         onClick={openControl('colour')}
-        active={open?.control === 'colour'}
-      />
+        aria-pressed={open?.control === 'colour' ? true : undefined}
+      >
+        {t('Colour')}
+      </Button>
       <Menu
         anchorEl={open?.anchor}
         open={open?.control === 'size'}

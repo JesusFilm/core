@@ -13,7 +13,7 @@ import { UserTeamRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
-import { BottomBar } from './BottomBar'
+import { AddPanel } from './AddPanel'
 import {
   CampaignEditorProvider,
   useCampaignEditor
@@ -44,7 +44,7 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the rail, the open panel, the canvas with its banner and bottom bar, and the Inspector. */
+/** Everything inside the providers: the rail, the open panel, the canvas with its banner, and the Inspector. */
 function CampaignEditorShell({
   campaign,
   isManager
@@ -68,7 +68,11 @@ function CampaignEditorShell({
   }
 
   const leftPanel =
-    panel === 'pages' ? (
+    panel === 'add' ? (
+      <LeftPanel label={t('Add')} overlay={!pushesCanvas}>
+        <AddPanel />
+      </LeftPanel>
+    ) : panel === 'pages' ? (
       <LeftPanel label={t('Pages')} overlay={!pushesCanvas}>
         <PagesPanel />
       </LeftPanel>
@@ -105,7 +109,6 @@ function CampaignEditorShell({
           <Canvas campaign={campaign} pageKind={pageKind} view={view} />
           {!pushesCanvas && leftPanel}
         </Box>
-        <BottomBar />
       </Stack>
       <Inspector
         isManager={isManager}
@@ -119,8 +122,8 @@ function CampaignEditorShell({
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
  * the Mux upload queue (so a Media Slot upload outlives the selection), the
- * Left Rail with its panels, the canvas with its banner, the Inspector and the
- * contextual bottom bar. First open after create shows the landing page, nothing selected,
+ * Left Rail with its panels, the canvas with its banner and the Inspector.
+ * First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
  * replaces Save.
  */
