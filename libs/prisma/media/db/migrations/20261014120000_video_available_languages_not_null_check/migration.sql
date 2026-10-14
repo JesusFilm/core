@@ -22,4 +22,17 @@ ALTER TABLE "Video" ALTER COLUMN "availableLanguages" SET DEFAULT ARRAY[]::TEXT[
 -- Validation of pre-existing rows runs in that later migration instead, so
 -- that scan doesn't inherit the ACCESS EXCLUSIVE lock this transaction
 -- already holds from SET DEFAULT above.
+--
+-- Accepted tradeoff: Postgres re-validates every CHECK constraint against
+-- the full new row version on every write, not just ones touching the
+-- constrained column. So between this migration's COMMIT and the backfill's
+-- COMMIT (20261014120001_video_available_languages_backfill_not_null), any
+-- UPDATE to a pre-existing row still holding availableLanguages = NULL —
+-- even one that only touches an unrelated column like title — will fail
+-- with a check-constraint violation (23514) until that row is backfilled.
+-- This window is bounded by how long the backfill UPDATE takes to run, and
+-- only affects rows that already have availableLanguages = NULL, so it's
+-- taken as a transient cost of closing the insert race above. Check the
+-- current NULL-row count before applying in a write-heavy environment to
+-- bound the blast radius.
 ALTER TABLE "Video" ADD CONSTRAINT "Video_availableLanguages_not_null_check" CHECK ("availableLanguages" IS NOT NULL) NOT VALID;
