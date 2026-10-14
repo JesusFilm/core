@@ -65,7 +65,7 @@ Your database is now in sync with your schema.
 
 No `P3006` error, and no extra empty migration was generated (schema was already in sync with the renamed migration applied — `git status` showed only the rename, no new files). **Premise 1 confirmed and fixed** — for the single, unsplit migration that existed at the time of this test.
 
-**Update (2026-10-14): superseded by the NOT VALID staging split, not re-verified.** The migration this test ran against — one file doing `SET DEFAULT` + `SET NOT NULL` + `CREATE INDEX` together — was later replaced with four separate migrations using the NOT VALID check-constraint staging pattern documented in `apis/AGENTS.md`:
+**Update (2026-10-14): superseded by the NOT VALID staging split, not re-verified.** The migration this test ran against — one file doing `SET DEFAULT` + `SET NOT NULL` + `CREATE INDEX` together — was later replaced with four separate migrations using the NOT VALID check-constraint staging pattern documented in `docs/solutions/logic-errors/nullable-column-equality-filter-hides-legacy-rows-2026-06-22.md:79`:
 
 - `20261014120000_video_available_languages_not_null_check`
 - `20261014120001_video_available_languages_backfill_not_null`
