@@ -13,6 +13,7 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
   CampaignPageKind,
+  CampaignTextSource,
   IdType,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
@@ -64,7 +65,8 @@ const languagesMock = {
           id: '496',
           slug: 'french',
           name: [
-            { __typename: 'LanguageName', value: 'Français', primary: true }
+            { __typename: 'LanguageName', value: 'Français', primary: true },
+            { __typename: 'LanguageName', value: 'French', primary: false }
           ]
         }
       ]
@@ -254,7 +256,8 @@ function withEnglish(english: typeof eurEnglish): typeof campaignWithRegions {
 }
 
 function renderShare(
-  campaignProp = campaignWithRegions
+  campaignProp = campaignWithRegions,
+  previewLanguageId?: string
 ): ReturnType<typeof render> {
   return render(
     <SnackbarProvider>
@@ -263,7 +266,8 @@ function renderShare(
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
-          selectedBlockId: 'regionShareId'
+          selectedBlockId: 'regionShareId',
+          ...(previewLanguageId != null && { previewLanguageId })
         }}
         mocks={[
           languagesMock,
@@ -364,6 +368,79 @@ describe('ShareSectionEdit', () => {
       'ShareLanguageRow-529',
       'ShareLanguageRow-496'
     ])
+  })
+
+  describe('Campaign Strings', () => {
+    function withStrings(
+      overrides: Record<
+        string,
+        Partial<(typeof campaignWithRegions.strings)[number]>
+      >
+    ): typeof campaignWithRegions {
+      return {
+        ...campaignWithRegions,
+        strings: campaignWithRegions.strings.map((string) => ({
+          ...string,
+          ...overrides[string.key]
+        }))
+      }
+    }
+
+    it("labels Open, Copy link and Download QR code with the campaign's own wording, not the admin's", async () => {
+      renderShare(
+        withStrings({
+          open: { value: 'Visit' },
+          copy: { value: 'Share this link' },
+          downloadQr: { value: 'Get the QR code' }
+        })
+      )
+
+      const english = await screen.findByTestId('ShareLanguageRow-529')
+      expect(
+        within(english).getByRole('link', { name: 'Visit' })
+      ).toBeInTheDocument()
+      expect(
+        within(english).getByTestId('ShareLanguageCopy')
+      ).toHaveTextContent('Share this link')
+      expect(
+        within(english).getByTestId('ShareLanguageDownload')
+      ).toHaveTextContent('Get the QR code')
+    })
+
+    it('shows the previewed language’s translation, falling back to the default wording where there is none', async () => {
+      renderShare(
+        withStrings({
+          copy: {
+            valueTranslations: [
+              {
+                __typename: 'TranslatedValue',
+                languageId: '496',
+                value: 'Copier le lien',
+                source: CampaignTextSource.human
+              }
+            ]
+          }
+        }),
+        '496'
+      )
+
+      const english = await screen.findByTestId('ShareLanguageRow-529')
+      expect(
+        within(english).getByTestId('ShareLanguageCopy')
+      ).toHaveTextContent('Copier le lien')
+      expect(
+        within(english).getByTestId('ShareLanguageDownload')
+      ).toHaveTextContent('Download QR code')
+    })
+
+    it('copies the link and announces it with the campaign’s own "copied" string', async () => {
+      renderShare(withStrings({ copied: { value: 'Copied it' } }))
+
+      const english = await screen.findByTestId('ShareLanguageRow-529')
+      fireEvent.click(within(english).getByTestId('ShareLanguageCopy'))
+
+      expect(await screen.findByText('Copied it')).toBeInTheDocument()
+    })
   })
 
   it('offers the page languages first, then the full catalogue, and adds the chosen one', async () => {

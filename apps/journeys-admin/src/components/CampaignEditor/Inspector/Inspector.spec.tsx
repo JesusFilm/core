@@ -21,7 +21,12 @@ import {
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithRegions,
+  withEmptyTranslations
+} from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
 import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
@@ -1032,12 +1037,12 @@ describe('Inspector', () => {
       parentOrder: number
     ): GetCampaign_campaign_blocks {
       return {
-        ...youTubeVideoBlock,
+        ...withEmptyTranslations(youTubeVideoBlock),
         id,
         videoId: `${id}YouTube`,
         parentBlockId: 'carouselId',
         parentOrder
-      }
+      } as GetCampaign_campaign_blocks
     }
 
     const carouselCampaign = {

@@ -13,6 +13,7 @@ import {
   CampaignTextField,
   CampaignTranslatedValue,
   blockTranslations,
+  campaignTextInputKey,
   translationValue,
   useCampaignBlockTextMutation,
   withTranslationValue
@@ -182,15 +183,16 @@ export function useCampaignTextCommand(
       ...context
     }
     if (languageId != null) {
-      const column = `${resolved.field}Translations`
+      const apiField =
+        resolved.field === 'value'
+          ? resolved.field
+          : campaignTextInputKey(resolved.field)
+      const column = `${apiField}Translations`
       return await translationSet({
         variables: {
           input: {
             target: resolved.translationTarget,
-            field:
-              CampaignTextFieldEnum[
-                resolved.field as keyof typeof CampaignTextFieldEnum
-              ],
+            field: CampaignTextFieldEnum[apiField as CampaignTextFieldEnum],
             languageId,
             value: nextValue
           }

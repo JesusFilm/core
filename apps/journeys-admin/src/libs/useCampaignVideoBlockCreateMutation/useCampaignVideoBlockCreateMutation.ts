@@ -17,17 +17,20 @@ import {
   campaignBlockCreateUpdate,
   campaignBlockSlotWrite
 } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export type CampaignVideoBlock = GetCampaign_campaign_blocks_CampaignVideoBlock
 
 export const CAMPAIGN_VIDEO_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignVideoBlockCreate(
     $input: CampaignVideoBlockCreateInput!
     $languageId: ID
   ) {
     campaignVideoBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `
@@ -72,6 +75,8 @@ export function newOwnedVideoBlock(
     videoVariantLanguageId: null,
     title: null,
     description: null,
+    titleTranslations: [],
+    descriptionTranslations: [],
     image: null,
     duration: null,
     mediaVideo: null

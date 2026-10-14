@@ -154,7 +154,9 @@ export function newSectionBlock(
         __typename: typename,
         ...shared,
         title: null,
-        richTextContent: null
+        richTextContent: null,
+        titleTranslations: [],
+        richTextContentTranslations: []
       }
     case 'CampaignColumnsBlock':
       return {
@@ -168,6 +170,7 @@ export function newSectionBlock(
         ...shared,
         src: null,
         alt: null,
+        altTranslations: [],
         width: null,
         height: null
       }
@@ -180,7 +183,11 @@ export function newSectionBlock(
         lede: null,
         bullets: null,
         mediaSide: CampaignMediaSide.right,
-        mediaBlockId: null
+        mediaBlockId: null,
+        eyebrowTranslations: [],
+        titleTranslations: [],
+        ledeTranslations: [],
+        bulletsTranslations: []
       }
   }
 }
