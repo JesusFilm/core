@@ -1,3 +1,15 @@
+-- Note: the backfill UPDATE, the SET NOT NULL validation scan, and the
+-- CREATE INDEX below all take locks that block writes to Video for the
+-- duration of this migration (SET NOT NULL requires a full-table scan to
+-- validate; CREATE INDEX without CONCURRENTLY holds a SHARE lock for the
+-- whole build). Same caution as
+-- libs/prisma/media/db/migrations/20260324194149_20260324194147/migration.sql:
+-- verify current Video row count before applying in production, and if it's
+-- large, consider splitting the index creation into its own non-transactional
+-- CREATE INDEX CONCURRENTLY migration (CONCURRENTLY cannot run inside a
+-- transaction, so it cannot share this migration's transaction with the
+-- backfill/SET NOT NULL statements above).
+
 -- Backfill any existing NULL values before the NOT NULL constraint is added,
 -- so the constraint below cannot fail against current data.
 UPDATE "Video" SET "availableLanguages" = ARRAY[]::TEXT[] WHERE "availableLanguages" IS NULL;
