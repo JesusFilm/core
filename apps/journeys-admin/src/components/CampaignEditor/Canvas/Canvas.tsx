@@ -40,8 +40,8 @@ import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
-import { CanvasView, canvasScale, frameWidthOf } from './canvasScale'
 import { CanvasInsertPoint } from './CanvasInsertPoint'
+import { CanvasView, canvasScale, frameWidthOf } from './canvasScale'
 import { CanvasSection } from './CanvasSection'
 import { FrameTheme } from './FrameTheme'
 
