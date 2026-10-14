@@ -47,13 +47,17 @@ export class CampaignBuilderPage {
 
   async verifyEditorOpenedOnLandingPage(title: string): Promise<void> {
     await expect(this.page).toHaveURL(/\/campaigns\/[^/]+$/)
-    await expect(this.page.getByTestId('CampaignTopBar')).toContainText(title)
-    await expect(this.page.getByRole('combobox', { name: 'Page' })).toHaveText(
-      'Landing page'
+    await this.togglePagesPanel()
+    await expect(this.page.getByTestId('CampaignPagesPanelTitle')).toHaveText(
+      title
     )
     await expect(
+      this.page.getByRole('button', { name: 'Landing page' })
+    ).toHaveAttribute('aria-current', 'page')
+    await this.togglePagesPanel()
+    await expect(
       this.page.getByText(
-        'Click any text to edit it. Add your regions in the region switcher.'
+        'Pick anything on the page or in the Navigator, then change it in the Inspector.'
       )
     ).toBeVisible()
     await expect(
@@ -68,6 +72,11 @@ export class CampaignBuilderPage {
     await expect(this.heroTitleInput).toHaveValue(DEFAULT_HERO_TITLE)
     await this.heroTitleInput.fill(heroTitle)
     await expect(this.heroTitleInput).toHaveValue(heroTitle)
+  }
+
+  /** Opens the Pages panel, or closes it when it is open. */
+  private async togglePagesPanel(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Pages', exact: true }).click()
   }
 
   async undo(): Promise<void> {
@@ -88,10 +97,11 @@ export class CampaignBuilderPage {
   }
 
   async openRegionPage(): Promise<void> {
-    await this.page.getByRole('combobox', { name: 'Page' }).click()
+    await this.togglePagesPanel()
     await this.page
-      .getByRole('option', { name: new RegExp(`^${NEW_REGION_NAME}`) })
+      .getByRole('button', { name: new RegExp(`^${NEW_REGION_NAME}`) })
       .click()
+    await this.togglePagesPanel()
     await expect(
       this.canvas.getByRole('heading', { name: 'Share this journey' })
     ).toBeVisible()
@@ -121,22 +131,27 @@ export class CampaignBuilderPage {
   }
 
   async publish(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Publish status' }).click()
     await this.page
       .getByRole('button', { name: 'Publish', exact: true })
       .click()
-    await expect(this.page.getByTestId('CampaignStatusChip')).toHaveText(
-      'Published'
+    await expect(this.page.getByTestId('PublishStatusDot')).toHaveAttribute(
+      'data-status',
+      'published'
     )
     await expect(
       this.page.getByRole('button', { name: 'Unpublish', exact: true })
     ).toBeVisible()
+    await this.page.keyboard.press('Escape')
   }
 
   /** The campaign's slug, read from the Open page address `/campaign/<slug>`. */
   async getCampaignSlug(): Promise<string> {
+    await this.page.getByRole('button', { name: 'Publish status' }).click()
     const href = await this.page
       .getByRole('link', { name: 'Open page' })
       .getAttribute('href')
+    await this.page.keyboard.press('Escape')
     const slug = href?.match(/\/campaign\/([^/?#]+)/)?.[1]
     if (slug == null) throw new Error(`No campaign slug in Open page: ${href}`)
     return slug

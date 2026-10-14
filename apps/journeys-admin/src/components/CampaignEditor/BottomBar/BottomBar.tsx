@@ -6,9 +6,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, ReactNode, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-import TranslateIcon from '@core/shared/ui/icons/Translate'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
@@ -19,7 +17,6 @@ import { BarButton } from '../BarButton'
 import { blockLabel } from '../blockLabel'
 import { Breadcrumb } from '../Breadcrumb'
 import { regionLines, useCampaignEditor } from '../CampaignEditorProvider'
-import { OrphanPageBar } from '../OrphanPageBar'
 import {
   pageSections,
   sectionTypesForPage,
@@ -32,32 +29,20 @@ import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCo
 /** The label a new button Extra is born with (PRD §14); campaign content, not UI copy. */
 export const NEW_BUTTON_LABEL = 'Button'
 
-interface BottomBarProps {
-  /** Opens the Languages view (add and remove campaign languages) in the Inspector. */
-  onLanguagesClick?: () => void
-  /** Opens the Translations view (review and edit translated text) in the Inspector. */
-  onTranslationsClick?: () => void
-}
-
 type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
 /**
  * The contextual bottom bar: the breadcrumb, then the Add menus. What the
- * selection can be edited with lives in the Inspector. Campaign row: the
- * Languages and Translations buttons until the Localize panel lands, and
- * +Add section; on an Orphan Page also the orphan page bar. Section and
+ * selection can be edited with lives in the Inspector. Campaign row: +Add
+ * section (the orphan page bar floats in the Canvas banner). Section and
  * chrome: +Add (an Extra, or for a section a section above or below). Column
  * child: +Add (Extras only). Region card: +Add line.
  */
-export function BottomBar({
-  onLanguagesClick,
-  onTranslationsClick
-}: BottomBarProps): ReactElement {
+export function BottomBar(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
     selection,
-    currentRegion,
     state: { pageKind }
   } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
@@ -307,28 +292,11 @@ export function BottomBar({
     switch (selection.kind) {
       case 'campaign':
         return (
-          <>
-            {currentRegion != null && !currentRegion.listed && (
-              <OrphanPageBar region={currentRegion} />
-            )}
-            <BarButton
-              label={t('Languages')}
-              icon={<Globe1Icon />}
-              onClick={onLanguagesClick}
-              disabled={onLanguagesClick == null}
-            />
-            <BarButton
-              label={t('Translations')}
-              icon={<TranslateIcon />}
-              onClick={onTranslationsClick}
-              disabled={onTranslationsClick == null}
-            />
-            <BarButton
-              label={t('Add section')}
-              icon={<Plus2Icon />}
-              onClick={handleAddSectionClick}
-            />
-          </>
+          <BarButton
+            label={t('Add section')}
+            icon={<Plus2Icon />}
+            onClick={handleAddSectionClick}
+          />
         )
       case 'section':
       case 'column':

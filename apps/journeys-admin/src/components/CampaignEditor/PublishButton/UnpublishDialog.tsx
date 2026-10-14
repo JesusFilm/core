@@ -11,7 +11,7 @@ interface UnpublishDialogProps {
 }
 
 /**
- * The one confirmation the top bar has. Unpublish takes the landing page and
+ * The one confirmation the Publish button has. Unpublish takes the landing page and
  * every region page offline at once while distributed share links still
  * point there, so the dialog states what stays up.
  */

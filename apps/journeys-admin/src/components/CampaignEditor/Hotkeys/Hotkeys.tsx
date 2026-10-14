@@ -11,9 +11,10 @@ interface HotkeysProps {
 }
 
 /**
- * The editor's shortcuts: ⌘Z / ⇧⌘Z for undo and redo, Escape to step the
- * selection up one level (blurring an inline input first), S and D to switch
- * the Inspector's Style and Settings tab. Rendered once for the shell and
+ * The editor's shortcuts: ⌘Z / ⇧⌘Z for undo and redo, Escape to close the open
+ * left panel and otherwise step the selection up one level (blurring an
+ * inline input first), P to toggle the Pages panel, S and D to switch the
+ * Inspector's Style and Settings tab. Rendered once for the shell and
  * once inside the canvas frame, whose key events never reach the parent
  * document. Only the frame listens to undo and redo while a form field has
  * focus: its inline inputs are Commands, whereas the shell's fields (the
@@ -22,7 +23,11 @@ interface HotkeysProps {
  */
 export function Hotkeys({ document }: HotkeysProps): ReactElement {
   const { undo, redo } = useCommand()
-  const { escape, dispatch } = useCampaignEditor()
+  const {
+    escape,
+    dispatch,
+    state: { panel }
+  } = useCampaignEditor()
   const options = {
     document,
     enableOnFormTags: document != null,
@@ -34,12 +39,27 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
   useHotkeys('mod+shift+z', redo, options)
   useHotkeys(
     'escape',
-    () => {
+    (event) => {
+      // A menu or dialog opened from a panel closes itself on Escape first.
+      if (
+        event.target instanceof Element &&
+        event.target.closest('.MuiModal-root')
+      )
+        return
       const active = (document ?? window.document).activeElement
       if (active instanceof HTMLElement) active.blur()
+      if (panel !== 'none') {
+        dispatch({ type: 'SetPanelAction', panel })
+        return
+      }
       escape()
     },
     options
+  )
+  useHotkeys(
+    'p',
+    () => dispatch({ type: 'SetPanelAction', panel: 'pages' }),
+    letterOptions
   )
   useHotkeys(
     's',
