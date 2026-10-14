@@ -160,7 +160,7 @@ export function ThemePanel({ onClose }: ThemePanelProps): ReactElement {
   return (
     <Stack
       spacing={5}
-      sx={{ p: 6, width: 360, overflowY: 'auto' }}
+      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignThemePanel"
       data-preset={active}
     >

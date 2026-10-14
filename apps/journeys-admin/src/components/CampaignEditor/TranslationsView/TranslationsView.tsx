@@ -121,7 +121,7 @@ export function TranslationsView({
       <Stack
         spacing={1}
         data-testid="TranslationsView"
-        sx={{ p: 4, width: 640 }}
+        sx={{ p: 4, pt: 5, width: '100%' }}
       >
         <Typography variant="h6">{t('Translations')}</Typography>
         <Typography variant="body2" color="text.secondary">
@@ -142,7 +142,11 @@ export function TranslationsView({
   }
 
   return (
-    <Stack spacing={3} data-testid="TranslationsView" sx={{ p: 4, width: 640 }}>
+    <Stack
+      spacing={3}
+      data-testid="TranslationsView"
+      sx={{ p: 4, pt: 5, width: '100%' }}
+    >
       <Stack spacing={1}>
         <Typography variant="h6">{t('Translations')}</Typography>
         <Typography variant="body2" color="text.secondary">

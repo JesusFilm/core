@@ -20,6 +20,7 @@ import {
 import { CAMPAIGN_PUBLISH } from '../../../libs/useCampaignPublishMutation'
 import { CAMPAIGN_UNPUBLISH } from '../../../libs/useCampaignUnpublishMutation'
 import type { CanvasView } from '../Canvas'
+import type { EditorPanelMode } from '../EditorPanel'
 import { campaign, campaignWithRegions, publishedCampaign } from '../data'
 
 import { TopBar } from './TopBar'
@@ -87,6 +88,7 @@ function Harness({
   const [regionId, setRegionId] = useState<string>()
   const [previewLanguageId, setPreviewLanguageId] = useState('529')
   const [view, setView] = useState<CanvasView>('desktop')
+  const [panelMode, setPanelMode] = useState<EditorPanelMode>('docked')
   return (
     <MockedProvider mocks={[publishMock, unpublishMock]}>
       <SnackbarProvider>
@@ -110,6 +112,8 @@ function Harness({
             view={view}
             onViewChange={setView}
             isManager={isManager}
+            panelMode={panelMode}
+            onPanelModeChange={setPanelMode}
           />
         </CommandProvider>
       </SnackbarProvider>

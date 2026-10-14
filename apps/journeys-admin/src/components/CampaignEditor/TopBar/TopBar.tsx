@@ -19,7 +19,9 @@ import { ReactElement, useState } from 'react'
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
+import Layout2Icon from '@core/shared/ui/icons/Layout2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
+import SquareIcon from '@core/shared/ui/icons/Square'
 
 import {
   GetCampaign_campaign as Campaign,
@@ -38,6 +40,7 @@ import { LabelChip } from '../../LabelChip'
 import { campaignPermanentAddress } from '../campaignAddress'
 import { regionNeedsJourney, sortedRegions } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
+import type { EditorPanelMode } from '../EditorPanel'
 
 import { UnpublishDialog } from './UnpublishDialog'
 
@@ -53,6 +56,9 @@ interface TopBarProps {
   onViewChange: (view: CanvasView) => void
   /** Publish and Unpublish are campaign Manage: a manager of the team only. */
   isManager: boolean
+  /** Where the editor's panels show: docked beside the canvas, or floating over it. */
+  panelMode: EditorPanelMode
+  onPanelModeChange: (mode: EditorPanelMode) => void
 }
 
 /** The page selector's value: the landing page, or the Region Page rendered for one region. */
@@ -99,6 +105,8 @@ export function TopBar({
   onPreviewLanguageChange,
   view,
   onViewChange,
+  panelMode,
+  onPanelModeChange,
   isManager
 }: TopBarProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -161,6 +169,13 @@ export function TopBar({
     nextView: CanvasView | null
   ): void {
     if (nextView != null) onViewChange(nextView)
+  }
+
+  function handlePanelModeChange(
+    _event: unknown,
+    nextMode: EditorPanelMode | null
+  ): void {
+    if (nextMode != null) onPanelModeChange(nextMode)
   }
 
   return (
@@ -260,6 +275,25 @@ export function TopBar({
         </ToggleButton>
         <ToggleButton value="phone" aria-label={t('Phone')}>
           <Iphone1Icon />
+        </ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup
+        exclusive
+        size="small"
+        value={panelMode}
+        onChange={handlePanelModeChange}
+        aria-label={t('Panel layout')}
+        data-testid="CampaignPanelModeToggle"
+      >
+        <ToggleButton value="docked" aria-label={t('Docked panels')}>
+          <Tooltip title={t('Docked panels')} placement="bottom" arrow>
+            <Layout2Icon />
+          </Tooltip>
+        </ToggleButton>
+        <ToggleButton value="floating" aria-label={t('Floating panels')}>
+          <Tooltip title={t('Floating panels')} placement="bottom" arrow>
+            <SquareIcon />
+          </Tooltip>
         </ToggleButton>
       </ToggleButtonGroup>
       <Stack direction="row" sx={{ flexGrow: 1, justifyContent: 'center' }}>

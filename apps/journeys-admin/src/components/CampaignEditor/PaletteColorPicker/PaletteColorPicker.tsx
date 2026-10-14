@@ -99,7 +99,7 @@ export function PaletteColorPicker({
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState<string>()
   /** The last colour the area produced, read when the drag ends. */
-  const areaDraft = useRef<string>()
+  const areaDraft = useRef<string | undefined>(undefined)
 
   useEffect(() => {
     setDraft(committed)

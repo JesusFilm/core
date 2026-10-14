@@ -67,7 +67,7 @@ export function CarouselCardEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 6, width: 400 }}
+      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignCarouselCardEdit"
       data-block-id={block.id}
     >

@@ -1,6 +1,5 @@
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
-import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -22,7 +21,6 @@ import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Layout1Icon from '@core/shared/ui/icons/Layout1'
-import LinkIcon from '@core/shared/ui/icons/Link'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import PaletteIcon from '@core/shared/ui/icons/Palette'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
@@ -52,6 +50,7 @@ import {
 import { CarouselCardEdit } from '../CarouselCardEdit'
 import { CarouselEdit } from '../CarouselEdit'
 import { ChromeEdit } from '../ChromeEdit'
+import { EditorPanel } from '../EditorPanel'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { LinkChip } from '../LinkChip'
 import { MediaSectionEdit } from '../MediaSectionEdit'
@@ -120,7 +119,7 @@ interface SectionInsert {
  * Style, +Add only; the header's Edit opens the logo editor, an Image
  * section's Edit the picture editor, a hero's or Featured Media section's
  * Edit the media editor and a Video Carousel's Edit the carousel editor, all
- * in a drawer. Carousel card: Edit (its title and description), ← → (one
+ * in a panel. Carousel card: Edit (its title and description), ← → (one
  * order Command each) and bin (a delete Command, no confirmation). Column
  * child (the section in a Column Slot): Edit, Style, Change type, +Add
  * (Extras only), ⇄ swap the two slots, bin behind a confirmation that empties
@@ -230,7 +229,7 @@ export function ContextBar({
     addBlockOrder(selectedJourneyCard, target.parentOrder)
   }
 
-  /** The header, an Image section, the sections with a Media Slot, a Video Carousel and its cards edit in a drawer (logo, picture, media, videos, card text); everything else edits its text in place. */
+  /** The header, an Image section, the sections with a Media Slot, a Video Carousel and its cards edit in a panel (logo, picture, media, videos, card text); everything else edits its text in place. */
   const editedBlock =
     selection.block != null &&
     (selection.block.__typename === 'CampaignHeaderBlock' ||
@@ -913,17 +912,17 @@ export function ContextBar({
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleConfirmDelete}
       />
-      <Drawer
-        anchor="right"
+      <EditorPanel
+        id="style"
         open={styleOpen && styledHost != null}
         onClose={() => setStyleOpen(false)}
       >
         {styledHost != null && (
           <StylePanel block={styledHost} onClose={() => setStyleOpen(false)} />
         )}
-      </Drawer>
-      <Drawer
-        anchor="right"
+      </EditorPanel>
+      <EditorPanel
+        id="edit"
         open={editOpen && editedBlock != null}
         onClose={() => setEditOpen(false)}
       >
@@ -954,7 +953,7 @@ export function ContextBar({
             onClose={() => setEditOpen(false)}
           />
         )}
-      </Drawer>
+      </EditorPanel>
     </Stack>
   )
 }

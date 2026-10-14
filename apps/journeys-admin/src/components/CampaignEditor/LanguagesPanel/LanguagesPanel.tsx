@@ -127,7 +127,7 @@ export function LanguagesPanel({
     <Stack
       spacing={3}
       data-testid="CampaignLanguagesPanel"
-      sx={{ p: 4, width: 400 }}
+      sx={{ p: 4, pt: 5, width: '100%' }}
     >
       <Stack spacing={1}>
         <Typography variant="h6">{t('Languages')}</Typography>

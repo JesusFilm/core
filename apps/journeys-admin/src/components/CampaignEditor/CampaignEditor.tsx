@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -24,6 +23,12 @@ import {
 import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { ContextBar } from './ContextBar'
+import {
+  DOCKED_PANEL_WIDTH,
+  EditorPanel,
+  EditorPanelsProvider,
+  useEditorPanels
+} from './EditorPanel'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
 import { LanguagesPanel } from './LanguagesPanel'
@@ -45,7 +50,7 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the top bar, the hint, the context bar, the canvas and the drawers. */
+/** Everything inside the providers: the top bar, the hint, the context bar, the canvas, the docked column and the panels. */
 function CampaignEditorShell({
   campaign,
   isManager
@@ -56,6 +61,7 @@ function CampaignEditorShell({
     selection,
     dispatch
   } = useCampaignEditor()
+  const { mode, setMode, dockOpen, setDockElement } = useEditorPanels()
   const [view, setView] = useState<CanvasView>('desktop')
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [themeOpen, setThemeOpen] = useState(false)
@@ -93,55 +99,80 @@ function CampaignEditorShell({
         view={view}
         onViewChange={setView}
         isManager={isManager}
+        panelMode={mode}
+        onPanelModeChange={setMode}
       />
-      <FirstRunHint campaignId={campaign.id} />
-      <ContextBar
-        onSettingsClick={() => setSettingsOpen(true)}
-        onThemeClick={() => setThemeOpen(true)}
-        onLanguagesClick={() => setLanguagesOpen(true)}
-        onRegionSettingsClick={() => setRegionSettingsOpen(true)}
-        onTranslationsClick={() => setTranslationsOpen(true)}
-      />
-      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
-      <Drawer
-        anchor="right"
+      <Stack direction="row" sx={{ flexGrow: 1, minHeight: 0 }}>
+        <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
+          <FirstRunHint campaignId={campaign.id} />
+          <ContextBar
+            onSettingsClick={() => setSettingsOpen(true)}
+            onThemeClick={() => setThemeOpen(true)}
+            onLanguagesClick={() => setLanguagesOpen(true)}
+            onRegionSettingsClick={() => setRegionSettingsOpen(true)}
+            onTranslationsClick={() => setTranslationsOpen(true)}
+          />
+          <Canvas campaign={campaign} pageKind={pageKind} view={view} />
+        </Stack>
+        <Box
+          ref={setDockElement}
+          data-testid="CampaignEditorDock"
+          sx={{
+            display: dockOpen ? 'block' : 'none',
+            width: DOCKED_PANEL_WIDTH,
+            flexShrink: 0,
+            overflowY: 'auto',
+            borderLeft: 1,
+            borderColor: 'divider',
+            bgcolor: 'background.paper'
+          }}
+        />
+      </Stack>
+      <EditorPanel
+        id="settings"
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+        closeButton
       >
         <Settings
           campaign={campaign}
           isManager={isManager}
           onDefaultLanguageChanged={() => setPromotionNoticeShown(true)}
         />
-      </Drawer>
-      <Drawer
-        anchor="right"
+      </EditorPanel>
+      <EditorPanel
+        id="regionSettings"
         open={regionSettingsOpen && settingsRegion != null}
         onClose={() => setRegionSettingsOpen(false)}
+        closeButton
       >
         {settingsRegion != null && <RegionSettings region={settingsRegion} />}
-      </Drawer>
-      <Drawer
-        anchor="right"
+      </EditorPanel>
+      <EditorPanel
+        id="theme"
         open={themeOpen}
         onClose={() => setThemeOpen(false)}
       >
         <ThemePanel onClose={() => setThemeOpen(false)} />
-      </Drawer>
-      <Drawer
-        anchor="right"
+      </EditorPanel>
+      <EditorPanel
+        id="languages"
         open={languagesOpen}
         onClose={() => setLanguagesOpen(false)}
+        closeButton
       >
         <LanguagesPanel campaign={campaign} />
-      </Drawer>
-      <Drawer
-        anchor="right"
+      </EditorPanel>
+      <EditorPanel
+        id="translations"
         open={translationsOpen}
         onClose={() => {
           setTranslationsOpen(false)
           setPromotionNoticeShown(false)
         }}
+        float
+        width={640}
+        closeButton
       >
         <TranslationsView
           campaign={campaign}
@@ -149,7 +180,7 @@ function CampaignEditorShell({
           showPromotionNotice={promotionNoticeShown}
           onPromotionNoticeClose={() => setPromotionNoticeShown(false)}
         />
-      </Drawer>
+      </EditorPanel>
     </Stack>
   )
 }
@@ -157,9 +188,9 @@ function CampaignEditorShell({
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
- * the Mux upload queue (so a Media Slot upload outlives its drawer), the
- * top bar, the first-run hint, the contextual bar floating under it and
- * the canvas. First open after create shows the landing page, nothing selected,
+ * the Mux upload queue (so a Media Slot upload outlives its panel), the
+ * top bar, the first-run hint, the contextual bar floating under it, the
+ * canvas and the panels beside or over it. First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
  * replaces Save.
  */
@@ -226,7 +257,9 @@ export function CampaignEditor({
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
         <MuxVideoUploadProvider>
-          <CampaignEditorShell campaign={campaign} isManager={isManager} />
+          <EditorPanelsProvider>
+            <CampaignEditorShell campaign={campaign} isManager={isManager} />
+          </EditorPanelsProvider>
         </MuxVideoUploadProvider>
       </CampaignEditorProvider>
     </CommandProvider>

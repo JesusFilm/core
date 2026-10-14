@@ -201,7 +201,11 @@ export function Settings({
   )
 
   return (
-    <Stack spacing={5} sx={{ p: 6, width: 400 }} data-testid="CampaignSettings">
+    <Stack
+      spacing={5}
+      sx={{ p: 4, pt: 5, width: '100%' }}
+      data-testid="CampaignSettings"
+    >
       <Typography variant="h6">{t('Settings')}</Typography>
       <Typography
         variant="body2"

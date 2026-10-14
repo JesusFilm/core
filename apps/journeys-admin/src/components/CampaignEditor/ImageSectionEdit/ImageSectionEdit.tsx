@@ -75,7 +75,7 @@ export function ImageSectionEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 6, width: 360 }}
+      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignImageSectionEdit"
       data-block-id={block.id}
     >

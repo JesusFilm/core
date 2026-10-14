@@ -198,7 +198,11 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
   }
 
   return (
-    <Stack spacing={5} sx={{ p: 6, width: 400 }} data-testid="RegionSettings">
+    <Stack
+      spacing={5}
+      sx={{ p: 4, pt: 5, width: '100%' }}
+      data-testid="RegionSettings"
+    >
       <Typography variant="h6">{t('Region settings')}</Typography>
       <TextField
         label={t('Name')}
