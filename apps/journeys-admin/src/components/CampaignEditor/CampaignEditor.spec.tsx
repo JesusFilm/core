@@ -342,6 +342,20 @@ describe('CampaignEditor', () => {
     await waitFor(() => expect(swapped).toHaveBeenCalled())
   })
 
+  it('leaves S to the Default language select while it is open', async () => {
+    renderEditor()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    fireEvent.mouseDown(
+      screen.getByRole('combobox', { name: 'Default language' })
+    )
+    expect(screen.getByRole('listbox')).toBeInTheDocument()
+    await userEvent.keyboard('s')
+
+    expect(screen.getByTestId('CampaignSettings')).toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignThemePanel')).not.toBeInTheDocument()
+  })
+
   it('floats the first-run hint in the canvas banner, taking no layout height', () => {
     renderEditor()
 
