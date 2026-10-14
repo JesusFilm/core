@@ -91,6 +91,65 @@ export class CampaignBuilderPage {
     await redoButton.click()
   }
 
+  /** The Navigator's tree: the open page as exactly what the canvas shows. */
+  get navigatorTree(): Locator {
+    return this.page.getByRole('tree', { name: 'Page structure' })
+  }
+
+  /** The Inspector's Style / Settings tabs (the Style panel has tabs of its own). */
+  get inspectorTabs(): Locator {
+    return this.page.getByRole('tablist', { name: 'Inspector' })
+  }
+
+  /** Opens a Left Rail panel, unless it is already open. */
+  private async openRailPanel(name: 'Navigator' | 'Add'): Promise<void> {
+    const toggle = this.page.getByRole('button', { name, exact: true })
+    if ((await toggle.getAttribute('aria-pressed')) !== 'true') {
+      await toggle.click()
+    }
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+  }
+
+  /** Opens the Navigator and selects the hero's row, which selects it on the canvas too. */
+  async selectHeroInNavigator(): Promise<void> {
+    await this.openRailPanel('Navigator')
+    const heroRow = this.navigatorTree.getByRole('treeitem', { name: /^Hero/ })
+    await heroRow.getByText('Hero', { exact: true }).click()
+    await expect(heroRow).toHaveAttribute('aria-selected', 'true')
+  }
+
+  /** Sets the selected section's Background kind on the Inspector's Style tab. */
+  async setBackgroundKind(kind: string): Promise<void> {
+    await this.inspectorTabs.getByRole('tab', { name: 'Style' }).click()
+    await this.page.getByRole('tab', { name: 'Background' }).click()
+    const kindButton = this.page
+      .getByRole('group', { name: 'Background' })
+      .getByRole('button', { name: kind, exact: true })
+    await kindButton.click()
+    await expect(kindButton).toHaveAttribute('aria-pressed', 'true')
+  }
+
+  /**
+   * Adds a Rich text section below the selected section from the Add Panel;
+   * the new section is selected, so its Title is typed straight into the
+   * canvas.
+   */
+  async addRichTextSectionBelowSelection(title: string): Promise<void> {
+    await this.openRailPanel('Add')
+    await this.page
+      .getByRole('list', { name: 'Sections' })
+      .getByRole('button', { name: 'Rich text', exact: true })
+      .click()
+
+    const titleInput = this.canvas.getByRole('textbox', { name: 'Title' })
+    await titleInput.fill(title)
+    await expect(titleInput).toHaveValue(title)
+    await titleInput.blur()
+    await expect(
+      this.canvas.getByRole('heading', { level: 2, name: title })
+    ).toBeVisible()
+  }
+
   async addRegionFromSwitcher(): Promise<void> {
     await this.canvas.getByRole('button', { name: 'Add', exact: true }).click()
     await expect(this.canvas.getByText(NEW_REGION_NAME)).toBeVisible()
