@@ -1,13 +1,10 @@
 import Box from '@mui/material/Box'
-import List from '@mui/material/List'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
 
 import {
   CAMPAIGN_THEME_PRESETS,
@@ -35,7 +32,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { FontSelect } from '../../Editor/Slider/Settings/CanvasDetails/Properties/blocks/Typography/ThemeBuilderDialog/ThemeSettings/FontSelect'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { PaletteColorPicker } from '../PaletteColorPicker'
+import { ColourRows } from '../ColourRows'
 import { useCampaignThemeCommand } from '../utils/useCampaignThemeCommand'
 
 export const THEME_PRESET_NAMES: readonly CampaignThemePresetName[] = [
@@ -66,7 +63,7 @@ const SWATCH_COLUMNS: readonly CampaignThemePresetColumn[] = [
 ]
 
 /**
- * The campaign row's Theme: the Light and Dark Theme Preset swatches, the
+ * The campaign Theme: the Light and Dark Theme Preset swatches, the
  * six base colours and the two contrast colours as swatch plus hex, the three
  * font selects over the journeys theme dialog's curated lists, the four
  * corner radii and the two button shapes. Every change is one Command
@@ -80,8 +77,6 @@ export function ThemePanel(): ReactElement {
   const { campaign } = useCampaignEditor()
   const theme = campaign.theme
   const { addTheme } = useCampaignThemeCommand()
-  const [colour, setColour] =
-    useState<CampaignThemePresetColumn>('primaryColor')
   const active = activeThemePreset(theme)
 
   const presetLabels: Record<CampaignThemePresetLabel, string> = {
@@ -200,38 +195,17 @@ export function ThemePanel(): ReactElement {
       </Stack>
       <Stack spacing={2}>
         <Typography variant="subtitle2">{t('Colours')}</Typography>
-        <List dense disablePadding aria-label={t('Theme colours')}>
-          {PRESET_COLOR_COLUMNS.map((column) => (
-            <ListItemButton
-              key={column}
-              selected={colour === column}
-              onClick={() => setColour(column)}
-              data-testid={`ThemeColour-${column}`}
-            >
-              <Box
-                sx={{
-                  width: 24,
-                  height: 24,
-                  mr: 3,
-                  borderRadius: '50%',
-                  bgcolor: theme[column],
-                  border: '1px solid',
-                  borderColor: 'divider'
-                }}
-              />
-              <ListItemText
-                primary={colourLabels[column]}
-                secondary={theme[column]}
-              />
-            </ListItemButton>
-          ))}
-        </List>
-        <PaletteColorPicker
-          key={colour}
-          label={colourLabels[colour]}
-          value={theme[colour]}
-          onCommit={(hex) => addTheme({ [colour]: hex })}
-          testId="ThemeColourPicker"
+        <ColourRows
+          label={t('Theme colours')}
+          rows={PRESET_COLOR_COLUMNS.map((column) => ({
+            key: column,
+            label: colourLabels[column],
+            value: theme[column],
+            inherited: theme[column]
+          }))}
+          rowTestId="ThemeColour"
+          pickerTestId="ThemeColourPicker"
+          onCommit={(column, hex) => addTheme({ [column]: hex })}
         />
       </Stack>
       <Stack spacing={4}>

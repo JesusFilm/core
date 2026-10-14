@@ -14,6 +14,7 @@ import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampai
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
+import { CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO } from '../../../libs/useCampaignColumnsBlockRatioMutation'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import {
   CAMPAIGN_HERO_BLOCK_CREATE,
@@ -151,6 +152,22 @@ const swapMock = {
         },
         { __typename: 'CampaignColumnBlock', id: 'slotLeftId', parentOrder: 1 }
       ]
+    }
+  }))
+}
+
+const ratioMock = {
+  request: {
+    query: CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO,
+    variables: { id: 'columnsId', input: { ratio: 'wideRight' } }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignColumnsBlockUpdate: {
+        __typename: 'CampaignColumnsBlock',
+        id: 'columnsId',
+        ratio: 'wideRight'
+      }
     }
   }))
 }
@@ -514,13 +531,50 @@ describe('Inspector', () => {
     })
   })
 
-  describe('text Extra', () => {
-    it('shows size, align and colour on Style and a delete without confirmation', async () => {
+  describe('Inherits from', () => {
+    it('names the host of a text Extra and selects it on click', () => {
       renderInspector({ selectedBlockId: 'journeyListNoteId' })
 
-      expect(screen.getByRole('button', { name: 'Size' })).toBeEnabled()
-      expect(screen.getByRole('button', { name: 'Align' })).toBeEnabled()
-      expect(screen.getByRole('button', { name: 'Colour' })).toBeEnabled()
+      const link = within(screen.getByTestId('CampaignInspector')).getByRole(
+        'button',
+        { name: 'Inherits from Journey list' }
+      )
+      fireEvent.click(link)
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyListId'
+      )
+      expect(
+        screen.queryByTestId('InspectorInheritsFrom')
+      ).not.toBeInTheDocument()
+    })
+
+    it('names the host of a button Extra and selects it on click', () => {
+      renderInspector({ selectedBlockId: 'heroButtonId' })
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Inherits from Hero' })
+      )
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+    })
+
+    it('is not shown for a section', () => {
+      renderInspector({ selectedBlockId: 'heroId' })
+
+      expect(
+        screen.queryByTestId('InspectorInheritsFrom')
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('text Extra', () => {
+    it('shows size, align and colour as inline rows on Style and a delete without confirmation', async () => {
+      renderInspector({ selectedBlockId: 'journeyListNoteId' })
+
+      expect(screen.getByRole('combobox', { name: 'Size' })).toBeEnabled()
+      expect(screen.getByRole('group', { name: 'Align' })).toBeVisible()
+      expect(screen.getByTestId('TextColourRow-color')).toBeVisible()
       expect(actionNames()).toEqual(['Delete'])
 
       fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
@@ -555,8 +609,11 @@ describe('Inspector', () => {
           'CampaignBreadcrumb'
         )
       ).toHaveTextContent('Campaign›Europe›Text')
-      expect(screen.getByRole('button', { name: 'Size' })).toBeEnabled()
+      expect(screen.getByRole('combobox', { name: 'Size' })).toBeEnabled()
       expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled()
+      expect(
+        screen.queryByTestId('InspectorInheritsFrom')
+      ).not.toBeInTheDocument()
 
       fireEvent.keyDown(document.body, { key: 'Escape' })
       expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
@@ -564,13 +621,29 @@ describe('Inspector', () => {
   })
 
   describe('button Extra', () => {
-    it('shows variant, size and colours on Style', () => {
+    it('shows variant, size, align and both colours as inline rows on Style', () => {
       renderInspector({ selectedBlockId: 'heroButtonId' })
 
-      expect(screen.getByRole('button', { name: 'Variant' })).toBeEnabled()
-      expect(screen.getByRole('button', { name: 'Size' })).toBeEnabled()
-      expect(screen.getByRole('button', { name: 'Colours' })).toBeEnabled()
+      expect(screen.getByRole('group', { name: 'Variant' })).toBeVisible()
+      expect(screen.getByRole('group', { name: 'Size' })).toBeVisible()
+      expect(screen.getByRole('group', { name: 'Align' })).toBeVisible()
+      expect(screen.getByTestId('ButtonColourRow-color')).toBeVisible()
+      expect(screen.getByTestId('ButtonColourRow-labelColor')).toBeVisible()
       expect(actionNames()).toEqual(['Delete'])
+    })
+
+    it('shows the host’s inherited colours in orange and no host controls on its own tab', () => {
+      renderInspector({ selectedBlockId: 'heroButtonId' })
+
+      expect(
+        within(screen.getByTestId('ButtonColourRow-color')).getByTestId(
+          'ValueIndicator'
+        )
+      ).toHaveAttribute('data-source', 'inherited')
+      expect(
+        screen.queryByRole('tab', { name: 'Background' })
+      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('CampaignStylePanel')).not.toBeInTheDocument()
     })
 
     it('shows the link on Settings', () => {
@@ -587,6 +660,7 @@ describe('Inspector', () => {
 
   describe('column child and column slot', () => {
     const mocks = [
+      ratioMock,
       slotRichTextDeleteMock,
       swapMock,
       heroInSlotMock,
@@ -603,6 +677,31 @@ describe('Inspector', () => {
         mocks
       )
     }
+
+    it('shows Ratio above Background and Colours for a Columns section, one Command to change it', async () => {
+      renderColumns('columnsId', 'style')
+
+      const ratio = screen.getByTestId('ColumnsRatio')
+      expect(
+        within(ratio)
+          .getAllByRole('button')
+          .map((button) => button.textContent)
+      ).toEqual(['Equal', 'Wide left', 'Wide right'])
+      expect(screen.getByTestId('CampaignStylePanel')).toHaveAttribute(
+        'data-block-id',
+        'columnsId'
+      )
+
+      fireEvent.click(within(ratio).getByRole('button', { name: 'Wide right' }))
+
+      await waitFor(() => expect(ratioMock.result).toHaveBeenCalled())
+    })
+
+    it('leaves Ratio to the Columns section, not the section in a slot', () => {
+      renderColumns('slotRichTextId', 'style')
+
+      expect(screen.queryByTestId('ColumnsRatio')).not.toBeInTheDocument()
+    })
 
     it('styles the section in a slot on Style, under Columns › Column in the breadcrumb', () => {
       renderColumns('slotRichTextId', 'style')
@@ -764,6 +863,14 @@ describe('Inspector', () => {
       ).toHaveTextContent('Campaign›Journey list›Journey')
       expect(screen.getByText('Styled by its section')).toBeInTheDocument()
       expect(actionNames()).toEqual(['Move left', 'Move right', 'Delete'])
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select Journey list' })
+      )
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingJourneyListId'
+      )
     })
 
     it('offers Refresh from journey on Settings', () => {
@@ -840,6 +947,15 @@ describe('Inspector', () => {
         )
       ).toHaveTextContent('Campaign›Region switcher›Europe')
       expect(screen.getByText('Styled by its section')).toBeInTheDocument()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select Region switcher' })
+      )
+
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'landingSwitcherId'
+      )
     })
 
     it('moves in the region order', () => {
@@ -968,6 +1084,14 @@ describe('Inspector', () => {
       expect(actionNames()).toEqual(['Move left', 'Move right', 'Delete'])
       expect(screen.getByRole('button', { name: 'Move left' })).toBeEnabled()
       expect(screen.getByRole('button', { name: 'Move right' })).toBeEnabled()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Select Video carousel' })
+      )
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'carouselId'
+      )
     })
 
     it('shows the title and description of a card on Settings', () => {

@@ -1660,6 +1660,14 @@
   "Back to settings": "Back to settings",
   "Edit this text directly on the page.": "Edit this text directly on the page.",
   "Inspector": "Inspector",
+  "Set": "Set",
+  "Reset {{label}}": "Reset {{label}}",
+  "Reset": "Reset",
+  "Inherits from {{host}}": "Inherits from {{host}}",
+  "Equal": "Equal",
+  "Wide left": "Wide left",
+  "Wide right": "Wide right",
+  "Ratio": "Ratio",
   "Pages": "Pages",
   "Localize": "Localize",
   "The campaign editor needs a window at least 1280 pixels wide.": "The campaign editor needs a window at least 1280 pixels wide.",
@@ -1671,5 +1679,12 @@
   "Above": "Above",
   "Below": "Below",
   "Not listed": "Not listed",
-  "Page structure": "Page structure"
+  "Page structure": "Page structure",
+  "Sections": "Sections",
+  "Select an empty column, or a section not in a column.": "Select an empty column, or a section not in a column.",
+  "Extras": "Extras",
+  "Placement": "Placement",
+  "Above text": "Above text",
+  "Below text": "Below text",
+  "Select a section to add text or a button to it.": "Select a section to add text or a button to it."
 }
