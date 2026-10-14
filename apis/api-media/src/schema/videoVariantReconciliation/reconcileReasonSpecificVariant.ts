@@ -18,7 +18,10 @@ import {
   persistReconciliationStatus,
   syncVideoRecordStage
 } from './reconciliationStages'
-import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
+import {
+  FRESH_UPLOAD_REASONS,
+  VideoVariantReconciliationReason
+} from './requestVideoVariantReconciliation'
 import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
 type ReconciledVariant = {
@@ -34,23 +37,15 @@ type ReconciledVariant = {
 
 const CONTAINER_LABELS = new Set(['collection', 'series', 'featureFilm'])
 
-// `featureFilm` is also a directly-uploadable label: a publisher's own
-// Variant on a featureFilm Video matches the shape heuristic below (no
-// muxVideo, no hls/share) on the very first sweep after creation, before its
-// Mux upload has produced any media. Only reasons that mean an *existing*
-// Variant is being revisited (a publish toggle, a language change, a childIds
-// edit on the grandparent) may fall back to the shape heuristic; a brand-new
-// upload must go down the general path so its Mux check can time out normally.
-const FRESH_UPLOAD_REASONS = new Set<VideoVariantReconciliationReason>([
-  'video-variant-create',
-  'process-video-upload'
-])
-
 // A generated parent Variant is recognisable by shape: it belongs to a
-// container Video and has no media of its own. requestVideoVariantReconciliation
-// overwrites `reason` on re-request (a publish toggle, a childIds edit on the
-// grandparent), so relying on the reason alone sent these down the general
-// path, where the Mux check can never pass.
+// container Video and has no media of its own. `featureFilm` is also a
+// directly-uploadable label, so a publisher's own fresh Variant on a
+// featureFilm Video matches this same shape before its Mux upload has
+// produced any media -- FRESH_UPLOAD_REASONS excludes those. A re-request
+// (a publish toggle, a childIds edit on the grandparent) overwrites `reason`
+// in requestVideoVariantReconciliation, but that function keeps a fresh
+// upload's reason sticky until Mux resolves, so this exclusion still holds
+// for a Variant re-requested mid-upload.
 export function isGeneratedParentVariant(
   variant: ReconciledVariant,
   reason: VideoVariantReconciliationReason

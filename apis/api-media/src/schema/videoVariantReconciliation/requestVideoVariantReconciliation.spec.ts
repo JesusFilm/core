@@ -54,4 +54,52 @@ describe('requestVideoVariantReconciliation', () => {
     // must not inherit the original request's age.
     expect((data.createdAt as Date).getTime()).toBeGreaterThanOrEqual(before)
   })
+
+  it('keeps the original reason when a fresh upload is re-requested before Mux resolves', async () => {
+    prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+      id: 'status-1',
+      reason: 'video-variant-create',
+      processingStages: { mux: { state: 'processing', attempts: 1 } }
+    } as never)
+
+    await requestVideoVariantReconciliation({
+      ...intent,
+      reason: 'video-variant-publication-change'
+    })
+
+    const { data } =
+      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
+    expect(data).toMatchObject({ reason: 'video-variant-create' })
+  })
+
+  it('overwrites the reason normally once Mux has resolved', async () => {
+    prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+      id: 'status-1',
+      reason: 'video-variant-create',
+      processingStages: { mux: { state: 'complete', attempts: 1 } }
+    } as never)
+
+    await requestVideoVariantReconciliation({
+      ...intent,
+      reason: 'video-variant-publication-change'
+    })
+
+    const { data } =
+      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
+    expect(data).toMatchObject({ reason: 'video-variant-publication-change' })
+  })
+
+  it('does not apply stickiness to a non-fresh-upload reason', async () => {
+    prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+      id: 'status_53424_Rescue',
+      reason: 'generated-parent',
+      processingStages: { mux: { state: 'notApplicable', attempts: 0 } }
+    } as never)
+
+    await requestVideoVariantReconciliation(intent)
+
+    const { data } =
+      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
+    expect(data).toMatchObject({ reason: 'video-relationship-change' })
+  })
 })
