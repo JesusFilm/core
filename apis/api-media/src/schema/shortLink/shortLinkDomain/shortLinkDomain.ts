@@ -33,13 +33,13 @@ import {
   removeVercelDomain
 } from './shortLinkDomain.service'
 
-// Adding a domain and every setting on it (redirects, slug grammar, services,
-// and where it is served from: path prefix, KV namespace, Worker binding)
-// belong to the shortLinkAdmin role or a superAdmin; publisher and
-// shortLinkEditor only read domains and republish. The lazy superAdmin scope is
-// only evaluated when the role scope fails. The Cloudflare side (namespace,
-// binding, route) is done by hand: see workers/short-links-redirect/README.md,
-// "Setting up a domain".
+// Adding a domain, every setting on it (redirects, slug grammar, services, and
+// where it is served from: path prefix, KV namespace, Worker binding) and
+// republishing it belong to the shortLinkAdmin role or a superAdmin; publisher
+// and shortLinkEditor only read domains. The lazy superAdmin scope is only
+// evaluated when the role scope fails. The Cloudflare side (namespace, binding,
+// route) is done by hand: see workers/short-links-redirect/README.md, "Setting
+// up a domain".
 const domainAdminScopes = {
   $any: { isShortLinkDomainAdmin: true, isSuperAdmin: true }
 } as const
