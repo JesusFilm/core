@@ -371,17 +371,22 @@ function buildNexusUrl(mediaComponentId: string, languageId: string): string {
 // video-slug segment therefore comes from rowSlug, not from splitting the
 // variant's own slug — a child's slug is scoped under its parent and is not
 // independently routable, so treating it as a standalone content slug 404s.
+//
+// Video.slug is nullable, and when it's null the variant's own slug still
+// embeds a routable fallback (reconcileParentVariant writes it as
+// `${video.slug ?? video.id}/${languageSlug}`). For a standalone row —
+// isOwnVariant true, meaning the variant belongs to the row's own video
+// rather than a package child — splitting that variant slug is safe and
+// recovers the previously-working link. It stays unsafe for package rows,
+// where the variant can belong to a child and splitting it would
+// reintroduce the exact bug this function exists to avoid.
 function buildWatchUrl(
   rowSlug: string | null,
-  variantSlug: string
+  variantSlug: string,
+  isOwnVariant: boolean
 ): string | undefined {
   const watchUrl = process.env.WATCH_URL
-  if (
-    watchUrl == null ||
-    watchUrl === '' ||
-    rowSlug == null ||
-    rowSlug === ''
-  ) {
+  if (watchUrl == null || watchUrl === '') {
     return undefined
   }
 
@@ -390,10 +395,21 @@ function buildWatchUrl(
     return undefined
   }
 
+  let contentSlug = rowSlug
+  if (contentSlug == null || contentSlug === '') {
+    if (!isOwnVariant) {
+      return undefined
+    }
+    contentSlug = variantSlug.slice(0, -(languageSlug.length + 1))
+    if (contentSlug === '') {
+      return undefined
+    }
+  }
+
   return (
     watchUrl.replace(/\/$/, '') +
     '/' +
-    encodeURIComponent(rowSlug) +
+    encodeURIComponent(contentSlug) +
     '.html/' +
     encodeURIComponent(languageSlug) +
     '.html'
@@ -462,7 +478,11 @@ async function buildReportRows(args: {
           ? (group.variants.find((variant) => variant.videoId === root.id) ??
             group.variants[0])
           : group.variants[0]
-      const watchUrl = buildWatchUrl(rowVideo.slug, versionVariant.slug)
+      const watchUrl = buildWatchUrl(
+        rowVideo.slug,
+        versionVariant.slug,
+        versionVariant.videoId === rowVideo.id
+      )
       return {
         version: versionVariant.version,
         production: productionLabel(rowVideo),

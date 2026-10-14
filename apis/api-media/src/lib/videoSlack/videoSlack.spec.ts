@@ -657,6 +657,41 @@ describe('videoSlack', () => {
     )
   })
 
+  it('should build the Production Managers watch URL from the variant slug when a standalone video has no slug yet', async () => {
+    // Video.slug is nullable; a standalone (non-package) video's variant can
+    // still carry a routable slug generated as `${video.id}/${languageSlug}`
+    // (the same fallback reconcileParentVariant uses for package roots).
+    // Since this row's variant always belongs to its own video, splitting it
+    // is safe here — unlike the package-row case, there is no child video
+    // whose slug could leak in.
+    mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce([
+      videoVariantRow({
+        videoId: 'standalone-no-slug',
+        languageId: '529',
+        version: 1,
+        createdAt: new Date('2026-05-20T14:00:00.000Z'),
+        updatedAt: new Date('2026-05-20T14:00:00.000Z'),
+        slug: 'standalone-no-slug/english',
+        video: videoRow({
+          id: 'standalone-no-slug',
+          slug: null,
+          title: [{ value: 'Standalone No Slug' }]
+        })
+      })
+    ])
+
+    await sendProductionManagerFlagshipSummary(
+      new Date('2026-05-22T13:00:00.000Z')
+    )
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(mockFetch.mock.calls[0][1]?.body as string)
+    const blocksText = JSON.stringify(body.blocks)
+    expect(blocksText).toContain(
+      'https://www.jesusfilm.org/watch/standalone-no-slug.html/english.html'
+    )
+  })
+
   it('should split large Production Managers table reports at Slack table row limits', async () => {
     mockLanguagesPrisma.language.findMany.mockResolvedValue([])
     mockMediaPrisma.videoVariant.findMany.mockResolvedValueOnce(
