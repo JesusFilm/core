@@ -8,8 +8,8 @@ import {
 
 // Atomic intra-collection reorder. The server moves the journey to `order`
 // within the page, shifting other rows in the affected window by ±1 so the
-// final state has no gaps and no duplicates. Cross-collection moves and
-// add/remove-from-collection still go through templateGalleryPageAssignJourney.
+// final state has no gaps and no duplicates. Cross-collection moves, links
+// and removals go through the move / link / remove mutations.
 export const TEMPLATE_GALLERY_PAGE_REORDER_TEMPLATE = gql`
   mutation TemplateGalleryPageReorderTemplate(
     $pageId: ID!

@@ -14,7 +14,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { useRouteChangeState } from '@core/journeys/ui/useRouteChangeState'
 import BarGroup3Icon from '@core/shared/ui/icons/BarGroup3'
@@ -89,6 +89,13 @@ interface JourneyCardProps {
    * the plain journey lists render no affordance.
    */
   showDragAffordance?: 'hover' | 'always'
+  /**
+   * Rendered over the bottom-left corner of the image, the one corner the
+   * card leaves free: the Quick Start / website badges own the top-left,
+   * the ⋮ menu the top-right, and the analytics row the card footer. The
+   * template gallery uses it for the home / link membership chip.
+   */
+  imageFooterBadge?: ReactNode
 }
 
 /**
@@ -109,7 +116,8 @@ export function JourneyCard({
   duplicatedJourneyId,
   variant = JourneyCardVariant.default,
   refetch,
-  showDragAffordance
+  showDragAffordance,
+  imageFooterBadge
 }: JourneyCardProps): ReactElement {
   const theme = useTheme()
   const duplicatedJourneyRef = useRef<HTMLDivElement>(null)
@@ -450,6 +458,24 @@ export function JourneyCard({
                 }}
               >
                 <OpenWithRoundedIcon />
+              </Box>
+            )}
+            {imageFooterBadge != null && (
+              <Box
+                data-testid="JourneyCardImageFooterBadge"
+                sx={{
+                  position: 'absolute',
+                  bottom: 8,
+                  left: 8,
+                  right: 8,
+                  zIndex: 2,
+                  display: 'flex',
+                  // Visual only — a real pointer target here would swallow
+                  // the drag sensor's pointerdown.
+                  pointerEvents: 'none'
+                }}
+              >
+                {imageFooterBadge}
               </Box>
             )}
           </Box>

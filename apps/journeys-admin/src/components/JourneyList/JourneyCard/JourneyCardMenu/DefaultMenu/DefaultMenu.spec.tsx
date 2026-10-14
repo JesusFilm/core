@@ -21,6 +21,7 @@ import {
 } from '../../../../../../__generated__/globalTypes'
 import { GET_CURRENT_USER } from '../../../../../libs/useCurrentUserLazyQuery'
 import { getCustomDomainMock } from '../../../../../libs/useCustomDomainsQuery/useCustomDomainsQuery.mock'
+import { InCollectionContext } from '../../../../TemplateGalleryPageList/InCollectionContext'
 import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { GET_JOURNEY_WITH_USER_ROLES } from './DefaultMenu'
@@ -1126,14 +1127,31 @@ describe('DefaultMenu', () => {
     expect(handleCloseMenu).toHaveBeenCalled()
   })
 
-  describe('Copy to collection menu item (NES-1637)', () => {
+  describe('Remove from collection menu item', () => {
     function renderWithFlagAndTemplate({
       flag,
-      template
+      template,
+      inCollection
     }: {
       flag: boolean
       template: boolean
+      inCollection: boolean
     }) {
+      const menu = (
+        <DefaultMenu
+          id="journey-id"
+          slug="journey-slug"
+          status={JourneyStatus.draft}
+          journeyId="journey-id"
+          published={false}
+          template={template}
+          setOpenAccessDialog={noop}
+          handleCloseMenu={noop}
+          setOpenTrashDialog={noop}
+          setOpenDetailsDialog={noop}
+          setOpenTranslateDialog={noop}
+        />
+      )
       return render(
         <MockedProvider
           mocks={[
@@ -1147,19 +1165,18 @@ describe('DefaultMenu', () => {
             <SnackbarProvider>
               <FlagsProvider flags={{ teamTemplateCollection: flag }}>
                 <TeamProvider>
-                  <DefaultMenu
-                    id="journey-id"
-                    slug="journey-slug"
-                    status={JourneyStatus.draft}
-                    journeyId="journey-id"
-                    published={false}
-                    template={template}
-                    setOpenAccessDialog={noop}
-                    handleCloseMenu={noop}
-                    setOpenTrashDialog={noop}
-                    setOpenDetailsDialog={noop}
-                    setOpenTranslateDialog={noop}
-                  />
+                  {inCollection ? (
+                    <InCollectionContext.Provider
+                      value={{
+                        collectionId: 'page-1',
+                        collectionTitle: 'Easter 2026'
+                      }}
+                    >
+                      {menu}
+                    </InCollectionContext.Provider>
+                  ) : (
+                    menu
+                  )}
                 </TeamProvider>
               </FlagsProvider>
             </SnackbarProvider>
@@ -1169,38 +1186,27 @@ describe('DefaultMenu', () => {
       )
     }
 
-    it('renders "Copy to collection..." when flag is on AND template is true', async () => {
+    it('renders "Remove from collection" when flag is on, template is true and the card is in a collection', async () => {
       const { getByTestId, getByRole } = renderWithFlagAndTemplate({
         flag: true,
-        template: true
+        template: true,
+        inCollection: true
       })
       await waitFor(() =>
         expect(
-          getByTestId('JourneysAdminMenuItemCopyToCollection')
-        ).toBeInTheDocument()
-      )
-      expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
-    })
-
-    it('does NOT render "Copy to collection..." when flag is off but template is true', async () => {
-      const { queryByTestId, getByRole } = renderWithFlagAndTemplate({
-        flag: false,
-        template: true
-      })
-      await waitFor(() =>
-        expect(
-          getByRole('menuitem', { name: 'Copy to ...' })
+          getByTestId('JourneysAdminMenuItemRemoveFromCollection')
         ).toBeInTheDocument()
       )
       expect(
-        queryByTestId('JourneysAdminMenuItemCopyToCollection')
-      ).not.toBeInTheDocument()
+        getByRole('menuitem', { name: 'Remove from collection' })
+      ).toBeInTheDocument()
     })
 
-    it('does NOT render "Copy to collection..." when flag is on but template is false', async () => {
+    it('does NOT render it outside a collection (All Templates, plain lists)', async () => {
       const { queryByTestId, getByRole } = renderWithFlagAndTemplate({
         flag: true,
-        template: false
+        template: true,
+        inCollection: false
       })
       await waitFor(() =>
         expect(
@@ -1208,14 +1214,15 @@ describe('DefaultMenu', () => {
         ).toBeInTheDocument()
       )
       expect(
-        queryByTestId('JourneysAdminMenuItemCopyToCollection')
+        queryByTestId('JourneysAdminMenuItemRemoveFromCollection')
       ).not.toBeInTheDocument()
     })
 
-    it('does NOT render "Copy to collection..." when flag is off and template is false (sanity)', async () => {
+    it('does NOT render it when the flag is off', async () => {
       const { queryByTestId, getByRole } = renderWithFlagAndTemplate({
         flag: false,
-        template: false
+        template: true,
+        inCollection: true
       })
       await waitFor(() =>
         expect(
@@ -1223,7 +1230,23 @@ describe('DefaultMenu', () => {
         ).toBeInTheDocument()
       )
       expect(
-        queryByTestId('JourneysAdminMenuItemCopyToCollection')
+        queryByTestId('JourneysAdminMenuItemRemoveFromCollection')
+      ).not.toBeInTheDocument()
+    })
+
+    it('does NOT render it for a non-template journey', async () => {
+      const { queryByTestId, getByRole } = renderWithFlagAndTemplate({
+        flag: true,
+        template: false,
+        inCollection: true
+      })
+      await waitFor(() =>
+        expect(
+          getByRole('menuitem', { name: 'Copy to ...' })
+        ).toBeInTheDocument()
+      )
+      expect(
+        queryByTestId('JourneysAdminMenuItemRemoveFromCollection')
       ).not.toBeInTheDocument()
     })
   })

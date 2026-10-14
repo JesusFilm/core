@@ -787,11 +787,19 @@ model TemplateGalleryPageTemplate {
   templateGalleryPageId String
   journeyId             String
   order                 Int
+  /// A journey has at most one home membership; every other membership is a
+  /// link. Home is presentational only (the admin draws links greyed). The
+  /// first membership a journey gains is its home; removing the home promotes
+  /// the oldest remaining link (by `createdAt`). Enforced in the mutation
+  /// layer under a per-journey row lock, not by a DB constraint.
+  isHome                Boolean             @default(false)
+  createdAt             DateTime            @default(now())
   templateGalleryPage   TemplateGalleryPage @relation(fields: [templateGalleryPageId], references: [id], onDelete: Cascade)
   journey               Journey             @relation("JourneyTemplateGalleryPageTemplate", fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@unique([templateGalleryPageId, journeyId])
   @@unique([templateGalleryPageId, order])
+  @@index([journeyId])
 }
 
 model QrCode {

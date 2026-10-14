@@ -38,6 +38,10 @@ export const GET_TEMPLATE_GALLERY_PAGES = gql`
           alt
         }
       }
+      memberships {
+        journeyId
+        isHome
+      }
     }
   }
 `

@@ -9,6 +9,7 @@ import { filterToTeamTemplates } from './filterToTeamTemplates'
 import { generateUniqueSlug } from './generateUniqueSlug'
 import { TemplateGalleryPageCreateInput } from './inputs'
 import { mediaCreateData, resolveMediaInput } from './media/resolveMediaInput'
+import { lockJourney } from './membership'
 import { TemplateGalleryPageRef } from './templateGalleryPage'
 
 type CreateInput = typeof TemplateGalleryPageCreateInput.$inferInput
@@ -58,6 +59,21 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                 teamId,
                 journeyIds ?? []
               )
+              // Each initial template becomes this page's home unless it
+              // already has one elsewhere, in which case it is a link. Lock
+              // the journeys (sorted) so a concurrent link cannot race the
+              // home decision — the same order every membership write uses.
+              for (const journeyId of [...validIds].sort()) {
+                await lockJourney(tx, journeyId)
+              }
+              const existingHomes =
+                validIds.length > 0
+                  ? await tx.templateGalleryPageTemplate.findMany({
+                      where: { journeyId: { in: validIds }, isHome: true },
+                      select: { journeyId: true }
+                    })
+                  : []
+              const hasHome = new Set(existingHomes.map((row) => row.journeyId))
               const page = await tx.templateGalleryPage.create({
                 data: {
                   team: { connect: { id: teamId } },
@@ -73,7 +89,8 @@ builder.mutationField('templateGalleryPageCreate', (t) =>
                     createMany: {
                       data: validIds.map((journeyId, order) => ({
                         journeyId,
-                        order
+                        order,
+                        isHome: !hasHome.has(journeyId)
                       }))
                     }
                   }
