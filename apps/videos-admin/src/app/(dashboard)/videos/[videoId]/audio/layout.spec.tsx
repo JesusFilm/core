@@ -218,7 +218,7 @@ describe('ClientLayout', () => {
 
     expect(screen.getByText('Publishing...')).toBeInTheDocument()
     expect(screen.queryByText('Draft')).not.toBeInTheDocument()
-    expect(variantStartPolling).toHaveBeenCalledWith(5000)
+    expect(variantStartPolling).toHaveBeenCalledWith(30000)
   })
 
   it('leaves a draft variant with no pending publish as Draft', () => {

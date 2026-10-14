@@ -194,7 +194,10 @@ export default function ClientLayout({
 
   useEffect(() => {
     if (hasPendingPublish) {
-      startVariantPolling(5000)
+      // The reconciliation sweep that resolves a pending publish only runs
+      // every 15 minutes, so polling faster than this buys no earlier
+      // detection and just spams the API.
+      startVariantPolling(30000)
       return () => stopVariantPolling()
     }
 
