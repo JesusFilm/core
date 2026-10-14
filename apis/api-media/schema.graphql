@@ -424,7 +424,7 @@ type Mutation {
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
 
   """
-  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
+  Update the services and edge settings of a short link domain (superAdmin only); routing changes republish every live link on it
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
 

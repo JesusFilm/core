@@ -222,19 +222,22 @@ const SERVICE_VALUES = SERVICE_OPTIONS.map((option) => option.value)
 
 function ServicesField({
   value,
-  onChange
+  onChange,
+  disabled
 }: {
   value: Service[]
   onChange: (services: Service[]) => void
+  disabled?: boolean
 }): ReactElement {
   return (
-    <Field name="services">
+    <Field name="services" disabled={disabled}>
       <FieldLabel>Services allowed to mint links</FieldLabel>
       <Combobox<Service, true>
         items={SERVICE_VALUES}
         multiple
         value={value}
         onValueChange={onChange}
+        disabled={disabled}
       >
         <ComboboxChips className="w-full">
           <ComboboxValue>
@@ -289,8 +292,9 @@ export const SHORT_LINK_DOMAIN_DELETE = graphql(`
 export function DomainForm(): ReactElement {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  // superAdmin owns the path prefix, the KV fields and removing the domain
-  const { isSuperAdmin } = useShortLinkAccess()
+  // only a superAdmin changes or removes a domain (api-media refuses everyone
+  // else); an admin reads the settings and can republish
+  const { isSuperAdmin, loading: accessLoading } = useShortLinkAccess()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [removeOpen, setRemoveOpen] = useState(false)
   const [typedHostname, setTypedHostname] = useState('')
@@ -306,7 +310,7 @@ export function DomainForm(): ReactElement {
     { refetchQueries: [GET_SHORT_LINK_DOMAINS] }
   )
 
-  if (loading) return <Spinner aria-label="Loading domain" />
+  if (loading || accessLoading) return <Spinner aria-label="Loading domain" />
   if (error != null)
     return (
       <Alert variant="error">
@@ -326,6 +330,7 @@ export function DomainForm(): ReactElement {
     )
   }
   const domain = result.data
+  const readOnly = !isSuperAdmin
 
   const initialValues: DomainFormValues = {
     pathPrefix: domain.pathPrefix ?? '',
@@ -362,15 +367,9 @@ export function DomainForm(): ReactElement {
             notFound: values.notFound,
             passthroughOrigin: emptyToNull(values.passthroughOrigin),
             autoFailover: values.autoFailover,
-            // api-media refuses these from anyone else, so they are only
-            // sent (and only shown) for a superAdmin
-            ...(isSuperAdmin
-              ? {
-                  pathPrefix: values.pathPrefix.trim(),
-                  kvNamespaceId: emptyToNull(values.kvNamespaceId),
-                  kvBinding: emptyToNull(values.kvBinding)
-                }
-              : {})
+            pathPrefix: values.pathPrefix.trim(),
+            kvNamespaceId: emptyToNull(values.kvNamespaceId),
+            kvBinding: emptyToNull(values.kvBinding)
           }
         }
       })
@@ -507,10 +506,18 @@ export function DomainForm(): ReactElement {
                   <AlertDescription>{errorMessage}</AlertDescription>
                 </Alert>
               )}
+              {readOnly && (
+                <Alert variant="info">
+                  <AlertDescription>
+                    Only a superAdmin can change domain settings.
+                  </AlertDescription>
+                </Alert>
+              )}
               <Section title="Redirects">
                 <div className="grid gap-4 md:grid-cols-3">
                   <SelectField
                     id="redirectStatus"
+                    disabled={readOnly}
                     label="Redirect status"
                     value={String(values.redirectStatus)}
                     onValueChange={(value) =>
@@ -520,6 +527,7 @@ export function DomainForm(): ReactElement {
                   />
                   <SelectField
                     id="notFound"
+                    disabled={readOnly}
                     label="Not found behaviour"
                     value={values.notFound}
                     onValueChange={(value) =>
@@ -529,6 +537,7 @@ export function DomainForm(): ReactElement {
                   />
                   <SwitchField
                     id="autoFailover"
+                    disabled={readOnly}
                     label="Auto failover on failed health check"
                     checked={values.autoFailover}
                     onCheckedChange={(checked) =>
@@ -539,6 +548,7 @@ export function DomainForm(): ReactElement {
                 <div className="grid gap-4 md:grid-cols-2">
                   <TextField
                     id="fallbackTo"
+                    disabled={readOnly}
                     label="Fallback URL"
                     value={values.fallbackTo}
                     onChange={handleChange}
@@ -548,6 +558,7 @@ export function DomainForm(): ReactElement {
                   />
                   <TextField
                     id="passthroughOrigin"
+                    disabled={readOnly}
                     label="Passthrough origin"
                     value={values.passthroughOrigin}
                     onChange={handleChange}
@@ -559,20 +570,20 @@ export function DomainForm(): ReactElement {
               </Section>
 
               <Section title="Slug grammar">
-                {isSuperAdmin && (
-                  <TextField
-                    id="pathPrefix"
-                    label="Path prefix"
-                    value={values.pathPrefix}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={fieldError('pathPrefix')}
-                    helperText="Path the short links live under, without slashes, e.g. s. Leave empty for the root. Changing it changes what must be attached to the Worker."
-                  />
-                )}
+                <TextField
+                  id="pathPrefix"
+                  disabled={readOnly}
+                  label="Path prefix"
+                  value={values.pathPrefix}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  error={fieldError('pathPrefix')}
+                  helperText="Path the short links live under, without slashes, e.g. s. Leave empty for the root. Changing it changes what must be attached to the Worker."
+                />
                 <div className="grid gap-4 md:grid-cols-6">
                   <TextField
                     id="slugAllowedChars"
+                    disabled={readOnly}
                     label="Allowed characters"
                     value={values.slugAllowedChars}
                     onChange={handleChange}
@@ -583,6 +594,7 @@ export function DomainForm(): ReactElement {
                   />
                   <TextField
                     id="slugMinLength"
+                    disabled={readOnly}
                     label="Min length"
                     type="number"
                     value={values.slugMinLength}
@@ -592,6 +604,7 @@ export function DomainForm(): ReactElement {
                   />
                   <TextField
                     id="slugMaxLength"
+                    disabled={readOnly}
                     label="Max length"
                     type="number"
                     value={values.slugMaxLength}
@@ -601,6 +614,7 @@ export function DomainForm(): ReactElement {
                   />
                   <SwitchField
                     id="slugCaseSensitive"
+                    disabled={readOnly}
                     label="Case-sensitive"
                     checked={values.slugCaseSensitive}
                     onCheckedChange={(checked) =>
@@ -610,6 +624,7 @@ export function DomainForm(): ReactElement {
                 </div>
                 <TagsInput
                   id="reservedPaths"
+                  disabled={readOnly}
                   label="Reserved paths"
                   helperText="First path segments that are never minted (admin, api, .well-known…)"
                   value={values.reservedPaths}
@@ -619,29 +634,29 @@ export function DomainForm(): ReactElement {
                 />
               </Section>
 
-              {isSuperAdmin && (
-                <Section title="Edge publishing">
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <TextField
-                      id="kvNamespaceId"
-                      label="KV namespace id"
-                      value={values.kvNamespaceId}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText="The id printed by `wrangler kv namespace create`. Locally it is the Worker binding name. Leave empty until the namespace exists; the domain's links are not published until then."
-                    />
-                    <TextField
-                      id="kvBinding"
-                      label="Worker binding"
-                      value={values.kvBinding}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      error={fieldError('kvBinding')}
-                      helperText="The [[kv_namespaces]] binding declared in the Worker's wrangler.toml, e.g. KV_JESUS_FILM."
-                    />
-                  </div>
-                </Section>
-              )}
+              <Section title="Edge publishing">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <TextField
+                    id="kvNamespaceId"
+                    disabled={readOnly}
+                    label="KV namespace id"
+                    value={values.kvNamespaceId}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText="The id printed by `wrangler kv namespace create`. Locally it is the Worker binding name. Leave empty until the namespace exists; the domain's links are not published until then."
+                  />
+                  <TextField
+                    id="kvBinding"
+                    disabled={readOnly}
+                    label="Worker binding"
+                    value={values.kvBinding}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    error={fieldError('kvBinding')}
+                    helperText="The [[kv_namespaces]] binding declared in the Worker's wrangler.toml, e.g. KV_JESUS_FILM."
+                  />
+                </div>
+              </Section>
 
               <Section title="Services">
                 <ServicesField
@@ -649,14 +664,17 @@ export function DomainForm(): ReactElement {
                   onChange={(services) =>
                     void setFieldValue('services', services)
                   }
+                  disabled={readOnly}
                 />
               </Section>
 
-              <div className="flex justify-end">
-                <Button type="submit" loading={updating}>
-                  Save domain
-                </Button>
-              </div>
+              {!readOnly && (
+                <div className="flex justify-end">
+                  <Button type="submit" loading={updating}>
+                    Save domain
+                  </Button>
+                </div>
+              )}
             </Form>
           )
         }}

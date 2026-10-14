@@ -504,6 +504,8 @@ Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stag
 
 ### Permissions
 
+Amended by "Domain settings are superAdmin-only" below: `shortLinkDomainUpdate` is now superAdmin in full, not only for the three edge-wiring fields.
+
 | Action                                                                        | Who                                       |
 | ----------------------------------------------------------------------------- | ----------------------------------------- |
 | Redirect, slug, services settings; `shortLinkDomainPublish`                   | `shortLinkAdmin`, `publisher`, superAdmin |
@@ -545,3 +547,14 @@ What is given up: during a KV-only outage every redirect goes through api-media 
 Decision: the scan-event store is one ClickHouse Cloud service per environment, provisioned by Terraform (`infrastructure/modules/clickhouse/service`, called from each environment's `main.tf`), billed through the AWS Marketplace subscription. Stage comes first and idles after 15 quiet minutes (scans lost while it wakes only affect stage); prod is added once stage is proven and is always on. Stage and prod are separate services on purpose: stage secrets are visible to developers, and on a shared service they would sit next to prod data and prod capacity. Terraform manages the **service only** and publishes `SHORT_LINKS_CLICKHOUSE_URL` and `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD` into the `core` Doppler project (`stg` / `prd`); the database, table and the two limited users (`short_links_writer`: INSERT on `redirects.redirect_events`; `short_links_reader`: SELECT on `redirects.*`) are created by hand from the runbook in `workers/short-links-redirect/README.md`, "Setting up ClickHouse". The service accepts connections from anywhere (`0.0.0.0/0`) because Cloudflare Workers have no fixed egress addresses; protection is TLS, strong passwords and the two users.
 
 Prerequisites: a ClickHouse Cloud organisation on the Basic tier, an Admin API key, and the SSM parameters `/terraform/prd/CLICKHOUSE_ORG_ID`, `/terraform/prd/CLICKHOUSE_CLOUD_API_KEY`, `/terraform/prd/CLICKHOUSE_CLOUD_API_SECRET`. Smallest service is 1 × 8 GiB; the always-on list price is about $160/month (us-east-1 list, us-east-2 assumed equal). The table above gains `global UInt8` and `owner_hostname LowCardinality(String)`, which `clickhouse/0001_init.sql` and the Worker already had.
+
+## Domain settings are superAdmin-only (2026-10-14)
+
+Decision: every domain setting, not only the three edge-wiring fields, is changed by a superAdmin. `shortLinkDomainUpdate` runs under the `isSuperAdmin` scope like `shortLinkDomainCreate` and `shortLinkDomainDelete`; the per-field check that let a `shortLinkAdmin` save the redirect, slug and services settings is gone.
+
+| Action                                                                    | Who                                       |
+| ------------------------------------------------------------------------- | ----------------------------------------- |
+| `shortLinkDomainPublish`                                                  | `shortLinkAdmin`, `publisher`, superAdmin |
+| `shortLinkDomainCreate`, `shortLinkDomainUpdate`, `shortLinkDomainDelete` | superAdmin                                |
+
+Admin app: the Domains section stays open to admins, who see every setting (including the path prefix and KV fields, which were hidden from them before) read-only, with no Save button and a note that only a superAdmin can change them. **Republish domain** stays available to them as a repair action. A superAdmin sees the same form editable, plus **Add domain** and **Remove domain**.

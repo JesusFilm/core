@@ -46,12 +46,12 @@ In scope
 - A new admin app (`apps/short-links-admin`) using core's existing auth.
 - Campaigns, bulk pause / retag, destination health checks with opt-in
   failover, and a per-link destination history that doubles as the audit log.
-- Roles: `shortLinkEditor` (links, campaigns) and `shortLinkAdmin` (domain
-  settings, protected assets, republishing). `publisher` keeps its existing
-  powers. Adding and removing domains, and the fields that wire a domain to
-  the edge (path prefix, KV namespace id, Worker binding), belong to
-  `superAdmin` users. The Cloudflare resources themselves are created by hand
-  with wrangler, never by api-media.
+- Roles: `shortLinkEditor` (links, campaigns) and `shortLinkAdmin` (protected
+  assets, global links, republishing). `publisher` keeps its existing powers.
+  Domains belong to `superAdmin` users: adding and removing them and every
+  setting on them, including the fields that wire a domain to the edge (path
+  prefix, KV namespace id, Worker binding). The Cloudflare resources
+  themselves are created by hand with wrangler, never by api-media.
 
 Out of scope for this version
 

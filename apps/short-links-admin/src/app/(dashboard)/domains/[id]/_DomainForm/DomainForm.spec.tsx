@@ -259,55 +259,48 @@ describe('DomainForm', () => {
   })
 
   describe('for an admin who is not a superAdmin', () => {
-    it('hides the edge wiring fields and leaves them out of the save', async () => {
-      const update = {
-        request: {
-          query: SHORT_LINK_DOMAIN_UPDATE,
-          variables: {
-            input: {
-              id: 'domain-1',
-              services: [],
-              redirectStatus: 307,
-              slugAllowedChars: 'a-z0-9-',
-              slugMinLength: 3,
-              slugMaxLength: 32,
-              slugCaseSensitive: false,
-              reservedPaths: ['dashboard'],
-              fallbackTo: 'https://www.jesusfilm.org',
-              notFound: 'fallback',
-              passthroughOrigin: null,
-              autoFailover: false
-            }
-          }
-        },
-        result: vi.fn(() => ({
-          data: {
-            shortLinkDomainUpdate: {
-              __typename: 'MutationShortLinkDomainUpdateSuccess',
-              data: domain
-            }
-          }
-        }))
-      }
-      renderForm([domainMock, update], { superAdmin: false })
+    it('shows the settings read-only and still lets them republish', async () => {
+      renderForm([domainMock, publishMock('2026-09-25T12:00:00.000Z')], {
+        superAdmin: false
+      })
 
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Save domain' })
-      )
-
-      await waitFor(() => expect(update.result).toHaveBeenCalled())
       expect(
-        screen.queryByRole('textbox', { name: 'Path prefix' })
-      ).not.toBeInTheDocument()
+        await screen.findByText('Only a superAdmin can change domain settings.')
+      ).toBeInTheDocument()
       expect(
-        screen.queryByRole('textbox', { name: 'KV namespace id' })
-      ).not.toBeInTheDocument()
+        screen.getByRole('textbox', { name: 'Fallback URL' })
+      ).toBeDisabled()
       expect(
-        screen.queryByRole('textbox', { name: 'Worker binding' })
+        screen.getByRole('textbox', { name: 'Path prefix' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('textbox', { name: 'KV namespace id' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('combobox', { name: 'Redirect status' })
+      ).toBeDisabled()
+      // Base UI renders the switch as a span, so it is disabled by aria only
+      expect(
+        screen.getByRole('switch', {
+          name: 'Auto failover on failed health check'
+        })
+      ).toHaveAttribute('aria-disabled', 'true')
+      expect(
+        screen.queryByRole('button', { name: 'Save domain' })
       ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Remove domain' })
       ).not.toBeInTheDocument()
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Republish domain' })
+      )
+      await waitFor(() =>
+        expect(notify).toHaveBeenCalledWith(
+          'Domain and its links republished to the edge',
+          'success'
+        )
+      )
     })
   })
 

@@ -11,9 +11,10 @@ export interface ShortLinkAccess {
   isEditor: boolean
   isAdmin: boolean
   /**
-   * The `superAdmin` flag on the user (api-users), not a media role: owns
-   * which domains exist and how they are wired to the edge. On its own it
-   * opens the domains section only.
+   * The `superAdmin` flag on the user (api-users), not a media role: owns the
+   * domains, which exist and every setting on them. On its own it opens the
+   * domains section only. An admin reaches that section too, but reads the
+   * settings and republishes rather than editing.
    */
   isSuperAdmin: boolean
 }

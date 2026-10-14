@@ -52,7 +52,7 @@ const SHORT_LINK_EDITOR_ROLES: MediaRole[] = [
   ...SHORT_LINK_ADMIN_ROLES
 ]
 
-/** shortLinkAdmin or publisher: domain settings, protected links, republishing */
+/** shortLinkAdmin or publisher: protected links, global links, republishing */
 export function isShortLinkAdmin(roles: MediaRole[]): boolean {
   return roles.some((role) => SHORT_LINK_ADMIN_ROLES.includes(role))
 }

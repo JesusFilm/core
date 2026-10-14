@@ -11,7 +11,7 @@ import {
 } from '../../error'
 import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
-import { assertSuperAdmin, editorScopes } from '../lib/access'
+import { editorScopes } from '../lib/access'
 import { PUBLIC_HTTPS_URL_MESSAGE, isPublicHttpsUrl } from '../lib/destination'
 import {
   HTTPS_URL_MESSAGE,
@@ -33,20 +33,12 @@ import {
   removeVercelDomain
 } from './shortLinkDomain.service'
 
-// Redirect, slug and service settings: shortLinkAdmin, publisher or superAdmin.
-// The lazy superAdmin scope is only evaluated when the role scopes fail.
-const settingsScopes = {
-  $any: { isPublisher: true, isShortLinkAdmin: true, isSuperAdmin: true }
-} as const
-
-// Which domains exist, and everything that decides where a domain is served
-// from (path prefix, KV namespace, Worker binding), belongs to superAdmin. The
-// Cloudflare side (namespace, binding, route) is done by hand: see
-// workers/short-links-redirect/README.md, "Setting up a domain".
+// Which domains exist and every setting on them (redirects, slug grammar,
+// services, and where a domain is served from: path prefix, KV namespace,
+// Worker binding) belong to superAdmin; media roles only read them and
+// republish. The Cloudflare side (namespace, binding, route) is done by hand:
+// see workers/short-links-redirect/README.md, "Setting up a domain".
 const superAdminScopes = { isSuperAdmin: true } as const
-
-const INFRASTRUCTURE_FIELDS_MESSAGE =
-  'only a superAdmin may change the path prefix, KV namespace or Worker binding of a domain'
 
 const SLUG_ALLOWED_CHARS_MESSAGE =
   'slugAllowedChars must be a valid regex character-class body (e.g. A-Za-z0-9_-)'
@@ -490,10 +482,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  shortLinkDomainUpdate: t.withAuth(settingsScopes).prismaFieldWithInput({
+  shortLinkDomainUpdate: t.withAuth(superAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin',
+      'Update the services and edge settings of a short link domain (superAdmin only); routing changes republish every live link on it',
     errors: {
       types: [ZodError, NotFoundError]
     },
@@ -562,7 +554,7 @@ builder.mutationFields((t) => ({
       }),
       autoFailover: t.input.boolean({ required: false })
     },
-    resolve: async (query, _, { input }, context) => {
+    resolve: async (query, _, { input }) => {
       const existing = await prisma.shortLinkDomain.findUnique({
         where: { id: input.id }
       })
@@ -574,13 +566,6 @@ builder.mutationFields((t) => ({
       const pathPrefix = resolvePathPrefix(input.pathPrefix)
       const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
       const kvBinding = resolveKvBinding(input.kvBinding)
-      const changesInfrastructure =
-        (pathPrefix !== undefined && pathPrefix !== existing.pathPrefix) ||
-        (kvNamespaceId !== undefined &&
-          kvNamespaceId !== existing.kvNamespaceId) ||
-        (kvBinding !== undefined && kvBinding !== existing.kvBinding)
-      if (changesInfrastructure)
-        await assertSuperAdmin(context, INFRASTRUCTURE_FIELDS_MESSAGE)
       assertDomainSettings({
         notFound: input.notFound ?? existing.notFound,
         passthroughOrigin:
