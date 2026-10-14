@@ -637,5 +637,55 @@ describe('reconcileVideoVariantReconciliation', () => {
       })
       expect(result).toEqual({ publicationReady: true, status: 'complete' })
     })
+
+    it('does not mistake a featureFilm Variant mid-upload for a generated parent', async () => {
+      // A featureFilm's own Variant, created directly via videoVariantCreate,
+      // matches the shape heuristic above (container label, no muxVideo, no
+      // hls/share) before its Mux upload has produced any media. Unlike the
+      // Rescue case, its reason is still the original creation reason, so it
+      // must fall through to the general path and wait on Mux instead of
+      // being force-published as a generated parent.
+      const reconciliation: ReconciliationRecord = {
+        reason: 'process-video-upload',
+        videoId: 'my-film',
+        languageId: '529',
+        published: true,
+        videoVariantId: '529_my-film',
+        processingStages: {},
+        createdAt: new Date(),
+        videoVariant: {
+          id: '529_my-film',
+          videoId: 'my-film',
+          languageId: '529',
+          slug: 'my-film/529',
+          published: false,
+          downloadable: false,
+          hls: '',
+          share: '',
+          muxVideo: null,
+          video: { label: 'featureFilm' }
+        }
+      }
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        reconciliation as never
+      )
+
+      const result = await reconcileVideoVariantReconciliation('status-1')
+
+      expect(updateVideoInAlgolia).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'status-1' },
+          data: expect.objectContaining({
+            status: 'processing',
+            processingStages: expect.objectContaining({
+              mux: expect.objectContaining({ state: 'processing' })
+            })
+          })
+        }
+      )
+      expect(result).toEqual({ publicationReady: false, status: 'processing' })
+    })
   })
 })
