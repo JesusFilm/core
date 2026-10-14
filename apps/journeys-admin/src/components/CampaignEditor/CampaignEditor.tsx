@@ -9,10 +9,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
-import {
-  CampaignPageKind,
-  UserTeamRole
-} from '../../../__generated__/globalTypes'
+import { UserTeamRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
@@ -23,14 +20,20 @@ import {
 } from './CampaignEditorProvider'
 import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
-import { FirstRunHint } from './FirstRunHint'
+import { CanvasBanner } from './CanvasBanner'
 import { Hotkeys } from './Hotkeys'
 import { Inspector } from './Inspector'
-import type { InspectorInlineView } from './Inspector'
-import { TopBar } from './TopBar'
+import { LeftPanel } from './LeftPanel'
+import { LeftRail } from './LeftRail'
+import { LocalizePanel } from './LocalizePanel'
+import type { LocalizeTab } from './LocalizePanel'
+import { PagesPanel } from './PagesPanel'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
-export const EDITOR_MIN_WIDTH = 980
+export const EDITOR_MIN_WIDTH = 1280
+
+/** From this width a left panel pushes the canvas; below it the panel overlays it. */
+export const PANEL_PUSH_MIN_WIDTH = 1440
 
 interface CampaignEditorProps {
   campaign?: Campaign
@@ -41,67 +44,72 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the bars, the hint, the canvas and the Inspector. */
+/** Everything inside the providers: the rail, the open panel, the canvas with its banner and bottom bar, and the Inspector. */
 function CampaignEditorShell({
   campaign,
   isManager
 }: CampaignEditorShellProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { pageKind, previewLanguageId },
-    currentRegion,
+    state: { pageKind, panel },
     dispatch
   } = useCampaignEditor()
+  const pushesCanvas = useMediaQuery(`(min-width:${PANEL_PUSH_MIN_WIDTH}px)`)
   const [view, setView] = useState<CanvasView>('desktop')
-  const [inline, setInline] = useState<InspectorInlineView>()
+  const [localizeTab, setLocalizeTab] = useState<LocalizeTab>('languages')
+  const [promotionNotice, setPromotionNotice] = useState(false)
 
-  function handlePageKindChange(
-    nextPageKind: CampaignPageKind,
-    regionId?: string
-  ): void {
-    dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind, regionId })
+  /** A default-language swap opens Localize on Translations with the promotion notice. */
+  function handleDefaultLanguageChanged(): void {
+    setLocalizeTab('translations')
+    setPromotionNotice(true)
+    if (panel !== 'localize')
+      dispatch({ type: 'SetPanelAction', panel: 'localize' })
   }
 
-  /** Languages and Translations open inline in the nothing-selected Settings tab until the Localize panel lands. */
-  function handleInlineOpen(next: InspectorInlineView): void {
-    dispatch({ type: 'SetInspectorTabAction', inspectorTab: 'settings' })
-    setInline(next)
-  }
-
-  function handlePreviewLanguageChange(languageId: string): void {
-    dispatch({
-      type: 'SetPreviewLanguageAction',
-      previewLanguageId: languageId
-    })
-  }
+  const leftPanel =
+    panel === 'pages' ? (
+      <LeftPanel label={t('Pages')} overlay={!pushesCanvas}>
+        <PagesPanel />
+      </LeftPanel>
+    ) : panel === 'localize' ? (
+      <LeftPanel label={t('Localize')} overlay={!pushesCanvas}>
+        <LocalizePanel
+          tab={localizeTab}
+          onTabChange={setLocalizeTab}
+          promotionNotice={promotionNotice}
+          onPromotionNoticeClose={() => setPromotionNotice(false)}
+        />
+      </LeftPanel>
+    ) : null
 
   return (
-    <Stack data-testid="CampaignEditor" sx={{ height: '100vh' }}>
+    <Stack
+      direction="row"
+      data-testid="CampaignEditor"
+      sx={{ height: '100vh' }}
+    >
       <Hotkeys />
-      <TopBar
-        campaign={campaign}
-        pageKind={pageKind}
-        regionId={currentRegion?.id}
-        onPageKindChange={handlePageKindChange}
-        previewLanguageId={previewLanguageId}
-        onPreviewLanguageChange={handlePreviewLanguageChange}
-        view={view}
-        onViewChange={setView}
-        isManager={isManager}
-      />
-      <FirstRunHint campaignId={campaign.id} />
-      <Stack direction="row" sx={{ flexGrow: 1, minHeight: 0 }}>
-        <Canvas campaign={campaign} pageKind={pageKind} view={view} />
-        <Inspector
-          isManager={isManager}
-          inline={inline}
-          onInlineChange={setInline}
-        />
+      <LeftRail view={view} onViewChange={setView} isManager={isManager} />
+      {pushesCanvas && leftPanel}
+      <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
+        <Box
+          sx={{
+            position: 'relative',
+            flexGrow: 1,
+            minHeight: 0,
+            display: 'flex'
+          }}
+        >
+          <CanvasBanner />
+          <Canvas campaign={campaign} pageKind={pageKind} view={view} />
+          {!pushesCanvas && leftPanel}
+        </Box>
+        <BottomBar />
       </Stack>
-      <BottomBar
-        onLanguagesClick={() => handleInlineOpen({ view: 'languages' })}
-        onTranslationsClick={() =>
-          handleInlineOpen({ view: 'translations', promotionNotice: false })
-        }
+      <Inspector
+        isManager={isManager}
+        onDefaultLanguageChanged={handleDefaultLanguageChanged}
       />
     </Stack>
   )
@@ -111,8 +119,8 @@ function CampaignEditorShell({
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
  * the Mux upload queue (so a Media Slot upload outlives the selection), the
- * top bar, the first-run hint, the canvas, the Inspector and the contextual
- * bottom bar. First open after create shows the landing page, nothing selected,
+ * Left Rail with its panels, the canvas with its banner, the Inspector and the
+ * contextual bottom bar. First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
  * replaces Save.
  */
@@ -143,7 +151,7 @@ export function CampaignEditor({
           {t('Open this on a larger screen')}
         </Typography>
         <Typography color="text.secondary">
-          {t('The campaign editor needs a window at least 980 pixels wide.')}
+          {t('The campaign editor needs a window at least 1280 pixels wide.')}
         </Typography>
       </Stack>
     )

@@ -4,12 +4,9 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
-import TranslateIcon from '@core/shared/ui/icons/Translate'
 
 import {
   GetCampaign_campaign as Campaign,
@@ -25,31 +22,20 @@ import { ChromeEdit } from '../ChromeEdit'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { JourneyCardSettings } from '../JourneyCardSettings'
 import { JourneyListSettings } from '../JourneyListSettings'
-import { LanguagesPanel } from '../LanguagesPanel'
 import { LinkSettings } from '../LinkSettings'
 import { MediaSectionEdit } from '../MediaSectionEdit'
 import { RegionSettings } from '../RegionSettings'
 import { RegionSwitcherSettings } from '../RegionSwitcherSettings'
 import { Settings } from '../Settings'
-import { TranslationsView } from '../TranslationsView'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
 import { ColumnControls } from './ColumnControls'
 
-/**
- * What the nothing-selected Settings tab shows in place of the campaign
- * settings, until the Localize panel lands: the Languages panel, or the
- * Translations view with or without the default-language promotion notice.
- */
-export type InspectorInlineView =
-  | { view: 'languages' }
-  | { view: 'translations'; promotionNotice: boolean }
-
 interface InspectorSettingsProps {
   campaign: Campaign
   isManager: boolean
-  inline?: InspectorInlineView
-  onInlineChange?: (inline?: InspectorInlineView) => void
+  /** The default language was swapped; the shell opens Localize on Translations. */
+  onDefaultLanguageChanged?: () => void
 }
 
 interface SectionEditorProps {
@@ -92,83 +78,22 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
 export function InspectorSettings({
   campaign,
   isManager,
-  inline,
-  onInlineChange
+  onDefaultLanguageChanged
 }: InspectorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const {
-    selection,
-    state: { previewLanguageId }
-  } = useCampaignEditor()
+  const { selection } = useCampaignEditor()
   const { setListed } = useCampaignRegionCommand()
   const { block, region } = selection
 
   switch (selection.kind) {
-    case 'campaign': {
-      if (inline != null)
-        return (
-          <Stack spacing={3} data-testid="InspectorInlineView">
-            <Button
-              size="small"
-              color="secondary"
-              startIcon={<ArrowLeftIcon />}
-              onClick={() => onInlineChange?.(undefined)}
-              sx={{ alignSelf: 'flex-start' }}
-            >
-              {t('Back to settings')}
-            </Button>
-            {inline.view === 'languages' ? (
-              <LanguagesPanel campaign={campaign} />
-            ) : (
-              <TranslationsView
-                campaign={campaign}
-                initialLanguageId={previewLanguageId}
-                showPromotionNotice={inline.promotionNotice}
-                onPromotionNoticeClose={() =>
-                  onInlineChange?.({
-                    view: 'translations',
-                    promotionNotice: false
-                  })
-                }
-              />
-            )}
-          </Stack>
-        )
+    case 'campaign':
       return (
-        <Stack spacing={5}>
-          <Settings
-            campaign={campaign}
-            isManager={isManager}
-            onDefaultLanguageChanged={() =>
-              onInlineChange?.({ view: 'translations', promotionNotice: true })
-            }
-          />
-          <Stack direction="row" spacing={2}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<Globe1Icon />}
-              onClick={() => onInlineChange?.({ view: 'languages' })}
-            >
-              {t('Languages')}
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              startIcon={<TranslateIcon />}
-              onClick={() =>
-                onInlineChange?.({
-                  view: 'translations',
-                  promotionNotice: false
-                })
-              }
-            >
-              {t('Translations')}
-            </Button>
-          </Stack>
-        </Stack>
+        <Settings
+          campaign={campaign}
+          isManager={isManager}
+          onDefaultLanguageChanged={onDefaultLanguageChanged}
+        />
       )
-    }
     case 'section':
     case 'chrome':
       return block != null ? (
