@@ -213,7 +213,9 @@ export async function reconcileVideoVariantReconciliation(
   }
 
   // The Variant is published and indexed, but reconciliation isn't complete
-  // until its Video record is too; this keeps the retry and Slack alert.
+  // until its Video record is too, so this keeps retrying. Whether it also
+  // alerts depends on shouldAlertOnBlockedStages: an algoliaVideo-only
+  // failure here is exactly the case that stays quiet by design.
   if (stages.algoliaVideo.state === 'failed') {
     await persistStatus('degraded', stages.algoliaVideo)
     return { publicationReady: false, status: 'degraded' }
