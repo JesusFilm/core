@@ -1,4 +1,11 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { Profiler, ReactElement } from 'react'
 
 import { GET_CAMPAIGN_STATS } from '@core/journeys/ui/Campaign'
@@ -220,6 +227,107 @@ describe('Navigator', () => {
       fireEvent.keyDown(hero, { key })
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+    })
+  })
+
+  describe('drag handles', () => {
+    function handle(id: string): HTMLElement {
+      return screen.getByTestId(`NavigatorDragHandle-${id}`)
+    }
+
+    it('puts a handle at the end of every section and none on the header or footer', () => {
+      renderNavigator()
+
+      expect(handle('heroId')).toHaveAccessibleName(/Reorder Hero/)
+      expect(handle('landingAnalyticsId')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('NavigatorDragHandle-headerId')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('NavigatorDragHandle-footerId')
+      ).not.toBeInTheDocument()
+    })
+
+    it('puts handles on a list’s cards and its Extras, and none on the divider', () => {
+      renderNavigator({
+        initialState: { selectedBlockId: 'landingJourneyId' }
+      })
+
+      expect(handle('landingJourneyId')).toBeInTheDocument()
+      expect(handle('landingDraftJourneyId')).toBeInTheDocument()
+      expect(handle('journeyListNoteId')).toBeInTheDocument()
+      expect(row('landingJourneyListId__content')).toHaveTextContent(
+        'Section content'
+      )
+      expect(
+        screen.queryByTestId(
+          'NavigatorDragHandle-landingJourneyListId__content'
+        )
+      ).not.toBeInTheDocument()
+    })
+
+    it('puts no handle on a row that is alone in its group', () => {
+      renderNavigator({ campaignProp: campaignWithColumns })
+      fireEvent.keyDown(document, { key: 'Ω', code: 'KeyZ', altKey: true })
+
+      expect(handle('slotLeftId')).toBeInTheDocument()
+      expect(
+        screen.queryByTestId('NavigatorDragHandle-slotRichTextId')
+      ).not.toBeInTheDocument()
+    })
+
+    it('does not select the row when the handle is clicked', () => {
+      renderNavigator()
+
+      fireEvent.click(handle('heroId'))
+
+      expect(screen.getByTestId('SelectedBlockId')).toBeEmptyDOMElement()
+    })
+
+    it('leaves the row’s arrow keys moving focus with the handles present', () => {
+      renderNavigator()
+      const items = screen.getAllByRole('treeitem')
+      act(() => items[1].focus())
+
+      fireEvent.keyDown(items[1], { key: 'ArrowDown' })
+      expect(items[2]).toHaveFocus()
+      fireEvent.keyDown(items[2], { key: 'ArrowUp' })
+      expect(items[1]).toHaveFocus()
+    })
+
+    it('leaves the row’s Enter and Space selecting it, not starting a drag', () => {
+      renderNavigator()
+      const hero = row('heroId')
+      act(() => hero.focus())
+
+      fireEvent.keyDown(hero, { key: ' ', code: 'Space' })
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+      expect(handle('heroId')).not.toHaveAttribute('aria-pressed', 'true')
+    })
+
+    it('takes Space from its own focus to lift the row, and does not select or toggle it', async () => {
+      renderNavigator()
+      const hero = handle('heroId')
+      act(() => hero.focus())
+
+      fireEvent.keyDown(hero, { key: ' ', code: 'Space' })
+
+      await waitFor(() => expect(hero).toHaveAttribute('aria-pressed', 'true'))
+      expect(screen.getByTestId('SelectedBlockId')).toBeEmptyDOMElement()
+      expect(row('heroId')).toHaveAttribute('aria-expanded', 'false')
+    })
+
+    it('does not move the tree’s focus when an arrow is pressed on the handle', () => {
+      renderNavigator()
+      const items = screen.getAllByRole('treeitem')
+      const hero = handle('heroId')
+      act(() => hero.focus())
+
+      fireEvent.keyDown(hero, { key: 'ArrowDown', code: 'ArrowDown' })
+
+      expect(hero).toHaveFocus()
+      expect(items[2]).not.toHaveFocus()
     })
   })
 

@@ -6,6 +6,7 @@ import {
   ancestorIds,
   buildNavigatorTree,
   expandableIds,
+  flattenNavigatorTree,
   selectedNodeId
 } from './navigatorTree'
 
@@ -62,19 +63,48 @@ describe('buildNavigatorTree', () => {
     ])
   })
 
-  it('nests a section’s Extras in parentOrder, tagged above or below', () => {
+  it('nests a section’s Extras tagged above or below, around a divider where its content starts', () => {
     const tree = buildNavigatorTree({
       campaign,
       pageKind: CampaignPageKind.landing
     })
 
     const hero = find(tree, 'heroId')
-    expect(hero?.children.map((node) => node.id)).toEqual(['heroButtonId'])
-    expect(hero?.children[0]).toMatchObject({
+    expect(hero?.children.map((node) => node.id)).toEqual([
+      'heroId__content',
+      'heroButtonId'
+    ])
+    expect(hero?.children[0]).toMatchObject({ type: 'SectionContent' })
+    expect(hero?.children[1]).toMatchObject({
       type: 'CampaignButtonBlock',
-      placement: expect.stringMatching(/^(above|below)$/)
+      placement: 'below'
     })
     expect(find(tree, 'heroId')?.placement).toBeUndefined()
+  })
+
+  it('lists Extras as the canvas orders them: above, the body, below', () => {
+    const tree = buildNavigatorTree({
+      campaign,
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(
+      find(tree, 'landingJourneyListId')?.children.map((node) => node.id)
+    ).toEqual([
+      'journeyListNoteId',
+      'landingJourneyListId__content',
+      'landingJourneyId',
+      'landingDraftJourneyId'
+    ])
+  })
+
+  it('leaves out the divider when a section has no Extras', () => {
+    const tree = buildNavigatorTree({
+      campaign,
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(find(tree, 'carouselId')?.children).toEqual([])
   })
 
   it('nests journey cards under their list in order', () => {
@@ -151,6 +181,95 @@ describe('buildNavigatorTree', () => {
     expect(
       find(tree, 'regionSwitcherId')?.children.map((card) => card.regionId)
     ).toEqual(['afrRegionId'])
+  })
+})
+
+describe('buildNavigatorTree sibling groups', () => {
+  function groupsOf(nodes: NavigatorNode[]): Record<string, string[]> {
+    const groups: Record<string, string[]> = {}
+    for (const node of flattenNavigatorTree(nodes)) {
+      if (node.reorder == null) continue
+      groups[node.reorder.group] = [
+        ...(groups[node.reorder.group] ?? []),
+        node.id
+      ]
+    }
+    return groups
+  }
+
+  it('groups the page’s sections, leaving the header and footer out', () => {
+    const tree = buildNavigatorTree({
+      campaign,
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(groupsOf(tree)['root:sections']).toEqual([
+      'heroId',
+      'landingSwitcherId',
+      'carouselId',
+      'landingJourneyListId',
+      'landingAnalyticsId'
+    ])
+    expect(find(tree, 'headerId')?.reorder).toBeUndefined()
+    expect(find(tree, 'footerId')?.reorder).toBeUndefined()
+  })
+
+  it('groups Extras with the divider, and journey cards on their own', () => {
+    const tree = buildNavigatorTree({
+      campaign,
+      pageKind: CampaignPageKind.landing
+    })
+
+    const groups = groupsOf(tree)
+    expect(groups['landingJourneyListId:extras']).toEqual([
+      'journeyListNoteId',
+      'landingJourneyListId__content'
+    ])
+    expect(groups['landingJourneyListId:CampaignJourneyBlock']).toEqual([
+      'landingJourneyId',
+      'landingDraftJourneyId'
+    ])
+    expect(find(tree, 'journeyListNoteId')?.reorder?.kind).toBe('extra')
+    expect(find(tree, 'landingJourneyId')?.reorder?.kind).toBe('block')
+  })
+
+  it('groups a Columns section’s two slots for a swap', () => {
+    const tree = buildNavigatorTree({
+      campaign: campaignWithColumns,
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(groupsOf(tree)['columnsId:CampaignColumnBlock']).toEqual([
+      'slotLeftId',
+      'slotRightId'
+    ])
+    expect(find(tree, 'slotLeftId')?.reorder?.kind).toBe('columnSlot')
+  })
+
+  it('groups region cards in switcher order and each card’s lines', () => {
+    const tree = buildNavigatorTree({
+      campaign: campaignWithRegions,
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(groupsOf(tree)['landingSwitcherId:Region']).toEqual([
+      'landingSwitcherId__eurRegionId',
+      'landingSwitcherId__afrRegionId'
+    ])
+    expect(find(tree, 'landingSwitcherId__eurRegionId')?.reorder?.kind).toBe(
+      'region'
+    )
+  })
+
+  it('leaves a lone row without a group', () => {
+    const tree = buildNavigatorTree({
+      campaign: campaignWithRegions,
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(
+      find(tree, 'landingSwitcherId__eurRegionId__eurLineId')?.reorder
+    ).toBeUndefined()
   })
 })
 

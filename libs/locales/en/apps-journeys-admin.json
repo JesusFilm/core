@@ -1671,5 +1671,12 @@
   "Above": "Above",
   "Below": "Below",
   "Not listed": "Not listed",
-  "Page structure": "Page structure"
+  "Page structure": "Page structure",
+  "Reorder {{label}}": "Reorder {{label}}",
+  "Section content": "Section content",
+  "Picked up {{label}}.": "Picked up {{label}}.",
+  "{{label}} is over {{target}}.": "{{label}} is over {{target}}.",
+  "Dropped {{label}}.": "Dropped {{label}}.",
+  "Moving {{label}} cancelled.": "Moving {{label}} cancelled.",
+  "To pick up a row, press space or enter. Use the arrow keys to move it among its siblings, then press space or enter to drop it, or escape to cancel.": "To pick up a row, press space or enter. Use the arrow keys to move it among its siblings, then press space or enter to drop it, or escape to cancel."
 }
