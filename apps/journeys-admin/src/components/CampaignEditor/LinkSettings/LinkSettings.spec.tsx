@@ -20,14 +20,14 @@ import {
   StaticEditor
 } from '../testing'
 
-import { LinkChip, isHttpsUrl } from './LinkChip'
+import { LinkSettings, isHttpsUrl } from './LinkSettings'
 
-/** The chip over the button as the editor currently holds it. */
-function ChipFor({ blockId }: { blockId: string }): ReactElement | null {
+/** The link settings over the button as the editor currently holds it. */
+function SettingsFor({ blockId }: { blockId: string }): ReactElement | null {
   const { campaign: current } = useCampaignEditor()
   const block = current.blocks.find((candidate) => candidate.id === blockId)
   if (block?.__typename !== 'CampaignButtonBlock') return null
-  return <LinkChip block={block} />
+  return <LinkSettings block={block} />
 }
 
 /** The fixture with the hero button's action replaced. */
@@ -48,7 +48,7 @@ function renderStatic(
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor campaignProp={campaignProp}>
-      <ChipFor blockId={blockId} />
+      <SettingsFor blockId={blockId} />
     </StaticEditor>
   )
 }
@@ -176,13 +176,13 @@ function renderQueried(): ReturnType<typeof render> {
       <CommandUndoItem variant="button" />
       <CommandProbe />
       <BlocksProbe />
-      <ChipFor blockId="heroButtonId" />
+      <SettingsFor blockId="heroButtonId" />
     </QueriedEditor>
   )
 }
 
-function chip(): HTMLElement {
-  return screen.getByTestId('LinkChip')
+function current(): HTMLElement {
+  return screen.getByTestId('LinkCurrent')
 }
 
 function listItems(): string[] {
@@ -192,18 +192,18 @@ function listItems(): string[] {
     .map((button) => button.textContent ?? '')
 }
 
-describe('LinkChip', () => {
+describe('LinkSettings', () => {
   beforeEach(() => vi.clearAllMocks())
 
   describe('label', () => {
-    it('reads "Add link" for a button with no action', () => {
+    it('reads "No link" for a button with no action', () => {
       renderStatic(withHeroButtonAction(null))
-      expect(chip()).toHaveTextContent('Add link')
+      expect(current()).toHaveTextContent('No link')
     })
 
     it('reads the target section by title for a ScrollToBlockAction', () => {
       renderStatic(campaign)
-      expect(chip()).toHaveTextContent('Choose your region')
+      expect(current()).toHaveTextContent('Choose your region')
     })
 
     it('reads the target section by type when it has no title', () => {
@@ -214,19 +214,19 @@ describe('LinkChip', () => {
           blockId: 'regionHeaderId'
         })
       )
-      expect(chip()).toHaveTextContent('Region header')
+      expect(current()).toHaveTextContent('Region header')
     })
 
     it('reads the address for a LinkAction', () => {
       renderStatic(campaign, 'footerTermsId')
-      expect(chip()).toHaveTextContent(
+      expect(current()).toHaveTextContent(
         'https://www.cru.org/us/en/about/terms-of-use.html'
       )
     })
 
     it('reads the region name for a NavigateToRegionAction', () => {
       renderStatic(campaign, 'switcherEuropeButtonId')
-      expect(chip()).toHaveTextContent('Europe')
+      expect(current()).toHaveTextContent('Europe')
     })
 
     it.each([
@@ -240,16 +240,14 @@ describe('LinkChip', () => {
           regionId
         })
       )
-      expect(chip()).toHaveTextContent('Missing region')
-      expect(chip()).toHaveClass('MuiChip-colorError')
+      expect(current()).toHaveTextContent('Missing region')
+      expect(current()).toHaveAttribute('data-missing', 'true')
     })
   })
 
-  describe('picker', () => {
+  describe('kinds', () => {
     it('offers a web address, the sections on this page by title or type, and the regions', () => {
       renderStatic(campaign)
-
-      fireEvent.click(chip())
 
       expect(
         screen.getByRole('button', { name: 'Web address' })
@@ -284,11 +282,9 @@ describe('LinkChip', () => {
           campaignProp={campaign}
           initialState={{ pageKind: 'regionTemplate' as never }}
         >
-          <ChipFor blockId="navHomeId" />
+          <SettingsFor blockId="navHomeId" />
         </StaticEditor>
       )
-
-      fireEvent.click(chip())
 
       expect(listItems()).toEqual([
         'Region header',
@@ -301,20 +297,16 @@ describe('LinkChip', () => {
 
     it('picking a section is one Command through campaignBlockUpdateScrollToBlockAction; undo restores the previous target', async () => {
       renderQueried()
-      await screen.findByTestId('LinkChip')
+      await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(chip())
       fireEvent.click(
         screen.getByRole('button', { name: 'Films for the season' })
       )
 
-      await waitFor(() =>
-        expect(screen.queryByTestId('LinkPicker')).not.toBeInTheDocument()
-      )
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
-      // Optimistic: the chip reads the new target before the request returns.
+      // Optimistic: the link reads the new target before the request returns.
       await waitFor(() =>
-        expect(chip()).toHaveTextContent('Films for the season')
+        expect(current()).toHaveTextContent('Films for the season')
       )
       expect(scrollToCarouselMock.result).not.toHaveBeenCalled()
       await waitFor(() =>
@@ -324,7 +316,7 @@ describe('LinkChip', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
       await waitFor(() =>
-        expect(chip()).toHaveTextContent('Choose your region')
+        expect(current()).toHaveTextContent('Choose your region')
       )
       await waitFor(() =>
         expect(scrollToSwitcherMock.result).toHaveBeenCalled()
@@ -333,13 +325,12 @@ describe('LinkChip', () => {
 
     it('picking a region is one Command through campaignBlockUpdateNavigateToRegionAction', async () => {
       renderQueried()
-      await screen.findByTestId('LinkChip')
+      await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(chip())
       fireEvent.click(screen.getByRole('button', { name: 'Region' }))
       fireEvent.click(screen.getByRole('button', { name: 'Africa' }))
 
-      await waitFor(() => expect(chip()).toHaveTextContent('Africa'))
+      await waitFor(() => expect(current()).toHaveTextContent('Africa'))
       expect(screen.getByTestId('Block-heroButtonId')).toHaveTextContent(
         '|CampaignNavigateToRegionAction'
       )
@@ -349,9 +340,8 @@ describe('LinkChip', () => {
 
     it('pre-validates the https scheme only, then writes the address as one Command', async () => {
       renderQueried()
-      await screen.findByTestId('LinkChip')
+      await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(chip())
       fireEvent.click(screen.getByRole('button', { name: 'Web address' }))
       const field = screen.getByRole('textbox', { name: 'Web address' })
       fireEvent.change(field, { target: { value: 'http://example.com/watch' } })
@@ -361,7 +351,7 @@ describe('LinkChip', () => {
         'Enter an address starting with https://'
       )
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
-      expect(screen.getByTestId('LinkPicker')).toBeInTheDocument()
+      expect(screen.getByTestId('LinkSettings')).toBeInTheDocument()
 
       fireEvent.change(field, {
         target: { value: ' https://example.com/watch ' }
@@ -369,7 +359,7 @@ describe('LinkChip', () => {
       fireEvent.keyDown(field, { key: 'Enter' })
 
       await waitFor(() =>
-        expect(chip()).toHaveTextContent('https://example.com/watch')
+        expect(current()).toHaveTextContent('https://example.com/watch')
       )
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
       await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
@@ -377,9 +367,8 @@ describe('LinkChip', () => {
 
     it("shows the API's message verbatim when the write fails", async () => {
       renderQueried()
-      await screen.findByTestId('LinkChip')
+      await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(chip())
       fireEvent.click(screen.getByRole('button', { name: 'Web address' }))
       fireEvent.change(screen.getByRole('textbox', { name: 'Web address' }), {
         target: { value: 'https://bad.example/' }
@@ -391,18 +380,17 @@ describe('LinkChip', () => {
       )
       // Rolled back to the action the button had.
       await waitFor(() =>
-        expect(chip()).toHaveTextContent('Choose your region')
+        expect(current()).toHaveTextContent('Choose your region')
       )
     })
 
     it('removing the link is one Command through campaignBlockDeleteAction; undo restores it', async () => {
       renderQueried()
-      await screen.findByTestId('LinkChip')
+      await screen.findByTestId('LinkSettings')
 
-      fireEvent.click(chip())
       fireEvent.click(screen.getByRole('button', { name: 'Remove link' }))
 
-      await waitFor(() => expect(chip()).toHaveTextContent('Add link'))
+      await waitFor(() => expect(current()).toHaveTextContent('No link'))
       expect(screen.getByTestId('Block-heroButtonId')).toHaveTextContent(
         '|null'
       )
@@ -412,7 +400,7 @@ describe('LinkChip', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
       await waitFor(() =>
-        expect(chip()).toHaveTextContent('Choose your region')
+        expect(current()).toHaveTextContent('Choose your region')
       )
       await waitFor(() =>
         expect(scrollToSwitcherMock.result).toHaveBeenCalled()
