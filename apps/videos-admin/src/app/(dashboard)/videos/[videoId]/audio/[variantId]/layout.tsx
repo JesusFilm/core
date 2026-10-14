@@ -75,6 +75,11 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
     videoVariantUpdate(input: $input) {
       id
       published
+      reconciliation {
+        id
+        status
+        published
+      }
     }
   }
 `)
@@ -113,8 +118,20 @@ function VariantDialogContent({
       variables: {
         input: { id: variantId, published: values.published === 'published' }
       },
-      onCompleted: () => {
-        enqueueSnackbar('Variant updated', { variant: 'success' })
+      onCompleted: (data) => {
+        // Publishing waits for reconciliation while Mux is still processing,
+        // so the row stays Draft for now -- say that instead of reporting a
+        // change the editor cannot see.
+        const publishPending =
+          values.published === 'published' &&
+          data.videoVariantUpdate.published === false
+
+        enqueueSnackbar(
+          publishPending
+            ? 'Publishing. This audio language goes live once processing finishes.'
+            : 'Variant updated',
+          { variant: publishPending ? 'info' : 'success' }
+        )
         resetForm({ values })
         router.push(`/videos/${videoId}/audio`, {
           scroll: false

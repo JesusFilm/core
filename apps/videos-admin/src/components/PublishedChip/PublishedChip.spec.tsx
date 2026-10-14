@@ -14,4 +14,17 @@ describe('PublishedChip', () => {
 
     expect(screen.getByText('Draft')).toBeInTheDocument()
   })
+
+  it('should render a pending publish', () => {
+    render(<PublishedChip published={false} publishPending />)
+
+    expect(screen.getByText('Publishing...')).toBeInTheDocument()
+    expect(screen.queryByText('Draft')).not.toBeInTheDocument()
+  })
+
+  it('should ignore a pending publish once published', () => {
+    render(<PublishedChip published publishPending />)
+
+    expect(screen.getByText('Published')).toBeInTheDocument()
+  })
 })

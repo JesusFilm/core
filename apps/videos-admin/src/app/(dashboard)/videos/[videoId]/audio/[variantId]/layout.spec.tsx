@@ -3,7 +3,7 @@ import {
   useSuspenseQuery as apolloClientModule_useSuspenseQuery
 } from '@apollo/client/react'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -219,10 +219,14 @@ vi.mock('@apollo/client/react', async () => {
   }
 })
 
+const { mockEnqueueSnackbar } = vi.hoisted(() => ({
+  mockEnqueueSnackbar: vi.fn()
+}))
+
 // Mock notistack
 vi.mock('notistack', () => ({
   useSnackbar: () => ({
-    enqueueSnackbar: vi.fn()
+    enqueueSnackbar: mockEnqueueSnackbar
   }),
   SnackbarProvider: ({ children }) => (
     <div data-testid="mock-snackbar-provider">{children}</div>
@@ -327,6 +331,101 @@ describe('VariantDialog', () => {
       </MockedProvider>
     )
   }
+
+  describe('publish feedback', () => {
+    function renderWithMutation(variantPublished: boolean, result: boolean) {
+      const useSuspenseQuery = vi.mocked(
+        apolloClientModule_useSuspenseQuery as unknown as Mock
+      )
+      useSuspenseQuery.mockReturnValue({
+        data: {
+          videoVariant: {
+            id: mockVariantId,
+            published: variantPublished,
+            hls: 'https://example.com/video.m3u8',
+            downloads: [],
+            language: { id: 'lang-123', name: [{ value: 'English' }] },
+            videoEdition: { name: 'Standard Edition' }
+          }
+        }
+      })
+
+      const mutation = vi.fn(async (options) => {
+        options?.onCompleted?.({
+          videoVariantUpdate: { id: mockVariantId, published: result }
+        })
+      })
+      vi.mocked(
+        apolloClientModule_useMutation as unknown as Mock
+      ).mockReturnValue([mutation, { loading: false, error: null, data: null }])
+
+      const { container } = render(
+        <MockedProvider>
+          <SnackbarProvider>
+            <VariantDialog
+              params={resolvedParams({
+                variantId: mockVariantId,
+                videoId: mockVideoId
+              })}
+            >
+              <div>Child content</div>
+            </VariantDialog>
+          </SnackbarProvider>
+        </MockedProvider>
+      )
+
+      return { mutation, container }
+    }
+
+    // The dialog's Save button is a stubbed MUI Button in this spec, so submit
+    // the form itself rather than clicking it.
+    function chooseStatusAndSave(container: HTMLElement, value: string) {
+      fireEvent.change(screen.getByTestId('mock-form-select'), {
+        target: { name: 'published', value }
+      })
+
+      const form = container.querySelector('form')
+      if (form == null) throw new Error('variant form not rendered')
+      fireEvent.submit(form)
+    }
+
+    it('reports a publish that is waiting on processing', async () => {
+      const { container } = renderWithMutation(false, false)
+
+      chooseStatusAndSave(container, 'published')
+
+      await waitFor(() =>
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'Publishing. This audio language goes live once processing finishes.',
+          { variant: 'info' }
+        )
+      )
+    })
+
+    it('reports an applied publish normally', async () => {
+      const { container } = renderWithMutation(false, true)
+
+      chooseStatusAndSave(container, 'published')
+
+      await waitFor(() =>
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Variant updated', {
+          variant: 'success'
+        })
+      )
+    })
+
+    it('reports a switch to draft normally', async () => {
+      const { container } = renderWithMutation(true, false)
+
+      chooseStatusAndSave(container, 'unpublished')
+
+      await waitFor(() =>
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Variant updated', {
+          variant: 'success'
+        })
+      )
+    })
+  })
 
   it('renders the variant dialog with all components', () => {
     renderComponent()
