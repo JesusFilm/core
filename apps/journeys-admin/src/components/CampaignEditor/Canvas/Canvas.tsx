@@ -15,7 +15,14 @@ import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 
 import {
   createCampaignTheme,
@@ -34,6 +41,7 @@ import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
+import { CanvasInsertPoint } from './CanvasInsertPoint'
 import { CanvasView, canvasScale, frameWidthOf } from './canvasScale'
 import { CanvasSection } from './CanvasSection'
 import { FrameTheme } from './FrameTheme'
@@ -186,7 +194,9 @@ interface CanvasProps {
  * The frame carries its own Hotkeys, since its key events never leave it, and
  * a click on the empty frame returns to the campaign. A section is
  * dragged by its handle only; the drop lands before or after the section
- * under the pointer by its midpoint, as one reorder Command.
+ * under the pointer by its midpoint, as one reorder Command. A "+" between
+ * sections (and above the first, below the last) opens the Add Panel at that
+ * insert point.
  *
  * The frame has a fixed width (1200 px Desktop, 390 px Phone) and is scaled
  * down to fit the space it is given with a CSS transform on a wrapper outside
@@ -387,19 +397,29 @@ export function Canvas({
                             previewLanguageId={previewLanguageId}
                           />
                         )}
-                        {sections.map((section) => (
-                          <CanvasSection
-                            key={section.id}
-                            block={section}
-                            theme={campaign.theme}
-                            previewLanguageId={previewLanguageId}
-                            draggable
-                            dropEdge={
-                              dropTarget?.overId === section.id
-                                ? dropTarget.edge
-                                : undefined
-                            }
-                          />
+                        {pageId != null && (
+                          <CanvasInsertPoint pageId={pageId} parentOrder={0} />
+                        )}
+                        {sections.map((section, index) => (
+                          <Fragment key={section.id}>
+                            <CanvasSection
+                              block={section}
+                              theme={campaign.theme}
+                              previewLanguageId={previewLanguageId}
+                              draggable
+                              dropEdge={
+                                dropTarget?.overId === section.id
+                                  ? dropTarget.edge
+                                  : undefined
+                              }
+                            />
+                            {pageId != null && (
+                              <CanvasInsertPoint
+                                pageId={pageId}
+                                parentOrder={index + 1}
+                              />
+                            )}
+                          </Fragment>
                         ))}
                         {footer != null && (
                           <CanvasSection

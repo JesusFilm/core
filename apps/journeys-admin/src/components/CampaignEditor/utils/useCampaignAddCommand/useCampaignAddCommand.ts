@@ -29,13 +29,13 @@ interface CampaignAddCommand {
  * The editor's add handlers: a section, an Extra or a Region Line, placed by
  * the insertion rule of `addTargets` for the current selection. Each add is
  * the same create Command a menu used to dispatch. Shared by the Add Panel
- * and, later, the canvas "+".
+ * and the canvas "+", whose preset insert point it follows.
  */
 export function useCampaignAddCommand(): CampaignAddCommand {
   const {
     campaign,
     selection,
-    state: { pageKind }
+    state: { pageKind, addPreset }
   } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
   const addSectionAt = useAddSection()
@@ -43,7 +43,12 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     campaign.id
   )
   const [buttonCreate] = useCampaignButtonBlockCreateMutation(campaign.id)
-  const targets = addTargets({ selection, campaign, pageKind })
+  const targets = addTargets({
+    selection,
+    campaign,
+    pageKind,
+    preset: addPreset
+  })
 
   function addSection(typename: CampaignSectionTypename): void {
     if (targets.section == null) return

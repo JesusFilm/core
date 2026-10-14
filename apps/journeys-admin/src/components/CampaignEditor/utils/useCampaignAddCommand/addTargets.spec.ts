@@ -176,6 +176,45 @@ describe('addTargets', () => {
     })
   })
 
+  describe('with a preset insert point', () => {
+    it('offers sections only, at the preset position, whatever is selected', () => {
+      const targets = addTargets({
+        selection: resolveSelection(campaign.blocks, 'heroId'),
+        campaign,
+        pageKind: CampaignPageKind.landing,
+        preset: { pageId: 'landingPageId', parentOrder: 2 }
+      })
+
+      expect(targets).toEqual({
+        section: {
+          insert: { pageId: 'landingPageId', parentOrder: 2 },
+          typenames: expect.arrayContaining(['CampaignHeroBlock'])
+        }
+      })
+      expect(hasType(targets, SLOT_DISALLOWED_TYPENAMES)).toBe(true)
+    })
+
+    it('hides slot-disallowed types when the preset is a Column Slot', () => {
+      const targets = addTargets({
+        selection: resolveSelection(campaignWithColumns.blocks, 'slotRightId'),
+        campaign: campaignWithColumns,
+        pageKind: CampaignPageKind.landing,
+        preset: {
+          pageId: 'landingPageId',
+          parentOrder: 0,
+          parentBlockId: 'slotRightId'
+        }
+      })
+
+      expect(targets.section?.insert).toEqual({
+        pageId: 'landingPageId',
+        parentOrder: 0,
+        parentBlockId: 'slotRightId'
+      })
+      expect(hasType(targets, SLOT_DISALLOWED_TYPENAMES)).toBe(false)
+    })
+  })
+
   it('adds a section below the section a card or journey item sits in', () => {
     const targets = targetsFor('landingJourneyId')
 

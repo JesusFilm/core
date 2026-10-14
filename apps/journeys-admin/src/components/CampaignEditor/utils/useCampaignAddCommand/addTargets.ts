@@ -8,7 +8,10 @@ import {
   CampaignPageKind
 } from '../../../../../__generated__/globalTypes'
 import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
-import type { CampaignSelection } from '../../CampaignEditorProvider'
+import type {
+  CampaignAddPreset,
+  CampaignSelection
+} from '../../CampaignEditorProvider'
 import {
   pageSections,
   sectionTypesForPage,
@@ -47,6 +50,8 @@ interface AddTargetsInput {
   campaign: Pick<Campaign, 'blocks' | 'pages'>
   /** The page the canvas shows: where nothing-selected adds go. */
   pageKind: CampaignPageKind
+  /** An insert point the canvas chose; it overrides the selection's rule. */
+  preset?: CampaignAddPreset
 }
 
 /**
@@ -57,12 +62,15 @@ interface AddTargetsInput {
  * section into it, filtered to what fits in a column; a section already in a
  * slot has no section sibling to add. An Extra → another Extra on the same
  * host and placement. A region card → a new Region Line. Region-page-only
- * section types are offered on the Region Page only.
+ * section types are offered on the Region Page only. A preset insert point
+ * (the canvas "+", an empty slot's placeholder) wins over all of this and
+ * offers sections only, at that point.
  */
 export function addTargets({
   selection,
   campaign,
-  pageKind
+  pageKind,
+  preset
 }: AddTargetsInput): AddTargets {
   const { blocks, pages } = campaign
   const kindOfPage = (pageId: string): CampaignPageKind =>
@@ -92,6 +100,19 @@ export function addTargets({
     return {
       insert: { pageId: host.pageId, parentOrder: host.parentOrder + 1 },
       typenames: sectionTypesForPage(kindOfPage(host.pageId))
+    }
+  }
+
+  if (preset != null) {
+    const presetPageKind = kindOfPage(preset.pageId)
+    return {
+      section: {
+        insert: preset,
+        typenames:
+          preset.parentBlockId != null
+            ? sectionTypesForSlot(presetPageKind)
+            : sectionTypesForPage(presetPageKind)
+      }
     }
   }
 
