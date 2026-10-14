@@ -27,6 +27,7 @@ import { LeftPanel } from './LeftPanel'
 import { LeftRail } from './LeftRail'
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
+import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
@@ -71,6 +72,10 @@ function CampaignEditorShell({
     panel === 'pages' ? (
       <LeftPanel label={t('Pages')} overlay={!pushesCanvas}>
         <PagesPanel />
+      </LeftPanel>
+    ) : panel === 'navigator' ? (
+      <LeftPanel label={t('Navigator')} overlay={!pushesCanvas}>
+        <Navigator />
       </LeftPanel>
     ) : panel === 'localize' ? (
       <LeftPanel label={t('Localize')} overlay={!pushesCanvas}>
@@ -181,7 +186,9 @@ export function CampaignEditor({
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
         <MuxVideoUploadProvider>
-          <CampaignEditorShell campaign={campaign} isManager={isManager} />
+          <NavigatorHoverProvider>
+            <CampaignEditorShell campaign={campaign} isManager={isManager} />
+          </NavigatorHoverProvider>
         </MuxVideoUploadProvider>
       </CampaignEditorProvider>
     </CommandProvider>

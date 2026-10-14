@@ -22,6 +22,7 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
@@ -65,8 +66,10 @@ function RegionCardEdit({
 
   return (
     <Box
+      id={`${hostBlockId}__${region.id}`}
       data-testid={`RegionCardEdit-${region.id}`}
       data-selected={selected}
+      data-hoverable
       onClick={handleClick}
       sx={{
         display: 'flex',
@@ -78,6 +81,7 @@ function RegionCardEdit({
         cursor: 'pointer',
         backgroundColor: 'var(--campaign-band-card)',
         border: '1px solid var(--campaign-band-border)',
+        ...HOVER_OUTLINE_SX,
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
@@ -107,13 +111,17 @@ function RegionCardEdit({
         line.__typename === 'CampaignTypographyBlock' ? (
           <Box
             key={line.id}
+            id={line.id}
             data-testid={`RegionLineEdit-${line.id}`}
+            data-selected={selection.block?.id === line.id}
+            data-hoverable
             onClick={(event: MouseEvent<HTMLElement>) => {
               event.stopPropagation()
               selectBlock(line.id)
             }}
             sx={{
               width: '100%',
+              ...HOVER_OUTLINE_SX,
               ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
             }}
           >

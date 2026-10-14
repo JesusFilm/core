@@ -199,6 +199,49 @@ describe('CampaignEditor', () => {
     expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
   })
 
+  it('toggles the Navigator panel with Z in the shell and inside the frame, never while typing', async () => {
+    const { baseElement } = renderEditor()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+
+    fireEvent.keyDown(document.body, { key: 'z', code: 'KeyZ' })
+    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+    fireEvent.keyDown(body.ownerDocument.body, { key: 'z', code: 'KeyZ' })
+    expect(screen.queryByTestId('Navigator')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Navigator' }))
+    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    const title = screen.getByLabelText('Title')
+    title.focus()
+    fireEvent.keyDown(title, { key: 'z', code: 'KeyZ' })
+    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+  })
+
+  it('shows the picked row in the Inspector and expands the tree to a block picked on the canvas', async () => {
+    const { baseElement } = renderEditor()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    fireEvent.click(screen.getByRole('button', { name: 'Navigator' }))
+    const scrollIntoView = vi.fn()
+    ;(body.querySelector('#footerId') as HTMLElement).scrollIntoView =
+      scrollIntoView
+
+    fireEvent.click(
+      screen
+        .getByTestId('NavigatorRow-footerId')
+        .querySelector('.MuiTreeItem-content') as HTMLElement
+    )
+    expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
+      'Footer'
+    )
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' })
+
+    fireEvent.click(
+      body.querySelector('[data-testid="CanvasExtra-heroButtonId"]')!
+    )
+    expect(screen.getByTestId('NavigatorRow-heroButtonId')).toBeInTheDocument()
+  })
+
   it('closes an open panel on Escape before it steps the selection up', async () => {
     const { baseElement } = renderEditor()
     const body = await frameBody(baseElement, 'CanvasSection-heroId')

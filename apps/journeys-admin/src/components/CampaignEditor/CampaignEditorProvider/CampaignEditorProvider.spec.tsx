@@ -134,7 +134,8 @@ describe('CampaignEditorProvider', () => {
       selectedBlockId: 'heroId',
       editRequest: 0,
       panel: 'none',
-      inspectorTab: 'style'
+      inspectorTab: 'style',
+      navigatorExpandRequest: 0
     }
 
     it('changes the preview language without touching the selection', () => {
@@ -158,8 +159,16 @@ describe('CampaignEditorProvider', () => {
         selectedBlockId: undefined,
         editRequest: 0,
         panel: 'none',
-        inspectorTab: 'style'
+        inspectorTab: 'style',
+        navigatorExpandRequest: 0
       })
+    })
+
+    it('counts Navigator expand-all requests', () => {
+      expect(
+        reducer(state, { type: 'ToggleNavigatorExpandAction' })
+          .navigatorExpandRequest
+      ).toBe(1)
     })
 
     it('focuses a page and a block together for undo', () => {

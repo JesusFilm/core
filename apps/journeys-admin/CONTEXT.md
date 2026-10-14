@@ -79,12 +79,16 @@ The contextual bottom bar shown while nothing on the Campaign Canvas is selected
 _Avoid_: toolbar, properties panel
 
 **Left Rail**:
-The Campaign Editor's 56 px column of icon buttons to the left of the Campaign Canvas: at the top the back button to the campaigns list and the panel toggles **Pages** (P) and **Localize** (each toggles its panel; opening one closes another); at the bottom Undo, Redo, the Desktop / Phone toggle and the **Publish button**. It replaces the first editor's top bar.
+The Campaign Editor's 56 px column of icon buttons to the left of the Campaign Canvas: at the top the back button to the campaigns list and the panel toggles **Pages** (P), **Navigator** (Z) and **Localize** (each toggles its panel; opening one closes another); at the bottom Undo, Redo, the Desktop / Phone toggle and the **Publish button**. It replaces the first editor's top bar.
 _Avoid_: toolbar, sidebar, top bar
 
 **Pages Panel**:
 The 300 px Left Rail panel that decides what the Campaign Canvas shows: the campaign title as its header, the page list (the landing page, then each region's Region Page in switcher order, with " · not listed" for an orphan and the "Needs journey" chip) and the **Preview Language** select. Choosing a page or a language is a view choice, never a Command. One left panel is open at a time; below 1440 px it overlays the canvas, from 1440 px it pushes it, and Escape closes it before it steps the selection up.
 _Avoid_: page selector (the first editor's control), navigation
+
+**Navigator**:
+The 300 px Left Rail panel (Z) that shows the open page as a tree of exactly what the Campaign Canvas shows: Header, the page's sections in order, Footer; under a section its Extras in `parentOrder` (tagged above or below), Columns › Column Slot › its section, Video carousel › cards, Journey list › journey cards, Region switcher › region cards › Region Lines. A row is the type name with the block's own title text muted beside it; badges are "Needs journey" on a region card and an eye-slash on an unlisted region. Nothing expands by default beyond the ancestors of the selection, which are derived from it, never stored; Option+Z expands or collapses all. A row selects through the same two selection actions as the canvas (arrow keys move focus only, Enter or Space selects) and scrolls the canvas to the block (nearest edge). Hovering a row sets `data-hovered` on the canvas element; hovering the canvas highlights its row through one small context only the Navigator subscribes to — hover is never reducer state.
+_Avoid_: outline, layers, tree view (the component)
 
 **Localize Panel**:
 The Left Rail panel with two tabs, **Languages** (the Languages Panel body) and **Translations** (the Translations View body). Changing the default language opens it on Translations with the promotion notice.

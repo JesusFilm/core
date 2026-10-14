@@ -77,6 +77,18 @@ describe('LeftRail', () => {
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('none')
   })
 
+  it('toggles the Navigator panel', () => {
+    render(<Harness />)
+    const navigator = screen.getByRole('button', { name: 'Navigator' })
+
+    fireEvent.click(navigator)
+    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('navigator')
+    expect(navigator).toHaveAttribute('aria-pressed', 'true')
+
+    fireEvent.click(navigator)
+    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('none')
+  })
+
   it('undoes and redoes through the one Command history', () => {
     render(<Harness />)
     expect(screen.getByRole('button', { name: 'Undo' })).toBeDisabled()

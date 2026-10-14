@@ -1666,5 +1666,10 @@
   "Publish status": "Publish status",
   "Campaign tools": "Campaign tools",
   "Back to campaigns": "Back to campaigns",
-  "Pick anything on the page or in the Navigator, then change it in the Inspector.": "Pick anything on the page or in the Navigator, then change it in the Inspector."
+  "Pick anything on the page or in the Navigator, then change it in the Inspector.": "Pick anything on the page or in the Navigator, then change it in the Inspector.",
+  "Navigator": "Navigator",
+  "Above": "Above",
+  "Below": "Below",
+  "Not listed": "Not listed",
+  "Page structure": "Page structure"
 }

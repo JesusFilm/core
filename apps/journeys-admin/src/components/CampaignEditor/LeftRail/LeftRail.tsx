@@ -13,6 +13,7 @@ import ComputerIcon from '@core/shared/ui/icons/Computer'
 import File5Icon from '@core/shared/ui/icons/File5'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
+import Layers4Icon from '@core/shared/ui/icons/Layers4'
 
 import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
@@ -72,7 +73,7 @@ function PanelToggle({
 
 /**
  * The editor's left column of icon buttons: the back button to the campaigns
- * list, the Pages and Localize panel toggles (one panel open at a time), and
+ * list, the Pages, Navigator and Localize panel toggles (one panel open at a time), and
  * at the bottom undo, redo, the Desktop / Phone view and the Publish button.
  * Undo and redo run the one Command history; the view toggle is never a
  * Command.
@@ -123,6 +124,12 @@ export function LeftRail({
           label={t('Pages')}
           shortcut="P"
           icon={<File5Icon />}
+        />
+        <PanelToggle
+          panel="navigator"
+          label={t('Navigator')}
+          shortcut="Z"
+          icon={<Layers4Icon />}
         />
         <PanelToggle
           panel="localize"
