@@ -82,6 +82,8 @@ No `P3006` error, and no extra empty migration was generated (schema was already
 
 (Two other `isEmpty: false` occurrences exist in the codebase — `childIds: { isEmpty: false }` in `apis/api-media/src/scripts/audit-parent-variants.ts:29` and `apis/api-media/src/workers/videoChildren/service/service.ts:29` — but those filter a different column, not `availableLanguages`, and are out of scope for this index.)
 
+**Correction (2026-10-14):** the original pass above scoped its call-site grep to `apis/api-media` only, and missed that `apps/arclight` talks to the media Postgres database directly via its own Prisma client (`@core/prisma/media/client`), bypassing api-media's GraphQL layer entirely. `apps/arclight/src/app/v2/[...route]/_media-components/index.ts:240,277` — the exact `/v2/media_components` endpoint this migration's comment names — filters with `availableLanguages: { hasSome: languageIds } }` when the `languageIds` query param is supplied. `hasSome` compiles to the `&&` (overlap) operator, not `<>`, and this doc's own sanity-check EXPLAIN (below) already shows `&&` _is_ served by the default `array_ops` GIN opclass (`Bitmap Index Scan` with `Index Cond`). So the index is not dead weight: it backs a real, cited call site — just not the `isEmpty: false` one this doc otherwise tested. See the revised verdict at the end of this document.
+
 ### What Prisma actually compiles `isEmpty: false` into
 
 Instrumented the real generated Prisma client (`@prisma/adapter-pg`, Prisma 7) with query-event logging and ran the exact predicate shape used by `Query.videos`/`Query.videosCount`:
@@ -191,14 +193,17 @@ SELECT count(*) FROM gin_test_video WHERE "availableLanguages" && ARRAY['lang_1'
 
 Here the index _is_ used (`Index Cond:`, `Bitmap Index Scan`) — confirming the index and adapter setup are working correctly, and isolating the failure specifically to the `<>`/`isEmpty` predicate, not to some setup problem.
 
-## Verdict
+## Verdict (revised 2026-10-14)
 
-`@@index([availableLanguages], type: Gin)` with the default `array_ops` operator class **does not and cannot** serve the `isEmpty: false` predicate used at all 6 real call sites (Prisma compiles it to `<> '{}'`, which `array_ops` has no strategy for). The index only accelerates `@>`/`<@`/`&&`/`=` predicates, none of which appear anywhere in the current api-media codebase against this column. As written, the index adds write overhead (GIN indexes are relatively expensive to maintain on insert/update) and storage cost with zero read benefit for the stated justification.
+`@@index([availableLanguages], type: Gin)` with the default `array_ops` operator class **does not and cannot** serve the `isEmpty: false` predicate used at the 6 api-media call sites (Prisma compiles it to `<> '{}'`, which `array_ops` has no strategy for).
 
-**Recommendation: rescope the PR.** Keep the `@default([])` + backfill + `SET NOT NULL` change (independently sound — makes the column's non-null invariant explicit and matches how it's already used) and **drop the GIN index** entirely, since no current query pattern benefits from it. If a genuine containment/overlap use case emerges later (e.g. "videos available in language X"), that would justify re-adding a GIN `array_ops` index at that time — but that's a different, currently-hypothetical predicate, not the one this PR cited.
+However, the index **does** serve a real, already-cited call site: Arclight's `/v2/media_components` listing (`apps/arclight/src/app/v2/[...route]/_media-components/index.ts:240,277`) queries the media database directly via its own Prisma client and filters with `availableLanguages: { hasSome: languageIds }` whenever a caller passes `languageIds`. `hasSome` compiles to `&&` (array overlap), which `array_ops` _does_ have a strategy for — confirmed by this doc's own EXPLAIN sanity check above (`Bitmap Index Scan` + `Index Cond` on `&&`). The original pass missed this because its grep for call sites was scoped to `apis/api-media`, not the full repo; Arclight's direct-Prisma path falls outside that scope.
+
+**Recommendation: keep the index, fix the comment.** The `@default([])` + backfill + `SET NOT NULL` change is independently sound regardless. The GIN index should **stay**, since it backs the `hasSome` filter on Arclight's catalog listing — the same endpoint the migration's comment already named. What needed fixing was the comment's wording: it previously credited the index with serving `isEmpty` as well as `hasSome`, which overstated its reach. The migration comment now states precisely which predicate (`hasSome`/`&&`) the index serves, names the exact call site, and notes `isEmpty: false` is _not_ served and why.
 
 ## Files
 
 - `libs/prisma/media/db/schema.prisma` — `Video.availableLanguages` field + index
-- `libs/prisma/media/db/migrations/20260916194658_video_available_languages_not_null_gin_index/migration.sql` (renamed from `20260821060000_...`)
-- `apis/api-media/src/schema/video/video.ts` — 6 call sites (lines 426, 464, 566, 574, 610, 638)
+- `libs/prisma/media/db/migrations/20260916194658_video_available_languages_not_null_gin_index/migration.sql` (renamed from `20260821060000_...`; comment corrected 2026-10-14)
+- `apis/api-media/src/schema/video/video.ts` — 6 `isEmpty: false` call sites not served by the index (lines 426, 464, 566, 574, 610, 638)
+- `apps/arclight/src/app/v2/[...route]/_media-components/index.ts` — 2 `hasSome` call sites served by the index (lines 240, 277)
