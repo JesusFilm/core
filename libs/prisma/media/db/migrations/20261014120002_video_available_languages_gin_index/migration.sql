@@ -1,13 +1,13 @@
 -- Kept in its own migration (and therefore its own transaction), separate
--- from the preceding NOT NULL/DEFAULT migration. Postgres holds every lock a
--- transaction acquires until COMMIT, so if CREATE INDEX below shared a
+-- from the preceding NOT NULL/DEFAULT migrations. Postgres holds every lock
+-- a transaction acquires until COMMIT, so if CREATE INDEX below shared a
 -- transaction with an ALTER TABLE on this column, it would run under the
 -- ACCESS EXCLUSIVE lock already held by that ALTER TABLE for the rest of the
 -- transaction — blocking all reads and writes against Video for the full
 -- index build, not just writes. By the time this migration's own transaction
--- starts, the prior migration has already committed and released that lock,
--- so CREATE INDEX below takes only its own SHARE lock (blocks writes only)
--- for the build.
+-- starts, the prior migrations have already committed and released that
+-- lock, so CREATE INDEX below takes only its own SHARE lock (blocks writes
+-- only) for the build.
 --
 -- That SHARE lock is still held for the whole build (it runs without
 -- CONCURRENTLY). Same caution as
