@@ -13,6 +13,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns } from '../data'
 import { newSectionBlock } from '../sectionTypes'
 import {
@@ -81,6 +82,16 @@ const swapMock = {
       ]
     }
   }))
+}
+
+/** Dispatches the Edit request that focuses the selected block's primary text. */
+function EditRequester(): ReactElement {
+  const { dispatch } = useCampaignEditor()
+  return (
+    <Button onClick={() => dispatch({ type: 'RequestEditAction' })}>
+      Edit
+    </Button>
+  )
 }
 
 function ViewHarness(): ReactElement {
@@ -187,7 +198,7 @@ describe('Canvas', () => {
 
     const iframe = baseElement.getElementsByTagName('iframe')[0]
     expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('width', '100%')
+    expect(iframe).toHaveAttribute('width', '1200')
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     expect(body.textContent).toContain('Share the story of Christmas')
     expect(body.textContent).toContain('Choose your region')
@@ -332,7 +343,7 @@ describe('Canvas', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Toggle view' }))
     expect(baseElement.getElementsByTagName('iframe')[0]).toHaveAttribute(
       'width',
-      '100%'
+      '1200'
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
@@ -663,6 +674,201 @@ describe('Canvas', () => {
       expect(swapMock.result).not.toHaveBeenCalled()
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
     })
+  })
+})
+
+describe('Canvas scaled to fit', () => {
+  /** The size the stage reports to the canvas's ResizeObserver. */
+  const stage = { width: 900, height: 600 }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.reject(new Error('offline')))
+    )
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(private readonly callback: ResizeObserverCallback) {}
+
+        observe(): void {
+          this.callback([{ contentRect: stage } as ResizeObserverEntry], this)
+        }
+
+        disconnect = vi.fn()
+        unobserve = vi.fn()
+      }
+    )
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    stage.width = 900
+  })
+
+  it('keeps the Desktop frame 1200 px wide and scales a wrapper outside it to the stage', async () => {
+    const { baseElement } = renderCanvas()
+    await frameBody(baseElement, 'CanvasSection-heroId')
+
+    const wrapper = screen.getByTestId('CampaignCanvasScale')
+    expect(wrapper).toHaveAttribute('data-scale', String(900 / 1200))
+    expect(wrapper).toHaveStyle({ width: '900px' })
+    const iframe = baseElement.getElementsByTagName('iframe')[0]
+    expect(iframe).toHaveAttribute('width', '1200')
+    const scaled = iframe.parentElement as HTMLElement
+    expect(scaled).toHaveStyle({
+      width: '1200px',
+      transform: `scale(${900 / 1200})`,
+      transformOrigin: 'top left'
+    })
+    expect(scaled).toHaveStyle({ height: '800px' })
+  })
+
+  it('never scales below 0.5', async () => {
+    stage.width = 400
+    const { baseElement } = renderCanvas()
+    await frameBody(baseElement, 'CanvasSection-heroId')
+
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveAttribute(
+      'data-scale',
+      '0.5'
+    )
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveStyle({
+      width: '600px'
+    })
+  })
+
+  it('does not enlarge the frame on a wide stage, and leaves the Phone frame at 390 px', async () => {
+    stage.width = 1472
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'phone')
+    await frameBody(baseElement, 'CanvasSection-heroId')
+
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveAttribute(
+      'data-scale',
+      '1'
+    )
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveStyle({
+      width: '390px'
+    })
+    expect(baseElement.getElementsByTagName('iframe')[0]).toHaveAttribute(
+      'width',
+      '390'
+    )
+  })
+
+  it('still reorders a section dragged by its handle, by the midpoint of the section under the pointer', async () => {
+    const { baseElement } = renderCanvas()
+    const body = await frameBody(
+      baseElement,
+      'CanvasSection-landingAnalyticsId'
+    )
+    stackSections(body)
+    const frameDocument = body.ownerDocument
+    const handle = body.querySelector(
+      '[data-testid="CanvasSectionDragHandle-heroId"]'
+    )!
+
+    fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+    fireEvent.mouseMove(frameDocument, { clientX: 20, clientY: 60 })
+    fireEvent.mouseMove(frameDocument, { clientX: 20, clientY: 180 })
+
+    await waitFor(() =>
+      expect(
+        body.querySelector('[data-testid="CanvasDropIndicator"]')
+      ).toHaveAttribute('data-edge', 'after')
+    )
+    fireEvent.mouseUp(frameDocument, { clientX: 20, clientY: 180 })
+
+    await waitFor(() => expect(orderMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('still swaps the slots of a Columns section', async () => {
+    const { baseElement } = render(
+      <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+        <CommandProbe />
+        <Canvas
+          campaign={campaignWithColumns}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+    ;['slotLeftId', 'slotRightId'].forEach((id, index) => {
+      const slot = body.querySelector(
+        `[data-testid="CanvasColumnSlot-${id}"]`
+      ) as HTMLElement
+      const left = index * 400
+      slot.getBoundingClientRect = () => ({
+        top: 0,
+        bottom: 100,
+        left,
+        right: left + 400,
+        width: 400,
+        height: 100,
+        x: left,
+        y: 0,
+        toJSON: () => ({})
+      })
+    })
+    const frameDocument = body.ownerDocument
+    const handle = body.querySelector(
+      '[data-testid="CanvasColumnDragHandle-slotLeftId"]'
+    )!
+
+    fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+    fireEvent.mouseMove(frameDocument, { clientX: 40, clientY: 50 })
+    fireEvent.mouseMove(frameDocument, { clientX: 600, clientY: 50 })
+    fireEvent.mouseUp(frameDocument, { clientX: 600, clientY: 50 })
+
+    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('edits text inline with its character counter', async () => {
+    const { baseElement } = renderCanvas()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    fireEvent.click(body.querySelector('[data-testid="CanvasSection-heroId"]')!)
+    const title = await waitFor(() => {
+      const input = body.querySelector('textarea[name="title"]')
+      expect(input).not.toBeNull()
+      return input as HTMLTextAreaElement
+    })
+
+    fireEvent.change(title, { target: { value: 'x'.repeat(130) } })
+
+    await waitFor(() => expect(body.textContent).toContain('130 / 150'))
+  })
+
+  it('focuses an inline input without scrolling the editor page', async () => {
+    const { baseElement } = render(
+      <StaticEditor
+        mocks={[orderMock]}
+        initialState={{ selectedBlockId: 'heroButtonId' }}
+      >
+        <EditRequester />
+        <Canvas
+          campaign={campaign}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    // The input lives in the frame's window, which has its own HTMLElement.
+    const frameWindow = body.ownerDocument.defaultView as Window &
+      typeof globalThis
+    const focus = vi.spyOn(frameWindow.HTMLElement.prototype, 'focus')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+
+    await waitFor(() => expect(focus).toHaveBeenCalled())
+    expect(
+      focus.mock.calls.every(([options]) => options?.preventScroll === true)
+    ).toBe(true)
+    focus.mockRestore()
   })
 })
 
