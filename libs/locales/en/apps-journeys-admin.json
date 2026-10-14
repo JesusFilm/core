@@ -1659,5 +1659,11 @@
   "Edit its text directly on the page.": "Edit its text directly on the page.",
   "Back to settings": "Back to settings",
   "Edit this text directly on the page.": "Edit this text directly on the page.",
-  "Inspector": "Inspector"
+  "Inspector": "Inspector",
+  "List": "List",
+  "Pills": "Pills",
+  "No link": "No link",
+  "Grid": "Grid",
+  "Snapshot": "Snapshot",
+  "Map": "Map"
 }

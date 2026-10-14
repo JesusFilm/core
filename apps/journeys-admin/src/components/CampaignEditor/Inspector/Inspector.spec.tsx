@@ -428,9 +428,43 @@ describe('Inspector', () => {
       ).toBeInTheDocument()
     })
 
-    it('points a section without an editor at the page on Settings', () => {
+    it('shows the map toggle of the Analytics section on Settings', () => {
       renderInspector({
         selectedBlockId: 'landingAnalyticsId',
+        inspectorTab: 'settings'
+      })
+
+      expect(screen.getByTestId('AnalyticsSettings')).toBeInTheDocument()
+      expect(screen.getByRole('switch', { name: 'Show map' })).toBeChecked()
+    })
+
+    it('shows the variant of the Region Switcher on Settings', () => {
+      renderInspector({
+        selectedBlockId: 'landingSwitcherId',
+        inspectorTab: 'settings'
+      })
+
+      expect(screen.getByRole('button', { name: 'Cards' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    })
+
+    it('shows the display of the Journey List on Settings', () => {
+      renderInspector({
+        selectedBlockId: 'landingJourneyListId',
+        inspectorTab: 'settings'
+      })
+
+      expect(screen.getByRole('button', { name: 'Grid' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    })
+
+    it('points a section without an editor at the page on Settings', () => {
+      renderInspector({
+        selectedBlockId: 'footerId',
         inspectorTab: 'settings'
       })
 
@@ -628,9 +662,12 @@ describe('Inspector', () => {
         inspectorTab: 'settings'
       })
 
-      expect(screen.getByTestId('LinkChip')).toHaveTextContent(
+      expect(screen.getByTestId('LinkCurrent')).toHaveTextContent(
         'Choose your region'
       )
+      expect(
+        screen.getByRole('button', { name: 'Remove link' })
+      ).toBeInTheDocument()
     })
   })
 
@@ -815,12 +852,19 @@ describe('Inspector', () => {
       expect(actionNames()).toEqual(['Move left', 'Move right', 'Delete'])
     })
 
-    it('offers Refresh from journey on Settings', () => {
+    it('shows the snapshot title and description with Refresh from journey on Settings', () => {
       renderInspector({
         selectedBlockId: 'landingJourneyId',
         inspectorTab: 'settings'
       })
 
+      expect(screen.getByTestId('JourneyCardSettings')).toBeInTheDocument()
+      expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
+        'The Christmas story'
+      )
+      expect(
+        screen.getByRole('textbox', { name: 'Description' })
+      ).toBeInTheDocument()
       expect(
         screen.getByRole('button', { name: 'Refresh from journey' })
       ).toBeEnabled()

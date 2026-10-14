@@ -5,7 +5,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
-import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Globe1Icon from '@core/shared/ui/icons/Globe1'
@@ -17,20 +16,23 @@ import {
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
 import { isCampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
+import { AnalyticsSettings } from '../AnalyticsSettings'
 import { campaignPermanentAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CarouselCardEdit } from '../CarouselCardEdit'
 import { CarouselEdit } from '../CarouselEdit'
 import { ChromeEdit } from '../ChromeEdit'
 import { ImageSectionEdit } from '../ImageSectionEdit'
+import { JourneyCardSettings } from '../JourneyCardSettings'
+import { JourneyListSettings } from '../JourneyListSettings'
 import { LanguagesPanel } from '../LanguagesPanel'
-import { LinkChip } from '../LinkChip'
+import { LinkSettings } from '../LinkSettings'
 import { MediaSectionEdit } from '../MediaSectionEdit'
 import { RegionSettings } from '../RegionSettings'
+import { RegionSwitcherSettings } from '../RegionSwitcherSettings'
 import { Settings } from '../Settings'
 import { TranslationsView } from '../TranslationsView'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
-import { useJourneyCardSnapshotRefreshCommand } from '../utils/useJourneyCardSnapshotRefreshCommand'
 
 import { ColumnControls } from './ColumnControls'
 
@@ -54,7 +56,7 @@ interface SectionEditorProps {
   block: CampaignBlock
 }
 
-/** The header, an Image section, a Video Carousel and the sections with a Media Slot have an editor; every other section edits its text in place. */
+/** The header, an Image section, a Video Carousel, the sections with a Media Slot, the Analytics section, the Region Switcher and the Journey List have an editor; every other section edits its text in place. */
 function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   if (block.__typename === 'CampaignHeaderBlock')
@@ -64,6 +66,12 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
   if (block.__typename === 'CampaignVideoCarouselBlock')
     return <CarouselEdit block={block} />
   if (isCampaignMediaOwner(block)) return <MediaSectionEdit block={block} />
+  if (block.__typename === 'CampaignAnalyticsBlock')
+    return <AnalyticsSettings block={block} />
+  if (block.__typename === 'CampaignRegionSwitcherBlock')
+    return <RegionSwitcherSettings block={block} />
+  if (block.__typename === 'CampaignJourneyListBlock')
+    return <JourneyListSettings block={block} />
   return (
     <Typography variant="body2" color="text.secondary">
       {t('Edit its text directly on the page.')}
@@ -74,8 +82,10 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
 /**
  * The Inspector's Settings tab, switched on the selection: campaign settings
  * when nothing is selected, the editor that opened in the Edit drawer for a
- * section, the link chip for a button Extra, title and description for a
- * carousel card, Refresh from journey for a journey card, the region's
+ * section with the per-type toggles (analytics map, switcher variant,
+ * journey-list display, media side), the link settings for a button Extra,
+ * title and description for a carousel card, the snapshot text and Refresh
+ * from journey for a journey card, the region's
  * settings with list / unlist and Open page for a region card, and the type
  * controls for a column slot.
  */
@@ -91,8 +101,6 @@ export function InspectorSettings({
     state: { previewLanguageId }
   } = useCampaignEditor()
   const { setListed } = useCampaignRegionCommand()
-  const { refreshSnapshot, confirmDialog } =
-    useJourneyCardSnapshotRefreshCommand()
   const { block, region } = selection
 
   switch (selection.kind) {
@@ -185,10 +193,7 @@ export function InspectorSettings({
       )
     case 'button':
       return block?.__typename === 'CampaignButtonBlock' ? (
-        <Stack spacing={2}>
-          <Typography variant="subtitle2">{t('Link')}</Typography>
-          <LinkChip block={block} />
-        </Stack>
+        <LinkSettings block={block} />
       ) : (
         <></>
       )
@@ -200,20 +205,7 @@ export function InspectorSettings({
       )
     case 'journey':
       return block?.__typename === 'CampaignJourneyBlock' ? (
-        <Stack spacing={2}>
-          <Button
-            variant="outlined"
-            color="secondary"
-            startIcon={<ArrowRefresh6Icon />}
-            onClick={() => {
-              void refreshSnapshot(block)
-            }}
-            sx={{ alignSelf: 'flex-start' }}
-          >
-            {t('Refresh from journey')}
-          </Button>
-          {confirmDialog}
-        </Stack>
+        <JourneyCardSettings key={block.id} block={block} />
       ) : (
         <></>
       )

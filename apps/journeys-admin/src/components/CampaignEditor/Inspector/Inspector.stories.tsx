@@ -3,10 +3,17 @@ import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement } from 'react'
 
+import {
+  featuredMediaImageBlock,
+  featuredMediaSectionBlock
+} from '@core/journeys/ui/Campaign/testData'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
-import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign as Campaign,
+  GetCampaign_campaign_blocks as CampaignBlock
+} from '../../../../__generated__/GetCampaign'
 import {
   CampaignEditorProvider,
   CampaignEditorState
@@ -77,6 +84,54 @@ export const SectionSettings: Story = {
   }
 }
 
+/** A Featured Media section, Settings: the media slot and which side the media sits on. */
+export const FeaturedMediaSettings: Story = {
+  args: {
+    campaignProp: {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks,
+        featuredMediaSectionBlock as CampaignBlock,
+        featuredMediaImageBlock as CampaignBlock
+      ]
+    },
+    initialState: {
+      selectedBlockId: 'featuredMediaId',
+      inspectorTab: 'settings'
+    }
+  }
+}
+
+/** An Analytics section, Settings: the map toggle. */
+export const AnalyticsSettings: Story = {
+  args: {
+    initialState: {
+      selectedBlockId: 'landingAnalyticsId',
+      inspectorTab: 'settings'
+    }
+  }
+}
+
+/** A Region Switcher, Settings: the variant. */
+export const RegionSwitcherSettings: Story = {
+  args: {
+    initialState: {
+      selectedBlockId: 'landingSwitcherId',
+      inspectorTab: 'settings'
+    }
+  }
+}
+
+/** A Journey List, Settings: the display. */
+export const JourneyListSettings: Story = {
+  args: {
+    initialState: {
+      selectedBlockId: 'landingJourneyListId',
+      inspectorTab: 'settings'
+    }
+  }
+}
+
 /** The header, Settings: the logo. */
 export const ChromeSettings: Story = {
   args: {
@@ -128,14 +183,14 @@ export const ButtonExtraStyle: Story = {
   }
 }
 
-/** A button Extra, Settings: the link. */
+/** A button Extra, Settings: the link, inline — web address, section or region. */
 export const ButtonExtraSettings: Story = {
   args: {
     initialState: { selectedBlockId: 'heroButtonId', inspectorTab: 'settings' }
   }
 }
 
-/** A journey card, Settings: Refresh from journey. */
+/** A journey card, Settings: the snapshot title and description and Refresh from journey. */
 export const JourneyCardSettings: Story = {
   args: {
     initialState: {
