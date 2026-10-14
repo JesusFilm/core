@@ -1,6 +1,5 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   addLanguageToVideo,
@@ -17,7 +16,8 @@ import {
   failedStage,
   notApplicableStage,
   persistReconciliationStatus,
-  previousAttempts
+  previousAttempts,
+  syncVideoRecordStage
 } from './reconciliationStages'
 import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
 
@@ -37,8 +37,13 @@ export type ReconciliationRecord = {
     published: boolean
     downloadable: boolean
     hls: string
+    dash?: string | null
     share: string
+    masterUrl?: string | null
+    assetId?: string | null
+    duration?: number | null
     muxVideo: { readyToStream: boolean } | null
+    video?: { label: string } | null
   } | null
 }
 
@@ -168,13 +173,15 @@ export async function reconcileVideoVariantReconciliation(
   try {
     await addLanguageToVideo(variant.videoId, variant.languageId)
     await updateParentCollectionLanguages(variant.videoId)
-    await updateVideoInAlgolia(variant.videoId)
-    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
   } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
-    await persistStatus('degraded', stages.algoliaVideo)
+    stages.parentSync = failedStage(error, stages.parentSync.attempts + 1)
+    await persistStatus('degraded', stages.parentSync)
     return { publicationReady: false, status: 'degraded' }
   }
+  stages.algoliaVideo = await syncVideoRecordStage(
+    variant.videoId,
+    stages.algoliaVideo
+  )
 
   const downloadCount = await prisma.videoVariantDownload.count({
     where: { videoVariantId: variant.id }
@@ -206,6 +213,15 @@ export async function reconcileVideoVariantReconciliation(
       })
     }
     await persistStatus('degraded', stages.algoliaVariant)
+    return { publicationReady: false, status: 'degraded' }
+  }
+
+  // The Variant is published and indexed, but reconciliation isn't complete
+  // until its Video record is too, so this keeps retrying. Whether it also
+  // alerts depends on shouldAlertOnBlockedStages: an algoliaVideo-only
+  // failure here is exactly the case that stays quiet by design.
+  if (stages.algoliaVideo.state === 'failed') {
+    await persistStatus('degraded', stages.algoliaVideo)
     return { publicationReady: false, status: 'degraded' }
   }
 
