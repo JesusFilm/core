@@ -55,6 +55,7 @@ import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
+import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
@@ -114,11 +115,15 @@ function CanvasExtra({
     case 'CampaignTypographyBlock':
       return (
         <Box
+          id={block.id}
           data-testid={`CanvasExtra-${block.id}`}
+          data-selected={selected}
+          data-hoverable
           onClick={handleClick}
           sx={{
             width: '100%',
             cursor: 'pointer',
+            ...HOVER_OUTLINE_SX,
             ...(selected ? SELECTED_OUTLINE : {})
           }}
         >
@@ -140,11 +145,15 @@ function CanvasExtra({
       const buttonVariant = block.buttonVariant ?? 'contained'
       return (
         <Box
+          id={block.id}
           data-testid={`CanvasExtra-${block.id}`}
+          data-selected={selected}
+          data-hoverable
           onClick={handleClick}
           sx={{
             display: 'flex',
             cursor: 'pointer',
+            ...HOVER_OUTLINE_SX,
             ...(selected ? SELECTED_OUTLINE : {}),
             justifyContent:
               block.align === 'center'
@@ -678,6 +687,7 @@ export function CanvasSection({
       id={block.id}
       data-testid={`CanvasSection-${block.id}`}
       data-selected={sectionSelected}
+      data-hoverable
       style={bandCssVariables(band)}
       onClick={(event: MouseEvent<HTMLElement>) => {
         event.stopPropagation()
@@ -697,6 +707,7 @@ export function CanvasSection({
           : { py: { xs: 6, md: 10 } }),
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
+        ...HOVER_OUTLINE_SX,
         ...(sectionSelected ? SELECTED_OUTLINE : {})
       }}
     >

@@ -12,6 +12,7 @@ import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { GetCampaign_campaign_theme as CampaignTheme } from '../../../../../__generated__/GetCampaign'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { CanvasBlock, CanvasSection } from '../CanvasSection'
+import { HOVER_OUTLINE_SX } from '../hoverOutline'
 
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
@@ -82,14 +83,17 @@ export function CanvasColumnSlot({
   return (
     <Box
       ref={setSlotRef}
+      id={slot.id}
       data-testid={`CanvasColumnSlot-${slot.id}`}
       data-selected={slotSelected}
+      data-hoverable
       onClick={handleClick}
       sx={{
         position: 'relative',
         minHeight: 96,
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
+        ...HOVER_OUTLINE_SX,
         outline: dropTarget
           ? `3px solid ${adminPrimary.main}`
           : slotSelected
