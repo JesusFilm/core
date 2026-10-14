@@ -12,6 +12,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import type { CanvasBlock } from '../CanvasSection'
+import { HOVER_OUTLINE_SX } from '../hoverOutline'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
@@ -63,8 +64,10 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
     return (
       <Box
         key={card.id}
+        id={explicit ? card.id : undefined}
         data-testid={`CanvasCarouselCard-${card.id}`}
         data-selected={selected}
+        data-hoverable={explicit ? '' : undefined}
         onClick={(event: MouseEvent<HTMLElement>) =>
           handleSelect(event, card.id)
         }
@@ -76,6 +79,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           backgroundColor: 'var(--campaign-band-card)',
           border: '1px solid var(--campaign-band-border)',
           cursor: 'pointer',
+          ...(explicit ? HOVER_OUTLINE_SX : {}),
           ...(selected
             ? { outline: `2px solid ${adminPrimary.main}`, outlineOffset: -2 }
             : {})

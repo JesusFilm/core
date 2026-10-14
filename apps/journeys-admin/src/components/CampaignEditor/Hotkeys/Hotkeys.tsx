@@ -13,8 +13,9 @@ interface HotkeysProps {
 /**
  * The editor's shortcuts: ⌘Z / ⇧⌘Z for undo and redo, Escape to close the open
  * left panel and otherwise step the selection up one level (blurring an
- * inline input first), P and A to toggle the Pages and Add panels, S and D to switch the
- * Inspector's Style and Settings tab. Rendered once for the shell and
+ * inline input first), P, A and Z to toggle the Pages, Add and Navigator panels,
+ * Option+Z to expand or collapse the whole Navigator tree, S and D to switch
+ * the Inspector's Style and Settings tab. Rendered once for the shell and
  * once inside the canvas frame, whose key events never reach the parent
  * document. Only the frame listens to undo and redo while a form field has
  * focus: its inline inputs are Commands, whereas the shell's fields (the
@@ -64,6 +65,16 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
   useHotkeys(
     'a',
     () => dispatch({ type: 'SetPanelAction', panel: 'add' }),
+    letterOptions
+  )
+  useHotkeys(
+    'z',
+    () => dispatch({ type: 'SetPanelAction', panel: 'navigator' }),
+    letterOptions
+  )
+  useHotkeys(
+    'alt+z',
+    () => dispatch({ type: 'ToggleNavigatorExpandAction' }),
     letterOptions
   )
   useHotkeys(

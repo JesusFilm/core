@@ -17,6 +17,7 @@ import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__gene
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 
@@ -89,8 +90,10 @@ function JourneyCardEdit({
 
   return (
     <Stack
+      id={card.id}
       data-testid={`JourneyCard-${card.id}`}
       data-selected={selected}
+      data-hoverable
       onClick={handleClick}
       sx={{
         overflow: 'hidden',
@@ -98,6 +101,7 @@ function JourneyCardEdit({
         cursor: 'pointer',
         backgroundColor: 'var(--campaign-band-card)',
         border: '1px solid var(--campaign-band-border)',
+        ...HOVER_OUTLINE_SX,
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >

@@ -29,6 +29,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { FontLoader } from '../../Editor/FontLoader'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
+import { CanvasHoverReporter } from '../Navigator/NavigatorHover'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
@@ -360,6 +361,7 @@ export function Canvas({
                   <FrameTheme document={document}>
                     <CssBaseline />
                     <FrameDocument document={document} />
+                    <CanvasHoverReporter document={document} />
                     <Hotkeys document={document} />
                     <Box
                       data-testid="CampaignCanvasPage"

@@ -46,6 +46,8 @@ export interface CampaignEditorState {
   panel: CampaignPanel
   /** The Inspector tab; a view choice, never a Command. */
   inspectorTab: CampaignInspectorTab
+  /** Bumped by Option+Z so the Navigator expands or collapses its whole tree. */
+  navigatorExpandRequest: number
 }
 
 interface SetPageKindAction {
@@ -92,6 +94,10 @@ interface SetInspectorTabAction {
   type: 'SetInspectorTabAction'
   inspectorTab: CampaignInspectorTab
 }
+/** Ask the Navigator to expand every row, or collapse them all when already expanded. */
+interface ToggleNavigatorExpandAction {
+  type: 'ToggleNavigatorExpandAction'
+}
 export type CampaignEditorAction =
   | SetPageKindAction
   | SelectBlockAction
@@ -101,6 +107,7 @@ export type CampaignEditorAction =
   | SetPreviewLanguageAction
   | SetPanelAction
   | SetInspectorTabAction
+  | ToggleNavigatorExpandAction
 
 export function reducer(
   state: CampaignEditorState,
@@ -146,6 +153,11 @@ export function reducer(
       }
     case 'SetInspectorTabAction':
       return { ...state, inspectorTab: action.inspectorTab }
+    case 'ToggleNavigatorExpandAction':
+      return {
+        ...state,
+        navigatorExpandRequest: state.navigatorExpandRequest + 1
+      }
   }
 }
 
@@ -349,7 +361,8 @@ export function CampaignEditorProvider({
     previewLanguageId: campaign.defaultLanguageId,
     editRequest: 0,
     panel: 'none',
-    inspectorTab: 'style'
+    inspectorTab: 'style',
+    navigatorExpandRequest: 0
   }
   const [rawState, dispatch] = useReducer(reducer, {
     ...defaultState,
