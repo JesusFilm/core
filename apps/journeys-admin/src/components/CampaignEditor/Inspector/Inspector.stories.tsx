@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import {
   featuredMediaImageBlock,
@@ -61,6 +62,24 @@ const InspectorMeta: Meta<typeof InspectorStory> = {
 }
 
 type Story = StoryObj<typeof InspectorStory>
+
+/** The campaign with `patch` applied over the block `blockId`. */
+function withBlockPatch(
+  source: Campaign,
+  blockId: string,
+  patch: Record<string, unknown>
+): Campaign {
+  return {
+    ...source,
+    blocks: source.blocks.map((block) =>
+      block.id === blockId ? { ...block, ...patch } : block
+    )
+  }
+}
+
+async function openColoursTab(): Promise<void> {
+  await userEvent.click(await screen.findByRole('tab', { name: 'Colours' }))
+}
 
 /** Nothing selected, Style: the campaign Theme. */
 export const NothingSelectedStyle: Story = {
@@ -139,6 +158,40 @@ export const ChromeSettings: Story = {
   }
 }
 
+/** A hero's Colours, every row inherited from the band: orange dots. */
+export const SectionColoursInherited: Story = {
+  args: { initialState: { selectedBlockId: 'heroId', inspectorTab: 'style' } },
+  play: openColoursTab
+}
+
+/** A hero's Colours with two overrides set: blue dots on Heading and Button, orange on the rest, Reset on the picker. */
+export const SectionColoursSet: Story = {
+  args: {
+    campaignProp: withBlockPatch(campaign, 'heroId', {
+      headingColor: '#B62D1C',
+      buttonColor: '#3AA74A'
+    }),
+    initialState: { selectedBlockId: 'heroId', inspectorTab: 'style' }
+  },
+  play: openColoursTab
+}
+
+/** A Columns section, Style: Ratio above Background and Colours. */
+export const ColumnsSectionStyle: Story = {
+  args: {
+    campaignProp: campaignWithColumns,
+    initialState: { selectedBlockId: 'columnsId', inspectorTab: 'style' }
+  }
+}
+
+/** An empty column slot, Style: styled by its section, with the link to Columns. */
+export const ColumnSlotStyle: Story = {
+  args: {
+    campaignProp: campaignWithColumns,
+    initialState: { selectedBlockId: 'slotRightId', inspectorTab: 'style' }
+  }
+}
+
 /** A section in a column, Style: Background and Colours. */
 export const ColumnChildStyle: Story = {
   args: {
@@ -166,7 +219,33 @@ export const ColumnSlotSettings: Story = {
   }
 }
 
-/** A text Extra, Style: size, align and colour. */
+/** A text Extra with its own align and colour: blue dots, Reset enabled. */
+export const TextExtraStyleSet: Story = {
+  args: {
+    campaignProp: withBlockPatch(campaign, 'journeyListNoteId', {
+      align: 'center',
+      color: '#B62D1C'
+    }),
+    initialState: {
+      selectedBlockId: 'journeyListNoteId',
+      inspectorTab: 'style'
+    }
+  }
+}
+
+/** A button Extra with its own align and colours: blue dots, Reset enabled. */
+export const ButtonExtraStyleSet: Story = {
+  args: {
+    campaignProp: withBlockPatch(campaign, 'heroButtonId', {
+      align: 'right',
+      color: '#3AA74A',
+      labelColor: '#FFFFFF'
+    }),
+    initialState: { selectedBlockId: 'heroButtonId', inspectorTab: 'style' }
+  }
+}
+
+/** A text Extra, Style: size, align and colour, inherited from its section (orange) with the "Inherits from" link in the header. */
 export const TextExtraStyle: Story = {
   args: {
     initialState: {
@@ -176,7 +255,7 @@ export const TextExtraStyle: Story = {
   }
 }
 
-/** A button Extra, Style: variant, size and colours. */
+/** A button Extra, Style: variant, size, align and colours, inherited from its section (orange). */
 export const ButtonExtraStyle: Story = {
   args: {
     initialState: { selectedBlockId: 'heroButtonId', inspectorTab: 'style' }
@@ -204,6 +283,18 @@ export const JourneyCardSettings: Story = {
 export const JourneyCardStyle: Story = {
   args: {
     initialState: { selectedBlockId: 'landingJourneyId', inspectorTab: 'style' }
+  }
+}
+
+/** A region card, Style: styled by its section. */
+export const RegionCardStyle: Story = {
+  args: {
+    campaignProp: campaignWithRegions,
+    initialState: {
+      selectedRegionId: 'eurRegionId',
+      selectedBlockId: 'landingSwitcherId',
+      inspectorTab: 'style'
+    }
   }
 }
 

@@ -56,22 +56,30 @@ function renderControls(mocks: StyleMock[]): ReturnType<typeof render> {
 describe('TextControls', () => {
   beforeEach(() => vi.clearAllMocks())
 
+  it('shows Size, Align and Colour as inline rows, with no menu or popover', async () => {
+    renderControls([])
+
+    expect(await screen.findByRole('combobox', { name: 'Size' })).toBeVisible()
+    expect(screen.getByRole('group', { name: 'Align' })).toBeVisible()
+    expect(screen.getByRole('list', { name: 'Colour' })).toBeVisible()
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    expect(screen.queryByRole('presentation')).not.toBeInTheDocument()
+  })
+
   it('walks the twelve typography variants from Size, one Command per choice', async () => {
     const mocks = [textMock({ variant: 'h2' })]
     renderControls(mocks)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Size' }))
-    const menu = screen.getByTestId('TextSizeMenu')
-    expect(within(menu).getAllByRole('menuitem')).toHaveLength(12)
+    const size = await screen.findByRole('combobox', { name: 'Size' })
+    expect(within(size).getAllByRole('option')).toHaveLength(12)
     expect(TEXT_SIZES).toHaveLength(12)
-    expect(
-      within(menu).getByRole('menuitem', { name: 'Overline' })
-    ).toHaveClass('Mui-selected')
+    expect(size).toHaveValue('overline')
 
-    fireEvent.click(within(menu).getByRole('menuitem', { name: 'Heading 2' }))
+    fireEvent.change(size, { target: { value: 'h2' } })
 
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(size).toHaveValue('h2')
   })
 
   it('undoes a size change by writing the previous variant back', async () => {
@@ -81,8 +89,9 @@ describe('TextControls', () => {
     ]
     renderControls(mocks)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Size' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Heading 2' }))
+    fireEvent.change(await screen.findByRole('combobox', { name: 'Size' }), {
+      target: { value: 'h2' }
+    })
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -90,32 +99,52 @@ describe('TextControls', () => {
     await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
   })
 
-  it('sets align left, center or right, or follows the section again', async () => {
+  it('sets align left, center or right, and Reset follows the section again', async () => {
     const mocks = [
       textMock({ align: 'center' }),
       textMock({ align: null }, { align: 'center' as never })
     ]
     renderControls(mocks)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Align' }))
-    const menu = screen.getByTestId('TextAlignMenu')
+    const align = await screen.findByTestId('StyleRow-Align')
     expect(
-      within(menu)
-        .getAllByRole('menuitem')
-        .map((item) => item.textContent)
-    ).toEqual(['Left', 'Center', 'Right', 'Follow section'])
+      within(align)
+        .getAllByRole('button')
+        .map((button) => button.textContent)
+    ).toEqual(['Reset', 'Left', 'Center', 'Right'])
+    expect(within(align).getByTestId('ValueIndicator')).toHaveAttribute(
+      'data-source',
+      'inherited'
+    )
+    expect(
+      within(align).getByRole('button', { name: 'Reset Align' })
+    ).toBeDisabled()
 
-    fireEvent.click(within(menu).getByRole('menuitem', { name: 'Center' }))
+    fireEvent.click(within(align).getByRole('button', { name: 'Center' }))
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    await waitFor(() =>
+      expect(within(align).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'set'
+      )
+    )
+    expect(
+      within(align).getByRole('button', { name: 'Center' })
+    ).toHaveAttribute('aria-pressed', 'true')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Align' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Follow section' }))
+    fireEvent.click(within(align).getByRole('button', { name: 'Reset Align' }))
     await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+    await waitFor(() =>
+      expect(within(align).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'inherited'
+      )
+    )
   })
 
-  it('sets a hex colour through the palette picker and clears it to follow the section', async () => {
+  it('sets a hex colour through the palette picker and Reset returns it to the section colour', async () => {
     const mocks = [
       textMock({ color: '#112233' }),
       paletteMock(nextPalette(campaign.palette, '#112233')),
@@ -123,19 +152,35 @@ describe('TextControls', () => {
     ]
     renderControls(mocks)
 
-    fireEvent.click(await screen.findByRole('button', { name: 'Colour' }))
+    const row = await screen.findByTestId('TextColourRow-color')
+    expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+      'data-source',
+      'inherited'
+    )
     const input = screen.getByRole('textbox', { name: 'Text colour hex' })
     fireEvent.change(input, { target: { value: '#112233' } })
     fireEvent.keyDown(input, { key: 'Enter' })
 
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    await waitFor(() =>
+      expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'set'
+      )
+    )
 
-    const follow = await screen.findByRole('button', { name: 'Follow section' })
-    await waitFor(() => expect(follow).toBeEnabled())
-    fireEvent.click(follow)
+    const reset = screen.getByRole('button', { name: 'Reset' })
+    await waitFor(() => expect(reset).toBeEnabled())
+    fireEvent.click(reset)
 
     await waitFor(() => expect(mocks[2].result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+    await waitFor(() =>
+      expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'inherited'
+      )
+    )
   })
 })
