@@ -324,6 +324,83 @@ describe('ClientLayout', () => {
     await waitFor(() => expect(mockRefetch).toHaveBeenCalled())
   })
 
+  it('refetches variants when one of several concurrent uploads finishes', async () => {
+    let uploads: unknown[] = [
+      {
+        id: 'upload1',
+        source: 'videos-admin',
+        sourceKey: 'source-key-1',
+        status: 'muxCreated',
+        videoId: 'video123',
+        languageId: '184631',
+        language: { id: '184631', name: [{ value: 'Upload English' }] },
+        edition: 'base',
+        originalFilename: 'test-video.mp4',
+        contentType: 'video/mp4',
+        contentLength: '12345',
+        errorMessage: null,
+        r2AssetId: 'r2-id',
+        muxVideoId: 'mux-id',
+        videoVariantId: null,
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'upload2',
+        source: 'videos-admin',
+        sourceKey: 'source-key-2',
+        status: 'muxCreated',
+        videoId: 'video123',
+        languageId: '184632',
+        language: { id: '184632', name: [{ value: 'Upload Spanish' }] },
+        edition: 'base',
+        originalFilename: 'test-video-2.mp4',
+        contentType: 'video/mp4',
+        contentLength: '12345',
+        errorMessage: null,
+        r2AssetId: 'r2-id-2',
+        muxVideoId: 'mux-id-2',
+        videoVariantId: null,
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      }
+    ]
+    mockQueriesInOrder(
+      () =>
+        queryResult({
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        }),
+      () => queryResult({ videoVariantUploads: uploads })
+    )
+
+    const { rerender } = render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(mockRefetch).not.toHaveBeenCalled()
+
+    // the first upload finished while the second is still processing
+    uploads = [uploads[1]]
+    rerender(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(mockRefetch).toHaveBeenCalled())
+  })
+
   it('should render variants', () => {
     render(
       <MockedProvider>

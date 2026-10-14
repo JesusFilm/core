@@ -206,10 +206,7 @@ export default function ClientLayout({
   // audio language only appears after a full page reload.
   const previousIncompleteUploadCount = useRef(0)
   useEffect(() => {
-    if (
-      previousIncompleteUploadCount.current > 0 &&
-      incompleteUploads.length === 0
-    ) {
+    if (incompleteUploads.length < previousIncompleteUploadCount.current) {
       void refetch()
     }
     previousIncompleteUploadCount.current = incompleteUploads.length
