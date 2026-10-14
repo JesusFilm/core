@@ -425,11 +425,9 @@ describe('cascading availableLanguages upward to the root', () => {
       return storeBackedUpdate(args)
     })
 
-    await expect(
-      updateParentCollectionLanguages('leaf')
-    ).resolves.toBeUndefined()
+    await expect(updateParentCollectionLanguages('leaf')).rejects.toThrow()
 
-    // A's failure was caught and logged rather than thrown out of the cascade.
+    // A's failure was caught and logged rather than aborting B's branch.
     expect(mockedLoggerError).toHaveBeenCalledWith(
       expect.objectContaining({ videoId: 'A' }),
       expect.any(String)
@@ -438,6 +436,9 @@ describe('cascading availableLanguages upward to the root', () => {
     expect(store.A.availableLanguages).toEqual(['529'])
     // B's sibling branch still ran to completion, unaffected by A's failure.
     expect(store.B.availableLanguages.slice().sort()).toEqual(['496', '529'])
+    // But the overall promise still rejects, so callers that depend on this
+    // to mark their operation degraded (see reconcileParentVariants et al.)
+    // still see a failure.
   })
 
   it('produces a correct final value at a shared grandparent visited via two diamond branches', async () => {

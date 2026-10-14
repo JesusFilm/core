@@ -216,17 +216,35 @@ export function sameLanguageSet(a: string[], b: string[]): boolean {
 // cycle; that branch is logged and abandoned instead of recursing forever.
 // (A diamond - two branches sharing a common ancestor - is not a cycle and
 // is not affected: each branch carries its own path.)
+//
+// A failure in one branch is isolated from its siblings - each branch is
+// walked independently and a thrown error only abandons the branch it
+// occurred in - but is still reported to the caller: every pre-existing
+// caller wraps this call in its own try/catch to mark its operation
+// "degraded" (and, in one case, fire a Slack alert) when the parent sync
+// fails, so the promise this function returns must still reject if any
+// branch of the walk failed.
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
-  await cascadeParentCollectionLanguages(childVideoId, new Set([childVideoId]))
+  const hadFailure = await cascadeParentCollectionLanguages(
+    childVideoId,
+    new Set([childVideoId])
+  )
+
+  if (hadFailure) {
+    throw new Error(
+      `Failed to cascade availableLanguages to one or more parents of video ${childVideoId}`
+    )
+  }
 }
 
 async function cascadeParentCollectionLanguages(
   childVideoId: string,
   visitedPath: ReadonlySet<string>
-): Promise<void> {
+): Promise<boolean> {
   const parentIds = await findContainerParentIds(childVideoId)
+  let hadFailure = false
 
   for (const parentId of parentIds) {
     if (visitedPath.has(parentId)) {
@@ -244,17 +262,21 @@ async function cascadeParentCollectionLanguages(
       })
 
       if (!sameLanguageSet(before, after)) {
-        await cascadeParentCollectionLanguages(
+        const branchFailed = await cascadeParentCollectionLanguages(
           parentId,
           new Set([...visitedPath, parentId])
         )
+        if (branchFailed) hadFailure = true
       }
     } catch (error) {
       logger.error(
         { videoId: parentId, path: Array.from(visitedPath), error },
         'Failed to cascade availableLanguages to parent while walking video children/parents relation - abandoning this branch'
       )
+      hadFailure = true
       continue
     }
   }
+
+  return hadFailure
 }
