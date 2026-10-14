@@ -204,6 +204,6 @@ However, the index **does** serve a real, already-cited call site: Arclight's `/
 ## Files
 
 - `libs/prisma/media/db/schema.prisma` — `Video.availableLanguages` field + index
-- `libs/prisma/media/db/migrations/20260916194658_video_available_languages_not_null_gin_index/migration.sql` (renamed from `20260821060000_...`; comment corrected 2026-10-14)
+- `libs/prisma/media/db/migrations/20261014120000_video_available_languages_not_null_gin_index/migration.sql` (renamed from `20260821060000_...`, then `20260916194658_...`; comment corrected 2026-10-14; renamed again 2026-10-14 after merging main reintroduced P3006 drift against later migrations)
 - `apis/api-media/src/schema/video/video.ts` — 6 `isEmpty: false` call sites not served by the index (lines 426, 464, 566, 574, 610, 638)
 - `apps/arclight/src/app/v2/[...route]/_media-components/index.ts` — 2 `hasSome` call sites served by the index (lines 240, 277)
