@@ -19,7 +19,7 @@ resource "aws_rds_cluster" "default" {
   backup_retention_period         = 5
   preferred_backup_window         = "07:00-09:00"
   vpc_security_group_ids          = [var.vpc_security_group_id]
-  allow_major_version_upgrade     = true
+  allow_major_version_upgrade     = var.allow_major_version_upgrade
   final_snapshot_identifier       = "${var.name}-${var.env}-final-snapshot"
   db_cluster_parameter_group_name = var.managed_parameter_group_family == null ? var.db_cluster_parameter_group_name : aws_rds_cluster_parameter_group.upgrade[0].name
   enabled_cloudwatch_logs_exports = ["postgresql"]
@@ -29,6 +29,13 @@ resource "aws_rds_cluster" "default" {
   }
 
   lifecycle {
+    precondition {
+      condition = var.enforce_major_upgrade_approval ? (
+        split(".", var.engine_version)[0] == split(".", data.aws_rds_cluster.live[0].engine_version)[0] ||
+        var.allow_major_version_upgrade
+      ) : true
+      error_message = "Changing the live Aurora major version requires explicit per-environment approval in the reviewed plan. Complete the UPGRADES.md preflight first."
+    }
     precondition {
       condition     = var.managed_parameter_group_family == null ? var.db_cluster_parameter_group_name != null : var.managed_parameter_group_family == "aurora-postgresql${split(".", var.engine_version)[0]}"
       error_message = "A managed parameter group must match the Aurora PostgreSQL engine major version."

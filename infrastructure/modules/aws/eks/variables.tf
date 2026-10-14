@@ -87,8 +87,8 @@ variable "addons" {
   default     = {}
 
   validation {
-    condition     = alltrue([for name, addon in var.addons : contains(["kube-proxy", "vpc-cni", "coredns", "eks-node-monitoring-agent", "aws-ebs-csi-driver"], name) && can(regex("^v[0-9]+\\.[0-9]+\\.[0-9]+-eksbuild\\.[0-9]+$", addon.version))])
-    error_message = "Use a pinned eksbuild version for a reviewed EKS add-on."
+    condition     = alltrue([for name, addon in var.addons : contains(["kube-proxy", "vpc-cni", "coredns", "eks-node-monitoring-agent"], name) && can(regex("^v[0-9]+\\.[0-9]+\\.[0-9]+-eksbuild\\.[0-9]+$", addon.version))])
+    error_message = "Use a pinned eksbuild version for bootstrap or monitoring add-ons. EBS CSI is managed separately through its existing owner."
   }
 }
 

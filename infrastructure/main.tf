@@ -21,28 +21,29 @@ module "acm_central_jesusfilm_org" {
 
 module "prod" {
   source                       = "./environments/prod"
+  allow_aurora_major_upgrade   = var.allow_prod_aurora_major_upgrade
   datadog_forwarder_lambda_arn = module.datadog.log_forwarder_lambda_arn
   versions = {
     eks_cluster = local.upgrade.prod_eks
     eks_nodes   = local.upgrade.prod_nodes
     aurora      = local.upgrade.prod_pg
   }
-  eks_addon_versions = local.upgrade.prod_addons ? merge(local.eks_addon_versions[local.upgrade.prod_eks], {
+  eks_addon_versions = local.upgrade.prod_addons ? merge(local.prod_addon_versions, {
     eks-node-monitoring-agent = "v1.4.0-eksbuild.2"
-    aws-ebs-csi-driver        = "v1.67.0-eksbuild.1"
   }) : {}
 }
 
 module "stage" {
   source                       = "./environments/stage"
+  allow_aurora_major_upgrade   = var.allow_stage_aurora_major_upgrade
   datadog_forwarder_lambda_arn = module.datadog.log_forwarder_lambda_arn
   versions = {
     eks_cluster = local.upgrade.stage_eks
     eks_nodes   = local.upgrade.stage_eks
     aurora      = local.upgrade.stage_pg
   }
-  eks_addon_versions = merge(local.eks_addon_versions[local.upgrade.stage_eks], {
-    eks-node-monitoring-agent = "v1.4.0-eksbuild.2"
+  eks_addon_versions = merge(local.stage_addon_versions, {
+    eks-node-monitoring-agent = var.upgrade_phase == "prepare" ? "v1.1.0-eksbuild.1" : "v1.4.0-eksbuild.2"
   })
 }
 

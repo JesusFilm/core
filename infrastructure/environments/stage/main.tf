@@ -221,6 +221,8 @@ module "postgresql" {
   name                            = "jfp-core"
   env                             = "stage"
   engine_version                  = var.versions.aurora
+  enforce_major_upgrade_approval  = true
+  allow_major_version_upgrade     = var.allow_aurora_major_upgrade
   db_cluster_parameter_group_name = split(".", var.versions.aurora)[0] == "13" ? "aurora-postgresql13-cluster-replication" : null
   managed_parameter_group_family  = split(".", var.versions.aurora)[0] == "13" ? null : "aurora-postgresql${split(".", var.versions.aurora)[0]}"
   db_parameter_group_name         = "default.aurora-postgresql${split(".", var.versions.aurora)[0]}"
@@ -255,7 +257,7 @@ module "eks" {
   addons = {
     for name, version in var.eks_addon_versions : name => {
       version              = version
-      existing             = contains(["eks-node-monitoring-agent", "aws-ebs-csi-driver"], name)
+      existing             = name == "eks-node-monitoring-agent"
       configuration_values = lookup(local.eks_addon_configuration, name, null)
     }
   }

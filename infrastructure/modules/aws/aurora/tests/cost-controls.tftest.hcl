@@ -1,4 +1,8 @@
 mock_provider "aws" {
+  mock_data "aws_rds_cluster" {
+    defaults = { engine_version = "13.23" }
+  }
+
   mock_resource "aws_iam_role" {
     defaults = {
       arn = "arn:aws:iam::410965620680:role/test-rds-monitoring"
@@ -16,13 +20,14 @@ mock_provider "random" {}
 mock_provider "doppler" {}
 
 variables {
-  env                     = "stage"
-  name                    = "test-core"
-  doppler_token           = "test-token"
-  doppler_project         = "test"
-  subnet_group_name       = "test-subnets"
-  vpc_security_group_id   = "sg-00000000000000000"
-  PG_DATABASE_URL_ENV_VAR = "PRIVATE_DATABASE_URL"
+  enforce_major_upgrade_approval = true
+  env                            = "stage"
+  name                           = "test-core"
+  doppler_token                  = "test-token"
+  doppler_project                = "test"
+  subnet_group_name              = "test-subnets"
+  vpc_security_group_id          = "sg-00000000000000000"
+  PG_DATABASE_URL_ENV_VAR        = "PRIVATE_DATABASE_URL"
 }
 
 run "preserve_existing_database_defaults" {
@@ -65,6 +70,7 @@ run "configure_a_separate_engine_rollout" {
   command = plan
 
   variables {
+    allow_major_version_upgrade     = true
     engine_version                  = "17.11"
     db_cluster_parameter_group_name = "test-postgresql17-replication"
     apply_immediately               = false
@@ -107,6 +113,7 @@ run "reject_reversed_capacity_bounds" {
 run "upgrade_with_a_new_compatible_parameter_group" {
   command = plan
   variables {
+    allow_major_version_upgrade     = true
     engine_version                  = "17.11"
     db_cluster_parameter_group_name = null
     managed_parameter_group_family  = "aurora-postgresql17"
@@ -136,8 +143,44 @@ run "upgrade_with_a_new_compatible_parameter_group" {
 run "reject_parameter_group_for_a_different_major" {
   command = plan
   variables {
+    allow_major_version_upgrade    = true
     engine_version                 = "17.11"
     managed_parameter_group_family = "aurora-postgresql16"
+  }
+  expect_failures = [aws_rds_cluster.default]
+}
+
+run "reject_implicit_major_upgrade" {
+  command = plan
+  variables {
+    engine_version                  = "17.11"
+    db_cluster_parameter_group_name = "test-postgresql17-replication"
+  }
+  expect_failures = [aws_rds_cluster.default]
+}
+
+run "allow_ordinary_plan_after_major_upgrade_without_approval" {
+  command = plan
+  variables {
+    engine_version                  = "17.11"
+    db_cluster_parameter_group_name = "test-postgresql17-replication"
+  }
+  override_data {
+    target = data.aws_rds_cluster.live
+    values = { engine_version = "17.11" }
+  }
+  assert {
+    condition     = !aws_rds_cluster.default.allow_major_version_upgrade
+    error_message = "A completed major upgrade must not require permanent approval for ordinary plans."
+  }
+}
+
+run "reject_production_major_upgrade_without_its_own_approval" {
+  command = plan
+  variables {
+    env                             = "prod"
+    engine_version                  = "17.11"
+    db_cluster_parameter_group_name = "test-postgresql17-replication"
   }
   expect_failures = [aws_rds_cluster.default]
 }

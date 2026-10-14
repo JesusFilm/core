@@ -120,3 +120,15 @@ variable "apply_immediately" {
   description = "Apply cluster changes immediately rather than during maintenance; choose explicitly for each rollout."
   default     = true
 }
+
+variable "enforce_major_upgrade_approval" {
+  type        = bool
+  description = "Read an existing cluster's live engine and reject unapproved major changes; leave false only when provisioning a new cluster."
+  default     = false
+}
+
+variable "allow_major_version_upgrade" {
+  type        = bool
+  description = "Explicit approval for a major engine change; defaults to false even when the target engine changes."
+  default     = false
+}

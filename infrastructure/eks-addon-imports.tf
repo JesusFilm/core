@@ -6,7 +6,7 @@ import {
 }
 
 import {
-  for_each = local.upgrade.prod_addons ? toset(["eks-node-monitoring-agent", "aws-ebs-csi-driver"]) : toset([])
+  for_each = local.upgrade.prod_addons ? toset(["eks-node-monitoring-agent"]) : toset([])
   to       = module.prod.module.eks.aws_eks_addon.core[each.key]
   id       = "jfp-eks-prod:${each.key}"
 }

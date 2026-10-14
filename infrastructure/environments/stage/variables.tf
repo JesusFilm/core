@@ -28,3 +28,9 @@ variable "eks_addon_versions" {
   type        = map(string)
   description = "Pinned, compatible core add-on versions; empty defers adoption in this environment."
 }
+
+variable "allow_aurora_major_upgrade" {
+  type        = bool
+  description = "Explicit approval for this environment's live Aurora major upgrade; never inferred from an EKS phase."
+  default     = false
+}

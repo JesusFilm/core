@@ -13,7 +13,7 @@ mock_provider "aws" {
   mock_data "aws_eks_addon" {
     defaults = {
       configuration_values     = "{\"test\":true}"
-      service_account_role_arn = "arn:aws:iam::123456789012:role/existing-csi"
+      service_account_role_arn = "arn:aws:iam::123456789012:role/existing-monitoring"
     }
   }
 }
@@ -94,20 +94,30 @@ run "allow_worker_preparation_without_control_plane_upgrade" {
   }
 }
 
-run "preserve_existing_driver_configuration_and_iam_role" {
+run "preserve_existing_monitoring_configuration_and_iam_role" {
   command = plan
   variables {
     cluster_version = "1.32"
     addons = {
-      aws-ebs-csi-driver = { version = "v1.67.0-eksbuild.1", existing = true }
+      eks-node-monitoring-agent = { version = "v1.4.0-eksbuild.2", existing = true }
     }
   }
   assert {
     condition = (
-      aws_eks_addon.core["aws-ebs-csi-driver"].configuration_values == "{\"test\":true}" &&
-      aws_eks_addon.core["aws-ebs-csi-driver"].service_account_role_arn == "arn:aws:iam::123456789012:role/existing-csi" &&
-      aws_eks_addon.core["aws-ebs-csi-driver"].preserve
+      aws_eks_addon.core["eks-node-monitoring-agent"].configuration_values == "{\"test\":true}" &&
+      aws_eks_addon.core["eks-node-monitoring-agent"].service_account_role_arn == "arn:aws:iam::123456789012:role/existing-monitoring" &&
+      aws_eks_addon.core["eks-node-monitoring-agent"].preserve
     )
-    error_message = "Importing an existing driver must preserve its configuration, IAM role and Kubernetes objects."
+    error_message = "Importing existing monitoring must preserve its configuration, IAM role and Kubernetes objects."
   }
+}
+
+run "reject_competing_ebs_csi_ownership" {
+  command = plan
+  variables {
+    addons = {
+      aws-ebs-csi-driver = { version = "v1.67.0-eksbuild.1", existing = true }
+    }
+  }
+  expect_failures = [var.addons]
 }
