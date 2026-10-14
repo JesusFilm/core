@@ -244,6 +244,17 @@ describe('ThemePanel', () => {
       expect(readTheme(cache)?.contrastTextColor).toBe('#FFFFFF')
     })
 
+    it('marks every theme colour as set, in blue', async () => {
+      renderPanel([])
+
+      const row = await screen.findByTestId('ThemeColour-primaryColor')
+      expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'set'
+      )
+      expect(screen.getAllByTestId('ValueIndicator')).toHaveLength(8)
+    })
+
     it('pre-validates only the hex format and writes nothing for a bad value', async () => {
       renderPanel([])
 

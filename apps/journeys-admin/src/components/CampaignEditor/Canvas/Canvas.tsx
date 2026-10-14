@@ -183,7 +183,7 @@ interface CanvasProps {
  * language's bcp47), the header above and the footer below as on the public
  * page. Desktop/Phone is a view toggle held by the shell, never a Command.
  * The frame carries its own Hotkeys, since its key events never leave it, and
- * a click on the empty frame returns to the campaign row. A section is
+ * a click on the empty frame returns to the campaign. A section is
  * dragged by its handle only; the drop lands before or after the section
  * under the pointer by its midpoint, as one reorder Command.
  *
