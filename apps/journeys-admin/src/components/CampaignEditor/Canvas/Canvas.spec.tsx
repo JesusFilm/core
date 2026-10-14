@@ -686,7 +686,7 @@ describe('Canvas preview language', () => {
     )
   }
 
-  it('renders the campaign text in the preview language the top bar chose, falling back to the default where no translation exists', async () => {
+  it('renders the campaign text in the preview language the Pages panel chose, falling back to the default where no translation exists', async () => {
     const { baseElement } = render(
       <StaticEditor
         campaignProp={translated}

@@ -157,8 +157,7 @@ const columnsCreateMock = {
 
 function renderBar(
   initialState?: Partial<CampaignEditorState>,
-  campaignProp = campaign,
-  props: Parameters<typeof BottomBar>[0] = {}
+  campaignProp = campaign
 ): ReturnType<typeof render> {
   return render(
     <StaticEditor
@@ -174,7 +173,7 @@ function renderBar(
     >
       <Hotkeys />
       <SelectionProbe />
-      <BottomBar {...props} />
+      <BottomBar />
     </StaticEditor>
   )
 }
@@ -196,26 +195,15 @@ describe('BottomBar', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
-  it('shows Languages, Translations and Add section on the campaign row, and no Settings or Theme', () => {
+  it('shows only Add section on the campaign row, and no Languages, Translations, Settings or Theme', () => {
     renderBar()
 
     expect(screen.getByTestId('CampaignBottomBar')).toHaveAttribute(
       'data-selection',
       'campaign'
     )
-    expect(buttonNames()).toEqual(['Languages', 'Translations', 'Add section'])
+    expect(buttonNames()).toEqual(['Add section'])
     expect(screen.getByRole('button', { name: 'Add section' })).toBeEnabled()
-  })
-
-  it('opens the Languages and Translations views through their callbacks', () => {
-    const onLanguagesClick = vi.fn()
-    const onTranslationsClick = vi.fn()
-    renderBar(undefined, campaign, { onLanguagesClick, onTranslationsClick })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Languages' }))
-    expect(onLanguagesClick).toHaveBeenCalled()
-    fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
-    expect(onTranslationsClick).toHaveBeenCalled()
   })
 
   it('keeps only the breadcrumb and Add line for a selected region card', () => {
@@ -298,7 +286,7 @@ describe('BottomBar', () => {
     await userEvent.keyboard('{Escape}')
 
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
-    expect(buttonNames()).toEqual(['Languages', 'Translations', 'Add section'])
+    expect(buttonNames()).toEqual(['Add section'])
   })
 
   it('offers text or button, above or below, from a chrome block’s Add, and no section entries', async () => {
