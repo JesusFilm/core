@@ -1,4 +1,7 @@
-import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
+import {
+  carouselCards,
+  transformCampaignBlocks
+} from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 
 import {
@@ -45,7 +48,7 @@ export interface NavigatorNode {
 }
 
 interface BuildNavigatorTreeParams {
-  campaign: Pick<Campaign, 'blocks' | 'pages' | 'regions'>
+  campaign: Pick<Campaign, 'blocks' | 'pages' | 'regions' | 'defaultLanguageId'>
   pageKind: CampaignPageKind
   /** The region the Region Page is rendered for; its own card is left out of the switcher. */
   currentRegionId?: string
@@ -82,14 +85,31 @@ function placementOf(
   return block.placement === CampaignChildPlacement.above ? 'above' : 'below'
 }
 
+/**
+ * The children the canvas renders. A Video Carousel shows only its cards: in
+ * Watch mode (`videoId` set) none of its items, otherwise the items that make
+ * a card; the rest are hidden data a row must not select.
+ */
+function shownChildren(
+  block: CampaignTreeBlock<CampaignBlock>,
+  languageId: string
+): Array<CampaignTreeBlock<CampaignBlock>> {
+  if (block.__typename !== 'CampaignVideoCarouselBlock') return block.children
+  if (block.videoId != null) return []
+  const cardIds = new Set(
+    carouselCards(block, languageId).map((card) => card.id)
+  )
+  return block.children.filter((child) => cardIds.has(child.id))
+}
+
 function blockNode(
   block: CampaignTreeBlock<CampaignBlock>,
   parent: CampaignBlock | undefined,
   campaign: BuildNavigatorTreeParams['campaign'],
   currentRegionId: string | undefined
 ): NavigatorNode {
-  const children = block.children.map((child) =>
-    blockNode(child, block, campaign, currentRegionId)
+  const children = shownChildren(block, campaign.defaultLanguageId).map(
+    (child) => blockNode(child, block, campaign, currentRegionId)
   )
   if (block.__typename === 'CampaignRegionSwitcherBlock')
     children.push(...regionNodes(campaign, block.id, currentRegionId))
