@@ -20,8 +20,8 @@ import {
 import { CAMPAIGN_PUBLISH } from '../../../libs/useCampaignPublishMutation'
 import { CAMPAIGN_UNPUBLISH } from '../../../libs/useCampaignUnpublishMutation'
 import type { CanvasView } from '../Canvas'
-import type { EditorPanelMode } from '../EditorPanel'
 import { campaign, campaignWithRegions, publishedCampaign } from '../data'
+import type { EditorPanelMode } from '../EditorPanel'
 
 import { TopBar } from './TopBar'
 
