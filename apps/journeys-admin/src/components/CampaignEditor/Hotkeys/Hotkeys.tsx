@@ -13,7 +13,7 @@ interface HotkeysProps {
 /**
  * The editor's shortcuts: ⌘Z / ⇧⌘Z for undo and redo, Escape to close the open
  * left panel and otherwise step the selection up one level (blurring an
- * inline input first), P to toggle the Pages panel, S and D to switch the
+ * inline input first), P and A to toggle the Pages and Add panels, S and D to switch the
  * Inspector's Style and Settings tab. Rendered once for the shell and
  * once inside the canvas frame, whose key events never reach the parent
  * document. Only the frame listens to undo and redo while a form field has
@@ -59,6 +59,11 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
   useHotkeys(
     'p',
     () => dispatch({ type: 'SetPanelAction', panel: 'pages' }),
+    letterOptions
+  )
+  useHotkeys(
+    'a',
+    () => dispatch({ type: 'SetPanelAction', panel: 'add' }),
     letterOptions
   )
   useHotkeys(
