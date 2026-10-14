@@ -1,8 +1,8 @@
 import { builder } from '../../../builder'
 import { CampaignButtonBlock } from '../campaignButtonBlock'
 import {
-  assertPlacement,
   authorizeTypedBlockUpdate,
+  placementUpdate,
   updateBlock
 } from '../service'
 
@@ -28,9 +28,7 @@ builder.mutationField('campaignButtonBlockUpdate', (t) =>
       const data = validateButtonInput(input)
       return await updateBlock(block, {
         ...data,
-        ...(input.placement !== undefined && block.parentBlockId != null
-          ? { placement: assertPlacement(input.placement) }
-          : {})
+        ...placementUpdate(block, input.placement)
       })
     }
   })

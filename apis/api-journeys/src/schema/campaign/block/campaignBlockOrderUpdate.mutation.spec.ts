@@ -197,6 +197,27 @@ describe('campaignBlockOrderUpdate', () => {
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
+  it('rejects placement on a Region Line (BAD_USER_INPUT, placement)', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', {
+        id: 'lineId',
+        typename: 'CampaignTypographyBlock',
+        pageId: null,
+        regionId: 'regionId',
+        parentBlockId: null,
+        parentOrder: 0
+      })
+    )
+
+    const result = await move('lineId', 1, 'above')
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'placement'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
   it('rejects a negative position (BAD_USER_INPUT, parentOrder)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroId')
