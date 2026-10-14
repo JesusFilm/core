@@ -31,7 +31,11 @@ type ReconciledVariant = {
   published: boolean
   muxVideo: { readyToStream: boolean } | null
   hls?: string | null
+  dash?: string | null
   share?: string | null
+  masterUrl?: string | null
+  assetId?: string | null
+  duration?: number | null
   video?: { label: string } | null
 }
 
@@ -56,7 +60,14 @@ export function isGeneratedParentVariant(
   if (FRESH_UPLOAD_REASONS.has(reason)) return false
   return (
     variant.muxVideo == null &&
-    !videoVariantContainsMedia({ hls: variant.hls, share: variant.share })
+    !videoVariantContainsMedia({
+      hls: variant.hls,
+      dash: variant.dash,
+      share: variant.share,
+      masterUrl: variant.masterUrl,
+      assetId: variant.assetId,
+      duration: variant.duration
+    })
   )
 }
 

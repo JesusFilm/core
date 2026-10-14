@@ -37,7 +37,11 @@ export type ReconciliationRecord = {
     published: boolean
     downloadable: boolean
     hls: string
+    dash?: string | null
     share: string
+    masterUrl?: string | null
+    assetId?: string | null
+    duration?: number | null
     muxVideo: { readyToStream: boolean } | null
     video?: { label: string } | null
   } | null
