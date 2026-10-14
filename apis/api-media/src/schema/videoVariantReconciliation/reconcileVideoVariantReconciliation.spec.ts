@@ -110,7 +110,7 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
   })
 
-  it('keeps a new Variant unpublished when parent indexing fails', async () => {
+  it('keeps the child Variant unpublished, but still publishes and indexes the generated parent Variant, when the parent Video record fails to index', async () => {
     const reconciliation: ReconciliationRecord = {
       reason: 'video-variant-publication-change',
       videoId: 'episode-1',
@@ -149,7 +149,19 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
-    expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+    // The child Variant's own publish step never runs -- reconcileParentVariants
+    // reports failure before reconcileVideoVariantReconciliation gets there.
+    expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith({
+      where: { id: 'variant-1' },
+      data: { published: true }
+    })
+    // But the generated parent Variant is still published and indexed: its own
+    // Video record (series-1) failing to index must not block its Variant record.
+    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+      where: { id: '20770_series-1' },
+      data: { published: true }
+    })
+    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
     expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
       where: { id: 'reconciliation-1' },
       data: expect.objectContaining({

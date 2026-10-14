@@ -1,6 +1,5 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import {
   removeLanguageFromVideoIfUnused,
@@ -356,27 +355,10 @@ export async function reconcileGeneratedParentVariant({
 }): Promise<ReasonSpecificReconciliationResult> {
   const stages = generatedParentStages(reconciliation.processingStages)
 
-  try {
-    await updateVideoInAlgolia(variant.videoId)
-    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
-  } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
-    await persistReconciliationStatus({
-      store,
-      reconciliationId,
-      status: 'degraded',
-      stages,
-      failedStageValue: stages.algoliaVideo
-    })
-    return {
-      publicationReady: false,
-      status: 'degraded',
-      failure: {
-        stageName: 'algoliaVideo',
-        stage: stages.algoliaVideo
-      }
-    }
-  }
+  stages.algoliaVideo = await syncVideoRecordStage(
+    variant.videoId,
+    stages.algoliaVideo
+  )
 
   try {
     if (!variant.published) {
@@ -418,6 +400,13 @@ export async function reconcileGeneratedParentVariant({
       }
     }
   }
+
+  const videoRecordFailure = await persistVideoRecordFailure({
+    store,
+    reconciliationId,
+    stages
+  })
+  if (videoRecordFailure != null) return videoRecordFailure
 
   await persistReconciliationStatus({
     store,

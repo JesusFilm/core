@@ -1,6 +1,5 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import {
@@ -16,7 +15,8 @@ import {
   ReconciliationStatus,
   completedStage,
   failedStage,
-  generatedParentStages
+  generatedParentStages,
+  syncVideoRecordStage
 } from './reconciliationStages'
 import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
@@ -186,14 +186,10 @@ async function reconcileParentVariant({
     return null
   }
 
-  try {
-    await updateVideoInAlgolia(parentVideo.id)
-    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
-  } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
-    await persistStatus('degraded', stages.algoliaVideo)
-    return { publicationReady: false, status: 'degraded' }
-  }
+  stages.algoliaVideo = await syncVideoRecordStage(
+    parentVideo.id,
+    stages.algoliaVideo
+  )
 
   try {
     await updateVideoVariantInAlgolia(parentVariant.id)
@@ -203,6 +199,11 @@ async function reconcileParentVariant({
       stages.algoliaVariant.attempts + 1
     )
     await persistStatus('degraded', stages.algoliaVariant)
+    return { publicationReady: false, status: 'degraded' }
+  }
+
+  if (stages.algoliaVideo.state === 'failed') {
+    await persistStatus('degraded', stages.algoliaVideo)
     return { publicationReady: false, status: 'degraded' }
   }
 
