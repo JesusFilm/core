@@ -2,6 +2,7 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import Paper from '@mui/material/Paper'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ReactElement } from 'react'
+import { screen, userEvent } from 'storybook/test'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 import { journeysAdminConfig } from '@core/shared/ui/storybook'
@@ -91,6 +92,26 @@ export const RegionPage: Story = {
       selectedRegionId: 'afrRegionId'
     }
   }
+}
+
+/** Lifts a row by its handle with the keyboard and steps it once, so the row it would land on is marked. */
+async function liftAndStep(handleId: string): Promise<void> {
+  const handle = await screen.findByTestId(`NavigatorDragHandle-${handleId}`)
+  handle.focus()
+  await userEvent.keyboard(' ')
+  await userEvent.keyboard('{ArrowUp}')
+}
+
+/** The second journey card lifted over the first: only the list's own cards can be landed on. */
+export const DraggingAJourneyCard: Story = {
+  args: { initialState: { selectedBlockId: 'landingDraftJourneyId' } },
+  play: async () => await liftAndStep('landingDraftJourneyId')
+}
+
+/** An Extra lifted: the divider is a drop target, and dropping past it flips the Extra's placement. */
+export const DraggingAnExtraTowardTheDivider: Story = {
+  args: { initialState: { selectedBlockId: 'heroButtonId' } },
+  play: async () => await liftAndStep('heroButtonId')
 }
 
 export default NavigatorMeta

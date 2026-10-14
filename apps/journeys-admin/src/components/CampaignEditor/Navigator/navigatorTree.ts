@@ -19,10 +19,23 @@ import {
   sortedRegions
 } from '../CampaignEditorProvider'
 
-/** What a row is called: a block's typename, or a region card. */
-export type NavigatorNodeType = CampaignBlock['__typename'] | 'Region'
+/** What a row is called: a block's typename, a region card, or the divider between a section's above and below Extras. */
+export type NavigatorNodeType =
+  | CampaignBlock['__typename']
+  | 'Region'
+  | 'SectionContent'
 
 export type NavigatorExtraPlacement = 'above' | 'below'
+
+/** Which Command a drop in a sibling group dispatches. */
+export type NavigatorReorderKind = 'block' | 'extra' | 'columnSlot' | 'region'
+
+/** A row that takes part in drag-to-reorder: the sibling group it can be dropped in. */
+export interface NavigatorReorder {
+  /** `<parent row id>:<what the group holds>`; rows in different groups never collide. */
+  group: string
+  kind: NavigatorReorderKind
+}
 
 export interface NavigatorNode {
   /** The tree item id; the block id, or `<switcher id>__<region id>` for a region card. */
@@ -44,6 +57,8 @@ export interface NavigatorNode {
   needsJourney: boolean
   /** A region card whose region is not listed on the switcher. */
   unlisted: boolean
+  /** Absent when the row has no sibling of its kind to be moved among. */
+  reorder?: NavigatorReorder
   children: NavigatorNode[]
 }
 
@@ -85,6 +100,70 @@ function placementOf(
   return block.placement === CampaignChildPlacement.above ? 'above' : 'below'
 }
 
+/** The body kinds that reorder among their own kind, by the section that holds them: carousel cards, journey cards, Column Slots and region cards. */
+const BODY_REORDER_KINDS: ReadonlyArray<
+  [NavigatorNodeType, NavigatorNodeType, NavigatorReorderKind]
+> = [
+  ['CampaignVideoCarouselBlock', 'CampaignVideoBlock', 'block'],
+  ['CampaignJourneyListBlock', 'CampaignJourneyBlock', 'block'],
+  ['CampaignColumnsBlock', 'CampaignColumnBlock', 'columnSlot'],
+  ['CampaignRegionSwitcherBlock', 'Region', 'region']
+]
+
+/** Marks the rows of one sibling group movable; a group of one has nothing to move among. */
+function inGroup(
+  nodes: NavigatorNode[],
+  group: string,
+  kind: NavigatorReorderKind
+): NavigatorNode[] {
+  if (nodes.length < 2) return nodes
+  return nodes.map((node) => ({ ...node, reorder: { group, kind } }))
+}
+
+/**
+ * A node's children as the canvas orders them: the Extras placed above, the
+ * body (cards, slots, region cards), then the Extras placed below. When there
+ * are Extras a divider row stands where the body starts, so an Extra can be
+ * dragged across it to change its placement.
+ */
+function childRows(
+  block: CampaignBlock,
+  nodes: NavigatorNode[]
+): NavigatorNode[] {
+  const body = nodes.filter((node) => node.placement == null)
+  const regrouped = new Map<string, NavigatorNode>()
+  for (const [parentType, type, kind] of BODY_REORDER_KINDS) {
+    if (block.__typename !== parentType) continue
+    const members = body.filter((node) => node.type === type)
+    for (const node of inGroup(members, `${block.id}:${type}`, kind))
+      regrouped.set(node.id, node)
+  }
+  const bodyRows = body.map((node) => regrouped.get(node.id) ?? node)
+
+  const above = nodes.filter((node) => node.placement === 'above')
+  const below = nodes.filter((node) => node.placement === 'below')
+  if (above.length + below.length === 0) return bodyRows
+  const divider: NavigatorNode = {
+    id: `${block.id}__content`,
+    domId: `${block.id}__content`,
+    type: 'SectionContent',
+    needsJourney: false,
+    unlisted: false,
+    children: []
+  }
+  const extraRows = inGroup(
+    [...above, divider, ...below],
+    `${block.id}:extras`,
+    'extra'
+  )
+  return [
+    ...extraRows.filter((node) => node.placement === 'above'),
+    ...extraRows.filter((node) => node.type === 'SectionContent'),
+    ...bodyRows,
+    ...extraRows.filter((node) => node.placement === 'below')
+  ]
+}
+
 /**
  * The children the canvas renders. A Video Carousel shows only its cards: in
  * Watch mode (`videoId` set) none of its items, otherwise the items that make
@@ -122,7 +201,7 @@ function blockNode(
     placement: placementOf(block, parent),
     needsJourney: false,
     unlisted: false,
-    children
+    children: childRows(block, children)
   }
 }
 
@@ -149,27 +228,32 @@ function regionNodes(
         secondaryText: region.name,
         needsJourney: regionNeedsJourney(region),
         unlisted: !region.listed,
-        children: regionLines(campaign.blocks, region.id)
-          .filter((line) => line.__typename === 'CampaignTypographyBlock')
-          .map((line) => ({
-            id: `${id}__${line.id}`,
-            domId: line.id,
-            type: line.__typename,
-            blockId: line.id,
-            secondaryText: secondaryTextOf(line),
-            needsJourney: false,
-            unlisted: false,
-            children: []
-          }))
+        children: inGroup(
+          regionLines(campaign.blocks, region.id)
+            .filter((line) => line.__typename === 'CampaignTypographyBlock')
+            .map((line) => ({
+              id: `${id}__${line.id}`,
+              domId: line.id,
+              type: line.__typename,
+              blockId: line.id,
+              secondaryText: secondaryTextOf(line),
+              needsJourney: false,
+              unlisted: false,
+              children: []
+            })),
+          `${id}:lines`,
+          'block'
+        )
       }
     })
 }
 
 /**
  * The Navigator's tree: exactly what the canvas shows. The Header, the page's
- * sections in order, the Footer; under a section its Extras, Column Slots,
- * carousel cards and journey cards in `parentOrder` (an Extra tagged above or
- * below); under a Region Switcher its region cards and their Region Lines.
+ * sections in order, the Footer; under a section its Extras (tagged above or
+ * below), Column Slots, carousel cards and journey cards, in the canvas's order;
+ * under a Region Switcher its region cards and their Region Lines. Rows that
+ * can be moved among their siblings carry their sibling group.
  */
 export function buildNavigatorTree({
   campaign,
@@ -191,9 +275,18 @@ export function buildNavigatorTree({
   const footer = chrome.find(
     (block) => block.__typename === 'CampaignFooterBlock'
   )
-  return [header, ...sections, footer]
-    .filter((block) => block != null)
-    .map((block) => blockNode(block, undefined, campaign, currentRegionId))
+  const sectionNodes = inGroup(
+    sections.map((section) =>
+      blockNode(section, undefined, campaign, currentRegionId)
+    ),
+    'root:sections',
+    'block'
+  )
+  const chromeNode = (block: (typeof chrome)[number] | undefined) =>
+    block == null
+      ? []
+      : [blockNode(block, undefined, campaign, currentRegionId)]
+  return [...chromeNode(header), ...sectionNodes, ...chromeNode(footer)]
 }
 
 /** Every node of the tree, parents before their children. */
