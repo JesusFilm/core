@@ -12,7 +12,7 @@ export function firstRunHintKey(campaignId: string): string {
 }
 
 /**
- * The one first-run hint shown above the canvas after create, once per
+ * The one first-run hint floating over the canvas in the Canvas banner after create, once per
  * campaign: dismissing it sets the flag like the editor's other one-time
  * tours. No wizard, no modal.
  */
@@ -39,9 +39,11 @@ export function FirstRunHint({
       severity="info"
       onClose={handleDismiss}
       data-testid="CampaignFirstRunHint"
-      sx={{ borderRadius: 0 }}
+      sx={{ boxShadow: 4 }}
     >
-      {t('Click any text to edit it. Add your regions in the region switcher.')}
+      {t(
+        'Pick anything on the page or in the Navigator, then change it in the Inspector.'
+      )}
     </Alert>
   )
 }

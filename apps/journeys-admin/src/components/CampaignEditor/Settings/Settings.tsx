@@ -32,6 +32,7 @@ import {
   campaignPublicAddress
 } from '../campaignAddress'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
+import { campaignStatusCopy } from '../PublishButton/statusCopy'
 
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
 
@@ -207,13 +208,7 @@ export function Settings({
         color="text.secondary"
         data-testid="CampaignStatusCopy"
       >
-        {published
-          ? t(
-              'Published. Edits are saved as you make them and reach the public page shortly.'
-            )
-          : t(
-              'Draft. Edits are saved as you make them; nothing is public until you publish.'
-            )}
+        {campaignStatusCopy(t, published)}
       </Typography>
       <TextField
         label={t('Title')}
