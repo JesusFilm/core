@@ -199,6 +199,8 @@ module "redis" {
   cluster_id        = "redis-stage"
   subnet_ids        = module.stage.vpc.internal_subnets
   env               = "stage"
+  node_type         = "cache.t2.medium"
+  apply_immediately = true
   security_group_id = module.stage.ecs.internal_ecs_security_group_id
   cidr              = module.stage.cidr
   vpc_id            = module.stage.vpc.id
@@ -215,9 +217,17 @@ module "short_links_clickhouse" {
 }
 
 module "postgresql" {
-  source                  = "../../modules/aws/aurora"
-  name                    = "jfp-core"
-  env                     = "stage"
+  source                          = "../../modules/aws/aurora"
+  name                            = "jfp-core"
+  env                             = "stage"
+  engine_version                  = "13.23"
+  db_cluster_parameter_group_name = "aurora-postgresql13-cluster-replication"
+  storage_type                    = "aurora-iopt1"
+  apply_immediately               = true
+  serverlessv2_capacity = {
+    min_capacity = 0.5
+    max_capacity = 16
+  }
   doppler_token           = data.aws_ssm_parameter.doppler_core_stage_token.value
   doppler_project         = "core"
   subnet_group_name       = module.stage.vpc.db_subnet_group_name
@@ -226,8 +236,20 @@ module "postgresql" {
 }
 
 module "eks" {
-  source             = "../../modules/aws/eks"
-  env                = "stage"
+  source               = "../../modules/aws/eks"
+  env                  = "stage"
+  cluster_version      = "1.32"
+  node_version         = null
+  node_max_unavailable = 2
+  node_repair_thresholds = {
+    max_parallel_nodes_repaired_percentage  = 10
+    max_unhealthy_node_threshold_percentage = 20
+  }
+  node_scaling_config = {
+    desired_size = 3
+    min_size     = 3
+    max_size     = 5
+  }
   name               = "jfp-eks"
   subnet_ids         = concat(module.stage.vpc.internal_subnets, module.stage.vpc.public_subnets)
   security_group_ids = [module.stage.ecs.internal_ecs_security_group_id, module.stage.ecs.public_ecs_security_group_id]
@@ -254,4 +276,3 @@ module "plausible_clickhouse_snapshots" {
     { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 3 }
   ]
 }
-

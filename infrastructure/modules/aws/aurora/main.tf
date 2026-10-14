@@ -5,11 +5,12 @@ resource "random_password" "password" {
 }
 
 resource "aws_rds_cluster" "default" {
-  apply_immediately               = true
+  apply_immediately               = var.apply_immediately
   cluster_identifier              = "${var.name}-${var.env}"
   engine                          = "aurora-postgresql"
   engine_mode                     = "provisioned"
-  engine_version                  = "13.23"
+  engine_version                  = var.engine_version
+  storage_type                    = var.storage_type
   availability_zones              = data.aws_availability_zones.current.names.*
   db_subnet_group_name            = var.subnet_group_name
   database_name                   = var.env
@@ -20,11 +21,11 @@ resource "aws_rds_cluster" "default" {
   vpc_security_group_ids          = [var.vpc_security_group_id]
   allow_major_version_upgrade     = true
   final_snapshot_identifier       = "${var.name}-${var.env}-final-snapshot"
-  db_cluster_parameter_group_name = "aurora-postgresql13-cluster-replication"
+  db_cluster_parameter_group_name = var.db_cluster_parameter_group_name
   enabled_cloudwatch_logs_exports = ["postgresql"]
   serverlessv2_scaling_configuration {
-    max_capacity = 16
-    min_capacity = 0.5
+    max_capacity = var.serverlessv2_capacity.max_capacity
+    min_capacity = var.serverlessv2_capacity.min_capacity
   }
 }
 

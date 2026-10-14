@@ -46,7 +46,7 @@ resource "aws_security_group" "eks-cluster" {
 resource "aws_eks_cluster" "this" {
   name     = "${var.name}-${var.env}"
   role_arn = aws_iam_role.eks-cluster.arn
-  version  = "1.32"
+  version  = var.cluster_version
 
   vpc_config {
     security_group_ids = concat([aws_security_group.eks-cluster.id], var.security_group_ids)
@@ -217,18 +217,21 @@ resource "aws_eks_node_group" "az_2a_ondemand" {
   node_group_name = "jfp-eks-node-group-2a-${var.env}"
   node_role_arn   = aws_iam_role.eks-node.arn
   subnet_ids      = var.subnet_ids_2a
+  version         = var.node_version
 
   scaling_config {
-    desired_size = 3
-    max_size     = 5
-    min_size     = 3
+    desired_size = var.node_scaling_config.desired_size
+    max_size     = var.node_scaling_config.max_size
+    min_size     = var.node_scaling_config.min_size
   }
 
   update_config {
-    max_unavailable = 2
+    max_unavailable = var.node_max_unavailable
   }
   node_repair_config {
-    enabled = true
+    enabled                                 = true
+    max_parallel_nodes_repaired_percentage  = var.node_repair_thresholds.max_parallel_nodes_repaired_percentage
+    max_unhealthy_node_threshold_percentage = var.node_repair_thresholds.max_unhealthy_node_threshold_percentage
   }
   capacity_type = "ON_DEMAND"
 

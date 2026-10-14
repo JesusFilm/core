@@ -161,6 +161,8 @@ module "datadog_aurora" {
 module "redis" {
   source            = "../../modules/aws/elasticache"
   cluster_id        = "redis-prod"
+  node_type         = "cache.t2.medium"
+  apply_immediately = true
   subnet_ids        = module.prod.vpc.internal_subnets
   security_group_id = module.prod.ecs.internal_ecs_security_group_id
   cidr              = module.prod.cidr
@@ -176,9 +178,17 @@ module "short_links_clickhouse" {
 }
 
 module "postgresql" {
-  source                  = "../../modules/aws/aurora"
-  name                    = "jfp-core"
-  env                     = "prod"
+  source                          = "../../modules/aws/aurora"
+  name                            = "jfp-core"
+  env                             = "prod"
+  engine_version                  = "13.23"
+  db_cluster_parameter_group_name = "aurora-postgresql13-cluster-replication"
+  storage_type                    = null
+  apply_immediately               = true
+  serverlessv2_capacity = {
+    min_capacity = 0.5
+    max_capacity = 16
+  }
   doppler_token           = data.aws_ssm_parameter.doppler_core_prod_token.value
   doppler_project         = "core"
   subnet_group_name       = module.prod.vpc.db_subnet_group_name
@@ -187,8 +197,16 @@ module "postgresql" {
 }
 
 module "eks" {
-  source             = "../../modules/aws/eks"
-  env                = "prod"
+  source               = "../../modules/aws/eks"
+  env                  = "prod"
+  cluster_version      = "1.32"
+  node_version         = null
+  node_max_unavailable = 2
+  node_scaling_config = {
+    desired_size = 3
+    min_size     = 3
+    max_size     = 5
+  }
   name               = "jfp-eks"
   subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
   security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
@@ -216,4 +234,3 @@ module "plausible_clickhouse_snapshots" {
     { name = "weekly", cron_expression = "cron(0 2 ? * SUN *)", retain_count = 4 }
   ]
 }
-
