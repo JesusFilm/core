@@ -36,7 +36,7 @@ export interface CampaignEditorState {
    * translations for it. A view choice, never a Command.
    */
   previewLanguageId: string
-  /** The selected block; undefined is the campaign row (or a region card). */
+  /** The selected block; undefined is the campaign (or a region card). */
   selectedBlockId?: string
   /** The selected region card; its switcher, if known, is `selectedBlockId`. */
   selectedRegionId?: string
@@ -175,7 +175,7 @@ export type CampaignSelectionKind =
 
 export interface CampaignSelection {
   kind: CampaignSelectionKind
-  /** The selected block; undefined on the campaign row or a region card. */
+  /** The selected block; undefined on the campaign or a region card. */
   block?: CampaignBlock
   /**
    * The section or chrome block hosting the selection; the block itself when
@@ -310,14 +310,14 @@ export interface CampaignEditorContextValue {
   selection: CampaignSelection
   /** The region the canvas renders the Region Page for; undefined on the landing page or with no regions. */
   currentRegion?: CampaignRegion
-  /** Select a block, or the campaign row when no id is given. */
+  /** Select a block, or the campaign when no id is given. */
   selectBlock: (blockId?: string) => void
   /** Select a region card, naming the switcher it sits in when known. */
   selectRegion: (regionId: string, hostBlockId?: string) => void
   /**
    * Escape: an Extra or a card steps up to its section, a line to its region,
    * a region to its switcher, a Column Slot or the section in one to its
-   * Columns section, a section or chrome block to the campaign row.
+   * Columns section, a section or chrome block to the campaign.
    */
   escape: () => void
   /** The page a block sits on; undefined for chrome and Region Lines, which every page shows. */
@@ -347,7 +347,7 @@ interface CampaignEditorProviderProps {
  * which region the Region Page is rendered for) and which block or region
  * card is selected. The selection resolves against the campaign's block and
  * region lists, so a row that leaves the cache (deleted, undone) falls back
- * to the campaign row without a dispatch. The Preview Language is clamped the
+ * to the campaign without a dispatch. The Preview Language is clamped the
  * same way: when its language leaves `campaign.languages` (removed in the
  * Languages panel) the preview falls back to the campaign default.
  */

@@ -12,10 +12,12 @@ import { StylePanel } from '../StylePanel'
 import { TextControls } from '../TextControls'
 import { ThemePanel } from '../ThemePanel'
 
+import { ColumnsRatio } from './ColumnsRatio'
+
 /**
  * The Inspector's Style tab, switched on the selection: the campaign Theme
  * when nothing is selected, Background and Colours for a section, chrome
- * block or column child, the text controls for a text Extra and the button
+ * block or column child (a Columns section adds its Ratio), the text controls for a text Extra and the button
  * controls for a button Extra. A column slot, carousel card, journey card or
  * region card is styled by its section and links to it.
  */
@@ -31,7 +33,13 @@ export function InspectorStyle(): ReactElement {
     case 'chrome':
     case 'column':
       return host != null && isCampaignStyledBlock(host) ? (
-        <StylePanel block={host} />
+        <Stack spacing={4}>
+          {selection.kind === 'section' &&
+            host.__typename === 'CampaignColumnsBlock' && (
+              <ColumnsRatio block={host} />
+            )}
+          <StylePanel block={host} />
+        </Stack>
       ) : (
         <Typography variant="body2" color="text.secondary">
           {t('Nothing to style on this block.')}
@@ -39,17 +47,13 @@ export function InspectorStyle(): ReactElement {
       )
     case 'text':
       return block?.__typename === 'CampaignTypographyBlock' ? (
-        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
-          <TextControls block={block} />
-        </Stack>
+        <TextControls block={block} />
       ) : (
         <></>
       )
     case 'button':
       return block?.__typename === 'CampaignButtonBlock' ? (
-        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 2 }}>
-          <ButtonControls block={block} />
-        </Stack>
+        <ButtonControls block={block} />
       ) : (
         <></>
       )

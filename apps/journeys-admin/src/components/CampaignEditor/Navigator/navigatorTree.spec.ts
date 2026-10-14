@@ -1,3 +1,6 @@
+import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
+
+import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 
@@ -270,6 +273,55 @@ describe('buildNavigatorTree sibling groups', () => {
     expect(
       find(tree, 'landingSwitcherId__eurRegionId__eurLineId')?.reorder
     ).toBeUndefined()
+  })
+})
+
+describe('buildNavigatorTree carousel items', () => {
+  const shownItem = {
+    ...youTubeVideoBlock,
+    id: 'shownItemId',
+    parentBlockId: 'carouselId',
+    parentOrder: 0
+  }
+  const hiddenItem = {
+    ...youTubeVideoBlock,
+    id: 'hiddenItemId',
+    parentBlockId: 'carouselId',
+    parentOrder: 1,
+    videoId: null
+  }
+
+  function withCarousel(videoId: string | null): Campaign {
+    return {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks.map((block) =>
+          block.id === 'carouselId' ? { ...block, videoId } : block
+        ),
+        shownItem,
+        hiddenItem
+      ] as Campaign['blocks']
+    }
+  }
+
+  it('lists the items the canvas turns into cards and drops the rest', () => {
+    const tree = buildNavigatorTree({
+      campaign: withCarousel(null),
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(find(tree, 'carouselId')?.children.map((node) => node.id)).toEqual([
+      'shownItemId'
+    ])
+  })
+
+  it('lists no items in Watch mode, where the canvas shows the Watch cards', () => {
+    const tree = buildNavigatorTree({
+      campaign: withCarousel('collectionId'),
+      pageKind: CampaignPageKind.landing
+    })
+
+    expect(find(tree, 'carouselId')?.children).toEqual([])
   })
 })
 

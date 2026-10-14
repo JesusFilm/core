@@ -109,11 +109,11 @@ describe('CampaignEditor', () => {
     expect(baseElement.getElementsByTagName('iframe')).toHaveLength(0)
   })
 
-  it('renders fully at 1280 px: rail, canvas, Inspector and bottom bar, with no top bar and no drawer', () => {
+  it('renders fully at 1280 px: rail, canvas and Inspector, with no top bar, no bottom bar and no drawer', () => {
     const { baseElement } = renderEditor()
 
     expect(screen.getByTestId('CampaignLeftRail')).toBeInTheDocument()
-    expect(screen.getByTestId('CampaignBottomBar')).toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignBottomBar')).not.toBeInTheDocument()
     expect(screen.getByTestId('CampaignInspector')).toHaveAttribute(
       'data-selection',
       'campaign'
@@ -197,6 +197,23 @@ describe('CampaignEditor', () => {
     title.focus()
     fireEvent.keyDown(title, { key: 'p', code: 'KeyP' })
     expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
+  })
+
+  it('toggles the Add panel with A in the shell and inside the frame, never while typing', async () => {
+    const { baseElement } = renderEditor()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const frameDocument = body.ownerDocument
+
+    fireEvent.keyDown(document.body, { key: 'a', code: 'KeyA' })
+    expect(screen.getByTestId('CampaignAddPanel')).toBeInTheDocument()
+    fireEvent.keyDown(frameDocument.body, { key: 'a', code: 'KeyA' })
+    expect(screen.queryByTestId('CampaignAddPanel')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    const title = screen.getByLabelText('Title')
+    title.focus()
+    fireEvent.keyDown(title, { key: 'a', code: 'KeyA' })
+    expect(screen.queryByTestId('CampaignAddPanel')).not.toBeInTheDocument()
   })
 
   it('toggles the Navigator panel with Z in the shell and inside the frame, never while typing', async () => {

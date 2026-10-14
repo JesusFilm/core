@@ -1,25 +1,16 @@
 import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useState } from 'react'
-
-import AlignCenterIcon from '@core/shared/ui/icons/AlignCenter'
-import PaletteIcon from '@core/shared/ui/icons/Palette'
-import Type1Icon from '@core/shared/ui/icons/Type1'
+import { ChangeEvent, ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock } from '../../../../__generated__/GetCampaign'
-import {
-  TypographyAlign,
-  TypographyVariant
-} from '../../../../__generated__/globalTypes'
-import { BarButton } from '../BarButton'
+import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { PaletteColorPicker } from '../PaletteColorPicker'
+import { ColourRows } from '../ColourRows'
+import { AlignRow, StyleRow } from '../StyleRow'
 import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
+import { useHostBand } from '../utils/useHostBand'
 
 /** The twelve variants Size walks, largest first. */
 export const TEXT_SIZES = [
@@ -37,31 +28,26 @@ export const TEXT_SIZES = [
   TypographyVariant.overline
 ] as const
 
-export const TEXT_ALIGNS = [
-  TypographyAlign.left,
-  TypographyAlign.center,
-  TypographyAlign.right
-] as const
-
-type Control = 'size' | 'align' | 'colour'
+/** The sizes a section's heading colour applies to; the rest take its text colour. */
+const HEADING_SIZES: ReadonlySet<TypographyVariant> = new Set(
+  TEXT_SIZES.slice(0, 6)
+)
 
 interface TextControlsProps {
   block: TypographyBlock
 }
 
 /**
- * The text Extra's bar controls: Size walks the twelve typography variants,
- * Align sets left, center or right (or follows the section), Colour sets a
- * hex through the palette picker (or follows the section). One Command each.
+ * The text Extra's inline rows: Size walks the twelve typography variants,
+ * Align sets left, center or right, Colour sets a hex through the palette
+ * picker. Align and Colour show whether they follow the section and Reset
+ * back to it. One Command each.
  */
 export function TextControls({ block }: TextControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addTextStyle, error } = useCampaignExtraStyleCommand()
-  const [open, setOpen] = useState<{
-    control: Control
-    anchor: HTMLElement
-  } | null>(null)
+  const band = useHostBand()
 
   const sizeLabels: Record<TypographyVariant, string> = {
     h1: t('Heading 1'),
@@ -77,129 +63,62 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
     caption: t('Caption'),
     overline: t('Overline')
   }
-  const alignLabels: Record<TypographyAlign, string> = {
-    left: t('Left'),
-    center: t('Center'),
-    right: t('Right')
-  }
   const currentSize = block.typographyVariant ?? TypographyVariant.body1
+  const inheritedColour =
+    (HEADING_SIZES.has(currentSize) ? band?.heading : band?.text) ??
+    campaign.theme.textColor
 
-  function openControl(control: Control) {
-    return (event: MouseEvent<HTMLButtonElement>) =>
-      setOpen({ control, anchor: event.currentTarget })
-  }
-
-  function close(): void {
-    setOpen(null)
-  }
-
-  function handleSize(variant: TypographyVariant): void {
-    close()
+  function handleSize(event: ChangeEvent<HTMLInputElement>): void {
+    const variant = event.target.value as TypographyVariant
     if (variant === currentSize) return
     addTextStyle(block, { variant })
   }
 
-  function handleAlign(align: TypographyAlign | null): void {
-    close()
-    if (align === block.align) return
-    addTextStyle(block, { align })
-  }
-
-  const menuOrigin = {
-    anchorOrigin: { vertical: 'top', horizontal: 'left' },
-    transformOrigin: { vertical: 'bottom', horizontal: 'left' }
-  } as const
-
   return (
-    <>
-      <BarButton
-        label={t('Size')}
-        icon={<Type1Icon />}
-        onClick={openControl('size')}
-        active={open?.control === 'size'}
-      />
-      <BarButton
-        label={t('Align')}
-        icon={<AlignCenterIcon />}
-        onClick={openControl('align')}
-        active={open?.control === 'align'}
-      />
-      <BarButton
-        label={t('Colour')}
-        icon={<PaletteIcon />}
-        onClick={openControl('colour')}
-        active={open?.control === 'colour'}
-      />
-      <Menu
-        anchorEl={open?.anchor}
-        open={open?.control === 'size'}
-        onClose={close}
-        {...menuOrigin}
-        data-testid="TextSizeMenu"
-      >
-        {TEXT_SIZES.map((variant) => (
-          <MenuItem
-            key={variant}
-            selected={variant === currentSize}
-            onClick={() => handleSize(variant)}
-          >
-            {sizeLabels[variant]}
-          </MenuItem>
-        ))}
-      </Menu>
-      <Menu
-        anchorEl={open?.anchor}
-        open={open?.control === 'align'}
-        onClose={close}
-        {...menuOrigin}
-        data-testid="TextAlignMenu"
-      >
-        {TEXT_ALIGNS.map((align) => (
-          <MenuItem
-            key={align}
-            selected={align === block.align}
-            onClick={() => handleAlign(align)}
-          >
-            {alignLabels[align]}
-          </MenuItem>
-        ))}
-        <MenuItem
-          selected={block.align == null}
-          onClick={() => handleAlign(null)}
+    <Stack spacing={4} data-testid="TextControls">
+      {error != null && (
+        <Alert severity="error" role="alert">
+          {error}
+        </Alert>
+      )}
+      <StyleRow label={t('Size')}>
+        <TextField
+          select
+          size="small"
+          fullWidth
+          value={currentSize}
+          onChange={handleSize}
+          slotProps={{
+            select: { native: true },
+            htmlInput: { 'aria-label': t('Size') }
+          }}
         >
-          {t('Follow section')}
-        </MenuItem>
-      </Menu>
-      <Popover
-        anchorEl={open?.anchor}
-        open={open?.control === 'colour'}
-        onClose={close}
-        {...menuOrigin}
-        data-testid="TextColourPopover"
-      >
-        <Stack spacing={3} sx={{ p: 4, width: 320 }}>
-          {error != null && (
-            <Alert severity="error" role="alert">
-              {error}
-            </Alert>
-          )}
-          <PaletteColorPicker
-            label={t('Text colour')}
-            value={block.color}
-            fallback={campaign.theme.textColor}
-            onCommit={(hex) => addTextStyle(block, { color: hex })}
-            testId="TextColour"
-          />
-          <Button
-            size="small"
-            color="secondary"
-            disabled={block.color == null}
-            onClick={() => addTextStyle(block, { color: null })}
-          >
-            {t('Follow section')}
-          </Button>
-        </Stack>
-      </Popover>
-    </>
+          {TEXT_SIZES.map((variant) => (
+            <option key={variant} value={variant}>
+              {sizeLabels[variant]}
+            </option>
+          ))}
+        </TextField>
+      </StyleRow>
+      <AlignRow
+        value={block.align}
+        onChange={(align) => addTextStyle(block, { align })}
+      />
+      <ColourRows
+        label={t('Colour')}
+        rows={[
+          {
+            key: 'color',
+            label: t('Text colour'),
+            value: block.color,
+            inherited: inheritedColour
+          }
+        ]}
+        rowTestId="TextColourRow"
+        pickerTestId="TextColour"
+        onCommit={(_key, hex) => addTextStyle(block, { color: hex })}
+        onReset={() => addTextStyle(block, { color: null })}
+      />
+    </Stack>
   )
 }

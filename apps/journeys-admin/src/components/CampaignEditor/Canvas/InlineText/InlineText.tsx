@@ -84,9 +84,18 @@ export function InlineText({
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
 
+  // Focus without scrolling: a plain focus() (and the autoFocus attribute)
+  // scrolls every ancestor to centre the input, including the editor page that
+  // holds the scaled frame.
+  useEffect(() => {
+    if (!editing || !autoFocus) return
+    inputRef.current?.focus({ preventScroll: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing])
+
   useEffect(() => {
     if (focusRequest === 0 || !autoFocus) return
-    inputRef.current?.focus()
+    inputRef.current?.focus({ preventScroll: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusRequest])
 
@@ -153,7 +162,6 @@ export function InlineText({
           name={target.string != null ? target.string.key : target.field}
           fullWidth
           multiline
-          autoFocus={autoFocus}
           inputRef={inputRef}
           value={value}
           placeholder={fallback !== '' ? fallback : placeholder}

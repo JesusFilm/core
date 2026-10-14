@@ -62,4 +62,47 @@ export const PanelPushesAt1440: Story = {
   play: openPagesPanel
 }
 
+async function openAddPanel(): Promise<void> {
+  await userEvent.click(await screen.findByRole('button', { name: 'Add' }))
+}
+
+/** The whole shell at the 1280 px minimum, the Add panel overlaying the canvas. */
+export const Shell1280: Story = {
+  parameters: { chromatic: { viewports: [1280] } },
+  play: openAddPanel
+}
+
+/** The whole shell at 1440 px, the Add panel pushing the canvas. */
+export const Shell1440: Story = {
+  parameters: { chromatic: { viewports: [1440] } },
+  play: openAddPanel
+}
+
+/** The whole shell at 1920 px, the Add panel pushing the canvas. */
+export const Shell1920: Story = {
+  parameters: { chromatic: { viewports: [1920] } },
+  play: openAddPanel
+}
+
+/** The Desktop frame is 1200 px wide inside, scaled to about 0.69 to fit between the rail and the Inspector. */
+export const ScaledFrameAt1280: Story = {
+  parameters: { chromatic: { viewports: [1280] } }
+}
+
+/** About 0.83 with no panel open. */
+export const ScaledFrameAt1440: Story = {
+  parameters: { chromatic: { viewports: [1440] } }
+}
+
+/** Wide enough for the frame at its real width, so it is not scaled. */
+export const ScaledFrameAt1920: Story = {
+  parameters: { chromatic: { viewports: [1920] } }
+}
+
+/** A pushed panel takes 300 px, so the frame scales further (about 0.58 at 1440 px). */
+export const ScaledFrameWithPushedPanelAt1440: Story = {
+  parameters: { chromatic: { viewports: [1440] } },
+  play: openPagesPanel
+}
+
 export default CampaignEditorMeta

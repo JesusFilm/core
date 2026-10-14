@@ -22,8 +22,8 @@ const SWAP_GLYPH = '⇄'
 /**
  * A Column Slot's settings: choose the type of an empty slot, change the
  * type of the section in it, and swap the Columns section's two slots. Shown
- * for a selected slot and for the section in one. Each is the Command the
- * bottom bar's controls ran.
+ * for a selected slot and for the section in one. Each is the Command it
+ * was before the Inspector.
  */
 export function ColumnControls(): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
