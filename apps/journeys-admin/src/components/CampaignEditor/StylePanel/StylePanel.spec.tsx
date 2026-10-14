@@ -291,7 +291,12 @@ describe('StylePanel', () => {
       renderPanel(mocks)
       fireEvent.click(await screen.findByRole('tab', { name: 'Colours' }))
 
-      fireEvent.click(screen.getByTestId('StyleOverride-textColor'))
+      const row = screen.getByTestId('StyleOverride-textColor')
+      expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'inherited'
+      )
+      fireEvent.click(row)
       const input = screen.getByRole('textbox', { name: 'Text hex' })
       fireEvent.change(input, { target: { value: 'abcdef' } })
       fireEvent.keyDown(input, { key: 'Enter' })
@@ -306,16 +311,21 @@ describe('StylePanel', () => {
         ).toBeInTheDocument()
       )
 
-      fireEvent.click(screen.getByRole('button', { name: 'Inherit' }))
+      expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'set'
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset' }))
 
       await waitFor(() => expect(mocks[2].result).toHaveBeenCalled())
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
       await waitFor(() =>
-        expect(
-          within(screen.getByTestId('StyleOverride-textColor')).getByText(
-            'Inherited'
-          )
-        ).toBeInTheDocument()
+        expect(within(row).getByText('Inherited')).toBeInTheDocument()
+      )
+      expect(within(row).getByTestId('ValueIndicator')).toHaveAttribute(
+        'data-source',
+        'inherited'
       )
     })
 

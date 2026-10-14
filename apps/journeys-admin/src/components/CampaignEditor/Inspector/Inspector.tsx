@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
@@ -33,7 +34,8 @@ interface InspectorProps {
 /**
  * The persistent right panel for the selection. Its header carries the
  * element-type icon and the block's label, the breadcrumb and the actions
- * row (move, duplicate, delete); below it a Style and a Settings tab, switched
+ * row (move, duplicate, delete); an Extra's header also says which section it
+ * inherits from, with a link that selects it. Below the header it holds a Style and a Settings tab, switched
  * on the selection kind. With nothing selected it holds the campaign's Theme
  * and settings. It never dims or blocks the canvas, and selecting another
  * block simply swaps its content.
@@ -48,7 +50,8 @@ export function Inspector({
     campaign,
     selection,
     state: { inspectorTab },
-    dispatch
+    dispatch,
+    selectBlock
   } = useCampaignEditor()
 
   const label =
@@ -57,6 +60,11 @@ export function Inspector({
       : selection.block != null
         ? blockLabel(t, selection.block.__typename)
         : t('Campaign')
+  const inheritsFrom =
+    (selection.kind === 'text' || selection.kind === 'button') &&
+    selection.host != null
+      ? selection.host
+      : undefined
   const bodyKey = selection.block?.id ?? selection.region?.id ?? 'campaign'
 
   function handleTabChange(_event: unknown, next: CampaignInspectorTab): void {
@@ -90,6 +98,21 @@ export function Inspector({
             {label}
           </Typography>
         </Stack>
+        {inheritsFrom != null && (
+          <Link
+            component="button"
+            type="button"
+            variant="body2"
+            underline="hover"
+            data-testid="InspectorInheritsFrom"
+            onClick={() => selectBlock(inheritsFrom.id)}
+            sx={{ alignSelf: 'flex-start' }}
+          >
+            {t('Inherits from {{host}}', {
+              host: blockLabel(t, inheritsFrom.__typename)
+            })}
+          </Link>
+        )}
         <Breadcrumb />
         <InspectorActions />
       </Stack>
