@@ -63,7 +63,16 @@ Applying migration `20260916194658_video_available_languages_not_null_gin_index`
 Your database is now in sync with your schema.
 ```
 
-No `P3006` error, and no extra empty migration was generated (schema was already in sync with the renamed migration applied — `git status` showed only the rename, no new files). **Premise 1 confirmed and fixed.**
+No `P3006` error, and no extra empty migration was generated (schema was already in sync with the renamed migration applied — `git status` showed only the rename, no new files). **Premise 1 confirmed and fixed** — for the single, unsplit migration that existed at the time of this test.
+
+**Update (2026-10-14): superseded by the NOT VALID staging split, not re-verified.** The migration this test ran against — one file doing `SET DEFAULT` + `SET NOT NULL` + `CREATE INDEX` together — was later replaced with four separate migrations using the NOT VALID check-constraint staging pattern documented in `apis/AGENTS.md`:
+
+- `20261014120000_video_available_languages_not_null_check`
+- `20261014120001_video_available_languages_backfill_not_null`
+- `20261014120002_video_available_languages_validate_not_null`
+- `20261014120003_video_available_languages_gin_index`
+
+These sort after all migrations already on `main` as of 2026-10-14, so the `P3006` ordering concern Premise 1 was testing for still doesn't apply by inspection — but that's a timestamp-ordering argument, not the empirical `prisma migrate dev` run this section otherwise relies on as evidence. No live Postgres was available in this environment to re-run the shadow-db apply against the actual 4-migration sequence (no `docker`, no reachable `db:5432`). Treat the live-apply confirmation above as applying only to the superseded single-file version; the 4-migration split that actually ships needs the same live-apply check re-run before this premise can be called confirmed for what's in the diff today.
 
 ## Premise 2: does the GIN index serve the `isEmpty: false` predicate?
 
@@ -204,6 +213,9 @@ However, the index **does** serve a real, already-cited call site: Arclight's `/
 ## Files
 
 - `libs/prisma/media/db/schema.prisma` — `Video.availableLanguages` field + index
-- `libs/prisma/media/db/migrations/20261014120000_video_available_languages_not_null_gin_index/migration.sql` (renamed from `20260821060000_...`, then `20260916194658_...`; comment corrected 2026-10-14; renamed again 2026-10-14 after merging main reintroduced P3006 drift against later migrations)
+- `libs/prisma/media/db/migrations/20261014120000_video_available_languages_not_null_check/migration.sql` — `SET DEFAULT` + `ADD CONSTRAINT ... NOT VALID` (final shipped form; supersedes the single-file `20260821060000_...` / `20260916194658_...` migration this doc's Premise 1 live-apply test ran against — see the 2026-10-14 update in that section)
+- `libs/prisma/media/db/migrations/20261014120001_video_available_languages_backfill_not_null/migration.sql` — backfill `UPDATE`
+- `libs/prisma/media/db/migrations/20261014120002_video_available_languages_validate_not_null/migration.sql` — `VALIDATE CONSTRAINT` + `SET NOT NULL`
+- `libs/prisma/media/db/migrations/20261014120003_video_available_languages_gin_index/migration.sql` — `CREATE INDEX ... USING GIN`
 - `apis/api-media/src/schema/video/video.ts` — 6 `isEmpty: false` call sites not served by the index (lines 426, 464, 566, 574, 610, 638)
 - `apps/arclight/src/app/v2/[...route]/_media-components/index.ts` — 2 `hasSome` call sites served by the index (lines 240, 277)
