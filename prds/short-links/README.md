@@ -47,11 +47,12 @@ In scope
 - Campaigns, bulk pause / retag, destination health checks with opt-in
   failover, and a per-link destination history that doubles as the audit log.
 - Roles: `shortLinkEditor` (links, campaigns) and `shortLinkAdmin` (protected
-  assets, global links, republishing). `publisher` keeps its existing powers.
-  Domains belong to `superAdmin` users: adding and removing them and every
-  setting on them, including the fields that wire a domain to the edge (path
-  prefix, KV namespace id, Worker binding). The Cloudflare resources
-  themselves are created by hand with wrangler, never by api-media.
+  assets, global links, republishing, adding and republishing domains and
+  every domain setting, including the fields that wire a domain to the edge:
+  path prefix, KV namespace id, Worker binding). `publisher` keeps its
+  existing link powers but only reads domains. `superAdmin` users can do the same with
+  domains and are alone in removing one. The Cloudflare resources themselves
+  are created by hand with wrangler, never by api-media.
 
 Out of scope for this version
 

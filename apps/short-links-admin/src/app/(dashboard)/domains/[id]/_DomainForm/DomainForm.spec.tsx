@@ -24,7 +24,7 @@ vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
 >)
 vi.mocked(useParams).mockReturnValue({ id: 'domain-1' })
 
-function accessMock(superAdmin: boolean) {
+function accessMock(superAdmin: boolean, roles: string[]) {
   return {
     request: { query: GET_SHORT_LINK_ACCESS },
     result: {
@@ -32,7 +32,7 @@ function accessMock(superAdmin: boolean) {
         me: {
           __typename: 'AuthenticatedUser',
           id: 'user-1',
-          mediaUserRoles: ['shortLinkAdmin'],
+          mediaUserRoles: roles,
           superAdmin
         }
       }
@@ -134,10 +134,13 @@ function publishMock(edgePublishedAt: string | null) {
 
 function renderForm(
   mocks: unknown[],
-  { superAdmin = true }: { superAdmin?: boolean } = {}
+  {
+    superAdmin = true,
+    roles = ['shortLinkAdmin']
+  }: { superAdmin?: boolean; roles?: string[] } = {}
 ): void {
   render(
-    <MockedProvider mocks={[accessMock(superAdmin), ...mocks] as never}>
+    <MockedProvider mocks={[accessMock(superAdmin, roles), ...mocks] as never}>
       <DomainForm />
     </MockedProvider>
   )
@@ -258,14 +261,30 @@ describe('DomainForm', () => {
     expect(update.result).not.toHaveBeenCalled()
   })
 
-  describe('for an admin who is not a superAdmin', () => {
-    it('shows the settings read-only and still lets them republish', async () => {
-      renderForm([domainMock, publishMock('2026-09-25T12:00:00.000Z')], {
-        superAdmin: false
-      })
+  describe('for a shortLinkAdmin who is not a superAdmin', () => {
+    it('saves every setting but cannot remove the domain', async () => {
+      const update = updateMock('s')
+      renderForm([domainMock, update], { superAdmin: false })
+
+      const field = await screen.findByRole('textbox', { name: 'Path prefix' })
+      await userEvent.type(field, 's')
+      await userEvent.click(screen.getByRole('button', { name: 'Save domain' }))
+
+      await waitFor(() => expect(update.result).toHaveBeenCalled())
+      expect(
+        screen.queryByRole('button', { name: 'Remove domain' })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('for a publisher who is not a superAdmin', () => {
+    it('shows the settings read-only with no save, republish or remove', async () => {
+      renderForm([domainMock], { superAdmin: false, roles: ['publisher'] })
 
       expect(
-        await screen.findByText('Only a superAdmin can change domain settings.')
+        await screen.findByText(
+          'Only a shortLinkAdmin or superAdmin can change domain settings.'
+        )
       ).toBeInTheDocument()
       expect(
         screen.getByRole('textbox', { name: 'Fallback URL' })
@@ -291,16 +310,9 @@ describe('DomainForm', () => {
       expect(
         screen.queryByRole('button', { name: 'Remove domain' })
       ).not.toBeInTheDocument()
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Republish domain' })
-      )
-      await waitFor(() =>
-        expect(notify).toHaveBeenCalledWith(
-          'Domain and its links republished to the edge',
-          'success'
-        )
-      )
+      expect(
+        screen.queryByRole('button', { name: 'Republish domain' })
+      ).not.toBeInTheDocument()
     })
   })
 

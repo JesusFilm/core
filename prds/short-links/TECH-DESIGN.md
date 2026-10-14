@@ -504,7 +504,7 @@ Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stag
 
 ### Permissions
 
-Amended by "Domain settings are superAdmin-only" below: `shortLinkDomainUpdate` is now superAdmin in full, not only for the three edge-wiring fields.
+Amended by "Domains belong to shortLinkAdmin and superAdmin" below: `shortLinkDomainCreate`, all of `shortLinkDomainUpdate` and `shortLinkDomainPublish` are open to the `shortLinkAdmin` role and superAdmin, and closed to `publisher`.
 
 | Action                                                                        | Who                                       |
 | ----------------------------------------------------------------------------- | ----------------------------------------- |
@@ -548,13 +548,13 @@ Decision: the scan-event store is one ClickHouse Cloud service per environment, 
 
 Prerequisites: a ClickHouse Cloud organisation on the Basic tier, an Admin API key, and the SSM parameters `/terraform/prd/CLICKHOUSE_ORG_ID`, `/terraform/prd/CLICKHOUSE_CLOUD_API_KEY`, `/terraform/prd/CLICKHOUSE_CLOUD_API_SECRET`. Smallest service is 1 × 8 GiB; the always-on list price is about $160/month (us-east-1 list, us-east-2 assumed equal). The table above gains `global UInt8` and `owner_hostname LowCardinality(String)`, which `clickhouse/0001_init.sql` and the Worker already had.
 
-## Domain settings are superAdmin-only (2026-10-14)
+## Domains belong to shortLinkAdmin and superAdmin (2026-10-14)
 
-Decision: every domain setting, not only the three edge-wiring fields, is changed by a superAdmin. `shortLinkDomainUpdate` runs under the `isSuperAdmin` scope like `shortLinkDomainCreate` and `shortLinkDomainDelete`; the per-field check that let a `shortLinkAdmin` save the redirect, slug and services settings is gone.
+Decision: adding a domain, changing any of its settings (the three edge-wiring fields included) and republishing it need the `shortLinkAdmin` role or the superAdmin flag. `publisher`, which everywhere else has the powers of `shortLinkAdmin` (including `shortLinkPublish` for a single link), only reads domains; this is the one place the two differ. The per-field superAdmin check inside `shortLinkDomainUpdate` is gone. A new scope, `isShortLinkDomainAdmin`, is the `shortLinkAdmin` role alone (the existing `isShortLinkAdmin` scope includes `publisher`); the three domain mutations run under `$any: { isShortLinkDomainAdmin, isSuperAdmin }`, so the users-database lookup still only happens when the role scope fails. Removing a domain stays superAdmin-only.
 
-| Action                                                                    | Who                                       |
-| ------------------------------------------------------------------------- | ----------------------------------------- |
-| `shortLinkDomainPublish`                                                  | `shortLinkAdmin`, `publisher`, superAdmin |
-| `shortLinkDomainCreate`, `shortLinkDomainUpdate`, `shortLinkDomainDelete` | superAdmin                                |
+| Action                                                                     | Who                          |
+| -------------------------------------------------------------------------- | ---------------------------- |
+| `shortLinkDomainCreate`, `shortLinkDomainUpdate`, `shortLinkDomainPublish` | `shortLinkAdmin`, superAdmin |
+| `shortLinkDomainDelete`                                                    | superAdmin                   |
 
-Admin app: the Domains section stays open to admins, who see every setting (including the path prefix and KV fields, which were hidden from them before) read-only, with no Save button and a note that only a superAdmin can change them. **Republish domain** stays available to them as a repair action. A superAdmin sees the same form editable, plus **Add domain** and **Remove domain**.
+Admin app: `isDomainAdmin` (the `shortLinkAdmin` role or superAdmin) gates **Add domain** and **Republish domain** and makes the domain form editable; the path prefix and KV fields, previously shown to a superAdmin only, are part of the form for every domain admin. A `publisher` still reaches the Domains section but sees the form read-only with no Save, Republish or Remove button and a note. **Remove domain** stays superAdmin-only.

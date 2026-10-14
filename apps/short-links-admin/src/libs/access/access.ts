@@ -5,16 +5,22 @@ export const DOMAINS_PAGE = '/domains'
 
 const EDITOR_ROLES = ['shortLinkEditor', 'shortLinkAdmin', 'publisher']
 const ADMIN_ROLES = ['shortLinkAdmin', 'publisher']
+const DOMAIN_ADMIN_ROLE = 'shortLinkAdmin'
 const ADMIN_SECTIONS = [DOMAINS_PAGE]
 
 export interface ShortLinkAccess {
   isEditor: boolean
   isAdmin: boolean
   /**
-   * The `superAdmin` flag on the user (api-users), not a media role: owns the
-   * domains, which exist and every setting on them. On its own it opens the
-   * domains section only. An admin reaches that section too, but reads the
-   * settings and republishes rather than editing.
+   * Adds domains, changes their settings and republishes them: the
+   * `shortLinkAdmin` role itself (not `publisher`, which only reads them) or a
+   * superAdmin.
+   */
+  isDomainAdmin: boolean
+  /**
+   * The `superAdmin` flag on the user (api-users), not a media role: a domain
+   * admin who can also remove domains. On its own it opens the domains section
+   * only.
    */
   isSuperAdmin: boolean
 }
@@ -26,8 +32,11 @@ export function getShortLinkAccess(
   const isAdmin = mediaUserRoles.some((role) => ADMIN_ROLES.includes(role))
   const isEditor =
     isAdmin || mediaUserRoles.some((role) => EDITOR_ROLES.includes(role))
+  const isSuperAdmin = superAdmin === true
+  const isDomainAdmin =
+    isSuperAdmin || mediaUserRoles.includes(DOMAIN_ADMIN_ROLE)
 
-  return { isEditor, isAdmin, isSuperAdmin: superAdmin === true }
+  return { isEditor, isAdmin, isDomainAdmin, isSuperAdmin }
 }
 
 function isPathInSection(pathname: string, section: string): boolean {

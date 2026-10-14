@@ -742,7 +742,24 @@ describe('shortLinkDomain', () => {
         })
       })
 
-      it.each<MediaRole>(['publisher', 'shortLinkAdmin', 'shortLinkEditor'])(
+      it('should allow a shortLinkAdmin who is not a superAdmin', async () => {
+        setRoles(['shortLinkAdmin'])
+        setSuperAdmin(false)
+        prismaMock.shortLinkDomain.create.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId' })
+        )
+        const result = await authClient({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: { input: { hostname: 'example.com' } }
+        })
+        expect(result).toMatchObject({
+          data: { shortLinkDomainCreate: { data: { id: 'testId' } } }
+        })
+        // the role scope passes first, so the users database is never asked
+        expect(usersPrismaMock.user.findUnique).not.toHaveBeenCalled()
+      })
+
+      it.each<MediaRole>(['publisher', 'shortLinkEditor'])(
         'should refuse a %s who is not a superAdmin',
         async (role) => {
           setRoles([role])
@@ -1244,7 +1261,28 @@ describe('shortLinkDomain', () => {
         })
       })
 
-      it.each<MediaRole>(['publisher', 'shortLinkAdmin', 'shortLinkEditor'])(
+      it('should allow a shortLinkAdmin who is not a superAdmin', async () => {
+        setRoles(['shortLinkAdmin'])
+        setSuperAdmin(false)
+        const existing = buildShortLinkDomain({ id: 'testId' })
+        prismaMock.shortLinkDomain.findUnique.mockResolvedValue(existing)
+        prismaMock.shortLinkDomain.update.mockResolvedValue({
+          ...existing,
+          redirectStatus: 301
+        })
+        const result = await authClient({
+          document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+          variables: {
+            input: { id: 'testId', services: [], redirectStatus: 301 }
+          }
+        })
+        expect(result).toMatchObject({
+          data: { shortLinkDomainUpdate: { data: { id: 'testId' } } }
+        })
+        expect(usersPrismaMock.user.findUnique).not.toHaveBeenCalled()
+      })
+
+      it.each<MediaRole>(['publisher', 'shortLinkEditor'])(
         'should refuse a %s who is not a superAdmin',
         async (role) => {
           setRoles([role])
@@ -1544,16 +1582,19 @@ describe('shortLinkDomain', () => {
         })
       })
 
-      it('should refuse an editor who is not a superAdmin', async () => {
-        setRoles(['shortLinkEditor'])
-        setSuperAdmin(false)
-        const result = await authClient({
-          document: SHORT_LINK_DOMAIN_PUBLISH_MUTATION,
-          variables: { id: 'testId' }
-        })
-        expect(result).toMatchObject({ errors: [expect.anything()] })
-        expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
-      })
+      it.each<MediaRole>(['publisher', 'shortLinkEditor'])(
+        'should refuse a %s who is not a superAdmin',
+        async (role) => {
+          setRoles([role])
+          setSuperAdmin(false)
+          const result = await authClient({
+            document: SHORT_LINK_DOMAIN_PUBLISH_MUTATION,
+            variables: { id: 'testId' }
+          })
+          expect(result).toMatchObject({ errors: [expect.anything()] })
+          expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
+        }
+      )
 
       it('should return a NotFoundError for an unknown domain', async () => {
         prismaMock.shortLinkDomain.findUnique.mockResolvedValue(null)

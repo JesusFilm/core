@@ -292,9 +292,14 @@ export const SHORT_LINK_DOMAIN_DELETE = graphql(`
 export function DomainForm(): ReactElement {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
-  // only a superAdmin changes or removes a domain (api-media refuses everyone
-  // else); an admin reads the settings and can republish
-  const { isSuperAdmin, loading: accessLoading } = useShortLinkAccess()
+  // a shortLinkAdmin or superAdmin changes the settings and republishes, and
+  // only a superAdmin removes the domain (api-media refuses everyone else); a
+  // publisher reads the settings
+  const {
+    isDomainAdmin,
+    isSuperAdmin,
+    loading: accessLoading
+  } = useShortLinkAccess()
   const [errorMessage, setErrorMessage] = useState<string>()
   const [removeOpen, setRemoveOpen] = useState(false)
   const [typedHostname, setTypedHostname] = useState('')
@@ -330,7 +335,7 @@ export function DomainForm(): ReactElement {
     )
   }
   const domain = result.data
-  const readOnly = !isSuperAdmin
+  const readOnly = !isDomainAdmin
 
   const initialValues: DomainFormValues = {
     pathPrefix: domain.pathPrefix ?? '',
@@ -455,16 +460,18 @@ export function DomainForm(): ReactElement {
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePublish}
-              loading={publishing}
-              disabled={updating}
-            >
-              <UploadCloudIcon aria-hidden="true" />
-              Republish domain
-            </Button>
+            {isDomainAdmin && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePublish}
+                loading={publishing}
+                disabled={updating}
+              >
+                <UploadCloudIcon aria-hidden="true" />
+                Republish domain
+              </Button>
+            )}
             {isSuperAdmin && (
               <Button
                 variant="destructive-outline"
@@ -509,7 +516,8 @@ export function DomainForm(): ReactElement {
               {readOnly && (
                 <Alert variant="info">
                   <AlertDescription>
-                    Only a superAdmin can change domain settings.
+                    Only a shortLinkAdmin or superAdmin can change domain
+                    settings.
                   </AlertDescription>
                 </Alert>
               )}

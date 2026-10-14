@@ -33,11 +33,18 @@ import {
   removeVercelDomain
 } from './shortLinkDomain.service'
 
-// Which domains exist and every setting on them (redirects, slug grammar,
-// services, and where a domain is served from: path prefix, KV namespace,
-// Worker binding) belong to superAdmin; media roles only read them and
-// republish. The Cloudflare side (namespace, binding, route) is done by hand:
-// see workers/short-links-redirect/README.md, "Setting up a domain".
+// Adding a domain and every setting on it (redirects, slug grammar, services,
+// and where it is served from: path prefix, KV namespace, Worker binding)
+// belong to the shortLinkAdmin role or a superAdmin; publisher and
+// shortLinkEditor only read domains and republish. The lazy superAdmin scope is
+// only evaluated when the role scope fails. The Cloudflare side (namespace,
+// binding, route) is done by hand: see workers/short-links-redirect/README.md,
+// "Setting up a domain".
+const domainAdminScopes = {
+  $any: { isShortLinkDomainAdmin: true, isSuperAdmin: true }
+} as const
+
+// Removing a domain stays with superAdmin.
 const superAdminScopes = { isSuperAdmin: true } as const
 
 const SLUG_ALLOWED_CHARS_MESSAGE =
@@ -318,10 +325,10 @@ function routingChanged(
 }
 
 builder.mutationFields((t) => ({
-  shortLinkDomainCreate: t.withAuth(superAdminScopes).prismaFieldWithInput({
+  shortLinkDomainCreate: t.withAuth(domainAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml',
+      'Create a new short link domain that can be used for short links (shortLinkAdmin or superAdmin). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml',
     errors: {
       types: [ZodError, NotUniqueError]
     },
@@ -482,10 +489,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  shortLinkDomainUpdate: t.withAuth(superAdminScopes).prismaFieldWithInput({
+  shortLinkDomainUpdate: t.withAuth(domainAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Update the services and edge settings of a short link domain (superAdmin only); routing changes republish every live link on it',
+      'Update the services and edge settings of a short link domain (shortLinkAdmin or superAdmin); routing changes republish every live link on it',
     errors: {
       types: [ZodError, NotFoundError]
     },

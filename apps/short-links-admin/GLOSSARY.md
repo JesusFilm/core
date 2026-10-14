@@ -37,7 +37,7 @@ An image (PNG or SVG) rendered by this app's own `/api/qr` route. It always enco
 _Avoid_: QR link (the link is the Short Link; the QR is one rendering of it)
 
 **Editor / Admin**:
-The two role levels. Editor (`shortLinkEditor`, or `shortLinkAdmin`, or `publisher`) manages links and campaigns. Admin (`shortLinkAdmin` or `publisher`) additionally changes protected Destinations, sets the Global flag, republishes to the edge, and reads Domain settings. `publisher` keeps its existing powers; it is not a third level. Separate from both: a **superAdmin** (the flag on the user, not a media role) owns the Domains: adding and removing them and every setting on them, from redirect status and slug grammar to the fields that wire a domain to the edge (path prefix, KV namespace id, Worker binding). With no media role it reaches the Domains section only; an Admin who is not a superAdmin sees that section read-only. The Cloudflare resources behind the edge fields are created by hand (Worker README, "Setting up a domain").
+The two role levels. Editor (`shortLinkEditor`, or `shortLinkAdmin`, or `publisher`) manages links and campaigns. Admin (`shortLinkAdmin` or `publisher`) additionally changes protected Destinations, sets the Global flag, republishes single links, and reads Domain settings. `publisher` keeps its existing link powers; it is not a third level. Domains are the one place the two admin roles differ: a **Domain Admin** (the `shortLinkAdmin` role itself, or a **superAdmin**, the flag on the user that is not a media role) adds Domains, edits every setting on them, from redirect status and slug grammar to the fields that wire a domain to the edge (path prefix, KV namespace id, Worker binding), and republishes a whole Domain; a `publisher` sees the Domains section read-only. Only a superAdmin removes a Domain; with no media role a superAdmin reaches the Domains section and nothing else. The Cloudflare resources behind the edge fields are created by hand (Worker README, "Setting up a domain").
 _Avoid_: Owner, superuser, "publisher role" when you mean admin
 
 **Path Prefix**:
@@ -49,11 +49,11 @@ A Short Link flagged `global`: it keeps its own domain (that is its canonical sh
 _Avoid_: Shared link, wildcard, cross-domain link
 
 **KV Namespace / Worker Binding**:
-Each Short Link Domain publishes to its own Cloudflare KV namespace: `kvNamespaceId` is where api-media writes, `kvBinding` (upper-case, e.g. `KV_JESUS_FILM`) is the name the edge Worker reads it through. Both are set on the Domains page by a superAdmin once the namespace exists and the Worker has been deployed with the binding; until then the domain shows as "not published" and `edgePublishedAt` stays empty. Global links also go to the shared global namespace, which is not a domain setting.
+Each Short Link Domain publishes to its own Cloudflare KV namespace: `kvNamespaceId` is where api-media writes, `kvBinding` (upper-case, e.g. `KV_JESUS_FILM`) is the name the edge Worker reads it through. Both are set on the Domains page by a Domain Admin once the namespace exists and the Worker has been deployed with the binding; until then the domain shows as "not published" and `edgePublishedAt` stays empty. Global links also go to the shared global namespace, which is not a domain setting.
 _Avoid_: Cache, store (say which namespace), "the KV"
 
 **Republish**:
-Rewriting a link's (or a whole domain's) routing record to the edge store. A repair action for publish gaps or cutovers, not part of the normal save flow — every ordinary mutation already publishes.
+Rewriting a link's (or a whole domain's) routing record to the edge store. A repair action for publish gaps or cutovers, not part of the normal save flow — every ordinary mutation already publishes. A single link is republished by any Admin; a whole Domain by a Domain Admin.
 _Avoid_: Deploy, sync, refresh
 
 ### Terminology traps
