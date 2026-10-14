@@ -10,8 +10,8 @@ import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { BottomBar } from '../../BottomBar'
 import { campaign } from '../../data'
+import { Inspector } from '../../Inspector'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
 import { siblingsOf } from './useCampaignBlockDeleteCommand'
@@ -67,7 +67,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandUndoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <Inspector isManager={false} />
     </QueriedEditor>
   )
 }
@@ -181,7 +181,7 @@ describe('useCampaignBlockDeleteCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+          <Inspector isManager={false} />
         </QueriedEditor>
       )
     }

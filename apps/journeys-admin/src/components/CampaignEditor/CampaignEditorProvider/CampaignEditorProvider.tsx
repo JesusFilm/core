@@ -1,12 +1,14 @@
 import {
   Dispatch,
+  MutableRefObject,
   ReactElement,
   ReactNode,
   createContext,
   useCallback,
   useContext,
   useMemo,
-  useReducer
+  useReducer,
+  useRef
 } from 'react'
 
 import {
@@ -16,6 +18,12 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { isInColumnSlot } from '../sectionTypes'
+
+/** The left rail panel that is open; `none` while all are closed. */
+export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize' | 'none'
+
+/** The Inspector tab the selection shows. */
+export type CampaignInspectorTab = 'style' | 'settings'
 
 export interface CampaignEditorState {
   /** The page the canvas shows; a view choice, never a Command. */
@@ -34,6 +42,10 @@ export interface CampaignEditorState {
   selectedRegionId?: string
   /** Bumped by the bar's Edit so the selected block's primary text takes focus. */
   editRequest: number
+  /** The open rail panel; a view choice, never a Command. */
+  panel: CampaignPanel
+  /** The Inspector tab; a view choice, never a Command. */
+  inspectorTab: CampaignInspectorTab
 }
 
 interface SetPageKindAction {
@@ -71,6 +83,15 @@ interface SetPreviewLanguageAction {
   type: 'SetPreviewLanguageAction'
   previewLanguageId: string
 }
+/** Open a rail panel, or close it when it is the one already open. */
+interface SetPanelAction {
+  type: 'SetPanelAction'
+  panel: CampaignPanel
+}
+interface SetInspectorTabAction {
+  type: 'SetInspectorTabAction'
+  inspectorTab: CampaignInspectorTab
+}
 export type CampaignEditorAction =
   | SetPageKindAction
   | SelectBlockAction
@@ -78,6 +99,8 @@ export type CampaignEditorAction =
   | SetEditorFocusAction
   | RequestEditAction
   | SetPreviewLanguageAction
+  | SetPanelAction
+  | SetInspectorTabAction
 
 export function reducer(
   state: CampaignEditorState,
@@ -116,6 +139,13 @@ export function reducer(
       return { ...state, editRequest: state.editRequest + 1 }
     case 'SetPreviewLanguageAction':
       return { ...state, previewLanguageId: action.previewLanguageId }
+    case 'SetPanelAction':
+      return {
+        ...state,
+        panel: state.panel === action.panel ? 'none' : action.panel
+      }
+    case 'SetInspectorTabAction':
+      return { ...state, inspectorTab: action.inspectorTab }
   }
 }
 
@@ -282,6 +312,12 @@ export interface CampaignEditorContextValue {
   pageKindOf: (
     block: Pick<CampaignBlock, 'pageId'>
   ) => CampaignPageKind | undefined
+  /**
+   * The canvas frame's document, set by the canvas while the frame is
+   * mounted. A ref, so reading it for scroll-to or a hover attribute never
+   * re-renders the editor.
+   */
+  frameDocumentRef: MutableRefObject<Document | null>
 }
 
 export const CampaignEditorContext = createContext<
@@ -308,10 +344,15 @@ export function CampaignEditorProvider({
   initialState,
   children
 }: CampaignEditorProviderProps): ReactElement {
-  const [rawState, dispatch] = useReducer(reducer, {
+  const defaultState: CampaignEditorState = {
     pageKind: CampaignPageKind.landing,
     previewLanguageId: campaign.defaultLanguageId,
     editRequest: 0,
+    panel: 'none',
+    inspectorTab: 'style'
+  }
+  const [rawState, dispatch] = useReducer(reducer, {
+    ...defaultState,
     ...initialState
   })
   const previewLanguageId = campaign.languages.some(
@@ -391,6 +432,7 @@ export function CampaignEditorProvider({
       campaign.pages.find((page) => page.id === block.pageId)?.kind,
     [campaign.pages]
   )
+  const frameDocumentRef = useRef<Document | null>(null)
   const value = useMemo(
     () => ({
       campaign,
@@ -401,7 +443,8 @@ export function CampaignEditorProvider({
       selectBlock,
       selectRegion,
       escape,
-      pageKindOf
+      pageKindOf,
+      frameDocumentRef
     }),
     [
       campaign,

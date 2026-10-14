@@ -1,6 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -14,6 +14,7 @@ import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 import { CampaignEditor } from './CampaignEditor'
 import { CURRENT_USER_ID, campaign } from './data'
 import { firstRunHintKey } from './FirstRunHint'
+import { frameBody } from './testing'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -72,7 +73,7 @@ describe('CampaignEditor', () => {
     expect(baseElement.getElementsByTagName('iframe')).toHaveLength(0)
   })
 
-  it('opens on the landing page, Desktop view, default language, campaign row visible, nothing selected', () => {
+  it('opens on the landing page, Desktop view, default language, the Inspector showing the Theme, nothing selected', () => {
     const { baseElement } = renderEditor()
 
     expect(screen.getByRole('combobox', { name: /^Page/ })).toHaveTextContent(
@@ -86,12 +87,16 @@ describe('CampaignEditor', () => {
       screen.getByRole('combobox', { name: /^Preview language/ })
     ).toHaveTextContent('English')
     expect(screen.getByTestId('CampaignBottomBar')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Settings' })).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignInspector')).toHaveAttribute(
+      'data-selection',
+      'campaign'
+    )
+    expect(screen.getByTestId('CampaignThemePanel')).toBeInTheDocument()
     expect(baseElement.getElementsByTagName('iframe')).toHaveLength(1)
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('opens the Translations view from the campaign row', async () => {
+  it('opens the Translations view inline in the Inspector from the campaign row', async () => {
     renderEditor([
       {
         request: {
@@ -109,7 +114,16 @@ describe('CampaignEditor', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Translations' }))
 
     expect(await screen.findByTestId('TranslationsView')).toBeInTheDocument()
-    expect(await screen.findByTestId('TranslationsEmpty')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Settings' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
+    expect(
+      within(screen.getByTestId('CampaignInspector')).getByTestId(
+        'TranslationsView'
+      )
+    ).toBeInTheDocument()
+    expect(document.querySelector('.MuiDrawer-root')).toBeNull()
   })
 
   it('shows the dismissible first-run hint once per campaign through localStorage', () => {
@@ -155,7 +169,7 @@ describe('CampaignEditor', () => {
       }
     ])
 
-    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     const title = screen.getByLabelText('Title')
     fireEvent.change(title, { target: { value: 'Easter 2027' } })
     expect(title).toHaveValue('Easter 2027')
@@ -164,10 +178,8 @@ describe('CampaignEditor', () => {
     expect(await screen.findByText('campaign not found')).toBeInTheDocument()
   })
 
-  it('opens the Theme panel from the campaign row', async () => {
+  it('shows the Theme in the Inspector when nothing is selected', async () => {
     renderEditor()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Theme' }))
 
     expect(await screen.findByTestId('CampaignThemePanel')).toHaveAttribute(
       'data-preset',
@@ -182,10 +194,60 @@ describe('CampaignEditor', () => {
   it('offers Delete campaign to the manager', async () => {
     renderEditor()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Settings' }))
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     expect(
       await screen.findByRole('button', { name: 'Delete campaign' })
     ).toBeInTheDocument()
+  })
+
+  it('swaps the Inspector’s content on selection without a drawer or a dimmed canvas', async () => {
+    const { baseElement } = renderEditor()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+
+    fireEvent.click(body.querySelector('[data-testid="CanvasSection-heroId"]')!)
+
+    expect(screen.getByTestId('CampaignStylePanel')).toHaveAttribute(
+      'data-block-id',
+      'heroId'
+    )
+    expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
+      'Hero'
+    )
+
+    fireEvent.click(
+      body.querySelector('[data-testid="CanvasExtra-heroButtonId"]')!
+    )
+
+    expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
+      'Button'
+    )
+    expect(screen.queryByTestId('CampaignStylePanel')).not.toBeInTheDocument()
+    expect(document.querySelector('.MuiDrawer-root')).toBeNull()
+    expect(document.querySelector('.MuiBackdrop-root')).toBeNull()
+  })
+
+  it('switches the Inspector tab with D and S in the shell and inside the frame, and not while typing', async () => {
+    const { baseElement } = renderEditor()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const frameDocument = body.ownerDocument
+    const selected = (): string | null =>
+      screen
+        .getAllByRole('tab')
+        .find((tab) => tab.getAttribute('aria-selected') === 'true')
+        ?.textContent ?? null
+    expect(selected()).toBe('Style')
+
+    fireEvent.keyDown(document.body, { key: 'd', code: 'KeyD' })
+    expect(selected()).toBe('Settings')
+    fireEvent.keyDown(frameDocument.body, { key: 's', code: 'KeyS' })
+    expect(selected()).toBe('Style')
+    fireEvent.keyDown(frameDocument.body, { key: 'd', code: 'KeyD' })
+    expect(selected()).toBe('Settings')
+
+    const title = screen.getByLabelText('Title')
+    title.focus()
+    fireEvent.keyDown(title, { key: 's', code: 'KeyS' })
+    expect(selected()).toBe('Settings')
   })
 
   it('shows a loading state until the campaign arrives', () => {

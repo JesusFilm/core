@@ -118,7 +118,7 @@ function renderEditor(): ReturnType<typeof render> {
       <SelectionProbe />
       <BlocksProbe />
       <PageCanvas />
-      <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <BottomBar />
     </QueriedEditor>
   )
 }
@@ -260,7 +260,7 @@ describe('useCampaignBlockCreateCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+          <BottomBar />
         </QueriedEditor>
       )
     }

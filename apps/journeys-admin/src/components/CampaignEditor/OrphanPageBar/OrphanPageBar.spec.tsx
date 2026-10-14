@@ -60,7 +60,7 @@ function renderBar(
         <SelectionProbe />
         <CommandProbe />
         <RegionsProbe />
-        <BottomBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <BottomBar />
       </QueriedEditor>
     </SnackbarProvider>
   )
@@ -94,7 +94,7 @@ describe('OrphanPageBar', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: 'Settings' })
+        screen.getByRole('button', { name: 'Translations' })
       ).toBeInTheDocument()
     )
     expect(screen.queryByTestId('OrphanPageDelete')).not.toBeInTheDocument()
@@ -103,7 +103,7 @@ describe('OrphanPageBar', () => {
     renderBar({ pageKind: CampaignPageKind.landing })
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: 'Settings' })
+        screen.getByRole('button', { name: 'Translations' })
       ).toBeInTheDocument()
     )
     expect(screen.queryByTestId('OrphanPageDelete')).not.toBeInTheDocument()

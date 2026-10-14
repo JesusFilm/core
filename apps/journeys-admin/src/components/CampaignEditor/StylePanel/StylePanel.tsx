@@ -1,7 +1,6 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
@@ -15,7 +14,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { campaignImageSource, resolveBand } from '@core/journeys/ui/Campaign'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import {
   CampaignBackgroundKind,
@@ -29,7 +27,6 @@ import {
   SectionOverrideField,
   useCampaignSectionStyleMutation
 } from '../../../libs/useCampaignSectionStyleMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ImagePicker } from '../Pickers/ImagePicker'
@@ -57,7 +54,6 @@ export const BACKGROUND_OVERLAYS = [
 
 interface StylePanelProps {
   block: CampaignStyledBlock
-  onClose?: () => void
 }
 
 /**
@@ -70,7 +66,7 @@ interface StylePanelProps {
  * override writes null. Only the pure hex and https rules are checked here;
  * the API's message is shown verbatim otherwise.
  */
-export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
+export function StylePanel({ block }: StylePanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
@@ -179,23 +175,9 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
   return (
     <Stack
       spacing={4}
-      sx={{ p: 6, width: 360 }}
       data-testid="CampaignStylePanel"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Style')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {blockLabel(t, block.__typename)}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
       <Tabs
         value={tab}
         onChange={(_event, next: StyleTab) => setTab(next)}

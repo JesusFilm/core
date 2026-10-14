@@ -70,8 +70,12 @@ _Avoid_: campaign builder (the feature name, not the surface), site editor
 The Campaign Editor's rendering of the selected Campaign Page inside a FramePortal iframe, painted with the editor's own section components under the campaign theme (shared with the public viewer are pure helpers only). **Desktop/Phone** is a view toggle that sets the frame to full width or 390 px; it is never a Command.
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
+**Inspector**:
+The persistent right panel (328 px, the journey editor's drawer width) of the Campaign Editor that shows the selection: a header with the element-type icon and the block's label, the breadcrumb (each earlier crumb selects that level) and an actions row (move, duplicate, delete, confirming for sections, columns and regions only), then a **Style** and a **Settings** tab switched on the selection kind (S and D switch tab, never while a field has focus). With nothing selected it holds the campaign Theme (Style) and the campaign settings (Settings). It replaces the seven modal drawers of the first Campaign Editor and never dims or blocks the canvas; the active tab (and the open rail panel, unused for now) is editor view state, never a Command.
+_Avoid_: properties (the journey editor's Drawer), details panel, side panel
+
 **Campaign Row**:
-The contextual bottom bar shown while nothing on the Campaign Canvas is selected: Settings, Theme, Translations and Add section. **Settings** holds the title, the slug with its address hint (the permanent root-domain address and the current public address), the status copy and, for team managers, Delete campaign; title and slug save through `campaignUpdate` and are not Commands. **Theme** opens the Theme panel: the Light and Dark Theme Preset swatches, the eight Campaign Theme colours as swatch plus hex, the three font selects over the journeys theme dialog's curated lists, the four corner radii and the two button shapes; every change, and each preset application, is one Command through `campaignThemeUpdate`, and the Light / Dark / Custom label is derived by comparing the nine values to the preset constants, never stored.
+The contextual bottom bar shown while nothing on the Campaign Canvas is selected: Languages, Translations and Add section; Settings and Theme live in the **Inspector**. **Settings** holds the title, the slug with its address hint (the permanent root-domain address and the current public address), the status copy and, for team managers, Delete campaign; title and slug save through `campaignUpdate` and are not Commands. **Theme** opens the Theme panel: the Light and Dark Theme Preset swatches, the eight Campaign Theme colours as swatch plus hex, the three font selects over the journeys theme dialog's curated lists, the four corner radii and the two button shapes; every change, and each preset application, is one Command through `campaignThemeUpdate`, and the Light / Dark / Custom label is derived by comparing the nine values to the preset constants, never stored.
 _Avoid_: toolbar (that is the Top Bar), properties panel
 
 **Top Bar**:
@@ -79,7 +83,7 @@ The Campaign Editor's header: the Page Selector (landing page, Region Page), the
 _Avoid_: toolbar, app bar
 
 **Languages Panel**:
-The drawer the Campaign Row's Languages button opens: the campaign's Page Languages in selector order (autonym, with the English name beside it, the default marked) with Remove on each, and the shared language autocomplete to add one. Add and remove go straight to the API and are never Commands; the default or last language cannot be removed and the API's refusal is shown verbatim. The machine-translation run for a new language belongs to the Translations view.
+The view the Campaign Row's (or the Inspector's) Languages button opens inline in the Inspector's Settings tab, until the Localize panel lands: the campaign's Page Languages in selector order (autonym, with the English name beside it, the default marked) with Remove on each, and the shared language autocomplete to add one. Add and remove go straight to the API and are never Commands; the default or last language cannot be removed and the API's refusal is shown verbatim. The machine-translation run for a new language belongs to the Translations view.
 _Avoid_: language settings, locale picker
 
 **Preview Language**:
@@ -87,7 +91,7 @@ The Top Bar select that decides which campaign language the Campaign Canvas rend
 _Avoid_: canvas language, view language, locale
 
 **Translations View**:
-The drawer the Campaign Row's Translations button opens: one non-default campaign language at a time, every Translated Field grouped Interface, Landing page, Region page and Regions, filtered All, Needs review, Machine-translated, Missing or Edited (Needs review and Machine-translated list the same lines). Each line shows what the text is, the default wording and an editable field with its character counter; leaving the field writes a human translation (an emptied field clears it) and the line turns Edited at once, in the list and in the editor's own copy. It is not a Command: undo belongs to the canvas.
+The view the Campaign Row's (or the Inspector's) Translations button opens inline in the Inspector's Settings tab, until the Localize panel lands: one non-default campaign language at a time, every Translated Field grouped Interface, Landing page, Region page and Regions, filtered All, Needs review, Machine-translated, Missing or Edited (Needs review and Machine-translated list the same lines). Each line shows what the text is, the default wording and an editable field with its character counter; leaving the field writes a human translation (an emptied field clears it) and the line turns Edited at once, in the list and in the editor's own copy. It is not a Command: undo belongs to the canvas.
 _Avoid_: translation manager, review queue
 
 **First-run Hint**:

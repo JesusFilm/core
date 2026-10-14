@@ -70,7 +70,6 @@ describe('MediaSectionEdit', () => {
   it('shows the media the slot holds with Replace and Clear, and the media side', () => {
     renderEdit([])
 
-    expect(screen.getByText('Featured media')).toBeInTheDocument()
     expect(screen.getByTestId('CanvasMediaImage')).toHaveAttribute('src', SRC)
     expect(
       screen.getByRole('button', { name: 'Replace media' })

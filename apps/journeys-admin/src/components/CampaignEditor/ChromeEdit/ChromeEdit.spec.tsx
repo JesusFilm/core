@@ -130,9 +130,10 @@ describe('ChromeEdit', () => {
   it('offers the logo picker (upload or paste) when the header has no logo, and no Clear logo', async () => {
     render(<HeaderEdit />)
 
-    expect(await screen.findByText('Header')).toBeInTheDocument()
     expect(
-      screen.getByText('No logo: the campaign title shows as the brand mark.')
+      await screen.findByText(
+        'No logo: the campaign title shows as the brand mark.'
+      )
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Upload a file' })).toBeEnabled()
     expect(

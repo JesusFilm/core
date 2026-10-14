@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import CircularProgress from '@mui/material/CircularProgress'
-import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -26,12 +25,9 @@ import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { FirstRunHint } from './FirstRunHint'
 import { Hotkeys } from './Hotkeys'
-import { LanguagesPanel } from './LanguagesPanel'
-import { RegionSettings } from './RegionSettings'
-import { Settings } from './Settings'
-import { ThemePanel } from './ThemePanel'
+import { Inspector } from './Inspector'
+import type { InspectorInlineView } from './Inspector'
 import { TopBar } from './TopBar'
-import { TranslationsView } from './TranslationsView'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
 export const EDITOR_MIN_WIDTH = 980
@@ -45,7 +41,7 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the bars, the hint, the canvas and the settings drawer. */
+/** Everything inside the providers: the bars, the hint, the canvas and the Inspector. */
 function CampaignEditorShell({
   campaign,
   isManager
@@ -53,24 +49,22 @@ function CampaignEditorShell({
   const {
     state: { pageKind, previewLanguageId },
     currentRegion,
-    selection,
     dispatch
   } = useCampaignEditor()
   const [view, setView] = useState<CanvasView>('desktop')
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [themeOpen, setThemeOpen] = useState(false)
-  const [languagesOpen, setLanguagesOpen] = useState(false)
-  const [regionSettingsOpen, setRegionSettingsOpen] = useState(false)
-  const settingsRegion =
-    selection.kind === 'region' ? selection.region : undefined
-  const [translationsOpen, setTranslationsOpen] = useState(false)
-  const [promotionNoticeShown, setPromotionNoticeShown] = useState(false)
+  const [inline, setInline] = useState<InspectorInlineView>()
 
   function handlePageKindChange(
     nextPageKind: CampaignPageKind,
     regionId?: string
   ): void {
     dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind, regionId })
+  }
+
+  /** Languages and Translations open inline in the nothing-selected Settings tab until the Localize panel lands. */
+  function handleInlineOpen(next: InspectorInlineView): void {
+    dispatch({ type: 'SetInspectorTabAction', inspectorTab: 'settings' })
+    setInline(next)
   }
 
   function handlePreviewLanguageChange(languageId: string): void {
@@ -95,61 +89,20 @@ function CampaignEditorShell({
         isManager={isManager}
       />
       <FirstRunHint campaignId={campaign.id} />
-      <Canvas campaign={campaign} pageKind={pageKind} view={view} />
-      <BottomBar
-        onSettingsClick={() => setSettingsOpen(true)}
-        onThemeClick={() => setThemeOpen(true)}
-        onLanguagesClick={() => setLanguagesOpen(true)}
-        onRegionSettingsClick={() => setRegionSettingsOpen(true)}
-        onTranslationsClick={() => setTranslationsOpen(true)}
-      />
-      <Drawer
-        anchor="right"
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-      >
-        <Settings
-          campaign={campaign}
+      <Stack direction="row" sx={{ flexGrow: 1, minHeight: 0 }}>
+        <Canvas campaign={campaign} pageKind={pageKind} view={view} />
+        <Inspector
           isManager={isManager}
-          onDefaultLanguageChanged={() => setPromotionNoticeShown(true)}
+          inline={inline}
+          onInlineChange={setInline}
         />
-      </Drawer>
-      <Drawer
-        anchor="right"
-        open={regionSettingsOpen && settingsRegion != null}
-        onClose={() => setRegionSettingsOpen(false)}
-      >
-        {settingsRegion != null && <RegionSettings region={settingsRegion} />}
-      </Drawer>
-      <Drawer
-        anchor="right"
-        open={themeOpen}
-        onClose={() => setThemeOpen(false)}
-      >
-        <ThemePanel onClose={() => setThemeOpen(false)} />
-      </Drawer>
-      <Drawer
-        anchor="right"
-        open={languagesOpen}
-        onClose={() => setLanguagesOpen(false)}
-      >
-        <LanguagesPanel campaign={campaign} />
-      </Drawer>
-      <Drawer
-        anchor="right"
-        open={translationsOpen}
-        onClose={() => {
-          setTranslationsOpen(false)
-          setPromotionNoticeShown(false)
-        }}
-      >
-        <TranslationsView
-          campaign={campaign}
-          initialLanguageId={previewLanguageId}
-          showPromotionNotice={promotionNoticeShown}
-          onPromotionNoticeClose={() => setPromotionNoticeShown(false)}
-        />
-      </Drawer>
+      </Stack>
+      <BottomBar
+        onLanguagesClick={() => handleInlineOpen({ view: 'languages' })}
+        onTranslationsClick={() =>
+          handleInlineOpen({ view: 'translations', promotionNotice: false })
+        }
+      />
     </Stack>
   )
 }
@@ -157,9 +110,9 @@ function CampaignEditorShell({
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
- * the Mux upload queue (so a Media Slot upload outlives its drawer), the
- * top bar, the first-run hint, the canvas and the contextual bottom
- * bar. First open after create shows the landing page, nothing selected,
+ * the Mux upload queue (so a Media Slot upload outlives the selection), the
+ * top bar, the first-run hint, the canvas, the Inspector and the contextual
+ * bottom bar. First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
  * replaces Save.
  */

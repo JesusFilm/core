@@ -386,17 +386,4 @@ describe('ThemePanel', () => {
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
     })
   })
-
-  it('closes through the close button', async () => {
-    const onClose = vi.fn()
-    render(
-      <QueriedEditor>
-        <ThemePanel onClose={onClose} />
-      </QueriedEditor>
-    )
-
-    fireEvent.click(await screen.findByRole('button', { name: 'Close' }))
-
-    expect(onClose).toHaveBeenCalled()
-  })
 })
