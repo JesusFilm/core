@@ -27,7 +27,7 @@ import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
  * The Inspector's actions row for the selection: move up / down for a
  * section (left / right for a carousel or journey card, the region order for
  * a region card), duplicate for a section and delete. Each is the same
- * Command as the bottom bar's was. Deleting a section or emptying a column
+ * Command as before the Inspector. Deleting a section or emptying a column
  * confirms and points at undo; every other delete is immediate.
  */
 export function InspectorActions(): ReactElement | null {
