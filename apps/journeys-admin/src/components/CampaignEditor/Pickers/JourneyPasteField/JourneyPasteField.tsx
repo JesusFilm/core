@@ -9,6 +9,8 @@ import {
   KeyboardEvent,
   MouseEvent,
   ReactElement,
+  useEffect,
+  useRef,
   useState
 } from 'react'
 
@@ -77,6 +79,13 @@ export function JourneyPasteField({
   const [resolvedFor, setResolvedFor] = useState<string>()
   const [linking, setLinking] = useState(false)
   const [resolve, { loading: resolving }] = useCampaignJourneyByLinkLazyQuery()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Without scrolling: the field sits in the scaled canvas frame, and a plain
+  // focus() would scroll the editor page that holds it.
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus({ preventScroll: true })
+  }, [autoFocus])
 
   async function handleResolve(raw: string): Promise<void> {
     const trimmed = raw.trim()
@@ -156,7 +165,7 @@ export function JourneyPasteField({
         helperText={
           error ?? t('Paste the journey’s admin link or its public address.')
         }
-        autoFocus={autoFocus}
+        inputRef={inputRef}
         disabled={disabled || linking}
         fullWidth
         size="small"

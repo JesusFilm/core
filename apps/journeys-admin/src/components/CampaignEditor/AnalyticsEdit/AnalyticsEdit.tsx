@@ -1,83 +1,31 @@
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Stack from '@mui/material/Stack'
-import Switch from '@mui/material/Switch'
-import { useTranslation } from 'next-i18next/pages'
-import { ChangeEvent, MouseEvent, ReactElement } from 'react'
+import Box from '@mui/material/Box'
+import { MouseEvent, ReactElement } from 'react'
 
 import { CampaignAnalyticsPanel } from '@core/journeys/ui/Campaign'
-import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
-import { useCampaignAnalyticsBlockShowMapMutation } from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
 import { useWorldMap } from '../../../libs/useWorldMap'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 
 interface AnalyticsEditProps {
   /** The Analytics section this editor sits in. */
-  block: Pick<CampaignBlock, 'id' | 'pageId'> & { showMap: boolean }
-}
-
-interface ShowMapParameters {
-  showMap: boolean
+  block: Pick<CampaignBlock, 'id'> & { showMap: boolean }
 }
 
 /**
  * The Analytics section on the editor canvas: the same panel the public page
- * shows, under the "Show map" switch. Flipping the switch is one Command that
- * writes `showMap` through `campaignAnalyticsBlockUpdate`, shown at once;
- * undo writes the previous value back.
+ * shows, with the world map while the section's `showMap` is on. The switch
+ * that turns the map on or off lives in the section's Settings.
  */
 export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const { add } = useCommand()
-  const {
-    campaign,
-    currentRegion,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
-  const [updateShowMap] = useCampaignAnalyticsBlockShowMapMutation()
+  const { campaign, currentRegion } = useCampaignEditor()
   const worldMap = useWorldMap(block.showMap)
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    const blockPageKind = pageKindOf(block) ?? pageKind
-    add<ShowMapParameters>({
-      parameters: {
-        execute: { showMap: event.target.checked },
-        undo: { showMap: block.showMap }
-      },
-      execute({ showMap }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.id
-        })
-        void updateShowMap({
-          variables: { id: block.id, input: { showMap } },
-          optimisticResponse: {
-            campaignAnalyticsBlockUpdate: {
-              __typename: 'CampaignAnalyticsBlock',
-              id: block.id,
-              showMap
-            }
-          }
-        })
-      }
-    })
-  }
-
   return (
-    <Stack
-      spacing={2}
+    <Box
       data-testid="AnalyticsEdit"
       onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
     >
-      <FormControlLabel
-        control={<Switch checked={block.showMap} onChange={handleChange} />}
-        label={t('Show map')}
-        sx={{ alignSelf: 'flex-start', color: 'var(--campaign-band-text)' }}
-      />
       <CampaignAnalyticsPanel
         campaignId={campaign.id}
         regions={campaign.regions}
@@ -87,6 +35,6 @@ export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
         worldMap={worldMap}
         accentColor={campaign.theme.accentColor}
       />
-    </Stack>
+    </Box>
   )
 }
