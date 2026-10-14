@@ -144,13 +144,13 @@ enabled = true
 [env.prod]
 name = "short-links-redirect-prod"
 logpush = true
-# One route per cut-over hostname. Uncomment at cutover; a deploy applies it.
-# Root domains (nxstp.is, arc.gt) become custom domains:
+# One route per cut-over hostname; a deploy applies the set below. Root
+# domains (nxstp.is, arc.gt) become custom domains at their cutover:
 #   { pattern = "nxstp.is", custom_domain = true }
-# routes = [
-#   { pattern = "jesus.film/s/*", zone_name = "jesus.film" },
-#   { pattern = "jesus.movie/s/*", zone_name = "jesus.movie" }
-# ]
+routes = [
+  { pattern = "jesus.film/s/*", zone_name = "jesus.film" },
+  { pattern = "jesus.movie/s/*", zone_name = "jesus.movie" }
+]
 
 [env.prod.vars]
 CORE_GRAPHQL_ENDPOINT = "https://api-gateway.central.jesusfilm.org/"
