@@ -62,4 +62,25 @@ export const PanelPushesAt1440: Story = {
   play: openPagesPanel
 }
 
+/** The Desktop frame is 1200 px wide inside, scaled to about 0.69 to fit between the rail and the Inspector. */
+export const ScaledFrameAt1280: Story = {
+  parameters: { chromatic: { viewports: [1280] } }
+}
+
+/** About 0.83 with no panel open. */
+export const ScaledFrameAt1440: Story = {
+  parameters: { chromatic: { viewports: [1440] } }
+}
+
+/** Wide enough for the frame at its real width, so it is not scaled. */
+export const ScaledFrameAt1920: Story = {
+  parameters: { chromatic: { viewports: [1920] } }
+}
+
+/** A pushed panel takes 300 px, so the frame scales further (about 0.58 at 1440 px). */
+export const ScaledFrameWithPushedPanelAt1440: Story = {
+  parameters: { chromatic: { viewports: [1440] } },
+  play: openPagesPanel
+}
+
 export default CampaignEditorMeta

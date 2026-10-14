@@ -15,7 +15,7 @@ import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   createCampaignTheme,
@@ -33,12 +33,12 @@ import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
+import { CanvasView, canvasScale, frameWidthOf } from './canvasScale'
 import { CanvasSection } from './CanvasSection'
+import { FrameTheme } from './FrameTheme'
 
-export type CanvasView = 'desktop' | 'phone'
-
-/** Phone view: the frame is 390 px wide so the campaign's breakpoints follow the canvas width. */
-export const PHONE_FRAME_WIDTH = 390
+export { PHONE_FRAME_WIDTH } from './canvasScale'
+export type { CanvasView } from './canvasScale'
 
 export type DropEdge = 'before' | 'after'
 
@@ -142,6 +142,34 @@ function FrameDocument({ document }: { document: Document }): ReactElement {
   return <></>
 }
 
+interface StageSize {
+  width: number
+  height: number
+}
+
+/**
+ * The size of the space the frame may fill, measured on a callback ref. It
+ * stays undefined until measured (and where there is no ResizeObserver, as in
+ * jsdom), when the frame is shown unscaled.
+ */
+function useStageSize(): [(node: HTMLElement | null) => void, StageSize?] {
+  const [stage, setStage] = useState<HTMLElement | null>(null)
+  const [size, setSize] = useState<StageSize>()
+  const ref = useCallback((node: HTMLElement | null) => setStage(node), [])
+
+  useEffect(() => {
+    if (stage == null || typeof ResizeObserver === 'undefined') return
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect
+      setSize({ width, height })
+    })
+    observer.observe(stage)
+    return () => observer.disconnect()
+  }, [stage])
+
+  return [ref, size]
+}
+
 interface CanvasProps {
   campaign: Campaign
   pageKind: CampaignPageKind
@@ -158,6 +186,12 @@ interface CanvasProps {
  * a click on the empty frame returns to the campaign row. A section is
  * dragged by its handle only; the drop lands before or after the section
  * under the pointer by its midpoint, as one reorder Command.
+ *
+ * The frame has a fixed width (1200 px Desktop, 390 px Phone) and is scaled
+ * down to fit the space it is given with a CSS transform on a wrapper outside
+ * the frame, never below 0.5. Everything that runs inside the frame stays
+ * inside it, so the scale never reaches it: the pointer coordinates and rects
+ * the drag context reads all come from the frame's own unscaled document.
  */
 export function Canvas({
   campaign,
@@ -220,6 +254,10 @@ export function Canvas({
     ],
     [fontFamilies]
   )
+  const [stageRef, stageSize] = useStageSize()
+  const frameWidth = frameWidthOf(view)
+  const scale = stageSize == null ? 1 : canvasScale(stageSize.width, frameWidth)
+  const frameHeight = stageSize == null ? '100%' : stageSize.height / scale
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
     useSensor(TouchSensor, {
@@ -279,79 +317,103 @@ export function Canvas({
     >
       <FontLoader fonts={fonts} />
       <Box
+        ref={stageRef}
         sx={{
-          width: view === 'phone' ? PHONE_FRAME_WIDTH : '100%',
-          maxWidth: '100%',
-          height: '100%',
-          bgcolor: 'background.paper',
-          borderRadius: 3,
-          overflow: 'hidden',
-          boxShadow: 2
+          flexGrow: 1,
+          minWidth: 0,
+          minHeight: 0,
+          display: 'flex',
+          justifyContent: 'center'
         }}
       >
-        <FramePortal
-          width={view === 'phone' ? PHONE_FRAME_WIDTH : '100%'}
-          height="100%"
-          dir={rtl ? 'rtl' : 'ltr'}
-          fontFamilies={fontFamilies}
-          title={t('Campaign preview')}
-          data-testid="CampaignCanvasFrame"
+        <Box
+          data-testid="CampaignCanvasScale"
+          data-scale={scale}
+          sx={{
+            width: frameWidth * scale,
+            height: '100%',
+            flexShrink: 0,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            overflow: 'hidden',
+            boxShadow: 2
+          }}
         >
-          {({ document }) => (
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <FrameDocument document={document} />
-              <Hotkeys document={document} />
-              <Box
-                data-testid="CampaignCanvasPage"
-                onClick={() => selectBlock(undefined)}
-                sx={{
-                  height: '100%',
-                  overflowY: 'auto',
-                  bgcolor: 'background.default',
-                  color: 'text.primary'
-                }}
-              >
-                <DndContext
-                  sensors={sensors}
-                  collisionDetection={collisionDetection}
-                  onDragMove={handleDragMove}
-                  onDragEnd={handleDragEnd}
-                  onDragCancel={() => setDropTarget(undefined)}
-                >
-                  {header != null && (
-                    <CanvasSection
-                      block={header}
-                      theme={campaign.theme}
-                      previewLanguageId={previewLanguageId}
-                    />
-                  )}
-                  {sections.map((section) => (
-                    <CanvasSection
-                      key={section.id}
-                      block={section}
-                      theme={campaign.theme}
-                      previewLanguageId={previewLanguageId}
-                      draggable
-                      dropEdge={
-                        dropTarget?.overId === section.id
-                          ? dropTarget.edge
-                          : undefined
-                      }
-                    />
-                  ))}
-                  {footer != null && (
-                    <CanvasSection
-                      block={footer}
-                      theme={campaign.theme}
-                      previewLanguageId={previewLanguageId}
-                    />
-                  )}
-                </DndContext>
-              </Box>
-            </ThemeProvider>
-          )}
-        </FramePortal>
+          <Box
+            sx={{
+              width: frameWidth,
+              height: frameHeight,
+              transform: `scale(${scale})`,
+              transformOrigin: 'top left'
+            }}
+          >
+            <FramePortal
+              width={frameWidth}
+              height="100%"
+              dir={rtl ? 'rtl' : 'ltr'}
+              fontFamilies={fontFamilies}
+              title={t('Campaign preview')}
+              data-testid="CampaignCanvasFrame"
+            >
+              {({ document }) => (
+                <ThemeProvider theme={theme}>
+                  <FrameTheme document={document}>
+                    <CssBaseline />
+                    <FrameDocument document={document} />
+                    <Hotkeys document={document} />
+                    <Box
+                      data-testid="CampaignCanvasPage"
+                      onClick={() => selectBlock(undefined)}
+                      sx={{
+                        height: '100%',
+                        overflowY: 'auto',
+                        bgcolor: 'background.default',
+                        color: 'text.primary'
+                      }}
+                    >
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={collisionDetection}
+                        onDragMove={handleDragMove}
+                        onDragEnd={handleDragEnd}
+                        onDragCancel={() => setDropTarget(undefined)}
+                      >
+                        {header != null && (
+                          <CanvasSection
+                            block={header}
+                            theme={campaign.theme}
+                            previewLanguageId={previewLanguageId}
+                          />
+                        )}
+                        {sections.map((section) => (
+                          <CanvasSection
+                            key={section.id}
+                            block={section}
+                            theme={campaign.theme}
+                            previewLanguageId={previewLanguageId}
+                            draggable
+                            dropEdge={
+                              dropTarget?.overId === section.id
+                                ? dropTarget.edge
+                                : undefined
+                            }
+                          />
+                        ))}
+                        {footer != null && (
+                          <CanvasSection
+                            block={footer}
+                            theme={campaign.theme}
+                            previewLanguageId={previewLanguageId}
+                          />
+                        )}
+                      </DndContext>
+                    </Box>
+                  </FrameTheme>
+                </ThemeProvider>
+              )}
+            </FramePortal>
+          </Box>
+        </Box>
       </Box>
     </Box>
   )

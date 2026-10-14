@@ -67,7 +67,7 @@ The full-screen `/campaigns/[id]` editor for a **Campaign** (the Journeys contex
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
-The Campaign Editor's rendering of the selected Campaign Page inside a FramePortal iframe, painted with the editor's own section components under the campaign theme (shared with the public viewer are pure helpers only). **Desktop/Phone** is a view toggle that sets the frame to full width or 390 px; it is never a Command.
+The Campaign Editor's rendering of the selected Campaign Page inside a FramePortal iframe, painted with the editor's own section components under the campaign theme (shared with the public viewer are pure helpers only). **Desktop/Phone** is a view toggle that sets the frame to 1200 px or 390 px wide; it is never a Command. The frame keeps that width and is scaled down to fit the space between the Left Rail (and a pushed panel) and the Inspector with a CSS transform on a wrapper outside it, never below 0.5 and never above 1 (the wrapper is sized to frame × scale so layout matches). Everything that runs inside the frame stays inside it — the drag context, the inline inputs, popovers and menus (their container is the frame's body) and focus (`preventScroll`) — so the scale never reaches it; iframe `zoom` is not used.
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
 **Inspector**:
