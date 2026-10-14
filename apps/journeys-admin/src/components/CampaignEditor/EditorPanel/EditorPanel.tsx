@@ -7,7 +7,12 @@ import { createPortal } from 'react-dom'
 
 import X2Icon from '@core/shared/ui/icons/X2'
 
-import { FLOATING_PANEL_WIDTH, useEditorPanels } from './EditorPanelsProvider'
+import {
+  BOTTOM_BAR_COLUMN_WIDTH,
+  BOTTOM_BAR_HEIGHT,
+  FLOATING_PANEL_WIDTH,
+  useEditorPanels
+} from './EditorPanelsProvider'
 
 /** A floating panel hangs below the top bar and the context bar. */
 const FLOATING_PANEL_TOP = 128
@@ -29,7 +34,8 @@ interface EditorPanelProps {
 /**
  * One editor panel, shown the way the panel mode says: docked, it portals
  * into the inspector column beside the canvas; floating, it is a card over
- * the canvas's right edge. Never modal. Opening one closes the one before,
+ * the canvas's right edge; bottom, a bar along the canvas's bottom edge
+ * whose content flows into columns. Never modal. Opening one closes the one before,
  * and Escape closes it; the content mounts only while open.
  */
 export function EditorPanel({
@@ -45,7 +51,8 @@ export function EditorPanel({
   const { mode, dockElement, activate, deactivate } = useEditorPanels()
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
-  const floating = float || mode === 'floating'
+  const floating = float || mode !== 'docked'
+  const bottom = !float && mode === 'bottom'
 
   useEffect(() => {
     if (!open) return
@@ -67,7 +74,24 @@ export function EditorPanel({
   const content = (
     <Box
       data-testid={`EditorPanel-${id}`}
-      sx={{ position: 'relative', width: '100%' }}
+      sx={{
+        position: 'relative',
+        width: '100%',
+        ...(bottom && {
+          height: '100%',
+          // The panel's column of controls becomes a block that flows into
+          // side-by-side columns, filled top to bottom then left to right.
+          '& > .MuiStack-root': {
+            display: 'block',
+            height: '100%',
+            boxSizing: 'border-box',
+            columnWidth: BOTTOM_BAR_COLUMN_WIDTH,
+            columnGap: 6,
+            columnFill: 'auto',
+            '& > *': { breakInside: 'avoid' }
+          }
+        })
+      }}
     >
       {closeButton && (
         <IconButton
@@ -87,6 +111,27 @@ export function EditorPanel({
     if (dockElement == null) return null
     return createPortal(content, dockElement)
   }
+
+  if (bottom)
+    return (
+      <Paper
+        elevation={8}
+        data-testid={`EditorPanelBottom-${id}`}
+        sx={{
+          position: 'fixed',
+          left: 16,
+          right: 16,
+          bottom: 16,
+          height: BOTTOM_BAR_HEIGHT,
+          zIndex: 'drawer',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          borderRadius: 2
+        }}
+      >
+        {content}
+      </Paper>
+    )
 
   return (
     <Paper

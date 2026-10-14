@@ -18,6 +18,7 @@ import { ReactElement, useState } from 'react'
 
 import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
+import FlexAlignBottom1Icon from '@core/shared/ui/icons/FlexAlignBottom1'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import Layout2Icon from '@core/shared/ui/icons/Layout2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
@@ -293,6 +294,11 @@ export function TopBar({
         <ToggleButton value="floating" aria-label={t('Floating panels')}>
           <Tooltip title={t('Floating panels')} placement="bottom" arrow>
             <SquareIcon />
+          </Tooltip>
+        </ToggleButton>
+        <ToggleButton value="bottom" aria-label={t('Bottom bar')}>
+          <Tooltip title={t('Bottom bar')} placement="bottom" arrow>
+            <FlexAlignBottom1Icon />
           </Tooltip>
         </ToggleButton>
       </ToggleButtonGroup>

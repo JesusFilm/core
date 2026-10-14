@@ -12,15 +12,20 @@ import {
 /**
  * Where the editor's panels (Style, Edit, Theme, Settings, …) show:
  * `docked` is one inspector column to the right of the canvas, which
- * narrows to make room; `floating` is a card over the canvas's right edge.
- * Neither is modal: the canvas stays visible and clickable behind them.
+ * narrows to make room; `floating` is a card over the canvas's right edge;
+ * `bottom` is a bar along the bottom of the canvas, the panel's content
+ * flowing into columns left to right. None is modal: the canvas stays
+ * visible and clickable behind them.
  */
-export type EditorPanelMode = 'docked' | 'floating'
+export type EditorPanelMode = 'docked' | 'floating' | 'bottom'
 
 export const EDITOR_PANEL_MODE_KEY = 'campaignEditorPanelMode'
 export const DEFAULT_EDITOR_PANEL_MODE: EditorPanelMode = 'docked'
 export const DOCKED_PANEL_WIDTH = 340
 export const FLOATING_PANEL_WIDTH = 340
+/** The bottom bar's height; its content flows into columns of this width. */
+export const BOTTOM_BAR_HEIGHT = 'min(420px, 45vh)'
+export const BOTTOM_BAR_COLUMN_WIDTH = 300
 
 interface ActivePanel {
   id: string
@@ -62,7 +67,7 @@ const EditorPanelsContext = createContext<EditorPanelsContextValue>({
 function readStoredMode(): EditorPanelMode {
   try {
     const stored = window.localStorage.getItem(EDITOR_PANEL_MODE_KEY)
-    return stored === 'docked' || stored === 'floating'
+    return stored === 'docked' || stored === 'floating' || stored === 'bottom'
       ? stored
       : DEFAULT_EDITOR_PANEL_MODE
   } catch {
