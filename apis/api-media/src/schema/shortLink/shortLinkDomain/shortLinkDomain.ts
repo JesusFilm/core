@@ -11,7 +11,7 @@ import {
 } from '../../error'
 import { publishDomain, publishDomainWithLinks, unpublishDomain } from '../edge'
 import { ShortLinkNotFound } from '../enums/shortLinkNotFound'
-import { assertSuperAdmin, editorScopes } from '../lib/access'
+import { editorScopes } from '../lib/access'
 import { PUBLIC_HTTPS_URL_MESSAGE, isPublicHttpsUrl } from '../lib/destination'
 import {
   HTTPS_URL_MESSAGE,
@@ -33,20 +33,19 @@ import {
   removeVercelDomain
 } from './shortLinkDomain.service'
 
-// Redirect, slug and service settings: shortLinkAdmin, publisher or superAdmin.
-// The lazy superAdmin scope is only evaluated when the role scopes fail.
-const settingsScopes = {
-  $any: { isPublisher: true, isShortLinkAdmin: true, isSuperAdmin: true }
+// Adding a domain, every setting on it (redirects, slug grammar, services, and
+// where it is served from: path prefix, KV namespace, Worker binding) and
+// republishing it belong to the shortLinkAdmin role or a superAdmin; publisher
+// and shortLinkEditor only read domains. The lazy superAdmin scope is only
+// evaluated when the role scope fails. The Cloudflare side (namespace, binding,
+// route) is done by hand: see workers/short-links-redirect/README.md, "Setting
+// up a domain".
+const domainAdminScopes = {
+  $any: { isShortLinkDomainAdmin: true, isSuperAdmin: true }
 } as const
 
-// Which domains exist, and everything that decides where a domain is served
-// from (path prefix, KV namespace, Worker binding), belongs to superAdmin. The
-// Cloudflare side (namespace, binding, route) is done by hand: see
-// workers/short-links-redirect/README.md, "Setting up a domain".
+// Removing a domain stays with superAdmin.
 const superAdminScopes = { isSuperAdmin: true } as const
-
-const INFRASTRUCTURE_FIELDS_MESSAGE =
-  'only a superAdmin may change the path prefix, KV namespace or Worker binding of a domain'
 
 const SLUG_ALLOWED_CHARS_MESSAGE =
   'slugAllowedChars must be a valid regex character-class body (e.g. A-Za-z0-9_-)'
@@ -326,10 +325,10 @@ function routingChanged(
 }
 
 builder.mutationFields((t) => ({
-  shortLinkDomainCreate: t.withAuth(superAdminScopes).prismaFieldWithInput({
+  shortLinkDomainCreate: t.withAuth(domainAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml',
+      'Create a new short link domain that can be used for short links (shortLinkAdmin or superAdmin). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml',
     errors: {
       types: [ZodError, NotUniqueError]
     },
@@ -490,10 +489,10 @@ builder.mutationFields((t) => ({
       })
     }
   }),
-  shortLinkDomainUpdate: t.withAuth(settingsScopes).prismaFieldWithInput({
+  shortLinkDomainUpdate: t.withAuth(domainAdminScopes).prismaFieldWithInput({
     type: 'ShortLinkDomain',
     description:
-      'Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin',
+      'Update the services and edge settings of a short link domain (shortLinkAdmin or superAdmin); routing changes republish every live link on it',
     errors: {
       types: [ZodError, NotFoundError]
     },
@@ -562,7 +561,7 @@ builder.mutationFields((t) => ({
       }),
       autoFailover: t.input.boolean({ required: false })
     },
-    resolve: async (query, _, { input }, context) => {
+    resolve: async (query, _, { input }) => {
       const existing = await prisma.shortLinkDomain.findUnique({
         where: { id: input.id }
       })
@@ -574,13 +573,6 @@ builder.mutationFields((t) => ({
       const pathPrefix = resolvePathPrefix(input.pathPrefix)
       const kvNamespaceId = resolveKvNamespaceId(input.kvNamespaceId)
       const kvBinding = resolveKvBinding(input.kvBinding)
-      const changesInfrastructure =
-        (pathPrefix !== undefined && pathPrefix !== existing.pathPrefix) ||
-        (kvNamespaceId !== undefined &&
-          kvNamespaceId !== existing.kvNamespaceId) ||
-        (kvBinding !== undefined && kvBinding !== existing.kvBinding)
-      if (changesInfrastructure)
-        await assertSuperAdmin(context, INFRASTRUCTURE_FIELDS_MESSAGE)
       assertDomainSettings({
         notFound: input.notFound ?? existing.notFound,
         passthroughOrigin:
