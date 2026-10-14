@@ -34,7 +34,10 @@ export function campaignPagePaths(campaign: {
  * slug, listing or delete change of a published campaign call this; other
  * content mutations rely on the 60 s ISR window and queue nothing. A queue
  * failure is logged, not thrown: the page still refreshes at the next ISR
- * regeneration.
+ * regeneration. The pages a `?lang=` link reaches (`_lang/<tag>`) are not
+ * enumerable here, since a campaign language's tag lives in api-languages; they
+ * expire with the same window, so 60 s is how long an unpublish stays visible
+ * there.
  */
 export async function enqueueCampaignRevalidation(
   paths: string[]

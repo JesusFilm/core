@@ -1,14 +1,10 @@
-import { GetServerSideProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import {
-  CAMPAIGN_LANGUAGE_COOKIE,
-  matchRegionSlug
-} from '@core/journeys/ui/Campaign'
 import type {
   CampaignPublic,
   CampaignRegion,
@@ -28,12 +24,8 @@ import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import {
-  campaignPageCacheControl,
-  fetchCampaignPublicInPageLanguageByHostname
-} from '../../src/libs/getCampaignPublic'
+import { getHostCampaignStaticProps } from '../../src/libs/campaignStaticProps'
 import { getFlags } from '../../src/libs/getFlags'
-import { getWorldMap } from '../../src/libs/getWorldMap'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 
@@ -42,16 +34,6 @@ interface HostJourneyPageProps {
   journey: Journey
   locale: string
   rtl: boolean
-}
-
-interface HostSlugPageProps {
-  host: string
-  journey?: Journey
-  locale?: string
-  rtl?: boolean
-  campaign?: CampaignPublic
-  region?: CampaignRegion
-  worldMap?: WorldMapShapes
 }
 
 export function HostJourneyPage({
@@ -111,6 +93,16 @@ export function HostJourneyPage({
   )
 }
 
+interface HostSlugPageProps {
+  host?: string
+  journey?: Journey
+  locale?: string
+  rtl?: boolean
+  campaign?: CampaignPublic
+  region?: CampaignRegion | null
+  worldMap?: WorldMapShapes | null
+}
+
 // `/<segment>` on a domain is a region of its Campaign Root first, then a
 // journey slug (a region outranks a journey with the same spelling).
 function HostSlugPage({
@@ -137,7 +129,7 @@ function HostSlugPage({
 
   return (
     <HostJourneyPage
-      host={host}
+      host={host ?? ''}
       journey={journey}
       locale={locale ?? 'en'}
       rtl={rtl ?? false}
@@ -145,56 +137,16 @@ function HostSlugPage({
   )
 }
 
-// The journey branch keeps the 60 s shared-cache window the static page gave
-// it.
-const SHARED_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=300'
-const NOT_FOUND_CACHE_CONTROL = 'public, s-maxage=1'
-
-// Rendered per request: a region of the domain's Campaign Root is decided in
-// the visitor's Page Language (`?lang` → cookie → `Accept-Language` →
-// default), exactly as at `/campaign/<slug>/<region>`, and cached per
-// `campaignPageCacheControl`. Any other segment is a journey slug.
-export const getServerSideProps: GetServerSideProps<HostSlugPageProps> = async (
+export const getStaticProps: GetStaticProps<HostSlugPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
-
-  const root = await fetchCampaignPublicInPageLanguageByHostname(
-    apolloClient,
-    context.params?.hostname?.toString() ?? '',
-    {
-      param: context.query.lang,
-      cookie: context.req.cookies[CAMPAIGN_LANGUAGE_COOKIE],
-      acceptLanguage: context.req.headers['accept-language']
-    }
-  )
-  const region =
-    root == null
-      ? null
-      : matchRegionSlug(
-          context.params?.journeySlug?.toString(),
-          root.campaign.regions
-        )
-  if (root != null && region != null) {
-    context.res.setHeader(
-      'Cache-Control',
-      campaignPageCacheControl(root.language, root.campaign.languages.length)
-    )
-    return {
-      props: {
-        flags: await getFlags(),
-        host: context.params?.host?.toString() ?? '',
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        )),
-        campaign: root.campaign,
-        region,
-        worldMap: await getWorldMap()
-      }
-    }
-  }
+  const campaignProps = await getHostCampaignStaticProps({
+    hostname: context.params?.hostname?.toString() ?? '',
+    segment: context.params?.journeySlug?.toString(),
+    locale: context.locale
+  })
+  if (campaignProps != null) return campaignProps
 
   try {
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
@@ -214,7 +166,6 @@ export const getServerSideProps: GetServerSideProps<HostSlugPageProps> = async (
     if (data == null) throw new Error('GetJourney returned no data')
 
     const { rtl, locale } = getJourneyRTL(data.journey)
-    context.res.setHeader('Cache-Control', SHARED_CACHE_CONTROL)
     return {
       props: {
         flags: await getFlags(),
@@ -228,11 +179,11 @@ export const getServerSideProps: GetServerSideProps<HostSlugPageProps> = async (
         journey: data.journey,
         locale,
         rtl
-      }
+      },
+      revalidate: 60
     }
   } catch (e) {
     if (isJourneyNotFoundError(e)) {
-      context.res.setHeader('Cache-Control', NOT_FOUND_CACHE_CONTROL)
       return {
         props: {
           ...(await serverSideTranslations(
@@ -241,10 +192,18 @@ export const getServerSideProps: GetServerSideProps<HostSlugPageProps> = async (
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 1
       }
     }
     throw e
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: 'blocking'
   }
 }
 

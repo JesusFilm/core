@@ -100,16 +100,6 @@ export async function fetchCampaignPublicByHostname(
  */
 const WATCH_TEXT_FALLBACK_LANGUAGE_ID = '529'
 
-/** What the request carries that decides the Page Language (PRD §2). */
-export interface PageLanguageRequest {
-  /** The `lang` query param. */
-  param?: string | string[] | null
-  /** The language cookie the header select wrote. */
-  cookie?: string | null
-  /** The `Accept-Language` header. */
-  acceptLanguage?: string | null
-}
-
 export interface CampaignPublicInPageLanguage {
   campaign: CampaignPublic
   language: ResolvedPageLanguage
@@ -119,81 +109,74 @@ type CampaignReader = (
   languageId?: string | null
 ) => Promise<CampaignPublic | null>
 
+/**
+ * The campaign in the Page Language named by `language` (a bcp47 tag, the
+ * `lang` the proxy rewrote into the route; absent means the campaign default).
+ * One read in the campaign default yields the language list the tag is
+ * resolved against. `wanted`, when given, sees that first read and may veto
+ * the rest: a custom-domain visit that turns out to be a journey slug, not a
+ * region, stops here instead of paying for a second read.
+ */
 async function readInPageLanguage(
   read: CampaignReader,
-  request: PageLanguageRequest
+  language: string | null | undefined,
+  wanted?: (inDefault: CampaignPublic) => boolean
 ): Promise<CampaignPublicInPageLanguage | null> {
   const inDefault = await read()
   if (inDefault == null) return null
-  const language = resolvePageLanguage({
+  if (wanted != null && !wanted(inDefault)) return null
+  const resolved = resolvePageLanguage({
     languages: inDefault.languages.map((candidate) => ({
       languageId: candidate.languageId,
       bcp47: candidate.language.bcp47
     })),
     defaultLanguageId: inDefault.defaultLanguageId,
-    ...request
+    param: language
   })
   if (
-    language.languageId === inDefault.languageId &&
-    language.languageId === WATCH_TEXT_FALLBACK_LANGUAGE_ID
+    resolved.languageId === inDefault.languageId &&
+    resolved.languageId === WATCH_TEXT_FALLBACK_LANGUAGE_ID
   )
-    return { campaign: inDefault, language }
-  const campaign = await read(language.languageId)
+    return { campaign: inDefault, language: resolved }
+  const campaign = await read(resolved.languageId)
   if (campaign == null) return null
-  return { campaign, language }
+  return { campaign, language: resolved }
 }
 
 /**
- * Read a published campaign in the visitor's Page Language: one read in the
- * campaign default yields the language list the request is resolved
- * against (`?lang` → cookie → `Accept-Language` → default), then a second
- * read unless the resolved language is the one the first read already used
- * for both the campaign text and the Watch video titles. Null when the
- * campaign is not published.
+ * Read a published campaign in a Page Language: a second read unless the
+ * resolved language is the one the first read already used for both the
+ * campaign text and the Watch video titles. `language.source` is `param` only
+ * when the tag named a campaign language; any other tag reads the default.
+ * Null when the campaign is not published.
  */
 export async function fetchCampaignPublicInPageLanguage(
   apolloClient: ApolloClient,
   slug: string,
-  request: PageLanguageRequest
+  language?: string | null
 ): Promise<CampaignPublicInPageLanguage | null> {
   return await readInPageLanguage(
     async (languageId) =>
       await fetchCampaignPublic(apolloClient, slug, languageId),
-    request
+    language
   )
 }
 
 /**
  * The same read for the published Campaign Root of a custom domain. Null
- * when the domain has no root campaign or it is a draft.
+ * when the domain has no root campaign, it is a draft, or `wanted` rejects
+ * the root campaign read in its default language.
  */
 export async function fetchCampaignPublicInPageLanguageByHostname(
   apolloClient: ApolloClient,
   hostname: string,
-  request: PageLanguageRequest
+  language?: string | null,
+  wanted?: (inDefault: CampaignPublic) => boolean
 ): Promise<CampaignPublicInPageLanguage | null> {
   return await readInPageLanguage(
     async (languageId) =>
       await fetchCampaignPublicByHostname(apolloClient, hostname, languageId),
-    request
+    language,
+    wanted
   )
-}
-
-/**
- * The `Cache-Control` a campaign page answers with: shared caching when the
- * response is a function of the URL alone — the `lang` param decided the
- * language, or the campaign has one language so nothing can vary. Every
- * other outcome depends on the visitor's cookie or `Accept-Language` (a
- * default-language answer included: the next visitor at the same URL may
- * carry a cookie), so it is private. Every in-campaign link and the header
- * select carry the param on a multi-language campaign, so only a first
- * visit there is uncached.
- */
-export function campaignPageCacheControl(
-  language: ResolvedPageLanguage,
-  campaignLanguageCount: number
-): string {
-  return language.source === 'param' || campaignLanguageCount <= 1
-    ? 'public, s-maxage=60, stale-while-revalidate=300'
-    : 'private, no-cache'
 }

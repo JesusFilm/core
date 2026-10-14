@@ -19,7 +19,7 @@ export class CampaignPage {
   }
 
   async openLandingPage(slug: string, heroTitle: string): Promise<void> {
-    // 90s: a published page can be served stale until its 60s ISR revalidation, so reload until the hero shows
+    // 90s: publish queues an on-demand revalidation, but a not-found cached before it can outlive the revalidate worker's run by up to the 60s ISR window, so reload until the hero shows
     await expect(async () => {
       await this.page.goto(`/campaign/${slug}`)
       await expect(
@@ -33,7 +33,7 @@ export class CampaignPage {
     slug: string,
     sectionTitle: string
   ): Promise<void> {
-    // 90s: a published page can be served stale until its 60s ISR revalidation, so reload until the new section shows
+    // 90s: an edit to a published campaign queues no revalidation, so the page shows it once its 60s ISR window lapses; reload until the new section shows
     await expect(async () => {
       await this.page.goto(`/campaign/${slug}`)
       await expect(this.sectionHeading(sectionTitle)).toBeVisible({
