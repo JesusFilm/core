@@ -135,7 +135,7 @@ export interface CreateVideoVariantInput {
   muxVideoId: string
   playbackId: string
   metadata: VariantMetadata
-  published?: boolean
+  published: boolean
   uploadId?: string
   logger?: Logger
 }
@@ -219,7 +219,7 @@ export async function createOrUpdateVideoVariant({
   muxVideoId,
   playbackId,
   metadata,
-  published = true,
+  published,
   uploadId,
   logger
 }: CreateVideoVariantInput) {

@@ -70,6 +70,11 @@ describe('processVideoUploads service', () => {
       id: 'mux-video-id',
       assetId: 'asset-id'
     } as any)
+    prismaMock.videoVariantUpload.findFirst.mockResolvedValue({
+      id: 'upload-id',
+      published: true,
+      muxNonStandardInputDetectedAt: null
+    } as any)
     ;(getVideo as Mock).mockResolvedValue({
       status: 'ready',
       duration: 120,
@@ -197,6 +202,58 @@ describe('processVideoUploads service', () => {
         errorMessage: null
       }
     })
+  })
+
+  it('keeps a variant uploaded as Draft unpublished (VMT-349)', async () => {
+    const uploadJob = {
+      data: {
+        ...mockJob.data,
+        uploadId: 'upload-id'
+      }
+    } as Job<ProcessVideoUploadJobData>
+
+    prismaMock.muxVideo.findUnique.mockResolvedValue({
+      id: 'mux-video-id',
+      assetId: 'asset-id'
+    } as any)
+    prismaMock.videoVariantUpload.findUnique.mockResolvedValue({
+      id: 'upload-id',
+      published: false,
+      muxNonStandardInputDetectedAt: null
+    } as any)
+    ;(getVideo as Mock).mockResolvedValue({
+      status: 'ready',
+      duration: 120,
+      playback_ids: [{ id: 'playback-id', policy: 'public' }]
+    })
+
+    prismaMock.muxVideo.update.mockResolvedValue({} as any)
+    prismaMock.videoVariantUpload.update.mockResolvedValue({} as any)
+    prismaMock.video.findUnique.mockResolvedValue({ slug: 'video-slug' } as any)
+    prismaMock.video.findMany.mockResolvedValue([])
+    prismaMock.videoVariant.findFirst.mockResolvedValue({
+      id: 'variant-id',
+      slug: 'variant-slug'
+    } as any)
+    prismaMock.videoVariant.update.mockResolvedValue({
+      id: 'variant-id'
+    } as any)
+
+    await service(uploadJob, mockLogger)
+
+    expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        reason: 'process-video-upload',
+        published: false,
+        videoVariantId: 'variant-id'
+      })
+    })
+    expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ published: true })
+      })
+    )
+    expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
   })
 
   it('marks the durable upload failed when final variant creation fails', async () => {
