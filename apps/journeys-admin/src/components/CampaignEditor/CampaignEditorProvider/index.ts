@@ -8,6 +8,7 @@ export {
   useCampaignEditor
 } from './CampaignEditorProvider'
 export type {
+  CampaignAddPreset,
   CampaignEditorAction,
   CampaignEditorState,
   CampaignInspectorTab,

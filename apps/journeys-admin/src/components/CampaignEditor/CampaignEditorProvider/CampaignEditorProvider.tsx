@@ -22,6 +22,17 @@ import { isInColumnSlot } from '../sectionTypes'
 /** The left rail panel that is open; `none` while all are closed. */
 export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize' | 'none'
 
+/**
+ * An insert point the canvas chose for the Add Panel: a page and a position
+ * among its sections, or a Column Slot, whose one section is at position 0.
+ * It lasts while the Add panel stays open and the selection stays put.
+ */
+export interface CampaignAddPreset {
+  pageId: string
+  parentOrder: number
+  parentBlockId?: string
+}
+
 /** The Inspector tab the selection shows. */
 export type CampaignInspectorTab = 'style' | 'settings'
 
@@ -46,6 +57,8 @@ export interface CampaignEditorState {
   panel: CampaignPanel
   /** The Inspector tab; a view choice, never a Command. */
   inspectorTab: CampaignInspectorTab
+  /** The insert point the canvas "+" or an empty slot preset; a view choice, never a Command. */
+  addPreset?: CampaignAddPreset
 }
 
 interface SetPageKindAction {
@@ -88,6 +101,11 @@ interface SetPanelAction {
   type: 'SetPanelAction'
   panel: CampaignPanel
 }
+/** Open the Add panel at an insert point the canvas chose. */
+interface OpenAddPanelAction {
+  type: 'OpenAddPanelAction'
+  preset: CampaignAddPreset
+}
 interface SetInspectorTabAction {
   type: 'SetInspectorTabAction'
   inspectorTab: CampaignInspectorTab
@@ -100,6 +118,7 @@ export type CampaignEditorAction =
   | RequestEditAction
   | SetPreviewLanguageAction
   | SetPanelAction
+  | OpenAddPanelAction
   | SetInspectorTabAction
 
 export function reducer(
@@ -113,19 +132,22 @@ export function reducer(
         pageKind: action.pageKind,
         regionId: action.regionId ?? state.regionId,
         selectedBlockId: undefined,
-        selectedRegionId: undefined
+        selectedRegionId: undefined,
+        addPreset: undefined
       }
     case 'SelectBlockAction':
       return {
         ...state,
         selectedBlockId: action.blockId,
-        selectedRegionId: undefined
+        selectedRegionId: undefined,
+        addPreset: undefined
       }
     case 'SelectRegionAction':
       return {
         ...state,
         selectedBlockId: action.hostBlockId,
-        selectedRegionId: action.regionId
+        selectedRegionId: action.regionId,
+        addPreset: undefined
       }
     case 'SetEditorFocusAction':
       return {
@@ -133,17 +155,23 @@ export function reducer(
         pageKind: action.pageKind ?? state.pageKind,
         regionId: action.regionId ?? state.regionId,
         selectedBlockId: action.selectedBlockId,
-        selectedRegionId: action.selectedRegionId
+        selectedRegionId: action.selectedRegionId,
+        addPreset: undefined
       }
     case 'RequestEditAction':
       return { ...state, editRequest: state.editRequest + 1 }
     case 'SetPreviewLanguageAction':
       return { ...state, previewLanguageId: action.previewLanguageId }
-    case 'SetPanelAction':
+    case 'SetPanelAction': {
+      const panel = state.panel === action.panel ? 'none' : action.panel
       return {
         ...state,
-        panel: state.panel === action.panel ? 'none' : action.panel
+        panel,
+        addPreset: panel === 'add' ? state.addPreset : undefined
       }
+    }
+    case 'OpenAddPanelAction':
+      return { ...state, panel: 'add', addPreset: action.preset }
     case 'SetInspectorTabAction':
       return { ...state, inspectorTab: action.inspectorTab }
   }
