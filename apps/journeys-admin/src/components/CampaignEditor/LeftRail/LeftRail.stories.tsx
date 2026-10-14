@@ -75,6 +75,11 @@ export const PagesOpen: Story = {
   args: { initialState: { panel: 'pages' } }
 }
 
+/** The Add toggle pressed while its panel is open. */
+export const AddOpen: Story = {
+  args: { initialState: { panel: 'add' } }
+}
+
 /** The Localize toggle pressed while its panel is open. */
 export const LocalizeOpen: Story = {
   args: { initialState: { panel: 'localize' } }

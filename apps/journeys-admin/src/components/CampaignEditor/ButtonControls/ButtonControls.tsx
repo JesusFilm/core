@@ -16,7 +16,6 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
-import { BarButton } from '../BarButton'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { PaletteColorPicker } from '../PaletteColorPicker'
 import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
@@ -94,24 +93,33 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
 
   return (
     <>
-      <BarButton
-        label={t('Variant')}
-        icon={<Type1Icon />}
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<Type1Icon />}
         onClick={openControl('variant')}
-        active={open?.control === 'variant'}
-      />
-      <BarButton
-        label={t('Size')}
-        icon={<Type1Icon />}
+        aria-pressed={open?.control === 'variant' ? true : undefined}
+      >
+        {t('Variant')}
+      </Button>
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<Type1Icon />}
         onClick={openControl('size')}
-        active={open?.control === 'size'}
-      />
-      <BarButton
-        label={t('Colours')}
-        icon={<PaletteIcon />}
+        aria-pressed={open?.control === 'size' ? true : undefined}
+      >
+        {t('Size')}
+      </Button>
+      <Button
+        variant="outlined"
+        color="secondary"
+        startIcon={<PaletteIcon />}
         onClick={openControl('colours')}
-        active={open?.control === 'colours'}
-      />
+        aria-pressed={open?.control === 'colours' ? true : undefined}
+      >
+        {t('Colours')}
+      </Button>
       <Menu
         anchorEl={open?.anchor}
         open={open?.control === 'variant'}
