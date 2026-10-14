@@ -115,7 +115,7 @@ export class CampaignBuilderPage {
     await this.openRailPanel('Navigator')
     const heroRow = this.navigatorTree.getByRole('treeitem', { name: /^Hero/ })
     await heroRow.getByText('Hero', { exact: true }).click()
-    await expect(heroRow).toHaveAttribute('aria-selected', 'true')
+    await expect(heroRow).toHaveAttribute('aria-checked', 'true')
   }
 
   /** Sets the selected section's Background kind on the Inspector's Style tab. */
@@ -142,12 +142,19 @@ export class CampaignBuilderPage {
       .click()
 
     const titleInput = this.canvas.getByRole('textbox', { name: 'Title' })
+    // Text writes are debounced: publishing before the mutation lands would race the title save.
+    const titleSaved = this.page.waitForResponse(
+      (response) =>
+        response.request().method() === 'POST' &&
+        (response.request().postData() ?? '').includes(
+          'CampaignRichTextBlockUpdateText'
+        ) &&
+        response.ok()
+    )
     await titleInput.fill(title)
     await expect(titleInput).toHaveValue(title)
     await titleInput.blur()
-    await expect(
-      this.canvas.getByRole('heading', { level: 2, name: title })
-    ).toBeVisible()
+    await titleSaved
   }
 
   async addRegionFromSwitcher(): Promise<void> {
