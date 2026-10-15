@@ -40,7 +40,12 @@ const FILE_EXTENSION_RE =
 // Made New", "Sacrifício final") than a real version-tag remnant, and
 // mechanically dropping it would silently change the title's meaning.
 const VERSION_TAG_RE = /_(v\d+|final|draft|master|copy|old|new|temp|tmp)$/i
-const DUPLICATED_WORD_RE = /\b([A-Za-z][A-Za-z'-]{2,})\b\s+\1\b/i
+// \b is ASCII-only (based on \w), so it misreads the boundary right before a
+// diacritic letter — e.g. "Thiên" splits into a false "Thi" that then looks
+// duplicated against a preceding "Thi". Match word edges via \p{L} lookaround
+// instead so non-ASCII letters count as "still part of the word".
+const DUPLICATED_WORD_RE =
+  /(?<![\p{L}'-])(\p{L}[\p{L}'-]{2,})\s+\1(?![\p{L}'-])/iu
 
 // Soft heuristics: flagged for human triage only, never auto-fixed. Both had a
 // high false-positive rate against real catalog data (legit branding like

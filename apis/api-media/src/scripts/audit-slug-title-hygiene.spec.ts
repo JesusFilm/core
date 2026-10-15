@@ -219,6 +219,44 @@ describe('auditSlugTitleHygiene', () => {
     ])
   })
 
+  it('does not treat a word immediately followed by a diacritic-initial word as a duplicate', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-9',
+        slug: 'sach-thi-thien-tap-11',
+        published: true,
+        // ASCII-only word-boundary matching would misread the boundary right
+        // before "ê", splitting "Thiên" into a false "Thi" that then looks
+        // identical to the preceding "Thi".
+        title: [{ value: 'Sách Thi Thiên (Tập 11)', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([])
+  })
+
+  it('flags an ordinary duplicated word as low-confidence review, never auto-fixed', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-10',
+        slug: 'the-the-quick-fox',
+        published: true,
+        title: [{ value: 'The The Quick Fox', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toHaveLength(1)
+    expect(findings[0]?.reasons).toContain('duplicated-word')
+    expect(findings[0]?.proposedValue).toBeNull()
+    expect(findings[0]?.needsContentReview).toBe(true)
+  })
+
   it('never calls a write method on the prisma client', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {
