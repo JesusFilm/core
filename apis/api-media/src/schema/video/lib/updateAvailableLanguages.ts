@@ -3,7 +3,7 @@
 // Handles both regular videos and collections
 // Used by video.ts and videoVariant.ts
 
-import { prisma } from '@core/prisma/media/client'
+import { Prisma, prisma } from '@core/prisma/media/client'
 
 import { videoCacheReset } from '../../../lib/videoCacheReset'
 import {
@@ -102,9 +102,10 @@ export async function updateVideoAvailableLanguages(
 // COALESCE handles the nullable column so array_append always has a base array.
 export async function addLanguageToVideo(
   videoId: string,
-  languageId: string
+  languageId: string,
+  client: Prisma.TransactionClient | typeof prisma = prisma
 ): Promise<void> {
-  await prisma.$executeRaw`
+  await client.$executeRaw`
     UPDATE "Video"
     SET "availableLanguages" = array_append(COALESCE("availableLanguages", ARRAY[]::TEXT[]), ${languageId})
     WHERE id = ${videoId}

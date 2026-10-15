@@ -286,12 +286,15 @@ describe('applyParentLanguageRepairs', () => {
       apply: true
     })
 
-    expect(prismaMock.video.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: 'series-1' },
-        data: { availableLanguages: { set: ['20770'] } }
-      })
-    )
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      TemplateStringsArray,
+      ...unknown[]
+    ]
+    expect(sqlParts.join('?')).toContain('array_append')
+    expect(values).toContain('20770')
+    expect(values).toContain('series-1')
     expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
     expect(result.repaired).toEqual([

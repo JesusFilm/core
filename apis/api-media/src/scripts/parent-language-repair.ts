@@ -2,6 +2,7 @@ import { prisma } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../lib/algolia/algoliaVideoVariantUpdate'
+import { addLanguageToVideo } from '../schema/video/lib/updateAvailableLanguages'
 import { createEmptyParentVariant } from '../schema/videoVariant/videoVariant'
 import { videoVariantContainsMedia } from '../schema/videoVariantReconciliation/videoVariantContainsMedia'
 
@@ -82,6 +83,10 @@ async function indexRepairedParentVariant(
 // pass is still refused, never overwritten. The availableLanguages and
 // published updates are only issued when needed, and run in a single
 // transaction so the Video and Variant either both change or neither does.
+// availableLanguages is updated via addLanguageToVideo's atomic array_append
+// rather than a read-then-set, because this tool runs for minutes to hours
+// alongside live publish traffic touching the same parents, and a read-then-set
+// would silently clobber a concurrent legitimate language addition.
 async function writeParentLanguageRepair(
   gap: ParentVariantAuditEntry
 ): Promise<string> {
@@ -120,16 +125,7 @@ async function writeParentLanguageRepair(
     await prisma.$transaction(async (tx) => {
       const updates: Array<Promise<unknown>> = []
       if (needsLanguage) {
-        updates.push(
-          tx.video.update({
-            where: { id: gap.parentVideoId },
-            data: {
-              availableLanguages: {
-                set: [...parent.availableLanguages, gap.languageId]
-              }
-            }
-          })
-        )
+        updates.push(addLanguageToVideo(gap.parentVideoId, gap.languageId, tx))
       }
       if (needsPublish) {
         updates.push(
