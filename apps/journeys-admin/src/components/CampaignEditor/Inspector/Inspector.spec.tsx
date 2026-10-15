@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampaign'
+import { TypographyAlign } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
@@ -20,12 +21,19 @@ import {
   CAMPAIGN_HERO_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
+import { CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE } from '../../../libs/useCampaignTypographyBlockUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithRegions,
+  withEmptyTranslations
+} from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
 import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
+import { textStyleRow } from '../utils/useCampaignExtraStyleCommand'
 
 import { Inspector } from './Inspector'
 
@@ -245,6 +253,7 @@ function renderInspector(
     >
       <Hotkeys />
       <SelectionProbe />
+      <CommandProbe />
       <Inspector isManager={false} />
     </StaticEditor>
   )
@@ -620,6 +629,41 @@ describe('Inspector', () => {
       )
     })
 
+    it('clicks Reset on an Align that was set and writes null as one Command', async () => {
+      const centred = {
+        ...campaign,
+        blocks: campaign.blocks.map((block) =>
+          block.id === 'journeyListNoteId'
+            ? { ...block, align: TypographyAlign.center }
+            : block
+        )
+      }
+      const resetMock = {
+        request: {
+          query: CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE,
+          variables: { id: 'journeyListNoteId', input: { align: null } }
+        },
+        result: vi.fn(() => ({
+          data: {
+            campaignTypographyBlockUpdate: textStyleRow(
+              centred.blocks.find(
+                (block) => block.id === 'journeyListNoteId'
+              ) as Parameters<typeof textStyleRow>[0],
+              { align: null }
+            )
+          }
+        }))
+      }
+      renderInspector({ selectedBlockId: 'journeyListNoteId' }, centred, [
+        resetMock
+      ])
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reset Align' }))
+
+      await waitFor(() => expect(resetMock.result).toHaveBeenCalled())
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    })
+
     it('edits text on the page, so Settings points there', () => {
       renderInspector({
         selectedBlockId: 'journeyListNoteId',
@@ -991,6 +1035,16 @@ describe('Inspector', () => {
         )
       ).toHaveTextContent('Campaign›Region switcher›Europe')
       expect(screen.getByText('Styled by its section')).toBeInTheDocument()
+      expect(
+        within(screen.getByTestId('CampaignInspector')).getByTestId(
+          'Globe1Icon'
+        )
+      ).toBeInTheDocument()
+      expect(
+        within(screen.getByTestId('CampaignInspector')).queryByTestId(
+          'Home3Icon'
+        )
+      ).not.toBeInTheDocument()
 
       fireEvent.click(
         screen.getByRole('button', { name: 'Select Region switcher' })
@@ -1032,12 +1086,12 @@ describe('Inspector', () => {
       parentOrder: number
     ): GetCampaign_campaign_blocks {
       return {
-        ...youTubeVideoBlock,
+        ...withEmptyTranslations(youTubeVideoBlock),
         id,
         videoId: `${id}YouTube`,
         parentBlockId: 'carouselId',
         parentOrder
-      }
+      } as GetCampaign_campaign_blocks
     }
 
     const carouselCampaign = {

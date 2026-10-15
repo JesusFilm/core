@@ -7,6 +7,7 @@ import { ReactElement } from 'react'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { regionDisplayName } from '../utils/regionDisplayName'
 
 /** A block and everything above it, outermost first. */
 function trailOf(
@@ -31,7 +32,13 @@ function trailOf(
  */
 export function Breadcrumb(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection, selectBlock, selectRegion } = useCampaignEditor()
+  const {
+    campaign,
+    state: { previewLanguageId },
+    selection,
+    selectBlock,
+    selectRegion
+  } = useCampaignEditor()
   const crumbs: Array<{ label: string; onClick?: () => void }> = [
     { label: t('Campaign') }
   ]
@@ -45,9 +52,13 @@ export function Breadcrumb(): ReactElement {
       })
     }
     const regionId = selection.region.id
-    const hostId = selection.host?.id
+    const hostId = selection.regionHost?.id
     crumbs.push({
-      label: selection.region.name,
+      label: regionDisplayName(
+        selection.region,
+        previewLanguageId,
+        campaign.defaultLanguageId
+      ),
       onClick: () => selectRegion(regionId, hostId)
     })
     if (selection.block != null && selection.block.id !== selection.host?.id) {
@@ -71,7 +82,7 @@ export function Breadcrumb(): ReactElement {
       aria-label={t('Selection')}
       data-testid="CampaignBreadcrumb"
       separator="›"
-      sx={{ minWidth: 200 }}
+      sx={{ '& .MuiBreadcrumbs-li': { minWidth: 0, overflowWrap: 'anywhere' } }}
     >
       {crumbs.map((crumb, index) =>
         index === crumbs.length - 1 ? (

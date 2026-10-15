@@ -6,12 +6,13 @@ import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBloc
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 interface AddBlockParameters {
   /** The new block as its create mutation's optimistic response renders it. */
   block: CampaignBlock
-  /** Runs the create mutation. */
-  execute: () => void
+  /** Runs the create mutation; rejects when the API refuses it. */
+  execute: () => Promise<unknown>
 }
 
 interface UndoParameters {
@@ -35,7 +36,10 @@ interface RedoParameters {
  * Adding a block (an Extra or a section) is one Command: execute selects the
  * new block and runs the create; undo focuses the page it was made on,
  * restores the previous selection and soft-deletes it, with the siblings
- * renumbered at once; redo restores it through `campaignBlockRestore`.
+ * renumbered at once; redo restores it through `campaignBlockRestore`. When
+ * the create is refused the block never existed: the selection goes back at
+ * once, undo has nothing to delete and redo runs the create again instead of
+ * restoring it.
  */
 export function useCampaignBlockCreateCommand(): {
   addBlock: (params: AddBlockParameters) => void
@@ -49,6 +53,7 @@ export function useCampaignBlockCreateCommand(): {
   } = useCampaignEditor()
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function addBlock({ block, execute }: AddBlockParameters): void {
     const blockPageKind = pageKindOf(block) ?? pageKind
@@ -59,6 +64,20 @@ export function useCampaignBlockCreateCommand(): {
         parentOrder
       })
     )
+    let landed = true
+
+    function create(onRefused?: () => void): void {
+      void execute()
+        .then(() => {
+          landed = true
+        })
+        .catch((error: unknown) => {
+          landed = false
+          onRefused?.()
+          reportFailure(error)
+        })
+    }
+
     add<Record<string, never>, RedoParameters, UndoParameters>({
       parameters: {
         execute: {},
@@ -76,7 +95,13 @@ export function useCampaignBlockCreateCommand(): {
           pageKind: blockPageKind,
           selectedBlockId: block.id
         })
-        execute()
+        create(() =>
+          dispatch({
+            type: 'SetEditorFocusAction',
+            pageKind: blockPageKind,
+            selectedBlockId
+          })
+        )
       },
       undo({
         block: created,
@@ -89,10 +114,11 @@ export function useCampaignBlockCreateCommand(): {
           pageKind: targetPageKind,
           selectedBlockId: previousBlockId
         })
+        if (!landed) return
         void blockDelete({
           variables: { id: created.id },
           optimisticResponse: { campaignBlockDelete: siblingsAfter }
-        })
+        }).catch(reportFailure)
       },
       redo({ block: created, pageKind: targetPageKind }) {
         dispatch({
@@ -100,10 +126,14 @@ export function useCampaignBlockCreateCommand(): {
           pageKind: targetPageKind,
           selectedBlockId: created.id
         })
+        if (!landed) {
+          create()
+          return
+        }
         void blockRestore({
           variables: { id: created.id },
           optimisticResponse: { campaignBlockRestore: [created] }
-        })
+        }).catch(reportFailure)
       }
     })
   }

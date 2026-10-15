@@ -74,7 +74,7 @@ function PanelToggle({
 
 /**
  * The editor's left column of icon buttons: the back button to the campaigns
- * list, the Pages, Add, Navigator and Localize panel toggles (one panel open at a time), and
+ * list, the Pages, Navigator, Add and Localize panel toggles (one panel open at a time), and
  * at the bottom undo, redo, the Desktop / Phone view and the Publish button.
  * Undo and redo run the one Command history; the view toggle is never a
  * Command.
@@ -127,16 +127,16 @@ export function LeftRail({
           icon={<File5Icon />}
         />
         <PanelToggle
-          panel="add"
-          label={t('Add')}
-          shortcut="A"
-          icon={<Plus2Icon />}
-        />
-        <PanelToggle
           panel="navigator"
           label={t('Navigator')}
           shortcut="Z"
           icon={<Layers4Icon />}
+        />
+        <PanelToggle
+          panel="add"
+          label={t('Add')}
+          shortcut="A"
+          icon={<Plus2Icon />}
         />
         <PanelToggle
           panel="localize"

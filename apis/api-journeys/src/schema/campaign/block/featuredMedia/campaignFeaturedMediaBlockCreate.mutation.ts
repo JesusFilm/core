@@ -67,7 +67,6 @@ builder.mutationField('campaignFeaturedMediaBlockCreate', (t) =>
         'CampaignFeaturedMediaBlock',
         context.user,
         () => ({
-          mediaSide: 'right',
           ...validateFeaturedMediaInput(input)
         })
       )

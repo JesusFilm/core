@@ -87,6 +87,47 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
     }
     ... on CampaignJourneyBlock {
       journeyId
+      titleTranslations {
+        ...TranslatedValueFields
+      }
+      descriptionTranslations {
+        ...TranslatedValueFields
+      }
+    }
+    ... on CampaignRichTextBlock {
+      titleTranslations {
+        ...TranslatedValueFields
+      }
+      richTextContentTranslations: contentTranslations {
+        ...TranslatedValueFields
+      }
+    }
+    ... on CampaignFeaturedMediaBlock {
+      eyebrowTranslations {
+        ...TranslatedValueFields
+      }
+      titleTranslations {
+        ...TranslatedValueFields
+      }
+      ledeTranslations {
+        ...TranslatedValueFields
+      }
+      bulletsTranslations {
+        ...TranslatedValueFields
+      }
+    }
+    ... on CampaignImageBlock {
+      altTranslations {
+        ...TranslatedValueFields
+      }
+    }
+    ... on CampaignVideoBlock {
+      titleTranslations {
+        ...TranslatedValueFields
+      }
+      descriptionTranslations {
+        ...TranslatedValueFields
+      }
     }
   }
 `
@@ -111,7 +152,7 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
     language {
       id
       bcp47
-      name(primary: true) {
+      name(languageId: "529", primary: true) {
         value
         primary
       }
@@ -143,12 +184,16 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
  * they are rows of `Campaign.blocks` with `regionId` set.
  */
 export const CAMPAIGN_REGION_FIELDS = gql`
+  ${TRANSLATED_VALUE_FIELDS}
   ${CAMPAIGN_REGION_LANGUAGE_FIELDS}
   fragment CampaignRegionFields on CampaignRegion {
     __typename
     id
     campaignId
     name
+    nameTranslations {
+      ...TranslatedValueFields
+    }
     slug
     order
     listed

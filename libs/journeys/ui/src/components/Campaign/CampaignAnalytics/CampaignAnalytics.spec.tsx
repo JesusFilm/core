@@ -25,7 +25,8 @@ import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
 import type { GetCampaignStats_campaignStats as CampaignStats } from './__generated__/GetCampaignStats'
 import { CampaignAnalytics } from './CampaignAnalytics'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
-import { WorldAtlasTopology, WorldMapShapes, buildWorldMap } from './WorldMap'
+import { WorldAtlasTopology, WorldMapShapes } from './WorldMap'
+import { buildWorldMap } from './WorldMap/buildWorldMap'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
 
@@ -273,7 +274,7 @@ describe('CampaignAnalytics', () => {
 
     it('shows "<Region name> visitors" for a region tab', async () => {
       await renderAnalytics()
-      fireEvent.click(await screen.findByRole('tab', { name: 'Europe' }))
+      fireEvent.click(await screen.findByRole('tab', { name: 'EUR' }))
       const visitors = screen.getByTestId('CampaignAnalyticsVisitors')
       expect(visitors).toHaveTextContent('Europe visitors')
       expect(visitors).toHaveTextContent('40')
@@ -281,7 +282,7 @@ describe('CampaignAnalytics', () => {
         screen.getByTestId('CampaignAnalyticsTopCountry')
       ).toHaveTextContent('France')
 
-      fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
+      fireEvent.click(screen.getByRole('tab', { name: 'AFR' }))
       expect(screen.getByTestId('CampaignAnalyticsVisitors')).toHaveTextContent(
         'Africa visitors'
       )
@@ -336,7 +337,7 @@ describe('CampaignAnalytics', () => {
       expect(nigeria).toHaveAttribute('data-rank', '1')
       expect(nigeria).toHaveStyle({ transform: 'translateY(42px)' })
 
-      fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
+      fireEvent.click(screen.getByRole('tab', { name: 'AFR' }))
       const africaNigeria = screen.getByTestId('CampaignAnalyticsRow-NG')
       expect(africaNigeria).toBe(nigeria)
       expect(africaNigeria).toHaveAttribute('data-rank', '0')
@@ -393,6 +394,51 @@ describe('CampaignAnalytics', () => {
       await screen.findByTestId('CampaignAnalyticsVisitors')
       expect(screen.queryByRole('tab')).not.toBeInTheDocument()
     })
+
+    it('names each tab by its visible code, describes it by the region name and controls one tabpanel', async () => {
+      await renderAnalytics()
+      const tabs = await screen.findAllByRole('tab')
+      expect(tabs[0]).toHaveAccessibleName('EUR')
+      expect(tabs[0]).toHaveAccessibleDescription('Europe')
+      const panel = screen.getByRole('tabpanel')
+      tabs.forEach((tab) =>
+        expect(tab).toHaveAttribute('aria-controls', panel.id)
+      )
+      expect(panel).toHaveAttribute('aria-labelledby', tabs[2].id)
+      fireEvent.click(tabs[1])
+      expect(panel).toHaveAttribute('aria-labelledby', tabs[1].id)
+    })
+
+    it('puts only the selected tab in the tab order', async () => {
+      await renderAnalytics()
+      const tabs = await screen.findAllByRole('tab')
+      expect(tabs.map((tab) => tab.getAttribute('tabindex'))).toEqual([
+        '-1',
+        '-1',
+        '0'
+      ])
+    })
+
+    it('moves selection and focus with the arrow keys, wrapping, and with Home and End', async () => {
+      await renderAnalytics()
+      const tabs = await screen.findAllByRole('tab')
+      tabs[2].focus()
+
+      fireEvent.keyDown(tabs[2], { key: 'ArrowRight' })
+      expect(tabs[0]).toHaveAttribute('aria-selected', 'true')
+      expect(tabs[0]).toHaveFocus()
+      expect(tabs[0]).toHaveAttribute('tabindex', '0')
+
+      fireEvent.keyDown(tabs[0], { key: 'ArrowLeft' })
+      expect(tabs[2]).toHaveAttribute('aria-selected', 'true')
+      expect(tabs[2]).toHaveFocus()
+
+      fireEvent.keyDown(tabs[2], { key: 'Home' })
+      expect(tabs[0]).toHaveFocus()
+      fireEvent.keyDown(tabs[0], { key: 'End' })
+      expect(tabs[2]).toHaveFocus()
+      expect(tabs[2]).toHaveAttribute('aria-selected', 'true')
+    })
   })
 
   it('requests the stats once for the campaign', async () => {
@@ -412,6 +458,14 @@ describe('CampaignAnalytics', () => {
       await renderAnalytics({ showMap: false })
       await screen.findByTestId('CampaignAnalyticsStats')
       expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+    })
+
+    it('letterboxes the map so no edge is cropped', async () => {
+      await renderAnalytics()
+      expect(await screen.findByTestId('WorldMap')).toHaveAttribute(
+        'preserveAspectRatio',
+        'xMidYMid meet'
+      )
     })
 
     it('skips the map while the page carries no world map', async () => {
@@ -463,7 +517,7 @@ describe('CampaignAnalytics', () => {
 
     it("colours and zooms to the selected region's countries on its tab", async () => {
       await renderAnalytics({ campaign: mappedCampaign })
-      fireEvent.click(await screen.findByRole('tab', { name: 'Europe' }))
+      fireEvent.click(await screen.findByRole('tab', { name: 'EUR' }))
       expect(screen.getByTestId('WorldMapCountry-250')).toHaveAttribute(
         'data-step',
         '3'
@@ -475,7 +529,7 @@ describe('CampaignAnalytics', () => {
       expect(europe).not.toBe(WORLD_TRANSFORM)
       expect(scaleOf(europe)).toBeGreaterThan(1)
 
-      fireEvent.click(screen.getByRole('tab', { name: 'Africa' }))
+      fireEvent.click(screen.getByRole('tab', { name: 'AFR' }))
       expect(screen.getByTestId('WorldMapCountry-566')).toHaveAttribute(
         'data-step'
       )
@@ -490,7 +544,7 @@ describe('CampaignAnalytics', () => {
 
     it('shows the world for a region with no countries', async () => {
       await renderAnalytics()
-      fireEvent.click(await screen.findByRole('tab', { name: 'Africa' }))
+      fireEvent.click(await screen.findByRole('tab', { name: 'AFR' }))
       expect(viewportTransform()).toBe(WORLD_TRANSFORM)
     })
 

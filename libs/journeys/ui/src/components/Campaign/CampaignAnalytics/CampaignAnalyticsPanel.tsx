@@ -4,11 +4,21 @@ import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode, useState } from 'react'
+import {
+  KeyboardEvent,
+  ReactElement,
+  ReactNode,
+  useId,
+  useRef,
+  useState
+} from 'react'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
+import { campaignString } from '../CampaignProvider/campaignString'
+import { hasText } from '../types'
 import type { CampaignRegion } from '../types'
 
 import type {
@@ -69,8 +79,8 @@ function stringValue(
   key: CampaignStringKey,
   fallback: string
 ): string {
-  const value = strings.find((string) => string.key === key)?.value
-  return value == null || value.trim() === '' ? fallback : value
+  const value = campaignString(strings, key)
+  return hasText(value) ? value : fallback
 }
 
 interface TileProps {
@@ -253,8 +263,9 @@ function LoadingState(): ReactElement {
  * The Analytics section's body, shared by the public page and the editor
  * canvas: it fetches `campaignStats` client-side after render, then shows the
  * visitors and top-country tiles and the ranked top countries in two
- * columns. The landing page gets region chips (ALL first) that wrap rather
- * than scroll; a Region Page is fixed to its region.
+ * columns. The landing page gets region tabs (every region, then ALL) that
+ * wrap rather than scroll and follow the WAI-ARIA tabs pattern; a Region Page
+ * is fixed to its region.
  */
 export function CampaignAnalyticsPanel({
   campaignId,
@@ -267,6 +278,9 @@ export function CampaignAnalyticsPanel({
 }: CampaignAnalyticsPanelProps): ReactElement {
   const { t, i18n } = useTranslation('libs-journeys-ui')
   const locale = i18n?.language ?? 'en'
+  const theme = useTheme()
+  const idPrefix = useId()
+  const tabRefs = useRef(new Map<string, HTMLElement>())
   const [selectedTab, setSelectedTab] = useState(ALL_REGIONS)
   const { data, loading } = useQuery<
     GetCampaignStats,
@@ -286,20 +300,53 @@ export function CampaignAnalyticsPanel({
   const activeRegion =
     fixedRegion ?? tabRegions.find((region) => region.id === activeTab)
 
-  /** A region chip shows the region's code (its slug, upper-cased) and is named by its full name for assistive tech. */
-  const chipFor = (
+  const tabId = (value: string): string => `${idPrefix}-tab-${value}`
+  const panelId = `${idPrefix}-panel`
+  const tabValues = [...tabRegions.map((region) => region.id), ALL_REGIONS]
+
+  /** Arrow keys, Home and End move the selection and focus; Left and Right swap in a right-to-left layout. */
+  function handleTabKeyDown(event: KeyboardEvent<HTMLElement>): void {
+    const forwardKey = theme.direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight'
+    const backwardKey = theme.direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft'
+    const current = tabValues.indexOf(activeTab)
+    const next =
+      event.key === forwardKey
+        ? (current + 1) % tabValues.length
+        : event.key === backwardKey
+          ? (current - 1 + tabValues.length) % tabValues.length
+          : event.key === 'Home'
+            ? 0
+            : event.key === 'End'
+              ? tabValues.length - 1
+              : null
+    if (next == null) return
+    event.preventDefault()
+    setSelectedTab(tabValues[next])
+    tabRefs.current.get(tabValues[next])?.focus()
+  }
+
+  /** A region tab shows the region's code (its slug, upper-cased) and is named by it; the full name is its description. */
+  const tabFor = (
     value: string,
     label: string,
-    name: string = label
+    description?: string
   ): ReactElement => {
     const selected = activeTab === value
     return (
       <ButtonBase
         key={value}
+        ref={(element: HTMLElement | null) => {
+          if (element == null) tabRefs.current.delete(value)
+          else tabRefs.current.set(value, element)
+        }}
+        id={tabId(value)}
         role="tab"
         aria-selected={selected}
-        aria-label={name}
+        aria-controls={panelId}
+        tabIndex={selected ? 0 : -1}
+        title={description}
         onClick={() => setSelectedTab(value)}
+        onKeyDown={handleTabKeyDown}
         data-testid={`CampaignAnalyticsChip-${value}`}
         sx={{
           px: 1,
@@ -332,7 +379,7 @@ export function CampaignAnalyticsPanel({
     )
   }
 
-  // The region selector: a grid of equal chips, every region then ALL, so
+  // The region selector: a grid of equal tabs, every region then ALL, so
   // every region stays visible instead of scrolling off a tab strip.
   const tabs = tabsShown && (
     <Box
@@ -343,18 +390,29 @@ export function CampaignAnalyticsPanel({
         display: 'flex',
         flexWrap: 'wrap',
         gap: 1,
-        // Each chip is at least as wide as its code and shares the rest of
-        // the row, so a long code never spills past its chip.
+        // Each tab is at least as wide as its code and shares the rest of
+        // the row, so a long code never spills past its tab.
         '& > *': { flex: '1 1 72px', whiteSpace: 'nowrap' }
       }}
     >
       {tabRegions.map((region) =>
-        chipFor(region.id, region.slug.toUpperCase(), region.name)
+        tabFor(region.id, region.slug.toUpperCase(), region.name)
       )}
-      {chipFor(
+      {tabFor(
         ALL_REGIONS,
         stringValue(strings, CampaignStringKey.allRegions, t('All'))
       )}
+    </Box>
+  )
+
+  /** The ranked list, labelled by the selected tab; it is the panel the tabs control. */
+  const panel = (content: ReactNode): ReactElement => (
+    <Box
+      id={panelId}
+      role={tabsShown ? 'tabpanel' : undefined}
+      aria-labelledby={tabsShown ? tabId(activeTab) : undefined}
+    >
+      {content}
     </Box>
   )
 
@@ -373,7 +431,6 @@ export function CampaignAnalyticsPanel({
         visitors={visitors}
         accentColor={accentColor}
         locale={locale}
-        fit="cover"
       />
     ) : null
 
@@ -429,7 +486,7 @@ export function CampaignAnalyticsPanel({
           </Stack>
           <Stack spacing={2}>
             {tabs}
-            {ranks}
+            {panel(ranks)}
           </Stack>
         </>
       ) : (
@@ -445,7 +502,7 @@ export function CampaignAnalyticsPanel({
               >
                 {t('Top countries by views')}
               </Typography>
-              {ranks}
+              {panel(ranks)}
             </Stack>
           )}
         </>

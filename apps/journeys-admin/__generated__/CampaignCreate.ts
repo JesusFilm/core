@@ -752,6 +752,26 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock {
   introTranslations: CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock_introTranslations[];
 }
 
+export interface CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock_richTextContentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock {
   __typename: "CampaignRichTextBlock";
   id: string;
@@ -792,6 +812,8 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock {
    * Paragraphs separated by blank lines.
    */
   richTextContent: string | null;
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock_titleTranslations[];
+  richTextContentTranslations: CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock_richTextContentTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignColumnsBlock {
@@ -833,6 +855,16 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignColumnsBlock {
    * Width of the two slots at `md` and up; defaults to equal.
    */
   ratio: CampaignColumnsRatio;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignImageBlock_altTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignImageBlock {
@@ -886,6 +918,47 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignImageBlock {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  altTranslations: CampaignCreate_campaignCreate_blocks_CampaignImageBlock_altTranslations[];
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_bulletsTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock {
@@ -938,12 +1011,36 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_eyebrowTranslations[];
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_titleTranslations[];
+  ledeTranslations: CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_ledeTranslations[];
+  bulletsTranslations: CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_journeyImage {
   __typename: "CampaignJourneyImage";
   src: string;
   alt: string | null;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock {
@@ -987,6 +1084,8 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock {
    * The linked journey. Null only if the row predates the link; never exposes the journey itself.
    */
   journeyId: string | null;
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_titleTranslations[];
+  descriptionTranslations: CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_descriptionTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_title_language {
@@ -999,6 +1098,18 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVi
   value: string;
   primary: boolean;
   language: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description_language;
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_images {
@@ -1030,6 +1141,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVi
    */
   childrenCount: number;
   title: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description[];
   images: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }
@@ -1046,6 +1158,26 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVi
 }
 
 export type CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo = CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video | CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_MuxVideo | CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock {
   __typename: "CampaignVideoBlock";
@@ -1096,6 +1228,8 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock {
    * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
    */
   mediaVideo: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo | null;
+  titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_titleTranslations[];
+  descriptionTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_descriptionTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock_contentTranslations {
@@ -1233,6 +1367,16 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignButtonBlock {
 
 export type CampaignCreate_campaignCreate_blocks = CampaignCreate_campaignCreate_blocks_CampaignColumnBlock | CampaignCreate_campaignCreate_blocks_CampaignHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignFooterBlock | CampaignCreate_campaignCreate_blocks_CampaignHeroBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionSwitcherBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyListBlock | CampaignCreate_campaignCreate_blocks_CampaignAnalyticsBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionHeaderBlock | CampaignCreate_campaignCreate_blocks_CampaignRegionShareBlock | CampaignCreate_campaignCreate_blocks_CampaignRichTextBlock | CampaignCreate_campaignCreate_blocks_CampaignColumnsBlock | CampaignCreate_campaignCreate_blocks_CampaignImageBlock | CampaignCreate_campaignCreate_blocks_CampaignFeaturedMediaBlock | CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock | CampaignCreate_campaignCreate_blocks_CampaignVideoBlock | CampaignCreate_campaignCreate_blocks_CampaignTypographyBlock | CampaignCreate_campaignCreate_blocks_CampaignButtonBlock;
 
+export interface CampaignCreate_campaignCreate_regions_nameTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignCreate_campaignCreate_regions_languages_language_name {
   __typename: "LanguageName";
   value: string;
@@ -1342,6 +1486,7 @@ export interface CampaignCreate_campaignCreate_regions {
    * Required, at most 60 characters.
    */
   name: string;
+  nameTranslations: CampaignCreate_campaignCreate_regions_nameTranslations[];
   /**
    * Unique within the campaign. Changing it breaks links already shared to the region page.
    */
@@ -1435,6 +1580,7 @@ export interface CampaignCreate {
    * - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
    * - BAD_USER_INPUT (field: `defaultLanguageId`): not an api-languages language.
    * - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
+   * - CONFLICT (field: `slug`): a concurrent create took the generated address twice; retry.
    */
   campaignCreate: CampaignCreate_campaignCreate;
 }

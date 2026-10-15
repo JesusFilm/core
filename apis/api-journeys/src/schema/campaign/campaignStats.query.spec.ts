@@ -272,7 +272,7 @@ describe('campaignStats', () => {
   })
 
   describe('journey status', () => {
-    it('counts only published and archived journeys', async () => {
+    it('counts every journey that is not trashed or deleted, drafts included', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       prismaMock.journey.findMany.mockResolvedValue([
         { id: 'enJourneyId' },
@@ -289,16 +289,54 @@ describe('campaignStats', () => {
           where: {
             id: { in: expect.arrayContaining(['enJourneyId', 'frJourneyId']) },
             deletedAt: null,
-            status: { in: ['published', 'archived'] }
+            status: { notIn: ['trashed', 'deleted'] }
           }
         })
       )
       expect(result.errors).toBeUndefined()
-      // frJourneyId is unpublished: it is neither requested nor summed.
+      // frJourneyId is trashed: it is neither requested nor summed.
       expect(mockAxios.get).toHaveBeenCalledTimes(2)
       expect(result.data.campaignStats.regions[0].totalVisitors).toBe(17)
       expect(result.data.campaignStats.regions[1].totalVisitors).toBe(10)
       expect(result.data.campaignStats.all.totalVisitors).toBe(27)
+    })
+  })
+
+  describe('concurrency', () => {
+    it('never has more than five journeys in flight against Plausible', async () => {
+      const journeyCount = 12
+      const campaign = Array.from({ length: journeyCount }, (_, index) => index)
+        .reduce(
+          (factory, index) =>
+            factory.withLinkedJourney('eurRegionId', String(index), {
+              id: `journey${index}`,
+              title: `EUR ${index}`,
+              description: null
+            }),
+          campaignFactory().withLanguage('496').withRegion('EUR')
+        )
+        .published()
+        .build()
+      prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+      let inFlight = 0
+      let peak = 0
+      mockAxios.get.mockImplementation(async () => {
+        inFlight++
+        peak = Math.max(peak, inFlight)
+        await new Promise((resolve) => setTimeout(resolve, 5))
+        inFlight--
+        return plausibleCountryRows([['GB', 1]])
+      })
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(mockAxios.get).toHaveBeenCalledTimes(journeyCount)
+      expect(peak).toBe(5)
+      expect(result.data.campaignStats.all.totalVisitors).toBe(journeyCount)
     })
   })
 
@@ -407,7 +445,8 @@ describe('campaignStats', () => {
               { countryCode: 'TZ', visitors: 3 }
             ]
           }
-        })
+        }),
+        { partial: false }
       )
     })
 
@@ -416,6 +455,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now(),
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -445,16 +485,21 @@ describe('campaignStats', () => {
       expect(result.data.campaignStats.regions[1].totalVisitors).toBe(0)
     })
 
-    it('refreshes a stale entry from Plausible', async () => {
+    it('serves a stale entry as it is and refreshes it in the background', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
         fresh: false,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
-          journeys: {}
+          journeys: {
+            enJourneyId: [{ countryCode: 'NZ', visitors: 4 }],
+            frJourneyId: [],
+            swJourneyId: []
+          }
         }
       })
 
@@ -464,16 +509,19 @@ describe('campaignStats', () => {
       })) as any
 
       expect(result.errors).toBeUndefined()
+      expect(result.data.campaignStats.all.totalVisitors).toBe(4)
+      await vi.waitFor(() => {
+        expect(mockStatsCache.set).toHaveBeenCalledTimes(1)
+      })
       expect(mockAxios.get).toHaveBeenCalledTimes(3)
-      expect(mockStatsCache.set).toHaveBeenCalledTimes(1)
-      expect(result.data.campaignStats.all.totalVisitors).toBe(48)
     })
 
-    it('serves the last cached sweep and defers the next refresh when Plausible fails', async () => {
+    it('keeps serving the last cached sweep and defers the next refresh when the background sweep fails', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       const cached = {
         fresh: false,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -493,12 +541,13 @@ describe('campaignStats', () => {
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.regions[0].totalVisitors).toBe(4)
+      await vi.waitFor(() => {
+        expect(mockStatsCache.deferRefresh).toHaveBeenCalledWith(
+          'campaignId',
+          cached
+        )
+      })
       expect(mockStatsCache.set).not.toHaveBeenCalled()
-      expect(mockStatsCache.deferRefresh).toHaveBeenCalledWith(
-        'campaignId',
-        cached
-      )
-      // Only the one foreground sweep asks Plausible; there is no background retry.
       expect(mockAxios.get).toHaveBeenCalledTimes(3)
     })
 
@@ -508,6 +557,7 @@ describe('campaignStats', () => {
         ...{
           fresh: false,
           backingOff: false,
+          partial: false,
           sweptAt: Date.now() - 3600000,
           sweep: {
             from: '2026-10-05T00:00:00.000Z',
@@ -531,11 +581,12 @@ describe('campaignStats', () => {
       expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
     })
 
-    it('treats a fresh entry missing a linked journey as a miss', async () => {
+    it('refreshes in the background when a fresh entry is missing a linked journey', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now(),
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -552,16 +603,19 @@ describe('campaignStats', () => {
       })) as any
 
       expect(result.errors).toBeUndefined()
+      expect(result.data.campaignStats.all.totalVisitors).toBe(4)
+      await vi.waitFor(() => {
+        expect(mockStatsCache.set).toHaveBeenCalledTimes(1)
+      })
       expect(mockAxios.get).toHaveBeenCalledTimes(3)
-      expect(mockStatsCache.set).toHaveBeenCalledTimes(1)
-      expect(result.data.campaignStats.all.totalVisitors).toBe(48)
     })
 
-    it('treats a fresh entry swept from a different start as a miss', async () => {
+    it('refreshes in the background when a fresh entry was swept from a different start', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now(),
         sweep: {
           from: '2026-09-01T00:00:00.000Z',
@@ -576,8 +630,14 @@ describe('campaignStats', () => {
       })) as any
 
       expect(result.errors).toBeUndefined()
-      expect(mockAxios.get).toHaveBeenCalledTimes(3)
-      expect(result.data.campaignStats.from).toBe('2026-10-05T00:00:00.000Z')
+      expect(result.data.campaignStats.from).toBe('2026-09-01T00:00:00.000Z')
+      await vi.waitFor(() => {
+        expect(mockStatsCache.set).toHaveBeenCalledWith(
+          'campaignId',
+          expect.objectContaining({ from: '2026-10-05T00:00:00.000Z' }),
+          { partial: false }
+        )
+      })
     })
 
     it('errors when Plausible fails and nothing is cached', async () => {
@@ -603,6 +663,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: false,
         backingOff: true,
+        partial: false,
         sweptAt: Date.now(),
         sweep: null
       })
@@ -633,11 +694,75 @@ describe('campaignStats', () => {
       expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
     })
 
-    it('never caches a partial sweep', async () => {
+    it('keeps the journeys that answered when one request fails', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
-      mockAxios.get
-        .mockResolvedValueOnce(plausibleCountryRows([['GB', 1]]))
-        .mockRejectedValue(new Error('429'))
+      mockAxios.get.mockImplementation((async (_url: string, config: any) => {
+        if (config.params.site_id.endsWith('swJourneyId'))
+          throw new Error('429')
+        return await plausibleCountryRowsBySite(rowsByJourney)(_url, config)
+      }) as any)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.campaignStats.regions[0].totalVisitors).toBe(38)
+      expect(result.data.campaignStats.regions[1].totalVisitors).toBe(21)
+      expect(mockStatsCache.set).toHaveBeenCalledWith(
+        'campaignId',
+        expect.objectContaining({
+          journeys: expect.objectContaining({ swJourneyId: [] })
+        }),
+        { partial: true }
+      )
+    })
+
+    it('keeps the last sweep rows of a journey whose request fails', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockStatsCache.get.mockResolvedValue({
+        fresh: false,
+        backingOff: false,
+        partial: false,
+        sweptAt: Date.now() - 3600000,
+        sweep: {
+          from: '2026-10-05T00:00:00.000Z',
+          to: '2026-10-06T00:00:00.000Z',
+          journeys: {
+            enJourneyId: [],
+            frJourneyId: [],
+            swJourneyId: [{ countryCode: 'KE', visitors: 6 }]
+          }
+        }
+      })
+      mockAxios.get.mockImplementation((async (_url: string, config: any) => {
+        if (config.params.site_id.endsWith('swJourneyId'))
+          throw new Error('429')
+        return await plausibleCountryRowsBySite(rowsByJourney)(_url, config)
+      }) as any)
+
+      await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })
+
+      await vi.waitFor(() => {
+        expect(mockStatsCache.set).toHaveBeenCalledWith(
+          'campaignId',
+          expect.objectContaining({
+            journeys: expect.objectContaining({
+              swJourneyId: [{ countryCode: 'KE', visitors: 6 }]
+            })
+          }),
+          { partial: true }
+        )
+      })
+    })
+
+    it('never caches a sweep in which every journey failed', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockAxios.get.mockRejectedValue(new Error('429'))
 
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
@@ -646,6 +771,53 @@ describe('campaignStats', () => {
 
       expect(result.errors).toHaveLength(1)
       expect(mockStatsCache.set).not.toHaveBeenCalled()
+    })
+
+    it('gives up on a cold cache after the deadline while the sweep carries on', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+      try {
+        prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+        let releasePlausible: () => void = () => undefined
+        const plausibleHangs = new Promise<void>((resolve) => {
+          releasePlausible = resolve
+        })
+        mockAxios.get.mockImplementation((async (url: string, config: any) => {
+          await plausibleHangs
+          return await plausibleCountryRowsBySite(rowsByJourney)(url, config)
+        }) as any)
+
+        let settled = false
+        const request = publicClient({
+          document: CAMPAIGN_STATS,
+          variables: { id: 'campaignId' }
+        }).finally(() => {
+          settled = true
+        })
+        for (let elapsed = 0; elapsed < 9000 && !settled; elapsed += 1000)
+          await vi.advanceTimersByTimeAsync(1000)
+        expect(settled).toBe(false)
+        while (!settled) await vi.advanceTimersByTimeAsync(1000)
+        const result = (await request) as any
+
+        expect(result.errors).toHaveLength(1)
+        expect(mockStatsCache.set).not.toHaveBeenCalled()
+
+        releasePlausible()
+        await vi.waitFor(() => {
+          expect(mockStatsCache.set).toHaveBeenCalledWith(
+            'campaignId',
+            expect.objectContaining({
+              journeys: expect.objectContaining({
+                enJourneyId: expect.any(Array)
+              })
+            }),
+            { partial: false }
+          )
+        })
+        expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 })

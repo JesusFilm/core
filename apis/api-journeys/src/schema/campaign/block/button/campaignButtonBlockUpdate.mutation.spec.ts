@@ -145,6 +145,37 @@ describe('campaignButtonBlockUpdate', () => {
     }
   )
 
+  it('rejects placement null instead of reading it as the default (BAD_USER_INPUT, placement)', async () => {
+    const result = await update({ placement: null })
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'placement'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('rejects placement on a Region Line instead of ignoring it (BAD_USER_INPUT, placement)', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', {
+        id: 'lineId',
+        typename: 'CampaignButtonBlock',
+        pageId: null,
+        regionId: 'regionId',
+        parentBlockId: null,
+        parentOrder: 0
+      })
+    )
+
+    const result = await update({ placement: 'above' }, 'lineId')
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'placement'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
   it('throws NOT_FOUND when the id is not a live button block', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'footerCopyrightId')

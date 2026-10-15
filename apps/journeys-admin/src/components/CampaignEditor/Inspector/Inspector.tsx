@@ -23,6 +23,9 @@ import { InspectorStyle } from './InspectorStyle'
 /** The Inspector's width: the journey editor's drawer width. */
 export const INSPECTOR_WIDTH = 328
 
+/** The padding, in theme spacing units, between the Inspector's edge and its header and body. */
+export const INSPECTOR_PADDING = 4
+
 interface InspectorProps {
   isManager: boolean
   /** The default language was swapped; the shell opens Localize on Translations. */
@@ -84,9 +87,13 @@ export function Inspector({
         borderColor: 'divider'
       }}
     >
-      <Stack spacing={2} sx={{ p: 4, pb: 2 }}>
+      <Stack spacing={2} sx={{ p: INSPECTOR_PADDING }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          {blockIcon(selection.block?.__typename)}
+          {blockIcon(
+            selection.kind === 'region'
+              ? 'CampaignRegionSwitcherBlock'
+              : selection.block?.__typename
+          )}
           <Typography
             variant="subtitle1"
             noWrap
@@ -138,7 +145,13 @@ export function Inspector({
         id="inspector-panel"
         aria-labelledby={`inspector-tab-${inspectorTab}`}
         data-testid={`CampaignInspector${inspectorTab === 'style' ? 'Style' : 'Settings'}`}
-        sx={{ flexGrow: 1, minHeight: 0, overflowY: 'auto', p: 4 }}
+        sx={{
+          flexGrow: 1,
+          minHeight: 0,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          p: INSPECTOR_PADDING
+        }}
       >
         {inspectorTab === 'style' ? (
           <InspectorStyle key={bodyKey} />

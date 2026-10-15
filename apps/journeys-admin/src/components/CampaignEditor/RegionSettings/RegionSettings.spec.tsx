@@ -10,10 +10,12 @@ import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 
+import { CampaignTextSource } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import { CAMPAIGN_REGION_COUNTRY_ADD } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { CAMPAIGN_REGION_COUNTRY_REMOVE } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
+import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
 import { eurRegion } from '../data'
 
 import { RegionSettings } from './RegionSettings'
@@ -145,7 +147,51 @@ const removeCountryMock = {
   }))
 }
 
-function renderSettings(region = eurRegion): void {
+const translateNameMock = {
+  request: {
+    query: CAMPAIGN_TRANSLATION_SET,
+    variables: {
+      input: {
+        target: { regionId: 'eurRegionId' },
+        field: 'name',
+        languageId: '496',
+        value: 'Europe de l’Ouest'
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignTranslationSet: [
+        {
+          __typename: 'TranslatedValue',
+          languageId: '496',
+          value: 'Europe de l’Ouest',
+          source: 'human'
+        }
+      ]
+    }
+  }))
+}
+
+const clearNameTranslationMock = {
+  request: {
+    query: CAMPAIGN_TRANSLATION_SET,
+    variables: {
+      input: {
+        target: { regionId: 'eurRegionId' },
+        field: 'name',
+        languageId: '496',
+        value: ''
+      }
+    }
+  },
+  result: vi.fn(() => ({ data: { campaignTranslationSet: [] } }))
+}
+
+function renderSettings(
+  region = eurRegion,
+  translationLanguageId?: string
+): void {
   render(
     <MockedProvider
       mocks={
@@ -156,12 +202,17 @@ function renderSettings(region = eurRegion): void {
           reservedSlugMock,
           longNameMock,
           addCountryMock,
-          removeCountryMock
+          removeCountryMock,
+          translateNameMock,
+          clearNameTranslationMock
         ] as never
       }
     >
       <SnackbarProvider>
-        <RegionSettings region={region} />
+        <RegionSettings
+          region={region}
+          translationLanguageId={translationLanguageId}
+        />
       </SnackbarProvider>
     </MockedProvider>
   )
@@ -186,6 +237,73 @@ describe('RegionSettings', () => {
       'src',
       'https://flags.example.org/fr.png'
     )
+  })
+
+  describe('previewing a non-default language', () => {
+    const translated = {
+      ...eurRegion,
+      nameTranslations: [
+        {
+          __typename: 'TranslatedValue' as const,
+          languageId: '496',
+          value: 'Europe',
+          source: CampaignTextSource.human
+        }
+      ]
+    }
+
+    it('shows the name translation', () => {
+      renderSettings(translated, '496')
+
+      expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue(
+        'Europe'
+      )
+    })
+
+    it('shows the default name as the placeholder while untranslated', () => {
+      renderSettings(eurRegion, '496')
+
+      const name = screen.getByRole('textbox', { name: 'Name' })
+      expect(name).toHaveValue('')
+      expect(name).toHaveAttribute('placeholder', 'Europe')
+    })
+
+    it('writes the name as a translation, not the default column', async () => {
+      renderSettings(eurRegion, '496')
+
+      const name = screen.getByRole('textbox', { name: 'Name' })
+      fireEvent.change(name, { target: { value: '  Europe de l’Ouest ' } })
+      fireEvent.blur(name)
+
+      await waitFor(() => expect(translateNameMock.result).toHaveBeenCalled())
+      expect(renameMock.result).not.toHaveBeenCalled()
+    })
+
+    it('clears the translation when the name is emptied, instead of asking for a name', async () => {
+      renderSettings(
+        {
+          ...eurRegion,
+          nameTranslations: [
+            {
+              __typename: 'TranslatedValue',
+              languageId: '496',
+              value: 'Europe de l’Ouest',
+              source: CampaignTextSource.human
+            }
+          ]
+        },
+        '496'
+      )
+
+      const name = screen.getByRole('textbox', { name: 'Name' })
+      fireEvent.change(name, { target: { value: '' } })
+      fireEvent.blur(name)
+
+      await waitFor(() =>
+        expect(clearNameTranslationMock.result).toHaveBeenCalled()
+      )
+      expect(screen.queryByText('Name is required')).not.toBeInTheDocument()
+    })
   })
 
   it('saves the name on commit through campaignRegionUpdate', async () => {

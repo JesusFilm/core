@@ -149,8 +149,18 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
 
   function commit(next: CampaignButtonAction | null): void {
     setError(undefined)
-    setPickedKind(undefined)
-    addAction({ block, action: next, undoAction: action, onError: setError })
+    addAction({
+      block,
+      action: next,
+      undoAction: action,
+      onError: (message) => {
+        // The rollback puts the old action back, which would otherwise take
+        // the kind picker, and what the author typed in it, with it.
+        setPickedKind(kind)
+        setUrl(url)
+        setError(message)
+      }
+    })
   }
 
   function handleSaveLink(): void {

@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -7,6 +6,7 @@ import { ReactElement } from 'react'
 
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { LanguagesPanel } from '../LanguagesPanel'
+import { LeftPanelBody } from '../LeftPanel'
 import { TranslationsView } from '../TranslationsView'
 
 /** The Localize panel's tabs. */
@@ -63,11 +63,10 @@ export function LocalizePanel({
           aria-controls="localize-panel"
         />
       </Tabs>
-      <Box
+      <LeftPanelBody
         role="tabpanel"
         id="localize-panel"
         aria-labelledby={`localize-tab-${tab}`}
-        sx={{ flexGrow: 1, minHeight: 0, overflowY: 'auto', p: 4 }}
       >
         {tab === 'languages' ? (
           <LanguagesPanel campaign={campaign} />
@@ -79,7 +78,7 @@ export function LocalizePanel({
             onPromotionNoticeClose={onPromotionNoticeClose}
           />
         )}
-      </Box>
+      </LeftPanelBody>
     </Stack>
   )
 }

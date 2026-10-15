@@ -1,10 +1,8 @@
 import { ApolloClient, CombinedGraphQLErrors, gql } from '@apollo/client'
 
-import {
-  CAMPAIGN_PUBLIC_FIELDS,
-  resolvePageLanguage
-} from '@core/journeys/ui/Campaign'
-import type { ResolvedPageLanguage } from '@core/journeys/ui/Campaign'
+import { CAMPAIGN_PUBLIC_FIELDS } from '@core/journeys/ui/Campaign/campaignPublicFields'
+import { resolvePageLanguage } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
+import type { ResolvedPageLanguage } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 
 import {
   GetCampaignPublic_campaignPublic as CampaignPublic,

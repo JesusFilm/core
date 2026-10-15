@@ -519,6 +519,20 @@ function watchVideo(
         language: { __typename: 'Language', id: '496' }
       }
     ],
+    description: [
+      {
+        __typename: 'VideoDescription',
+        value: 'The story of the first Christmas.',
+        primary: true,
+        language: { __typename: 'Language', id: '529' }
+      },
+      {
+        __typename: 'VideoDescription',
+        value: 'L histoire du premier Noël.',
+        primary: false,
+        language: { __typename: 'Language', id: '496' }
+      }
+    ],
     images: [
       {
         __typename: 'CloudflareImage',

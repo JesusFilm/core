@@ -64,8 +64,7 @@ builder.mutationField('customDomainUpdate', (t) =>
         })
       }
 
-      const action = 'campaignId' in input ? Action.Manage : Action.Update
-      if (!canAccessCustomDomain(action, customDomain, context.user)) {
+      if (!canAccessCustomDomain(Action.Update, customDomain, context.user)) {
         throw new GraphQLError('user is not allowed to update custom domain', {
           extensions: { code: 'FORBIDDEN' }
         })

@@ -11,6 +11,8 @@ import {
   useRef
 } from 'react'
 
+import { isExtra } from '@core/journeys/ui/Campaign'
+
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -51,8 +53,6 @@ export interface CampaignEditorState {
   selectedBlockId?: string
   /** The selected region card; its switcher, if known, is `selectedBlockId`. */
   selectedRegionId?: string
-  /** Bumped by the bar's Edit so the selected block's primary text takes focus. */
-  editRequest: number
   /** The open rail panel; a view choice, never a Command. */
   panel: CampaignPanel
   /** The Inspector tab; a view choice, never a Command. */
@@ -91,9 +91,6 @@ interface SetEditorFocusAction {
   selectedBlockId?: string
   selectedRegionId?: string
 }
-interface RequestEditAction {
-  type: 'RequestEditAction'
-}
 interface SetPreviewLanguageAction {
   type: 'SetPreviewLanguageAction'
   previewLanguageId: string
@@ -121,7 +118,6 @@ export type CampaignEditorAction =
   | SelectBlockAction
   | SelectRegionAction
   | SetEditorFocusAction
-  | RequestEditAction
   | SetPreviewLanguageAction
   | SetPanelAction
   | OpenAddPanelAction
@@ -165,8 +161,6 @@ export function reducer(
         selectedRegionId: action.selectedRegionId,
         addPreset: undefined
       }
-    case 'RequestEditAction':
-      return { ...state, editRequest: state.editRequest + 1 }
     case 'SetPreviewLanguageAction':
       return { ...state, previewLanguageId: action.previewLanguageId }
     case 'SetPanelAction': {
@@ -212,6 +206,8 @@ export interface CampaignSelection {
   host?: CampaignBlock
   /** The selected region card, or the region a selected Region Line belongs to. */
   region?: CampaignRegion
+  /** The Region Switcher the selected region card or Region Line sits in; the host a step up to the region keeps. */
+  regionHost?: CampaignBlock
 }
 
 export const CAMPAIGN_SELECTION: CampaignSelection = { kind: 'campaign' }
@@ -265,6 +261,29 @@ export function regionLines(
 }
 
 /**
+ * The Region Switcher a region card or Region Line is reached through: the
+ * one the card was clicked in, else the switcher on the page being shown (a
+ * Region Line carries no host of its own), else the first one.
+ */
+function regionSwitcherOf(
+  campaign: Pick<Campaign, 'blocks' | 'pages'>,
+  host: CampaignBlock | undefined,
+  pageKind: CampaignPageKind
+): CampaignBlock | undefined {
+  if (host != null) return host
+  const switchers = campaign.blocks.filter(
+    (block) => block.__typename === 'CampaignRegionSwitcherBlock'
+  )
+  return (
+    switchers.find(
+      (block) =>
+        campaign.pages.find((page) => page.id === block.pageId)?.kind ===
+        pageKind
+    ) ?? switchers[0]
+  )
+}
+
+/**
  * Resolve the selection from the block and region lists: what is selected
  * and where it sits. A region card wins when one is selected and still
  * exists; a Region Line resolves to text with its region and no host.
@@ -301,10 +320,7 @@ export function resolveSelection(
     )
     return { kind: 'card', block, host }
   }
-  if (
-    block.__typename === 'CampaignTypographyBlock' ||
-    block.__typename === 'CampaignButtonBlock'
-  ) {
+  if (isExtra(block)) {
     if (block.regionId != null)
       return {
         kind: 'text',
@@ -387,7 +403,6 @@ export function CampaignEditorProvider({
   const defaultState: CampaignEditorState = {
     pageKind: CampaignPageKind.landing,
     previewLanguageId: campaign.defaultLanguageId,
-    editRequest: 0,
     panel: 'none',
     inspectorTab: 'style',
     navigatorExpandRequest: 0
@@ -405,21 +420,19 @@ export function CampaignEditorProvider({
     () => ({ ...rawState, previewLanguageId }),
     [rawState, previewLanguageId]
   )
-  const selection = useMemo(
-    () =>
-      resolveSelection(
-        campaign.blocks,
-        state.selectedBlockId,
-        campaign.regions,
-        state.selectedRegionId
-      ),
-    [
+  const selection = useMemo(() => {
+    const resolved = resolveSelection(
       campaign.blocks,
-      campaign.regions,
       state.selectedBlockId,
+      campaign.regions,
       state.selectedRegionId
-    ]
-  )
+    )
+    if (resolved.region == null) return resolved
+    return {
+      ...resolved,
+      regionHost: regionSwitcherOf(campaign, resolved.host, state.pageKind)
+    }
+  }, [campaign, state.selectedBlockId, state.selectedRegionId, state.pageKind])
   const currentRegion = useMemo(() => {
     if (state.pageKind !== CampaignPageKind.regionTemplate) return undefined
     const regions = sortedRegions(campaign.regions)
@@ -443,7 +456,7 @@ export function CampaignEditorProvider({
       return
     }
     if (selection.kind === 'text' && selection.region != null) {
-      selectRegion(selection.region.id)
+      selectRegion(selection.region.id, selection.regionHost?.id)
       return
     }
     if (

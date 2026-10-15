@@ -9,7 +9,6 @@ import {
   useSensors
 } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -37,6 +36,7 @@ import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { LeftPanelBody } from '../LeftPanel'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
@@ -94,6 +94,11 @@ const NavigatorRowContent = forwardRef<
   const { t } = useTranslation('apps-journeys-admin')
   const rows = useContext(NavigatorRowsContext)
   const divider = node.type === 'SectionContent'
+  const hasTrailing =
+    node.placement != null ||
+    node.needsJourney ||
+    node.unlisted ||
+    handle != null
   return (
     <Stack
       ref={ref}
@@ -116,7 +121,8 @@ const NavigatorRowContent = forwardRef<
         variant={divider ? 'caption' : 'body2'}
         noWrap
         sx={{
-          flexShrink: 0,
+          minWidth: 0,
+          flexShrink: 1,
           ...(divider && {
             color: 'text.secondary',
             textTransform: 'uppercase'
@@ -130,38 +136,51 @@ const NavigatorRowContent = forwardRef<
           variant="caption"
           noWrap
           data-testid="NavigatorSecondaryText"
-          sx={{ color: 'text.secondary', minWidth: 0, flexShrink: 1 }}
+          sx={{ color: 'text.secondary', minWidth: 0, flexShrink: 2 }}
         >
           {node.secondaryText}
         </Typography>
       )}
-      {node.placement != null && (
-        <Chip
-          size="small"
-          variant="outlined"
-          label={node.placement === 'above' ? t('Above') : t('Below')}
-          data-testid="NavigatorPlacement"
-          sx={{ flexShrink: 0 }}
-        />
+      {hasTrailing && (
+        <Stack
+          direction="row"
+          spacing={1}
+          data-testid="NavigatorRowTrailing"
+          sx={{
+            alignItems: 'center',
+            flexShrink: 0,
+            ...(handle != null && { ml: 'auto !important' })
+          }}
+        >
+          {node.placement != null && (
+            <Chip
+              size="small"
+              variant="outlined"
+              label={node.placement === 'above' ? t('Above') : t('Below')}
+              data-testid="NavigatorPlacement"
+              sx={{ flexShrink: 0 }}
+            />
+          )}
+          {node.needsJourney && (
+            <Chip
+              size="small"
+              color="warning"
+              label={t('Needs journey')}
+              data-testid="NavigatorNeedsJourney"
+              sx={{ flexShrink: 0 }}
+            />
+          )}
+          {node.unlisted && (
+            <EyeClosedIcon
+              fontSize="small"
+              titleAccess={t('Not listed')}
+              data-testid="NavigatorUnlisted"
+              sx={{ flexShrink: 0, color: 'text.secondary' }}
+            />
+          )}
+          {handle}
+        </Stack>
       )}
-      {node.needsJourney && (
-        <Chip
-          size="small"
-          color="warning"
-          label={t('Needs journey')}
-          data-testid="NavigatorNeedsJourney"
-          sx={{ flexShrink: 0 }}
-        />
-      )}
-      {node.unlisted && (
-        <EyeClosedIcon
-          fontSize="small"
-          titleAccess={t('Not listed')}
-          data-testid="NavigatorUnlisted"
-          sx={{ flexShrink: 0, color: 'text.secondary' }}
-        />
-      )}
-      {handle != null && <Box sx={{ ml: 'auto !important' }}>{handle}</Box>}
     </Stack>
   )
 })
@@ -466,8 +485,8 @@ export function Navigator(): ReactElement {
   }
 
   return (
-    <Stack data-testid="Navigator" sx={{ minHeight: 0, flexGrow: 1 }}>
-      <Typography variant="subtitle1" sx={{ px: 2, py: 1.5 }}>
+    <LeftPanelBody spacing={3} data-testid="Navigator">
+      <Typography variant="h6" noWrap>
         {t('Navigator')}
       </Typography>
       <NavigatorRowsContext.Provider value={rows}>
@@ -500,11 +519,10 @@ export function Navigator(): ReactElement {
               selectedItems={selectedId ?? null}
               onItemClick={handleItemClick}
               aria-label={t('Page structure')}
-              sx={{ flexGrow: 1, overflowY: 'auto', px: 1, pb: 2 }}
             />
           </SortableContext>
         </DndContext>
       </NavigatorRowsContext.Provider>
-    </Stack>
+    </LeftPanelBody>
   )
 }

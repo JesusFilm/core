@@ -8,6 +8,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
 import { CampaignRegionCountries } from '@core/journeys/ui/Campaign'
+import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
@@ -24,6 +25,7 @@ import {
 } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { regionDisplayName } from '../utils/regionDisplayName'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -54,10 +56,18 @@ function RegionCardEdit({
   hostBlockId
 }: RegionCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection, selectBlock, selectRegion } = useCampaignEditor()
+  const {
+    campaign,
+    state: { previewLanguageId },
+    selection,
+    selectBlock,
+    selectRegion
+  } = useCampaignEditor()
   const selected =
     selection.kind === 'region' && selection.region?.id === region.id
   const lines = regionLines(campaign.blocks, region.id)
+  const lineSelected = lines.some((line) => line.id === selection.block?.id)
+  const muted = !region.listed && !selected && !lineSelected
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
@@ -69,6 +79,7 @@ function RegionCardEdit({
       id={`${hostBlockId}__${region.id}`}
       data-testid={`RegionCardEdit-${region.id}`}
       data-selected={selected}
+      data-unlisted={!region.listed}
       data-hoverable
       onClick={handleClick}
       sx={{
@@ -82,6 +93,7 @@ function RegionCardEdit({
         backgroundColor: 'var(--campaign-band-card)',
         border: '1px solid var(--campaign-band-border)',
         ...HOVER_OUTLINE_SX,
+        ...(muted ? { opacity: 0.5 } : {}),
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
@@ -96,8 +108,20 @@ function RegionCardEdit({
           data-testid="RegionCardName"
           sx={{ color: 'var(--campaign-band-heading)' }}
         >
-          {region.name}
+          {regionDisplayName(
+            region,
+            previewLanguageId,
+            campaign.defaultLanguageId
+          )}
         </Typography>
+        {!region.listed && (
+          <EyeClosedIcon
+            fontSize="small"
+            titleAccess={t('Not listed')}
+            data-testid="RegionUnlisted"
+            sx={{ color: 'var(--campaign-band-muted)' }}
+          />
+        )}
         {regionNeedsJourney(region) && (
           <Chip
             size="small"
@@ -145,9 +169,12 @@ function RegionCardEdit({
 }
 
 /**
- * The Region Switcher on the editor canvas: every listed region as a card
- * (the current region hidden on its own Region Page) and the "+ Add" that
- * runs `campaignRegionCreate` as a Command. With no listed region the
+ * The Region Switcher on the editor canvas: every region as a card (the
+ * current region hidden on its own Region Page), an unlisted one muted with an
+ * eye-slash (until it or one of its lines is selected, so the selection
+ * outline and the line being edited stay at full strength) so its Navigator
+ * row can hover and select it, and the "+ Add"
+ * that runs `campaignRegionCreate` as a Command. With no region to show the
  * section reads "Add your first region".
  */
 export function RegionSwitcherEdit({
@@ -157,7 +184,7 @@ export function RegionSwitcherEdit({
   const { campaign, currentRegion } = useCampaignEditor()
   const { addRegion } = useCampaignRegionCommand()
   const regions = sortedRegions(campaign.regions).filter(
-    (region) => region.listed && region.id !== currentRegion?.id
+    (region) => region.id !== currentRegion?.id
   )
 
   function handleAdd(event: MouseEvent<HTMLButtonElement>): void {

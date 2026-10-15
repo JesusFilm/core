@@ -60,6 +60,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
         lede: null,
         align: null,
         action: null,
+        mediaSide: 'right',
         ...data,
         id: data.id ?? 'newFeaturedId'
       }
@@ -113,7 +114,6 @@ describe('campaignFeaturedMediaBlockCreate', () => {
       data: {
         id: undefined,
         typename: 'CampaignFeaturedMediaBlock',
-        mediaSide: 'right',
         campaignId: 'campaignId',
         pageId: 'landingPageId',
         regionId: null,

@@ -9,7 +9,10 @@ export {
   CAMPAIGN_STRING_DEFAULTS,
   CAMPAIGN_STRING_KEYS
 } from './campaignStrings'
-export { adminLocaleFolder, resolveCampaignStringValues } from './adminLocale'
+export {
+  campaignLocaleFolder,
+  resolveCampaignStringValues
+} from './campaignLocale'
 export * from './sections'
 export { seedCampaign } from './seedCampaign'
 export type { SeedCampaignInput } from './seedCampaign'

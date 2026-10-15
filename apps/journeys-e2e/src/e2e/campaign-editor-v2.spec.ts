@@ -10,8 +10,18 @@ import { CampaignPage } from '../pages/campaign-page'
  * which attaches the generated slug to its report as the `campaign-v2-slug`
  * annotation.
  *
+ * Human-run, on demand: it is tagged @manual, so the `e2e` target (deploy
+ * checks and nightly) skips it. Run the admin half, then this half:
+ * 1. pnpm exec nx run journeys-admin-e2e:e2e-campaign -- campaign-editor-v2.spec
+ *    with CAMPAIGN_E2E_KEEP=true, so the campaign is still there afterwards.
+ * 2. pnpm exec nx run journeys-e2e:e2e-campaign -- campaign-editor-v2.spec
+ *    with CAMPAIGN_E2E_V2_SLUG set to the `campaign-v2-slug` annotation of
+ *    the admin report, and DEPLOYMENT_URL (or JOURNEYS_DAILY_E2E) set to the
+ *    journeys app the campaign was published on.
+ * 3. Delete the campaign in the admin editor (Settings > Delete campaign).
+ *
  * Setup:
- * - Set CAMPAIGN_E2E_V2_SLUG to that slug; without it the scenario is skipped.
+ * - CAMPAIGN_E2E_V2_SLUG is required; the scenario fails without it.
  * - The admin e2e user's team needs the `campaignBuilder` flag on in the
  *   preview environment for the campaign to have been created at all.
  */
@@ -24,18 +34,19 @@ const HERO_BACKGROUND_COLOR = 'rgb(197, 45, 58)'
 // Kept in sync with the admin editor-v2 spec
 const RICH_TEXT_TITLE = 'Playwright rich text title'
 
-test('campaign landing page renders the restyled hero and the added Rich text section', async ({
-  page
-}) => {
-  test.skip(
-    CAMPAIGN_SLUG == null || CAMPAIGN_SLUG === '',
-    'CAMPAIGN_E2E_V2_SLUG is not set: run the admin campaign-editor-v2 spec first and pass its campaign-v2-slug'
-  )
+test(
+  'campaign landing page renders the restyled hero and the added Rich text section',
+  { tag: '@manual' },
+  async ({ page }) => {
+    if (CAMPAIGN_SLUG == null || CAMPAIGN_SLUG === '')
+      throw new Error(
+        'CAMPAIGN_E2E_V2_SLUG is not set: run the admin campaign-editor-v2 spec first and pass its campaign-v2-slug'
+      )
 
-  const campaignSlug = CAMPAIGN_SLUG as string
-  const campaign = new CampaignPage(page)
+    const campaign = new CampaignPage(page)
 
-  await campaign.openLandingPageShowingSection(campaignSlug, RICH_TEXT_TITLE)
-  await campaign.verifySectionBackground(HERO_TITLE, HERO_BACKGROUND_COLOR)
-  await campaign.verifySectionBelowHero(HERO_TITLE, RICH_TEXT_TITLE)
-})
+    await campaign.openLandingPageShowingSection(CAMPAIGN_SLUG, RICH_TEXT_TITLE)
+    await campaign.verifySectionBackground(HERO_TITLE, HERO_BACKGROUND_COLOR)
+    await campaign.verifySectionBelowHero(HERO_TITLE, RICH_TEXT_TITLE)
+  }
+)

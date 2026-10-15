@@ -95,14 +95,6 @@ export function shareLanguageLabel(language: CampaignShareLanguage): string {
   return language.language.name[0]?.value ?? language.languageId
 }
 
-/** A Campaign String's resolved value, empty when the campaign lacks the row. */
-export function campaignString(
-  campaign: Pick<CampaignPublic, 'strings'>,
-  key: CampaignStringKey
-): string {
-  return campaign.strings.find((string) => string.key === key)?.value ?? ''
-}
-
 interface ShareStepProps {
   id: string
   label: string
@@ -159,7 +151,7 @@ export function CampaignRegionShare({
   block
 }: CampaignRegionShareProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { campaign, region } = useCampaign()
+  const { campaign, region, string } = useCampaign()
   const [selectedId, setSelectedId] = useState<string>()
   const [copied, setCopied] = useState(false)
   const languages = region == null ? [] : shareLanguages(region)
@@ -167,15 +159,15 @@ export function CampaignRegionShare({
     languages.find((language) => language.id === selectedId) ??
     defaultShareLanguage(languages, campaign.languageId)
   const strings = {
-    step1: campaignString(campaign, CampaignStringKey.step1),
-    step2: campaignString(campaign, CampaignStringKey.step2),
-    step2help: campaignString(campaign, CampaignStringKey.step2help),
-    step3: campaignString(campaign, CampaignStringKey.step3),
-    step4: campaignString(campaign, CampaignStringKey.step4),
-    copy: campaignString(campaign, CampaignStringKey.copy),
-    copied: campaignString(campaign, CampaignStringKey.copied),
-    downloadQr: campaignString(campaign, CampaignStringKey.downloadQr),
-    open: campaignString(campaign, CampaignStringKey.open)
+    step1: string(CampaignStringKey.step1),
+    step2: string(CampaignStringKey.step2),
+    step2help: string(CampaignStringKey.step2help),
+    step3: string(CampaignStringKey.step3),
+    step4: string(CampaignStringKey.step4),
+    copy: string(CampaignStringKey.copy),
+    copied: string(CampaignStringKey.copied),
+    downloadQr: string(CampaignStringKey.downloadQr),
+    open: string(CampaignStringKey.open)
   }
   const openLabel = hasText(strings.open) ? strings.open : t('Open')
   const copiedLabel = hasText(strings.copied) ? strings.copied : t('Copied')
@@ -187,8 +179,12 @@ export function CampaignRegionShare({
 
   async function handleCopy(): Promise<void> {
     if (shortLink == null) return
-    await navigator.clipboard.writeText(shortLink)
-    setCopied(true)
+    try {
+      await navigator.clipboard.writeText(shortLink)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
   }
 
   function handleDownload(event: MouseEvent<HTMLButtonElement>): void {

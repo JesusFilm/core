@@ -94,6 +94,11 @@ export const RegionPage: Story = {
   }
 }
 
+/** The nested, unlisted Region row that needs a journey: the label truncates so the badges and the drag handle stay inside the 300 px column. */
+export const NestedRegionRowWithBadges: Story = {
+  args: { initialState: { selectedBlockId: 'eurLineId' } }
+}
+
 /** Lifts a row by its handle with the keyboard and steps it once, so the row it would land on is marked. */
 async function liftAndStep(handleId: string): Promise<void> {
   const handle = await screen.findByTestId(`NavigatorDragHandle-${handleId}`)
