@@ -371,7 +371,7 @@ export async function processDownloads(): Promise<void> {
           )
           if (variantZeroMetadataDownloads.length === 0) {
             console.log(
-              `  candidate: ${previewDownloads.length} Mux download rendition(s) available; apply mode creates or refreshes only the rows that are missing, non-Mux, or missing metadata`
+              `  candidate: ${previewDownloads.length} Mux download rendition(s) available; apply mode creates or refreshes only the rows that are missing, legacy, or missing metadata`
             )
             return true
           }

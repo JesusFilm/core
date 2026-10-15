@@ -9,6 +9,17 @@ import {
 
 const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
 
+// The origin server predating the Mux migration. This function also runs on
+// every live ingest pass (processVideoDownloads), not just the backfill, so
+// it must not treat every non-Mux URL as replaceable -- a publisher can set
+// an arbitrary download URL via videoVariantDownloadUpdate, and that should
+// survive reprocessing. Only this known legacy host is stale-by-definition.
+const LEGACY_DOWNLOAD_URL_HOST = 'api-media-core.jesusfilm.org'
+
+function isLegacyDownloadUrl(url: string): boolean {
+  return url.includes(LEGACY_DOWNLOAD_URL_HOST)
+}
+
 function hasMissingDownloadMetadata(download: {
   size?: number | null
   bitrate?: number | null
@@ -381,13 +392,14 @@ export async function createDownloadsFromMuxAsset({
       const isExistingMuxDownload =
         existingDownload.url.startsWith(MUX_STREAM_BASE_URL)
 
-      // Replace a broken Mux row, or any non-Mux row in this quality slot: a
-      // legacy origin URL here is stale data blocking the Mux-hosted download
-      // from landing, not a deliberate alternative the way distro* rows are
-      // (a separate quality enum this function never touches).
+      // Replace a broken Mux row, or a known-legacy row in this quality
+      // slot: the legacy origin URL is stale data blocking the Mux-hosted
+      // download from landing, not a deliberate alternative the way distro*
+      // rows are (a separate quality enum this function never touches) or
+      // any other non-Mux URL a publisher may have set deliberately.
       if (
-        !isExistingMuxDownload ||
-        hasMissingDownloadMetadata(existingDownload)
+        isLegacyDownloadUrl(existingDownload.url) ||
+        (isExistingMuxDownload && hasMissingDownloadMetadata(existingDownload))
       ) {
         await prisma.videoVariantDownload.update({
           where: { id: existingDownload.id },

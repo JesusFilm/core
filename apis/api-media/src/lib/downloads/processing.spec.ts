@@ -679,6 +679,48 @@ describe('download processing utilities', () => {
       })
     })
 
+    it('does not overwrite a complete non-Mux, non-legacy download (e.g. a publisher-curated URL)', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '720p',
+              status: 'ready',
+              filesize: '157286400',
+              height: 720,
+              width: 1280,
+              bitrate: 2500000
+            }
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.findUnique.mockResolvedValue({
+        id: 'existing-high-download',
+        quality: VideoVariantDownloadQuality.high,
+        videoVariantId: 'variant-1',
+        url: 'https://publisher-curated.example.com/download.mp4',
+        size: 157286400,
+        height: 720,
+        width: 1280,
+        bitrate: 2500000,
+        version: 1,
+        assetId: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+
+      const result = await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(result).toBe(0)
+      expect(prismaMock.videoVariantDownload.create).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
+    })
+
     it('should handle other database errors', async () => {
       const muxVideoAsset = {
         playback_ids: [{ id: 'test-playback-id' }],
