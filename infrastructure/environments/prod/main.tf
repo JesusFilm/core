@@ -177,6 +177,45 @@ module "short_links_clickhouse" {
   doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
 }
 
+# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
+# EKS Platform Cluster. Serves plausible.central.jesusfilm.org (the module's
+# own record) for smoke tests; analytics.jesusfilm.org moves here in the
+# cutover step (modules/plausible/README.md). Apply only once prod's Plausible
+# already uses ClickHouse Cloud.
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "prod"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_names       = ["analytics.jesusfilm.org", "plausible.central.jesusfilm.org"]
+}
+
+# analytics.jesusfilm.org is served by Cloudflare DNS, not Route53, so the ACM
+# validation CNAME is added there by hand (modules/plausible/README.md) and
+# the certificate is attached to the public listener in the cutover step once
+# ACM reports ISSUED. Deliberately no aws_acm_certificate_validation: it would
+# hold an Atlantis apply for up to 75 minutes waiting on that record.
+resource "aws_acm_certificate" "analytics_jesusfilm_org" {
+  domain_name       = "analytics.jesusfilm.org"
+  validation_method = "DNS"
+
+  tags = {
+    Name = "analytics.jesusfilm.org"
+    Env  = "prod"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 module "postgresql" {
   source                          = "../../modules/aws/aurora"
   name                            = "jfp-core"
