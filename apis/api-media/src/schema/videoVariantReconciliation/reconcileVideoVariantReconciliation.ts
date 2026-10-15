@@ -138,8 +138,12 @@ export async function reconcileVideoVariantReconciliation(
       previousAttempts(reconciliation.processingStages, 'parentSync')
     ),
     downloads: notApplicableStage(),
+    // Pre-incremented once for the whole run: `syncVideoRecordStage` may be
+    // called more than once this run (a parent container, then this Video),
+    // and each call stamps this same count rather than adding to it -- see
+    // reconciliationStages.ts.
     algoliaVideo: completedStage(
-      previousAttempts(reconciliation.processingStages, 'algoliaVideo')
+      previousAttempts(reconciliation.processingStages, 'algoliaVideo') + 1
     ),
     algoliaVariant: {
       state: 'pending',
@@ -216,19 +220,30 @@ export async function reconcileVideoVariantReconciliation(
     return { publicationReady: false, status: 'degraded' }
   }
 
+  // Downloads has its own 24h-bounded retry window, independent of
+  // algoliaVideo's attempt-based backoff (retryAtFor). Compute it first so
+  // that if both have failed this run, Downloads' still-open window takes
+  // priority for retryAt -- otherwise an exhausted algoliaVideo backoff
+  // (attempts >= 5, or a non-retryable error) would persist retryAt: null
+  // and `dueRecordWhere` would never sweep this record again, silently
+  // abandoning a Downloads retry that's still due.
+  const retryDownloads =
+    stages.downloads.state === 'failed' &&
+    Date.now() - reconciliation.createdAt.getTime() < 24 * 60 * 60 * 1000
+
   // The Variant is published and indexed, but reconciliation isn't complete
   // until its Video record is too, so this keeps retrying. Whether it also
   // alerts depends on shouldAlertOnBlockedStages: an algoliaVideo-only
   // failure here is exactly the case that stays quiet by design.
   if (stages.algoliaVideo.state === 'failed') {
-    await persistStatus('degraded', stages.algoliaVideo)
+    await persistStatus(
+      'degraded',
+      retryDownloads ? stages.downloads : stages.algoliaVideo
+    )
     return { publicationReady: false, status: 'degraded' }
   }
 
   const status = stages.downloads.state === 'failed' ? 'degraded' : 'complete'
-  const retryDownloads =
-    stages.downloads.state === 'failed' &&
-    Date.now() - reconciliation.createdAt.getTime() < 24 * 60 * 60 * 1000
   await persistStatus(status, retryDownloads ? stages.downloads : undefined)
   return { publicationReady: true, status }
 }
