@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { ReactElement } from 'react'
 
 import {
   LanguageFallbackRedirect,
@@ -41,7 +42,7 @@ describe('LanguageFallbackRedirect', () => {
   })
 
   describe('withLanguageFallback', () => {
-    function Page({ title }: { title: string }): JSX.Element {
+    function Page({ title }: { title: string }): ReactElement {
       return <p>{title}</p>
     }
     const Wrapped = withLanguageFallback(Page)
