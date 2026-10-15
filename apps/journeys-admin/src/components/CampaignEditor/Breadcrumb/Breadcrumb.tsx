@@ -52,7 +52,7 @@ export function Breadcrumb(): ReactElement {
       })
     }
     const regionId = selection.region.id
-    const hostId = selection.host?.id
+    const hostId = selection.regionHost?.id
     crumbs.push({
       label: regionDisplayName(
         selection.region,

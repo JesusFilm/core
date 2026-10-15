@@ -212,6 +212,8 @@ export interface CampaignSelection {
   host?: CampaignBlock
   /** The selected region card, or the region a selected Region Line belongs to. */
   region?: CampaignRegion
+  /** The Region Switcher the selected region card or Region Line sits in; the host a step up to the region keeps. */
+  regionHost?: CampaignBlock
 }
 
 export const CAMPAIGN_SELECTION: CampaignSelection = { kind: 'campaign' }
@@ -262,6 +264,29 @@ export function regionLines(
         block.parentOrder != null
     )
     .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+}
+
+/**
+ * The Region Switcher a region card or Region Line is reached through: the
+ * one the card was clicked in, else the switcher on the page being shown (a
+ * Region Line carries no host of its own), else the first one.
+ */
+function regionSwitcherOf(
+  campaign: Pick<Campaign, 'blocks' | 'pages'>,
+  host: CampaignBlock | undefined,
+  pageKind: CampaignPageKind
+): CampaignBlock | undefined {
+  if (host != null) return host
+  const switchers = campaign.blocks.filter(
+    (block) => block.__typename === 'CampaignRegionSwitcherBlock'
+  )
+  return (
+    switchers.find(
+      (block) =>
+        campaign.pages.find((page) => page.id === block.pageId)?.kind ===
+        pageKind
+    ) ?? switchers[0]
+  )
 }
 
 /**
@@ -405,21 +430,19 @@ export function CampaignEditorProvider({
     () => ({ ...rawState, previewLanguageId }),
     [rawState, previewLanguageId]
   )
-  const selection = useMemo(
-    () =>
-      resolveSelection(
-        campaign.blocks,
-        state.selectedBlockId,
-        campaign.regions,
-        state.selectedRegionId
-      ),
-    [
+  const selection = useMemo(() => {
+    const resolved = resolveSelection(
       campaign.blocks,
-      campaign.regions,
       state.selectedBlockId,
+      campaign.regions,
       state.selectedRegionId
-    ]
-  )
+    )
+    if (resolved.region == null) return resolved
+    return {
+      ...resolved,
+      regionHost: regionSwitcherOf(campaign, resolved.host, state.pageKind)
+    }
+  }, [campaign, state.selectedBlockId, state.selectedRegionId, state.pageKind])
   const currentRegion = useMemo(() => {
     if (state.pageKind !== CampaignPageKind.regionTemplate) return undefined
     const regions = sortedRegions(campaign.regions)
@@ -443,7 +466,7 @@ export function CampaignEditorProvider({
       return
     }
     if (selection.kind === 'text' && selection.region != null) {
-      selectRegion(selection.region.id)
+      selectRegion(selection.region.id, selection.regionHost?.id)
       return
     }
     if (

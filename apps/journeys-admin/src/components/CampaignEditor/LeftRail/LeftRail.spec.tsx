@@ -81,6 +81,18 @@ describe('LeftRail', () => {
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('none')
   })
 
+  it('lists the panel toggles as Pages, Navigator, Add, Localize', () => {
+    render(<Harness />)
+
+    const panels = ['Pages', 'Navigator', 'Add', 'Localize']
+    const toggles = screen
+      .getAllByRole('button')
+      .map((button) => button.getAttribute('aria-label') ?? '')
+      .filter((label) => panels.includes(label))
+
+    expect(toggles).toEqual(['Pages', 'Navigator', 'Add', 'Localize'])
+  })
+
   it('toggles the Navigator panel', () => {
     render(<Harness />)
     const navigator = screen.getByRole('button', { name: 'Navigator' })

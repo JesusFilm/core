@@ -33,9 +33,6 @@ import { PagesPanel } from './PagesPanel'
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
 export const EDITOR_MIN_WIDTH = 1280
 
-/** From this width a left panel pushes the canvas; below it the panel overlays it. */
-export const PANEL_PUSH_MIN_WIDTH = 1440
-
 interface CampaignEditorProps {
   campaign?: Campaign
 }
@@ -45,7 +42,7 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the rail, the open panel, the canvas with its banner, and the Inspector. */
+/** Everything inside the providers: the rail, the open panel (floating over the canvas, ahead of it in Tab order), the canvas with its banner, and the Inspector. */
 function CampaignEditorShell({
   campaign,
   isManager
@@ -55,7 +52,6 @@ function CampaignEditorShell({
     state: { pageKind, panel },
     dispatch
   } = useCampaignEditor()
-  const pushesCanvas = useMediaQuery(`(min-width:${PANEL_PUSH_MIN_WIDTH}px)`)
   const [view, setView] = useState<CanvasView>('desktop')
   const [localizeTab, setLocalizeTab] = useState<LocalizeTab>('languages')
   const [promotionNotice, setPromotionNotice] = useState(false)
@@ -70,19 +66,19 @@ function CampaignEditorShell({
 
   const leftPanel =
     panel === 'add' ? (
-      <LeftPanel label={t('Add')} overlay={!pushesCanvas}>
+      <LeftPanel label={t('Add')}>
         <AddPanel />
       </LeftPanel>
     ) : panel === 'pages' ? (
-      <LeftPanel label={t('Pages')} overlay={!pushesCanvas}>
+      <LeftPanel label={t('Pages')}>
         <PagesPanel />
       </LeftPanel>
     ) : panel === 'navigator' ? (
-      <LeftPanel label={t('Navigator')} overlay={!pushesCanvas}>
+      <LeftPanel label={t('Navigator')}>
         <Navigator />
       </LeftPanel>
     ) : panel === 'localize' ? (
-      <LeftPanel label={t('Localize')} overlay={!pushesCanvas}>
+      <LeftPanel label={t('Localize')}>
         <LocalizePanel
           tab={localizeTab}
           onTabChange={setLocalizeTab}
@@ -100,7 +96,6 @@ function CampaignEditorShell({
     >
       <Hotkeys />
       <LeftRail view={view} onViewChange={setView} isManager={isManager} />
-      {pushesCanvas && leftPanel}
       <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
         <Box
           sx={{
@@ -110,9 +105,9 @@ function CampaignEditorShell({
             display: 'flex'
           }}
         >
+          {leftPanel}
           <CanvasBanner />
           <Canvas campaign={campaign} pageKind={pageKind} view={view} />
-          {!pushesCanvas && leftPanel}
         </Box>
       </Stack>
       <Inspector
