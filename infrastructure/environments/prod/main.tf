@@ -214,6 +214,14 @@ resource "aws_acm_certificate" "analytics_jesusfilm_org" {
   }
 }
 
+# Attached only once ACM reports the certificate ISSUED (the validation CNAME
+# is added in Cloudflare by hand); attaching a pending certificate fails the
+# apply. After this, the DNS change in Cloudflare is the actual cutover.
+resource "aws_lb_listener_certificate" "analytics_jesusfilm_org" {
+  listener_arn    = module.prod.public_alb.alb_listener.arn
+  certificate_arn = aws_acm_certificate.analytics_jesusfilm_org.arn
+}
+
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"
