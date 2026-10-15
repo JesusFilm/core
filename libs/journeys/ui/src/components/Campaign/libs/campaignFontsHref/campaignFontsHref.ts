@@ -1,4 +1,4 @@
-/** The fonts every campaign page loads, as `home/[journeySlug].tsx` does. */
+/** The fonts every campaign page and root journey route load. */
 export const CAMPAIGN_DEFAULT_FONTS = ['Montserrat', 'Open Sans', 'El Messiri']
 
 const FONT_WEIGHTS = '400;500;600;700;800'
@@ -14,9 +14,9 @@ function formatFontName(font: string): string {
 }
 
 /**
- * The Google Fonts stylesheet href for a campaign, built exactly as the root
- * journey route builds it: the defaults plus the three theme fonts, each with
- * weights 400–800, deduplicated and sorted, `display=swap`. Null fonts add
+ * The Google Fonts stylesheet href for a campaign or journey theme: the
+ * defaults plus the three theme fonts, each with weights 400–800,
+ * deduplicated and sorted, `display=swap`. Null fonts add
  * nothing, so a theme with no fonts set loads the defaults only.
  */
 export function campaignFontsHref(

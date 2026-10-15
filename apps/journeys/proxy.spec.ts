@@ -229,11 +229,11 @@ describe('journeys proxy', () => {
     it('rewrites a region page with its query string on the root domain', async () => {
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
       const result = await proxy(
-        buildRequest('your.nextstep.is', '/campaign/christmas-2026/eur?lang=fr')
+        buildRequest('your.nextstep.is', '/campaign/christmas-2026/eur?ref=qr')
       )
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://your.nextstep.is/home/campaign/christmas-2026/eur?lang=fr'
+        'http://your.nextstep.is/home/campaign/christmas-2026/eur?ref=qr'
       )
     })
 
@@ -259,6 +259,83 @@ describe('journeys proxy', () => {
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://custom.example.com/custom.example.com/campaign-foo'
+      )
+    })
+  })
+
+  describe('campaign Page Language (?lang)', () => {
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+    })
+
+    it('rewrites a landing page with ?lang into its language path', async () => {
+      const result = await proxy(
+        buildRequest('your.nextstep.is', '/campaign/christmas-2026?lang=fr')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://your.nextstep.is/home/campaign/christmas-2026/_lang/fr?lang=fr'
+      )
+    })
+
+    it('rewrites a region page with ?lang, lower-casing the tag', async () => {
+      const result = await proxy(
+        buildRequest(
+          'custom.example.com',
+          '/campaign/christmas-2026/eur?lang=zh-Hans-CN'
+        )
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/home/campaign/christmas-2026/_lang/zh-hans-cn/eur?lang=zh-Hans-CN'
+      )
+    })
+
+    it('serves the plain page for a lang value that is not a language tag', async () => {
+      const result = await proxy(
+        buildRequest('your.nextstep.is', '/campaign/christmas-2026?lang=a/../b')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://your.nextstep.is/home/campaign/christmas-2026?lang=a%2F..%2Fb'
+      )
+    })
+
+    it('rewrites a custom domain landing page with ?lang', async () => {
+      const result = await proxy(
+        buildRequest('custom.example.com', '/?lang=es')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/_lang/es?lang=es'
+      )
+    })
+
+    it('rewrites a custom domain segment with ?lang', async () => {
+      const result = await proxy(
+        buildRequest('custom.example.com', '/eur?lang=es')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/_lang/es/eur?lang=es'
+      )
+    })
+
+    it('leaves deeper custom domain paths alone', async () => {
+      const result = await proxy(
+        buildRequest('custom.example.com', '/journey/card-2?lang=es')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/journey/card-2?lang=es'
+      )
+    })
+
+    it('leaves the root domain outside /campaign alone', async () => {
+      const result = await proxy(buildRequest('your.nextstep.is', '/?lang=es'))
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://your.nextstep.is/home/?lang=es'
       )
     })
   })

@@ -282,6 +282,31 @@ describe('ThemePanel', () => {
       expect(readTheme(cache)?.contrastTextColor).toBe('#FFFFFF')
     })
 
+    it('commits a palette pick at once as one Command, without clicking away; undo reverses that one pick', async () => {
+      const cache = campaignCache()
+      const mocks = [
+        themeMock({ contrastTextColor: '#F2B544' }),
+        themeMock({ contrastTextColor: '#FFFFFF' }),
+        paletteMock(nextPalette(campaign.palette, '#F2B544'))
+      ]
+      renderPanel(mocks, cache)
+
+      fireEvent.click(
+        await screen.findByTestId('ThemeColour-contrastTextColor')
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Use #F2B544' }))
+
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+      await waitFor(() =>
+        expect(readTheme(cache)?.contrastTextColor).toBe('#F2B544')
+      )
+      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+      expect(readTheme(cache)?.contrastTextColor).toBe('#FFFFFF')
+    })
+
     it('marks every theme colour as set, in blue', async () => {
       renderPanel([])
 

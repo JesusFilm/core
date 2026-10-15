@@ -21,6 +21,8 @@ import {
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
+  isCampaignSection,
+  isExtra,
   overlayAlpha,
   resolveBand
 } from '@core/journeys/ui/Campaign'
@@ -37,6 +39,7 @@ import {
 import {
   CampaignBackgroundKind,
   CampaignChildPlacement,
+  CampaignFeaturedMediaLayout,
   CampaignMediaSide,
   CampaignStringKey,
   TypographyVariant
@@ -78,11 +81,7 @@ const SELECTED_OUTLINE = {
 }
 
 function isAbove(child: CanvasBlock): boolean {
-  return (
-    (child.__typename === 'CampaignTypographyBlock' ||
-      child.__typename === 'CampaignButtonBlock') &&
-    child.placement === CampaignChildPlacement.above
-  )
+  return isExtra(child) && child.placement === CampaignChildPlacement.above
 }
 
 interface CanvasExtraProps {
@@ -384,7 +383,8 @@ function CanvasStrings({
  * Strings its public rendering reads, then the Extras placed below. A hero
  * with media and a Featured Media section put their Media Slot beside that
  * text (Featured Media on its `mediaSide`, with a placeholder while empty),
- * stacked below `md`; a Video Carousel shows its cards below its text.
+ * stacked below `md` (Featured Media stacked at every width when its layout
+ * is `stacked`, the media full width under the text); a Video Carousel shows its cards below its text.
  * Clicking anywhere selects the section; clicking an Extra or a carousel
  * item selects it. The selected block's text fields and strings become
  * inline inputs. The chrome follows the public layout instead: the header
@@ -428,14 +428,7 @@ export function CanvasSection({
     [setDroppableRef, setDraggableRef]
   )
   const band = useMemo(() => {
-    if (
-      block.__typename === 'CampaignTypographyBlock' ||
-      block.__typename === 'CampaignButtonBlock' ||
-      block.__typename === 'CampaignColumnBlock' ||
-      block.__typename === 'CampaignJourneyBlock' ||
-      block.__typename === 'CampaignVideoBlock'
-    )
-      return null
+    if (!isCampaignSection(block)) return null
     return resolveBand(block, theme)
   }, [block, theme])
 
@@ -481,8 +474,12 @@ export function CanvasSection({
   const showMedia =
     block.__typename === 'CampaignFeaturedMediaBlock' ||
     (block.__typename === 'CampaignHeroBlock' && block.media != null)
+  const stacked =
+    block.__typename === 'CampaignFeaturedMediaBlock' &&
+    block.layout === CampaignFeaturedMediaLayout.stacked
   const mediaLeft =
     block.__typename === 'CampaignFeaturedMediaBlock' &&
+    !stacked &&
     block.mediaSide === CampaignMediaSide.left
 
   function handleSelectField(field: CampaignTextField): void {
@@ -511,7 +508,11 @@ export function CanvasSection({
 
   const sectionBody = (
     <Stack
-      direction={{ xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }}
+      direction={
+        stacked
+          ? 'column'
+          : { xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }
+      }
       spacing={6}
       sx={{ alignItems: 'center', position: 'relative' }}
     >

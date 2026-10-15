@@ -4,6 +4,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -12,7 +13,7 @@ import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { CampaignVideo } from '../CampaignVideo'
+import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -87,15 +88,21 @@ function VideoCard({
   card: CampaignCarouselVideoCard
   onPlay: (card: CampaignCarouselVideoCard) => void
 }): ReactElement {
-  const { campaign } = useCampaign()
-  const string = (key: CampaignStringKey): string =>
-    campaign.strings.find((candidate) => candidate.key === key)?.value ?? ''
-  const action =
-    card.childrenCount > 0
-      ? `${card.childrenCount} ${string(CampaignStringKey.videos)}`.trim()
-      : card.source === 'youTube'
-        ? string(CampaignStringKey.youtube)
-        : string(CampaignStringKey.watch)
+  const { t } = useTranslation('libs-journeys-ui')
+  const { string } = useCampaign()
+
+  function cardAction(): string {
+    if (card.childrenCount > 0)
+      return videoCountLabel(
+        card.childrenCount,
+        string(CampaignStringKey.videos),
+        t
+      )
+    if (card.source === 'youTube') return string(CampaignStringKey.youtube)
+    return string(CampaignStringKey.watch)
+  }
+
+  const action = cardAction()
   const showDuration =
     card.childrenCount === 0 && card.duration != null && card.duration > 0
 
@@ -180,11 +187,8 @@ function SeeAllCard({
 }: {
   card: CampaignCarouselSeeAllCard
 }): ReactElement {
-  const { campaign } = useCampaign()
-  const label =
-    campaign.strings.find(
-      (candidate) => candidate.key === CampaignStringKey.seeAllOnWatch
-    )?.value ?? ''
+  const { string } = useCampaign()
+  const label = string(CampaignStringKey.seeAllOnWatch)
   return (
     <CardFrame testId="CampaignVideoCarouselSeeAll" href={card.href}>
       <Box
@@ -221,6 +225,7 @@ function SeeAllCard({
 export function CampaignVideoCarousel({
   block
 }: CampaignVideoCarouselProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const { campaign } = useCampaign()
   const cards = useMemo(
     () => carouselCards(block, campaign.languageId),
@@ -255,6 +260,9 @@ export function CampaignVideoCarousel({
       )}
       <Dialog
         open={playing?.block != null}
+        slotProps={{
+          paper: { 'aria-label': playing?.title ?? t('Video player') }
+        }}
         onClose={() => setPlaying(undefined)}
         maxWidth="md"
         fullWidth

@@ -14,6 +14,8 @@ import {
 } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 import { campaign, publishedCampaign } from '../data'
+import { TranslationRunContext } from '../TranslationRunProvider'
+import type { TranslationRun } from '../TranslationRunProvider'
 
 import { LeftRail } from '.'
 
@@ -21,13 +23,16 @@ interface LeftRailStoryProps {
   initialState?: Partial<CampaignEditorState>
   campaignProp?: Campaign
   isManager?: boolean
+  /** A machine-translation run in flight, ringed round the Localize button. */
+  run?: TranslationRun
 }
 
 /** The Left Rail over a campaign fixture, in its 56 px column. */
 function LeftRailStory({
   initialState,
   campaignProp = campaign,
-  isManager = true
+  isManager = true,
+  run
 }: LeftRailStoryProps): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
   return (
@@ -38,13 +43,21 @@ function LeftRailStory({
             campaign={campaignProp}
             initialState={initialState}
           >
-            <Box sx={{ display: 'flex', height: 560 }}>
-              <LeftRail
-                view={view}
-                onViewChange={setView}
-                isManager={isManager}
-              />
-            </Box>
+            <TranslationRunContext.Provider
+              value={{
+                run,
+                start: () => undefined,
+                cancel: () => undefined
+              }}
+            >
+              <Box sx={{ display: 'flex', height: 560 }}>
+                <LeftRail
+                  view={view}
+                  onViewChange={setView}
+                  isManager={isManager}
+                />
+              </Box>
+            </TranslationRunContext.Provider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>
@@ -83,6 +96,21 @@ export const AddOpen: Story = {
 /** The Localize toggle pressed while its panel is open. */
 export const LocalizeOpen: Story = {
   args: { initialState: { panel: 'localize' } }
+}
+
+/** A machine-translation run in flight: progress ringed round the Localize button, whichever panel is open. */
+export const LocalizeTranslating: Story = {
+  args: {
+    run: {
+      campaignId: campaign.id,
+      languageId: '496',
+      mode: 'missing',
+      languageName: 'Français',
+      progress: 45,
+      message: 'Translated 2 of 5 parts',
+      translatedCount: 7
+    }
+  }
 }
 
 export default LeftRailMeta

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignFields
@@ -1011,6 +1011,10 @@ export interface CampaignFields_blocks_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
@@ -1103,6 +1107,18 @@ export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title
   language: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -1132,6 +1148,7 @@ export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video {
    */
   childrenCount: number;
   title: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description[];
   images: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }

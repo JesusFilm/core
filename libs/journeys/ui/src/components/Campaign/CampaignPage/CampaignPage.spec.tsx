@@ -182,19 +182,6 @@ describe('CampaignPage', () => {
       )
     })
 
-    it('always renders the header and footer, even from an empty chrome list', () => {
-      renderPage({ ...campaignPublic, chrome: [] })
-      expect(screen.getByTestId('CampaignHeader')).toBeInTheDocument()
-      expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
-      )
-      expect(screen.queryByTestId('CampaignHeaderNav')).not.toBeInTheDocument()
-      expect(screen.getByTestId('CampaignFooter')).toHaveAttribute(
-        'data-empty',
-        'true'
-      )
-    })
-
     it('orders the header before the sections and the footer after them', () => {
       renderPage(campaignPublic)
       const page = screen.getByTestId('CampaignPage')

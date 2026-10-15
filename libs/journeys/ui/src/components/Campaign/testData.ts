@@ -3,6 +3,7 @@ import {
   ButtonVariant,
   CampaignBackgroundKind,
   CampaignChildPlacement,
+  CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
   CampaignPageKind,
@@ -518,6 +519,20 @@ function watchVideo(
         language: { __typename: 'Language', id: '496' }
       }
     ],
+    description: [
+      {
+        __typename: 'VideoDescription',
+        value: 'The story of the first Christmas.',
+        primary: true,
+        language: { __typename: 'Language', id: '529' }
+      },
+      {
+        __typename: 'VideoDescription',
+        value: 'L histoire du premier Noël.',
+        primary: false,
+        language: { __typename: 'Language', id: '496' }
+      }
+    ],
     images: [
       {
         __typename: 'CloudflareImage',
@@ -601,6 +616,7 @@ export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
   lede: 'Short films in the languages your neighbours speak.',
   bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
   mediaSide: CampaignMediaSide.left,
+  layout: CampaignFeaturedMediaLayout.sideBySide,
   mediaBlockId: 'featuredMediaImageId'
 })
 
