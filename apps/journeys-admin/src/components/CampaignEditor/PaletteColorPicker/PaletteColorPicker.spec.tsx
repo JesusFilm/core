@@ -20,6 +20,7 @@ import {
 } from '../testing'
 
 import {
+  COMMIT_DEBOUNCE_MS,
   PALETTE_SIZE,
   PaletteColorPicker,
   nextPalette,
@@ -167,6 +168,73 @@ describe('PaletteColorPicker', () => {
     )
     await waitFor(() => expect(mock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('commits a complete six-digit hex once it is typed, without leaving the field', async () => {
+    const mock = paletteMock(['#123456', ...eight.slice(0, 7)])
+    const { onCommit } = renderPicker({ mocks: [mock] })
+    const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: '#12345' } })
+    fireEvent.change(input, { target: { value: '#123456' } })
+    expect(onCommit).not.toHaveBeenCalled()
+
+    await waitFor(() => expect(onCommit).toHaveBeenCalledWith('#123456'))
+    expect(onCommit).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(mock.result).toHaveBeenCalled())
+
+    fireEvent.blur(input)
+    expect(onCommit).toHaveBeenCalledTimes(1)
+  })
+
+  it('never commits a partial hex while typing', async () => {
+    const { onCommit } = renderPicker()
+    const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+
+    fireEvent.focus(input)
+    for (const partial of ['#1', '#12', '#123', '#1234', '#12345'])
+      fireEvent.change(input, { target: { value: partial } })
+    await new Promise((resolve) =>
+      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
+    )
+
+    expect(onCommit).not.toHaveBeenCalled()
+  })
+
+  it('never commits an invalid value and shows the existing error', async () => {
+    const { onCommit } = renderPicker()
+    const input = await screen.findByRole('textbox', { name: 'Heading hex' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: '#12345g' } })
+    await new Promise((resolve) =>
+      setTimeout(resolve, COMMIT_DEBOUNCE_MS + 100)
+    )
+    expect(onCommit).not.toHaveBeenCalled()
+
+    fireEvent.keyDown(input, { key: 'Enter' })
+
+    expect(onCommit).not.toHaveBeenCalled()
+    expect(
+      screen.getByText('Enter a hex colour like #RRGGBB')
+    ).toBeInTheDocument()
+  })
+
+  it('commits a colour picked on the colour area once it settles, not on blur', async () => {
+    const { onCommit } = renderPicker({ value: '#808080' })
+    const [hue] = await screen.findAllByRole('slider')
+
+    fireEvent.keyDown(hue, { key: 'ArrowRight', keyCode: 39 })
+    fireEvent.keyDown(hue, { key: 'ArrowRight', keyCode: 39 })
+    expect(onCommit).not.toHaveBeenCalled()
+
+    await waitFor(() => expect(onCommit).toHaveBeenCalledTimes(1))
+    const input = screen.getByRole<HTMLInputElement>('textbox', {
+      name: 'Heading hex'
+    })
+    expect(input.value).not.toBe('#808080')
+    expect(onCommit).toHaveBeenCalledWith(input.value)
   })
 
   it('moves a chosen swatch to slot 1 and commits it at once', async () => {

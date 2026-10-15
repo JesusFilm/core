@@ -10,6 +10,7 @@ import {
   KeyboardEvent,
   ReactElement,
   useEffect,
+  useRef,
   useState
 } from 'react'
 import { HexColorPicker } from 'react-colorful'
@@ -23,6 +24,10 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 export const PALETTE_SIZE = 8
 
 const HEX_PATTERN = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i
+const FULL_HEX_PATTERN = /^#?[0-9a-f]{6}$/i
+
+/** How long a typed or dragged colour settles before it commits. */
+export const COMMIT_DEBOUNCE_MS = 300
 
 /**
  * The editor's pure hex rule, mirroring the API's `assertHex`: trim, accept
@@ -64,7 +69,7 @@ interface PaletteColorPickerProps {
   fallback?: string
   /** Names the picker for assistive technology and the hex field. */
   label: string
-  /** One call per commit (picker blur, Enter in the hex field, a palette swatch) with `#RRGGBB`. */
+  /** One call per pick (a palette swatch, a complete hex, the colour area settling, Enter or blur) with `#RRGGBB`. */
   onCommit: (hex: string) => void
   /** Offered when the field may inherit; writes null. */
   onClear?: () => void
@@ -74,10 +79,13 @@ interface PaletteColorPickerProps {
 
 /**
  * The one colour picker every campaign colour goes through: a hex area, a
- * hex field and the campaign's Palette as eight swatches, newest first. The
- * colour commits on blur (or Enter, or a swatch), as one call to `onCommit`;
- * the Palette is saved through `campaignUpdate` at the same moment, outside
- * undo. The only pre-validation is the pure hex rule.
+ * hex field and the campaign's Palette as eight swatches, newest first. A
+ * colour commits as it is picked, as one call to `onCommit`: a swatch at
+ * once, a complete six-digit hex or a settled drag on the colour area after a
+ * short debounce (so a partial hex never commits), and a shorthand hex on
+ * Enter or blur. Clicking away with nothing new commits nothing. The Palette
+ * is saved through `campaignUpdate` at the same moment, outside undo. The
+ * only pre-validation is the pure hex rule.
  */
 export function PaletteColorPicker({
   value,
@@ -96,6 +104,34 @@ export function PaletteColorPicker({
   const [text, setText] = useState(committed)
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState<string>()
+  const pendingTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const pendingHex = useRef<string>(undefined)
+  const commitHexRef = useRef<(hex: string) => void>(() => undefined)
+
+  function cancelPendingCommit(): void {
+    clearTimeout(pendingTimer.current)
+    pendingTimer.current = undefined
+    pendingHex.current = undefined
+  }
+
+  function scheduleCommit(hex: string): void {
+    cancelPendingCommit()
+    pendingHex.current = hex
+    pendingTimer.current = setTimeout(() => {
+      cancelPendingCommit()
+      commitHexRef.current(hex)
+    }, COMMIT_DEBOUNCE_MS)
+  }
+
+  // A pick still settling when the picker goes away is committed, not lost.
+  useEffect(
+    () => () => {
+      const hex = pendingHex.current
+      cancelPendingCommit()
+      if (hex != null) commitHexRef.current(hex)
+    },
+    []
+  )
 
   useEffect(() => {
     setDraft(committed)
@@ -128,6 +164,7 @@ export function PaletteColorPicker({
   }
 
   function commitHex(hex: string): void {
+    cancelPendingCommit()
     setDraft(hex)
     setText(hex)
     setDirty(false)
@@ -135,6 +172,8 @@ export function PaletteColorPicker({
     savePalette(hex)
     if (hex !== value) onCommit(hex)
   }
+
+  commitHexRef.current = commitHex
 
   function commit(): void {
     if (!dirty) return
@@ -152,6 +191,7 @@ export function PaletteColorPicker({
     setText(hex)
     setDirty(true)
     setError(undefined)
+    scheduleCommit(hex)
   }
 
   function handleTextChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -159,8 +199,11 @@ export function PaletteColorPicker({
     setText(next)
     setDirty(true)
     setError(undefined)
+    cancelPendingCommit()
     const hex = normalizeHex(next)
-    if (hex != null) setDraft(hex)
+    if (hex == null) return
+    setDraft(hex)
+    if (FULL_HEX_PATTERN.test(next.trim())) scheduleCommit(hex)
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
