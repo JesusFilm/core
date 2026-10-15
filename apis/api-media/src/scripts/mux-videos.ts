@@ -574,22 +574,52 @@ export async function processDownloads(): Promise<void> {
   // MUX_DOWNLOAD_BACKFILL_CURSOR_FILE: given a file path, the cursor is read
   // from it at startup and written back after each page, so a run interrupted
   // by a connection drop can be re-invoked with the same file and pick up
-  // where it left off.
+  // where it left off. The file's first line is the resume cursor; any
+  // further lines are variant ids that failed and still need a retry. Those
+  // are tracked separately from the cursor so one bad/flaky variant can't
+  // pin the cursor in place and force every future run to re-walk the whole
+  // remaining catalog just to reach it again -- the cursor always advances
+  // past a page once it's done, and failures are retried out of band.
   const cursorFilePath = process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE?.trim()
 
-  let missingRowsCursor =
+  const [persistedCursor = '', ...persistedRetryIds] =
     cursorFilePath != null && existsSync(cursorFilePath)
-      ? readFileSync(cursorFilePath, 'utf-8').trim()
-      : ''
-  // The cursor is only persisted up to the last variant that completed, so an
-  // interrupted or failed one is retried by the next run rather than skipped.
-  let persistedCursor = missingRowsCursor
-  let hasUnretriedFailure = false
-  if (cursorFilePath != null) {
-    console.log(
-      `Missing-rows pass resuming from cursor: ${missingRowsCursor === '' ? '(start)' : missingRowsCursor} (file: ${cursorFilePath})`
+      ? readFileSync(cursorFilePath, 'utf-8').trim().split('\n')
+      : ['']
+  let missingRowsCursor = persistedCursor
+  const retryVariantIds = new Set(persistedRetryIds.filter((id) => id !== ''))
+
+  const persistCursorFile = (): void => {
+    if (cursorFilePath == null) return
+    writeFileSync(
+      cursorFilePath,
+      [missingRowsCursor, ...retryVariantIds].join('\n')
     )
   }
+
+  if (cursorFilePath != null) {
+    console.log(
+      `Missing-rows pass resuming from cursor: ${missingRowsCursor === '' ? '(start)' : missingRowsCursor} (file: ${cursorFilePath})` +
+        (retryVariantIds.size > 0
+          ? `, retrying ${retryVariantIds.size} previously failed variant(s)`
+          : '')
+    )
+  }
+
+  if (retryVariantIds.size > 0) {
+    const retryVariants = await prisma.videoVariant.findMany({
+      where: { id: { in: Array.from(retryVariantIds) } },
+      include: { muxVideo: true }
+    })
+
+    await processConcurrently(retryVariants, concurrency, async (variant) => {
+      const completed = await processVariant(variant, [])
+      if (completed) retryVariantIds.delete(variant.id)
+    })
+    totalProcessed += retryVariants.length
+    persistCursorFile()
+  }
+
   let hasMoreMissingRows = true
 
   while (hasMoreMissingRows) {
@@ -636,29 +666,18 @@ export async function processDownloads(): Promise<void> {
       `Found ${variants.length} variants with fewer than ${MAX_MUX_DOWNLOAD_QUALITY_COUNT} Mux-hosted download rows to process in this batch`
     )
 
-    const failedVariantIds = new Set<string>()
     await processConcurrently(variants, concurrency, async (variant) => {
       const completed = await processVariant(variant, [])
-      if (!completed) failedVariantIds.add(variant.id)
+      if (completed) {
+        retryVariantIds.delete(variant.id)
+      } else {
+        retryVariantIds.add(variant.id)
+      }
     })
     totalProcessed += variants.length
 
     missingRowsCursor = candidates.at(-1)?.id ?? missingRowsCursor
-
-    if (!hasUnretriedFailure) {
-      const firstFailedIndex = candidates.findIndex((candidate) =>
-        failedVariantIds.has(candidate.id)
-      )
-      hasUnretriedFailure = firstFailedIndex !== -1
-      persistedCursor =
-        firstFailedIndex === -1
-          ? missingRowsCursor
-          : (candidates[firstFailedIndex - 1]?.id ?? persistedCursor)
-
-      if (cursorFilePath != null) {
-        writeFileSync(cursorFilePath, persistedCursor)
-      }
-    }
+    persistCursorFile()
 
     if (candidates.length < take) {
       hasMoreMissingRows = false

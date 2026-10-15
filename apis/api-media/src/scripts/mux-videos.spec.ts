@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, rmSync } from 'node:fs'
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
@@ -566,7 +566,7 @@ describe('processDownloads', () => {
       }
     })
 
-    it('persists the cursor only up to the last variant that completed', async () => {
+    it('advances the cursor past a failed variant but records it for retry', async () => {
       const cursorFile = join(
         tmpdir(),
         `mux-download-backfill-cursor-failure-${Date.now()}.txt`
@@ -591,14 +591,20 @@ describe('processDownloads', () => {
 
         await runProcessDownloads()
 
-        // variant-b failed, so the next run must start before it, not after.
-        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-a')
+        // The cursor still advances past the whole page -- a flaky variant-b
+        // doesn't force every later variant to be re-walked -- but variant-b
+        // itself is recorded as a separate retry id so it isn't skipped.
+        const [cursor, ...retryIds] = readFileSync(cursorFile, 'utf-8').split(
+          '\n'
+        )
+        expect(cursor).toBe('variant-b')
+        expect(retryIds).toEqual(['variant-b'])
       } finally {
         rmSync(cursorFile, { force: true })
       }
     })
 
-    it('does not advance the cursor past a variant whose Mux asset is not ready', async () => {
+    it('records a variant whose Mux asset is not ready as a retry without blocking the cursor', async () => {
       const cursorFile = join(
         tmpdir(),
         `mux-download-backfill-cursor-not-ready-${Date.now()}.txt`
@@ -629,15 +635,20 @@ describe('processDownloads', () => {
 
         await runProcessDownloads()
 
-        // variant-b still has no downloads to repair from, so a later run has
-        // to revisit it rather than start after it.
-        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-a')
+        // variant-b still has no downloads to repair from, so it's tracked as
+        // a retry rather than silently dropped, even though the cursor moves
+        // past it.
+        const [cursor, ...retryIds] = readFileSync(cursorFile, 'utf-8').split(
+          '\n'
+        )
+        expect(cursor).toBe('variant-b')
+        expect(retryIds).toEqual(['variant-b'])
       } finally {
         rmSync(cursorFile, { force: true })
       }
     })
 
-    it('leaves the cursor where it was when the first variant of a page fails', async () => {
+    it('records every failed variant of a page as a retry id', async () => {
       const cursorFile = join(
         tmpdir(),
         `mux-download-backfill-cursor-first-failure-${Date.now()}.txt`
@@ -657,7 +668,41 @@ describe('processDownloads', () => {
 
         await runProcessDownloads()
 
-        expect(readFileSync(cursorFile, 'utf-8')).toBe('')
+        const [cursor, ...retryIds] = readFileSync(cursorFile, 'utf-8').split(
+          '\n'
+        )
+        expect(cursor).toBe('variant-b')
+        expect(new Set(retryIds)).toEqual(new Set(['variant-a', 'variant-b']))
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
+
+    it('retries a previously failed variant on the next invocation and clears it once it succeeds', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-retry-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+      writeFileSync(cursorFile, 'variant-b\nvariant-b')
+
+      try {
+        ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+          variant('variant-b')
+        ])
+        mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+        await runProcessDownloads()
+
+        expect(prismaMock.videoVariant.findMany).toHaveBeenCalledWith({
+          where: { id: { in: ['variant-b'] } },
+          include: { muxVideo: true }
+        })
+        expect(mockedGetVideo).toHaveBeenCalledWith('asset-variant-b', false)
+        // variant-b succeeded this time, so it's no longer tracked as a retry.
+        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-b')
       } finally {
         rmSync(cursorFile, { force: true })
       }
