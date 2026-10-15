@@ -81,7 +81,10 @@ export function InspectorSettings({
   onDefaultLanguageChanged
 }: InspectorSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selection } = useCampaignEditor()
+  const {
+    selection,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const { setListed } = useCampaignRegionCommand()
   const { block, region } = selection
 
@@ -157,7 +160,15 @@ export function InspectorSettings({
               {region.listed ? t('Unlist') : t('List on switcher')}
             </Button>
           </Stack>
-          <RegionSettings key={region.id} region={region} />
+          <RegionSettings
+            key={region.id}
+            region={region}
+            translationLanguageId={
+              previewLanguageId === campaign.defaultLanguageId
+                ? undefined
+                : previewLanguageId
+            }
+          />
         </Stack>
       ) : (
         <></>

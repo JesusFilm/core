@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignJourneyBlockCreate
@@ -13,6 +13,26 @@ export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate_journeyIm
   __typename: "CampaignJourneyImage";
   src: string;
   alt: string | null;
+}
+
+export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate {
@@ -56,6 +76,8 @@ export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate {
    * The linked journey. Null only if the row predates the link; never exposes the journey itself.
    */
   journeyId: string | null;
+  titleTranslations: CampaignJourneyBlockCreate_campaignJourneyBlockCreate_titleTranslations[];
+  descriptionTranslations: CampaignJourneyBlockCreate_campaignJourneyBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignJourneyBlockCreate {

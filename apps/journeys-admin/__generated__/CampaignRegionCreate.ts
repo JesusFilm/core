@@ -3,11 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { JourneyStatus } from "./globalTypes";
+import { CampaignTextSource, JourneyStatus } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRegionCreate
 // ====================================================
+
+export interface CampaignRegionCreate_campaignRegionCreate_nameTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignRegionCreate_campaignRegionCreate_languages_language_name {
   __typename: "LanguageName";
@@ -118,6 +128,7 @@ export interface CampaignRegionCreate_campaignRegionCreate {
    * Required, at most 60 characters.
    */
   name: string;
+  nameTranslations: CampaignRegionCreate_campaignRegionCreate_nameTranslations[];
   /**
    * Unique within the campaign. Changing it breaks links already shared to the region page.
    */

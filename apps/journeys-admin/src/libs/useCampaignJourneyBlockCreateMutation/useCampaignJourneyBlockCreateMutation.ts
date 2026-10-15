@@ -8,9 +8,11 @@ import {
   CampaignJourneyBlockCreateVariables
 } from '../../../__generated__/CampaignJourneyBlockCreate'
 import { campaignBlockCreateUpdate } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export const CAMPAIGN_JOURNEY_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignJourneyBlockCreate(
     $id: ID
     $parentBlockId: ID!
@@ -23,9 +25,7 @@ export const CAMPAIGN_JOURNEY_BLOCK_CREATE = gql`
       url: $url
     ) {
       ...CampaignPublicBlockFields
-      ... on CampaignJourneyBlock {
-        journeyId
-      }
+      ...CampaignBlockTranslationFields
     }
   }
 `

@@ -30,6 +30,12 @@ import { CAMPAIGN_TEXT_FIELDS } from '../../libs/useCampaignBlockTextMutation'
 
 export const CURRENT_USER_ID = 'userId'
 
+/** The translatable fields of the blocks that have no inline text on the canvas. */
+const MEDIA_TRANSLATED_FIELDS: Record<string, readonly string[]> = {
+  CampaignImageBlock: ['alt'],
+  CampaignVideoBlock: ['title', 'description']
+}
+
 /** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field. */
 export function withEmptyTranslations(block: {
   __typename: string
@@ -39,7 +45,7 @@ export function withEmptyTranslations(block: {
       ? CAMPAIGN_TEXT_FIELDS[
           block.__typename as keyof typeof CAMPAIGN_TEXT_FIELDS
         ]
-      : []
+      : (MEDIA_TRANSLATED_FIELDS[block.__typename] ?? [])
   const translations = Object.fromEntries(
     fields.map((field) => [`${field}Translations`, []])
   )
@@ -225,6 +231,7 @@ export const eurRegion: CampaignRegion = {
   id: 'eurRegionId',
   campaignId: CAMPAIGN_ID,
   name: 'Europe',
+  nameTranslations: [],
   slug: 'eur',
   order: 0,
   listed: true,
@@ -252,6 +259,7 @@ export const afrRegion: CampaignRegion = {
   id: 'afrRegionId',
   campaignId: CAMPAIGN_ID,
   name: 'Africa',
+  nameTranslations: [],
   slug: 'afr',
   order: 1,
   listed: false,
@@ -314,29 +322,31 @@ export const campaignWithColumns: Campaign = {
   ...campaign,
   blocks: [
     ...campaign.blocks,
-    section('CampaignColumnsBlock', {
-      id: 'columnsId',
-      pageId: LANDING_PAGE_ID,
-      parentOrder: 5,
-      ratio: CampaignColumnsRatio.equal
-    }),
-    columnSlot({
-      id: 'slotLeftId',
-      parentBlockId: 'columnsId',
-      parentOrder: 0
-    }),
-    columnSlot({
-      id: 'slotRightId',
-      parentBlockId: 'columnsId',
-      parentOrder: 1
-    }),
-    section('CampaignRichTextBlock', {
-      id: 'slotRichTextId',
-      pageId: LANDING_PAGE_ID,
-      parentBlockId: 'slotLeftId',
-      parentOrder: 0,
-      title: 'Our story',
-      richTextContent: 'First.\n\nSecond.'
-    })
+    ...[
+      section('CampaignColumnsBlock', {
+        id: 'columnsId',
+        pageId: LANDING_PAGE_ID,
+        parentOrder: 5,
+        ratio: CampaignColumnsRatio.equal
+      }),
+      columnSlot({
+        id: 'slotLeftId',
+        parentBlockId: 'columnsId',
+        parentOrder: 0
+      }),
+      columnSlot({
+        id: 'slotRightId',
+        parentBlockId: 'columnsId',
+        parentOrder: 1
+      }),
+      section('CampaignRichTextBlock', {
+        id: 'slotRichTextId',
+        pageId: LANDING_PAGE_ID,
+        parentBlockId: 'slotLeftId',
+        parentOrder: 0,
+        title: 'Our story',
+        richTextContent: 'First.\n\nSecond.'
+      })
+    ].map(withEmptyTranslations)
   ]
 }

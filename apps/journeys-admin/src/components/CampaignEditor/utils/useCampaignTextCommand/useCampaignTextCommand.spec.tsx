@@ -3,6 +3,12 @@ import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
 
+import {
+  LANDING_PAGE_ID,
+  featuredMediaSectionBlock,
+  journeyCard
+} from '@core/journeys/ui/Campaign/testData'
+
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { DebounceLink } from '../../../../libs/apolloClient/DebounceLink'
 import {
@@ -10,7 +16,9 @@ import {
   CAMPAIGN_REGION_HEADER_BLOCK_UPDATE_TEXT,
   CampaignTextBlock,
   CampaignTextField,
-  isCampaignTextBlock
+  blockTranslations,
+  isCampaignTextBlock,
+  translationValue
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
@@ -20,13 +28,19 @@ import {
   CampaignEditorState,
   useCampaignEditor
 } from '../../CampaignEditorProvider'
-import { campaign, campaignStrings } from '../../data'
+import {
+  campaign,
+  campaignStrings,
+  campaignWithColumns,
+  withEmptyTranslations
+} from '../../data'
 import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
   campaignCache,
-  getCampaignMock
+  getCampaignMock,
+  getCampaignMockFor
 } from '../../testing'
 
 import {
@@ -551,4 +565,146 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
     expect(input).toHaveValue('Copier le lien')
   })
+})
+
+/** The translation the campaign read holds for a field, as the canvas reads it back. */
+function StoredTranslation({
+  blockId,
+  field
+}: {
+  blockId: string
+  field: CampaignTextField
+}): ReactElement | null {
+  const { campaign: current } = useCampaignEditor()
+  const block = current.blocks.find((candidate) => candidate.id === blockId)
+  if (block == null || !isCampaignTextBlock(block)) return null
+  return (
+    <span data-testid="StoredTranslation">
+      {translationValue(blockTranslations(block, field), '496')}
+    </span>
+  )
+}
+
+describe('useCampaignTextCommand translation round-trip of every translatable block field', () => {
+  const featuredMedia = withEmptyTranslations(featuredMediaSectionBlock)
+  const journeyCardBlock = withEmptyTranslations(
+    journeyCard({
+      id: 'journeyCardId',
+      parentBlockId: 'heroId',
+      pageId: LANDING_PAGE_ID
+    })
+  )
+  const translatableCampaign = {
+    ...campaignWithColumns,
+    blocks: [...campaignWithColumns.blocks, featuredMedia, journeyCardBlock]
+  }
+
+  const cases: Array<{
+    blockId: string
+    typename: string
+    field: CampaignTextField
+    apiField: string
+  }> = [
+    {
+      blockId: 'slotRichTextId',
+      typename: 'CampaignRichTextBlock',
+      field: 'title',
+      apiField: 'title'
+    },
+    {
+      blockId: 'slotRichTextId',
+      typename: 'CampaignRichTextBlock',
+      field: 'richTextContent',
+      apiField: 'content'
+    },
+    ...(['eyebrow', 'title', 'lede', 'bullets'] as const).map((field) => ({
+      blockId: 'featuredMediaId',
+      typename: 'CampaignFeaturedMediaBlock',
+      field,
+      apiField: field
+    })),
+    ...(['title', 'description'] as const).map((field) => ({
+      blockId: 'journeyCardId',
+      typename: 'CampaignJourneyBlock',
+      field,
+      apiField: field
+    }))
+  ]
+
+  it.each(cases)(
+    'translates $typename $field through campaignTranslationSet and shows it back',
+    async ({ blockId, typename, field, apiField }) => {
+      const translation = {
+        request: {
+          query: CAMPAIGN_TRANSLATION_SET,
+          variables: {
+            input: {
+              target: { blockId },
+              field: apiField,
+              languageId: '496',
+              value: 'Noël'
+            }
+          }
+        },
+        result: vi.fn(() => ({
+          data: {
+            campaignTranslationSet: [
+              {
+                __typename: 'TranslatedValue',
+                languageId: '496',
+                value: 'Noël',
+                source: 'human'
+              }
+            ]
+          }
+        }))
+      }
+      const cache = campaignCache()
+      const link = ApolloLink.from([
+        new DebounceLink(500),
+        new MockLink([
+          getCampaignMockFor(translatableCampaign),
+          translation
+        ] as never)
+      ])
+      render(
+        <QueriedEditor
+          link={link}
+          cache={cache}
+          initialState={{ previewLanguageId: '496' }}
+        >
+          <Field blockId={blockId} field={field} />
+          <StoredTranslation blockId={blockId} field={field} />
+        </QueriedEditor>
+      )
+      const input = await screen.findByRole('textbox', { name: field })
+      expect(input).toHaveValue('')
+
+      fireEvent.focus(input)
+      fireEvent.change(input, { target: { value: 'Noël' } })
+      await waitFor(() => expect(translation.result).toHaveBeenCalled())
+
+      const stored = cache.readFragment<{
+        translations: Array<{ languageId: string; value: string }>
+      }>({
+        id: `${typename}:${blockId}`,
+        fragment: gql`
+          fragment Stored${typename}${apiField}Translations on ${typename} {
+            translations: ${apiField}Translations {
+              languageId
+              value
+            }
+          }
+        `
+      })
+      expect(stored?.translations).toEqual([
+        { __typename: 'TranslatedValue', languageId: '496', value: 'Noël' }
+      ])
+      await waitFor(() =>
+        expect(screen.getByTestId('StoredTranslation')).toHaveTextContent(
+          'Noël'
+        )
+      )
+    }
+  )
 })
