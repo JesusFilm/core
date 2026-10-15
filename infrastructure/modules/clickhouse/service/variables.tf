@@ -8,6 +8,17 @@ variable "env" {
   }
 }
 
+variable "name" {
+  description = "Service name prefix; the environment is appended. Renaming is an in-place update in ClickHouse Cloud."
+  type        = string
+  default     = "jfp-clickhouse"
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]*[a-z0-9]$", var.name))
+    error_message = "name must be lowercase letters, digits and hyphens, starting with a letter."
+  }
+}
+
 variable "region" {
   description = "ClickHouse Cloud region on AWS. Cannot be changed once the service exists."
   type        = string
@@ -15,7 +26,7 @@ variable "region" {
 }
 
 variable "replica_memory_gb" {
-  description = "Memory of the single replica in GiB. The Basic tier allows 8 or 12."
+  description = "Memory of the single replica in GiB, shared by every tenant's queries and inserts. The Basic tier allows 8 or 12."
   type        = number
   default     = 8
 

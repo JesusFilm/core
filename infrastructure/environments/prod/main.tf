@@ -169,18 +169,26 @@ module "redis" {
   vpc_id            = module.prod.vpc.id
 }
 
-# Short-link scan events (ClickHouse Cloud, always on; stage idles).
-module "short_links_clickhouse" {
+# The shared ClickHouse Cloud service: short-link scan events (`redirects`)
+# and Plausible's event store (`plausible_events_db`). Always on; stage idles.
+module "clickhouse" {
   source        = "../../modules/clickhouse/service"
   env           = "prod"
   idle_scaling  = false
   doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
 }
 
+# Renamed from the short-links-only days; the service itself is renamed in
+# place (jfp-short-links-prod -> jfp-clickhouse-prod), not replaced.
+moved {
+  from = module.short_links_clickhouse
+  to   = module.clickhouse
+}
+
 # Plausible Analytics on ECS (arm64 Fargate). Serves analytics.jesusfilm.org
 # (a Cloudflare CNAME to the public ALB, by hand) and plausible.central.jesusfilm.org
 # (the module's own record, for smoke tests). Its events are in
-# short_links_clickhouse above, reached by the CLICKHOUSE_DATABASE_URL of the
+# module.clickhouse above, reached by the CLICKHOUSE_DATABASE_URL of the
 # prd_ecs Doppler branch config; that config's token must be in SSM before the
 # first apply (modules/plausible/README.md, "Prerequisites").
 module "plausible" {
