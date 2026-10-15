@@ -21,7 +21,7 @@ Plausible runs on EKS via a wrapper Helm chart and Argo CD, with its own ingress
 
 ## Assumptions
 
-*Authored without synchronous confirmation; review before implementation.*
+_Authored without synchronous confirmation; review before implementation._
 
 - **The ClickHouse migration lands first, per environment.** An ECS task cannot reach the in-cluster ClickHouse Service, so Plausible on ECS requires `CLICKHOUSE_DATABASE_URL` to already point at ClickHouse Cloud. The module work here can merge any time; the cutover units are gated on plan `001`'s U5 for the same environment.
 - **Hostnames do not change.** `analytics.jesusfilm.org` (prod) and `analytics.stage.central.jesusfilm.org` (stage) keep serving Plausible; `BASE_URL` and `api-journeys`' `PLAUSIBLE_URL` are untouched.
@@ -119,7 +119,7 @@ Plausible runs on EKS via a wrapper Helm chart and Argo CD, with its own ingress
 
 ## High-Level Technical Design
 
-> *Directional guidance for review, not implementation specification.*
+> _Directional guidance for review, not implementation specification._
 
 ```mermaid
 flowchart LR
@@ -149,15 +149,18 @@ flowchart LR
 **Dependencies:** None
 
 **Files:**
+
 - Modify: `infrastructure/modules/aws/ecs-task/variables.tf`, `infrastructure/modules/aws/ecs-task/main.tf`
 
 **Approach:**
+
 - `image` (string, null → current ECR `:latest` expression), `command` (list(string), null → omitted from the container definition via `merge`), `cpu_architecture` (`X86_64` | `ARM64`, dynamic `runtime_platform` only for ARM64), `deployment_minimum_healthy_percent` / `deployment_maximum_percent` (number, null → provider default).
 - Validation blocks on `cpu_architecture` and the percentages.
 
 **Patterns to follow:** existing `optional()` usage in `service_config`; `include_aws_env_vars` conditional concat.
 
 **Test scenarios:**
+
 - Happy path: Atlantis plan for the PR shows **no changes** for any existing Service's task definition or service (R5).
 - Edge case: `tofu validate` with `command = null` renders a container definition without a `command` key (not `"command": null`).
 - Error path: `cpu_architecture = "arm64"` (lowercase) is rejected by validation.
@@ -175,9 +178,11 @@ flowchart LR
 **Dependencies:** U1
 
 **Files:**
+
 - Create: `infrastructure/modules/plausible/main.tf`, `locals.tf`, `variables.tf`, `README.md` (the runbook: prerequisites, cutover per environment, rollback, what to watch; the ClickHouse runbook stays in `infrastructure/kube/plausible-analytics/README.md` until U7 moves it here)
 
 **Approach:**
+
 - `service_config`: name `plausible`, `doppler_project_name = "plausible"`, port 8000, cpu 1024, memory 2048, `desired_count = 1`, autoscaling min/max 1, `health_check_grace_period_seconds = 120`, `is_public = true`.
 - `environment_variables = [BASE_URL, CLICKHOUSE_DATABASE_URL, DATABASE_URL, DISABLE_REGISTRATION, SECRET_KEY_BASE, TOTP_VAULT_KEY]`.
 - `ecs-task` call: `image = "ghcr.io/plausible/community-edition:${var.plausible_version}"`, `command = ["sh", "-c", "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"]`, `cpu_architecture = "ARM64"`, deploy 0/100, `dd_source = "plausible"`, `host_names = var.host_names`.
@@ -186,6 +191,7 @@ flowchart LR
 **Patterns to follow:** `apps/arclight/infrastructure/*`, the removed `apps/cms/infrastructure/*`.
 
 **Test scenarios:**
+
 - Test expectation: none beyond `tofu fmt`/`validate` -- pure Terraform composition; behaviour is proven in U4.
 
 **Verification:** module validates; README has the prerequisite and cutover sections filled in.
@@ -201,11 +207,13 @@ flowchart LR
 **Dependencies:** None (but must exist before U4 applies)
 
 **Files:**
+
 - Modify: `infrastructure/modules/plausible/README.md` (the commands)
 
 **Approach:** Create a Doppler service token (read) for `plausible/stg` and `plausible/prd`; `aws ssm put-parameter --type SecureString` at `/terraform/prd/DOPPLER_PLAUSIBLE_STAGE_TOKEN` and `/terraform/prd/DOPPLER_PLAUSIBLE_PROD_TOKEN`. Same shape as every other `DOPPLER_*_TOKEN` parameter.
 
 **Test scenarios:**
+
 - Test expectation: none -- operational. Verified by the U4 Atlantis plan reading the data sources without error.
 
 ---
@@ -216,17 +224,20 @@ flowchart LR
 
 **Requirements:** R1, R2, R3 (prod cert requested)
 
-**Dependencies:** U1, U2, U3; plan `001` U5 on the same environment before this is *used*, not before it is applied (the task will crash-loop on ClickHouse until then, which is harmless but noisy; sequence the apply after the ClickHouse cutover to avoid it)
+**Dependencies:** U1, U2, U3; plan `001` U5 on the same environment before this is _used_, not before it is applied (the task will crash-loop on ClickHouse until then, which is harmless but noisy; sequence the apply after the ClickHouse cutover to avoid it)
 
 **Files:**
+
 - Modify: `infrastructure/environments/stage/main.tf`, `infrastructure/environments/stage/data.tf`, `infrastructure/environments/prod/main.tf`, `infrastructure/environments/prod/data.tf`
 - Modify: `infrastructure/GLOSSARY.md` (Services list gains Plausible; Platform Cluster entry notes it is leaving)
 
 **Approach:**
+
 - Per environment: `data.aws_ssm_parameter.doppler_plausible_<env>_token`; `module "plausible"` with `ecs_config = merge(local.public_ecs_config, { alb_target_group = merge(local.alb_target_group, { health_check_path = "/api/health", health_check_port = "8000" }) })`, `host_names = ["analytics.<real host>", "plausible.<zone>"]`.
 - Prod only: `aws_acm_certificate "analytics_jesusfilm_org"` (DNS validation, `create_before_destroy`). No validation resource; the runbook shows how to read the CNAME (`aws acm describe-certificate`) and add it in Cloudflare.
 
 **Test scenarios:**
+
 - Happy path: on stage, `https://plausible.stage.central.jesusfilm.org/api/health` returns 200 from the ECS task; the task log shows `createdb`/`migrate` no-ops and the app booting; ECS shows one task on `ARM64`.
 - Happy path: a test pageview POSTed to `https://plausible.stage.central.jesusfilm.org/api/event` for a stage site appears in ClickHouse Cloud `events_v2`.
 - Error path: with the Doppler token parameter missing, the Atlantis plan fails on the data source and nothing is created (proves U3 is a real prerequisite).
@@ -246,6 +257,7 @@ flowchart LR
 **Dependencies:** U4 (stage), plan `001` U5 on stage
 
 **Files:**
+
 - Modify: `infrastructure/kube/plausible-analytics/values-stage.yaml` (`ingress.enabled: false`)
 - Modify: `infrastructure/environments/stage/main.tf` (`aws_route53_record "plausible_analytics"`: `analytics` CNAME → `module.stage.public_alb.dns_name`, TTL 300, `allow_overwrite = true`)
 - Modify: `infrastructure/modules/plausible/README.md`
@@ -253,6 +265,7 @@ flowchart LR
 **Approach:** Merge the chart change first and confirm Argo synced it (ingress gone; external-dns logs show it no longer desires the record). Then apply the Terraform record. Delete the `external-dns-analytics.stage.central.jesusfilm.org` TXT records by hand. Scale the EKS Deployment to 0 only after the soak; until then it idles with no traffic.
 
 **Test scenarios:**
+
 - Happy path: after apply, the record resolves to the stage ALB; dashboard login, a stats query from the stage gateway, and realtime ingest all work.
 - Error path: rollback rehearsal: set the record back to the ingress NLB name (Terraform `records` change or console), scale the EKS Deployment to 1 if it was scaled down; service returns within TTL.
 - Integration: external-dns does not re-point the record after the ingress is removed (watch for one reconcile interval before applying Terraform).
@@ -270,6 +283,7 @@ flowchart LR
 **Dependencies:** U5 soak passed, U4 prod cert ISSUED, plan `001` U5 on prod
 
 **Files:**
+
 - Modify: `infrastructure/environments/prod/main.tf` (`aws_lb_listener_certificate` attaching the ACM cert to `module.prod.public_alb.alb_listener.arn`)
 - Modify: `infrastructure/kube/plausible-analytics/values.yaml` (`ingress.enabled: false`)
 - Modify: `infrastructure/modules/plausible/README.md` (the Cloudflare steps)
@@ -277,6 +291,7 @@ flowchart LR
 **Approach:** Attach the certificate (Terraform). Verify `curl --resolve analytics.jesusfilm.org:443:<alb ip>` serves the right certificate and `/api/health`. In Cloudflare, change the `analytics` CNAME target to the prod ALB DNS name (DNS-only, TTL 300). Then disable the chart ingress (prod Argo is manual: `argocd app sync`). Rollback is the CNAME back to the NLB name; the EKS Deployment stays until U7.
 
 **Test scenarios:**
+
 - Happy path: `curl --resolve` pre-check passes before DNS changes; after the change, dashboards, `api-journeys` stats and ingest work from the public hostname.
 - Error path: a certificate mismatch at pre-check stops the cutover before DNS moves.
 - Integration: Plausible's weekly/monthly email jobs and the Stats API keys keep working (Postgres unchanged).
@@ -294,12 +309,14 @@ flowchart LR
 **Dependencies:** U6 plus the rollback window; plan `001` U7 (the ClickHouse subchart removal) either merged first or folded in
 
 **Files:**
+
 - Delete: `infrastructure/kube/argocd/applications/{stage,prod}/plausible-analytics.yaml`, `infrastructure/kube/plausible-analytics/` (after moving the ClickHouse runbook content into `infrastructure/modules/plausible/README.md` or a `docs/` location), `apis/api-analytics/infrastructure/{deploy.sh,deploy-stage.sh,values-prod.yaml,values-stage.yaml,storage-class.yaml,snapshot-class.yaml,volume-snapshot.yaml}`
 - Modify: `infrastructure/kube/doppler/values.yaml`, `values-stage.yaml`, `templates/doppler-secrets.yaml` (drop the `plausible` DopplerSecret), `infrastructure/GLOSSARY.md`, `docker-compose.services.yml` comment if it references the chart
 
 **Approach:** Delete the Argo Application (prune removes the Deployment, Service, Ingress, certificate); then the chart directory; then the DopplerSecret. Leave the cluster's support tooling for the EKS teardown plan.
 
 **Test scenarios:**
+
 - Happy path: after the Argo app is deleted, `kubectl get all,ingress,secret -l app.kubernetes.io/instance=plausible-analytics` is empty on both clusters and prod/stage hostnames still serve from ECS.
 - Edge case: the Let's Encrypt certificate secrets (`analytics-jesusfilm-tls`) are deleted with the app; nothing else references them.
 
@@ -320,15 +337,15 @@ flowchart LR
 
 ## Risk Analysis & Mitigation
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| `ecs-task` change produces a diff for existing Services | Low | Med | Dynamic `runtime_platform`, null defaults; the PR's Atlantis plan must be empty before merge |
-| external-dns rewrites the stage record after Terraform takes it | Med | Low | Remove the ingress first, watch one reconcile, then apply; delete the TXT registry records |
-| Prod certificate validation stalls (CNAME typo in Cloudflare) | Low | Low | No `aws_acm_certificate_validation` resource, so nothing blocks; verify ISSUED before the attach PR |
-| ARM64-specific crash in the Erlang release | Low | Med | Stage soak; fallback is `cpu_architecture = "X86_64"` on the same module |
-| Task crash-loops on ClickHouse before plan `001` cutover | High if misordered | Low | Apply U4 after the ClickHouse cutover for that environment |
-| Phoenix origin checks reject the smoke-test hostname | Med | Low | Smoke tests use health + ingest; dashboard verified after DNS |
-| Doppler token parameter missing at apply | Med | Low | U3 is a named prerequisite; plan fails loudly on the data source |
+| Risk                                                            | Likelihood         | Impact | Mitigation                                                                                          |
+| --------------------------------------------------------------- | ------------------ | ------ | --------------------------------------------------------------------------------------------------- |
+| `ecs-task` change produces a diff for existing Services         | Low                | Med    | Dynamic `runtime_platform`, null defaults; the PR's Atlantis plan must be empty before merge        |
+| external-dns rewrites the stage record after Terraform takes it | Med                | Low    | Remove the ingress first, watch one reconcile, then apply; delete the TXT registry records          |
+| Prod certificate validation stalls (CNAME typo in Cloudflare)   | Low                | Low    | No `aws_acm_certificate_validation` resource, so nothing blocks; verify ISSUED before the attach PR |
+| ARM64-specific crash in the Erlang release                      | Low                | Med    | Stage soak; fallback is `cpu_architecture = "X86_64"` on the same module                            |
+| Task crash-loops on ClickHouse before plan `001` cutover        | High if misordered | Low    | Apply U4 after the ClickHouse cutover for that environment                                          |
+| Phoenix origin checks reject the smoke-test hostname            | Med                | Low    | Smoke tests use health + ingest; dashboard verified after DNS                                       |
+| Doppler token parameter missing at apply                        | Med                | Low    | U3 is a named prerequisite; plan fails loudly on the data source                                    |
 
 ---
 
