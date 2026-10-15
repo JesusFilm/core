@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockRestore
@@ -901,6 +901,10 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
    */
   mediaSide: CampaignMediaSide;
   /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
@@ -997,6 +1001,18 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_me
   language: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -1026,6 +1042,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_me
    */
   childrenCount: number;
   title: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description[];
   images: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }

@@ -14,6 +14,7 @@ import {
   campaignPublic,
   chromeBlocks,
   eurRegion,
+  footerBlock,
   headerBlock
 } from '../testData'
 import type { CampaignBlock, CampaignPublic, CampaignRegion } from '../types'
@@ -360,7 +361,7 @@ describe('CampaignHeader', () => {
     })
 
     it('renders no nav and no menu icon when the header has no button children', () => {
-      renderHeader(withHeader({}, [headerBlock]))
+      renderHeader(withHeader({}, [headerBlock, footerBlock]))
       expect(screen.queryByTestId('CampaignHeaderNav')).not.toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Open menu' })

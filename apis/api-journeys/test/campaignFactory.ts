@@ -107,6 +107,7 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   descriptionTranslations: null,
   align: null,
   mediaSide: null,
+  layout: null,
   mediaBlockId: null,
   logoBlockId: null,
   switcherVariant: null,

@@ -2,6 +2,7 @@ import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
@@ -14,6 +15,7 @@ import {
   campaignVideoDetails,
   campaignVideoPlayerBlock
 } from './campaignVideoDetails'
+import { videoCountLabel } from './videoCountLabel'
 
 interface CampaignVideoProps {
   block: CampaignTreeOf<'CampaignVideoBlock'>
@@ -63,7 +65,8 @@ function CampaignVideoCaption({
  * at 16:9 and captioned with its title and description.
  */
 export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
-  const { campaign } = useCampaign()
+  const { t } = useTranslation('libs-journeys-ui')
+  const { campaign, string } = useCampaign()
   const details = useMemo(
     () => campaignVideoDetails(block, campaign.languageId),
     [block, campaign.languageId]
@@ -74,9 +77,6 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
   )
 
   if (details.childrenCount > 0) {
-    const videos =
-      campaign.strings.find((string) => string.key === CampaignStringKey.videos)
-        ?.value ?? ''
     return (
       <ButtonBase
         component="a"
@@ -132,7 +132,11 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
             component="span"
             sx={{ color: 'var(--campaign-band-muted)' }}
           >
-            {`${details.childrenCount} ${videos}`.trim()}
+            {videoCountLabel(
+              details.childrenCount,
+              string(CampaignStringKey.videos),
+              t
+            )}
           </Typography>
         </Stack>
       </ButtonBase>

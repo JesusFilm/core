@@ -17,6 +17,8 @@ import {
 } from 'react'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
+import { campaignString } from '../CampaignProvider/campaignString'
+import { hasText } from '../types'
 import type { CampaignRegion } from '../types'
 
 import type {
@@ -77,8 +79,8 @@ function stringValue(
   key: CampaignStringKey,
   fallback: string
 ): string {
-  const value = strings.find((string) => string.key === key)?.value
-  return value == null || value.trim() === '' ? fallback : value
+  const value = campaignString(strings, key)
+  return hasText(value) ? value : fallback
 }
 
 interface TileProps {

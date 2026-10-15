@@ -3,7 +3,6 @@ import type { ApolloClient } from '@apollo/client'
 import { campaignPublic } from '@core/journeys/ui/Campaign/testData'
 
 import {
-  campaignPageCacheControl,
   fetchCampaignPublicInPageLanguage,
   fetchCampaignPublicInPageLanguageByHostname
 } from './getCampaignPublic'
@@ -29,15 +28,12 @@ function client(): { query: ReturnType<typeof vi.fn> } & ApolloClient {
 }
 
 describe('fetchCampaignPublicInPageLanguage', () => {
-  it('reads once when the request resolves to the campaign default', async () => {
+  it('reads once when the tag names the campaign default', async () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
       'christmas-2026',
-      {
-        param: 'en',
-        cookie: 'fr'
-      }
+      'en'
     )
     expect(result?.campaign).toBe(campaignPublic)
     expect(result?.language).toEqual({
@@ -48,20 +44,32 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     expect(apollo.query).toHaveBeenCalledTimes(1)
   })
 
-  it('reads again in the resolved language when it is not the default', async () => {
+  it('reads once with no tag at all, the campaign default', async () => {
+    const apollo = client()
+    const result = await fetchCampaignPublicInPageLanguage(
+      apollo,
+      'christmas-2026'
+    )
+    expect(result?.language).toEqual({
+      languageId: '529',
+      bcp47: 'en',
+      source: 'default'
+    })
+    expect(apollo.query).toHaveBeenCalledTimes(1)
+  })
+
+  it('reads again in the named language when it is not the default', async () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
       'christmas-2026',
-      {
-        cookie: 'fr'
-      }
+      'fr'
     )
     expect(result?.campaign.title).toBe('Noël 2026')
     expect(result?.language).toEqual({
       languageId: '496',
       bcp47: 'fr',
-      source: 'cookie'
+      source: 'param'
     })
     expect(apollo.query).toHaveBeenCalledTimes(2)
     expect(apollo.query.mock.calls[1][0].variables).toEqual({
@@ -79,8 +87,7 @@ describe('fetchCampaignPublicInPageLanguage', () => {
 
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
-      'christmas-2026',
-      {}
+      'christmas-2026'
     )
 
     expect(result?.language.languageId).toBe('496')
@@ -92,28 +99,14 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     ])
   })
 
-  it('follows the ?lang → cookie → Accept-Language → default order against the campaign languages', async () => {
+  it('reads the default for a tag that is not a campaign language', async () => {
     const apollo = client()
-    const header = await fetchCampaignPublicInPageLanguage(
+    const result = await fetchCampaignPublicInPageLanguage(
       apollo,
       'christmas-2026',
-      {
-        param: 'de',
-        cookie: 'es',
-        acceptLanguage: 'fr-CA,en;q=0.5'
-      }
+      'de'
     )
-    expect(header?.language.source).toBe('acceptLanguage')
-    expect(header?.campaign.languageId).toBe('496')
-
-    const fallback = await fetchCampaignPublicInPageLanguage(
-      apollo,
-      'christmas-2026',
-      {
-        acceptLanguage: 'de'
-      }
-    )
-    expect(fallback?.language).toEqual({
+    expect(result?.language).toEqual({
       languageId: '529',
       bcp47: 'en',
       source: 'default'
@@ -123,11 +116,9 @@ describe('fetchCampaignPublicInPageLanguage', () => {
   it('is null for an unpublished or malformed slug', async () => {
     const apollo = client()
     apollo.query.mockResolvedValueOnce({ data: { campaignPublic: null } })
+    expect(await fetchCampaignPublicInPageLanguage(apollo, 'draft')).toBeNull()
     expect(
-      await fetchCampaignPublicInPageLanguage(apollo, 'draft', {})
-    ).toBeNull()
-    expect(
-      await fetchCampaignPublicInPageLanguage(apollo, 'Not A Slug', {})
+      await fetchCampaignPublicInPageLanguage(apollo, 'Not A Slug')
     ).toBeNull()
   })
 })
@@ -138,7 +129,7 @@ describe('fetchCampaignPublicInPageLanguageByHostname', () => {
     const result = await fetchCampaignPublicInPageLanguageByHostname(
       apollo,
       'christmas.example.org',
-      { param: 'fr' }
+      'fr'
     )
     expect(result?.campaign.title).toBe('Noël 2026')
     expect(result?.language).toEqual({
@@ -156,76 +147,32 @@ describe('fetchCampaignPublicInPageLanguageByHostname', () => {
     })
   })
 
+  it('stops after the one default read when wanted rejects the root campaign', async () => {
+    const apollo = client()
+    const wanted = vi.fn().mockReturnValue(false)
+    expect(
+      await fetchCampaignPublicInPageLanguageByHostname(
+        apollo,
+        'christmas.example.org',
+        'fr',
+        wanted
+      )
+    ).toBeNull()
+    expect(wanted).toHaveBeenCalledWith(campaignPublic)
+    expect(apollo.query).toHaveBeenCalledTimes(1)
+  })
+
   it('is null when the domain has no published root campaign', async () => {
     const apollo = client()
     apollo.query.mockResolvedValueOnce({ data: { campaignPublic: null } })
     expect(
       await fetchCampaignPublicInPageLanguageByHostname(
         apollo,
-        'christmas.example.org',
-        {}
+        'christmas.example.org'
       )
     ).toBeNull()
     expect(
-      await fetchCampaignPublicInPageLanguageByHostname(apollo, '', {})
+      await fetchCampaignPublicInPageLanguageByHostname(apollo, '')
     ).toBeNull()
-  })
-})
-
-describe('campaignPageCacheControl', () => {
-  it('shares the cache only when the URL alone decided the language', () => {
-    expect(
-      campaignPageCacheControl(
-        {
-          languageId: '529',
-          bcp47: 'en',
-          source: 'param'
-        },
-        2
-      )
-    ).toBe('public, s-maxage=60, stale-while-revalidate=300')
-    expect(
-      campaignPageCacheControl(
-        {
-          languageId: '529',
-          bcp47: 'en',
-          source: 'default'
-        },
-        2
-      )
-    ).toBe('private, no-cache')
-    expect(
-      campaignPageCacheControl(
-        {
-          languageId: '496',
-          bcp47: 'fr',
-          source: 'cookie'
-        },
-        2
-      )
-    ).toBe('private, no-cache')
-    expect(
-      campaignPageCacheControl(
-        {
-          languageId: '496',
-          bcp47: 'fr',
-          source: 'acceptLanguage'
-        },
-        2
-      )
-    ).toBe('private, no-cache')
-  })
-
-  it('shares the cache on a single-language campaign whatever decided the language', () => {
-    expect(
-      campaignPageCacheControl(
-        {
-          languageId: '529',
-          bcp47: 'en',
-          source: 'default'
-        },
-        1
-      )
-    ).toBe('public, s-maxage=60, stale-while-revalidate=300')
   })
 })
