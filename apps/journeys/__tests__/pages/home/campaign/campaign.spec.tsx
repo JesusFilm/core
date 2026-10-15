@@ -164,7 +164,7 @@ describe('/campaign/<slug>/_lang/<tag>', () => {
     const result = await getLangLandingStaticProps(context({ lang: 'de' }))
 
     expect(result).toEqual({
-      redirect: { destination: '/campaign/christmas-2026', permanent: false },
+      props: { languageFallback: '/campaign/christmas-2026' },
       revalidate: 60
     })
   })
@@ -177,10 +177,7 @@ describe('/campaign/<slug>/_lang/<tag>', () => {
     )
 
     expect(result).toEqual({
-      redirect: {
-        destination: `/campaign/christmas-2026/${region.slug}`,
-        permanent: false
-      },
+      props: { languageFallback: `/campaign/christmas-2026/${region.slug}` },
       revalidate: 60
     })
   })

@@ -122,7 +122,7 @@ describe('Campaign Root on a custom domain', () => {
       const result = await getLangHostnameStaticProps(context({ lang: 'de' }))
 
       expect(result).toEqual({
-        redirect: { destination: '/', permanent: false },
+        props: { languageFallback: '/' },
         revalidate: 60
       })
     })
@@ -133,7 +133,7 @@ describe('Campaign Root on a custom domain', () => {
       const result = await getLangHostnameStaticProps(context({ lang: 'fr' }))
 
       expect(result).toEqual({
-        redirect: { destination: '/', permanent: false },
+        props: { languageFallback: '/' },
         revalidate: 60
       })
     })
@@ -258,7 +258,7 @@ describe('Campaign Root on a custom domain', () => {
 
       expect(mockQuery).toHaveBeenCalledTimes(1)
       expect(result).toEqual({
-        redirect: { destination: '/my-journey', permanent: false },
+        props: { languageFallback: '/my-journey' },
         revalidate: 60
       })
     })
@@ -271,7 +271,7 @@ describe('Campaign Root on a custom domain', () => {
       )
 
       expect(result).toEqual({
-        redirect: { destination: `/${region.slug}`, permanent: false },
+        props: { languageFallback: `/${region.slug}` },
         revalidate: 60
       })
     })
