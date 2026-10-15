@@ -198,14 +198,20 @@ describe('campaignSeoProps', () => {
   })
 
   describe('language alternates', () => {
-    it('emits one hreflang per campaign language at the lang param, plus x-default at the canonical', () => {
+    const inFrench = {
+      ...campaignPublic,
+      languageId: '496',
+      language: campaignPublic.languages[1].language
+    }
+
+    it('emits one hreflang per campaign language at the address it canonicalises to, plus x-default at the bare canonical', () => {
       expect(
         campaignSeoProps(campaignPublic, CampaignPageKind.landing, null, ROOT)
           .languageAlternates
       ).toEqual([
         {
           hrefLang: 'en',
-          href: 'https://your.nextstep.is/campaign/christmas-2026?lang=en'
+          href: 'https://your.nextstep.is/campaign/christmas-2026'
         },
         {
           hrefLang: 'fr',
@@ -227,19 +233,41 @@ describe('campaignSeoProps', () => {
           CAMPAIGN_ROOT
         ).languageAlternates
       ).toEqual([
-        { hrefLang: 'en', href: 'https://christmas.example.org/eur?lang=en' },
+        { hrefLang: 'en', href: 'https://christmas.example.org/eur' },
         { hrefLang: 'fr', href: 'https://christmas.example.org/eur?lang=fr' },
         { hrefLang: 'x-default', href: 'https://christmas.example.org/eur' }
       ])
+    })
+
+    it('keeps the same alternates whichever language the page was served in', () => {
+      expect(
+        campaignSeoProps(inFrench, CampaignPageKind.landing, null, ROOT)
+          .languageAlternates
+      ).toEqual(
+        campaignSeoProps(campaignPublic, CampaignPageKind.landing, null, ROOT)
+          .languageAlternates
+      )
+    })
+
+    it('emits none for a single-language campaign', () => {
+      const campaign = {
+        ...campaignPublic,
+        languages: [campaignPublic.languages[0]]
+      }
+      expect(
+        campaignSeoProps(campaign, CampaignPageKind.landing, null, ROOT)
+          .languageAlternates
+      ).toEqual([])
     })
 
     it('skips a language without a bcp47 tag', () => {
       const campaign = {
         ...campaignPublic,
         languages: [
+          campaignPublic.languages[0],
           {
-            ...campaignPublic.languages[0],
-            language: { ...campaignPublic.languages[0].language, bcp47: null }
+            ...campaignPublic.languages[1],
+            language: { ...campaignPublic.languages[1].language, bcp47: null }
           }
         ]
       }
@@ -248,10 +276,38 @@ describe('campaignSeoProps', () => {
           .languageAlternates
       ).toEqual([
         {
+          hrefLang: 'en',
+          href: 'https://your.nextstep.is/campaign/christmas-2026'
+        },
+        {
           hrefLang: 'x-default',
           href: 'https://your.nextstep.is/campaign/christmas-2026'
         }
       ])
+    })
+
+    it('makes the canonical and og:url name the served language, matching its alternate', () => {
+      const props = campaignSeoProps(
+        inFrench,
+        CampaignPageKind.landing,
+        null,
+        ROOT
+      )
+      expect(props.canonical).toBe(
+        'https://your.nextstep.is/campaign/christmas-2026?lang=fr'
+      )
+      expect(props.openGraph?.url).toBe(props.canonical)
+      expect(props.languageAlternates).toContainEqual({
+        hrefLang: 'fr',
+        href: props.canonical
+      })
+    })
+
+    it('keeps the bare canonical on a page served in the campaign default', () => {
+      expect(
+        campaignSeoProps(campaignPublic, CampaignPageKind.landing, null, ROOT)
+          .canonical
+      ).toBe('https://your.nextstep.is/campaign/christmas-2026')
     })
   })
 
