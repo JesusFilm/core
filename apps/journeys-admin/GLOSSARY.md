@@ -81,7 +81,7 @@ The persistent right panel for the selection: a breadcrumb and an actions row (m
 _Avoid_: properties (the journey editor's Drawer), details panel, side panel, settings panel / theme panel
 
 **Value Indicator**:
-The dot beside a Style row: orange for a value inherited from the band or theme, blue for a value set on the block. Reset writes the inherited value back and the dot returns to orange.
+The dot beside a Style row: orange for a value inherited from the band or theme, blue for a value set on the block. Reset clears the block's own value, so it inherits again and the dot returns to orange.
 _Avoid_: override badge
 
 **Pages Panel**:

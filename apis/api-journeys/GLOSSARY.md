@@ -162,7 +162,7 @@ A team's vanity hostname for serving journeys. `apexName` is the registrable roo
 _Avoid_: domain, host (Host is the presenter), vanity url
 
 **QR Code**:
-A scannable code that deep-links into a Journey (`toJourneyId`, optionally `toBlockId` for a specific Step), styled with colours and backed by a federated **short link** (`shortLinkId`). Its redirect goes to the Journey's own public address: the team's route-all Custom Domain, else a Journey Collection's domain, else the Root Domain.
+A scannable code that deep-links into a Journey (`toJourneyId`, optionally `toBlockId` for a specific Step), styled with colours and backed by a federated **short link** (`shortLinkId`). Its redirect goes to the Journey's own public address: the route-all Custom Domain of the Journey's own team, else a Journey Collection's domain, else the Root Domain.
 _Avoid_: qr, link code
 
 ### Campaigns
@@ -280,7 +280,7 @@ The one look-and-feel row every Campaign has: a light or dark **theme mode**, th
 _Avoid_: theme (bare — ambiguous with Journey Theme and theme mode), skin, style, brand, button shape (there is none)
 
 **Theme Preset**:
-One of two named value sets, Light and Dark, that fill a Campaign Theme's mode and colours in one step, leaving fonts and both radii alone. Nothing records which preset is active: the editor compares the current values to the presets and shows Custom when they differ.
+One of two named value sets, Light and Dark, that fill a Campaign Theme's mode and colours in one step, leaving fonts and the corner radius alone; button corners follow the preset. Nothing records which preset is active: the editor compares the current values to the presets and shows Custom when they differ.
 _Avoid_: template, default theme, mode (that is the light/dark column a preset sets)
 
 **Palette**:

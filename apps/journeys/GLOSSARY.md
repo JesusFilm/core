@@ -45,7 +45,7 @@ The Campaign a Custom Domain names, owned by the [Journeys](../../apis/api-journ
 _Avoid_: home page, default campaign
 
 **Reserved Segment**:
-A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The list is defined once here and the Journeys context derives its slug validation from it.
+A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The viewer owns the concept; one list in the Journeys API backs both Journey and Region slug validation.
 _Avoid_: reserved word, blocked slug
 
 **Embed**:
