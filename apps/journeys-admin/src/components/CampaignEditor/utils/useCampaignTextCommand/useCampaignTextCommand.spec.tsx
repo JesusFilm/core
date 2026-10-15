@@ -1,6 +1,7 @@
 import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { parse } from 'graphql'
 import { ReactElement } from 'react'
 
 import {
@@ -688,14 +689,14 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
         translations: Array<{ languageId: string; value: string }>
       }>({
         id: `${typename}:${blockId}`,
-        fragment: gql`
+        fragment: parse(`
           fragment Stored${typename}${apiField}Translations on ${typename} {
             translations: ${apiField}Translations {
               languageId
               value
             }
           }
-        `
+        `)
       })
       expect(stored?.translations).toEqual([
         { __typename: 'TranslatedValue', languageId: '496', value: 'Noël' }
