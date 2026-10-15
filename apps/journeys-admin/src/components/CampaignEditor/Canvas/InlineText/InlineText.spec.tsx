@@ -126,6 +126,50 @@ describe('InlineText', () => {
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveFocus()
   })
 
+  describe('autoWidth', () => {
+    it('sizes the input from a hidden copy of the text and keeps it single line', () => {
+      renderText({ autoWidth: true })
+
+      const input = screen.getByRole('textbox', { name: 'Title' })
+      expect(input.tagName).toBe('INPUT')
+      expect(input).toHaveAttribute('size', '1')
+      expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent(
+        'Share the story of Christmas'
+      )
+    })
+
+    it('sizes to the placeholder while the value is empty', () => {
+      renderText({
+        autoWidth: true,
+        target: {
+          block: { ...hero, title: '' } as CampaignTextBlock,
+          field: 'title'
+        }
+      })
+
+      expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent('Title')
+    })
+
+    it('grows the sizer as the author types', () => {
+      renderText({ autoWidth: true }, [heroMock('Short')])
+
+      fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+        target: { value: 'Short' }
+      })
+
+      expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent('Short')
+    })
+
+    it('renders a full-width multiline field without it', () => {
+      renderText()
+
+      expect(screen.getByRole('textbox', { name: 'Title' }).tagName).toBe(
+        'TEXTAREA'
+      )
+      expect(screen.queryByTestId('InlineTextSizer')).not.toBeInTheDocument()
+    })
+  })
+
   describe('Campaign Strings', () => {
     const copy = campaignStrings.find((string) => string.key === 'copy')!
     const target: CampaignTextTarget = { string: copy }
