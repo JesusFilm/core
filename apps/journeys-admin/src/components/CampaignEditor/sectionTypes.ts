@@ -2,6 +2,7 @@ import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generat
 import {
   CampaignBackgroundKind,
   CampaignColumnsRatio,
+  CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
   CampaignPageKind,
@@ -183,6 +184,7 @@ export function newSectionBlock(
         lede: null,
         bullets: null,
         mediaSide: CampaignMediaSide.right,
+        layout: CampaignFeaturedMediaLayout.sideBySide,
         mediaBlockId: null,
         eyebrowTranslations: [],
         titleTranslations: [],
