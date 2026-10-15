@@ -10,7 +10,7 @@ builder.mutationField('campaignJourneyBlockUpdate', (t) =>
     type: CampaignJourneyBlock,
     nullable: false,
     description:
-      'Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.',
+      'Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.',
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: CampaignJourneyBlockUpdateInput, required: true })
@@ -21,6 +21,9 @@ builder.mutationField('campaignJourneyBlockUpdate', (t) =>
         context.user,
         'CampaignJourneyBlock'
       )
+      const textEdited =
+        input.title !== undefined || input.description !== undefined
+      const snapshotEdited = input.snapshotEdited ?? (textEdited ? true : null)
       return await updateBlock(block, {
         ...(input.title !== undefined
           ? {
@@ -39,7 +42,8 @@ builder.mutationField('campaignJourneyBlockUpdate', (t) =>
                 TEXT_CAPS.journeyDescription
               )
             }
-          : {})
+          : {}),
+        ...(snapshotEdited != null ? { snapshotEdited } : {})
       })
     }
   })

@@ -120,6 +120,19 @@ describe('Settings', () => {
     )
   })
 
+  it('counts the title and the slug against their caps', () => {
+    renderSettings()
+
+    expect(screen.getByText('14 / 100')).toBeInTheDocument()
+    expect(screen.getByText('14 / 200')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
+      target: { value: 'Christmas' }
+    })
+
+    expect(screen.getByText('9 / 100')).toBeInTheDocument()
+  })
+
   it('shows the permanent root-domain address and the current public address', () => {
     renderSettings()
 

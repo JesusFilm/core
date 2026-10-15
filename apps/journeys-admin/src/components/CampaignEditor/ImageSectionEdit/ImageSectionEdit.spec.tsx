@@ -126,6 +126,17 @@ describe('ImageSectionEdit', () => {
     expect(translation.result).not.toHaveBeenCalled()
   })
 
+  it('counts the alt text against its cap', async () => {
+    renderEdit([])
+
+    const alt = await screen.findByRole('textbox', { name: 'Alt text' })
+    expect(screen.getByText('25 / 500')).toBeInTheDocument()
+
+    fireEvent.change(alt, { target: { value: 'Readers' } })
+
+    expect(screen.getByText('7 / 500')).toBeInTheDocument()
+  })
+
   it('shows the previewed language’s alt translation with the default text as the placeholder', async () => {
     renderEdit([], '496')
 

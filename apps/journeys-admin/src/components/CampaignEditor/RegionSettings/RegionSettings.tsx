@@ -1,6 +1,7 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -22,6 +23,7 @@ import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQue
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
+import { textLength } from '../Canvas/InlineText'
 import { shapeSlug } from '../Settings'
 import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
 
@@ -239,7 +241,9 @@ export function RegionSettings({
         onKeyDown={handleKeyDown}
         placeholder={translationLanguageId == null ? undefined : region.name}
         error={errors.name != null}
-        helperText={errors.name}
+        helperText={
+          errors.name ?? `${textLength(name)} / ${REGION_NAME_MAX_LENGTH}`
+        }
         required={translationLanguageId == null}
         fullWidth
         slotProps={{
@@ -259,8 +263,18 @@ export function RegionSettings({
         onKeyDown={handleKeyDown}
         error={errors.slug != null}
         helperText={
-          errors.slug ??
-          t('Changing this breaks links to this page you have already shared.')
+          errors.slug ?? (
+            <>
+              <Box component="span" sx={{ display: 'block' }}>
+                {t(
+                  'Changing this breaks links to this page you have already shared.'
+                )}
+              </Box>
+              <Box component="span" sx={{ display: 'block' }}>
+                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
+              </Box>
+            </>
+          )
         }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
