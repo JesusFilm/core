@@ -2,8 +2,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement, useState } from 'react'
 
 import {
-  GetCampaign_campaign as Campaign,
-  GetCampaign_campaign_blocks_CampaignAnalyticsBlock as AnalyticsBlock
+  GetCampaign_campaign_blocks_CampaignAnalyticsBlock as AnalyticsBlock,
+  GetCampaign_campaign as Campaign
 } from '../../../../__generated__/GetCampaign'
 import { CAMPAIGN_ANALYTICS_BLOCK_UPDATE_SHOW_MAP } from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
