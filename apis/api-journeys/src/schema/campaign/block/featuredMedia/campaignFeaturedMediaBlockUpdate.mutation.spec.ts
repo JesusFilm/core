@@ -164,7 +164,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
         .mockResolvedValueOnce({
           id: 'previousMediaId',
           typename: 'CampaignImageBlock'
-        } as never)
+        })
 
       const result = await update({ mediaBlockId: 'previousMediaId' })
 
@@ -224,7 +224,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
         .mockResolvedValueOnce({
           id: 'buttonId',
           typename: 'CampaignButtonBlock'
-        } as never)
+        })
       const extra = await update({ mediaBlockId: 'buttonId' })
       expect(extra.errors[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',

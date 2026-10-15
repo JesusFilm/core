@@ -37,6 +37,7 @@ import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { LeftPanelBody } from '../LeftPanel'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
@@ -466,8 +467,8 @@ export function Navigator(): ReactElement {
   }
 
   return (
-    <Stack data-testid="Navigator" sx={{ minHeight: 0, flexGrow: 1 }}>
-      <Typography variant="subtitle1" sx={{ px: 2, py: 1.5 }}>
+    <LeftPanelBody spacing={3} data-testid="Navigator">
+      <Typography variant="h6" noWrap>
         {t('Navigator')}
       </Typography>
       <NavigatorRowsContext.Provider value={rows}>
@@ -500,11 +501,10 @@ export function Navigator(): ReactElement {
               selectedItems={selectedId ?? null}
               onItemClick={handleItemClick}
               aria-label={t('Page structure')}
-              sx={{ flexGrow: 1, overflowY: 'auto', px: 1, pb: 2 }}
             />
           </SortableContext>
         </DndContext>
       </NavigatorRowsContext.Provider>
-    </Stack>
+    </LeftPanelBody>
   )
 }

@@ -127,7 +127,7 @@ describe('campaignRichTextBlockCreate', () => {
     }
 
     beforeEach(() => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue(slot as never)
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
     })
 
     it('creates the slot’s only section at parentOrder 0 under the slot', async () => {

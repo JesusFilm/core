@@ -101,7 +101,7 @@ describe('campaignRegionLanguageUpdate', () => {
       return { ...fixture.regions[0].languages[0], ...row, ...data }
     }) as never)
     prismaMock.journey.findFirst.mockResolvedValue(
-      journeyRow('journeyId', 'christmas-europe') as never
+      journeyRow('journeyId', 'christmas-europe')
     )
     prismaMock.journey.findUniqueOrThrow.mockImplementation((async ({
       where
@@ -246,7 +246,7 @@ describe('campaignRegionLanguageUpdate', () => {
               { name: 'journeys.example.org', routeAllTeamJourneys: true }
             ]
           }
-        }) as never
+        })
       )
 
       await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
@@ -259,7 +259,7 @@ describe('campaignRegionLanguageUpdate', () => {
     it('swapping the journey retargets the same short link; the QR row and qrCodeId are unchanged', async () => {
       prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
       prismaMock.journey.findFirst.mockResolvedValue(
-        journeyRow('otherJourneyId', 'noel-europe') as never
+        journeyRow('otherJourneyId', 'noel-europe')
       )
 
       const result = await update({
@@ -343,7 +343,7 @@ describe('campaignRegionLanguageUpdate', () => {
         )
         prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
         prismaMock.journey.findFirst.mockResolvedValue(
-          journeyRow('otherJourneyId', 'noel-europe') as never
+          journeyRow('otherJourneyId', 'noel-europe')
         )
 
         await update({
@@ -386,7 +386,7 @@ describe('campaignRegionLanguageUpdate', () => {
       it('points a retargeted short link back at the previous journey when the commit fails after the retarget', async () => {
         prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
         prismaMock.journey.findFirst.mockResolvedValue(
-          journeyRow('otherJourneyId', 'noel-europe') as never
+          journeyRow('otherJourneyId', 'noel-europe')
         )
         prismaMock.$transaction.mockImplementationOnce((async (
           callback: any

@@ -14,6 +14,7 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
 import { blockLabel } from '../blockLabel'
 import { blockIcon } from '../Inspector/blockIcon'
+import { LeftPanelBody } from '../LeftPanel'
 import { useCampaignAddCommand } from '../utils/useCampaignAddCommand'
 import type { ExtraTypename } from '../utils/useCampaignAddCommand'
 
@@ -93,7 +94,7 @@ export function AddPanel(): ReactElement {
   }
 
   return (
-    <Stack spacing={3} data-testid="CampaignAddPanel" sx={{ p: 4 }}>
+    <LeftPanelBody spacing={3} data-testid="CampaignAddPanel">
       <Typography variant="h6" noWrap>
         {t('Add')}
       </Typography>
@@ -161,6 +162,6 @@ export function AddPanel(): ReactElement {
           />
         </AddGroup>
       )}
-    </Stack>
+    </LeftPanelBody>
   )
 }

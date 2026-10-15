@@ -104,7 +104,7 @@ describe('campaignBlockRestore', () => {
     beforeEach(() => {
       prismaMock.campaignBlock.findFirst
         .mockResolvedValueOnce(binnedSlotHero())
-        .mockResolvedValueOnce(slot as never)
+        .mockResolvedValueOnce(slot)
     })
 
     it('is refused while the slot holds another section (CONFLICT, id)', async () => {
