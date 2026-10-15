@@ -5100,18 +5100,6 @@ type Mutation {
   campaignRegionLanguageDelete(id: ID!): CampaignRegionLanguage!
 
   """
-  Move a Share Language to `order` among its region’s languages (a position past the end moves it last) and renumber them contiguously; the public Share selector follows this order. Returns every Share Language of the region with its new `order`.
-  
-  Auth: campaign Update — any member or manager of the campaign’s team.
-  
-  Errors:
-  - NOT_FOUND: id does not resolve.
-  - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `order`): negative.
-  """
-  campaignRegionLanguageOrderUpdate(id: ID!, order: Int!): [CampaignRegionLanguage!]!
-
-  """
   Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.

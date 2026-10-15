@@ -50,11 +50,9 @@ builder.mutationField('campaignColumnsBlockCreate', (t) =>
     },
     resolve: async (_parent, { input }, context) =>
       await createSection(input, 'CampaignColumnsBlock', context.user, () => ({
-        ratio: assertEnum(
-          input.ratio ?? 'equal',
-          'ratio',
-          CAMPAIGN_COLUMNS_RATIOS
-        )
+        ...(input.ratio != null && {
+          ratio: assertEnum(input.ratio, 'ratio', CAMPAIGN_COLUMNS_RATIOS)
+        })
       }))
   })
 )
