@@ -19,6 +19,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
 const PROCESSING_STATUSES = gql`
@@ -96,18 +97,22 @@ function stageSummary(processingStages: string): string {
 }
 
 export function ProcessingStatusList(): ReactElement {
+  const { enqueueSnackbar } = useSnackbar()
   const [status, setStatus] = useState('')
   const [blockingStage, setBlockingStage] = useState('')
   const [olderThan, setOlderThan] = useState('')
   const [minRetryCount, setMinRetryCount] = useState('')
-  const { data, loading, refetch } = useQuery<ProcessingStatusesData>(
+  const { data, loading, error, refetch } = useQuery<ProcessingStatusesData>(
     PROCESSING_STATUSES,
     {
       variables: {
         status: status || undefined,
         blockingStage: blockingStage || undefined,
         olderThan: olderThan ? new Date(olderThan).toISOString() : undefined,
-        minRetryCount: minRetryCount ? Number(minRetryCount) : undefined
+        // Server rejects minRetryCount without blockingStage; the field is
+        // also disabled below, but guard the request in case state is stale.
+        minRetryCount:
+          blockingStage && minRetryCount ? Number(minRetryCount) : undefined
       },
       pollInterval: 30_000
     }
@@ -115,8 +120,12 @@ export function ProcessingStatusList(): ReactElement {
   const [retryProcessing, { loading: retrying }] = useMutation(RETRY_PROCESSING)
 
   const handleRetry = async (id: string): Promise<void> => {
-    await retryProcessing({ variables: { id } })
-    await refetch()
+    try {
+      await retryProcessing({ variables: { id } })
+      await refetch()
+    } catch {
+      enqueueSnackbar('Failed to retry processing', { variant: 'error' })
+    }
   }
 
   return (
@@ -182,6 +191,10 @@ export function ProcessingStatusList(): ReactElement {
           type="number"
           value={minRetryCount}
           onChange={(event) => setMinRetryCount(event.target.value)}
+          disabled={!blockingStage}
+          helperText={
+            !blockingStage ? 'Choose a blocking stage first' : undefined
+          }
           slotProps={{ htmlInput: { min: 0 } }}
         />
       </Stack>
@@ -203,6 +216,15 @@ export function ProcessingStatusList(): ReactElement {
               <TableRow>
                 <TableCell colSpan={6} align="center">
                   <CircularProgress size={24} />
+                </TableCell>
+              </TableRow>
+            )}
+            {!loading && error && (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  <Typography color="error">
+                    Failed to load processing statuses: {error.message}
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}
