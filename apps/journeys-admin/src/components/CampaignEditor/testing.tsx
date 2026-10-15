@@ -1,6 +1,7 @@
 import { ApolloLink, InMemoryCache } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { waitFor } from '@testing-library/react'
+import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
 import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
@@ -162,11 +163,13 @@ export function QueriedEditor({
           })}
       cache={cache}
     >
-      <CommandProvider>
-        <QueriedEditorInner initialState={initialState}>
-          {children}
-        </QueriedEditorInner>
-      </CommandProvider>
+      <SnackbarProvider>
+        <CommandProvider>
+          <QueriedEditorInner initialState={initialState}>
+            {children}
+          </QueriedEditorInner>
+        </CommandProvider>
+      </SnackbarProvider>
     </MockedProvider>
   )
 }
@@ -181,14 +184,16 @@ export function StaticEditor({
 }: RenderEditorProps): ReactElement {
   return (
     <MockedProvider mocks={mocks as never} cache={cache}>
-      <CommandProvider>
-        <CampaignEditorProvider
-          campaign={campaignProp}
-          initialState={initialState}
-        >
-          {children}
-        </CampaignEditorProvider>
-      </CommandProvider>
+      <SnackbarProvider>
+        <CommandProvider>
+          <CampaignEditorProvider
+            campaign={campaignProp}
+            initialState={initialState}
+          >
+            {children}
+          </CampaignEditorProvider>
+        </CommandProvider>
+      </SnackbarProvider>
     </MockedProvider>
   )
 }

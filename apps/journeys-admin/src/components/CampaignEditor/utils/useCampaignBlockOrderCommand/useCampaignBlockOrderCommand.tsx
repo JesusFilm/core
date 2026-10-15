@@ -8,6 +8,7 @@ import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes
 import { useCampaignBlockOrderUpdateMutation } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 type OrderRows = CampaignBlockOrderUpdate['campaignBlockOrderUpdate']
 
@@ -84,6 +85,7 @@ export function useCampaignBlockOrderCommand(): {
     pageKindOf
   } = useCampaignEditor()
   const [orderUpdate] = useCampaignBlockOrderUpdateMutation()
+  const reportFailure = useCommandFailure()
 
   function addBlockOrder(
     block: CampaignBlock,
@@ -122,7 +124,7 @@ export function useCampaignBlockOrderCommand(): {
             ...(nextPlacement != null ? { placement: nextPlacement } : {})
           },
           optimisticResponse: { campaignBlockOrderUpdate: rows }
-        })
+        }).catch(reportFailure)
       }
     })
   }

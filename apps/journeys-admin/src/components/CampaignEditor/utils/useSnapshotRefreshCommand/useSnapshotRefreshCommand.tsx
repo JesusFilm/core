@@ -7,6 +7,7 @@ import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { useCampaignRegionLanguageSnapshotRefreshMutation } from '../../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { useCommandFailure } from '../useCommandFailure'
 
 interface SnapshotParameters {
   title: string | null
@@ -46,6 +47,7 @@ export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
   const [snapshotRefresh] = useCampaignRegionLanguageSnapshotRefreshMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
   const [pending, setPending] = useState<CampaignRegionLanguage>()
+  const reportFailure = useCommandFailure()
 
   function currentFocus(): Focus {
     return {
@@ -89,7 +91,7 @@ export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
               snapshotEdited
             }
           }
-        })
+        }).catch(reportFailure)
       },
       undo({ title, description, snapshotEdited }) {
         focus(target)
@@ -106,7 +108,7 @@ export function useSnapshotRefreshCommand(): SnapshotRefreshCommand {
               snapshotEdited
             }
           }
-        })
+        }).catch(reportFailure)
       }
     })
   }

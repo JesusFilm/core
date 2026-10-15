@@ -9,6 +9,7 @@ import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignB
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 export interface CampaignBlockIdMap {
   oldId: string
@@ -107,7 +108,9 @@ export function duplicateBlocks(
  * Duplicating a block is one Command: execute selects the copy and runs the
  * duplicate with the whole copied subtree shown at once; undo reselects the
  * original and soft-deletes the copy's root (its descendants fall out of the
- * tree with it); redo restores the root, which brings them back.
+ * tree with it); redo restores the root, which brings them back. When the
+ * duplicate is refused the copy never existed, so undo has nothing to delete
+ * and redo runs the duplicate again instead of restoring it.
  */
 export function useCampaignBlockDuplicateCommand(): {
   addBlockDuplicate: (block: CampaignBlock) => void
@@ -122,6 +125,7 @@ export function useCampaignBlockDuplicateCommand(): {
   const [duplicate] = useCampaignBlockDuplicateMutation(campaign.id)
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function addBlockDuplicate(block: CampaignBlock): void {
     if (block.parentOrder == null) return
@@ -149,28 +153,46 @@ export function useCampaignBlockDuplicateCommand(): {
       })
     }
 
+    let landed = true
+
+    function create(): void {
+      void duplicate({
+        variables: { id: block.id, idMap },
+        optimisticResponse: { campaignBlockDuplicate: subtreeAfter }
+      })
+        .then(() => {
+          landed = true
+        })
+        .catch((error: unknown) => {
+          landed = false
+          reportFailure(error)
+        })
+    }
+
     add({
       parameters: { execute: {}, undo: {} },
       execute() {
         focus(copy.id)
-        void duplicate({
-          variables: { id: block.id, idMap },
-          optimisticResponse: { campaignBlockDuplicate: subtreeAfter }
-        })
+        create()
       },
       undo() {
         focus(block.id)
+        if (!landed) return
         void blockDelete({
           variables: { id: copy.id },
           optimisticResponse: { campaignBlockDelete: siblingsBefore }
-        })
+        }).catch(reportFailure)
       },
       redo() {
         focus(copy.id)
+        if (!landed) {
+          create()
+          return
+        }
         void blockRestore({
           variables: { id: copy.id },
           optimisticResponse: { campaignBlockRestore: subtreeAfter }
-        })
+        }).catch(reportFailure)
       }
     })
   }

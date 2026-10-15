@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Switch from '@mui/material/Switch'
@@ -5,67 +6,47 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ChangeEvent, ReactElement } from 'react'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
-import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
-import { useCampaignAnalyticsBlockShowMapMutation } from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
-import { useCampaignEditor } from '../CampaignEditorProvider'
+import { GetCampaign_campaign_blocks_CampaignAnalyticsBlock as CampaignAnalyticsBlock } from '../../../../__generated__/GetCampaign'
+import {
+  CampaignAnalyticsShowMapInput,
+  useCampaignAnalyticsBlockShowMapMutation
+} from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
+import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
 
 interface AnalyticsSettingsProps {
   /** The Analytics section this editor edits. */
-  block: Pick<CampaignBlock, 'id' | 'pageId'> & { showMap: boolean }
-}
-
-interface ShowMapParameters {
-  showMap: boolean
+  block: CampaignAnalyticsBlock
 }
 
 /**
  * The Analytics section's Settings: the "Show map" switch. Flipping it is one
  * Command that writes `showMap` through `campaignAnalyticsBlockUpdate`, shown
- * at once on the canvas; undo writes the previous value back.
+ * at once on the canvas; undo writes the previous value back, and a refused
+ * write shows the API's message.
  */
 export function AnalyticsSettings({
   block
 }: AnalyticsSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { add } = useCommand()
-  const {
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
-  const [updateShowMap] = useCampaignAnalyticsBlockShowMapMutation()
+  const { addStyle, error } = useCampaignStyleCommand()
+  const writeShowMap = useCampaignAnalyticsBlockShowMapMutation()
 
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    const blockPageKind = pageKindOf(block) ?? pageKind
-    add<ShowMapParameters>({
-      parameters: {
-        execute: { showMap: event.target.checked },
-        undo: { showMap: block.showMap }
-      },
-      execute({ showMap }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.id
-        })
-        void updateShowMap({
-          variables: { id: block.id, input: { showMap } },
-          optimisticResponse: {
-            campaignAnalyticsBlockUpdate: {
-              __typename: 'CampaignAnalyticsBlock',
-              id: block.id,
-              showMap
-            }
-          }
-        })
-      }
+    addStyle<CampaignAnalyticsBlock, CampaignAnalyticsShowMapInput>({
+      block,
+      input: { showMap: event.target.checked },
+      previous: { showMap: block.showMap },
+      run: writeShowMap
     })
   }
 
   return (
     <Stack spacing={2} data-testid="AnalyticsSettings" data-block-id={block.id}>
+      {error != null && (
+        <Alert severity="error" role="alert">
+          {error}
+        </Alert>
+      )}
       <Typography variant="subtitle2">{t('Map')}</Typography>
       <FormControlLabel
         control={<Switch checked={block.showMap} onChange={handleChange} />}

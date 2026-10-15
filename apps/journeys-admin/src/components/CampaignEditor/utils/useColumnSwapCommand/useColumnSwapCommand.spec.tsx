@@ -55,12 +55,22 @@ const swapFromRightMock = {
 
 const swapAgainMock = { ...swapMock, result: vi.fn(swapMock.result) }
 
-function renderEditor(selectedBlockId: string): ReturnType<typeof render> {
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
+function renderEditor(
+  selectedBlockId: string,
+  mocks: Array<Record<string, unknown>> = [
+    swapMock,
+    swapBackMock,
+    swapAgainMock,
+    swapFromRightMock
+  ]
+): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       campaignData={campaignWithColumns}
       initialState={{ selectedBlockId, inspectorTab: 'settings' }}
-      mocks={[swapMock, swapBackMock, swapAgainMock, swapFromRightMock]}
+      mocks={mocks}
     >
       <CommandUndoItem variant="button" />
       <CommandRedoItem variant="button" />
@@ -100,6 +110,19 @@ describe('useColumnSwapCommand', () => {
     await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
     expect(parentOrderOf('slotLeftId')).toBe('1')
     expect(parentOrderOf('slotRightId')).toBe('0')
+  })
+
+  it('raises the API message in the error snackbar when the swap is refused', async () => {
+    renderEditor('slotRichTextId', [{ ...swapMock, result: refusal }])
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotLeftId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Swap columns' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
   })
 
   it('swaps from a selected slot, keeping the slot selected', async () => {
