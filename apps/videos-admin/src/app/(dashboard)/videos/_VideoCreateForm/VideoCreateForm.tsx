@@ -120,6 +120,15 @@ export function VideoCreateForm({
               'Slug can only contain lowercase letters, numbers and hyphens'
           })
         }
+        // isPublicSlug (api-media) also requires hyphens to separate
+        // non-empty letter/number runs, so leading, trailing or doubled
+        // hyphens would be rejected by the server too.
+        if (/^-|-$|--/.test(value)) {
+          return this.createError({
+            message:
+              'Slug cannot start or end with a hyphen, or contain repeated hyphens'
+          })
+        }
         return true
       }),
     label: mixed<VideoLabelValue>()

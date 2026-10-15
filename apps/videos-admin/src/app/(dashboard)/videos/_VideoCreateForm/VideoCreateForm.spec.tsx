@@ -215,6 +215,20 @@ describe('VideoCreateForm', () => {
       })
     })
 
+    it('warns when slug has a leading, trailing or repeated hyphen', async () => {
+      const user = userEvent.setup()
+      await user.type(screen.getByLabelText(/Slug/i), '-know-god')
+      fireEvent.click(screen.getByText('Create'))
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Slug cannot start or end with a hyphen, or contain repeated hyphens'
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
     it('accepts slugs with unicode letters', async () => {
       const user = userEvent.setup()
       await user.type(screen.getByLabelText(/Slug/i), 'café-con-leche')
