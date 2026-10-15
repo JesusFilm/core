@@ -1701,5 +1701,9 @@
   "Below text": "Below text",
   "Select a section to add text or a button to it.": "Select a section to add text or a button to it.",
   "Add section here": "Add section here",
-  "Add to column": "Add to column"
+  "Add to column": "Add to column",
+  "Translated {{count}} strings into {{language}}_one": "Translated {{count}} string into {{language}}",
+  "Translated {{count}} strings into {{language}}_other": "Translated {{count}} strings into {{language}}",
+  "Translation into {{language}} cancelled. {{count}} strings kept._one": "Translation into {{language}} cancelled. {{count}} string kept.",
+  "Translation into {{language}} cancelled. {{count}} strings kept._other": "Translation into {{language}} cancelled. {{count}} strings kept."
 }

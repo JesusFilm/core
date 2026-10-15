@@ -293,6 +293,11 @@ type CampaignAiTranslateProgress {
   message: String
 
   """
+  How many strings the run has written so far; they are kept if the run is cancelled
+  """
+  translatedCount: Int
+
+  """
   The campaign with its translations written (only present when complete)
   """
   campaign: Campaign

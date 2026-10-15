@@ -36,6 +36,7 @@ type CampaignAiTranslateMode = 'all' | 'missing'
 interface CampaignAiTranslateProgress {
   progress: number
   message: string
+  translatedCount: number
   campaign: Campaign | null
 }
 
@@ -53,6 +54,11 @@ builder.objectType(CampaignAiTranslateProgressRef, {
     message: t.string({
       description: 'Current translation step message',
       resolve: (parent) => parent.message
+    }),
+    translatedCount: t.int({
+      description:
+        'How many strings the run has written so far; they are kept if the run is cancelled',
+      resolve: (parent) => parent.translatedCount
     }),
     campaign: t.prismaField({
       type: CampaignRef,
@@ -359,7 +365,13 @@ export async function* campaignAiTranslate(
         extensions: { code: 'UNAUTHENTICATED' }
       })
 
-    yield { progress: 0, message: 'Starting translation...', campaign: null }
+    let translatedCount = 0
+    yield {
+      progress: 0,
+      message: 'Starting translation...',
+      translatedCount,
+      campaign: null
+    }
 
     const campaignId = String(input.campaignId)
     const languageId = String(input.languageId)
@@ -406,6 +418,7 @@ export async function* campaignAiTranslate(
     yield {
       progress: 10,
       message: `Translating into ${targetLanguageName}...`,
+      translatedCount,
       campaign: null
     }
 
@@ -420,7 +433,7 @@ export async function* campaignAiTranslate(
           campaignTitle: campaign.title,
           session
         })
-        await writeBatch({
+        translatedCount += await writeBatch({
           campaignId,
           languageId,
           mode: input.mode,
@@ -437,16 +450,23 @@ export async function* campaignAiTranslate(
       yield {
         progress: 10 + ((index + 1) / batches.length) * 85,
         message: `Translated ${index + 1} of ${batches.length} parts`,
+        translatedCount,
         campaign: null
       }
     }
     if (batches.length > 0 && failedBatches === batches.length)
       throw new GraphQLError('Translation failed')
 
-    yield { progress: 95, message: 'Finalizing translation...', campaign: null }
+    yield {
+      progress: 95,
+      message: 'Finalizing translation...',
+      translatedCount,
+      campaign: null
+    }
     yield {
       progress: 100,
       message: 'Translation completed!',
+      translatedCount,
       campaign: await prisma.campaign.findUnique({ where: { id: campaignId } })
     }
   } catch (error) {
