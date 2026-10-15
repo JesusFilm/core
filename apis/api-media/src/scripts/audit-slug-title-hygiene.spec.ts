@@ -257,6 +257,23 @@ describe('auditSlugTitleHygiene', () => {
     expect(findings[0]?.needsContentReview).toBe(true)
   })
 
+  it('scans a long non-matching title in linear time instead of backtracking', async () => {
+    const longTitle = Array.from({ length: 200 }, () => 'Word').join(' ')
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-11',
+        slug: 'long-title-video',
+        published: true,
+        title: [{ value: longTitle, languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const start = Date.now()
+    await auditSlugTitleHygiene()
+    expect(Date.now() - start).toBeLessThan(1000)
+  })
+
   it('never calls a write method on the prisma client', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {

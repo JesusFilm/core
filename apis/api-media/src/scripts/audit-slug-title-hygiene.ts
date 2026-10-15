@@ -51,8 +51,44 @@ const DUPLICATED_WORD_RE =
 // high false-positive rate against real catalog data (legit branding like
 // "LUMO", "YHWH", "MENA", and dash-subtitled titles like "Jesus: The Story").
 const ALL_CAPS_TOKEN_RE = /\b[A-Z]{3,}\b/
-const DASH_SEPARATED_TWO_PHRASE_RE =
-  /^\p{Lu}[\p{L}'-]*(?:\s\p{Lu}?[\p{L}'-]*)*\s[-–—:]\s\p{Lu}[\p{L}'-]*(?:\s[\p{L}'-]*)*$/u
+// A previous version of this check was a single regex with nested unbounded
+// groups on both sides of the separator, which let the engine redistribute
+// word-boundary splits between the outer and inner `*` quantifiers —
+// catastrophic backtracking on any long non-matching title. Splitting on the
+// separator first, then testing each side with a single linear-time regex,
+// detects the same "Capitalized Phrase - Capitalized Phrase" shape without
+// the exponential blowup.
+const TWO_PHRASE_SEPARATOR_RE = /\s[-–—:]\s/gu
+const PLAIN_WORD_RE = /^[\p{L}'-]+$/u
+const CAPITALIZED_WORD_RE = /^\p{Lu}[\p{L}'-]*$/u
+
+function isCapitalizedPhrase(value: string): boolean {
+  const words = value.split(/\s+/)
+  return (
+    words.length > 0 &&
+    CAPITALIZED_WORD_RE.test(words[0]) &&
+    words.every((word) => PLAIN_WORD_RE.test(word))
+  )
+}
+
+function isDashSeparatedTwoPhrase(value: string): boolean {
+  for (const separator of value.matchAll(TWO_PHRASE_SEPARATOR_RE)) {
+    const left = value.slice(0, separator.index)
+    const right = value.slice(
+      separator.index + separator[0].length,
+      value.length
+    )
+    if (
+      left !== '' &&
+      right !== '' &&
+      isCapitalizedPhrase(left) &&
+      isCapitalizedPhrase(right)
+    ) {
+      return true
+    }
+  }
+  return false
+}
 
 const STRUCTURAL_REASONS: readonly SlugTitleHygieneReason[] = [
   'underscore',
@@ -87,7 +123,7 @@ function detectReasons(value: string): SlugTitleHygieneReason[] {
   if (FILE_EXTENSION_RE.test(value)) reasons.push('file-extension-remnant')
   if (VERSION_TAG_RE.test(value)) reasons.push('version-tag-remnant')
   if (DUPLICATED_WORD_RE.test(value)) reasons.push('duplicated-word')
-  if (DASH_SEPARATED_TWO_PHRASE_RE.test(value))
+  if (isDashSeparatedTwoPhrase(value))
     reasons.push('possible-multilingual-concatenation')
   if (ALL_CAPS_TOKEN_RE.test(value)) reasons.push('all-caps-token')
   return reasons
