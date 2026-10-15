@@ -13,6 +13,7 @@ import {
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
 import { CustomDomainUpdateInput } from './inputs'
+import { updateTeamShortLinks } from './service'
 
 /**
  * A Campaign Root change moves the domain form of the old and new campaign
@@ -140,6 +141,15 @@ builder.mutationField('customDomainUpdate', (t) =>
             customDomain.name
           )
       }
+
+      const routeAllChanged =
+        input.routeAllTeamJourneys != null &&
+        input.routeAllTeamJourneys !== customDomain.routeAllTeamJourneys
+      const journeyCollectionChanged =
+        'journeyCollectionId' in input &&
+        (input.journeyCollectionId ?? null) !== customDomain.journeyCollectionId
+      if (routeAllChanged || journeyCollectionChanged)
+        await updateTeamShortLinks(customDomain.teamId)
 
       return updated
     }
