@@ -4,6 +4,7 @@ import { logger as parentLogger } from '../../logger'
 import { getJourneyStatsBreakdown } from '../../plausible/service'
 
 import {
+  CachedCampaignStatsSweep,
   CampaignJourneyCountryRow,
   CampaignStatsSweep,
   statsCache
@@ -16,6 +17,9 @@ const logger = parentLogger.child({ module: 'campaignStats' })
 const PUBLIC_STATS_TIMEOUT_MS = 10000
 // There are fewer than 250 ISO country codes; one page covers every row.
 const COUNTRY_ROW_LIMIT = 300
+// At most this many journeys are in flight against Plausible at once, so a
+// large campaign cannot burst through the shared per-key rate limit.
+const SWEEP_CONCURRENCY = 5
 
 export interface CampaignCountryStat {
   countryCode: string
@@ -79,41 +83,94 @@ async function sweepJourney(
     undefined,
     { timeoutMs: PUBLIC_STATS_TIMEOUT_MS }
   )
-  return rows.map((row) => {
-    const visitors = (row as unknown as Record<string, unknown>).visitors
-    return {
-      countryCode: (row.property ?? '').trim().toUpperCase(),
-      visitors:
-        typeof visitors === 'number' && Number.isFinite(visitors) ? visitors : 0
+  return rows.map(({ property, visitors }) => ({
+    countryCode: (property ?? '').trim().toUpperCase(),
+    visitors:
+      typeof visitors === 'number' && Number.isFinite(visitors) ? visitors : 0
+  }))
+}
+
+/** `Promise.allSettled` over `items`, running `worker` on at most `limit` of them at a time. */
+async function settleWithConcurrency<Item, Result>(
+  items: Item[],
+  limit: number,
+  worker: (item: Item) => Promise<Result>
+): Promise<Array<PromiseSettledResult<Result>>> {
+  const results: Array<PromiseSettledResult<Result>> = new Array(items.length)
+  let next = 0
+  async function drain(): Promise<void> {
+    while (next < items.length) {
+      const index = next++
+      try {
+        results[index] = {
+          status: 'fulfilled',
+          value: await worker(items[index])
+        }
+      } catch (reason) {
+        results[index] = { status: 'rejected', reason }
+      }
     }
-  })
+  }
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, drain)
+  )
+  return results
 }
 
 /**
  * One `visit:country` breakdown (visitors only) per distinct linked journey, on
  * that journey's own site, from the Campaign's first publish (creation for a
- * draft) to now. Fails whole if any journey fails, so a partial sweep is never
- * cached.
+ * draft) to now, a few journeys at a time. A journey whose request fails keeps
+ * its rows from `previous` (the last sweep over the same window), else counts
+ * as no visitors, so one bad site cannot sink the rest. Throws only when every
+ * journey failed.
  */
 async function sweepCampaign(
   campaign: CampaignStatsSubject,
-  now: Date
+  now: Date,
+  previous: CampaignStatsSweep | null
 ): Promise<CampaignStatsSweep> {
   const start = campaign.publishedAt ?? campaign.createdAt
   const from = start.getTime() > now.getTime() ? now : start
   const journeyIds = linkedJourneyIds(
     campaign.regions.flatMap((region) => region.languages)
   )
-  const rows = await Promise.all(
-    journeyIds.map(
-      async (journeyId) => await sweepJourney(journeyId, from, now)
-    )
+  const settled = await settleWithConcurrency(
+    journeyIds,
+    SWEEP_CONCURRENCY,
+    async (journeyId) => await sweepJourney(journeyId, from, now)
   )
+  const failures = settled.flatMap((result, index) =>
+    result.status === 'rejected'
+      ? [{ journeyId: journeyIds[index], reason: result.reason }]
+      : []
+  )
+  if (failures.length > 0 && failures.length === journeyIds.length)
+    throw failures[0].reason
+  if (failures.length > 0)
+    logger.warn(
+      {
+        campaignId: campaign.id,
+        failedJourneyIds: failures.map(({ journeyId }) => journeyId),
+        error: failures[0].reason
+      },
+      'stats sweep kept partial results'
+    )
+  const fromIso = from.toISOString()
+  const reusable = previous?.from === fromIso ? previous.journeys : {}
   return {
-    from: from.toISOString(),
+    from: fromIso,
     to: now.toISOString(),
     journeys: Object.fromEntries(
-      journeyIds.map((journeyId, index) => [journeyId, rows[index]])
+      journeyIds.map((journeyId, index) => {
+        const result = settled[index]
+        return [
+          journeyId,
+          result.status === 'fulfilled'
+            ? result.value
+            : (reusable[journeyId] ?? [])
+        ]
+      })
     )
   }
 }
@@ -171,48 +228,63 @@ export function sumCampaignStats(
 
 const refreshes = new Map<string, Promise<CampaignStatsSweep>>()
 
-/** Sweep and cache, sharing one in-flight sweep per campaign so concurrent callers cost one round of requests. */
+/**
+ * Sweep and cache, sharing one in-flight sweep per campaign so concurrent
+ * callers cost one round of requests. A failed sweep defers the next refresh
+ * (keeping whatever `cached` holds) before it rethrows.
+ */
 async function refreshSweep(
-  campaign: CampaignStatsSubject
+  campaign: CampaignStatsSubject,
+  cached: CachedCampaignStatsSweep | null
 ): Promise<CampaignStatsSweep> {
   const inFlight = refreshes.get(campaign.id)
   if (inFlight != null) return await inFlight
   const refresh = (async () => {
-    const sweep = await sweepCampaign(campaign, new Date())
-    await statsCache.set(campaign.id, sweep)
-    return sweep
+    try {
+      const sweep = await sweepCampaign(
+        campaign,
+        new Date(),
+        cached?.sweep ?? null
+      )
+      await statsCache.set(campaign.id, sweep)
+      return sweep
+    } catch (error) {
+      logger.error({ error, campaignId: campaign.id }, 'stats sweep failed')
+      await statsCache.deferRefresh(campaign.id, cached)
+      throw error
+    }
   })().finally(() => refreshes.delete(campaign.id))
   refreshes.set(campaign.id, refresh)
   return await refresh
 }
 
 /**
- * The campaign restricted to journeys visitors can reach right now: published
- * or archived, never draft, trashed or deleted. Read live, so a journey that is
- * unpublished drops out and counts again once it is published.
+ * The campaign restricted to journeys that still exist: draft, published and
+ * archived all count, trashed and deleted ones do not. Read live, so a journey
+ * that is trashed drops out and counts again once it is restored.
  */
-async function withVisibleJourneys(
+async function withExistingJourneys(
   campaign: CampaignStatsSubject
 ): Promise<CampaignStatsSubject> {
   const linkedIds = linkedJourneyIds(
     campaign.regions.flatMap((region) => region.languages)
   )
   if (linkedIds.length === 0) return campaign
-  const visible = await prisma.journey.findMany({
+  const existing = await prisma.journey.findMany({
     where: {
       id: { in: linkedIds },
       deletedAt: null,
-      status: { in: ['published', 'archived'] }
+      status: { notIn: ['trashed', 'deleted'] }
     },
     select: { id: true }
   })
-  const visibleIds = new Set(visible.map(({ id }) => id))
+  const existingIds = new Set(existing.map(({ id }) => id))
   return {
     ...campaign,
     regions: campaign.regions.map((region) => ({
       id: region.id,
       languages: region.languages.filter(
-        ({ journeyId }) => journeyId != null && visibleIds.has(journeyId)
+        ({ journeyId }) => journeyId != null && existingIds.has(journeyId)
       )
     }))
   }
@@ -235,33 +307,30 @@ function sweepMatchesCampaign(
 }
 
 /**
- * The Campaign's visitor stats from its cached sweep, sweeping Plausible on a
- * miss, once the entry is stale, or when the entry no longer matches the
- * campaign (a journey linked or published since the sweep). When a sweep fails,
- * the last cached sweep is served and not retried for a few minutes. With
- * nothing cached the failure propagates and a failure marker is cached, so
- * requests in the next few minutes fail fast instead of sweeping again.
+ * The Campaign's visitor stats from its cached sweep. A cached sweep is always
+ * served as it is, however old: when it is stale or no longer matches the
+ * campaign (a journey linked or restored since the sweep) a refresh runs in the
+ * background for the next reader, so the request never waits on Plausible. Only
+ * with nothing cached does the request sweep and wait; if that fails the
+ * failure propagates and a marker is cached, so requests in the next few
+ * minutes fail fast instead of sweeping again. A failed refresh is not retried
+ * for a few minutes; the first request after that retries it.
  */
 export async function getCampaignStats(
   campaignWithAllJourneys: CampaignStatsSubject
 ): Promise<CampaignStats> {
-  const campaign = await withVisibleJourneys(campaignWithAllJourneys)
+  const campaign = await withExistingJourneys(campaignWithAllJourneys)
   const cached = await statsCache.get(campaign.id)
-  if (cached?.sweep != null) {
-    const servable =
-      cached.backingOff ||
-      (cached.fresh && sweepMatchesCampaign(campaign, cached.sweep))
-    if (servable) return sumCampaignStats(campaign, cached.sweep)
+  if (cached?.sweep == null) {
+    if (cached?.backingOff === true)
+      throw new Error('Campaign stats are temporarily unavailable')
+    return sumCampaignStats(campaign, await refreshSweep(campaign, cached))
   }
-  if (cached?.sweep == null && cached?.backingOff === true)
-    throw new Error('Campaign stats are temporarily unavailable')
 
-  try {
-    return sumCampaignStats(campaign, await refreshSweep(campaign))
-  } catch (error) {
-    logger.error({ error, campaignId: campaign.id }, 'stats sweep failed')
-    await statsCache.deferRefresh(campaign.id, cached)
-    if (cached?.sweep == null) throw error
-    return sumCampaignStats(campaign, cached.sweep)
-  }
+  const current = cached.fresh && sweepMatchesCampaign(campaign, cached.sweep)
+  if (!current && !cached.backingOff)
+    refreshSweep(campaign, cached).catch(() => {
+      // refreshSweep has already logged the failure and deferred the retry.
+    })
+  return sumCampaignStats(campaign, cached.sweep)
 }

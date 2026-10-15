@@ -1,6 +1,7 @@
 import Redis from 'ioredis'
 
-import { connection } from '../../../workers/lib/connection'
+import { connection } from '@core/yoga/redis/connection'
+
 import { logger as parentLogger } from '../../logger'
 
 const logger = parentLogger.child({ module: 'campaignStatsCache' })
@@ -50,11 +51,11 @@ let client: Redis | undefined
 
 function getClient(): Redis {
   if (client != null) return client
-  client = new Redis({
-    ...connection,
-    connectTimeout: 5000,
-    maxRetriesPerRequest: 2
-  })
+  const options = { connectTimeout: 5000, maxRetriesPerRequest: 2 }
+  client =
+    'url' in connection
+      ? new Redis(connection.url, options)
+      : new Redis({ host: connection.host, port: connection.port, ...options })
   client.on('error', (error) => {
     logger.error({ error }, 'redis connection error')
   })
