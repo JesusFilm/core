@@ -606,8 +606,14 @@ export async function processDownloads(): Promise<void> {
     )
   }
 
-  if (retryVariantIds.size > 0) {
-    const retryVariants = await prisma.videoVariant.findMany({
+  const retrySampleSize =
+    sampleSize == null ? null : sampleSize - totalProcessed
+
+  if (
+    retryVariantIds.size > 0 &&
+    (retrySampleSize == null || retrySampleSize > 0)
+  ) {
+    const allRetryVariants = await prisma.videoVariant.findMany({
       where: { id: { in: Array.from(retryVariantIds) } },
       include: { muxVideo: true }
     })
@@ -615,10 +621,18 @@ export async function processDownloads(): Promise<void> {
     // A retried variant can be deleted between runs, so findMany won't
     // return it -- drop its id now or it would sit in the cursor file
     // forever, retried-in-name-only on every future invocation.
-    const foundRetryVariantIds = new Set(retryVariants.map((v) => v.id))
+    const foundRetryVariantIds = new Set(allRetryVariants.map((v) => v.id))
     for (const id of retryVariantIds) {
       if (!foundRetryVariantIds.has(id)) retryVariantIds.delete(id)
     }
+
+    // Respect the sample-size cap the same way the missing-rows loop
+    // below does -- a large retry backlog from a prior outage shouldn't
+    // blow through a deliberately small/cautious sampleSize run.
+    const retryVariants =
+      retrySampleSize == null
+        ? allRetryVariants
+        : allRetryVariants.slice(0, retrySampleSize)
 
     await processConcurrently(retryVariants, concurrency, async (variant) => {
       const completed = await processVariant(variant, [])

@@ -650,7 +650,9 @@ describe('download processing utilities', () => {
           width: 1280,
           bitrate: 2500000,
           version: 1,
-          assetId: null,
+          // Legacy rows can carry an assetId from the pre-Mux R2 migration
+          // (download-migrate-r2.ts) -- it must not survive the replacement.
+          assetId: 'r2-asset-1',
           createdAt: new Date(),
           updatedAt: new Date()
         })
@@ -668,7 +670,8 @@ describe('download processing utilities', () => {
         where: { id: 'existing-high-download' },
         data: expect.objectContaining({
           quality: VideoVariantDownloadQuality.high,
-          url: 'https://stream.mux.com/test-playback-id/720p.mp4'
+          url: 'https://stream.mux.com/test-playback-id/720p.mp4',
+          assetId: null
         })
       })
       expect(prismaMock.videoVariantDownload.create).toHaveBeenCalledTimes(1)

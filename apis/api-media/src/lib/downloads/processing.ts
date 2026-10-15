@@ -413,7 +413,14 @@ export async function createDownloadsFromMuxAsset({
             height: download.height,
             width: download.width,
             bitrate: download.bitrate,
-            url: download.url
+            url: download.url,
+            // A legacy row can carry an assetId pointing at a CloudflareR2
+            // record from the pre-Mux migration (download-migrate-r2.ts).
+            // That asset is no longer associated with this download once
+            // the url is replaced with Mux data, so clear the FK rather
+            // than leave it dangling/misleading on the publisher-facing
+            // `asset` field.
+            assetId: null
           }
         })
         changedCount++

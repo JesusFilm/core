@@ -729,5 +729,39 @@ describe('processDownloads', () => {
         rmSync(cursorFile, { force: true })
       }
     })
+
+    it('caps the retry backlog it processes at the sample size, leaving the rest for next run', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-retry-sample-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+      process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE = '1'
+      // A large retry backlog left over from a prior outage.
+      writeFileSync(cursorFile, 'cursor-pos\nvariant-a\nvariant-b')
+
+      try {
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([
+          variant('variant-a'),
+          variant('variant-b')
+        ])
+        mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+        mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+        await runProcessDownloads()
+
+        // Only one retry variant is processed, matching the sample size --
+        // the backlog must not bypass the cap the way the main loop enforces it.
+        expect(mockedGetVideo).toHaveBeenCalledTimes(1)
+        // $queryRaw (the missing-rows pass) must not run once the sample
+        // size is already exhausted by the retry backlog.
+        expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
+
+        const [, ...retryIds] = readFileSync(cursorFile, 'utf-8').split('\n')
+        expect(retryIds).toHaveLength(1)
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
   })
 })
