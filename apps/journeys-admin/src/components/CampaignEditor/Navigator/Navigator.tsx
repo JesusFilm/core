@@ -9,7 +9,6 @@ import {
   useSensors
 } from '@dnd-kit/core'
 import { SortableContext, useSortable } from '@dnd-kit/sortable'
-import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -95,6 +94,11 @@ const NavigatorRowContent = forwardRef<
   const { t } = useTranslation('apps-journeys-admin')
   const rows = useContext(NavigatorRowsContext)
   const divider = node.type === 'SectionContent'
+  const hasTrailing =
+    node.placement != null ||
+    node.needsJourney ||
+    node.unlisted ||
+    handle != null
   return (
     <Stack
       ref={ref}
@@ -117,7 +121,8 @@ const NavigatorRowContent = forwardRef<
         variant={divider ? 'caption' : 'body2'}
         noWrap
         sx={{
-          flexShrink: 0,
+          minWidth: 0,
+          flexShrink: 1,
           ...(divider && {
             color: 'text.secondary',
             textTransform: 'uppercase'
@@ -131,38 +136,51 @@ const NavigatorRowContent = forwardRef<
           variant="caption"
           noWrap
           data-testid="NavigatorSecondaryText"
-          sx={{ color: 'text.secondary', minWidth: 0, flexShrink: 1 }}
+          sx={{ color: 'text.secondary', minWidth: 0, flexShrink: 2 }}
         >
           {node.secondaryText}
         </Typography>
       )}
-      {node.placement != null && (
-        <Chip
-          size="small"
-          variant="outlined"
-          label={node.placement === 'above' ? t('Above') : t('Below')}
-          data-testid="NavigatorPlacement"
-          sx={{ flexShrink: 0 }}
-        />
+      {hasTrailing && (
+        <Stack
+          direction="row"
+          spacing={1}
+          data-testid="NavigatorRowTrailing"
+          sx={{
+            alignItems: 'center',
+            flexShrink: 0,
+            ...(handle != null && { ml: 'auto !important' })
+          }}
+        >
+          {node.placement != null && (
+            <Chip
+              size="small"
+              variant="outlined"
+              label={node.placement === 'above' ? t('Above') : t('Below')}
+              data-testid="NavigatorPlacement"
+              sx={{ flexShrink: 0 }}
+            />
+          )}
+          {node.needsJourney && (
+            <Chip
+              size="small"
+              color="warning"
+              label={t('Needs journey')}
+              data-testid="NavigatorNeedsJourney"
+              sx={{ flexShrink: 0 }}
+            />
+          )}
+          {node.unlisted && (
+            <EyeClosedIcon
+              fontSize="small"
+              titleAccess={t('Not listed')}
+              data-testid="NavigatorUnlisted"
+              sx={{ flexShrink: 0, color: 'text.secondary' }}
+            />
+          )}
+          {handle}
+        </Stack>
       )}
-      {node.needsJourney && (
-        <Chip
-          size="small"
-          color="warning"
-          label={t('Needs journey')}
-          data-testid="NavigatorNeedsJourney"
-          sx={{ flexShrink: 0 }}
-        />
-      )}
-      {node.unlisted && (
-        <EyeClosedIcon
-          fontSize="small"
-          titleAccess={t('Not listed')}
-          data-testid="NavigatorUnlisted"
-          sx={{ flexShrink: 0, color: 'text.secondary' }}
-        />
-      )}
-      {handle != null && <Box sx={{ ml: 'auto !important' }}>{handle}</Box>}
     </Stack>
   )
 })
