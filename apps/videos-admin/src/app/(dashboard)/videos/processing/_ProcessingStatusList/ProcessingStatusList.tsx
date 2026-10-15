@@ -303,7 +303,9 @@ export function ProcessingStatusList(): ReactElement {
         <Button
           size="small"
           disabled={!hasPreviousPage}
-          onClick={() => setOffset((previous) => Math.max(0, previous - PAGE_SIZE))}
+          onClick={() =>
+            setOffset((previous) => Math.max(0, previous - PAGE_SIZE))
+          }
         >
           Previous
         </Button>
