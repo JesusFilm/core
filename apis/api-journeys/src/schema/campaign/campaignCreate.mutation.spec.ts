@@ -23,6 +23,9 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 vi.mock('uuid', () => ({ v4: vi.fn() }))
+vi.mock('../../../../../libs/locales/es-ES/libs-journeys-ui.json', () => ({
+  default: { 'Copy link': 'Copiar enlace' }
+}))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
@@ -693,7 +696,7 @@ describe('campaignCreate', () => {
       expect(rows.every((row) => row.campaignId === 'id-1')).toBe(true)
     })
 
-    it("uses the admin i18next bundle's translation when the default language is not English and has that exact string", async () => {
+    it("uses the libs-journeys-ui bundle's translation when the default language is not English and has that exact string", async () => {
       mockFetchLanguage.mockResolvedValue({ id: '21028', bcp47: 'es' })
       await create({ defaultLanguageId: '21028' })
       const rows = firstCallData<Array<{ key: string; value: string }>>(
@@ -702,7 +705,7 @@ describe('campaignCreate', () => {
       const byKey = Object.fromEntries(
         rows.map(({ key, value }) => [key, value])
       )
-      // "Copy link" exists in the Spanish admin bundle; the other sixteen do
+      // "Copy link" exists in the mocked Spanish bundle; the other sixteen do
       // not and keep their English wording.
       expect(byKey.copy).toBe('Copiar enlace')
       expect(byKey.allRegions).toBe('All regions')
