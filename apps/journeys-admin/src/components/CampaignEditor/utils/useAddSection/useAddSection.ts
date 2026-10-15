@@ -7,7 +7,6 @@ import {
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { newColumnSlots, newSectionBlock } from '../../sectionTypes'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
-import { useCommandFailure } from '../useCommandFailure'
 
 /**
  * Where a new section goes: a page and a position among its sections, or a
@@ -31,7 +30,6 @@ export function useAddSection(): (
   const { campaign } = useCampaignEditor()
   const { addBlock } = useCampaignBlockCreateCommand()
   const sectionCreate = useCampaignSectionCreateMutation(campaign.id)
-  const reportFailure = useCommandFailure()
 
   return function addSection(typename, insert): void {
     const id = uuidv4()
@@ -52,7 +50,7 @@ export function useAddSection(): (
     addBlock({
       block,
       execute() {
-        void sectionCreate(block, input, slots).catch(reportFailure)
+        return sectionCreate(block, input, slots)
       }
     })
   }

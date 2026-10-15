@@ -201,6 +201,30 @@ describe('useCampaignBlockDuplicateCommand', () => {
     ).toBeInTheDocument()
   })
 
+  it('sends no delete on undo, and duplicates again on redo, when the duplicate was refused', async () => {
+    renderEditor([
+      { ...duplicateMock, result: refusal },
+      duplicateMock,
+      deleteMock,
+      restoreMock
+    ])
+    expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(duplicateMock.result).toHaveBeenCalledTimes(1))
+    expect(deleteMock.result).not.toHaveBeenCalled()
+    expect(restoreMock.result).not.toHaveBeenCalled()
+    expect(
+      screen.queryByText(/No more mocked responses/)
+    ).not.toBeInTheDocument()
+  })
+
   it('raises the API message when the undo delete or the redo restore is refused', async () => {
     renderEditor([
       duplicateMock,

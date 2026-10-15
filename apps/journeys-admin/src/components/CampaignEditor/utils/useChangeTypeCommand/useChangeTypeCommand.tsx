@@ -30,9 +30,10 @@ interface ChangeTypeParameters {
  * request of each pair waits for the first, because a slot holds one section
  * at a time and the API refuses a second. If the create is refused after the
  * delete went through, the old section is restored so the column is never
- * left empty, and undo and redo carry on to their restore even when their
- * delete finds nothing to remove (the new section never existed). Every other
- * refusal, the create included, is raised in the editor's error snackbar.
+ * left empty, and undo carries on to its restore even when its delete finds
+ * nothing to remove (the new section never existed). Redo of a refused create
+ * runs the whole change again. Every other refusal, the create included, is
+ * raised in the editor's error snackbar.
  */
 export function useChangeTypeCommand(): {
   addChangeType: (
@@ -106,27 +107,32 @@ export function useChangeTypeCommand(): {
       pageKind: pageKindOf(section) ?? pageKind
     }
 
+    function change(): void {
+      void remove(section)
+        .then(async () => {
+          try {
+            await sectionCreate(next, {
+              id: next.id,
+              campaignId: campaign.id,
+              pageId: section.pageId as string,
+              parentBlockId: section.parentBlockId as string,
+              parentOrder: 0
+            })
+            nextExists = true
+          } catch (error) {
+            nextExists = false
+            reportFailure(error)
+            await restore(section)
+          }
+        })
+        .catch(reportFailure)
+    }
+
     add<Record<string, never>, ChangeTypeParameters, ChangeTypeParameters>({
       parameters: { execute: {}, undo: parameters, redo: parameters },
       execute() {
         focus(parameters, next)
-        void remove(section)
-          .then(async () => {
-            try {
-              await sectionCreate(next, {
-                id: next.id,
-                campaignId: campaign.id,
-                pageId: section.pageId as string,
-                parentBlockId: section.parentBlockId as string,
-                parentOrder: 0
-              })
-            } catch (error) {
-              nextExists = false
-              reportFailure(error)
-              await restore(section)
-            }
-          })
-          .catch(reportFailure)
+        change()
       },
       undo(target) {
         focus(target, target.previous)
@@ -134,6 +140,10 @@ export function useChangeTypeCommand(): {
       },
       redo(target) {
         focus(target, target.next)
+        if (!nextExists) {
+          change()
+          return
+        }
         void replace(target.previous, target.next, true)
       }
     })

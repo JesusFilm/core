@@ -297,6 +297,56 @@ describe('useChangeTypeCommand', () => {
     expect(screen.queryByText('NOT_FOUND')).not.toBeInTheDocument()
   })
 
+  it('runs the whole change again on redo when the create was refused, instead of restoring the section it never made', async () => {
+    const failingCreate = { ...createMock, error: new Error('refused') }
+    const deleteMissingNew = {
+      ...deleteNewMock,
+      error: new Error('NOT_FOUND')
+    }
+    const restoreOldOnUndo = restoreMock('slotRichTextId', slotRichText)
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
+        mocks={[
+          deleteOldMock,
+          failingCreate,
+          restoreOldMock,
+          deleteMissingNew,
+          restoreOldOnUndo,
+          deleteOldAgainMock,
+          createMock
+        ]}
+      >
+        <CommandUndoItem variant="button" />
+        <CommandRedoItem variant="button" />
+        <BlocksProbe />
+        <Inspector isManager={false} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(restoreOldOnUndo.result).toHaveBeenCalled())
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
+    calls.length = 0
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
+
+    await waitFor(() =>
+      expect(calls).toEqual(['delete slotRichTextId', 'create newId'])
+    )
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-newId']))
+    expect(screen.queryByText('NOT_FOUND')).not.toBeInTheDocument()
+  })
+
   it('still restores the old section on undo when the new one was never created', async () => {
     const failingCreate = { ...createMock, error: new Error('refused') }
     const deleteMissingNew = {

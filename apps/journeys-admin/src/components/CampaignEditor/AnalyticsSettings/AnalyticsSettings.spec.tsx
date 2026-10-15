@@ -1,6 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ReactElement, useState } from 'react'
 
-import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign as Campaign,
+  GetCampaign_campaign_blocks_CampaignAnalyticsBlock as AnalyticsBlock
+} from '../../../../__generated__/GetCampaign'
 import { CAMPAIGN_ANALYTICS_BLOCK_UPDATE_SHOW_MAP } from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
@@ -29,6 +33,17 @@ function showMapMock(showMap: boolean): Record<string, unknown> {
 const turnOffMock = showMapMock(false)
 const turnOnMock = showMapMock(true)
 
+/** The panel with a way to unmount it, as selecting another block does. */
+function RemovablePanel({ block }: { block: AnalyticsBlock }): ReactElement {
+  const [mounted, setMounted] = useState(true)
+  return (
+    <>
+      <button onClick={() => setMounted(false)}>Unmount panel</button>
+      {mounted && <AnalyticsSettings block={block} />}
+    </>
+  )
+}
+
 function renderSettings(
   showMap = true,
   mocks: Array<Record<string, unknown>> = [turnOffMock, turnOnMock]
@@ -52,7 +67,7 @@ function renderSettings(
       <CommandUndoItem variant="button" />
       <CommandProbe />
       <SelectionProbe />
-      <AnalyticsSettings block={block} />
+      <RemovablePanel block={block} />
     </StaticEditor>
   )
 }
@@ -99,6 +114,23 @@ describe('AnalyticsSettings', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'The request was refused'
     )
+  })
+
+  it('raises a refused undo in the error snackbar after the panel has unmounted', async () => {
+    renderSettings(true, [
+      turnOffMock,
+      {
+        request: turnOnMock.request,
+        result: { errors: [{ message: 'The undo was refused' }] }
+      }
+    ])
+    fireEvent.click(screen.getByRole('switch', { name: 'Show map' }))
+    await waitFor(() => expect(turnOffMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Unmount panel' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(await screen.findByText('The undo was refused')).toBeInTheDocument()
   })
 
   it('turns the map on from off', async () => {

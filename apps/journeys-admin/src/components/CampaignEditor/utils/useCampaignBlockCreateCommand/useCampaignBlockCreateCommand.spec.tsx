@@ -209,6 +209,27 @@ describe('useCampaignBlockCreateCommand', () => {
     ).toBeInTheDocument()
   })
 
+  it('sends no delete on undo, and creates again on redo, when the create was refused', async () => {
+    renderEditor([
+      { ...textCreateMock, result: refusal },
+      textCreateMock,
+      deleteMock
+    ])
+    await addExtra('Text', 'Above text')
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(textCreateMock.result).toHaveBeenCalledTimes(1))
+    expect(deleteMock.result).not.toHaveBeenCalled()
+    expect(
+      screen.queryByText(/No more mocked responses/)
+    ).not.toBeInTheDocument()
+  })
+
   it('raises the API message when the undo delete is refused', async () => {
     renderEditor([textCreateMock, { ...deleteMock, result: refusal }])
     await addExtra('Text', 'Above text')
