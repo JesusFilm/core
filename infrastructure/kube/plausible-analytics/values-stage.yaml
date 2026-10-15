@@ -170,7 +170,12 @@ plausible-analytics:
     port: 80
 
   ingress:
-    enabled: true
+    # Off since the move to ECS: analytics.stage.central.jesusfilm.org is a
+    # Route53 record to the public ALB, owned by Terraform
+    # (infrastructure/environments/stage/main.tf). Disabling the Ingress also
+    # stops external-dns desiring that record, which has to happen before
+    # Terraform takes it over (infrastructure/modules/plausible/README.md).
+    enabled: false
     annotations:
       kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: 'true'
