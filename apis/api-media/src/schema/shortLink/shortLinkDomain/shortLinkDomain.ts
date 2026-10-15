@@ -36,7 +36,11 @@ import {
 // Adding a domain, every setting on it (redirects, slug grammar, services, and
 // where it is served from: path prefix, KV namespace, Worker binding) and
 // republishing it belong to the shortLinkAdmin role or a superAdmin; publisher
-// and shortLinkEditor only read domains. The lazy superAdmin scope is only
+// and shortLinkEditor only read domains. shortLinkAdmin is the admin for
+// everything short-link, superAdmin for everything in core: that includes
+// naming the KV namespace a domain publishes into, which the account-wide
+// CLOUDFLARE_SHORT_LINKS_API_TOKEN then writes to, so the role is granted on
+// that trust (decided 2026-10-15, PR #9782). The lazy superAdmin scope is only
 // evaluated when the role scope fails. The Cloudflare side (namespace, binding,
 // route) is done by hand: see workers/short-links-redirect/README.md, "Setting
 // up a domain".
