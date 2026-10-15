@@ -22,18 +22,24 @@ import Typography from '@mui/material/Typography'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+const PAGE_SIZE = 50
+
 const PROCESSING_STATUSES = gql`
   query ProcessingStatuses(
     $status: VideoVariantReconciliationStatus
     $blockingStage: VideoVariantProcessingStage
     $olderThan: DateTime
     $minRetryCount: Int
+    $offset: Int
+    $limit: Int
   ) {
     videoVariantReconciliations(
       status: $status
       blockingStage: $blockingStage
       olderThan: $olderThan
       minRetryCount: $minRetryCount
+      offset: $offset
+      limit: $limit
     ) {
       id
       status
@@ -102,6 +108,7 @@ export function ProcessingStatusList(): ReactElement {
   const [blockingStage, setBlockingStage] = useState('')
   const [olderThan, setOlderThan] = useState('')
   const [minRetryCount, setMinRetryCount] = useState('')
+  const [offset, setOffset] = useState(0)
   const { data, loading, error, refetch } = useQuery<ProcessingStatusesData>(
     PROCESSING_STATUSES,
     {
@@ -112,20 +119,33 @@ export function ProcessingStatusList(): ReactElement {
         // Server rejects minRetryCount without blockingStage; the field is
         // also disabled below, but guard the request in case state is stale.
         minRetryCount:
-          blockingStage && minRetryCount ? Number(minRetryCount) : undefined
+          blockingStage && minRetryCount ? Number(minRetryCount) : undefined,
+        offset,
+        limit: PAGE_SIZE
       },
       pollInterval: 30_000
     }
   )
+  const resultCount = data?.videoVariantReconciliations.length ?? 0
+  const hasPreviousPage = offset > 0
+  const hasNextPage = resultCount === PAGE_SIZE
+
+  const updateFilter = (apply: () => void): void => {
+    apply()
+    setOffset(0)
+  }
   const [retryProcessing, { loading: retrying }] = useMutation(RETRY_PROCESSING)
 
   const handleRetry = async (id: string): Promise<void> => {
     try {
       await retryProcessing({ variables: { id } })
-      await refetch()
     } catch {
       enqueueSnackbar('Failed to retry processing', { variant: 'error' })
+      return
     }
+    // Retry already succeeded server-side; a refetch blip shouldn't be
+    // reported as a failed retry. The poll interval will pick up the new state.
+    await refetch().catch(() => undefined)
   }
 
   return (
@@ -145,7 +165,9 @@ export function ProcessingStatusList(): ReactElement {
             labelId="health-filter-label"
             label="Health"
             value={status}
-            onChange={(event) => setStatus(event.target.value)}
+            onChange={(event) =>
+              updateFilter(() => setStatus(event.target.value))
+            }
           >
             <MenuItem value="">All</MenuItem>
             {['processing', 'degraded', 'complete', 'failed'].map((value) => (
@@ -161,7 +183,9 @@ export function ProcessingStatusList(): ReactElement {
             labelId="stage-filter-label"
             label="Blocking stage"
             value={blockingStage}
-            onChange={(event) => setBlockingStage(event.target.value)}
+            onChange={(event) =>
+              updateFilter(() => setBlockingStage(event.target.value))
+            }
           >
             <MenuItem value="">Any</MenuItem>
             {[
@@ -182,7 +206,9 @@ export function ProcessingStatusList(): ReactElement {
           label="Older than"
           type="datetime-local"
           value={olderThan}
-          onChange={(event) => setOlderThan(event.target.value)}
+          onChange={(event) =>
+            updateFilter(() => setOlderThan(event.target.value))
+          }
           slotProps={{ inputLabel: { shrink: true } }}
         />
         <TextField
@@ -190,7 +216,9 @@ export function ProcessingStatusList(): ReactElement {
           label="Minimum retries"
           type="number"
           value={minRetryCount}
-          onChange={(event) => setMinRetryCount(event.target.value)}
+          onChange={(event) =>
+            updateFilter(() => setMinRetryCount(event.target.value))
+          }
           disabled={!blockingStage}
           helperText={
             !blockingStage ? 'Choose a blocking stage first' : undefined
@@ -270,6 +298,23 @@ export function ProcessingStatusList(): ReactElement {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Stack direction="row" spacing={2} justifyContent="flex-end">
+        <Button
+          size="small"
+          disabled={!hasPreviousPage}
+          onClick={() => setOffset((previous) => Math.max(0, previous - PAGE_SIZE))}
+        >
+          Previous
+        </Button>
+        <Button
+          size="small"
+          disabled={!hasNextPage}
+          onClick={() => setOffset((previous) => previous + PAGE_SIZE)}
+        >
+          Next
+        </Button>
+      </Stack>
     </Stack>
   )
 }

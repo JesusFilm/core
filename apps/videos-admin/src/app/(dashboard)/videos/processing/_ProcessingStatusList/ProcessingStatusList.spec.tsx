@@ -163,4 +163,60 @@ describe('ProcessingStatusList', () => {
     })
     expect(refetch).not.toHaveBeenCalled()
   })
+
+  it('does not report a failed retry when only the follow-up refetch fails', async () => {
+    const retry = vi.fn().mockResolvedValue({ data: {} })
+    const refetch = vi.fn().mockRejectedValue(new Error('network blip'))
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: {
+        videoVariantReconciliations: [
+          {
+            id: 'upload-1',
+            status: 'failed',
+            videoId: 'episode-1',
+            videoVariantId: 'variant-1',
+            errorMessage: 'Mux upload failed',
+            updatedAt: '2026-07-21T12:00:00.000Z',
+            processingStages: JSON.stringify({
+              mux: { state: 'failed', attempts: 1 }
+            })
+          }
+        ]
+      },
+      loading: false,
+      refetch
+    } as never)
+
+    render(
+      <SnackbarProvider>
+        <ProcessingStatusList />
+      </SnackbarProvider>
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry processing' }))
+
+    await waitFor(() => {
+      expect(retry).toHaveBeenCalledWith({ variables: { id: 'upload-1' } })
+    })
+    expect(
+      screen.queryByText('Failed to retry processing')
+    ).not.toBeInTheDocument()
+  })
+
+  it('disables Previous on the first page and Next when a full page is returned', async () => {
+    const retry = vi.fn()
+    const refetch = vi.fn()
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: { videoVariantReconciliations: [] },
+      loading: false,
+      refetch
+    } as never)
+
+    render(<ProcessingStatusList />)
+
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
+  })
 })
