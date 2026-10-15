@@ -110,7 +110,7 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
   })
 
-  it('keeps the child Variant unpublished, but still publishes and indexes the generated parent Variant, when the parent Video record fails to index', async () => {
+  it('still publishes the child Variant, and the generated parent Variant, when a newly-created parent Video record fails to index', async () => {
     const reconciliation: ReconciliationRecord = {
       reason: 'video-variant-publication-change',
       videoId: 'episode-1',
@@ -149,35 +149,107 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
-    // The child Variant's own publish step never runs -- reconcileParentVariants
-    // reports failure before reconcileVideoVariantReconciliation gets there.
-    expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith({
-      where: { id: 'variant-1' },
-      data: { published: true }
-    })
-    // But the generated parent Variant is still published and indexed: its own
-    // Video record (series-1) failing to index must not block its Variant record.
+    // The generated parent Variant is published and indexed: its own Video
+    // record (series-1) failing to index must not block its Variant record.
     expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
       where: { id: '20770_series-1' },
       data: { published: true }
     })
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
+    // Nor does the parent's Video-index failure block the real child
+    // Variant -- it must still publish and index.
+    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+      where: { id: 'variant-1' },
+      data: { published: true }
+    })
+    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
+    // The parent's failure is persisted as degraded while it's the latest
+    // known state (processingStages isn't asserted here: `stages` is a
+    // single mutable object shared across every persist call in this flow,
+    // so by the time the mock history is inspected it only shows the final
+    // state, not what was true at this call).
     expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
       where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
         status: 'degraded',
-        processingStages: expect.objectContaining({
-          algoliaVideo: expect.objectContaining({
-            state: 'failed',
-            error: 'Algolia unavailable',
-            attempts: 1
-          })
-        })
+        errorMessage: 'Algolia unavailable'
+      })
+    })
+    // ...but the shared algoliaVideo stage is overwritten once the child's
+    // own (successful) Video record sync runs afterward, so the final
+    // persisted status reflects that, not the parent's transient failure.
+    expect(result).toMatchObject({
+      publicationReady: true,
+      status: 'complete'
+    })
+  })
+
+  it('still publishes the child Variant when an existing parent Variant fails to index its Video record', async () => {
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: false,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+    vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
+    prismaMock.video.findMany.mockResolvedValue([
+      { id: 'series-1', slug: 'do-you-ever-wonder' }
+    ] as never)
+    // The parent Variant already exists and carries no media of its own, so
+    // this exercises reconcileParentVariant's existing-parent branch rather
+    // than the generated-parent creation path above.
+    prismaMock.videoVariant.findFirst.mockResolvedValue({
+      id: '20770_series-1',
+      hls: '',
+      dash: '',
+      share: '',
+      downloads: []
+    } as never)
+    prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+    vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(
+      new Error('Algolia unavailable')
+    )
+
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+
+    // The existing parent Variant is still indexed despite its Video record
+    // (series-1) failing to index.
+    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
+    // The parent's Video-index failure must not block the real child Variant.
+    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+      where: { id: 'variant-1' },
+      data: { published: true }
+    })
+    expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
+    // processingStages isn't asserted here for the same reason as above: it's
+    // a single mutable object shared across every persist call in this flow.
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1' },
+      data: expect.objectContaining({
+        status: 'degraded',
+        errorMessage: 'Algolia unavailable'
       })
     })
     expect(result).toMatchObject({
-      publicationReady: false,
-      status: 'degraded'
+      publicationReady: true,
+      status: 'complete'
     })
   })
 

@@ -181,7 +181,13 @@ async function reconcileParentVariant({
     if (result.failure != null) {
       stages[result.failure.stageName] = result.failure.stage
       await persistStatus('degraded', result.failure.stage)
-      return { publicationReady: false, status: 'degraded' }
+      // A generated parent Video-record failure never blocks: the parent
+      // Variant itself is already published and indexed by this point, and
+      // the real child Variant (not yet processed) must not get stuck behind
+      // its container's search-index sync.
+      if (result.failure.stageName !== 'algoliaVideo') {
+        return { publicationReady: false, status: 'degraded' }
+      }
     }
     return null
   }
@@ -202,9 +208,12 @@ async function reconcileParentVariant({
     return { publicationReady: false, status: 'degraded' }
   }
 
+  // Record the parent Video-record failure, but don't block on it: the
+  // parent Variant's own publish/index above already ran, and the real child
+  // Variant (not yet processed by the caller) must not get stuck behind its
+  // container's search-index sync.
   if (stages.algoliaVideo.state === 'failed') {
     await persistStatus('degraded', stages.algoliaVideo)
-    return { publicationReady: false, status: 'degraded' }
   }
 
   return null
