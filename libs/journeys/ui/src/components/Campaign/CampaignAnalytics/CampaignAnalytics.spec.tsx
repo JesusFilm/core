@@ -25,7 +25,8 @@ import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
 import type { GetCampaignStats_campaignStats as CampaignStats } from './__generated__/GetCampaignStats'
 import { CampaignAnalytics } from './CampaignAnalytics'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
-import { WorldAtlasTopology, WorldMapShapes, buildWorldMap } from './WorldMap'
+import { WorldAtlasTopology, WorldMapShapes } from './WorldMap'
+import { buildWorldMap } from './WorldMap/buildWorldMap'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
 

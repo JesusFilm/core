@@ -9,15 +9,12 @@ import { MouseEvent, ReactElement, useCallback } from 'react'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import { GetCampaign_campaign_theme as CampaignTheme } from '../../../../../__generated__/GetCampaign'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { CanvasBlock, CanvasSection } from '../CanvasSection'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
-  theme: CampaignTheme
-  previewLanguageId: string | null
 }
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -31,9 +28,7 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
  * section ever collide with each other.
  */
 export function CanvasColumnSlot({
-  slot,
-  theme,
-  previewLanguageId
+  slot
 }: CanvasColumnSlotProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { selection, selectBlock, dispatch } = useCampaignEditor()
@@ -131,12 +126,7 @@ export function CanvasColumnSlot({
         <DragIcon fontSize="small" />
       </Box>
       {section != null ? (
-        <CanvasSection
-          block={section}
-          theme={theme}
-          previewLanguageId={previewLanguageId}
-          inSlot
-        />
+        <CanvasSection block={section} inSlot />
       ) : (
         <ButtonBase
           data-testid={`CanvasEmptyColumn-${slot.id}`}

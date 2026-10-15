@@ -60,11 +60,13 @@ builder.mutationField('campaignRegionSwitcherBlockCreate', (t) =>
         context.user,
         () => ({
           ...validateSectionText(input, ['title']),
-          switcherVariant: assertEnum(
-            input.variant ?? 'cards',
-            'variant',
-            SWITCHER_VARIANTS
-          )
+          ...(input.variant != null && {
+            switcherVariant: assertEnum(
+              input.variant,
+              'variant',
+              SWITCHER_VARIANTS
+            )
+          })
         })
       )
   })

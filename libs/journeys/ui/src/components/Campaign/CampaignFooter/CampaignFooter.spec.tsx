@@ -12,7 +12,8 @@ import {
   campaignPublic,
   chromeBlocks,
   eurRegion,
-  footerBlock
+  footerBlock,
+  headerBlock
 } from '../testData'
 import type { CampaignBlock, CampaignPublic, CampaignRegion } from '../types'
 
@@ -113,7 +114,7 @@ describe('CampaignFooter', () => {
   })
 
   it('renders an empty footer as a thin band', () => {
-    renderFooter(withFooter({}, [footerBlock]))
+    renderFooter(withFooter({}, [headerBlock, footerBlock]))
     const footer = screen.getByTestId('CampaignFooter')
     expect(footer).toHaveAttribute('data-empty', 'true')
     expect(screen.queryByTestId('CampaignFooterRow')).not.toBeInTheDocument()

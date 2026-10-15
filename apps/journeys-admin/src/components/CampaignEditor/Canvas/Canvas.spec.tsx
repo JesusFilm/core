@@ -13,7 +13,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns } from '../data'
 import { newSectionBlock } from '../sectionTypes'
 import {
@@ -82,16 +81,6 @@ const swapMock = {
       ]
     }
   }))
-}
-
-/** Dispatches the Edit request that focuses the selected block's primary text. */
-function EditRequester(): ReactElement {
-  const { dispatch } = useCampaignEditor()
-  return (
-    <Button onClick={() => dispatch({ type: 'RequestEditAction' })}>
-      Edit
-    </Button>
-  )
 }
 
 function ViewHarness(): ReactElement {
@@ -844,11 +833,7 @@ describe('Canvas scaled to fit', () => {
 
   it('focuses an inline input without scrolling the editor page', async () => {
     const { baseElement } = render(
-      <StaticEditor
-        mocks={[orderMock]}
-        initialState={{ selectedBlockId: 'heroButtonId' }}
-      >
-        <EditRequester />
+      <StaticEditor mocks={[orderMock]}>
         <Canvas
           campaign={campaign}
           pageKind={CampaignPageKind.landing}
@@ -856,13 +841,15 @@ describe('Canvas scaled to fit', () => {
         />
       </StaticEditor>
     )
-    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const body = await frameBody(baseElement, 'CanvasExtra-heroButtonId')
     // The input lives in the frame's window, which has its own HTMLElement.
     const frameWindow = body.ownerDocument.defaultView as Window &
       typeof globalThis
     const focus = vi.spyOn(frameWindow.HTMLElement.prototype, 'focus')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+    fireEvent.click(
+      body.querySelector('[data-testid="CanvasExtra-heroButtonId"]')!
+    )
 
     await waitFor(() => expect(focus).toHaveBeenCalled())
     expect(

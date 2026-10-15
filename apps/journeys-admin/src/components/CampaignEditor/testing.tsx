@@ -7,10 +7,10 @@ import { parse } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
+import { CAMPAIGN_POSSIBLE_TYPES } from '@core/journeys/ui/Campaign/libs/campaignPossibleTypes'
 import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
-import { CAMPAIGN_POSSIBLE_TYPES } from '../../libs/apolloClient/campaignPossibleTypes'
 import { DebounceLink } from '../../libs/apolloClient/DebounceLink'
 import { GET_CAMPAIGN, useCampaignQuery } from '../../libs/useCampaignQuery'
 

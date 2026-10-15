@@ -25,7 +25,6 @@ builder.mutationField('qrCodeCreate', (t) =>
 
         const to = await getTo({
           shortLinkId,
-          teamId: String(input.teamId),
           toJourneyId: String(input.journeyId)
         })
 

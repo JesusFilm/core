@@ -2,12 +2,13 @@ import { ApolloLink, DocumentNode, gql } from '@apollo/client'
 import { useApolloClient } from '@apollo/client/react'
 import { useCallback } from 'react'
 
+import { CAMPAIGN_SECTION_TYPENAMES } from '@core/journeys/ui/Campaign/libs/campaignPossibleTypes'
+
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
   CampaignBackgroundOverlay
 } from '../../../__generated__/globalTypes'
-import { CAMPAIGN_SECTION_TYPENAMES } from '../apolloClient/campaignPossibleTypes'
 
 /** Every typename that carries the nine shared section fields: the sections and the chrome. */
 export type CampaignStyledTypename = (typeof CAMPAIGN_SECTION_TYPENAMES)[number]

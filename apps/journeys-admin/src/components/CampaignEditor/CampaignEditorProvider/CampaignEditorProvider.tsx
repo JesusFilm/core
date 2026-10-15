@@ -11,6 +11,8 @@ import {
   useRef
 } from 'react'
 
+import { isExtra } from '@core/journeys/ui/Campaign'
+
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -51,8 +53,6 @@ export interface CampaignEditorState {
   selectedBlockId?: string
   /** The selected region card; its switcher, if known, is `selectedBlockId`. */
   selectedRegionId?: string
-  /** Bumped by the bar's Edit so the selected block's primary text takes focus. */
-  editRequest: number
   /** The open rail panel; a view choice, never a Command. */
   panel: CampaignPanel
   /** The Inspector tab; a view choice, never a Command. */
@@ -91,9 +91,6 @@ interface SetEditorFocusAction {
   selectedBlockId?: string
   selectedRegionId?: string
 }
-interface RequestEditAction {
-  type: 'RequestEditAction'
-}
 interface SetPreviewLanguageAction {
   type: 'SetPreviewLanguageAction'
   previewLanguageId: string
@@ -121,7 +118,6 @@ export type CampaignEditorAction =
   | SelectBlockAction
   | SelectRegionAction
   | SetEditorFocusAction
-  | RequestEditAction
   | SetPreviewLanguageAction
   | SetPanelAction
   | OpenAddPanelAction
@@ -165,8 +161,6 @@ export function reducer(
         selectedRegionId: action.selectedRegionId,
         addPreset: undefined
       }
-    case 'RequestEditAction':
-      return { ...state, editRequest: state.editRequest + 1 }
     case 'SetPreviewLanguageAction':
       return { ...state, previewLanguageId: action.previewLanguageId }
     case 'SetPanelAction': {
@@ -326,10 +320,7 @@ export function resolveSelection(
     )
     return { kind: 'card', block, host }
   }
-  if (
-    block.__typename === 'CampaignTypographyBlock' ||
-    block.__typename === 'CampaignButtonBlock'
-  ) {
+  if (isExtra(block)) {
     if (block.regionId != null)
       return {
         kind: 'text',
@@ -412,7 +403,6 @@ export function CampaignEditorProvider({
   const defaultState: CampaignEditorState = {
     pageKind: CampaignPageKind.landing,
     previewLanguageId: campaign.defaultLanguageId,
-    editRequest: 0,
     panel: 'none',
     inspectorTab: 'style',
     navigatorExpandRequest: 0

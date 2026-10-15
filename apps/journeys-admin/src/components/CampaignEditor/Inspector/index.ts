@@ -1,1 +1,1 @@
-export { INSPECTOR_WIDTH, Inspector } from './Inspector'
+export { INSPECTOR_PADDING, INSPECTOR_WIDTH, Inspector } from './Inspector'

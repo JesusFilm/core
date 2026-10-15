@@ -10,5 +10,8 @@ export { CampaignRadius } from './campaignRadius'
 export { CampaignButtonRadius } from './campaignButtonRadius'
 export { CampaignChildPlacement } from './campaignChildPlacement'
 export { CampaignStringKey } from './campaignStringKey'
-export { CampaignTextSource } from './campaignTextSource'
+export {
+  CampaignTextSource,
+  type CampaignTextSourceValue
+} from './campaignTextSource'
 export { CampaignImageSlot } from './campaignImageSlot'

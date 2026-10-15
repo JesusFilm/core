@@ -1,11 +1,11 @@
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 
-import { buildWorldMap } from '@core/journeys/ui/Campaign'
 import type {
   WorldAtlasTopology,
   WorldMapShapes
 } from '@core/journeys/ui/Campaign'
+import { buildWorldMap } from '@core/journeys/ui/Campaign/CampaignAnalytics/WorldMap/buildWorldMap'
 
 let worldMap: Promise<WorldMapShapes> | undefined
 
