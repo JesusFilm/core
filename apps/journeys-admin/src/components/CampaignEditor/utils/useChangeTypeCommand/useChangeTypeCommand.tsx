@@ -12,6 +12,7 @@ import {
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { newSectionBlock } from '../../sectionTypes'
+import { useCommandFailure } from '../useCommandFailure'
 
 interface ChangeTypeParameters {
   /** The section the slot held before the change. */
@@ -30,7 +31,8 @@ interface ChangeTypeParameters {
  * at a time and the API refuses a second. If the create is refused after the
  * delete went through, the old section is restored so the column is never
  * left empty, and undo and redo carry on to their restore even when their
- * delete finds nothing to remove (the new section never existed).
+ * delete finds nothing to remove (the new section never existed). Every other
+ * refusal, the create included, is raised in the editor's error snackbar.
  */
 export function useChangeTypeCommand(): {
   addChangeType: (
@@ -48,6 +50,7 @@ export function useChangeTypeCommand(): {
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
   const sectionCreate = useCampaignSectionCreateMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function focus(target: ChangeTypeParameters, block: CampaignBlock): void {
     dispatch({
@@ -73,10 +76,15 @@ export function useChangeTypeCommand(): {
 
   async function replace(
     outgoing: CampaignBlock,
-    incoming: CampaignBlock
+    incoming: CampaignBlock,
+    outgoingExists: boolean
   ): Promise<void> {
-    await remove(outgoing).catch(() => undefined)
-    await restore(incoming).catch(() => undefined)
+    try {
+      await remove(outgoing)
+    } catch (error) {
+      if (outgoingExists) reportFailure(error)
+    }
+    await restore(incoming).catch(reportFailure)
   }
 
   function addChangeType(
@@ -91,6 +99,7 @@ export function useChangeTypeCommand(): {
       parentBlockId: section.parentBlockId,
       parentOrder: 0
     })
+    let nextExists = true
     const parameters: ChangeTypeParameters = {
       previous: section,
       next,
@@ -111,19 +120,21 @@ export function useChangeTypeCommand(): {
                 parentBlockId: section.parentBlockId as string,
                 parentOrder: 0
               })
-            } catch {
+            } catch (error) {
+              nextExists = false
+              reportFailure(error)
               await restore(section)
             }
           })
-          .catch(() => undefined)
+          .catch(reportFailure)
       },
       undo(target) {
         focus(target, target.previous)
-        void replace(target.next, target.previous)
+        void replace(target.next, target.previous, nextExists)
       },
       redo(target) {
         focus(target, target.next)
-        void replace(target.previous, target.next)
+        void replace(target.previous, target.next, true)
       }
     })
   }

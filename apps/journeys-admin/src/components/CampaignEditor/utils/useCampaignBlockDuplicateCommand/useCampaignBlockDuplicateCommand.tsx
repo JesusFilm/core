@@ -9,6 +9,7 @@ import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignB
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 export interface CampaignBlockIdMap {
   oldId: string
@@ -122,6 +123,7 @@ export function useCampaignBlockDuplicateCommand(): {
   const [duplicate] = useCampaignBlockDuplicateMutation(campaign.id)
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function addBlockDuplicate(block: CampaignBlock): void {
     if (block.parentOrder == null) return
@@ -156,21 +158,21 @@ export function useCampaignBlockDuplicateCommand(): {
         void duplicate({
           variables: { id: block.id, idMap },
           optimisticResponse: { campaignBlockDuplicate: subtreeAfter }
-        })
+        }).catch(reportFailure)
       },
       undo() {
         focus(block.id)
         void blockDelete({
           variables: { id: copy.id },
           optimisticResponse: { campaignBlockDelete: siblingsBefore }
-        })
+        }).catch(reportFailure)
       },
       redo() {
         focus(copy.id)
         void blockRestore({
           variables: { id: copy.id },
           optimisticResponse: { campaignBlockRestore: subtreeAfter }
-        })
+        }).catch(reportFailure)
       }
     })
   }

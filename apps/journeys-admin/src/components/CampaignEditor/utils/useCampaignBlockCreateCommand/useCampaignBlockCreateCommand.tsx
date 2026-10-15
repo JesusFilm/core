@@ -6,6 +6,7 @@ import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBloc
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 interface AddBlockParameters {
   /** The new block as its create mutation's optimistic response renders it. */
@@ -49,6 +50,7 @@ export function useCampaignBlockCreateCommand(): {
   } = useCampaignEditor()
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function addBlock({ block, execute }: AddBlockParameters): void {
     const blockPageKind = pageKindOf(block) ?? pageKind
@@ -92,7 +94,7 @@ export function useCampaignBlockCreateCommand(): {
         void blockDelete({
           variables: { id: created.id },
           optimisticResponse: { campaignBlockDelete: siblingsAfter }
-        })
+        }).catch(reportFailure)
       },
       redo({ block: created, pageKind: targetPageKind }) {
         dispatch({
@@ -103,7 +105,7 @@ export function useCampaignBlockCreateCommand(): {
         void blockRestore({
           variables: { id: created.id },
           optimisticResponse: { campaignBlockRestore: [created] }
-        })
+        }).catch(reportFailure)
       }
     })
   }

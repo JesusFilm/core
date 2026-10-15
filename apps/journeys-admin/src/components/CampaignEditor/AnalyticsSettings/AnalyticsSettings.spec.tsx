@@ -29,7 +29,10 @@ function showMapMock(showMap: boolean): Record<string, unknown> {
 const turnOffMock = showMapMock(false)
 const turnOnMock = showMapMock(true)
 
-function renderSettings(showMap = true): ReturnType<typeof render> {
+function renderSettings(
+  showMap = true,
+  mocks: Array<Record<string, unknown>> = [turnOffMock, turnOnMock]
+): ReturnType<typeof render> {
   const campaignProp: Campaign = {
     ...campaign,
     blocks: campaign.blocks.map((block) =>
@@ -45,7 +48,7 @@ function renderSettings(showMap = true): ReturnType<typeof render> {
   if (block?.__typename !== 'CampaignAnalyticsBlock')
     throw new Error('the fixture has no analytics block')
   return render(
-    <StaticEditor campaignProp={campaignProp} mocks={[turnOffMock, turnOnMock]}>
+    <StaticEditor campaignProp={campaignProp} mocks={mocks}>
       <CommandUndoItem variant="button" />
       <CommandProbe />
       <SelectionProbe />
@@ -73,14 +76,29 @@ describe('AnalyticsSettings', () => {
     fireEvent.click(screen.getByRole('switch', { name: 'Show map' }))
 
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
-    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
-      'landingAnalyticsId'
-    )
     await waitFor(() => expect(turnOffMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     await waitFor(() => expect(turnOnMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingAnalyticsId'
+    )
+  })
+
+  it('shows the API message when the write is refused', async () => {
+    renderSettings(true, [
+      {
+        request: turnOffMock.request,
+        result: { errors: [{ message: 'The request was refused' }] }
+      }
+    ])
+
+    fireEvent.click(screen.getByRole('switch', { name: 'Show map' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The request was refused'
+    )
   })
 
   it('turns the map on from off', async () => {

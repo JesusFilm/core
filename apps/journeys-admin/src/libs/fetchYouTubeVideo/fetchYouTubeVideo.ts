@@ -6,7 +6,9 @@ import type {
 /**
  * Read one YouTube video (snippet and duration) from the YouTube Data API,
  * as the journey video library resolves a pasted YouTube link. The
- * API answers an unknown id with no items, so the result can be undefined.
+ * API answers an unknown id with no items, so the result can be undefined;
+ * it answers a refused request (a bad key, an exhausted quota) with an error
+ * payload, which throws the API's message.
  */
 export async function fetchYouTubeVideo(
   id: string
@@ -16,8 +18,15 @@ export async function fetchYouTubeVideo(
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     id
   }).toString()
-  const videosData: YoutubeVideosData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/videos?${videosQuery}`)
-  ).json()
-  return videosData.items[0] as YoutubeVideo | undefined
+  const response = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?${videosQuery}`
+  )
+  const videosData: Partial<YoutubeVideosData> & {
+    error?: { message?: string }
+  } = await response.json()
+  if (!response.ok)
+    throw new Error(
+      videosData.error?.message ?? `YouTube request failed (${response.status})`
+    )
+  return videosData.items?.[0] as YoutubeVideo | undefined
 }

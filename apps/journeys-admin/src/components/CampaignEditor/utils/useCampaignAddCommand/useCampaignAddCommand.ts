@@ -8,6 +8,7 @@ import { useCampaignTypographyBlockCreateMutation } from '../../../../libs/useCa
 import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { useAddSection } from '../useAddSection'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 import { AddTargets, ExtraTypename, addTargets } from './addTargets'
 
@@ -43,6 +44,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     campaign.id
   )
   const [buttonCreate] = useCampaignButtonBlockCreateMutation(campaign.id)
+  const reportFailure = useCommandFailure()
   const targets = addTargets({
     selection,
     campaign,
@@ -101,7 +103,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
           void typographyCreate({
             variables: { input },
             optimisticResponse: { campaignTypographyBlockCreate: block }
-          })
+          }).catch(reportFailure)
         }
       })
       return
@@ -124,7 +126,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
         void buttonCreate({
           variables: { input: { ...input, label: NEW_BUTTON_LABEL } },
           optimisticResponse: { campaignButtonBlockCreate: block }
-        })
+        }).catch(reportFailure)
       }
     })
   }
@@ -157,7 +159,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
             input: { id, campaignId: campaign.id, regionId: region.id }
           },
           optimisticResponse: { campaignTypographyBlockCreate: block }
-        })
+        }).catch(reportFailure)
       }
     })
   }
