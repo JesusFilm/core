@@ -81,10 +81,15 @@ export function isRetryableError(error: unknown): boolean {
 // never stops the Variant's own record from being written.
 //
 // `stage` is a single slot shared across every Video record synced during
-// one reconciliation run (a parent container, then the child's own Video).
-// Each call still syncs its own videoId regardless, but once a failure is
-// recorded in this run a later call's success must not erase it -- doing so
-// would mask a permanently-failing index from ever being retried.
+// one reconciliation run (a parent container, then the child's own Video,
+// or multiple parent containers). Its `attempts` is pre-incremented once for
+// the whole run by the caller (see the `algoliaVideo` seeds below), so this
+// function stamps that same count on every call rather than adding to it --
+// otherwise a run touching N videoIds would advance the backoff counter by N
+// instead of 1, reaching `retryAtFor`'s cutoff far faster than intended.
+// Likewise, once a failure is recorded in this run a later call's success
+// must not erase it -- doing so would mask a permanently-failing index from
+// ever being retried.
 export async function syncVideoRecordStage(
   videoId: string,
   stage: ProcessingStage
@@ -92,9 +97,9 @@ export async function syncVideoRecordStage(
   const alreadyFailedThisRun = stage.state === 'failed'
   try {
     await updateVideoInAlgolia(videoId)
-    return alreadyFailedThisRun ? stage : completedStage(stage.attempts + 1)
+    return alreadyFailedThisRun ? stage : completedStage(stage.attempts)
   } catch (error) {
-    return failedStage(error, stage.attempts + 1)
+    return failedStage(error, stage.attempts)
   }
 }
 
@@ -113,7 +118,7 @@ export function generatedParentStages(
     downloads: notApplicableStage(),
     algoliaVideo: {
       state: 'pending',
-      attempts: previousAttempts(processingStages, 'algoliaVideo')
+      attempts: previousAttempts(processingStages, 'algoliaVideo') + 1
     },
     algoliaVariant: {
       state: 'pending',
