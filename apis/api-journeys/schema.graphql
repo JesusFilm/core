@@ -4517,7 +4517,7 @@ type Mutation {
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!): CampaignJourneyListBlock!
 
   """
-  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
+  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published or archived journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -4525,7 +4525,7 @@ type Mutation {
   - NOT_FOUND: parentBlockId does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
-  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or unpublished).
+  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
   """
   campaignJourneyBlockCreate(
     """A client-chosen id for the new item."""
@@ -5862,7 +5862,17 @@ type Query {
   integrations(teamId: ID!): [Integration!]!
   integrationGooglePickerToken(integrationId: ID!): String!
   adminJourney(id: ID!, idType: IdType = slug): Journey!
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+    useLastActiveTeamId: Boolean
+
+    """
+    Return every journey the caller can read, across all of their teams and those shared with them, in one list. Skips the default shared-with-me branch and leaves the read-access filter to decide.
+    """
+    allAccessible: Boolean
+  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!

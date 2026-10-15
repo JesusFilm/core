@@ -1685,5 +1685,11 @@
   "Select a section to add text or a button to it.": "Select a section to add text or a button to it.",
   "Add section here": "Add section here",
   "Add to column": "Add to column",
-  "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later."
+  "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later.",
+  "Search your journeys": "Search your journeys",
+  "Search for a new journey": "Search for a new journey",
+  "or paste a link": "or paste a link",
+  "Loading journeys…": "Loading journeys…",
+  "Could not load your journeys": "Could not load your journeys",
+  "No journeys found": "No journeys found"
 }

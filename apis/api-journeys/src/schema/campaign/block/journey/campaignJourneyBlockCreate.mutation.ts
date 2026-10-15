@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { resolveJourneyLink } from '../../journeyLink'
+import { CARD_JOURNEY_STATUSES, resolveJourneyLink } from '../../journeyLink'
 import { badUserInput } from '../../validation'
 import { CampaignJourneyBlock } from '../campaignJourneyBlock'
 import { authorizeBlockUpdate, createChildBlock } from '../service'
@@ -13,7 +13,7 @@ builder.mutationField('campaignJourneyBlockCreate', (t) =>
     type: CampaignJourneyBlock,
     nullable: false,
     description:
-      'Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: parentBlockId does not resolve to a live block.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `parentBlockId`): not a journey list.\n- BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or unpublished).',
+      'Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published or archived journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: parentBlockId does not resolve to a live block.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `parentBlockId`): not a journey list.\n- BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).',
     args: {
       id: t.arg({
         type: 'ID',
@@ -40,7 +40,7 @@ builder.mutationField('campaignJourneyBlockCreate', (t) =>
           'parentBlockId must be a journey list',
           'parentBlockId'
         )
-      const journey = await resolveJourneyLink(url)
+      const journey = await resolveJourneyLink(url, CARD_JOURNEY_STATUSES)
       return await prisma.$transaction(
         async (tx) =>
           await createChildBlock(tx, parent, {

@@ -57,6 +57,8 @@ interface JourneyPasteFieldProps {
   label?: string
   autoFocus?: boolean
   disabled?: boolean
+  /** The secondary form, under the journey picker: no standing helper text, only an error. */
+  compact?: boolean
 }
 
 /**
@@ -70,7 +72,8 @@ export function JourneyPasteField({
   onLink,
   label,
   autoFocus = false,
-  disabled = false
+  disabled = false,
+  compact = false
 }: JourneyPasteFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [value, setValue] = useState('')
@@ -163,7 +166,10 @@ export function JourneyPasteField({
         onKeyDown={handleKeyDown}
         error={error != null}
         helperText={
-          error ?? t('Paste the journey’s admin link or its public address.')
+          error ??
+          (compact
+            ? undefined
+            : t('Paste the journey’s admin link or its public address.'))
         }
         inputRef={inputRef}
         disabled={disabled || linking}

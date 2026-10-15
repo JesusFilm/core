@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { resolveJourneyId } from '../../journeyLink'
+import { CARD_JOURNEY_STATUSES, resolveJourneyId } from '../../journeyLink'
 import { CampaignJourneyBlock } from '../campaignJourneyBlock'
 import { authorizeTypedBlockUpdate, updateBlock } from '../service'
 
@@ -20,7 +20,11 @@ builder.mutationField('campaignJourneyBlockSnapshotRefresh', (t) =>
         context.user,
         'CampaignJourneyBlock'
       )
-      const journey = await resolveJourneyId(block.journeyId ?? '', 'id')
+      const journey = await resolveJourneyId(
+        block.journeyId ?? '',
+        'id',
+        CARD_JOURNEY_STATUSES
+      )
       return await updateBlock(block, snapshotOf(journey))
     }
   })

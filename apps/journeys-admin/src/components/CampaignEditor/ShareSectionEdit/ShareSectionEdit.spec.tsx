@@ -17,6 +17,7 @@ import {
   IdType,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
 import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
@@ -120,6 +121,20 @@ const journey = {
   description: null,
   slug: 'noel-europe',
   status: JourneyStatus.published
+}
+
+const accessibleJourneysMock = {
+  request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
+  result: vi.fn(() => ({
+    data: {
+      journeys: [
+        {
+          ...journey,
+          team: { __typename: 'Team', id: 'teamId', title: 'Équipe Europe' }
+        }
+      ]
+    }
+  }))
 }
 
 const resolveMock = {
@@ -349,6 +364,7 @@ function renderShare(
           createMock,
           deleteMock,
           resolveMock,
+          accessibleJourneysMock,
           resolveBySlugMock,
           linkMock,
           linkFailureMock,
@@ -574,7 +590,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Pick a journey' })
     )
     const field = within(french).getByRole('textbox', {
-      name: 'Journey link'
+      name: 'or paste a link'
     })
     await userEvent.type(
       field,
@@ -611,6 +627,31 @@ describe('ShareSectionEdit', () => {
     expect(within(linked).getByTestId('ShareLanguageCopy')).toBeEnabled()
   })
 
+  it('links a journey picked from the search with the admin link built from its id', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.click(
+      within(french).getByRole('combobox', { name: 'Search your journeys' })
+    )
+    const option = await screen.findByTestId('JourneyPickerOption-frJourneyId')
+    expect(option).toHaveTextContent('Noël en Europe')
+    expect(option).toHaveTextContent('Équipe Europe')
+    fireEvent.click(option)
+
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Noël en Europe')
+    )
+  })
+
   it('links the first journey as a plain save, so there is nothing to undo', async () => {
     renderShare()
 
@@ -619,7 +660,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Pick a journey' })
     )
     await userEvent.type(
-      within(french).getByRole('textbox', { name: 'Journey link' }),
+      within(french).getByRole('textbox', { name: 'or paste a link' }),
       'https://admin.nextstep.is/journeys/frJourneyId{enter}'
     )
     fireEvent.click(
@@ -644,7 +685,7 @@ describe('ShareSectionEdit', () => {
       within(english).getByRole('button', { name: 'Swap journey' })
     )
     await userEvent.type(
-      within(english).getByRole('textbox', { name: 'New journey link' }),
+      within(english).getByRole('textbox', { name: 'or paste a link' }),
       'https://admin.nextstep.is/journeys/frJourneyId{enter}'
     )
     fireEvent.click(
@@ -667,7 +708,7 @@ describe('ShareSectionEdit', () => {
       within(english).getByRole('button', { name: 'Swap journey' })
     )
     await userEvent.type(
-      within(english).getByRole('textbox', { name: 'New journey link' }),
+      within(english).getByRole('textbox', { name: 'or paste a link' }),
       'https://admin.nextstep.is/journeys/frJourneyId{enter}'
     )
     fireEvent.click(
@@ -692,7 +733,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Pick a journey' })
     )
     await userEvent.type(
-      within(french).getByRole('textbox', { name: 'Journey link' }),
+      within(french).getByRole('textbox', { name: 'or paste a link' }),
       'https://your.nextstep.is/noel-europe{enter}'
     )
     fireEvent.click(
@@ -711,7 +752,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Pick a journey' })
     )
     const field = within(french).getByRole('textbox', {
-      name: 'Journey link'
+      name: 'or paste a link'
     })
     await userEvent.type(field, 'https://your.nextstep.is/noel-europe{enter}')
     fireEvent.click(

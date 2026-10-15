@@ -11,6 +11,11 @@ export const JOURNEY_NOT_FOUND_MESSAGE = 'Journey not found or not published'
 /** How a pasted journey link addresses the journey: an admin link by id, a public URL by slug. */
 export type JourneyLink = { id: string } | { slug: string }
 
+type LinkableStatus = 'published' | 'archived'
+
+/** What a journey card may point at: the statuses the public page shows (published or archived). */
+export const CARD_JOURNEY_STATUSES: LinkableStatus[] = ['published', 'archived']
+
 /**
  * Parse a pasted journey link: an admin link (`/journeys/<id>`), the embed
  * route (`/embed/<slug>`) or a public URL on any domain (`/<slug>`). Anything
@@ -42,13 +47,14 @@ export function parseJourneyLink(url: string): JourneyLink {
  * are the same `BAD_USER_INPUT` on `url`, never `NOT_FOUND`.
  */
 export async function resolveJourneyLink(
-  url: string
+  url: string,
+  statuses: LinkableStatus[] = ['published']
 ): Promise<JourneyWithPublicUrl> {
   const link = parseJourneyLink(url)
   const journey = await prisma.journey.findFirst({
     where: {
       ...('id' in link ? { id: link.id } : { slug: link.slug }),
-      status: 'published',
+      status: { in: statuses },
       deletedAt: null
     },
     include: INCLUDE_JOURNEY_PUBLIC_URL
@@ -60,10 +66,15 @@ export async function resolveJourneyLink(
 /** A journey addressed by id must likewise be live-published. */
 export async function resolveJourneyId(
   journeyId: string,
-  field = 'journeyId'
+  field = 'journeyId',
+  statuses: LinkableStatus[] = ['published']
 ): Promise<JourneyWithPublicUrl> {
   const journey = await prisma.journey.findFirst({
-    where: { id: journeyId, status: 'published', deletedAt: null },
+    where: {
+      id: journeyId,
+      status: { in: statuses },
+      deletedAt: null
+    },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
   if (journey == null) throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, field)

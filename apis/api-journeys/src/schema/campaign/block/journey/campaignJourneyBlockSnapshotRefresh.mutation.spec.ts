@@ -91,7 +91,11 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       include: { action: true }
     })
     expect(prismaMock.journey.findFirst).toHaveBeenCalledWith({
-      where: { id: 'journeyId', status: 'published', deletedAt: null },
+      where: {
+        id: 'journeyId',
+        status: { in: ['published', 'archived'] },
+        deletedAt: null
+      },
       include: expect.anything()
     })
   })
