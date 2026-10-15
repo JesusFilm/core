@@ -299,7 +299,7 @@ export function ProcessingStatusList(): ReactElement {
         </Table>
       </TableContainer>
 
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
+      <Stack direction="row" spacing={2} sx={{ justifyContent: 'flex-end' }}>
         <Button
           size="small"
           disabled={!hasPreviousPage}
