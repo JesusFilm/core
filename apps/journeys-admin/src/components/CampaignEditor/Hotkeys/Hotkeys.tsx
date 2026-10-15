@@ -5,15 +5,18 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { useCampaignEditor } from '../CampaignEditorProvider'
 
-const SELECT_SELECTOR = '[role=combobox], [role=listbox]'
+const MODAL_SELECTOR = '.MuiModal-root'
+const LETTER_BLOCKER_SELECTOR = `[role=combobox][aria-expanded=true], [role=listbox], ${MODAL_SELECTOR}`
 
 /**
- * Whether the key event came from inside a (possibly open) select. The frame is
- * another realm, so `instanceof Element` would be false there.
+ * Whether the key event came from an open select or from inside a dialog, menu
+ * or popover, which own the letters while open. A closed select trigger does
+ * not use letters. The frame is another realm, so `instanceof Element` would
+ * be false there.
  */
-function isInsideSelect(event: KeyboardEvent): boolean {
+function isInsideLetterBlocker(event: KeyboardEvent): boolean {
   const target = event.target as Partial<Element> | null
-  return target?.closest?.(SELECT_SELECTOR) != null
+  return target?.closest?.(LETTER_BLOCKER_SELECTOR) != null
 }
 
 interface HotkeysProps {
@@ -31,8 +34,8 @@ interface HotkeysProps {
  * document. Only the frame listens to undo and redo while a form field has
  * focus: its inline inputs are Commands, whereas the shell's fields (the
  * Inspector's settings) are not and keep their native undo. The letters never
- * fire while an input or textarea has focus, or from within a select (its
- * trigger or open listbox), in either document.
+ * fire while an input or textarea has focus, or from within an open select, a
+ * dialog, a menu or a popover, in either document.
  */
 export function Hotkeys({ document }: HotkeysProps): ReactElement {
   const { undo, redo } = useCommand()
@@ -50,7 +53,7 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
 
   function letterHotkey(handler: () => void): (event: KeyboardEvent) => void {
     return (event) => {
-      if (isInsideSelect(event)) return
+      if (isInsideLetterBlocker(event)) return
       handler()
     }
   }
@@ -62,7 +65,7 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
     (event) => {
       // A menu or dialog opened from a panel closes itself on Escape first.
       const target = event.target as Partial<Element> | null
-      if (target?.closest?.('.MuiModal-root') != null) return
+      if (target?.closest?.(MODAL_SELECTOR) != null) return
       const active = (document ?? window.document)
         .activeElement as Partial<HTMLElement> | null
       active?.blur?.()

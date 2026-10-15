@@ -78,11 +78,12 @@ describe('Hotkeys', () => {
       expect(screen.getByTestId('Panel')).toHaveTextContent('none')
     })
 
-    it('ignores the letters from inside a select', () => {
+    it('ignores the letters from inside an open select', () => {
       const frame = frameDocument()
       render(<FrameHotkeys frame={frame} />)
       const select = frame.createElement('div')
       select.setAttribute('role', 'combobox')
+      select.setAttribute('aria-expanded', 'true')
       frame.body.appendChild(select)
 
       pressInFrame(frame, select, 'd')
@@ -91,15 +92,49 @@ describe('Hotkeys', () => {
       pressInFrame(frame, frame.body, 'd')
       expect(screen.getByTestId('InspectorTab')).toHaveTextContent('settings')
     })
+
+    it('keeps the letters working from a closed select trigger', () => {
+      const frame = frameDocument()
+      render(<FrameHotkeys frame={frame} />)
+      const select = frame.createElement('div')
+      select.setAttribute('role', 'combobox')
+      select.setAttribute('aria-expanded', 'false')
+      frame.body.appendChild(select)
+
+      pressInFrame(frame, select, 'd')
+
+      expect(screen.getByTestId('InspectorTab')).toHaveTextContent('settings')
+    })
+
+    it('ignores the letters from inside a dialog portaled into the frame', () => {
+      const frame = frameDocument()
+      render(<FrameHotkeys frame={frame} />)
+      const dialog = frame.createElement('div')
+      dialog.className = 'MuiModal-root'
+      const button = frame.createElement('button')
+      dialog.appendChild(button)
+      frame.body.appendChild(dialog)
+
+      pressInFrame(frame, button, 'p')
+      pressInFrame(frame, button, 'd')
+
+      expect(screen.getByTestId('Panel')).toHaveTextContent('pages')
+      expect(screen.getByTestId('InspectorTab')).toHaveTextContent('style')
+    })
   })
 
   describe('in the editor shell', () => {
-    it('ignores the letters while a select is focused or its listbox is open', async () => {
+    it('ignores the letters while a select is open', async () => {
       render(
         <StaticEditor>
           <Hotkeys />
           <StateProbe />
-          <div role="combobox" tabIndex={0} aria-label="Language" />
+          <div
+            role="combobox"
+            aria-expanded="true"
+            tabIndex={0}
+            aria-label="Language"
+          />
           <ul role="listbox" tabIndex={0} aria-label="Languages" />
         </StaticEditor>
       )
@@ -110,9 +145,45 @@ describe('Hotkeys', () => {
       await userEvent.keyboard('dp')
       expect(screen.getByTestId('InspectorTab')).toHaveTextContent('style')
       expect(screen.getByTestId('Panel')).toHaveTextContent('none')
-      ;(document.activeElement as HTMLElement).blur()
-      await userEvent.keyboard('d')
+    })
+
+    it('keeps the letters working from a closed, focused select', async () => {
+      render(
+        <StaticEditor>
+          <Hotkeys />
+          <StateProbe />
+          <div
+            role="combobox"
+            aria-expanded="false"
+            tabIndex={0}
+            aria-label="Language"
+          />
+        </StaticEditor>
+      )
+
+      screen.getByRole('combobox', { name: 'Language' }).focus()
+      await userEvent.keyboard('dp')
+
       expect(screen.getByTestId('InspectorTab')).toHaveTextContent('settings')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('pages')
+    })
+
+    it('ignores the letters while a dialog has focus', async () => {
+      render(
+        <StaticEditor>
+          <Hotkeys />
+          <StateProbe />
+          <div className="MuiModal-root">
+            <button type="button">Confirm</button>
+          </div>
+        </StaticEditor>
+      )
+
+      screen.getByRole('button', { name: 'Confirm' }).focus()
+      await userEvent.keyboard('dp')
+
+      expect(screen.getByTestId('InspectorTab')).toHaveTextContent('style')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('none')
     })
   })
 })
