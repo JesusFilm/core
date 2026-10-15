@@ -24,7 +24,7 @@ type PageRTLProps = Parameters<typeof getPageRTL>[0]
  */
 export function createRtlEmotionPlugin(): EmotionPlugin {
   const cache = createEmotionCache({ rtl: true })
-  const { extractCriticalToChunks } = createEmotionServer(cache)
+  const emotionServer = createEmotionServer(cache)
 
   return {
     enhanceApp: (App) =>
@@ -35,8 +35,10 @@ export function createRtlEmotionPlugin(): EmotionPlugin {
         if (!getPageRTL(props.pageProps ?? {})) return <Page {...props} />
         return <Page {...props} emotionCache={cache} />
       },
-    resolveProps: async (initialProps) => {
-      const { styles } = extractCriticalToChunks(initialProps.html)
+    resolveProps: (initialProps) => {
+      const { styles } = emotionServer.extractCriticalToChunks(
+        initialProps.html
+      )
       const rtlStyleTags = styles
         .filter((style) => style.css.trim() !== '')
         .map((style) => {
@@ -52,14 +54,14 @@ export function createRtlEmotionPlugin(): EmotionPlugin {
             />
           )
         })
-      if (rtlStyleTags.length === 0) return initialProps
+      if (rtlStyleTags.length === 0) return Promise.resolve(initialProps)
       const { emotionStyleTags = [] } = initialProps as {
         emotionStyleTags?: ReactElement[]
       }
-      return {
+      return Promise.resolve({
         ...initialProps,
         emotionStyleTags: [...emotionStyleTags, ...rtlStyleTags]
-      } as typeof initialProps
+      } as typeof initialProps)
     }
   }
 }

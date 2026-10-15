@@ -2,13 +2,14 @@
 import { CacheProvider } from '@emotion/react'
 import styled from '@emotion/styled'
 import { documentGetInitialProps } from '@mui/material-nextjs/v15-pagesRouter'
-import type { DocumentContext } from 'next/document'
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 import { renderToString } from 'react-dom/server'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
 import { createRtlEmotionPlugin } from './rtlEmotionPlugin'
+
+type DocumentContext = Parameters<typeof documentGetInitialProps>[0]
 
 const Padded = styled('div')({ paddingLeft: '8px' })
 
@@ -32,16 +33,16 @@ async function renderDocumentStyles(
     defaultGetInitialProps: async (documentCtx: DocumentContext) => ({
       html: (await documentCtx.renderPage()).html
     }),
-    renderPage: async ({
+    renderPage: ({
       enhanceApp
     }: {
       enhanceApp: (app: typeof TestApp) => (props: TestAppProps) => ReactElement
-    }) => {
-      const Enhanced = enhanceApp(TestApp)
-      return {
-        html: renderToString(<Enhanced pageProps={pageProps} />)
-      }
-    }
+    }) =>
+      Promise.resolve({
+        html: renderToString(
+          React.createElement(enhanceApp(TestApp), { pageProps })
+        )
+      })
   } as unknown as DocumentContext
   const { emotionStyleTags } = await documentGetInitialProps(ctx, {
     emotionCache: createEmotionCache({}),
