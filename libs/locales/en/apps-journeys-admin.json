@@ -1685,5 +1685,8 @@
   "Select a section to add text or a button to it.": "Select a section to add text or a button to it.",
   "Add section here": "Add section here",
   "Add to column": "Add to column",
-  "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later."
+  "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later.",
+  "Region card": "Region card",
+  "Region Line": "Region Line",
+  "Share language": "Share language"
 }

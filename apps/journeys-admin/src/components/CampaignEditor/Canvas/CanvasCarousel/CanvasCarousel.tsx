@@ -10,9 +10,11 @@ import type { CampaignCarouselCard } from '@core/journeys/ui/Campaign'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import type { CanvasBlock } from '../CanvasSection'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import { SelectionBadge } from '../SelectionBadge'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
@@ -72,6 +74,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           handleSelect(event, card.id)
         }
         sx={{
+          position: 'relative',
           flex: '0 0 auto',
           width: 220,
           overflow: 'hidden',
@@ -85,6 +88,12 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
             : {})
         }}
       >
+        <SelectionBadge
+          id={explicit ? card.id : undefined}
+          label={blockLabel(t, 'CampaignVideoBlock')}
+          selected={selected}
+          placement="inside"
+        />
         {card.kind === 'seeAll' ? (
           <Box
             sx={{

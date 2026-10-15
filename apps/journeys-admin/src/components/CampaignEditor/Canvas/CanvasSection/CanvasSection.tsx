@@ -50,6 +50,7 @@ import {
   isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
+import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
@@ -59,6 +60,7 @@ import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
+import { SelectionBadge, SelectionBadgePlacement } from '../SelectionBadge'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 
@@ -88,6 +90,8 @@ interface CanvasExtraProps {
   selected: boolean
   onSelect: () => void
   focusField?: CampaignTextField
+  /** `inside` where the header clips what leaves the block. */
+  badgePlacement?: SelectionBadgePlacement
 }
 
 /** A text or button Extra: click to select, edit its one text field in place. */
@@ -95,7 +99,8 @@ function CanvasExtra({
   block,
   selected,
   onSelect,
-  focusField
+  focusField,
+  badgePlacement
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -114,12 +119,19 @@ function CanvasExtra({
           data-hoverable
           onClick={handleClick}
           sx={{
+            position: 'relative',
             width: '100%',
             cursor: 'pointer',
             ...HOVER_OUTLINE_SX,
             ...(selected ? SELECTED_OUTLINE : {})
           }}
         >
+          <SelectionBadge
+            id={block.id}
+            label={blockLabel(t, block.__typename)}
+            selected={selected}
+            placement={badgePlacement}
+          />
           <InlineText
             target={{ block, field: 'content' }}
             placeholder={t('Your text')}
@@ -143,6 +155,7 @@ function CanvasExtra({
           data-hoverable
           onClick={handleClick}
           sx={{
+            position: 'relative',
             display: 'flex',
             cursor: 'pointer',
             ...HOVER_OUTLINE_SX,
@@ -157,6 +170,12 @@ function CanvasExtra({
                     : 'inherit'
           }}
         >
+          <SelectionBadge
+            id={block.id}
+            label={blockLabel(t, block.__typename)}
+            selected={selected}
+            placement={badgePlacement}
+          />
           <Button
             component="div"
             variant={buttonVariant}
@@ -486,6 +505,10 @@ export function CanvasSection({
     selectBlock(childId)
   }
 
+  /** The header clips what leaves it, so its Extras' badges sit inside their corner. */
+  const extraBadgePlacement: SelectionBadgePlacement =
+    block.__typename === 'CampaignHeaderBlock' ? 'inside' : 'above'
+
   function renderExtra(child: CanvasBlock): ReactElement | null {
     const field: CampaignTextField =
       child.__typename === 'CampaignButtonBlock' ? 'label' : 'content'
@@ -496,6 +519,7 @@ export function CanvasSection({
         selected={selectedId === child.id}
         onSelect={() => selectChild(child.id, field)}
         focusField={focusField}
+        badgePlacement={extraBadgePlacement}
       />
     )
   }
@@ -869,6 +893,12 @@ export function CanvasSection({
         ...(sectionSelected ? SELECTED_OUTLINE : {})
       }}
     >
+      <SelectionBadge
+        id={block.id}
+        label={blockLabel(t, block.__typename)}
+        selected={sectionSelected}
+        placement={inSlot ? 'above' : 'inside'}
+      />
       {draggable && (
         <Box
           ref={setActivatorNodeRef}

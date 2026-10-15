@@ -17,6 +17,7 @@ import {
   GetCampaign_campaign_regions as CampaignRegion
 } from '../../../../__generated__/GetCampaign'
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
+import { regionCardLabel, regionLineLabel } from '../blockLabel'
 import {
   regionLines,
   regionNeedsJourney,
@@ -25,6 +26,7 @@ import {
 } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { regionDisplayName } from '../utils/regionDisplayName'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
@@ -83,6 +85,7 @@ function RegionCardEdit({
       data-hoverable
       onClick={handleClick}
       sx={{
+        position: 'relative',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -97,6 +100,11 @@ function RegionCardEdit({
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
+      <SelectionBadge
+        id={`${hostBlockId}__${region.id}`}
+        label={regionCardLabel(t)}
+        selected={selected}
+      />
       <Stack
         direction="row"
         spacing={1}
@@ -144,11 +152,17 @@ function RegionCardEdit({
               selectBlock(line.id)
             }}
             sx={{
+              position: 'relative',
               width: '100%',
               ...HOVER_OUTLINE_SX,
               ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
             }}
           >
+            <SelectionBadge
+              id={line.id}
+              label={regionLineLabel(t)}
+              selected={selection.block?.id === line.id}
+            />
             <InlineText
               target={{ block: line, field: 'content' }}
               placeholder={t('Your text')}

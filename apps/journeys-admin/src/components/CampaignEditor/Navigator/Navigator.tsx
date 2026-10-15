@@ -34,7 +34,7 @@ import {
 import DragIcon from '@core/shared/ui/icons/Drag'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 
-import { blockLabel } from '../blockLabel'
+import { blockLabel, regionCardLabel, regionLineLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { LeftPanelBody } from '../LeftPanel'
 import { slotSection } from '../sectionTypes'
@@ -430,7 +430,8 @@ export function Navigator(): ReactElement {
 
   const labelOf = useCallback(
     (node: NavigatorNode) => {
-      if (node.type === 'Region') return t('Region')
+      if (node.type === 'Region') return regionCardLabel(t)
+      if (node.regionLine === true) return regionLineLabel(t)
       if (node.type === 'SectionContent') return t('Section content')
       return blockLabel(t, node.type)
     },
