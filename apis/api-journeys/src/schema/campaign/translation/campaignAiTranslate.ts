@@ -436,8 +436,9 @@ export async function* campaignAiTranslate(
 
     const session = createOpenrouterFallbackSession(env.TRANSLATION_AI_MODELS)
     let failedBatches = 0
+    const disconnected = (): boolean => cancelSignal?.aborted === true
     for (const [index, batch] of batches.entries()) {
-      if (cancelSignal?.aborted === true) return
+      if (disconnected()) return
       try {
         const translated = await translateBatch({
           batch,
@@ -447,7 +448,7 @@ export async function* campaignAiTranslate(
           session,
           cancelSignal
         })
-        if (cancelSignal?.aborted === true) return
+        if (disconnected()) return
         translatedCount += await writeBatch({
           campaignId,
           languageId,
@@ -456,7 +457,7 @@ export async function* campaignAiTranslate(
           translated
         })
       } catch (error) {
-        if (cancelSignal?.aborted === true) return
+        if (disconnected()) return
         failedBatches++
         logger.warn(
           { error, campaignId, languageId, batch: batch.label },
