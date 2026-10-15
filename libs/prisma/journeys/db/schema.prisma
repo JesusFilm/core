@@ -860,7 +860,7 @@ model JourneyCustomizationField {
 }
 
 // ---------------------------------------------------------------------------
-// Campaigns — a team-owned seasonal campaign site (see apis/api-journeys/GLOSSARY.md,
+// Campaigns — a team-owned seasonal campaign site (see apis/api-journeys/CONTEXT.md,
 // "Campaigns"). The Campaign is the aggregate root: every row below carries its
 // campaignId and is authorised through campaign.acl.ts.
 // ---------------------------------------------------------------------------
