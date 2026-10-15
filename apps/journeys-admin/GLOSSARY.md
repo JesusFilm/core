@@ -62,60 +62,66 @@ _Avoid_: insights, stats view, analytics overlay (the overlay is what the mode s
 A traffic-source node shown in the JourneyFlow during Analytics Mode: where Visitors arrived from, feeding into the first Step.
 _Avoid_: source, channel
 
+### The Campaign Editor
+
 **Campaign Editor**:
-The full-screen `/campaigns/[id]` editor for a **Campaign** (the Journeys context's seasonal site), behind the LaunchDarkly flag `campaignBuilder` together with the Campaigns nav item and the `/campaigns` list. Desktop only: below 1280 px it shows an "open this on a larger screen" message and no canvas. One **CommandProvider** spans both Campaign Pages so the undo history survives the **Page Selector**; nothing replaces Save — no Save button, Unsaved chip or save indicator — because every edit is its own mutation (Live Editing) with an optimistic response, and a failed one surfaces as the error snackbar and rolls back. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import that creates the items), there is no optimistic row and the edit shows when the server answers.
+The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
-The Campaign Editor's rendering of the selected Campaign Page inside a FramePortal iframe, painted with the editor's own section components under the campaign theme (shared with the public viewer are pure helpers only). **Desktop/Phone** is a view toggle that sets the frame to 1200 px or 390 px wide; it is never a Command. The frame keeps that width and is scaled down to fit the space between the Left Rail and the Inspector (an open left panel overlays it and never changes the scale) with a CSS transform on a wrapper outside it, never below 0.5 and never above 1 (the wrapper is sized to frame × scale so layout matches). Everything that runs inside the frame stays inside it — the drag context, the inline inputs, popovers and menus (their container is the frame's body) and focus (`preventScroll`) — so the scale never reaches it; iframe `zoom` is not used.
+The Campaign Editor's rendering of the open Campaign Page at a fixed Desktop or Phone width, scaled to fit between the Left Rail and the Inspector. Desktop / Phone is a view choice, never a Command, and opening a panel never changes the scale.
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
-**Inspector**:
-The persistent right panel (328 px, the journey editor's drawer width) of the Campaign Editor that shows the selection: a header with the element-type icon and the block's label, the breadcrumb (each earlier crumb selects that level) and an actions row (move, duplicate, delete, confirming for sections, columns and regions only), then a **Style** and a **Settings** tab switched on the selection kind (S and D switch tab, never while a field has focus). With nothing selected it holds the campaign Theme (Style) and the campaign settings (Settings). It replaces the seven modal drawers of the first Campaign Editor and never dims or blocks the canvas; the active tab and the open Left Rail panel are editor view state, never a Command. The Settings tab holds everything that is not text: a section's per-type toggles (the Analytics map, the Region Switcher variant, the Journey List display, the Featured Media side) beside its media or picture editor, a button Extra's **Link** (web address, section on the page or Campaign Region, picked inline, one Command per change), and the card bodies; the canvas edits text only. The Left Rail's **Settings** panel holds the title, the slug with its address hint (the permanent root-domain address and the current public address), the status copy and, for team managers, Delete campaign; title and slug save through `campaignUpdate` and are not Commands. Its **Theme** panel holds the Light and Dark Theme Preset swatches, the eight Campaign Theme colours as swatch plus hex, the three font selects over the journeys theme dialog's curated lists, the four corner radii and the two button shapes; every change, and each preset application, is one Command through `campaignThemeUpdate`, and the Light / Dark / Custom label is derived by comparing the nine values to the preset constants, never stored. The Style tab shows a text Extra's Size, Align and Colour and a button Extra's variant, size, Align and two colours as inline rows (one Command each), and a Columns section's Ratio (equal, wide left, wide right; one Command through the columns update). Every colour row carries an indicator: an **orange** dot for a value inherited from the band or theme, a **blue** dot for a value set on the block; Reset (v1's Inherit) writes null and the dot returns to orange. A theme colour is always set, so its dot is blue. An Extra's tab does not embed its host's controls: its header says "Inherits from <host>" with a link that selects the host, and a column slot, carousel card, journey card or region card says "Styled by its section" with the same link.
-_Avoid_: properties (the journey editor's Drawer), details panel, side panel
-
 **Left Rail**:
-The Campaign Editor's 56 px column of icon buttons to the left of the Campaign Canvas: at the top the back button to the campaigns list and the panel toggles **Pages** (P), **Navigator** (Z), **Add** (A) and **Localize** (each toggles its panel; opening one closes another); at the bottom Undo, Redo, the Desktop / Phone toggle and the **Publish button**. It replaces the first editor's top bar.
+The narrow column of icon buttons beside the Campaign Canvas: back to the campaigns list, the panel toggles **Pages**, **Navigator**, **Add** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is open at a time, and it overlays the canvas at every width.
 _Avoid_: toolbar, sidebar, top bar
 
-**Add Panel**:
-The 300 px Left Rail panel listing the section, Extra and Region Line types that can be added, in three groups: **Sections** (the page kind's types; region-page-only types on the Region Page only, slot-disallowed types hidden when the target is a Column Slot), **Extras** (Text, Button) and **Region** (Add line, while a region card is selected). Clicking a type adds it in place relative to the selection: nothing selected → the end of the page; a section → below it; an empty Column Slot → into it; an Extra → after it, same host and placement; a region card → a new Region Line. A section or chrome block selected also offers the Extra's side of the text (above or below). Each add is the same create Command as before, through one shared add hook whose insertion rule is a pure function of the selection. A toggles it, in the shell and in the canvas frame, never while an input has focus. The canvas can preset an **insert point** that overrides the selection's rule and offers Sections only: the "+" that appears between two sections on hover (and above the first, below the last) presets the page and position, and an empty Column Slot's placeholder presets the slot, so the next type chosen lands there. A preset lasts while the panel stays open and the selection stays put; closing the panel or selecting something else clears it. Drag from the panel onto the canvas is not part of v2.
-_Avoid_: element library, palette (the colour one), bottom bar (retired with the Campaign Row)
+**Inspector**:
+The persistent right panel for the selection: a breadcrumb and an actions row (move, duplicate, delete), then a **Style** tab and a **Settings** tab. With nothing selected it holds the Campaign's own theme (Style) and settings (Settings), which have no Left Rail panel of their own.
+_Avoid_: properties (the journey editor's Drawer), details panel, side panel, settings panel / theme panel
+
+**Value Indicator**:
+The dot beside a Style row: orange for a value inherited from the band or theme, blue for a value set on the block. Reset clears the block's own value, so it inherits again and the dot returns to orange.
+_Avoid_: override badge
 
 **Pages Panel**:
-The 300 px Left Rail panel that decides what the Campaign Canvas shows: the campaign title as its header, the page list (the landing page, then each region's Region Page in switcher order, with " · not listed" for an orphan and the "Needs journey" chip) and the **Preview Language** select. Choosing a page or a language is a view choice, never a Command. One left panel is open at a time; it overlays the canvas at every width (the frame and its scale never move when a panel opens or closes) and comes before the frame in Tab order, and Escape closes it before it steps the selection up.
-_Avoid_: page selector (the first editor's control), navigation
+The Left Rail panel that decides what the Campaign Canvas shows: the Campaign's title, its pages (the landing page, then each region's Region Page) and the **Preview Language**. Choosing a page or a language is a view choice, never a Command.
+_Avoid_: page selector, navigation
 
 **Navigator**:
-The 300 px Left Rail panel (Z) that shows the open page as a tree of exactly what the Campaign Canvas shows: Header, the page's sections in order, Footer; under a section its Extras in `parentOrder` (tagged above or below), Columns › Column Slot › its section, Video carousel › cards, Journey list › journey cards, Region switcher › region cards › Region Lines. A row is the type name with the block's own title text muted beside it; badges are "Needs journey" on a region card and an eye-slash on an unlisted region (which the canvas also draws, muted, so its row hovers and selects it). Nothing expands by default beyond the ancestors of the selection, which are derived from it, never stored; Option+Z expands or collapses all. A row selects through the same two selection actions as the canvas (arrow keys move focus only, Enter or Space selects) and scrolls the canvas to the block (nearest edge). Hovering a row sets `data-hovered` on the canvas element; hovering the canvas highlights its row through one small context only the Navigator subscribes to — hover is never reducer state. Under a section the children list as the canvas orders them: Extras placed above, a **Section content** divider row (present when the section has Extras), the body (cards, slots, region cards), Extras placed below. **Reordering** is by a drag handle button at the end of a row, among its siblings only: each parent's children are one dnd-kit sortable context, a row carries its **sibling group** (`<parent id>:<kind>`) and the collision filter admits only droppables of that group, so a drop outside the group never highlights or accepts and nothing re-parents. A dropped section, Extra, carousel card, journey card or Region Line dispatches the block order Command; dropping an Extra across the divider changes its placement in the same Command; region cards use the region order Command; Column Slots use the swap Command. The handle takes Space, Enter and the arrows only while it has focus (the tree ignores keys from inside a row), so the row's own keys are unchanged.
+The Left Rail panel showing the open page as a tree of exactly what the Campaign Canvas shows, with selection and hover kept in step both ways. Rows reorder among their siblings only; nothing is ever re-parented.
 _Avoid_: outline, layers, tree view (the component)
 
+**Add Panel**:
+The Left Rail panel listing the Sections, Extras and Region Lines that can be added; a click adds the type in place relative to the selection. An insert point preset from the canvas (between two sections, or an empty Column Slot) overrides the selection for the next add.
+_Avoid_: element library, palette (the colour one)
+
 **Localize Panel**:
-The Left Rail panel with two tabs, **Languages** (the Languages Panel body) and **Translations** (the Translations View body). Changing the default language opens it on Translations with the promotion notice.
+The Left Rail panel with two tabs, **Languages** and **Translations**. Changing the default language opens it on Translations with the promotion notice.
 _Avoid_: languages panel, translations view (now its tabs)
 
+**Languages Panel**:
+The Localize Panel's first tab: the Campaign's Page Languages with Remove on each, and the shared language autocomplete to add one, which also starts the Machine Translation run for that language with progress. Add and remove go straight to the API and are never Commands.
+_Avoid_: language settings, locale picker
+
+**Translations View**:
+The Localize Panel's second tab: one non-default Campaign language at a time, every Translated Field grouped and filtered by state, each editable in place. Leaving a field writes a human translation at once and is not a Command.
+_Avoid_: translation manager, review queue
+
+**Preview Language**:
+The Pages Panel select that sets which Campaign language the Campaign Canvas renders, falling back to marked default-language text where a translation is missing. Editing text in a non-default language writes a human translation as one Command; in the default language the same edit writes the field itself.
+_Avoid_: canvas language, view language, locale
+
 **Publish button**:
-The Left Rail's status-dot button (grey draft, green published) whose popover holds the status copy, **Publish** (no confirmation) or **Unpublish** (confirms, stating that the linked journeys and their QR codes keep working) and **Open page** (the root-domain `/campaign/<slug>` in a new tab). Publish and Unpublish are for team managers only and are explicit actions, never Commands.
+The Left Rail's status-dot button (grey draft, green published) whose popover offers Publish, Unpublish (confirmed) and Open page. Publish and Unpublish are explicit team-manager actions, never Commands.
 _Avoid_: status chip
 
 **Canvas banner**:
-The floating slot at the top of the canvas area, taking no layout height, for the **First-run Hint** and the orphan page bar when the rendered region is unlisted.
+The floating slot at the top of the canvas area that holds the First-run Hint and the orphan page bar. It takes no layout height.
 _Avoid_: bar
 
-**Languages Panel**:
-The Localize Panel's first tab: the campaign's Page Languages in selector order (autonym, with the English name beside it, the default marked) with Remove on each, and the shared language autocomplete to add one. Add and remove go straight to the API and are never Commands; the default or last language cannot be removed and the API's refusal is shown verbatim. The machine-translation run for a new language belongs to the Translations tab.
-_Avoid_: language settings, locale picker
-
-**Preview Language**:
-The Pages Panel select that decides which campaign language the Campaign Canvas renders in: translations where they exist, the default-language text as a marked fallback where they do not, text direction from the language's bcp47. Editing any text, including a Campaign String, while the Preview Language is not the default writes a human translation for that language as one Command; in the default language the same edit writes the field itself.
-_Avoid_: canvas language, view language, locale
-
-**Translations View**:
-The Localize Panel's second tab: one non-default campaign language at a time, every Translated Field grouped Interface, Landing page, Region page and Regions, filtered All, Needs review, Machine-translated, Missing or Edited (Needs review and Machine-translated list the same lines). Each line shows what the text is, the default wording and an editable field with its character counter; leaving the field writes a human translation (an emptied field clears it) and the line turns Edited at once, in the list and in the editor's own copy. It is not a Command: undo belongs to the canvas.
-_Avoid_: translation manager, review queue
-
 **First-run Hint**:
-The one dismissible hint floating in the **Canvas banner** the first time a campaign opens — "Pick anything on the page or in the Navigator, then change it in the Inspector." — recorded per campaign in `localStorage` like the Editor's other one-time tours. No wizard, no modal.
+The one dismissible hint shown in the Canvas banner the first time a Campaign opens, recorded per Campaign. It is not a tour or a wizard.
 _Avoid_: tour, onboarding (that is the dashboard flow), tooltip
 
 ### Journey management

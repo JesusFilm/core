@@ -281,6 +281,41 @@ describe('StylePanel', () => {
     })
   })
 
+  describe('Custom colour pick', () => {
+    it('commits a palette pick at once as one Command, and undo reverses that one pick', async () => {
+      const mocks = [
+        sectionStyleMock(hero, {
+          backgroundKind: CampaignBackgroundKind.custom
+        }),
+        sectionStyleMock(
+          hero,
+          { backgroundColor: '#F2B544' },
+          { backgroundKind: CampaignBackgroundKind.custom }
+        ),
+        paletteMock(nextPalette(campaign.palette, '#F2B544')),
+        sectionStyleMock(
+          hero,
+          { backgroundColor: null },
+          { backgroundKind: CampaignBackgroundKind.custom }
+        )
+      ]
+      renderPanel(mocks)
+
+      fireEvent.click(await screen.findByRole('button', { name: 'Custom' }))
+      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+      fireEvent.click(screen.getByRole('button', { name: 'Use #F2B544' }))
+
+      await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(mocks[3].result).toHaveBeenCalled())
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
+    })
+  })
+
   describe('Colours', () => {
     it('writes each override as one Command and clears it with null', async () => {
       const mocks = [

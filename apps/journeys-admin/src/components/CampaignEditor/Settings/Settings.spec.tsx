@@ -143,6 +143,33 @@ describe('Settings', () => {
     ).toBeInTheDocument()
   })
 
+  it('shows every attached Campaign Root as a current public address', () => {
+    renderSettings({
+      campaign: {
+        ...campaign,
+        customDomains: [
+          {
+            __typename: 'CustomDomain',
+            id: 'customDomainId',
+            name: 'christmas.example.org'
+          },
+          {
+            __typename: 'CustomDomain',
+            id: 'secondCustomDomainId',
+            name: 'gifts.example.org'
+          }
+        ]
+      }
+    })
+
+    expect(
+      screen.getByText('Current public address: https://christmas.example.org')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText('Current public address: https://gifts.example.org')
+    ).toBeInTheDocument()
+  })
+
   it('saves the title through campaignUpdate on commit without adding a Command', async () => {
     const result = vi.fn(() => ({
       data: {
