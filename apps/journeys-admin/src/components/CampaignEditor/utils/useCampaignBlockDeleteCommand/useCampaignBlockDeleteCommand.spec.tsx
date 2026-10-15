@@ -58,11 +58,15 @@ const restoreMock = {
   }))
 }
 
-function renderEditor(): ReturnType<typeof render> {
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
+function renderEditor(
+  mocks: Array<Record<string, unknown>> = [deleteMock, restoreMock]
+): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       initialState={{ selectedBlockId: 'footerTermsId' }}
-      mocks={[deleteMock, restoreMock]}
+      mocks={mocks}
     >
       <CommandUndoItem variant="button" />
       <SelectionProbe />
@@ -125,6 +129,30 @@ describe('useCampaignBlockDeleteCommand', () => {
     )
     expect(restoreMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
+  })
+
+  it('raises the API message in the error snackbar when the delete is refused', async () => {
+    renderEditor([{ ...deleteMock, result: refusal }])
+    expect(await screen.findByTestId('Block-footerTermsId')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('raises the API message when the undo restore is refused', async () => {
+    renderEditor([deleteMock, { ...restoreMock, result: refusal }])
+    expect(await screen.findByTestId('Block-footerTermsId')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
   })
 
   describe('sections', () => {

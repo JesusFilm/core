@@ -7,6 +7,7 @@ import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBloc
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 /** A block's live, ordered siblings, excluding itself. */
 export function siblingsOf(
@@ -45,6 +46,7 @@ export function useCampaignBlockDeleteCommand(): {
   } = useCampaignEditor()
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function addBlockDelete(block: CampaignBlock): void {
     const blockPageKind = pageKindOf(block) ?? pageKind
@@ -67,7 +69,7 @@ export function useCampaignBlockDeleteCommand(): {
           variables: { id: block.id },
           optimisticResponse: { campaignBlockDelete: siblingsAfter },
           context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
-        })
+        }).catch(reportFailure)
       },
       undo() {
         dispatch({
@@ -80,7 +82,7 @@ export function useCampaignBlockDeleteCommand(): {
           optimisticResponse: {
             campaignBlockRestore: [block, ...siblingsBefore]
           }
-        })
+        }).catch(reportFailure)
       }
     })
   }

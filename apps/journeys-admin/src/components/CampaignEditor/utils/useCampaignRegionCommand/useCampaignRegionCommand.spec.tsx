@@ -80,12 +80,18 @@ function Controls(): ReactElement {
   )
 }
 
-function renderCommands(): ReturnType<typeof render> {
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
+function renderCommands(
+  mocks: Array<Record<string, unknown>> = [
+    unlistMock,
+    listMock,
+    moveDownMock,
+    moveBackMock
+  ]
+): ReturnType<typeof render> {
   return render(
-    <QueriedEditor
-      campaignProp={campaignWithRegions}
-      mocks={[unlistMock, listMock, moveDownMock, moveBackMock]}
-    >
+    <QueriedEditor campaignProp={campaignWithRegions} mocks={mocks}>
       <Hotkeys />
       <CommandProbe />
       <RegionsProbe />
@@ -147,6 +153,32 @@ describe('useCampaignRegionCommand', () => {
         .getAllByTestId(/^Region-/)
         .map((item) => item.getAttribute('data-testid'))
     ).toEqual(['Region-eurRegionId', 'Region-afrRegionId'])
+  })
+
+  it('raises the API message in the error snackbar when a list or unlist is refused', async () => {
+    renderCommands([{ ...unlistMock, result: refusal }])
+    await waitFor(() =>
+      expect(screen.getByTestId('Region-eurRegionId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle listed' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('raises the API message when a reorder is refused', async () => {
+    renderCommands([{ ...moveDownMock, result: refusal }])
+    await waitFor(() =>
+      expect(screen.getByTestId('Region-eurRegionId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move down' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
   })
 
   describe('helpers', () => {

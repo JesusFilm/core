@@ -17,6 +17,7 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../../CampaignEditorProvider'
+import { useCommandFailure } from '../useCommandFailure'
 
 /** The name a new region is born with (PRD §3); campaign content, not UI copy. */
 export const NEW_REGION_NAME = 'New region'
@@ -164,6 +165,7 @@ export function useCampaignRegionCommand(): {
   const [regionUpdate] = useCampaignRegionUpdateMutation()
   const [regionDelete] = useCampaignRegionDeleteMutation(campaign.id)
   const [orderUpdate] = useCampaignRegionOrderUpdateMutation()
+  const reportFailure = useCommandFailure()
 
   function currentFocus(): Focus {
     return {
@@ -194,10 +196,12 @@ export function useCampaignRegionCommand(): {
       void regionCreate({
         variables: { campaignId: campaign.id, id },
         optimisticResponse: { campaignRegionCreate: region }
-      }).then((result) => {
-        if (result.data?.campaignRegionCreate != null)
-          born = result.data.campaignRegionCreate
       })
+        .then((result) => {
+          if (result.data?.campaignRegionCreate != null)
+            born = result.data.campaignRegionCreate
+        })
+        .catch(reportFailure)
     }
 
     add({
@@ -214,15 +218,17 @@ export function useCampaignRegionCommand(): {
           optimisticResponse: {
             campaignRegionUpdate: { ...region, listed: false }
           }
-        }).then(
-          async () =>
-            await regionDelete({
-              variables: { id },
-              optimisticResponse: {
-                campaignRegionDelete: { __typename: 'CampaignRegion', id }
-              }
-            })
-        )
+        })
+          .then(
+            async () =>
+              await regionDelete({
+                variables: { id },
+                optimisticResponse: {
+                  campaignRegionDelete: { __typename: 'CampaignRegion', id }
+                }
+              })
+          )
+          .catch(reportFailure)
       },
       redo() {
         focus(after)
@@ -251,7 +257,7 @@ export function useCampaignRegionCommand(): {
               listed: next
             }
           }
-        })
+        }).catch(reportFailure)
       }
     })
   }
@@ -274,7 +280,7 @@ export function useCampaignRegionCommand(): {
         void orderUpdate({
           variables: { id: region.id, order: next },
           optimisticResponse: { campaignRegionOrderUpdate: rows }
-        })
+        }).catch(reportFailure)
       }
     })
   }
