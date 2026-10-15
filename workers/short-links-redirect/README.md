@@ -392,7 +392,7 @@ are cut over.
 ## Setting up ClickHouse
 
 Scan events go to one ClickHouse Cloud service per environment
-(`jfp-short-links-<env>`), managed by Terraform
+(`jfp-clickhouse-<env>`, shared with Plausible, which has its own database and user), managed by Terraform
 (`infrastructure/modules/clickhouse/service`, called from each environment's
 `main.tf`; stage first, prod once stage is proven). Terraform manages the service only; the apply publishes two values
 into the `core` Doppler project (`stg` / `prd`):
