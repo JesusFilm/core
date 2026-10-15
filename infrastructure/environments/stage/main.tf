@@ -234,6 +234,20 @@ module "plausible" {
   host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
 }
 
+# The stage Plausible hostname, moved from the EKS ingress NLB to the public
+# ALB. external-dns created this record and still has it in its TXT registry;
+# with the chart's Ingress disabled it no longer desires it, and under
+# `upsert-only` it does not delete it, so Terraform overwrites it. Rollback is
+# the NLB name again (modules/plausible/README.md, "Stage cutover").
+resource "aws_route53_record" "plausible_analytics" {
+  zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
+  name            = "analytics"
+  type            = "CNAME"
+  ttl             = 300
+  records         = [module.stage.public_alb.dns_name]
+  allow_overwrite = true
+}
+
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"
