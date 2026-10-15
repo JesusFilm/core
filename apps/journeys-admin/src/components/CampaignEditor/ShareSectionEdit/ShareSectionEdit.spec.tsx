@@ -166,36 +166,6 @@ const linkMock = {
   }))
 }
 
-const linkedFrench = {
-  ...eurFrench,
-  journeyId: 'frJourneyId',
-  title: 'Noël en Europe',
-  description: null,
-  snapshotEdited: false,
-  qrCodeId: 'frQrCodeId',
-  journey
-}
-
-const unlinkFrenchMock = {
-  request: {
-    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
-    variables: { id: 'eurRegionId-496', input: { journeyId: null } }
-  },
-  result: vi.fn(() => ({
-    data: { campaignRegionLanguageUpdate: eurFrench }
-  }))
-}
-
-const relinkFrenchMock = {
-  request: {
-    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
-    variables: { id: 'eurRegionId-496', input: { journeyId: 'frJourneyId' } }
-  },
-  result: vi.fn(() => ({
-    data: { campaignRegionLanguageUpdate: linkedFrench }
-  }))
-}
-
 const swapMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
@@ -217,7 +187,26 @@ const swapMock = {
   }))
 }
 
+const swapRelinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-529', input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...eurEnglish,
+        journeyId: 'frJourneyId',
+        title: 'Noël en Europe',
+        description: null,
+        journey
+      }
+    }
+  }))
+}
+
 const swapBackMock = {
+  delay: 50,
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
     variables: { id: 'eurRegionId-529', input: { journeyId: 'eurJourneyId' } }
@@ -364,9 +353,8 @@ function renderShare(
           linkMock,
           linkFailureMock,
           unlinkMock,
-          unlinkFrenchMock,
-          relinkFrenchMock,
           swapMock,
+          swapRelinkMock,
           swapBackMock,
           restoreSnapshotMock,
           refreshMock
@@ -623,7 +611,7 @@ describe('ShareSectionEdit', () => {
     expect(within(linked).getByTestId('ShareLanguageCopy')).toBeEnabled()
   })
 
-  it('links as one Command: undo unlinks the language again and redo links the same journey by id', async () => {
+  it('links the first journey as a plain save, so there is nothing to undo', async () => {
     renderShare()
 
     const french = await screen.findByTestId('ShareLanguageRow-496')
@@ -644,24 +632,8 @@ describe('ShareSectionEdit', () => {
         )
       ).toHaveTextContent('Noël en Europe')
     )
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
     expect(linkMock.result).toHaveBeenCalledTimes(1)
-
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
-
-    await waitFor(() => expect(unlinkFrenchMock.result).toHaveBeenCalled())
-    await waitFor(() =>
-      expect(
-        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
-          'ShareLanguageHidden'
-        )
-      ).toBeInTheDocument()
-    )
-
-    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
-
-    await waitFor(() => expect(relinkFrenchMock.result).toHaveBeenCalled())
-    expect(linkMock.result).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
   it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
@@ -685,6 +657,31 @@ describe('ShareSectionEdit', () => {
 
     await waitFor(() => expect(swapBackMock.result).toHaveBeenCalled())
     await waitFor(() => expect(restoreSnapshotMock.result).toHaveBeenCalled())
+  })
+
+  it('keeps a quick undo then redo of a swap in order, so the swapped-in journey does not get the restored title', async () => {
+    renderShare(withEnglish(editedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Swap journey' })
+    )
+    await userEvent.type(
+      within(english).getByRole('textbox', { name: 'New journey link' }),
+      'https://admin.nextstep.is/journeys/frJourneyId{enter}'
+    )
+    fireEvent.click(
+      await within(english).findByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(swapRelinkMock.result).toHaveBeenCalled())
+    expect(restoreSnapshotMock.result.mock.invocationCallOrder[0]).toBeLessThan(
+      swapRelinkMock.result.mock.invocationCallOrder[0]
+    )
   })
 
   it('adds nothing to the undo stack when the link is refused', async () => {

@@ -199,6 +199,8 @@ export function JourneyListEdit({
       parentOrder: cards.length,
       title: journey.title,
       description: journey.description,
+      titleTranslations: [],
+      descriptionTranslations: [],
       journeyStatus: journey.status,
       journeyUrl: null,
       journeyImage: null,
