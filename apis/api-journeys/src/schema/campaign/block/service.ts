@@ -236,6 +236,8 @@ export async function authorizeStructuralBlock(
     throw conflict(`the header and footer cannot be ${verb}`, 'id')
   if (isCampaignSlotTypename(block.typename) && verb !== 'moved')
     throw conflict(`a column slot cannot be ${verb}`, 'id')
+  if (block.parentOrder == null && verb === 'deleted')
+    throw conflict('an owned block cannot be deleted on its own', 'id')
   return block
 }
 
@@ -286,6 +288,26 @@ export function assertPlacement(
     'placement',
     CAMPAIGN_CHILD_PLACEMENTS
   )
+}
+
+/**
+ * The `placement` an update writes: only a section child has one, so a
+ * Region Line (no parent) refuses it, and `null` is refused rather than read
+ * as the default (`BAD_USER_INPUT` / `placement`). Absent leaves it alone.
+ */
+export function placementUpdate(
+  block: Pick<CampaignBlock, 'parentBlockId'>,
+  placement: string | null | undefined
+): { placement?: (typeof CAMPAIGN_CHILD_PLACEMENTS)[number] } {
+  if (placement === undefined) return {}
+  if (block.parentBlockId == null)
+    throw badUserInput(
+      'placement applies to section children only',
+      'placement'
+    )
+  if (placement === null)
+    throw badUserInput('placement cannot be null', 'placement')
+  return { placement: assertPlacement(placement) }
 }
 
 /** The columns that decide which blocks are a block's siblings. */
@@ -461,8 +483,8 @@ async function assertSlotFreeForRestore(
   tx: Prisma.TransactionClient
 ): Promise<void> {
   if (block.parentBlockId == null) return
-  const parent = await tx.campaignBlock.findUnique({
-    where: { id: block.parentBlockId }
+  const parent = await tx.campaignBlock.findFirst({
+    where: { id: block.parentBlockId, deletedAt: null }
   })
   if (parent == null || !isCampaignSlotTypename(parent.typename)) return
   const occupants = await getSiblings(block, tx, { id: { not: block.id } })
@@ -736,7 +758,10 @@ export async function reorderBlock(
   assertParentOrder(parentOrder)
   const nextPlacement =
     placement == null ? undefined : assertPlacement(placement)
-  if (nextPlacement != null && !isCampaignChildTypename(block.typename))
+  if (
+    nextPlacement != null &&
+    (!isCampaignChildTypename(block.typename) || block.parentBlockId == null)
+  )
     throw badUserInput(
       'placement applies to section children only',
       'placement'

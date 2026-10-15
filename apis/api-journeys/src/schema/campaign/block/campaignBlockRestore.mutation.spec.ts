@@ -92,16 +92,19 @@ describe('campaignBlockRestore', () => {
   describe('a block binned from a column slot', () => {
     const slot = { id: 'slotId', typename: 'CampaignColumnBlock' }
 
+    function binnedSlotHero(): ReturnType<typeof campaignBlockWithAcl> {
+      return campaignBlockWithAcl(fixture, 'heroId', {
+        id: 'slotHeroId',
+        parentBlockId: 'slotId',
+        parentOrder: 0,
+        deletedAt: new Date()
+      })
+    }
+
     beforeEach(() => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        campaignBlockWithAcl(fixture, 'heroId', {
-          id: 'slotHeroId',
-          parentBlockId: 'slotId',
-          parentOrder: 0,
-          deletedAt: new Date()
-        })
-      )
-      prismaMock.campaignBlock.findUnique.mockResolvedValue(slot as never)
+      prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(binnedSlotHero())
+        .mockResolvedValueOnce(slot as never)
     })
 
     it('is refused while the slot holds another section (CONFLICT, id)', async () => {
@@ -116,6 +119,37 @@ describe('campaignBlockRestore', () => {
         field: 'id'
       })
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('reads only a live slot as the parent', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValueOnce([
+        { ...fixture.blocks[0], id: 'otherId', parentBlockId: 'slotId' }
+      ])
+
+      await restore('slotHeroId')
+
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+        where: { id: 'slotId', deletedAt: null }
+      })
+    })
+
+    it('does not treat a deleted slot as the occupied parent', async () => {
+      prismaMock.campaignBlock.findFirst.mockReset()
+      prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(binnedSlotHero())
+        .mockResolvedValueOnce(null)
+      prismaMock.campaignBlock.findMany.mockResolvedValue([])
+      prismaMock.campaignBlock.update.mockResolvedValue({
+        ...fixture.blocks[0],
+        id: 'slotHeroId',
+        parentBlockId: 'slotId',
+        parentOrder: 0,
+        deletedAt: null
+      })
+
+      const result = await restore('slotHeroId')
+
+      expect(result.errors).toBeUndefined()
     })
 
     it('comes back when the slot is empty', async () => {

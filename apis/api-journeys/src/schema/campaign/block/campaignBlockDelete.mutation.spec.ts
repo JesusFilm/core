@@ -203,6 +203,26 @@ describe('campaignBlockDelete', () => {
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
+  it('refuses to delete an owned block on its own (CONFLICT, id)', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(fixture, 'heroId', {
+        id: 'coverId',
+        typename: 'CampaignImageBlock',
+        parentBlockId: 'heroId',
+        parentOrder: null
+      })
+    )
+
+    const result = await remove('coverId')
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'CONFLICT',
+      field: 'id'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
+  })
+
   it.each(['landingPageId', 'regionPageId'])(
     'refuses to delete the page %s (CONFLICT, id)',
     async (id) => {

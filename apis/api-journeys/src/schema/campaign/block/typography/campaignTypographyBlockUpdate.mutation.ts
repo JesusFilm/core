@@ -1,8 +1,8 @@
 import { builder } from '../../../builder'
 import { CampaignTypographyBlock } from '../campaignTypographyBlock'
 import {
-  assertPlacement,
   authorizeTypedBlockUpdate,
+  placementUpdate,
   updateBlock
 } from '../service'
 
@@ -28,9 +28,7 @@ builder.mutationField('campaignTypographyBlockUpdate', (t) =>
       const data = validateTypographyInput(input)
       return await updateBlock(block, {
         ...data,
-        ...(input.placement !== undefined && block.parentBlockId != null
-          ? { placement: assertPlacement(input.placement) }
-          : {})
+        ...placementUpdate(block, input.placement)
       })
     }
   })
