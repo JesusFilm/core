@@ -1,17 +1,21 @@
 /**
- * Journey slugs that would be shadowed by a static route. A journey lives at
- * `/<journeySlug>/<stepSlug>`, but on the root domain the static folders
- * under `apps/journeys/pages/home/` win over `home/[journeySlug]/`, and the
- * proxy rewrites `/campaign/…` and `/template-gallery/…` on every host. A
- * journey with one of these slugs would lose its step links.
+ * The first path segments the viewer owns on a domain root. The static folders
+ * under `apps/journeys/pages/home/` win over `home/[journeySlug]/`, the proxy
+ * rewrites `/campaign/…` and `/template-gallery/…` on every host, and `/api`,
+ * `/_next` and `/plausible` never reach the journey route. This is the one
+ * list both sides reserve against: a journey slug (`isReservedJourneySlug`)
+ * and a campaign region slug (`REGION_RESERVED_SLUGS`).
  */
-export const RESERVED_JOURNEY_SLUGS: ReadonlySet<string> = new Set([
-  'campaign',
+export const VIEWER_RESERVED_SEGMENTS: ReadonlySet<string> = new Set([
   'embed',
   'legal',
-  'template-gallery'
+  'plausible',
+  'campaign',
+  'template-gallery',
+  'api',
+  '_next'
 ])
 
 export function isReservedJourneySlug(slug: string): boolean {
-  return RESERVED_JOURNEY_SLUGS.has(slug)
+  return VIEWER_RESERVED_SEGMENTS.has(slug)
 }

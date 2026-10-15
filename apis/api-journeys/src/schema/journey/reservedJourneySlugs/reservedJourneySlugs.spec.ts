@@ -1,11 +1,22 @@
-import { isReservedJourneySlug } from './reservedJourneySlugs'
+import {
+  VIEWER_RESERVED_SEGMENTS,
+  isReservedJourneySlug
+} from './reservedJourneySlugs'
 
 describe('isReservedJourneySlug', () => {
-  it('reserves the slugs shadowed by static routes', () => {
-    expect(isReservedJourneySlug('campaign')).toBe(true)
-    expect(isReservedJourneySlug('embed')).toBe(true)
-    expect(isReservedJourneySlug('legal')).toBe(true)
-    expect(isReservedJourneySlug('template-gallery')).toBe(true)
+  it('reserves every first path segment the viewer owns', () => {
+    for (const segment of [
+      'embed',
+      'legal',
+      'plausible',
+      'campaign',
+      'template-gallery',
+      'api',
+      '_next'
+    ]) {
+      expect(VIEWER_RESERVED_SEGMENTS.has(segment)).toBe(true)
+      expect(isReservedJourneySlug(segment)).toBe(true)
+    }
   })
 
   it('allows any other slug', () => {

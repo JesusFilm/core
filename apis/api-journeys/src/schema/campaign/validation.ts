@@ -5,6 +5,7 @@ import type { ZodType } from 'zod'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { FONT_FAMILIES } from '@core/shared/ui/fontFamilies'
 
+import { VIEWER_RESERVED_SEGMENTS } from '../journey/reservedJourneySlugs/reservedJourneySlugs'
 import { assertHttpsUrl } from '../templateGalleryPage/assertHttpsUrl'
 import {
   RESERVED_SLUGS,
@@ -218,13 +219,7 @@ export { RESERVED_SLUGS, SLUG_MAX_LENGTH, SLUG_PATTERN }
 
 export const REGION_RESERVED_SLUGS: ReadonlySet<string> = new Set([
   ...RESERVED_SLUGS,
-  'embed',
-  'legal',
-  'plausible',
-  'campaign',
-  'template-gallery',
-  'api',
-  '_next'
+  ...VIEWER_RESERVED_SEGMENTS
 ])
 
 function slugBase(source: string, reserved: ReadonlySet<string>): string {
