@@ -15,7 +15,7 @@ export class CampaignPage {
   }
 
   get qrCodeCanvas(): Locator {
-    return this.page.getByTestId('QrCodeCanvas').locator('canvas')
+    return this.page.getByTitle('QR Code')
   }
 
   async openLandingPage(slug: string, heroTitle: string): Promise<void> {

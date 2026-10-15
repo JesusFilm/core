@@ -48,9 +48,7 @@ export class CampaignBuilderPage {
   async verifyEditorOpenedOnLandingPage(title: string): Promise<void> {
     await expect(this.page).toHaveURL(/\/campaigns\/[^/]+$/)
     await this.togglePagesPanel()
-    await expect(this.page.getByTestId('CampaignPagesPanelTitle')).toHaveText(
-      title
-    )
+    await expect(this.page.getByRole('heading', { name: title })).toBeVisible()
     await expect(
       this.page.getByRole('button', { name: 'Landing page' })
     ).toHaveAttribute('aria-current', 'page')
@@ -121,7 +119,10 @@ export class CampaignBuilderPage {
   /** Sets the selected section's Background kind on the Inspector's Style tab. */
   async setBackgroundKind(kind: string): Promise<void> {
     await this.inspectorTabs.getByRole('tab', { name: 'Style' }).click()
-    await this.page.getByRole('tab', { name: 'Background' }).click()
+    await this.page
+      .getByRole('tablist', { name: 'Style', exact: true })
+      .getByRole('tab', { name: 'Background' })
+      .click()
     const kindButton = this.page
       .getByRole('group', { name: 'Background' })
       .getByRole('button', { name: kind, exact: true })
@@ -142,7 +143,9 @@ export class CampaignBuilderPage {
       .click()
 
     const titleInput = this.canvas.getByRole('textbox', { name: 'Title' })
-    // Text writes are debounced: publishing before the mutation lands would race the title save.
+    // The title shows optimistically and its write is debounced, and no UI
+    // signal reports that it was saved, so wait for the request itself:
+    // publishing or deleting before it lands would race the save.
     const titleSaved = this.page.waitForResponse(
       (response) =>
         response.request().method() === 'POST' &&
@@ -190,10 +193,16 @@ export class CampaignBuilderPage {
       .getByRole('button', { name: 'Use this journey' })
       .click({ timeout: 90000 })
 
-    const shortLink = this.canvas.getByTestId('ShareLanguageShortLink')
-    await expect(shortLink).toBeVisible()
-    await expect(this.canvas.getByTestId('QrCodeCanvas')).toBeVisible()
-    return (await shortLink.innerText()).trim()
+    // The Share Link is the target of the link that opens it
+    const openShareLink = this.canvas.getByRole('link', {
+      name: 'Open',
+      exact: true
+    })
+    await expect(openShareLink).toBeVisible()
+    await expect(this.canvas.getByTitle('QR Code')).toBeVisible()
+    const shareLink = await openShareLink.getAttribute('href')
+    if (shareLink == null) throw new Error('The Open link has no Share Link')
+    return shareLink.replace(/^https?:\/\//, '')
   }
 
   async publish(): Promise<void> {
@@ -201,10 +210,6 @@ export class CampaignBuilderPage {
     await this.page
       .getByRole('button', { name: 'Publish', exact: true })
       .click()
-    await expect(this.page.getByTestId('PublishStatusDot')).toHaveAttribute(
-      'data-status',
-      'published'
-    )
     await expect(
       this.page.getByRole('button', { name: 'Unpublish', exact: true })
     ).toBeVisible()
@@ -221,5 +226,35 @@ export class CampaignBuilderPage {
     const slug = href?.match(/\/campaign\/([^/?#]+)/)?.[1]
     if (slug == null) throw new Error(`No campaign slug in Open page: ${href}`)
     return slug
+  }
+
+  /**
+   * Deletes the campaign open in the editor from its Settings, so a run
+   * leaves nothing behind. Returns false, without deleting, when the run
+   * never got as far as an editor.
+   */
+  async deleteCampaign(): Promise<boolean> {
+    if (!/^\/campaigns\/[^/]+$/.test(new URL(this.page.url()).pathname)) {
+      return false
+    }
+
+    // Reloading starts the editor with nothing selected, so Settings shows
+    // the campaign itself, and it drops any popover (a modal with a backdrop)
+    // a test that died mid-step left open. Escape cannot do either safely: with
+    // no popover open it steps the editor selection up instead.
+    await this.page.reload()
+
+    const settingsTab = this.inspectorTabs.getByRole('tab', {
+      name: 'Settings'
+    })
+    await settingsTab.click()
+    await expect(settingsTab).toHaveAttribute('aria-selected', 'true')
+    await this.page.getByRole('button', { name: 'Delete campaign' }).click()
+    await this.page
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Delete', exact: true })
+      .click()
+    await expect(this.page).toHaveURL(/\/campaigns$/)
+    return true
   }
 }
