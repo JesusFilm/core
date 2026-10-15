@@ -1,5 +1,6 @@
 import {
   carouselCards,
+  isExtra,
   transformCampaignBlocks
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
@@ -92,11 +93,7 @@ function placementOf(
   parent: CampaignBlock | undefined
 ): NavigatorExtraPlacement | undefined {
   if (parent == null) return undefined
-  if (
-    block.__typename !== 'CampaignTypographyBlock' &&
-    block.__typename !== 'CampaignButtonBlock'
-  )
-    return undefined
+  if (!isExtra(block)) return undefined
   return block.placement === CampaignChildPlacement.above ? 'above' : 'below'
 }
 

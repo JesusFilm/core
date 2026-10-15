@@ -7,13 +7,13 @@ import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
+  CampaignFeaturedMediaLayout,
   CampaignPageKind,
   CampaignTextSource,
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, campaignWithColumns } from '../data'
 import { newSectionBlock } from '../sectionTypes'
 import {
@@ -82,16 +82,6 @@ const swapMock = {
       ]
     }
   }))
-}
-
-/** Dispatches the Edit request that focuses the selected block's primary text. */
-function EditRequester(): ReactElement {
-  const { dispatch } = useCampaignEditor()
-  return (
-    <Button onClick={() => dispatch({ type: 'RequestEditAction' })}>
-      Edit
-    </Button>
-  )
 }
 
 function ViewHarness(): ReactElement {
@@ -400,6 +390,48 @@ describe('Canvas', () => {
     expect(
       featuredSection.querySelector('[data-testid="InlineText-bullets"]')
     ).toHaveTextContent('Free to share In many languages')
+  })
+
+  it('lays a stacked Featured Media section out as one column at every width, the media under the text', async () => {
+    const hero = campaign.blocks.find((block) => block.id === 'heroId')
+    if (hero == null) throw new Error('no hero')
+    const featured = (id: string, layout: CampaignFeaturedMediaLayout) => ({
+      ...newSectionBlock('CampaignFeaturedMediaBlock', {
+        id,
+        campaignId: campaign.id,
+        pageId: hero.pageId ?? '',
+        parentOrder: 5
+      }),
+      layout
+    })
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'desktop', {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks,
+        featured('stackedId', CampaignFeaturedMediaLayout.stacked),
+        featured('sideBySideId', CampaignFeaturedMediaLayout.sideBySide)
+      ]
+    })
+    const body = await frameBody(baseElement, 'CanvasSection-stackedId')
+    const styles = Array.from(body.ownerDocument.querySelectorAll('style'))
+      .map((node) => node.textContent ?? '')
+      .join('')
+    function flexRules(sectionId: string): string {
+      const media = body.querySelector(
+        `[data-testid="CanvasSection-${sectionId}"] [data-testid="CanvasSectionMedia"]`
+      ) as HTMLElement
+      expect(media.previousElementSibling).not.toBeNull()
+      const className = Array.from(
+        (media.parentElement as HTMLElement).classList
+      ).find((name) => name.startsWith('iframe-'))
+      return (
+        styles.match(new RegExp(`\\.${className}\\{[^}]*\\}`, 'g')) ?? []
+      ).join('')
+    }
+
+    expect(flexRules('sideBySideId')).toContain('flex-direction:row')
+    expect(flexRules('stackedId')).toContain('flex-direction:column')
+    expect(flexRules('stackedId')).not.toContain('flex-direction:row')
   })
 
   it('selects a section on click and turns its text into inline inputs', async () => {
@@ -844,11 +876,7 @@ describe('Canvas scaled to fit', () => {
 
   it('focuses an inline input without scrolling the editor page', async () => {
     const { baseElement } = render(
-      <StaticEditor
-        mocks={[orderMock]}
-        initialState={{ selectedBlockId: 'heroButtonId' }}
-      >
-        <EditRequester />
+      <StaticEditor mocks={[orderMock]}>
         <Canvas
           campaign={campaign}
           pageKind={CampaignPageKind.landing}
@@ -856,13 +884,15 @@ describe('Canvas scaled to fit', () => {
         />
       </StaticEditor>
     )
-    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    const body = await frameBody(baseElement, 'CanvasExtra-heroButtonId')
     // The input lives in the frame's window, which has its own HTMLElement.
     const frameWindow = body.ownerDocument.defaultView as Window &
       typeof globalThis
     const focus = vi.spyOn(frameWindow.HTMLElement.prototype, 'focus')
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+    fireEvent.click(
+      body.querySelector('[data-testid="CanvasExtra-heroButtonId"]')!
+    )
 
     await waitFor(() => expect(focus).toHaveBeenCalled())
     expect(

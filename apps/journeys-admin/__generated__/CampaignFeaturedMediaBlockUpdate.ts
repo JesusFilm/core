@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignFeaturedMediaBlockUpdateInput, CampaignMediaSide } from "./globalTypes";
+import { CampaignFeaturedMediaBlockUpdateInput, CampaignMediaSide, CampaignFeaturedMediaLayout } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignFeaturedMediaBlockUpdate
@@ -17,6 +17,10 @@ export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpda
    */
   mediaSide: CampaignMediaSide;
   /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
@@ -24,7 +28,7 @@ export interface CampaignFeaturedMediaBlockUpdate_campaignFeaturedMediaBlockUpda
 
 export interface CampaignFeaturedMediaBlockUpdate {
   /**
-   * Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+   * Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -33,6 +37,7 @@ export interface CampaignFeaturedMediaBlockUpdate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
    * - BAD_USER_INPUT (field: `mediaSide`): not left or right.
+   * - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
    * - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.

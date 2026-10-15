@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
+import type { CSSObject } from '@mui/material/styles'
 import { ReactElement, ReactNode, useMemo } from 'react'
 
 import {
@@ -11,6 +12,7 @@ import {
 import { useCampaign } from '../CampaignProvider'
 import { CampaignRenderer } from '../CampaignRenderer'
 import { bandCssVariables, resolveBand } from '../libs/resolveBand'
+import { isExtra } from '../types'
 import type { CampaignSectionTree, CampaignTree } from '../types'
 
 import { CampaignBandCover } from './CampaignBandCover'
@@ -27,11 +29,14 @@ interface CampaignSectionBandProps {
 }
 
 function isAbove(child: CampaignTree): boolean {
-  return (
-    (child.__typename === 'CampaignTypographyBlock' ||
-      child.__typename === 'CampaignButtonBlock') &&
-    child.placement === CampaignChildPlacement.above
-  )
+  return isExtra(child) && child.placement === CampaignChildPlacement.above
+}
+
+/** A Column Slot paints no page rhythm, only padding when the section has a background of its own. */
+function spacingFor(block: CampaignSectionTree, inSlot: boolean): CSSObject {
+  if (!inSlot) return { py: { xs: 6, md: 10 } }
+  if (block.backgroundKind === CampaignBackgroundKind.none) return {}
+  return { p: { xs: 3, md: 4 }, borderRadius: 1 }
 }
 
 /**
@@ -88,11 +93,7 @@ export function CampaignSectionBand({
           color: 'var(--campaign-band-text)',
           textAlign: align ?? undefined,
           scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
-          ...(inSlot
-            ? block.backgroundKind !== CampaignBackgroundKind.none
-              ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
-              : {}
-            : { py: { xs: 6, md: 10 } })
+          ...spacingFor(block, inSlot)
         }}
       >
         <CampaignBandCover block={block} />

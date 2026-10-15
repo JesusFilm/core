@@ -70,6 +70,17 @@ describe('AnalyticsEdit', () => {
     vi.unstubAllGlobals()
   })
 
+  // First: the world map is cached per page load once fetched, and a failure clears it.
+  it('says so when the map cannot be loaded, leaving the stats in place', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 404 })
+    renderEdit()
+    await screen.findByTestId('CampaignAnalyticsStats')
+    expect(
+      await screen.findByText('The map could not be loaded. Try again later.')
+    ).toBeInTheDocument()
+    expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
+  })
+
   it('shows the map under the stats while showMap is on, with no switch on the canvas', async () => {
     renderEdit()
     await screen.findByTestId('CampaignAnalyticsStats')

@@ -50,7 +50,7 @@ builder.mutationField('journeyUpdate', (t) =>
           input.slug = slugify(input.slug, { lower: true, strict: true })
         if (input.slug != null && isReservedJourneySlug(input.slug))
           throw new GraphQLError('slug is reserved', {
-            extensions: { code: 'BAD_USER_INPUT' }
+            extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
           })
 
         if (input.hostId != null) {

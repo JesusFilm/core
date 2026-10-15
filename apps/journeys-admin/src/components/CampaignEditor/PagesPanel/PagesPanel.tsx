@@ -6,7 +6,6 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
-import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -19,6 +18,7 @@ import {
   useCampaignEditor
 } from '../CampaignEditorProvider'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
+import { LeftPanelBody } from '../LeftPanel'
 
 /** The page list's selected value: the landing page, or the Region Page rendered for one region. */
 export function pageSelectValue(
@@ -84,7 +84,7 @@ export function PagesPanel(): ReactElement {
   }
 
   return (
-    <Stack spacing={3} data-testid="CampaignPagesPanel" sx={{ p: 4 }}>
+    <LeftPanelBody spacing={3} data-testid="CampaignPagesPanel">
       <Typography variant="h6" noWrap data-testid="CampaignPagesPanelTitle">
         {campaign.title}
       </Typography>
@@ -131,7 +131,7 @@ export function PagesPanel(): ReactElement {
                   color="warning"
                   label={t('Needs journey')}
                   data-testid="RegionNeedsJourney"
-                  sx={{ ml: 1 }}
+                  sx={{ ml: 1, flexShrink: 0 }}
                 />
               )}
             </ListItemButton>
@@ -157,6 +157,6 @@ export function PagesPanel(): ReactElement {
           ))}
         </Select>
       </FormControl>
-    </Stack>
+    </LeftPanelBody>
   )
 }

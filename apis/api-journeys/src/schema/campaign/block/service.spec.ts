@@ -361,9 +361,9 @@ describe('campaign block service', () => {
   })
 
   describe('assertPlacement', () => {
-    it('defaults to below and accepts above', () => {
-      expect(assertPlacement(null)).toBe('below')
-      expect(assertPlacement(undefined)).toBe('below')
+    it('leaves an omitted placement to the column default and accepts above', () => {
+      expect(assertPlacement(null)).toBeUndefined()
+      expect(assertPlacement(undefined)).toBeUndefined()
       expect(assertPlacement('above')).toBe('above')
     })
 

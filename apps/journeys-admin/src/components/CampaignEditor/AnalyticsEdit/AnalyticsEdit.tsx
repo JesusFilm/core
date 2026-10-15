@@ -1,4 +1,6 @@
+import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
 import { CampaignAnalyticsPanel } from '@core/journeys/ui/Campaign'
@@ -22,7 +24,8 @@ interface AnalyticsEditProps {
  */
 export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
   const { campaign, currentRegion } = useCampaignEditor()
-  const worldMap = useWorldMap(block.showMap)
+  const { t } = useTranslation('apps-journeys-admin')
+  const { shapes: worldMap, error: worldMapError } = useWorldMap(block.showMap)
 
   return (
     <Box
@@ -38,6 +41,11 @@ export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
         worldMap={worldMap}
         accentColor={block.accentColor ?? campaign.theme.accentColor}
       />
+      {worldMapError != null && (
+        <Alert severity="warning" sx={{ mt: 2 }}>
+          {t('The map could not be loaded. Try again later.')}
+        </Alert>
+      )}
     </Box>
   )
 }

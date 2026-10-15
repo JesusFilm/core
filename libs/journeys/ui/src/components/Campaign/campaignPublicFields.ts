@@ -134,6 +134,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       lede
       bullets
       mediaSide
+      layout
       mediaBlockId
     }
     ... on CampaignVideoBlock {
@@ -152,6 +153,13 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
           slug
           childrenCount
           title(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          description(languageId: $languageId, primary: true) {
             value
             primary
             language {
@@ -285,7 +293,7 @@ export const CAMPAIGN_PUBLIC_FIELDS = gql`
         country {
           id
           flagPngSrc
-          name(primary: true) {
+          name(languageId: $languageId, primary: true) {
             value
           }
         }

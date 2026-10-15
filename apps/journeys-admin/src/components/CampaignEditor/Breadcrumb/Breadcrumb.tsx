@@ -82,7 +82,7 @@ export function Breadcrumb(): ReactElement {
       aria-label={t('Selection')}
       data-testid="CampaignBreadcrumb"
       separator="›"
-      sx={{ minWidth: 200 }}
+      sx={{ '& .MuiBreadcrumbs-li': { minWidth: 0, overflowWrap: 'anywhere' } }}
     >
       {crumbs.map((crumb, index) =>
         index === crumbs.length - 1 ? (

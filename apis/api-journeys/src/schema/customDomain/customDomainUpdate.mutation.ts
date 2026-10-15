@@ -5,6 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import {
+  campaignLanguageTags,
   campaignPagePaths,
   enqueueCampaignRevalidation
 } from '../campaign/revalidateCampaign'
@@ -29,10 +30,16 @@ async function revalidateCampaignRootChange(
     where: { id: { in: ids } },
     include: { regions: true }
   })
-  const paths = campaigns.flatMap((campaign) =>
-    campaignPagePaths({ ...campaign, hostnames: [hostname] })
+  const paths = await Promise.all(
+    campaigns.map(async (campaign) =>
+      campaignPagePaths({
+        ...campaign,
+        hostnames: [hostname],
+        languageTags: await campaignLanguageTags(campaign.id)
+      })
+    )
   )
-  await enqueueCampaignRevalidation(paths)
+  await enqueueCampaignRevalidation(paths.flat())
 }
 
 builder.mutationField('customDomainUpdate', (t) =>
@@ -57,8 +64,7 @@ builder.mutationField('customDomainUpdate', (t) =>
         })
       }
 
-      const action = 'campaignId' in input ? Action.Manage : Action.Update
-      if (!canAccessCustomDomain(action, customDomain, context.user)) {
+      if (!canAccessCustomDomain(Action.Update, customDomain, context.user)) {
         throw new GraphQLError('user is not allowed to update custom domain', {
           extensions: { code: 'FORBIDDEN' }
         })

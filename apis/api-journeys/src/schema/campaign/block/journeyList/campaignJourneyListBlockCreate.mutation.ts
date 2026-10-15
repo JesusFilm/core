@@ -68,7 +68,9 @@ builder.mutationField('campaignJourneyListBlockCreate', (t) =>
         context.user,
         () => ({
           ...validateSectionText(input, ['eyebrow', 'title', 'lede']),
-          display: assertEnum(input.display ?? 'grid', 'display', DISPLAYS)
+          ...(input.display != null && {
+            display: assertEnum(input.display, 'display', DISPLAYS)
+          })
         })
       )
   })

@@ -22,6 +22,15 @@ const HEADING_VARIANTS = new Set<TypographyVariant>([
   TypographyVariant.h6
 ])
 
+function sectionColorFor(
+  section: NonNullable<ReturnType<typeof useCampaignSection>> | null,
+  variant: TypographyVariant
+): string | undefined {
+  if (section == null) return undefined
+  if (HEADING_VARIANTS.has(variant)) return section.band.heading
+  return section.band.text
+}
+
 /**
  * The campaign text block. `variant` decides size, weight and font family
  * through the theme (null ⇒ body1); a null `align` inherits the section's;
@@ -35,12 +44,7 @@ export function CampaignTypography({
   if (!hasText(block.content)) return null
 
   const variant = block.typographyVariant ?? TypographyVariant.body1
-  const sectionColor =
-    section == null
-      ? undefined
-      : HEADING_VARIANTS.has(variant)
-        ? section.band.heading
-        : section.band.text
+  const sectionColor = sectionColorFor(section, variant)
   return (
     <MuiTypography
       variant={variant}

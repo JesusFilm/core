@@ -29,23 +29,31 @@ function watchVideo(block: CampaignVideoBlock): WatchVideo | null {
   return block.mediaVideo?.__typename === 'Video' ? block.mediaVideo : null
 }
 
-/** A Watch title as the gateway returns it with `title(languageId, primary: true)`. */
-export interface WatchTitle {
+/** A Watch title or description as the gateway returns it with `(languageId, primary: true)`. */
+export interface WatchText {
   value: string
   primary: boolean
   language: { id: string }
 }
 
-/** The Watch title in the Page Language, else the primary, else the first. */
-export function watchTitle(
-  titles: WatchTitle[],
+/** The Watch text in the Page Language, else the primary, else the first. */
+export function watchText(
+  texts: WatchText[],
   languageId: string
 ): string | null {
-  const title =
-    titles.find((candidate) => candidate.language.id === languageId) ??
-    titles.find((candidate) => candidate.primary) ??
-    titles[0]
-  return title?.value ?? null
+  const text =
+    texts.find((candidate) => candidate.language.id === languageId) ??
+    texts.find((candidate) => candidate.primary) ??
+    texts[0]
+  return text?.value ?? null
+}
+
+function watchField(
+  texts: WatchText[] | undefined,
+  languageId: string
+): string | null {
+  if (texts == null) return null
+  return watchText(texts, languageId)
 }
 
 /**
@@ -62,10 +70,10 @@ export function campaignVideoDetails(
   return {
     title: hasText(block.title)
       ? block.title
-      : video == null
-        ? null
-        : watchTitle(video.title, languageId),
-    description: hasText(block.description) ? block.description : null,
+      : watchField(video?.title, languageId),
+    description: hasText(block.description)
+      ? block.description
+      : watchField(video?.description, languageId),
     poster: campaignImageSource(block)?.src ?? null,
     childrenCount: video?.childrenCount ?? 0,
     watchHref: hasText(slug) ? watchUrl(slug) : null
