@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockRestore
@@ -900,6 +900,10 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
    * Which side the media sits on at `md` and up.
    */
   mediaSide: CampaignMediaSide;
+  /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */

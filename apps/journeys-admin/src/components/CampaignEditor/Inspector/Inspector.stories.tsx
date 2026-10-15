@@ -15,6 +15,7 @@ import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
+import { CampaignFeaturedMediaLayout } from '../../../../__generated__/globalTypes'
 import {
   CampaignEditorProvider,
   CampaignEditorState
@@ -103,7 +104,7 @@ export const SectionSettings: Story = {
   }
 }
 
-/** A Featured Media section, Settings: the media slot and which side the media sits on. */
+/** A Featured Media section, Settings: the media slot, the side by side layout and which side the media sits on. */
 export const FeaturedMediaSettings: Story = {
   args: {
     campaignProp: {
@@ -111,6 +112,27 @@ export const FeaturedMediaSettings: Story = {
       blocks: [
         ...campaign.blocks,
         featuredMediaSectionBlock as CampaignBlock,
+        featuredMediaImageBlock as CampaignBlock
+      ]
+    },
+    initialState: {
+      selectedBlockId: 'featuredMediaId',
+      inspectorTab: 'settings'
+    }
+  }
+}
+
+/** A stacked Featured Media section, Settings: the layout is Stacked and the media side is disabled. */
+export const FeaturedMediaStackedSettings: Story = {
+  args: {
+    campaignProp: {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks,
+        {
+          ...featuredMediaSectionBlock,
+          layout: CampaignFeaturedMediaLayout.stacked
+        } as CampaignBlock,
         featuredMediaImageBlock as CampaignBlock
       ]
     },

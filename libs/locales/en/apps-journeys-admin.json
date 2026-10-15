@@ -1689,5 +1689,7 @@
   "Translated {{count}} strings into {{language}}_other": "Translated {{count}} strings into {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "Translation into {{language}} cancelled. {{count}} string kept.",
   "Translation into {{language}} cancelled. {{count}} strings kept._other": "Translation into {{language}} cancelled. {{count}} strings kept.",
-  "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later."
+  "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later.",
+  "Side by side": "Side by side",
+  "Stacked": "Stacked"
 }
