@@ -171,9 +171,11 @@ export function QueriedEditor({
     >
       <SnackbarProvider>
         <CommandProvider>
-          <QueriedEditorInner initialState={initialState}>
-            {children}
-          </QueriedEditorInner>
+          <TranslationRunProvider>
+            <QueriedEditorInner initialState={initialState}>
+              {children}
+            </QueriedEditorInner>
+          </TranslationRunProvider>
         </CommandProvider>
       </SnackbarProvider>
     </MockedProvider>
