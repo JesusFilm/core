@@ -730,6 +730,42 @@ describe('processDownloads', () => {
       }
     })
 
+    it('skips a retry-backlog variant the zero-metadata pass already processed this run', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-retry-dedupe-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+      // variant-1 is in the retry backlog from a prior run, but this run's
+      // zero-metadata pass also turns it up (e.g. a different quality's row
+      // went zero-metadata while the missing-rows repair for another quality
+      // failed last run).
+      writeFileSync(cursorFile, 'cursor-pos\nvariant-1')
+      ;(prismaMock.videoVariantDownload.findMany as Mock).mockResolvedValueOnce(
+        [download({ videoVariantId: 'variant-1' })]
+      )
+      ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
+      mockedGetVideo.mockResolvedValue(readyMuxVideoAsset)
+      mockedPreviewMuxDownloadsFromAsset.mockReturnValue([])
+
+      try {
+        await runProcessDownloads()
+
+        // Only the zero-metadata pass's single getVideo call happens -- the
+        // retry backlog must not call processVariant() on the same variant
+        // again in the same run.
+        expect(mockedGetVideo).toHaveBeenCalledTimes(1)
+        expect(prismaMock.videoVariant.findMany).not.toHaveBeenCalled()
+
+        // Skipped, not confirmed -- the id stays in the backlog for a future
+        // run to actually retry.
+        const [, ...retryIds] = readFileSync(cursorFile, 'utf-8').split('\n')
+        expect(retryIds).toEqual(['variant-1'])
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
+
     it('caps the retry backlog it processes at the sample size, leaving the rest for next run', async () => {
       const cursorFile = join(
         tmpdir(),

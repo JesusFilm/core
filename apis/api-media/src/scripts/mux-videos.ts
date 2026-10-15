@@ -613,16 +613,29 @@ export async function processDownloads(): Promise<void> {
     retryVariantIds.size > 0 &&
     (retrySampleSize == null || retrySampleSize > 0)
   ) {
-    const allRetryVariants = await prisma.videoVariant.findMany({
-      where: { id: { in: Array.from(retryVariantIds) } },
-      include: { muxVideo: true }
-    })
+    // A ready backlog id can also turn up in this run's own zero-metadata
+    // pass above (e.g. one quality row went zero-metadata while another
+    // quality from the same variant failed a missing-rows repair last run).
+    // Skip those here -- processVariant() already ran for them this run --
+    // the same guard the missing-rows loop below applies via
+    // unprocessedCandidateIds.
+    const unprocessedRetryVariantIds = Array.from(retryVariantIds).filter(
+      (id) => !processedVariantIds.has(id)
+    )
+
+    const allRetryVariants =
+      unprocessedRetryVariantIds.length === 0
+        ? []
+        : await prisma.videoVariant.findMany({
+            where: { id: { in: unprocessedRetryVariantIds } },
+            include: { muxVideo: true }
+          })
 
     // A retried variant can be deleted between runs, so findMany won't
     // return it -- drop its id now or it would sit in the cursor file
     // forever, retried-in-name-only on every future invocation.
     const foundRetryVariantIds = new Set(allRetryVariants.map((v) => v.id))
-    for (const id of retryVariantIds) {
+    for (const id of unprocessedRetryVariantIds) {
       if (!foundRetryVariantIds.has(id)) retryVariantIds.delete(id)
     }
 
