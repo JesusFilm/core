@@ -1,5 +1,13 @@
 import fs from 'fs'
-import { appendFile, mkdir, readFile, rename, writeFile } from 'fs/promises'
+import {
+  appendFile,
+  mkdir,
+  open,
+  readFile,
+  rename,
+  unlink,
+  writeFile
+} from 'fs/promises'
 import path from 'path'
 
 import { prisma } from '@core/prisma/media/client'
@@ -25,6 +33,7 @@ const RETRY_PATH = path.join(
   REPORT_DIR,
   'parent-language-audit-index-retry.json'
 )
+const LOCK_PATH = `${RETRY_PATH}.lock`
 
 function isPendingIndexRetryList(value: unknown): value is PendingIndexRetry[] {
   return (
@@ -72,6 +81,36 @@ async function loadPendingIndexRetries(): Promise<PendingIndexRetry[]> {
 async function ensureReportDir(): Promise<void> {
   if (!fs.existsSync(REPORT_DIR)) {
     await mkdir(REPORT_DIR, { recursive: true })
+  }
+}
+
+// Guards the whole apply run so two instances can't share the retry file:
+// savePendingIndexRetries's rename-from-tmp and the incrementally appended
+// report file are not safe under concurrent writers. `wx` creates the lock
+// file atomically and fails with EEXIST if another run's lock already
+// exists, so a second apply run fails fast with a clear error instead of
+// racing on shared state. Dry runs never write, so they never take the lock.
+async function acquireApplyLock(): Promise<void> {
+  await ensureReportDir()
+  try {
+    const handle = await open(LOCK_PATH, 'wx')
+    await handle.close()
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'EEXIST') {
+      throw new Error(
+        `Another parent-language-audit apply run appears to be in progress (lock file exists at ${LOCK_PATH}). If a previous run crashed without cleaning up, delete that file and retry.`,
+        { cause: error }
+      )
+    }
+    throw error
+  }
+}
+
+async function releaseApplyLock(): Promise<void> {
+  try {
+    await unlink(LOCK_PATH)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error
   }
 }
 
@@ -138,66 +177,71 @@ export async function runParentLanguageAudit(apply: boolean): Promise<{
   audit: ParentVariantAuditResult
   repair: ParentLanguageRepairSummary
 }> {
-  const audit = await auditParentVariants()
-  const pendingIndexRetries = apply ? await loadPendingIndexRetries() : []
+  if (apply) await acquireApplyLock()
+  try {
+    const audit = await auditParentVariants()
+    const pendingIndexRetries = apply ? await loadPendingIndexRetries() : []
 
-  // Persisted once up front so an apply run that gets interrupted during the
-  // (potentially long) repair loop below still leaves the detected gaps on
-  // disk, then kept current after every single outcome via onOutcome —
-  // rather than only writing the report and retry file once the whole batch
-  // finishes, which would lose every completed outcome on an interruption
-  // even though the underlying database writes already happened.
-  await initReport([
-    ...audit.deterministicGaps.map((entry) => ({ type: 'gap', ...entry })),
-    ...audit.ambiguous.map((entry) => ({ type: 'ambiguous', ...entry }))
-  ])
+    // Persisted once up front so an apply run that gets interrupted during the
+    // (potentially long) repair loop below still leaves the detected gaps on
+    // disk, then kept current after every single outcome via onOutcome —
+    // rather than only writing the report and retry file once the whole batch
+    // finishes, which would lose every completed outcome on an interruption
+    // even though the underlying database writes already happened.
+    await initReport([
+      ...audit.deterministicGaps.map((entry) => ({ type: 'gap', ...entry })),
+      ...audit.ambiguous.map((entry) => ({ type: 'ambiguous', ...entry }))
+    ])
 
-  const repairOptions: {
-    apply: boolean
-    pendingIndexRetries: PendingIndexRetry[]
-    onOutcome?: (outcome: ParentLanguageRepairOutcome) => Promise<void>
-  } = { apply, pendingIndexRetries }
+    const repairOptions: {
+      apply: boolean
+      pendingIndexRetries: PendingIndexRetry[]
+      onOutcome?: (outcome: ParentLanguageRepairOutcome) => Promise<void>
+    } = { apply, pendingIndexRetries }
 
-  if (apply) {
-    const retries = new Map(
-      pendingIndexRetries.map((retry) => [retryKey(retry), retry])
-    )
-    repairOptions.onOutcome = async (outcome) => {
-      await appendReportRecord({ type: outcome.result, ...outcome })
-      if (outcome.result === 'indexIncomplete') {
-        retries.set(retryKey(outcome), toPendingRetry(outcome))
-      } else if (outcome.result === 'repaired') {
-        retries.delete(retryKey(outcome))
+    if (apply) {
+      const retries = new Map(
+        pendingIndexRetries.map((retry) => [retryKey(retry), retry])
+      )
+      repairOptions.onOutcome = async (outcome) => {
+        await appendReportRecord({ type: outcome.result, ...outcome })
+        if (outcome.result === 'indexIncomplete') {
+          retries.set(retryKey(outcome), toPendingRetry(outcome))
+        } else if (outcome.result === 'repaired') {
+          retries.delete(retryKey(outcome))
+        }
+        await savePendingIndexRetries([...retries.values()])
       }
-      await savePendingIndexRetries([...retries.values()])
     }
+
+    const repair = await applyParentLanguageRepairs(
+      audit.deterministicGaps,
+      repairOptions
+    )
+
+    await writeReport(audit, repair)
+    if (apply) {
+      await savePendingIndexRetries(repair.pendingIndexRetries)
+    }
+
+    logger.info(
+      {
+        apply,
+        deterministicGapCount: audit.deterministicGaps.length,
+        ambiguousCount: audit.ambiguous.length,
+        repairedCount: repair.repaired.length,
+        indexIncompleteCount: repair.indexIncomplete.length,
+        failedCount: repair.failed.length,
+        pendingIndexRetryCount: repair.pendingIndexRetries.length,
+        reportPath: REPORT_PATH
+      },
+      'Catalog-wide parent-language audit completed'
+    )
+
+    return { audit, repair }
+  } finally {
+    if (apply) await releaseApplyLock()
   }
-
-  const repair = await applyParentLanguageRepairs(
-    audit.deterministicGaps,
-    repairOptions
-  )
-
-  await writeReport(audit, repair)
-  if (apply) {
-    await savePendingIndexRetries(repair.pendingIndexRetries)
-  }
-
-  logger.info(
-    {
-      apply,
-      deterministicGapCount: audit.deterministicGaps.length,
-      ambiguousCount: audit.ambiguous.length,
-      repairedCount: repair.repaired.length,
-      indexIncompleteCount: repair.indexIncomplete.length,
-      failedCount: repair.failed.length,
-      pendingIndexRetryCount: repair.pendingIndexRetries.length,
-      reportPath: REPORT_PATH
-    },
-    'Catalog-wide parent-language audit completed'
-  )
-
-  return { audit, repair }
 }
 
 async function main(): Promise<void> {

@@ -15,6 +15,7 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
+import { addLanguageToVideo } from '../video/lib/updateAvailableLanguages'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
 
@@ -69,7 +70,7 @@ export async function createEmptyParentVariant(
   const [parentVideo, existingVariantWithLanguage] = await Promise.all([
     prisma.video.findUnique({
       where: { id: parentVideoId },
-      select: { slug: true, availableLanguages: true }
+      select: { slug: true }
     }),
     languageSlug
       ? null
@@ -104,12 +105,12 @@ export async function createEmptyParentVariant(
     )
   }
 
-  // Create empty variant for parent video and update available languages in a single transaction
-  const currentLanguages = parentVideo.availableLanguages || []
-  const updatedLanguages = Array.from(
-    new Set([...currentLanguages, languageId])
-  )
-
+  // Create empty variant for parent video and update available languages in a
+  // single transaction. availableLanguages is updated via addLanguageToVideo's
+  // atomic array_append rather than a read-then-set, since concurrent callers
+  // (e.g. a catalog-wide repair run alongside live publish traffic, or two
+  // children publishing different languages to the same parent) can otherwise
+  // clobber each other's language addition.
   const newVariant = await prisma.$transaction(async (tx) => {
     const variant = await tx.videoVariant.create({
       data: {
@@ -128,10 +129,7 @@ export async function createEmptyParentVariant(
       }
     })
 
-    await tx.video.update({
-      where: { id: parentVideoId },
-      data: { availableLanguages: updatedLanguages }
-    })
+    await addLanguageToVideo(parentVideoId, languageId, tx)
 
     return variant
   })

@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises'
+import { open, readFile } from 'fs/promises'
 import path from 'path'
 
 import {
@@ -41,6 +41,7 @@ vi.mock('./parent-language-repair', () => ({
 }))
 
 const files = new Map<string, string>()
+const locks = new Set<string>()
 
 vi.mock('fs', () => {
   const fsMock = { existsSync: vi.fn(() => true) }
@@ -68,6 +69,19 @@ vi.mock('fs/promises', () => ({
   rename: vi.fn((oldPath: string, newPath: string) => {
     files.set(newPath, files.get(oldPath) as string)
     files.delete(oldPath)
+    return Promise.resolve()
+  }),
+  open: vi.fn((path: string, flag: string) => {
+    if (flag === 'wx' && locks.has(path)) {
+      const error: NodeJS.ErrnoException = new Error('EEXIST')
+      error.code = 'EEXIST'
+      return Promise.reject(error)
+    }
+    locks.add(path)
+    return Promise.resolve({ close: vi.fn().mockResolvedValue(undefined) })
+  }),
+  unlink: vi.fn((path: string) => {
+    locks.delete(path)
     return Promise.resolve()
   })
 }))
@@ -108,10 +122,12 @@ const REPORT_PATH = path.resolve(
   '.cache/api-media',
   'parent-language-audit-report.jsonl'
 )
+const LOCK_PATH = `${RETRY_PATH}.lock`
 
 describe('run-parent-language-audit', () => {
   beforeEach(() => {
     files.clear()
+    locks.clear()
     mockedAudit.mockReset()
     mockedRepair.mockReset()
     process.argv = ['node', 'run-parent-language-audit.ts']
@@ -263,6 +279,33 @@ describe('run-parent-language-audit', () => {
     await main()
 
     expect(process.exitCode).toBe(1)
+  })
+
+  it('refuses to start a second apply run while one is already in progress, without touching the retry file', async () => {
+    await open(LOCK_PATH, 'wx')
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+
+    await expect(runParentLanguageAudit(true)).rejects.toThrow(
+      'apply run appears to be in progress'
+    )
+    expect(mockedAudit).not.toHaveBeenCalled()
+    expect(mockedRepair).not.toHaveBeenCalled()
+  })
+
+  it('does not take a lock for a dry run, and releases its own lock once an apply run finishes', async () => {
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary())
+
+    await runParentLanguageAudit(false)
+    expect(locks.has(LOCK_PATH)).toBe(false)
+
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+    await runParentLanguageAudit(true)
+    expect(locks.has(LOCK_PATH)).toBe(false)
+
+    // The lock being clear means a second apply run is free to proceed.
+    await expect(runParentLanguageAudit(true)).resolves.toBeDefined()
   })
 
   it('exits 0 in dry run even when deterministic gaps are reported', async () => {
