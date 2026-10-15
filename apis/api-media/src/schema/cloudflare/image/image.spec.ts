@@ -562,7 +562,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
@@ -587,7 +587,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_JOURNEY_MUTATION,
@@ -625,7 +625,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         const result = (await authClient({
           document: CREATE_BY_FILE_WITH_TEAM_MUTATION,
@@ -752,7 +752,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
@@ -774,7 +774,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_JOURNEY_MUTATION,
@@ -812,7 +812,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         const result = (await authClient({
           document: CREATE_BY_URL_WITH_TEAM_MUTATION,
@@ -952,7 +952,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         await authClient({
           document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
@@ -975,7 +975,7 @@ describe('cloudflareImage', () => {
         } as never)
         prismaMock.cloudflareImage.create.mockResolvedValue({
           id: 'id'
-        } as unknown as CloudflareImage)
+        })
 
         const result = (await authClient({
           document: CREATE_FROM_PROMPT_WITH_JOURNEY_MUTATION,
@@ -1011,7 +1011,7 @@ describe('cloudflareImage', () => {
         })
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'notUser'
-        } as unknown as CloudflareImage)
+        })
         const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
@@ -1034,7 +1034,7 @@ describe('cloudflareImage', () => {
       it('should return true if not publisher', async () => {
         prismaMock.cloudflareImage.findUniqueOrThrow.mockResolvedValue({
           userId: 'testUserId'
-        } as unknown as CloudflareImage)
+        })
         const result = await authClient({
           document: DELETE_CLOUDFLARE_IMAGE_MUTATION
         })
