@@ -24,6 +24,7 @@ import {
 } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { regionDisplayName } from '../utils/regionDisplayName'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -54,7 +55,13 @@ function RegionCardEdit({
   hostBlockId
 }: RegionCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection, selectBlock, selectRegion } = useCampaignEditor()
+  const {
+    campaign,
+    state: { previewLanguageId },
+    selection,
+    selectBlock,
+    selectRegion
+  } = useCampaignEditor()
   const selected =
     selection.kind === 'region' && selection.region?.id === region.id
   const lines = regionLines(campaign.blocks, region.id)
@@ -96,7 +103,11 @@ function RegionCardEdit({
           data-testid="RegionCardName"
           sx={{ color: 'var(--campaign-band-heading)' }}
         >
-          {region.name}
+          {regionDisplayName(
+            region,
+            previewLanguageId,
+            campaign.defaultLanguageId
+          )}
         </Typography>
         {regionNeedsJourney(region) && (
           <Chip

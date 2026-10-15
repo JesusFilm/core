@@ -54,15 +54,19 @@ const createMock = {
   },
   result: vi.fn(() => ({
     data: {
-      campaignJourneyBlockCreate: journeyCard({
-        id: 'newJourneyItemId',
-        pageId: 'landingPageId',
-        parentBlockId: 'landingJourneyListId',
-        parentOrder: 3,
-        journeyId: 'newJourneyId',
-        title: 'The Christmas story',
-        description: 'A short journey through the nativity.'
-      })
+      campaignJourneyBlockCreate: {
+        ...journeyCard({
+          id: 'newJourneyItemId',
+          pageId: 'landingPageId',
+          parentBlockId: 'landingJourneyListId',
+          parentOrder: 3,
+          journeyId: 'newJourneyId',
+          title: 'The Christmas story',
+          description: 'A short journey through the nativity.'
+        }),
+        titleTranslations: [],
+        descriptionTranslations: []
+      }
     }
   }))
 }

@@ -45,6 +45,7 @@ export function newRegion(campaign: Campaign, id: string): CampaignRegion {
     id,
     campaignId: campaign.id,
     name: NEW_REGION_NAME,
+    nameTranslations: [],
     slug: nextRegionSlug(campaign.regions),
     order: campaign.regions.length,
     listed: true,

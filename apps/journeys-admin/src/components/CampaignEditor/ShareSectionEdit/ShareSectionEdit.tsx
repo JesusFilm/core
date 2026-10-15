@@ -41,7 +41,11 @@ import {
   GetCampaign_campaign_regions as CampaignRegion,
   GetCampaign_campaign_regions_languages as CampaignRegionLanguage
 } from '../../../../__generated__/GetCampaign'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import {
+  CampaignStringKey,
+  JourneyStatus
+} from '../../../../__generated__/globalTypes'
+import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
@@ -53,6 +57,27 @@ import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
 interface ShareSectionEditProps {
   /** The Share section this editor sits in. */
   block: Pick<CampaignBlock, 'id'>
+}
+
+/**
+ * A Campaign String as the visitor reads it in the previewed language: its
+ * translation there, else its default-language wording, else `fallback`
+ * (what the public page shows for a row the campaign lacks or left blank).
+ */
+export function campaignStringText(
+  campaign: Pick<Campaign, 'strings' | 'defaultLanguageId'>,
+  key: CampaignStringKey,
+  previewLanguageId: string,
+  fallback: string
+): string {
+  const string = campaign.strings.find((candidate) => candidate.key === key)
+  if (string == null) return fallback
+  const translated =
+    previewLanguageId === campaign.defaultLanguageId
+      ? ''
+      : translationValue(string.valueTranslations, previewLanguageId)
+  if (translated.trim() !== '') return translated
+  return string.value.trim() === '' ? fallback : string.value
 }
 
 /** The editor label of a Share Language: autonym plus local name when they differ. */
@@ -211,11 +236,32 @@ function ShareLanguageRow({
   onCopied
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const [pasting, setPasting] = useState(false)
   const state = shareLanguageState(regionLanguage)
   const shortLink =
     state === 'live' ? campaignShareLink(regionLanguage.qrCode) : undefined
   const slug = regionLanguage.journey?.slug
+  const openLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.open,
+    previewLanguageId,
+    t('Open')
+  )
+  const copyLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.copy,
+    previewLanguageId,
+    t('Copy link')
+  )
+  const downloadLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.downloadQr,
+    previewLanguageId,
+    t('Download QR code')
+  )
 
   async function handleCopy(): Promise<void> {
     if (shortLink == null) return
@@ -378,13 +424,13 @@ function ShareLanguageRow({
               >
                 {shortLink.replace(/^https?:\/\//, '')}
               </Typography>
-              <Tooltip title={t('Open')}>
+              <Tooltip title={openLabel}>
                 <IconButton
                   component="a"
                   href={shortLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={t('Open')}
+                  aria-label={openLabel}
                   size="small"
                   onClick={stop}
                 >
@@ -411,7 +457,7 @@ function ShareLanguageRow({
                   void handleCopy()
                 }}
               >
-                {t('Copy link')}
+                {copyLabel}
               </Button>
               <Button
                 size="small"
@@ -425,7 +471,7 @@ function ShareLanguageRow({
                   handleDownload()
                 }}
               >
-                {t('Download QR code')}
+                {downloadLabel}
               </Button>
             </Stack>
           </Stack>
@@ -503,7 +549,11 @@ export function ShareSectionEdit({
 }: ShareSectionEditProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { campaign, currentRegion } = useCampaignEditor()
+  const {
+    campaign,
+    currentRegion,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const containerRef = useRef<HTMLDivElement>(null)
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529'
@@ -583,10 +633,18 @@ export function ShareSectionEdit({
   }
 
   function handleCopied(): void {
-    enqueueSnackbar(t('Link copied'), {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    enqueueSnackbar(
+      campaignStringText(
+        campaign,
+        CampaignStringKey.copied,
+        previewLanguageId,
+        t('Link copied')
+      ),
+      {
+        variant: 'success',
+        preventDuplicate: true
+      }
+    )
   }
 
   return (
