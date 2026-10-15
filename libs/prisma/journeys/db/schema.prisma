@@ -957,11 +957,6 @@ enum CampaignRadius {
   veryRounded
 }
 
-enum CampaignButtonRadius {
-  rounded
-  pill
-}
-
 enum CampaignStringKey {
   allRegions
   step1
@@ -1042,7 +1037,8 @@ model CampaignTheme {
   contrastBackgroundColor String
   contrastTextColor       String
   radius                  CampaignRadius       @default(rounded)
-  buttonRadius            CampaignButtonRadius @default(pill)
+  /// Button corners: the same four values as `radius`, applied to buttons only.
+  buttonRadius            CampaignRadius       @default(veryRounded)
   createdAt               DateTime             @default(now())
   updatedAt               DateTime             @updatedAt
   campaign                Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)

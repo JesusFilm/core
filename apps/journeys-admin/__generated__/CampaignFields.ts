@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignFields
@@ -86,7 +86,10 @@ export interface CampaignFields_theme {
   contrastBackgroundColor: string;
   contrastTextColor: string;
   radius: CampaignRadius;
-  buttonRadius: CampaignButtonRadius;
+  /**
+   * Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+   */
+  buttonRadius: CampaignRadius;
 }
 
 export interface CampaignFields_strings_valueTranslations {

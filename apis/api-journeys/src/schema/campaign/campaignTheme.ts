@@ -1,11 +1,11 @@
 import { ThemeMode } from '../block/card/enums/themeMode'
 import { builder } from '../builder'
 
-import { CampaignButtonRadius, CampaignRadius } from './enums'
+import { CampaignRadius } from './enums'
 
 export const CampaignThemeRef = builder.prismaObject('CampaignTheme', {
   description:
-    'The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button shape. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.',
+    'The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button corners. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.',
   fields: (t) => ({
     id: t.exposeID('id', { nullable: false }),
     campaignId: t.exposeID('campaignId', { nullable: false }),
@@ -30,8 +30,10 @@ export const CampaignThemeRef = builder.prismaObject('CampaignTheme', {
     }),
     radius: t.expose('radius', { type: CampaignRadius, nullable: false }),
     buttonRadius: t.expose('buttonRadius', {
-      type: CampaignButtonRadius,
-      nullable: false
+      type: CampaignRadius,
+      nullable: false,
+      description:
+        'Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.'
     }),
     createdAt: t.expose('createdAt', { type: 'DateTimeISO', nullable: false }),
     updatedAt: t.expose('updatedAt', { type: 'DateTimeISO', nullable: false })

@@ -2,7 +2,6 @@ import {
   ButtonSize,
   ButtonVariant,
   CampaignBackgroundKind,
-  CampaignButtonRadius,
   CampaignChildPlacement,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
@@ -195,7 +194,7 @@ export const lightTheme: CampaignPublicFields_theme = {
   contrastBackgroundColor: '#26262E',
   contrastTextColor: '#FFFFFF',
   radius: CampaignRadius.rounded,
-  buttonRadius: CampaignButtonRadius.pill
+  buttonRadius: CampaignRadius.veryRounded
 }
 
 const STRING_SEED: Array<[CampaignStringKey, string]> = [

@@ -75,8 +75,7 @@ export async function seedCampaign(
       headerFont: null,
       bodyFont: null,
       labelFont: null,
-      radius: 'rounded',
-      buttonRadius: 'pill'
+      radius: 'rounded'
     }
   })
 

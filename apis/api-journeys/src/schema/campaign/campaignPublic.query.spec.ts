@@ -338,7 +338,7 @@ describe('campaignPublic', () => {
         themeMode: 'light',
         primaryColor: '#C52D3A',
         radius: 'rounded',
-        buttonRadius: 'pill'
+        buttonRadius: 'veryRounded'
       },
       header: { id: 'headerId', logoBlockId: null, backgroundKind: 'none' },
       footer: { id: 'footerId', backgroundKind: 'surface' }

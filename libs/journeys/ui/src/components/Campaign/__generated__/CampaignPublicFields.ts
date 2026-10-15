@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./../../../../__generated__/globalTypes";
+import { ThemeMode, CampaignRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignPublicFields
@@ -58,7 +58,10 @@ export interface CampaignPublicFields_theme {
   contrastBackgroundColor: string;
   contrastTextColor: string;
   radius: CampaignRadius;
-  buttonRadius: CampaignButtonRadius;
+  /**
+   * Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+   */
+  buttonRadius: CampaignRadius;
 }
 
 export interface CampaignPublicFields_strings {

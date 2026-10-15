@@ -538,7 +538,7 @@ export function campaignFactory(
       contrastBackgroundColor: '#26262E',
       contrastTextColor: '#FFFFFF',
       radius: 'rounded',
-      buttonRadius: 'pill',
+      buttonRadius: 'veryRounded',
       createdAt,
       updatedAt: createdAt
     },
