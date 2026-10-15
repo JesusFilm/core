@@ -93,7 +93,9 @@ export function VideoCreateForm({
       .required('Slug is required')
       .test('valid-slug-format', function validSlugFormat(value) {
         if (value == null || value === '') return true
-        const hasUppercase = /[A-Z]/.test(value)
+        // Matches the letter/number classes isPublicSlug (api-media) accepts,
+        // so this form doesn't reject slugs the server would allow.
+        const hasUppercase = /\p{Lu}/u.test(value)
         const hasSpaces = /\s/.test(value)
         if (hasUppercase && hasSpaces) {
           return this.createError({
@@ -112,7 +114,7 @@ export function VideoCreateForm({
         }
         // Anything left over that isn't a lowercase letter, number or hyphen
         // (underscores included) is not a public-style slug.
-        if (/[^a-z0-9-]/.test(value)) {
+        if (/[^\p{L}\p{N}-]/u.test(value)) {
           return this.createError({
             message:
               'Slug can only contain lowercase letters, numbers and hyphens'

@@ -36,9 +36,11 @@ export function slugify(
   return slug
 }
 
-// A slug is public-style if it's already a fixed point of convertToSlug -
-// i.e. lowercase, with runs of anything other than letters/numbers collapsed
-// to single hyphens and no leading/trailing hyphen.
+// A slug is public-style if it's non-empty, made up of letter/number runs
+// separated by single hyphens (no leading/trailing/doubled hyphens), and
+// already a fixed point of convertToSlug - i.e. lowercase.
+const PUBLIC_SLUG_SHAPE = /^[\p{L}\p{N}]+(-[\p{L}\p{N}]+)*$/u
+
 export function isPublicSlug(slug: string): boolean {
-  return convertToSlug(slug) === slug
+  return PUBLIC_SLUG_SHAPE.test(slug) && convertToSlug(slug) === slug
 }

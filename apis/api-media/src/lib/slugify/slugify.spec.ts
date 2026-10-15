@@ -64,4 +64,16 @@ describe('isPublicSlug', () => {
   it('rejects spaces', () => {
     expect(isPublicSlug('know god')).toBe(false)
   })
+
+  it('rejects an empty slug', () => {
+    expect(isPublicSlug('')).toBe(false)
+  })
+
+  it('rejects leading and trailing hyphens', () => {
+    expect(isPublicSlug('-know-god-')).toBe(false)
+  })
+
+  it('rejects doubled hyphens', () => {
+    expect(isPublicSlug('know--god')).toBe(false)
+  })
 })

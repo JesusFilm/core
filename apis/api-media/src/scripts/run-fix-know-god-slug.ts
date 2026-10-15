@@ -7,4 +7,7 @@ async function main(): Promise<void> {
   logger.info({ result }, 'Know God slug fix result')
 }
 
-void main()
+main().catch((error) => {
+  logger.error({ error }, 'run-fix-know-god-slug failed')
+  process.exit(1)
+})

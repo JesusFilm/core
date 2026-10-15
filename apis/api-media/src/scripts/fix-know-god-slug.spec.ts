@@ -50,7 +50,7 @@ describe('fixKnowGodSlug', () => {
     expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('3934_7_KnowGod')
   })
 
-  it('is a no-op when the slug has already been fixed', async () => {
+  it('makes no database writes but retries cache resets when the slug has already been fixed', async () => {
     prismaMock.video.findUniqueOrThrow.mockResolvedValue({
       slug: 'know-god',
       variants: [{ id: '529_7_KnowGod', slug: 'know-god/english' }]
@@ -61,8 +61,8 @@ describe('fixKnowGodSlug', () => {
     expect(result).toEqual({ videoUpdated: false, variantIdsUpdated: [] })
     expect(prismaMock.video.update).not.toHaveBeenCalled()
     expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
-    expect(mockedVideoCacheReset).not.toHaveBeenCalled()
-    expect(mockedVideoVariantCacheReset).not.toHaveBeenCalled()
+    expect(mockedVideoCacheReset).toHaveBeenCalledWith('7_KnowGod')
+    expect(mockedVideoVariantCacheReset).toHaveBeenCalledWith('529_7_KnowGod')
   })
 
   it('does not touch a variant slug belonging to a different video prefix', async () => {

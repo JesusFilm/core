@@ -28,19 +28,24 @@ export async function fixKnowGodSlug(): Promise<FixKnowGodSlugResult> {
       where: { id: VIDEO_ID },
       data: { slug: NEW_SLUG }
     })
-    await videoCacheReset(VIDEO_ID)
   }
+  // videoCacheReset fails silently, so retry it on every run (not just the
+  // run that performs the write) in case a prior run's reset didn't land.
+  await videoCacheReset(VIDEO_ID)
 
   const variantIdsUpdated: string[] = []
   for (const variant of video.variants) {
-    if (!variant.slug.startsWith(`${OLD_SLUG}/`)) continue
-
-    await prisma.videoVariant.update({
-      where: { id: variant.id },
-      data: { slug: variant.slug.replace(`${OLD_SLUG}/`, `${NEW_SLUG}/`) }
-    })
-    await videoVariantCacheReset(variant.id)
-    variantIdsUpdated.push(variant.id)
+    const variantUpdated = variant.slug.startsWith(`${OLD_SLUG}/`)
+    if (variantUpdated) {
+      await prisma.videoVariant.update({
+        where: { id: variant.id },
+        data: { slug: variant.slug.replace(`${OLD_SLUG}/`, `${NEW_SLUG}/`) }
+      })
+      variantIdsUpdated.push(variant.id)
+    }
+    if (variantUpdated || variant.slug.startsWith(`${NEW_SLUG}/`)) {
+      await videoVariantCacheReset(variant.id)
+    }
   }
 
   return { videoUpdated, variantIdsUpdated }

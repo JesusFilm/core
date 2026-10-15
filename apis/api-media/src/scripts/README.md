@@ -279,7 +279,10 @@ nx run api-media:fix-know-god-slug
 
 The script is idempotent: it reads the current slug first, and only writes
 when it still matches the old value, so re-running it after the fix has
-already landed is a no-op.
+already landed makes no further database writes. It does still call
+`videoCacheReset`/`videoVariantCacheReset` for the known rows on every run,
+so a rerun is also the retry path if those (fail-silently) cache resets
+didn't land on a prior run.
 
 ### Note on the slug-permanence invariant
 
