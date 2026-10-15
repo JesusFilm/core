@@ -46,7 +46,7 @@ const resolveMock = {
 }
 
 const createMock = {
-  delay: 100,
+  delay: 500,
   request: {
     query: CAMPAIGN_JOURNEY_BLOCK_CREATE,
     variables: {
@@ -330,7 +330,7 @@ describe('JourneyListEdit', () => {
     fireEvent.click(
       await screen.findByRole('button', { name: 'Use this journey' })
     )
-    await screen.findByText('Journey not found or not published')
+    await screen.findAllByText('Journey not found or not published')
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'landingJourneyListId'
     )
@@ -355,8 +355,8 @@ describe('JourneyListEdit', () => {
     )
 
     expect(
-      await screen.findByText('Journey not found or not published')
-    ).toBeInTheDocument()
+      await screen.findAllByText('Journey not found or not published')
+    ).not.toHaveLength(0)
     expect(screen.queryByTestId('JourneyCard-newJourneyItemId')).toBeNull()
   })
 })

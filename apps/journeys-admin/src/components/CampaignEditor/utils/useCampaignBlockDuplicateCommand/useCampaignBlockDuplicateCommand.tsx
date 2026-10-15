@@ -10,6 +10,7 @@ import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlo
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
 import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 export interface CampaignBlockIdMap {
   oldId: string
@@ -110,7 +111,9 @@ export function duplicateBlocks(
  * original and soft-deletes the copy's root (its descendants fall out of the
  * tree with it); redo restores the root, which brings them back. A text edit
  * still waiting on its debounce is sent first, so the copy is never made from
- * the stale text.
+ * the stale text. When the duplicate is refused the copy never existed, so
+ * undo has nothing to delete and redo runs the duplicate again instead of
+ * restoring it.
  */
 export function useCampaignBlockDuplicateCommand(): {
   addBlockDuplicate: (block: CampaignBlock) => void
@@ -125,6 +128,7 @@ export function useCampaignBlockDuplicateCommand(): {
   const [duplicate] = useCampaignBlockDuplicateMutation(campaign.id)
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const reportFailure = useCommandFailure()
 
   function addBlockDuplicate(block: CampaignBlock): void {
     if (block.parentOrder == null) return
@@ -152,29 +156,47 @@ export function useCampaignBlockDuplicateCommand(): {
       })
     }
 
+    let landed = true
+
+    function create(): void {
+      void duplicate({
+        variables: { id: block.id, idMap },
+        optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
+        context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
+      })
+        .then(() => {
+          landed = true
+        })
+        .catch((error: unknown) => {
+          landed = false
+          reportFailure(error)
+        })
+    }
+
     add({
       parameters: { execute: {}, undo: {} },
       execute() {
         focus(copy.id)
-        void duplicate({
-          variables: { id: block.id, idMap },
-          optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
-          context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
-        })
+        create()
       },
       undo() {
         focus(block.id)
+        if (!landed) return
         void blockDelete({
           variables: { id: copy.id },
           optimisticResponse: { campaignBlockDelete: siblingsBefore }
-        })
+        }).catch(reportFailure)
       },
       redo() {
         focus(copy.id)
+        if (!landed) {
+          create()
+          return
+        }
         void blockRestore({
           variables: { id: copy.id },
           optimisticResponse: { campaignBlockRestore: subtreeAfter }
-        })
+        }).catch(reportFailure)
       }
     })
   }

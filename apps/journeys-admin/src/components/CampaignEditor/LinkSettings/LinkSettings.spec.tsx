@@ -384,6 +384,27 @@ describe('LinkSettings', () => {
       )
     })
 
+    it('keeps the web address field the author typed in when the write is refused', async () => {
+      renderQueried()
+      await screen.findByTestId('LinkSettings')
+
+      fireEvent.click(screen.getByRole('button', { name: 'Web address' }))
+      fireEvent.change(screen.getByRole('textbox', { name: 'Web address' }), {
+        target: { value: 'https://bad.example/' }
+      })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'url must be at most 2048 characters'
+      )
+      await waitFor(() =>
+        expect(current()).toHaveTextContent('Choose your region')
+      )
+      expect(screen.getByRole('textbox', { name: 'Web address' })).toHaveValue(
+        'https://bad.example/'
+      )
+    })
+
     it('removing the link is one Command through campaignBlockDeleteAction; undo restores it', async () => {
       renderQueried()
       await screen.findByTestId('LinkSettings')

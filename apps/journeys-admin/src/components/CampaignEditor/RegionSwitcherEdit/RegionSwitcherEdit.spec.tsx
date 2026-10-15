@@ -66,15 +66,18 @@ const deleteMock = {
   }))
 }
 
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
 function renderSwitcher(
   campaignProp = campaign,
-  initialState?: Partial<CampaignEditorState>
+  initialState?: Partial<CampaignEditorState>,
+  mocks: Array<Record<string, unknown>> = [createMock, unlistMock, deleteMock]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       campaignProp={campaignProp}
       initialState={initialState}
-      mocks={[createMock, unlistMock, deleteMock]}
+      mocks={mocks}
     >
       <Hotkeys />
       <SelectionProbe />
@@ -246,6 +249,33 @@ describe('RegionSwitcherEdit', () => {
     )
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
     expect(screen.getByTestId('RegionSwitcherEmpty')).toBeInTheDocument()
+  })
+
+  it('raises the API message in the error snackbar when the create is refused', async () => {
+    renderSwitcher(campaign, undefined, [{ ...createMock, result: refusal }])
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('raises the API message when the undo is refused', async () => {
+    renderSwitcher(campaign, undefined, [
+      createMock,
+      { ...unlistMock, result: refusal },
+      deleteMock
+    ])
+    fireEvent.click(await screen.findByRole('button', { name: 'Add' }))
+    await waitFor(() => expect(createMock.result).toHaveBeenCalled())
+
+    fireEvent.keyDown(document.body, { key: 'z', metaKey: true })
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+    expect(deleteMock.result).not.toHaveBeenCalled()
   })
 
   it('selects a card on click and a line on its own click', async () => {
