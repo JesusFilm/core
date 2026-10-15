@@ -46,7 +46,13 @@ function isMuxUnresolved(processingStages: unknown): boolean {
   const mux = (processingStages as Record<string, unknown>).mux
   if (mux == null || typeof mux !== 'object') return true
   const state = (mux as Record<string, unknown>).state
-  return state === 'pending' || state === 'processing'
+  // A timed-out upload ('failed') is still "not resolved" for stickiness
+  // purposes: it never produced media, so it must keep being treated as a
+  // genuinely failed upload rather than falling through to the shape
+  // heuristic that would misclassify it as a media-less generated parent.
+  // Only 'complete' (media produced) or 'notApplicable' (reconciled via a
+  // different path, e.g. unpublish) count as resolved.
+  return state !== 'complete' && state !== 'notApplicable'
 }
 
 export async function requestVideoVariantReconciliation(
@@ -58,9 +64,10 @@ export async function requestVideoVariantReconciliation(
       select: { id: true, reason: true, processingStages: true }
     })
 
-  // Keep a fresh upload's original reason until Mux resolves one way or
-  // the other, so a re-request in between (a publish toggle, a language
-  // edit) can't make a media-less Variant look like a generated parent.
+  // Keep a fresh upload's original reason until Mux actually produces media
+  // (or the Variant is reconciled via a different path), so a re-request in
+  // between -- including after a timeout, which still leaves no media --
+  // can't make a media-less Variant look like a generated parent.
   const reason =
     existingReconciliation != null &&
     FRESH_UPLOAD_REASONS.has(

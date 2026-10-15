@@ -72,6 +72,26 @@ describe('requestVideoVariantReconciliation', () => {
     expect(data).toMatchObject({ reason: 'video-variant-create' })
   })
 
+  it('keeps the original reason when a fresh upload is re-requested after Mux times out', async () => {
+    prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+      id: 'status-1',
+      reason: 'video-variant-create',
+      processingStages: { mux: { state: 'failed', attempts: 1 } }
+    } as never)
+
+    await requestVideoVariantReconciliation({
+      ...intent,
+      reason: 'video-variant-publication-change'
+    })
+
+    const { data } =
+      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
+    // A timed-out Mux upload never produced media, so it must still be
+    // excluded from the generated-parent shape heuristic rather than being
+    // force-published as a media-less container parent.
+    expect(data).toMatchObject({ reason: 'video-variant-create' })
+  })
+
   it('overwrites the reason normally once Mux has resolved', async () => {
     prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
       id: 'status-1',
