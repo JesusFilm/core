@@ -9,11 +9,11 @@ import {
   campaignPagePaths,
   enqueueCampaignRevalidation
 } from '../campaign/revalidateCampaign'
-import { badUserInput } from '../campaign/validation'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
 import { CustomDomainUpdateInput } from './inputs'
+import { updateTeamShortLinks } from './service'
 
 /**
  * A Campaign Root change moves the domain form of the old and new campaign
@@ -113,9 +113,9 @@ builder.mutationField('customDomainUpdate', (t) =>
           })
 
           if (campaign == null)
-            throw badUserInput(
+            throw new GraphQLError(
               'campaign not found for this custom domain team',
-              'campaignId'
+              { extensions: { code: 'FORBIDDEN' } }
             )
 
           campaignUpdate = { connect: { id: campaign.id } }
@@ -141,6 +141,15 @@ builder.mutationField('customDomainUpdate', (t) =>
             customDomain.name
           )
       }
+
+      const routeAllChanged =
+        input.routeAllTeamJourneys != null &&
+        input.routeAllTeamJourneys !== customDomain.routeAllTeamJourneys
+      const journeyCollectionChanged =
+        'journeyCollectionId' in input &&
+        (input.journeyCollectionId ?? null) !== customDomain.journeyCollectionId
+      if (routeAllChanged || journeyCollectionChanged)
+        await updateTeamShortLinks(customDomain.teamId)
 
       return updated
     }

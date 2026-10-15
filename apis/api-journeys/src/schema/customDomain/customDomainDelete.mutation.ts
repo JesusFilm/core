@@ -7,10 +7,7 @@ import { builder } from '../builder'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
-import {
-  deleteVercelDomain,
-  updateTeamShortLinks
-} from './customDomain.service'
+import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 builder.mutationField('customDomainDelete', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
@@ -40,10 +37,11 @@ builder.mutationField('customDomainDelete', (t) =>
       }
 
       await prisma.$transaction(async (tx) => {
-        await updateTeamShortLinks(customDomain.teamId, customDomain.name)
         await tx.customDomain.delete({ where: { id } })
         await deleteVercelDomain(customDomain)
       })
+
+      await updateTeamShortLinks(customDomain.teamId)
 
       return customDomain
     }
