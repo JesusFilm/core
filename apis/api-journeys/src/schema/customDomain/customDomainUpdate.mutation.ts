@@ -8,7 +8,6 @@ import {
   campaignPagePaths,
   enqueueCampaignRevalidation
 } from '../campaign/revalidateCampaign'
-import { badUserInput } from '../campaign/validation'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -107,9 +106,9 @@ builder.mutationField('customDomainUpdate', (t) =>
           })
 
           if (campaign == null)
-            throw badUserInput(
+            throw new GraphQLError(
               'campaign not found for this custom domain team',
-              'campaignId'
+              { extensions: { code: 'FORBIDDEN' } }
             )
 
           campaignUpdate = { connect: { id: campaign.id } }

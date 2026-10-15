@@ -58,17 +58,24 @@ export async function enqueueCampaignRevalidation(
  * After a region's slug, listing or deletion changes on a published campaign,
  * revalidate the landing page and the given region paths, including the
  * region's previous path, so the old URL stops resolving and the switchers
- * refresh. A draft campaign serves nothing, so nothing is queued.
+ * refresh. Every Custom Domain naming the campaign as Campaign Root gets the
+ * same paths in its domain form. A draft campaign serves nothing, so nothing
+ * is queued.
  */
 export async function enqueueRegionRevalidation(
-  campaign: { slug: string; status: string },
+  campaign: {
+    slug: string
+    status: string
+    customDomains: Array<{ name: string }>
+  },
   regionSlugs: string[]
 ): Promise<void> {
   if (campaign.status !== 'published') return
   await enqueueCampaignRevalidation(
     campaignPagePaths({
       slug: campaign.slug,
-      regions: [...new Set(regionSlugs)].map((slug) => ({ slug }))
+      regions: [...new Set(regionSlugs)].map((slug) => ({ slug })),
+      hostnames: campaign.customDomains.map(({ name }) => name)
     })
   )
 }

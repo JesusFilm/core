@@ -29,7 +29,7 @@ import {
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import {
   campaignPermanentAddress,
-  campaignPublicAddress
+  campaignPublicAddresses
 } from '../campaignAddress'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
@@ -196,9 +196,9 @@ export function Settings({
 
   const published = campaign.status === CampaignStatus.published
   const permanentAddress = campaignPermanentAddress(campaign.slug)
-  const publicAddress = campaignPublicAddress(
+  const publicAddresses = campaignPublicAddresses(
     campaign.slug,
-    campaign.customDomains[0]?.name ?? null
+    campaign.customDomains.map(({ name }) => name)
   )
 
   return (
@@ -236,11 +236,11 @@ export function Settings({
                   address: permanentAddress
                 })}
               </Box>
-              <Box component="span" sx={{ display: 'block' }}>
-                {t('Current public address: {{address}}', {
-                  address: publicAddress
-                })}
-              </Box>
+              {publicAddresses.map((address) => (
+                <Box key={address} component="span" sx={{ display: 'block' }}>
+                  {t('Current public address: {{address}}', { address })}
+                </Box>
+              ))}
             </>
           )
         }

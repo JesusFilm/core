@@ -45,10 +45,7 @@ builder.mutationField('qrCodeUpdate', (t) =>
 
         return await prisma.$transaction(async (tx) => {
           if (input.to != null) {
-            const { toJourneyId, toBlockId } = await parseAndVerifyTo(
-              qrCode,
-              input.to
-            )
+            const { toJourneyId, toBlockId } = await parseAndVerifyTo(input.to)
             const to = await getTo({
               shortLinkId: qrCode.shortLinkId,
               teamId: qrCode.teamId,

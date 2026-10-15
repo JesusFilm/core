@@ -1,6 +1,6 @@
 import { prismaMock } from '../../../test/prismaMock'
 
-import { getTo } from './qrCode.service'
+import { getTo, parseAndVerifyTo } from './qrCode.service'
 
 function journeyRow(
   slug: string,
@@ -101,6 +101,65 @@ describe('qrCode.service', () => {
       expect(prismaMock.block.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { journeyId: 'journeyId', id: 'blockId' }
       })
+    })
+  })
+
+  describe('parseAndVerifyTo', () => {
+    it("accepts the target journey's own team domain, whichever team owns the QR row", async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe', [
+          { name: 'journeys.example.org', routeAllTeamJourneys: true }
+        ]) as never
+      )
+
+      await expect(
+        parseAndVerifyTo('https://journeys.example.org/christmas-europe')
+      ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
+      expect(prismaMock.customDomain.findMany).not.toHaveBeenCalled()
+    })
+
+    it('accepts the root domain for a journey without a custom domain', async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+
+      await expect(
+        parseAndVerifyTo('https://example.com/christmas-europe')
+      ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
+    })
+
+    it('resolves the block of the address', async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+      prismaMock.block.findFirstOrThrow.mockResolvedValue({
+        id: 'blockId'
+      } as never)
+
+      await expect(
+        parseAndVerifyTo('https://example.com/christmas-europe/blockId')
+      ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: 'blockId' })
+      expect(prismaMock.block.findFirstOrThrow).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId', id: 'blockId' }
+      })
+    })
+
+    it('rejects a host that does not serve the journey', async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe', [
+          { name: 'journeys.example.org', routeAllTeamJourneys: true }
+        ]) as never
+      )
+
+      await expect(
+        parseAndVerifyTo('https://example.com/christmas-europe')
+      ).rejects.toThrow('Invalid hostname')
+    })
+
+    it('rejects an address without a journey slug', async () => {
+      await expect(parseAndVerifyTo('https://example.com/')).rejects.toThrow(
+        'Invalid to'
+      )
     })
   })
 })

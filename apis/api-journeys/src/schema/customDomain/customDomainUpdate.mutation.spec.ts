@@ -509,7 +509,7 @@ describe('customDomainUpdate', () => {
       expect(mockQueueAdd).not.toHaveBeenCalled()
     })
 
-    it('is BAD_USER_INPUT on field campaignId for a campaign of another team', async () => {
+    it('is FORBIDDEN for a campaign of another team', async () => {
       prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
       prismaMock.campaign.findFirst.mockResolvedValue(null)
 
@@ -522,10 +522,7 @@ describe('customDomainUpdate', () => {
       })) as any
 
       expect(result.errors[0].extensions).toEqual(
-        expect.objectContaining({
-          code: 'BAD_USER_INPUT',
-          field: 'campaignId'
-        })
+        expect.objectContaining({ code: 'FORBIDDEN' })
       )
       expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith({
         where: { id: 'otherTeamCampaignId', teamId: 'teamId' }

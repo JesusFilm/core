@@ -61,7 +61,7 @@ builder.mutationField('customDomainCreate', (t) =>
               data
             })
 
-            await updateTeamShortLinks(customDomain.teamId, customDomain.name)
+            await updateTeamShortLinks(customDomain.teamId, tx)
 
             return customDomain
           })

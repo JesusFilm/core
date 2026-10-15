@@ -1,8 +1,10 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { CustomDomain, Prisma, prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
+
+import { getTo } from '../qrCode/qrCode.service'
 
 const DOMAIN_REGEX =
   /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z]$/
@@ -125,7 +127,9 @@ export async function createVercelDomain(
   return data
 }
 
-export async function deleteVercelDomain(name: string): Promise<boolean> {
+export async function deleteVercelDomain({
+  name
+}: CustomDomain): Promise<boolean> {
   if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null) return true
 
   const response = await fetch(
@@ -186,49 +190,30 @@ function createGatewayClient(): ApolloClient {
   })
 }
 
-async function buildShortLinkTo(
-  shortLinkId: string,
-  toJourneyId: string,
-  toBlockId: string | null,
-  customDomainName: string
-): Promise<string> {
-  const journeysUrl = process.env.JOURNEYS_URL
-  if (journeysUrl == null)
-    throw new GraphQLError('Journeys url not configured', {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
-  const journey = await prisma.journey.findUniqueOrThrow({
-    where: { id: toJourneyId }
-  })
-
-  const base = `https://${customDomainName}`
-  const blockPath = toBlockId != null ? `/${toBlockId}` : ''
-  const path = `${journey.slug}${blockPath}`
-  const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
-
-  return `${base}/${path}${utm}`
-}
-
+/**
+ * Rewrite the short link of every QR code of the team, journey and campaign
+ * alike, through `getTo`, so each lands where its journey's team now serves
+ * it. Call it after the custom domain row is written or deleted, with the
+ * transaction client that wrote it, so `getTo` sees the new state.
+ */
 export async function updateTeamShortLinks(
   teamId: string,
-  customDomainName: string
+  tx: Prisma.TransactionClient = prisma
 ): Promise<void> {
   const apollo = createGatewayClient()
 
-  const qrCodes = await prisma.qrCode.findMany({
-    where: { teamId, campaignRegionLanguages: { none: {} } }
-  })
+  const qrCodes = await tx.qrCode.findMany({ where: { teamId } })
 
   for (const qrCode of qrCodes) {
     if (qrCode.journeyId !== qrCode.toJourneyId) continue
 
-    const to = await buildShortLinkTo(
-      qrCode.id,
-      qrCode.toJourneyId,
-      qrCode.toBlockId,
-      customDomainName
-    )
+    const to = await getTo({
+      shortLinkId: qrCode.shortLinkId,
+      teamId: qrCode.teamId,
+      toJourneyId: qrCode.toJourneyId,
+      toBlockId: qrCode.toBlockId,
+      client: tx
+    })
 
     await apollo.mutate({
       mutation: UPDATE_SHORT_LINK,
