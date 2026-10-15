@@ -86,6 +86,18 @@ describe('CampaignVideo', () => {
     )
   })
 
+  it('reads a Watch video description in the Page Language, falling back to the primary', () => {
+    const { unmount } = renderVideo(videoTree(heroVideoBlock), '496')
+    expect(screen.getByTestId('CampaignVideoDescription')).toHaveTextContent(
+      'L histoire du premier Noël.'
+    )
+    unmount()
+    renderVideo(videoTree(heroVideoBlock), '21028')
+    expect(screen.getByTestId('CampaignVideoDescription')).toHaveTextContent(
+      'The story of the first Christmas.'
+    )
+  })
+
   it('lets the row’s overrides win over the Watch text', () => {
     renderVideo(
       videoTree(heroVideoBlock, {
@@ -154,7 +166,7 @@ describe('CampaignVideo', () => {
     if (mediaVideo?.__typename !== 'Video') throw new Error('fixture')
     renderVideo(
       videoTree(heroVideoBlock, {
-        mediaVideo: { ...mediaVideo, title: [] }
+        mediaVideo: { ...mediaVideo, title: [], description: [] }
       })
     )
     expect(screen.getByTestId('JourneysVideo-heroVideoId')).toBeInTheDocument()

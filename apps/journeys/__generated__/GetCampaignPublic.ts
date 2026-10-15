@@ -868,6 +868,18 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlo
   language: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -897,6 +909,7 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlo
    */
   childrenCount: number;
   title: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_description[];
   images: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }
@@ -1904,6 +1917,18 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_medi
   language: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -1933,6 +1958,7 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_medi
    */
   childrenCount: number;
   title: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_description[];
   images: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }
@@ -2841,6 +2867,18 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBloc
   language: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -2870,6 +2908,7 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBloc
    */
   childrenCount: number;
   title: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_description[];
   images: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }

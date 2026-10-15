@@ -5,6 +5,7 @@ import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslation
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import { campaignFontsHref } from '@core/journeys/ui/Campaign/libs/campaignFontsHref'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -35,28 +36,7 @@ function JourneyPage({ journey, locale, rtl }: JourneyPageProps): ReactElement {
     void router.push('/embed/[journeySlug]', `/embed/${journey.slug}`)
   }
 
-  // Get journey-specific fonts if they exist
-  const defaultFonts = ['Montserrat', 'Open Sans', 'El Messiri']
-  const journeyFonts = getSortedValidFonts([
-    ...defaultFonts,
-    journey?.journeyTheme?.headerFont ?? '',
-    journey?.journeyTheme?.bodyFont ?? '',
-    journey?.journeyTheme?.labelFont ?? ''
-  ])
-
-  function getSortedValidFonts(fonts: string[]): string[] {
-    return [...new Set(fonts.filter((font) => font !== ''))].sort()
-  }
-
-  function formatFontName(font: string): string {
-    return font.trim().replace(/ /g, '+')
-  }
-
-  const fontsParam = journeyFonts
-    .map((font) => `family=${formatFontName(font)}:wght@400;500;600;700;800`)
-    .join('&')
-
-  const googleFontsUrl = `https://fonts.googleapis.com/css2?${fontsParam}&display=swap`
+  const googleFontsUrl = campaignFontsHref(journey?.journeyTheme)
 
   return (
     <>

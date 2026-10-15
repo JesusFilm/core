@@ -10,7 +10,6 @@ import {
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
 import { useCampaign } from '../CampaignProvider'
-import { campaignString } from '../CampaignRegionShare'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { hasText } from '../types'
@@ -139,10 +138,10 @@ function JourneyCard({
 export function CampaignJourneyList({
   block
 }: CampaignJourneyListProps): ReactElement {
-  const { campaign } = useCampaign()
+  const { string } = useCampaign()
   const cards = liveJourneyCards(block)
   const display = block.display ?? CampaignJourneyListDisplay.grid
-  const openLabel = campaignString(campaign, CampaignStringKey.openTemplate)
+  const openLabel = string(CampaignStringKey.openTemplate)
 
   return (
     <CampaignSectionBand block={block}>

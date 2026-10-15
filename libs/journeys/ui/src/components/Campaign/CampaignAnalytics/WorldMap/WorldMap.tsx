@@ -112,13 +112,17 @@ export function WorldMap({
       data-testid="WorldMap"
       viewBox={`0 0 ${shapes.width} ${shapes.height}`}
       preserveAspectRatio="xMidYMid meet"
-      role="img"
+      role="group"
       aria-label={t('Visitors by country')}
       sx={{
         display: 'block',
         width: '100%',
         height: 'auto',
-        '& path:hover': { opacity: 0.8 }
+        '& path:hover': { opacity: 0.8 },
+        '& path:focus-visible': {
+          outline: '2px solid var(--campaign-band-accent)',
+          outlineOffset: 1
+        }
       }}
     >
       <Box
@@ -141,11 +145,23 @@ export function WorldMap({
               ? shadeStep(count, topVisitors)
               : null
           const key = country.id ?? `${country.name}-${index}`
+          const countryVisitors = t('{{visitors}} visitors', {
+            visitors: numberFormat.format(count)
+          })
+          const focusable = step != null
           const shape = (
             <path
               d={country.d}
               data-testid={`WorldMapCountry-${country.id ?? country.name}`}
               data-step={step ?? undefined}
+              // Only countries with data take a tab stop; the rest are decoration.
+              role={focusable ? 'img' : undefined}
+              tabIndex={focusable ? 0 : undefined}
+              aria-label={
+                focusable
+                  ? `${labelOf(country)}: ${countryVisitors}`
+                  : undefined
+              }
               style={{
                 fill: step == null ? neutralColor : stepColors[step],
                 stroke: 'var(--campaign-band-background)',
@@ -164,9 +180,7 @@ export function WorldMap({
                     {labelOf(country)}
                   </Box>
                   <Box component="span" sx={{ display: 'block' }}>
-                    {t('{{visitors}} visitors', {
-                      visitors: numberFormat.format(count)
-                    })}
+                    {countryVisitors}
                   </Box>
                 </>
               }

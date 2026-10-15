@@ -1,8 +1,7 @@
-/**
- * The campaign interfaces and their implementors, so fragments on
- * `CampaignBlock`, `CampaignSectionBlock` and `CampaignAction` match exactly
- * instead of heuristically when the cache reads and writes campaign blocks.
- */
+import { CAMPAIGN_NON_SECTION_TYPENAMES } from '../../types'
+import type { CampaignSectionTypename } from '../../types'
+
+/** Every section and chrome typename, the implementors of `CampaignSectionBlock`. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
@@ -17,16 +16,18 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignFeaturedMediaBlock',
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
-] as const
+] as const satisfies readonly CampaignSectionTypename[]
 
+/**
+ * The campaign interfaces and their implementors, so fragments on
+ * `CampaignBlock`, `CampaignSectionBlock` and `CampaignAction` match exactly
+ * instead of heuristically when an Apollo cache reads and writes campaign
+ * blocks. Shared by the viewer and the editor.
+ */
 export const CAMPAIGN_POSSIBLE_TYPES: Record<string, string[]> = {
   CampaignBlock: [
     ...CAMPAIGN_SECTION_TYPENAMES,
-    'CampaignJourneyBlock',
-    'CampaignTypographyBlock',
-    'CampaignButtonBlock',
-    'CampaignColumnBlock',
-    'CampaignVideoBlock'
+    ...CAMPAIGN_NON_SECTION_TYPENAMES
   ],
   CampaignSectionBlock: [...CAMPAIGN_SECTION_TYPENAMES],
   CampaignAction: [
