@@ -16,16 +16,16 @@ The five canonical triage roles use their default label strings verbatim: `needs
 
 ### Domain docs
 
-Multi-context: `CONTEXT-MAP.md` at the repo root points to per-workspace `CONTEXT.md` files (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
+Multi-context: `GLOSSARY-MAP.md` at the repo root points to per-workspace `GLOSSARY.md` files (created lazily by `/domain-modeling`). See `docs/agents/domain.md`.
 
 ### Bug-diagnosis layer
 
-Selected NextSteps areas add a `CONTEXT-intake.md` beside their `CONTEXT.md` — the diagnosis layer for reported bugs (failure signatures, the question that localizes a report, where to look first, tagged by failure type T1–T11).
+Selected NextSteps areas add a `GLOSSARY-intake.md` beside their `GLOSSARY.md` — the diagnosis layer for reported bugs (failure signatures, the question that localizes a report, where to look first, tagged by failure type T1–T11).
 
-- Read `CONTEXT.md` to understand or build in an area.
-- Read `CONTEXT-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
+- Read `GLOSSARY.md` to understand or build in an area.
+- Read `GLOSSARY-intake.md` **only** when triaging or debugging a _reported bug_ in that area.
 
-Start from the intake index (`CONTEXT-MAP-intake.md`): match the reporter's words to an area's `trigger_phrases`, then open that area's `CONTEXT-intake.md`.
+Start from the intake index (`GLOSSARY-MAP-intake.md`): match the reporter's words to an area's `triggers`, then open that area's `GLOSSARY-intake.md`.
 
 ## Conventions
 
@@ -81,7 +81,7 @@ Scope: it compares the branch diff against `origin/main`, refreshed when the net
 
 Not covered locally: **`codegen`** is the one autofix.ci step that can still commit to your PR. Run `nx codegen <project>` after changing a GraphQL schema or query.
 
-It is deliberately not gated, because it only works where `apollo` is already installed globally. The devcontainer installs it in [`post-create-command.sh`](.devcontainer/post-create-command.sh) (`npm i -g nx foreman apollo graphql`) and autofix.ci does the same, which is why it works in both. On a plain host checkout `apollo` is absent, so `npx` tries to fetch it and fails with `EOVERRIDE` from the `next` override in `package.json` — gating it would mean requiring that global install everywhere, which we chose not to do. Work in the devcontainer, or expect autofix.ci to commit the regenerated files.
+It is deliberately not gated, because it only works where `apollo` is already installed globally. The devcontainer installs it in [`post-create-command.sh`](.devcontainer/post-create-command.sh) (`npm i -g nx foreman apollo graphql`) and autofix.ci does the same, which is why it works in both. On a plain host checkout `apollo` is absent unless you install it the same way (`npm i -g apollo graphql`; `pnpm setup:local` warns when it is missing), so `npx` tries to fetch it and fails with `EOVERRIDE` from the `next` override in `package.json`. It cannot be a devDependency: it is the deprecated Apollo CLI and peers on graphql 14/15 while the repo is on 16. Gating it would mean requiring that global install everywhere, which we chose not to do — install it globally, or expect autofix.ci to commit the regenerated files.
 
 **`type-check`** cannot produce a commit (it only reports), but it is still gated in the ritual above because CI's `lint-work` job fails on it and nothing in `lint:changed` covers types. It is the slowest step of the four — expect tens of seconds for a typical branch (a few seconds per affected project, plus nx overhead), so a pause is normal. Two traps: each project's `type-check` target runs `tsc7` (the TypeScript 7 preview via `tsconfig.ts7.json`), which is stricter than editor tsc — code your IDE accepts can still fail it. And nx prints the same trailing summary block on success and failure, so never judge the outcome from the tail of piped output — check the exit code. The command also exits non-zero on environment gaps (`origin/main` not fetched, `node_modules` missing in a fresh worktree) — rule those out before hunting for type errors.
 
@@ -89,7 +89,7 @@ The remaining steps cannot produce a commit at all: `subgraph-check` only report
 
 ### Documented Solutions
 
-The context map (`CONTEXT.md`, and `CONTEXT-intake.md` when diagnosing) is the primary knowledge source — rely on it by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
+The domain glossaries (`GLOSSARY-MAP.md` and each workspace's `GLOSSARY.md`, plus `GLOSSARY-intake.md` when diagnosing) are the primary knowledge source — rely on them by default. `docs/solutions/` is a **secondary, opt-in** archive of past problem write-ups (bugs, best practices, workflow patterns), organized by category with descriptive filenames and YAML frontmatter (`module`, `tags`, `problem_type`).
 
 Do **not** read solution docs by default. Their filenames are self-describing — if, while working, one looks relevant to the task, **surface it and ask the user before opening it** (e.g. "There may be a relevant solution doc: `<title>` — want me to read it?"). Only read the contents once the user confirms.
 
@@ -98,7 +98,7 @@ Do **not** read solution docs by default. Their filenames are self-describing �
 When creating a branch without a Linear issue, it must match this pattern:
 
 ```regex
-/^(\(HEAD detached at pull\/[0-9]+\/merge\)|(00-00-RB-.*)|stage|main|([0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9-]+[a-z0-9])|(feature\/[0-9]{2}-[0-9]{2}-[A-Z]{2}-[a-z0-9-]+[a-z0-9])|[a-z0-9]{2,4}-[0-9]+-[a-z0-9-]+|[a-z]+\/[a-z0-9]{2,4}-[0-9]+-[a-z0-9-]+|(cursor\/.*))$/g
+/^(\(HEAD detached at pull\/[0-9]+\/merge\)|(00-00-RB-.*)|stage|main|([0-9]{2}-[0-9]{2}-[A-Z]{2}-(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)-[a-z0-9-]+[a-z0-9])|(feature\/[0-9]{2}-[0-9]{2}-[A-Z]{2}-[a-z0-9-]+[a-z0-9])|[a-z0-9]{2,4}-[0-9]+-[a-z0-9-]+|[a-z]+\/[a-z0-9]{2,4}-[0-9]+-[a-z0-9-]+|(cursor\/.*)|(phoebe\/.*))$/
 ```
 
 Preferred format: `username/ticket-id-short-description` — all lowercase, no uppercase in suffix.

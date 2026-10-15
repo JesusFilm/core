@@ -17,7 +17,7 @@ const NEW_MUX_VIDEO_FRAGMENT = gql`
  * a paginated user has clicked Load More.
  */
 export function prependMuxVideo(
-  cache: ApolloCache<unknown>,
+  cache: ApolloCache,
   video: {
     id: string
     playbackId: string

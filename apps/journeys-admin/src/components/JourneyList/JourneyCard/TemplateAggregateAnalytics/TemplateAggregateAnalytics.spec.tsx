@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { type MockedFunction } from 'vitest'
@@ -60,7 +61,7 @@ describe('TemplateAggregateAnalytics', () => {
   })
 
   it('should call the query with correct variables and types', async () => {
-    const templateFamilyStatsAggregateMock: MockedResponse<
+    const templateFamilyStatsAggregateMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsAggregate,
       GetTemplateFamilyStatsAggregateVariables
     > = {
@@ -84,7 +85,7 @@ describe('TemplateAggregateAnalytics', () => {
             totalJourneysResponses: 50
           }
         }
-      })) as MockedResponse<
+      })) as MockLink.MockedResponse<
         GetTemplateFamilyStatsAggregate,
         GetTemplateFamilyStatsAggregateVariables
       >['result']
@@ -106,7 +107,7 @@ describe('TemplateAggregateAnalytics', () => {
   })
 
   it('should show error snackbar when query fails', async () => {
-    const templateFamilyStatsAggregateErrorMock: MockedResponse<
+    const templateFamilyStatsAggregateErrorMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsAggregate,
       GetTemplateFamilyStatsAggregateVariables
     > = {

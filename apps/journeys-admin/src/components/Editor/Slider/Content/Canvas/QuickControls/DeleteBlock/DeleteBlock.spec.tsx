@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -305,7 +306,7 @@ describe('DeleteBlock', () => {
       ]
     }
 
-    const passedInStepDeleteMock: MockedResponse<BlockDelete> = {
+    const passedInStepDeleteMock: MockLink.MockedResponse<BlockDelete> = {
       request: {
         query: BLOCK_DELETE,
         variables: {
@@ -323,7 +324,7 @@ describe('DeleteBlock', () => {
             }
           ]
         }
-      })) as MockedResponse<BlockDelete>['result']
+      })) as MockLink.MockedResponse<BlockDelete>['result']
     }
 
     const cache = new InMemoryCache()

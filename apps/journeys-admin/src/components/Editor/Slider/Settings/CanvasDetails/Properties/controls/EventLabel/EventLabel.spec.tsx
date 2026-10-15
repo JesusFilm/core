@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactNode } from 'react'
 
@@ -161,7 +162,7 @@ function createStepBlockMock(
 function createCardEventLabelUpdateMock(
   id: string,
   eventLabel: BlockEventLabel | null
-): MockedResponse<
+): MockLink.MockedResponse<
   EventLabelCardEventLabelUpdate,
   EventLabelCardEventLabelUpdateVariables
 > {
@@ -186,7 +187,7 @@ function createCardEventLabelUpdateMock(
 function createButtonEventLabelUpdateMock(
   id: string,
   eventLabel: BlockEventLabel | null
-): MockedResponse<
+): MockLink.MockedResponse<
   EventLabelButtonEventLabelUpdate,
   EventLabelButtonEventLabelUpdateVariables
 > {
@@ -211,7 +212,7 @@ function createButtonEventLabelUpdateMock(
 function createRadioOptionEventLabelUpdateMock(
   id: string,
   eventLabel: BlockEventLabel | null
-): MockedResponse<
+): MockLink.MockedResponse<
   EventLabelRadioOptionEventLabelUpdate,
   EventLabelRadioOptionEventLabelUpdateVariables
 > {
@@ -237,7 +238,7 @@ function createVideoStartEventLabelUpdateMock(
   id: string,
   eventLabel: BlockEventLabel | null,
   endEventLabel: BlockEventLabel | null = null
-): MockedResponse<
+): MockLink.MockedResponse<
   EventLabelVideoStartEventLabelUpdate,
   EventLabelVideoStartEventLabelUpdateVariables
 > {
@@ -264,7 +265,7 @@ function createVideoEndEventLabelUpdateMock(
   id: string,
   endEventLabel: BlockEventLabel | null,
   eventLabel: BlockEventLabel | null = null
-): MockedResponse<
+): MockLink.MockedResponse<
   EventLabelVideoEndEventLabelUpdate,
   EventLabelVideoEndEventLabelUpdateVariables
 > {

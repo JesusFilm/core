@@ -1,10 +1,5 @@
-import {
-  MutationHookOptions,
-  MutationTuple,
-  Reference,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   TemplateGalleryPageDelete,
@@ -20,11 +15,11 @@ export const TEMPLATE_GALLERY_PAGE_DELETE = gql`
 `
 
 export function useTemplateGalleryPageDeleteMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     TemplateGalleryPageDelete,
     TemplateGalleryPageDeleteVariables
   >
-): MutationTuple<
+): useMutation.ResultTuple<
   TemplateGalleryPageDelete,
   TemplateGalleryPageDeleteVariables
 > {

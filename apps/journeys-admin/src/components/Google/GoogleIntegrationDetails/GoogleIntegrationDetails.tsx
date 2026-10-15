@@ -1,4 +1,5 @@
-import { gql, useQuery } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -202,7 +203,7 @@ export function GoogleIntegrationDetails(): ReactElement | null {
           </Box>
         ) : (
           <>
-            <Stack gap={2}>
+            <Stack sx={{ gap: 2 }}>
               <Typography variant="subtitle1">{t('Active')}</Typography>
               {activeSyncs.length === 0 ? (
                 <Typography variant="body2">
@@ -344,7 +345,7 @@ export function GoogleIntegrationDetails(): ReactElement | null {
               )}
             </Stack>
 
-            <Stack gap={2}>
+            <Stack sx={{ gap: 2 }}>
               <Typography variant="subtitle1">{t('History')}</Typography>
               {historySyncs.length === 0 ? (
                 <Typography variant="body2">

@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import type { TreeBlock } from '@core/journeys/ui/block'
 
@@ -92,7 +92,7 @@ export const createStepBlock = (
   children: [createCardBlock(cardChildren)]
 })
 
-export const buttonBlockCreateMock: MockedResponse<
+export const buttonBlockCreateMock: MockLink.MockedResponse<
   ButtonBlockCreate,
   ButtonBlockCreateVariables
 > = {
@@ -177,7 +177,7 @@ export const buttonBlockCreateMock: MockedResponse<
   }))
 }
 
-export const submitButtonCreateMock: MockedResponse<
+export const submitButtonCreateMock: MockLink.MockedResponse<
   ButtonBlockCreate,
   ButtonBlockCreateVariables
 > = {

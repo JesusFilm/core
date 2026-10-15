@@ -1,8 +1,8 @@
 import {
   ApolloClient,
+  HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
-  createHttpLink,
   gql
 } from '@apollo/client'
 import { GraphQLError } from 'graphql'
@@ -64,20 +64,22 @@ interface GetLanguageSlugResult {
   language: { id: string; slug: string | null } | null
 }
 
-function createLanguageClient(): ApolloClient<NormalizedCacheObject> {
+function createLanguageClient(): ApolloClient {
   if (!process.env.GATEWAY_URL) {
     throw new Error('GATEWAY_URL environment variable is required')
   }
 
   return new ApolloClient({
-    link: createHttpLink({
+    link: new HttpLink({
       uri: process.env.GATEWAY_URL,
       headers: {
         'x-graphql-client-name': 'api-media',
         'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
       }
     }),
+
     cache: new InMemoryCache(),
+
     defaultOptions: {
       watchQuery: { fetchPolicy: 'no-cache' },
       query: { fetchPolicy: 'no-cache' }
@@ -90,7 +92,7 @@ async function getLanguageSlug(
   languageId: string,
   logger?: Logger
 ): Promise<string> {
-  let apollo: ApolloClient<NormalizedCacheObject> | null = null
+  let apollo: ApolloClient | null = null
   try {
     apollo = createLanguageClient()
     const { data } = await apollo.query<GetLanguageSlugResult>({
@@ -99,7 +101,7 @@ async function getLanguageSlug(
       fetchPolicy: 'no-cache'
     })
 
-    if (!data.language?.slug) {
+    if (!data?.language?.slug) {
       throw new Error(`No language slug found for language ID: ${languageId}`)
     }
 

@@ -30,6 +30,8 @@ export interface CliOptions {
   model?: string
   throttleMs?: number
   llmScrub: boolean
+  translate: boolean
+  translationCache?: string
   fixture?: string
   debug: boolean
   help: boolean
@@ -46,6 +48,11 @@ export const USAGE = `Usage: pnpm exec tsx tools/langfuse-export/run.ts [options
   --fixture PATH       build from a local {traces,observations,themes?} JSON instead of
                        Langfuse — fully offline, no credentials, no LLM (themes from the file)
   --llm-scrub          run an extra LLM PII scrub pass (pending NES-1562 sign-off)
+  --translate          machine-translate non-English messages + keyword facets to English
+                       (adds an OpenRouter pass; needs credentials even under --fixture)
+  --translation-cache PATH
+                       reuse/write translations at PATH (default output/.translation-cache.json;
+                       keyed by content hash so a re-render is free)
   --model ID           OpenRouter model id (default from env / google/gemini-2.5-flash-lite)
   --throttle MS        delay between Langfuse API calls (default 700ms; keep under ~100 req/min)
   --debug              also write records.ndjson (sanitised turns; never upload to Drive)
@@ -71,6 +78,7 @@ export function parseArgs(argv: string[]): CliOptions {
     discriminator: 'default',
     environment: 'production',
     llmScrub: false,
+    translate: false,
     debug: false,
     help: false
   }
@@ -114,6 +122,16 @@ export function parseArgs(argv: string[]): CliOptions {
         break
       case '--llm-scrub':
         options.llmScrub = true
+        break
+      case '--translate':
+        options.translate = true
+        break
+      case '--translation-cache':
+        options.translationCache = requireValue(
+          argv,
+          (index += 1),
+          '--translation-cache'
+        )
         break
       case '--fixture':
         options.fixture = requireValue(argv, (index += 1), '--fixture')

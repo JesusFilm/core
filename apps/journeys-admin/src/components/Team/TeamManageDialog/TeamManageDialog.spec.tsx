@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { act, fireEvent, render, waitFor } from '@testing-library/react'
 import { type Mock } from 'vitest'
@@ -40,7 +41,7 @@ describe('TeamManageDialog', () => {
     ;(useMediaQuery as Mock).mockImplementation(() => true)
   })
 
-  const getUserTeamMock1: MockedResponse<GetUserTeamsAndInvites> = {
+  const getUserTeamMock1: MockLink.MockedResponse<GetUserTeamsAndInvites> = {
     request: {
       query: GET_USER_TEAMS_AND_INVITES,
       variables: {
@@ -77,7 +78,7 @@ describe('TeamManageDialog', () => {
     }
   }
 
-  const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+  const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
     request: {
       query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
     },

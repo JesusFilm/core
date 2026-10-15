@@ -1,5 +1,7 @@
 // @vitest-environment node
-import { createMockClient } from '@apollo/client/testing'
+
+import { ApolloClient, InMemoryCache, TypedDocumentNode } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
 import { notFound, redirect } from 'next/navigation'
 import type { MockedFunction } from 'vitest'
 
@@ -22,6 +24,22 @@ vi.mock('../../../lib/apolloClient', () => ({
 const mockGetApolloClient = getApolloClient as MockedFunction<
   typeof getApolloClient
 >
+
+// Stands in for Apollo Client 3's `createMockClient`, removed in v4: a client
+// whose link answers exactly one request with `data`.
+function createMockClient<
+  TData extends Record<string, unknown>,
+  TVariables extends Record<string, unknown>
+>(
+  data: TData,
+  query: TypedDocumentNode<TData, TVariables>,
+  variables: TVariables
+): ApolloClient {
+  return new ApolloClient({
+    cache: new InMemoryCache(),
+    link: new MockLink([{ request: { query, variables }, result: { data } }])
+  })
+}
 
 describe('PathnamePage', () => {
   beforeEach(() => {

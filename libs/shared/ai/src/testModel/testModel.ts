@@ -14,8 +14,12 @@ import type { OpenrouterFallbackSession } from '../openrouterModel'
  */
 
 interface CreateStubModelOptions {
-  /** Text the model returns. Pass a JSON string for structured-output calls. */
-  text: string
+  /**
+   * Text the model returns. Pass a JSON string for structured-output calls.
+   * Pass an array to script one answer per call, in call order; the last
+   * entry repeats once the array runs out.
+   */
+  text: string | string[]
   /**
    * URL patterns the model accepts by media type. Real vision providers
    * declare these; without them the SDK downloads the asset itself.
@@ -23,27 +27,34 @@ interface CreateStubModelOptions {
   supportedUrls?: Record<string, RegExp[]>
 }
 
-/** A language model that answers every call with `text`. */
+/** A language model that answers each call with the scripted `text`. */
 export function createStubModel({
   text,
   supportedUrls = {}
 }: CreateStubModelOptions): MockLanguageModelV4 {
+  const answers = Array.isArray(text) ? text : [text]
+  let callIndex = 0
+
   return new MockLanguageModelV4({
     supportedUrls,
-    doGenerate: async () => ({
-      content: [{ type: 'text', text }],
-      finishReason: { unified: 'stop', raw: 'stop' },
-      usage: {
-        inputTokens: {
-          total: 1,
-          noCache: 1,
-          cacheRead: undefined,
-          cacheWrite: undefined
+    doGenerate: async () => {
+      const answer = answers[Math.min(callIndex, answers.length - 1)]
+      callIndex += 1
+      return {
+        content: [{ type: 'text', text: answer }],
+        finishReason: { unified: 'stop', raw: 'stop' },
+        usage: {
+          inputTokens: {
+            total: 1,
+            noCache: 1,
+            cacheRead: undefined,
+            cacheWrite: undefined
+          },
+          outputTokens: { total: 1, text: 1, reasoning: undefined }
         },
-        outputTokens: { total: 1, text: 1, reasoning: undefined }
-      },
-      warnings: []
-    })
+        warnings: []
+      }
+    }
   })
 }
 
@@ -66,5 +77,15 @@ export function systemPromptsSentTo(model: MockLanguageModelV4): string[] {
     call.prompt
       .filter((message) => message.role === 'system')
       .map((message) => String(message.content))
+  )
+}
+
+/** The user-turn text `model` was called with, one entry per call. */
+export function userPromptsSentTo(model: MockLanguageModelV4): string[] {
+  return model.doGenerateCalls.map((call) =>
+    call.prompt
+      .flatMap((message) => (message.role === 'user' ? message.content : []))
+      .flatMap((part) => (part.type === 'text' ? [part.text] : []))
+      .join('\n')
   )
 }

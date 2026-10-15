@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 
@@ -49,7 +50,7 @@ describe('ImageEdit', () => {
     customizable: null
   }
 
-  function getJourneyImageBlockCreateMock(): MockedResponse<
+  function getJourneyImageBlockCreateMock(): MockLink.MockedResponse<
     JourneyImageBlockCreate,
     JourneyImageBlockCreateVariables
   > {
@@ -202,7 +203,7 @@ describe('ImageEdit', () => {
           }
         }
       }))
-      const imageBlockUpdateMock: MockedResponse<
+      const imageBlockUpdateMock: MockLink.MockedResponse<
         JourneyImageBlockUpdate,
         JourneyImageBlockUpdateVariables
       > = {

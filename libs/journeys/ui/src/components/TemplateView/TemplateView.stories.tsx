@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
@@ -49,7 +50,7 @@ const tag: Tag = {
   ]
 }
 
-const getTagsMockEmpty: MockedResponse<GetTags> = {
+const getTagsMockEmpty: MockLink.MockedResponse<GetTags> = {
   request: {
     query: GET_TAGS
   },
@@ -60,7 +61,7 @@ const getTagsMockEmpty: MockedResponse<GetTags> = {
   }
 }
 
-const getTagsMock: MockedResponse<GetTags> = {
+const getTagsMock: MockLink.MockedResponse<GetTags> = {
   request: {
     query: GET_TAGS
   },
@@ -87,7 +88,7 @@ const primaryImageBlock: PrimaryImageBlock = {
   customizable: null
 }
 
-const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
+const getJourneysMockEmpty: MockLink.MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -105,7 +106,7 @@ const getJourneysMockEmpty: MockedResponse<GetJourneys> = {
   }
 }
 
-const getJourneysMock: MockedResponse<GetJourneys> = {
+const getJourneysMock: MockLink.MockedResponse<GetJourneys> = {
   request: {
     query: GET_JOURNEYS,
     variables: {
@@ -159,7 +160,7 @@ const journey = {
   primaryImageBlock
 }
 
-const getUserRoleMockEmpty: MockedResponse<GetUserRole> = {
+const getUserRoleMockEmpty: MockLink.MockedResponse<GetUserRole> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -173,7 +174,7 @@ const getUserRoleMockEmpty: MockedResponse<GetUserRole> = {
     }
   }
 }
-const getUserRoleMock: MockedResponse<GetUserRole> = {
+const getUserRoleMock: MockLink.MockedResponse<GetUserRole> = {
   request: {
     query: GET_USER_ROLE
   },
@@ -190,10 +191,10 @@ const getUserRoleMock: MockedResponse<GetUserRole> = {
 
 const Template: StoryObj<
   ComponentProps<typeof TemplateView> & {
-    getJourneysMock: MockedResponse<GetJourneys>
-    getUserRoleMock: MockedResponse<GetUserRole>
+    getJourneysMock: MockLink.MockedResponse<GetJourneys>
+    getUserRoleMock: MockLink.MockedResponse<GetUserRole>
     journey: Journey
-    getTagsMock: MockedResponse<GetTags>
+    getTagsMock: MockLink.MockedResponse<GetTags>
   }
 > = {
   render: (args) => {

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -70,7 +71,7 @@ vi.mock('next/router', () => ({
 
 const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 
-const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const mockGetLastActiveTeamIdAndTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
@@ -94,7 +95,7 @@ const mockGetLastActiveTeamIdAndTeams: MockedResponse<GetLastActiveTeamIdAndTeam
     }
   }
 
-const mockGetLastActiveTeamIdAndTeamsEmptyTeams: MockedResponse<GetLastActiveTeamIdAndTeams> =
+const mockGetLastActiveTeamIdAndTeamsEmptyTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
   {
     request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
     result: {
@@ -109,7 +110,7 @@ const mockGetLastActiveTeamIdAndTeamsEmptyTeams: MockedResponse<GetLastActiveTea
     }
   }
 
-const mockJourneyDuplicate: MockedResponse<
+const mockJourneyDuplicate: MockLink.MockedResponse<
   JourneyDuplicate,
   JourneyDuplicateVariables
 > = {
@@ -134,26 +135,27 @@ const mockJourneyDuplicate: MockedResponse<
 }
 
 const guestTeamIdFromCreate = 'guest-team-id'
-const mockTeamCreate: MockedResponse<TeamCreate, TeamCreateVariables> = {
-  request: {
-    query: TEAM_CREATE,
-    variables: {
-      input: { title: 'My Team', publicTitle: 'My Team' }
-    }
-  },
-  result: {
-    data: {
-      teamCreate: {
-        __typename: 'Team',
-        id: guestTeamIdFromCreate,
-        title: 'My Team',
-        publicTitle: 'My Team',
-        userTeams: [],
-        customDomains: []
+const mockTeamCreate: MockLink.MockedResponse<TeamCreate, TeamCreateVariables> =
+  {
+    request: {
+      query: TEAM_CREATE,
+      variables: {
+        input: { title: 'My Team', publicTitle: 'My Team' }
+      }
+    },
+    result: {
+      data: {
+        teamCreate: {
+          __typename: 'Team',
+          id: guestTeamIdFromCreate,
+          title: 'My Team',
+          publicTitle: 'My Team',
+          userTeams: [],
+          customDomains: []
+        }
       }
     }
   }
-}
 
 function createGetLanguagesMock(
   extraLanguages: Array<{
@@ -426,7 +428,7 @@ describe('LanguageScreen', () => {
   it('for anonymous user: creates guest team, duplicates journey and redirects to customize', async () => {
     mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
-    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+    const mockGetCurrentUser: MockLink.MockedResponse<GetCurrentUser> = {
       request: { query: GET_CURRENT_USER },
       result: {
         data: {
@@ -438,7 +440,7 @@ describe('LanguageScreen', () => {
         }
       }
     }
-    const mockJourneyDuplicateForGuest: MockedResponse<
+    const mockJourneyDuplicateForGuest: MockLink.MockedResponse<
       JourneyDuplicate,
       JourneyDuplicateVariables
     > = {
@@ -557,7 +559,7 @@ describe('LanguageScreen', () => {
     mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
     const existingGuestTeamId = 'teamId1'
-    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+    const mockGetCurrentUser: MockLink.MockedResponse<GetCurrentUser> = {
       request: { query: GET_CURRENT_USER },
       result: {
         data: {
@@ -569,7 +571,7 @@ describe('LanguageScreen', () => {
         }
       }
     }
-    const mockJourneyDuplicateForExistingGuest: MockedResponse<
+    const mockJourneyDuplicateForExistingGuest: MockLink.MockedResponse<
       JourneyDuplicate,
       JourneyDuplicateVariables
     > = {
@@ -648,7 +650,7 @@ describe('LanguageScreen', () => {
   it('for anonymous user with stale lastActiveTeamId: falls back to first existing team', async () => {
     mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
 
-    const mockStaleGuestTeamData: MockedResponse<GetLastActiveTeamIdAndTeams> =
+    const mockStaleGuestTeamData: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
       {
         request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
         result: {
@@ -672,7 +674,7 @@ describe('LanguageScreen', () => {
         }
       }
 
-    const mockGetCurrentUser: MockedResponse<GetCurrentUser> = {
+    const mockGetCurrentUser: MockLink.MockedResponse<GetCurrentUser> = {
       request: { query: GET_CURRENT_USER },
       result: {
         data: {
@@ -685,7 +687,7 @@ describe('LanguageScreen', () => {
       }
     }
 
-    const mockDuplicateForGuestStaleTeam: MockedResponse<
+    const mockDuplicateForGuestStaleTeam: MockLink.MockedResponse<
       JourneyDuplicate,
       JourneyDuplicateVariables
     > = {
@@ -888,28 +890,29 @@ describe('LanguageScreen', () => {
   })
 
   it('falls back to first team when lastActiveTeamId references a nonexistent team', async () => {
-    const mockStaleTeamData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-      result: {
-        data: {
-          getJourneyProfile: {
-            id: 'profile-id',
-            lastActiveTeamId: 'deleted-team-id',
-            __typename: 'JourneyProfile'
-          },
-          teams: [
-            {
-              __typename: 'Team',
-              id: 'teamId1',
-              title: 'Team One',
-              publicTitle: 'Team 1',
-              userTeams: [],
-              customDomains: []
-            }
-          ]
+    const mockStaleTeamData: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            getJourneyProfile: {
+              id: 'profile-id',
+              lastActiveTeamId: 'deleted-team-id',
+              __typename: 'JourneyProfile'
+            },
+            teams: [
+              {
+                __typename: 'Team',
+                id: 'teamId1',
+                title: 'Team One',
+                publicTitle: 'Team 1',
+                userTeams: [],
+                customDomains: []
+              }
+            ]
+          }
         }
       }
-    }
 
     render(
       <MockedProvider mocks={[mockStaleTeamData]}>
@@ -1033,10 +1036,11 @@ describe('LanguageScreen', () => {
   })
 
   it('renders team load error as an accessible alert', async () => {
-    const mockTeamsQueryError: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-      error: new Error('Team query failed')
-    }
+    const mockTeamsQueryError: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        error: new Error('Team query failed')
+      }
 
     render(
       <MockedProvider mocks={[mockTeamsQueryError]}>
@@ -1061,10 +1065,11 @@ describe('LanguageScreen', () => {
 
   it('does not show team load error for guest users when team query fails', async () => {
     mockUser = { ...defaultMockUser, id: null, email: null, isAnonymous: true }
-    const mockTeamsQueryError: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-      error: new Error('Forbidden')
-    }
+    const mockTeamsQueryError: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        error: new Error('Forbidden')
+      }
 
     render(
       <MockedProvider mocks={[mockTeamsQueryError]}>
@@ -1091,38 +1096,39 @@ describe('LanguageScreen', () => {
   })
 
   it('duplicates journey to the user-selected team, not lastActiveTeamId', async () => {
-    const mockTeamsData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-      result: {
-        data: {
-          getJourneyProfile: {
-            id: 'profile-id',
-            lastActiveTeamId: 'teamId1',
-            __typename: 'JourneyProfile'
-          },
-          teams: [
-            {
-              __typename: 'Team',
-              id: 'teamId1',
-              title: 'Team One',
-              publicTitle: 'Team 1',
-              userTeams: [],
-              customDomains: []
+    const mockTeamsData: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            getJourneyProfile: {
+              id: 'profile-id',
+              lastActiveTeamId: 'teamId1',
+              __typename: 'JourneyProfile'
             },
-            {
-              __typename: 'Team',
-              id: 'teamId2',
-              title: 'Team Two',
-              publicTitle: 'Team 2',
-              userTeams: [],
-              customDomains: []
-            }
-          ]
+            teams: [
+              {
+                __typename: 'Team',
+                id: 'teamId1',
+                title: 'Team One',
+                publicTitle: 'Team 1',
+                userTeams: [],
+                customDomains: []
+              },
+              {
+                __typename: 'Team',
+                id: 'teamId2',
+                title: 'Team Two',
+                publicTitle: 'Team 2',
+                userTeams: [],
+                customDomains: []
+              }
+            ]
+          }
         }
       }
-    }
 
-    const mockDuplicateToTeam2: MockedResponse<
+    const mockDuplicateToTeam2: MockLink.MockedResponse<
       JourneyDuplicate,
       JourneyDuplicateVariables
     > = {
@@ -1207,38 +1213,39 @@ describe('LanguageScreen', () => {
   })
 
   it('updates active team in session storage after duplication', async () => {
-    const mockTeamsData: MockedResponse<GetLastActiveTeamIdAndTeams> = {
-      request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
-      result: {
-        data: {
-          getJourneyProfile: {
-            id: 'profile-id',
-            lastActiveTeamId: 'teamId1',
-            __typename: 'JourneyProfile'
-          },
-          teams: [
-            {
-              __typename: 'Team',
-              id: 'teamId1',
-              title: 'Team One',
-              publicTitle: 'Team 1',
-              userTeams: [],
-              customDomains: []
+    const mockTeamsData: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+      {
+        request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+        result: {
+          data: {
+            getJourneyProfile: {
+              id: 'profile-id',
+              lastActiveTeamId: 'teamId1',
+              __typename: 'JourneyProfile'
             },
-            {
-              __typename: 'Team',
-              id: 'teamId2',
-              title: 'Team Two',
-              publicTitle: 'Team 2',
-              userTeams: [],
-              customDomains: []
-            }
-          ]
+            teams: [
+              {
+                __typename: 'Team',
+                id: 'teamId1',
+                title: 'Team One',
+                publicTitle: 'Team 1',
+                userTeams: [],
+                customDomains: []
+              },
+              {
+                __typename: 'Team',
+                id: 'teamId2',
+                title: 'Team Two',
+                publicTitle: 'Team 2',
+                userTeams: [],
+                customDomains: []
+              }
+            ]
+          }
         }
       }
-    }
 
-    const mockDuplicateToTeam2: MockedResponse<
+    const mockDuplicateToTeam2: MockLink.MockedResponse<
       JourneyDuplicate,
       JourneyDuplicateVariables
     > = {

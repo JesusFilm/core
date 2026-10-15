@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 
 /**
  * Creates an Apollo Client instance for GraphQL operations
@@ -6,7 +6,7 @@ import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
  * @returns Configured Apollo Client instance
  */
 export const createApolloClient = (apiName: string) => {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.GATEWAY_URL,
     headers: {
       'interop-token': process.env.INTEROP_TOKEN ?? '',

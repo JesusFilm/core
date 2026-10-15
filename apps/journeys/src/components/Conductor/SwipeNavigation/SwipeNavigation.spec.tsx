@@ -1,5 +1,6 @@
-import { FetchResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
@@ -86,55 +87,57 @@ describe('SwipeNavigation', () => {
     children: []
   }
 
-  const mockStepNextEventCreate: MockedResponse<StepNextEventCreate> = {
-    request: {
-      query: STEP_NEXT_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step1.id',
-          nextStepId: 'step2.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
-        }
-      }
-    },
-    result: vi.fn(
-      (_variables): FetchResult<StepNextEventCreate> => ({
-        data: {
-          stepNextEventCreate: {
+  const mockStepNextEventCreate: MockLink.MockedResponse<StepNextEventCreate> =
+    {
+      request: {
+        query: STEP_NEXT_EVENT_CREATE,
+        variables: {
+          input: {
             id: 'uuid',
-            __typename: 'StepNextEvent'
+            blockId: 'step1.id',
+            nextStepId: 'step2.id',
+            label: 'Step {{number}}',
+            value: 'Step {{number}}'
           }
         }
-      })
-    )
-  }
+      },
+      result: vi.fn(
+        (_variables): ApolloLink.Result<StepNextEventCreate> => ({
+          data: {
+            stepNextEventCreate: {
+              id: 'uuid',
+              __typename: 'StepNextEvent'
+            }
+          }
+        })
+      )
+    }
 
-  const mockStepPreviousEventCreate: MockedResponse<StepPreviousEventCreate> = {
-    request: {
-      query: STEP_PREVIOUS_EVENT_CREATE,
-      variables: {
-        input: {
-          id: 'uuid',
-          blockId: 'step2.id',
-          previousStepId: 'step1.id',
-          label: 'Step {{number}}',
-          value: 'Step {{number}}'
-        }
-      }
-    },
-    result: vi.fn(
-      (_variables): FetchResult<StepPreviousEventCreate> => ({
-        data: {
-          stepPreviousEventCreate: {
+  const mockStepPreviousEventCreate: MockLink.MockedResponse<StepPreviousEventCreate> =
+    {
+      request: {
+        query: STEP_PREVIOUS_EVENT_CREATE,
+        variables: {
+          input: {
             id: 'uuid',
-            __typename: 'StepPreviousEvent'
+            blockId: 'step2.id',
+            previousStepId: 'step1.id',
+            label: 'Step {{number}}',
+            value: 'Step {{number}}'
           }
         }
-      })
-    )
-  }
+      },
+      result: vi.fn(
+        (_variables): ApolloLink.Result<StepPreviousEventCreate> => ({
+          data: {
+            stepPreviousEventCreate: {
+              id: 'uuid',
+              __typename: 'StepPreviousEvent'
+            }
+          }
+        })
+      )
+    }
 
   const journey = {
     id: 'journey.id'

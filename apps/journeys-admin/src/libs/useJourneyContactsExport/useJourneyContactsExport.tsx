@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 
 import { VariablesOf, graphql } from '@core/shared/gql'

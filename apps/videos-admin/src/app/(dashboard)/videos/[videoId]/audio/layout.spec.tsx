@@ -1,11 +1,6 @@
-import {
-  NetworkStatus,
-  OperationVariables,
-  QueryResult,
-  useMutation,
-  useQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { NetworkStatus, OperationVariables } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
@@ -13,8 +8,8 @@ import { type MockedFunction } from 'vitest'
 import ClientLayout from './layout'
 
 // Mock useQuery and useMutation hooks
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useQuery: vi.fn(),
@@ -92,7 +87,12 @@ describe('ClientLayout', () => {
     const mockedUseMutation = useMutation as MockedFunction<typeof useMutation>
 
     // Create a complete mock for the QueryResult
-    const mockQueryResult: QueryResult<any, OperationVariables> = {
+    const mockQueryResult: useQuery.Result<
+      any,
+      OperationVariables,
+      'empty' | 'complete' | 'streaming',
+      Partial<OperationVariables>
+    > = {
       data: {
         adminVideo: {
           id: 'video123',
@@ -105,16 +105,15 @@ describe('ClientLayout', () => {
       error: undefined,
       fetchMore: vi.fn(),
       refetch: mockRefetch,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       client: {} as any,
-      called: true,
       startPolling: vi.fn(),
       stopPolling: vi.fn(),
       subscribeToMore: vi.fn(),
       updateQuery: vi.fn(),
       observable: {} as any,
       variables: { id: 'video123' },
-      reobserve: vi.fn(),
       previousData: undefined
     }
 
@@ -173,16 +172,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: { id: 'video123' },
-        reobserve: vi.fn(),
         previousData: undefined
       })
       .mockReturnValueOnce({
@@ -216,9 +214,9 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: uploadStartPolling,
         stopPolling: uploadStopPolling,
         subscribeToMore: vi.fn(),
@@ -239,7 +237,6 @@ describe('ClientLayout', () => {
           limit: 100,
           languageId: '529'
         },
-        reobserve: vi.fn(),
         previousData: undefined
       })
 
@@ -302,16 +299,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: { id: 'video123' },
-        reobserve: vi.fn(),
         previousData: undefined
       })
       .mockReturnValueOnce({
@@ -342,16 +338,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: {},
-        reobserve: vi.fn(),
         previousData: undefined
       })
 
@@ -413,16 +408,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: { id: 'video123' },
-        reobserve: vi.fn(),
         previousData: undefined
       })
       .mockReturnValueOnce({
@@ -532,16 +526,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: {},
-        reobserve: vi.fn(),
         previousData: undefined
       })
 
@@ -606,16 +599,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: { id: 'video123' },
-        reobserve: vi.fn(),
         previousData: undefined
       })
       .mockReturnValueOnce({
@@ -655,16 +647,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: vi.fn(),
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: {},
-        reobserve: vi.fn(),
         previousData: undefined
       })
 
@@ -736,18 +727,22 @@ describe('ClientLayout', () => {
           error: undefined,
           fetchMore: vi.fn(),
           refetch: vi.fn(),
+          dataState: 'complete' as const,
           networkStatus: NetworkStatus.ready,
           client: {} as any,
-          called: true,
           startPolling: vi.fn(),
           stopPolling: vi.fn(),
           subscribeToMore: vi.fn(),
           updateQuery: vi.fn(),
           observable: {} as any,
           variables: options.variables,
-          reobserve: vi.fn(),
           previousData: undefined
-        } as QueryResult<any, OperationVariables>
+        } as useQuery.Result<
+          any,
+          OperationVariables,
+          'empty' | 'complete' | 'streaming',
+          Partial<OperationVariables>
+        >
       }
 
       return {
@@ -763,18 +758,22 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: options?.variables ?? {},
-        reobserve: vi.fn(),
         previousData: undefined
-      } as QueryResult<any, OperationVariables>
+      } as useQuery.Result<
+        any,
+        OperationVariables,
+        'empty' | 'complete' | 'streaming',
+        Partial<OperationVariables>
+      >
     })
 
     render(
@@ -831,16 +830,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: { id: 'video123' },
-        reobserve: vi.fn(),
         previousData: undefined
       })
       .mockReturnValueOnce({
@@ -882,16 +880,15 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: vi.fn(),
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: {},
-        reobserve: vi.fn(),
         previousData: undefined
       })
 
@@ -973,18 +970,22 @@ describe('ClientLayout', () => {
           error: undefined,
           fetchMore: vi.fn(),
           refetch: vi.fn(),
+          dataState: 'complete' as const,
           networkStatus: NetworkStatus.ready,
           client: {} as any,
-          called: true,
           startPolling: vi.fn(),
           stopPolling: vi.fn(),
           subscribeToMore: vi.fn(),
           updateQuery: vi.fn(),
           observable: {} as any,
           variables: options.variables,
-          reobserve: vi.fn(),
           previousData: undefined
-        } as QueryResult<any, OperationVariables>
+        } as useQuery.Result<
+          any,
+          OperationVariables,
+          'empty' | 'complete' | 'streaming',
+          Partial<OperationVariables>
+        >
       }
 
       return {
@@ -1000,18 +1001,22 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: options?.variables ?? {},
-        reobserve: vi.fn(),
         previousData: undefined
-      } as QueryResult<any, OperationVariables>
+      } as useQuery.Result<
+        any,
+        OperationVariables,
+        'empty' | 'complete' | 'streaming',
+        Partial<OperationVariables>
+      >
     })
 
     render(
@@ -1089,18 +1094,22 @@ describe('ClientLayout', () => {
           error: undefined,
           fetchMore: vi.fn(),
           refetch: uploadRefetch,
+          dataState: 'complete' as const,
           networkStatus: NetworkStatus.ready,
           client: {} as any,
-          called: true,
           startPolling: vi.fn(),
           stopPolling: vi.fn(),
           subscribeToMore: vi.fn(),
           updateQuery: vi.fn(),
           observable: {} as any,
           variables: options.variables,
-          reobserve: vi.fn(),
           previousData: undefined
-        } as QueryResult<any, OperationVariables>
+        } as useQuery.Result<
+          any,
+          OperationVariables,
+          'empty' | 'complete' | 'streaming',
+          Partial<OperationVariables>
+        >
       }
 
       return {
@@ -1116,18 +1125,22 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: options?.variables ?? {},
-        reobserve: vi.fn(),
         previousData: undefined
-      } as QueryResult<any, OperationVariables>
+      } as useQuery.Result<
+        any,
+        OperationVariables,
+        'empty' | 'complete' | 'streaming',
+        Partial<OperationVariables>
+      >
     })
 
     render(
@@ -1213,18 +1226,22 @@ describe('ClientLayout', () => {
           error: undefined,
           fetchMore: vi.fn(),
           refetch: uploadRefetch,
+          dataState: 'complete' as const,
           networkStatus: NetworkStatus.ready,
           client: {} as any,
-          called: true,
           startPolling: vi.fn(),
           stopPolling: vi.fn(),
           subscribeToMore: vi.fn(),
           updateQuery: vi.fn(),
           observable: {} as any,
           variables: options.variables,
-          reobserve: vi.fn(),
           previousData: undefined
-        } as QueryResult<any, OperationVariables>
+        } as useQuery.Result<
+          any,
+          OperationVariables,
+          'empty' | 'complete' | 'streaming',
+          Partial<OperationVariables>
+        >
       }
 
       return {
@@ -1240,18 +1257,22 @@ describe('ClientLayout', () => {
         error: undefined,
         fetchMore: vi.fn(),
         refetch: mockRefetch,
+        dataState: 'complete' as const,
         networkStatus: NetworkStatus.ready,
         client: {} as any,
-        called: true,
         startPolling: vi.fn(),
         stopPolling: vi.fn(),
         subscribeToMore: vi.fn(),
         updateQuery: vi.fn(),
         observable: {} as any,
         variables: options?.variables ?? {},
-        reobserve: vi.fn(),
         previousData: undefined
-      } as QueryResult<any, OperationVariables>
+      } as useQuery.Result<
+        any,
+        OperationVariables,
+        'empty' | 'complete' | 'streaming',
+        Partial<OperationVariables>
+      >
     })
 
     const { rerender } = render(
@@ -1436,16 +1457,15 @@ describe('ClientLayout', () => {
       error: undefined,
       fetchMore: vi.fn(),
       refetch: mockRefetch,
+      dataState: 'complete' as const,
       networkStatus: NetworkStatus.ready,
       client: {} as any,
-      called: true,
       startPolling: vi.fn(),
       stopPolling: vi.fn(),
       subscribeToMore: vi.fn(),
       updateQuery: vi.fn(),
       observable: {} as any,
       variables: { id: 'video123' },
-      reobserve: vi.fn(),
       previousData: undefined
     })
 

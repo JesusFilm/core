@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import { ResultOf, VariablesOf } from '@core/shared/gql'
 
@@ -77,7 +77,7 @@ export const mockSubtitleData: GetSubtitles = {
 
 type GetSubtitlesVariables = VariablesOf<typeof GET_SUBTITLES>
 
-export const getSubtitlesMock: MockedResponse<
+export const getSubtitlesMock: MockLink.MockedResponse<
   GetSubtitles,
   GetSubtitlesVariables
 > = {

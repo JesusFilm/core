@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 

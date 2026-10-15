@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction } from 'vitest'
@@ -67,7 +68,7 @@ describe('Logo', () => {
     customizable: null
   }
 
-  function getLogoImageBlockCreateMock(): MockedResponse<
+  function getLogoImageBlockCreateMock(): MockLink.MockedResponse<
     LogoBlockCreate,
     LogoBlockCreateVariables
   > {
@@ -102,7 +103,10 @@ describe('Logo', () => {
             }
           }
         }
-      })) as MockedResponse<LogoBlockCreate, LogoBlockCreateVariables>['result']
+      })) as MockLink.MockedResponse<
+        LogoBlockCreate,
+        LogoBlockCreateVariables
+      >['result']
     }
   }
 
@@ -110,7 +114,7 @@ describe('Logo', () => {
     id: string,
     input: ImageBlockUpdateInput,
     update?: boolean
-  ): MockedResponse<ImageBlockUpdate, ImageBlockUpdateVariables> {
+  ): MockLink.MockedResponse<ImageBlockUpdate, ImageBlockUpdateVariables> {
     const updateInput =
       update === true
         ? {

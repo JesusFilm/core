@@ -1,9 +1,10 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
 import {
-  ApolloError,
   useMutation,
   useSubscription,
   useSuspenseQuery
-} from '@apollo/client'
+} from '@apollo/client/react'
 import Alert from '@mui/material/Alert'
 import AlertTitle from '@mui/material/AlertTitle'
 import Box from '@mui/material/Box'
@@ -162,7 +163,9 @@ function UserDeleteContent(): ReactElement {
       }
     },
     onError: (error) => {
-      const message = error.graphQLErrors[0]?.message ?? error.message
+      const message = CombinedGraphQLErrors.is(error)
+        ? (error.errors[0]?.message ?? error.message)
+        : error.message
       setLogs((prev) => [
         ...prev,
         {
@@ -208,8 +211,13 @@ function UserDeleteContent(): ReactElement {
 
   const handleMutationError = useCallback(
     (error: unknown): void => {
-      if (error instanceof ApolloError) {
-        const message = error.graphQLErrors[0]?.message ?? error.message
+      // Surface the server's own wording for anything Apollo raised — a
+      // GraphQL error or a transport failure — and keep the generic copy for
+      // errors this component threw itself.
+      if (CombinedGraphQLErrors.is(error) || LinkError.is(error)) {
+        const message = CombinedGraphQLErrors.is(error)
+          ? (error.errors[0]?.message ?? error.message)
+          : (error as Error).message
         setLogs((prev) => [
           ...prev,
           {

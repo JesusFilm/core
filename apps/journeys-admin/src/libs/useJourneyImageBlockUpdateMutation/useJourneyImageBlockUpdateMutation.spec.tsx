@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 
 import { JourneyImageBlockUpdate } from '../../../__generated__/JourneyImageBlockUpdate'
@@ -9,7 +10,7 @@ import {
 } from './useJourneyImageBlockUpdateMutation'
 
 describe('useJourneyImageBlockUpdateMutation', () => {
-  const journeyImageBlockUpdateMutationMock: MockedResponse<JourneyImageBlockUpdate> =
+  const journeyImageBlockUpdateMutationMock: MockLink.MockedResponse<JourneyImageBlockUpdate> =
     {
       request: {
         query: JOURNEY_IMAGE_BLOCK_UPDATE,
@@ -46,7 +47,7 @@ describe('useJourneyImageBlockUpdateMutation', () => {
             customizable: null
           }
         }
-      })) as MockedResponse<JourneyImageBlockUpdate>['result']
+      })) as MockLink.MockedResponse<JourneyImageBlockUpdate>['result']
     }
 
   it('should update image block', async () => {

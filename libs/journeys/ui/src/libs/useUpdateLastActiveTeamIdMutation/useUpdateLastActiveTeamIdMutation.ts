@@ -1,9 +1,5 @@
-import {
-  FetchResult,
-  MutationHookOptions,
-  gql,
-  useMutation
-} from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 
 import {
   UpdateLastActiveTeamId,
@@ -19,16 +15,14 @@ export const UPDATE_LAST_ACTIVE_TEAM_ID = gql`
 `
 
 export function useUpdateLastActiveTeamIdMutation(
-  options?: MutationHookOptions<
+  options?: useMutation.Options<
     UpdateLastActiveTeamId,
     UpdateLastActiveTeamIdVariables
   >
-): (
-  options?: MutationHookOptions<
-    UpdateLastActiveTeamId,
-    UpdateLastActiveTeamIdVariables
-  >
-) => Promise<FetchResult<UpdateLastActiveTeamId> | undefined> {
+): useMutation.MutationFunction<
+  UpdateLastActiveTeamId,
+  UpdateLastActiveTeamIdVariables
+> {
   const [updateLastActiveTeamId] = useMutation<
     UpdateLastActiveTeamId,
     UpdateLastActiveTeamIdVariables

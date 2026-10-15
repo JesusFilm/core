@@ -1,4 +1,4 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { Formik, FormikHelpers, FormikProvider } from 'formik'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'

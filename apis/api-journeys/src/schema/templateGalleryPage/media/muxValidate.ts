@@ -1,4 +1,4 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
 import { graphql } from '@core/shared/gql'
@@ -35,19 +35,21 @@ export async function muxValidate(muxVideoId: string): Promise<{
   muxDuration: number | null
 }> {
   const apollo = new ApolloClient({
-    link: createHttpLink({
+    link: new HttpLink({
       uri: env.GATEWAY_URL,
       headers: {
         'x-graphql-client-name': 'api-journeys-modern',
         'x-graphql-client-version': env.SERVICE_VERSION
       }
     }),
+
     cache: new InMemoryCache()
   })
 
   const { data } = await apollo.query({
     query: GET_MUX_VIDEO_QUERY,
-    variables: { id: muxVideoId }
+    variables: { id: muxVideoId },
+    errorPolicy: 'none'
   })
 
   if (data.getMuxVideo == null) {

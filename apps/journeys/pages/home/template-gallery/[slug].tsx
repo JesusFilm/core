@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { GetServerSideProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
@@ -139,7 +140,7 @@ export const getServerSideProps: GetServerSideProps<
   }
 
   const apolloClient = createApolloClient()
-  const { data, errors } = await apolloClient.query<
+  const { data, error } = await apolloClient.query<
     GetTemplateGalleryPage,
     GetTemplateGalleryPageVariables
   >({
@@ -148,13 +149,17 @@ export const getServerSideProps: GetServerSideProps<
     errorPolicy: 'all'
   })
 
+  // Apollo Client 4 unified `errors` into a single `error`; GraphQL errors
+  // arrive wrapped in `CombinedGraphQLErrors`.
+  const errors = CombinedGraphQLErrors.is(error) ? error.errors : []
+
   const gallery = data?.templateGalleryPageBySlug
   if (gallery == null) {
     // Only log when there are actual errors. A legitimate not-found
     // (draft / unknown slug) is a noisy public path — every probe
     // would otherwise add a log line. The signal we care about is the
     // error-but-null shape that hid the NES-1644 cache bug.
-    if (errors != null && errors.length > 0) {
+    if (errors.length > 0) {
       const MAX_LOGGED_ERRORS = 5
       const safeErrors = errors.slice(0, MAX_LOGGED_ERRORS).map((e) => ({
         message: e.message,

@@ -1,8 +1,8 @@
 import {
   useMutation as apolloClient_useMutation,
   useSuspenseQuery as apolloClient_useSuspenseQuery
-} from '@apollo/client'
-import { MockedProvider } from '@apollo/client/testing'
+} from '@apollo/client/react'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type Mock } from 'vitest'
 
@@ -24,8 +24,8 @@ vi.mock('notistack', () => ({
   useSnackbar: () => ({ enqueueSnackbar: mockEnqueueSnackbar })
 }))
 
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useSuspenseQuery: vi.fn(),

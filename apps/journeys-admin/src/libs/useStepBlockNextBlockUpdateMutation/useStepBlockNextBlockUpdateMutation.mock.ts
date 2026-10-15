@@ -1,4 +1,4 @@
-import { MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
 
 import {
   StepBlockNextBlockUpdate,
@@ -7,7 +7,7 @@ import {
 
 import { STEP_BLOCK_NEXT_BLOCK_UPDATE } from './useStepBlockNextBlockUpdateMutation'
 
-export const stepBlockNextBlockUpdateMock: MockedResponse<
+export const stepBlockNextBlockUpdateMock: MockLink.MockedResponse<
   StepBlockNextBlockUpdate,
   StepBlockNextBlockUpdateVariables
 > = {
@@ -29,7 +29,7 @@ export const stepBlockNextBlockUpdateMock: MockedResponse<
   }
 }
 
-export const stepBlockNextBlockUpdateToStepMock: MockedResponse<
+export const stepBlockNextBlockUpdateToStepMock: MockLink.MockedResponse<
   StepBlockNextBlockUpdate,
   StepBlockNextBlockUpdateVariables
 > = {

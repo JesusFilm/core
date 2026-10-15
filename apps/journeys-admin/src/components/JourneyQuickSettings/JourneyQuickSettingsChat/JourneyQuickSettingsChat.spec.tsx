@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
@@ -65,7 +66,10 @@ describe('JourneyQuickSettingsChat', () => {
   })
 
   it('should call update host mutation on name change', async () => {
-    const updateHostMock: MockedResponse<UpdateHost, UpdateHostVariables> = {
+    const updateHostMock: MockLink.MockedResponse<
+      UpdateHost,
+      UpdateHostVariables
+    > = {
       request: {
         query: UPDATE_HOST,
         variables: {
@@ -113,7 +117,7 @@ describe('JourneyQuickSettingsChat', () => {
   it('should call createhost mutation on name change if host does not exist', async () => {
     const mockCreateResult = vi.fn().mockReturnValue(hostCreateMock.result)
 
-    const updateJourneyHostMock: MockedResponse<
+    const updateJourneyHostMock: MockLink.MockedResponse<
       UpdateJourneyHost,
       UpdateJourneyHostVariables
     > = {

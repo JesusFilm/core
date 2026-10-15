@@ -31,7 +31,11 @@ const mockUseLazyQuery = vi.fn()
 const mockUseMutation = vi.fn()
 
 vi.mock('@apollo/client', () => ({
-  gql: (strings: TemplateStringsArray | string) => strings,
+  gql: (strings: TemplateStringsArray | string) => strings
+}))
+
+// Apollo Client 4 serves the React hooks from `@apollo/client/react`.
+vi.mock('@apollo/client/react', () => ({
   useQuery: (...args: unknown[]) => mockUseQuery(...args),
   useLazyQuery: (...args: unknown[]) => mockUseLazyQuery(...args),
   useMutation: (...args: unknown[]) => mockUseMutation(...args)
@@ -138,9 +142,10 @@ describe('GoogleSheetsSyncDialog', () => {
     )
 
     await waitFor(() => {
+      // Apollo Client 4 only accepts `variables` and `context` on the execute
+      // function; the fetch policy now lives on the hook.
       expect(loadSyncsMock).toHaveBeenCalledWith({
-        variables: { filter: { journeyId: 'journey1' } },
-        fetchPolicy: 'network-only'
+        variables: { filter: { journeyId: 'journey1' } }
       })
     })
   })

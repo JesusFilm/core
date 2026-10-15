@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { render, screen } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { useSnackbar } from 'notistack'
@@ -57,7 +57,7 @@ describe('GoogleCreateIntegration', () => {
 
   it('renders the connect button enabled when oauth url is available', () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -71,7 +71,7 @@ describe('GoogleCreateIntegration', () => {
     mockUseIntegrationGoogleCreate.mockReturnValue({ loading: true })
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -82,7 +82,7 @@ describe('GoogleCreateIntegration', () => {
 
   it('shows success snackbar and navigates on onSuccess', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -105,7 +105,7 @@ describe('GoogleCreateIntegration', () => {
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -127,7 +127,7 @@ describe('GoogleCreateIntegration', () => {
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -143,7 +143,7 @@ describe('GoogleCreateIntegration', () => {
 
   it('should show error snackbar and navigates on onError', async () => {
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -166,7 +166,7 @@ describe('GoogleCreateIntegration', () => {
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -185,7 +185,7 @@ describe('GoogleCreateIntegration', () => {
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
@@ -204,7 +204,7 @@ describe('GoogleCreateIntegration', () => {
     } as unknown as ReturnType<typeof useRouter>)
 
     render(
-      <MockedProvider mocks={[]} addTypename={false}>
+      <MockedProvider mocks={[]}>
         <GoogleCreateIntegration />
       </MockedProvider>
     )
