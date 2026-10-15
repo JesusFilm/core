@@ -123,19 +123,15 @@ async function writeParentLanguageRepair(
 
   if (needsLanguage || needsPublish) {
     await prisma.$transaction(async (tx) => {
-      const updates: Array<Promise<unknown>> = []
       if (needsLanguage) {
-        updates.push(addLanguageToVideo(gap.parentVideoId, gap.languageId, tx))
+        await addLanguageToVideo(gap.parentVideoId, gap.languageId, tx)
       }
       if (needsPublish) {
-        updates.push(
-          tx.videoVariant.update({
-            where: { id: variant.id },
-            data: { published: true }
-          })
-        )
+        await tx.videoVariant.update({
+          where: { id: variant.id },
+          data: { published: true }
+        })
       }
-      await Promise.all(updates)
     })
   }
 
