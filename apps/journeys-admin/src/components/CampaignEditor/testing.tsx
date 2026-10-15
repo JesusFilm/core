@@ -222,6 +222,8 @@ export async function frameBody(
   return iframe.contentDocument?.body as HTMLElement
 }
 
+// Not an API field, so it is parsed rather than tagged with gql to keep
+// codegen from validating it against the schema.
 const PENDING_TEXT_SAVE = parse(`
   mutation PendingTextSave {
     pendingTextSave

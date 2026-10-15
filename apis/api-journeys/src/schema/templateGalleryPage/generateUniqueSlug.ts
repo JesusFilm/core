@@ -86,37 +86,30 @@ export class SlugInvalidError extends GraphQLError {
 }
 
 /**
- * Generate a unique slug for a TemplateGalleryPage from a title.
- *
- * Single SELECT to fetch all colliding slugs (cheap; bounded by team activity),
- * then picks the first non-conflicting suffix in {base, base-2, ..., base-50}.
- * Falls back to a 6-char nanoid suffix beyond 50 collisions (statistically improbable).
- *
- * Caller is responsible for catching P2002 from the subsequent INSERT and retrying
- * once if the title was the source of the slug (TOCTOU window). DB unique index
- * is the ultimate backstop.
+ * Normalise a title or name to a slug base: slugify lower strict, truncated to
+ * SLUG_MAX_LENGTH so the resulting slug never overflows the public-query regex
+ * (which rejects slugs longer than 200 chars). Throws SlugReservedError when
+ * the result is empty or in `reserved`.
  */
-export async function generateUniqueSlug(
-  title: string,
-  excludeId?: string
-): Promise<string> {
-  const normalized = slugify(title, { lower: true, strict: true })
-  if (normalized === '' || RESERVED_SLUGS.has(normalized)) {
+export function slugBase(
+  source: string,
+  reserved: ReadonlySet<string> = RESERVED_SLUGS
+): string {
+  const normalized = slugify(source, { lower: true, strict: true })
+  if (normalized === '' || reserved.has(normalized)) {
     throw new SlugReservedError(normalized === '' ? '(empty)' : normalized)
   }
-  // Truncate to SLUG_MAX_LENGTH so the resulting slug never overflows the
-  // public-query regex (which rejects slugs longer than 200 chars). Without
-  // this, a long title would mint a slug nobody could later read back.
-  const base = normalized.slice(0, SLUG_MAX_LENGTH)
+  return normalized.slice(0, SLUG_MAX_LENGTH)
+}
 
-  const collisions = await prisma.templateGalleryPage.findMany({
-    where: { slug: { startsWith: base } },
-    select: { id: true, slug: true }
-  })
-  const taken = new Set(
-    collisions.filter((c) => c.id !== excludeId).map((c) => c.slug)
-  )
-
+/**
+ * The first of `base`, `base-2` … `base-50` not in `taken`, falling back to a
+ * 6-char nanoid suffix beyond 50 collisions (statistically improbable).
+ */
+export function firstFreeSlug(
+  base: string,
+  taken: ReadonlySet<string>
+): string {
   if (!taken.has(base)) return base
   for (let suffix = 2; suffix <= 50; suffix++) {
     const suffixPart = `-${suffix}`
@@ -126,6 +119,31 @@ export async function generateUniqueSlug(
   // Pathological — 50 collisions on the same base. Fall back to entropy.
   const randomSuffix = `-${slugSuffix()}`
   return `${base.slice(0, SLUG_MAX_LENGTH - randomSuffix.length)}${randomSuffix}`
+}
+
+/**
+ * Generate a unique slug for a TemplateGalleryPage from a title.
+ *
+ * Single SELECT to fetch all colliding slugs (cheap; bounded by team activity),
+ * then picks the first non-conflicting suffix (see `firstFreeSlug`).
+ *
+ * Caller is responsible for catching P2002 from the subsequent INSERT and retrying
+ * once if the title was the source of the slug (TOCTOU window). DB unique index
+ * is the ultimate backstop.
+ */
+export async function generateUniqueSlug(
+  title: string,
+  excludeId?: string
+): Promise<string> {
+  const base = slugBase(title)
+  const collisions = await prisma.templateGalleryPage.findMany({
+    where: { slug: { startsWith: base } },
+    select: { id: true, slug: true }
+  })
+  const taken = new Set(
+    collisions.filter((c) => c.id !== excludeId).map((c) => c.slug)
+  )
+  return firstFreeSlug(base, taken)
 }
 
 /**
