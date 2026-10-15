@@ -2993,6 +2993,47 @@ describe('video', () => {
         )
       })
 
+      it('should allow updating other fields when the existing slug is non-public-style but unchanged', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: null,
+          slug: 'Nua_Know_God',
+          variants: []
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id'
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'Nua_Know_God'
+            }
+          }
+        })
+
+        expect(prismaMock.video.update).toHaveBeenCalledWith(
+          expect.objectContaining({
+            where: { id: 'id' },
+            data: expect.objectContaining({
+              slug: 'Nua_Know_God'
+            })
+          })
+        )
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'id'
+        })
+      })
+
       it('should enable restrictTranslations', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',

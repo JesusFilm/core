@@ -773,7 +773,11 @@ builder.mutationFields((t) => ({
         throw new Error('Cannot change slug after video has been published')
       }
 
-      if (input.slug != null && !isPublicSlug(input.slug)) {
+      if (
+        input.slug != null &&
+        input.slug !== currentVideo?.slug &&
+        !isPublicSlug(input.slug)
+      ) {
         throw new Error(
           'Slug must be lowercase, with words separated by hyphens (e.g. "jesus-walks-on-water")'
         )
