@@ -72,4 +72,21 @@ export const WithRegions: Story = {
   }
 }
 
+/** A region with a very long name and the Needs journey chip: the name wraps inside the padding and the chip keeps its size. */
+export const LongRegionName: Story = {
+  args: {
+    campaignProp: {
+      ...campaignWithRegions,
+      regions: campaignWithRegions.regions.map((region, index) =>
+        index === 0
+          ? {
+              ...region,
+              name: 'Central and Eastern Europe, the Caucasus and Central Asia'
+            }
+          : region
+      )
+    }
+  }
+}
+
 export default PagesPanelMeta
