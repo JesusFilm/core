@@ -7,13 +7,13 @@ Its PostgreSQL is in the Core Database; its ClickHouse is the shared
 ClickHouse Cloud service (moved there by plan `2026-10-14-001`, runbook in
 `infrastructure/kube/plausible-analytics/README.md` until that chart is gone).
 
-| | stage | prod |
-| --- | --- | --- |
-| Hostname | `analytics.stage.central.jesusfilm.org` | `analytics.jesusfilm.org` |
-| Smoke-test hostname (module-created record) | `plausible.stage.central.jesusfilm.org` | `plausible.central.jesusfilm.org` |
-| Certificate | the `*.stage.central.jesusfilm.org` wildcard | ACM `analytics.jesusfilm.org`, validated in Cloudflare |
-| DNS for the hostname | Route53 zone `stage.central.jesusfilm.org` (external-dns owned until cutover) | Cloudflare DNS, DNS-only CNAME, by hand |
-| Doppler | `plausible` / `stg` | `plausible` / `prd` |
+|                                             | stage                                                                         | prod                                                   |
+| ------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Hostname                                    | `analytics.stage.central.jesusfilm.org`                                       | `analytics.jesusfilm.org`                              |
+| Smoke-test hostname (module-created record) | `plausible.stage.central.jesusfilm.org`                                       | `plausible.central.jesusfilm.org`                      |
+| Certificate                                 | the `*.stage.central.jesusfilm.org` wildcard                                  | ACM `analytics.jesusfilm.org`, validated in Cloudflare |
+| DNS for the hostname                        | Route53 zone `stage.central.jesusfilm.org` (external-dns owned until cutover) | Cloudflare DNS, DNS-only CNAME, by hand                |
+| Doppler                                     | `plausible` / `stg`                                                           | `plausible` / `prd`                                    |
 
 Configuration is the six keys of the `plausible` Doppler project (`BASE_URL`,
 `CLICKHOUSE_DATABASE_URL`, `DATABASE_URL`, `DISABLE_REGISTRATION`,
@@ -114,6 +114,7 @@ Rehearse once.
 
    The certificate must be the `analytics.jesusfilm.org` one and the health
    check must return 200.
+
 3. In Cloudflare DNS for `jesusfilm.org`: change the `analytics` CNAME target
    from the ingress NLB name to `$alb`. Keep it DNS-only and TTL 300. Note the
    old value.
