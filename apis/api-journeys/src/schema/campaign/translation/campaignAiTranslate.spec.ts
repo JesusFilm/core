@@ -374,10 +374,10 @@ describe('campaignAiTranslate', () => {
     it('writes nothing more once the caller disconnects mid-batch', async () => {
       const disconnect = new AbortController()
       const scripted = mockStreamText.getMockImplementation()!
-      mockStreamText.mockImplementation(((options: unknown) => {
+      mockStreamText.mockImplementation((options: unknown) => {
         disconnect.abort()
         return scripted(options as never)
-      }) as unknown as typeof streamText)
+      })
 
       const updates = await run({ mode: 'all' }, mockUser, disconnect.signal)
 
@@ -390,12 +390,13 @@ describe('campaignAiTranslate', () => {
     it('aborts the model call when the caller disconnects', async () => {
       const disconnect = new AbortController()
       const scripted = mockStreamText.getMockImplementation()!
-      mockStreamText.mockImplementation(((options: unknown) => {
+      mockStreamText.mockImplementation((options: unknown) => {
         disconnect.abort()
-        expect((options as { abortSignal: AbortSignal }).abortSignal.aborted)
-          .toBe(true)
+        expect(
+          (options as { abortSignal: AbortSignal }).abortSignal.aborted
+        ).toBe(true)
         return scripted(options as never)
-      }) as unknown as typeof streamText)
+      })
 
       await run({ mode: 'all' }, mockUser, disconnect.signal)
     })
