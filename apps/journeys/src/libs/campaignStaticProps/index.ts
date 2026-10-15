@@ -6,3 +6,4 @@ export {
   hasAnalyticsSection
 } from './campaignStaticProps'
 export type { CampaignStaticProps } from './campaignStaticProps'
+export { toLanguageFallback } from './languageFallback'

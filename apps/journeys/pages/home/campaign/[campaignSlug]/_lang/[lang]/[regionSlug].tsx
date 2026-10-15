@@ -1,25 +1,33 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import {
+  LanguageFallbackProps,
+  withLanguageFallback
+} from '../../../../../../src/components/LanguageFallbackRedirect'
+import {
   CampaignStaticProps,
-  getCampaignStaticProps
+  getCampaignStaticProps,
+  toLanguageFallback
 } from '../../../../../../src/libs/campaignStaticProps'
 import CampaignRegionPage from '../../[regionSlug]'
 
 // The Region Page in the campaign language the proxy rewrote `?lang=` to. A
-// tag that is not a campaign language redirects to the default-language page.
-export const getStaticProps: GetStaticProps<CampaignStaticProps> = async (
-  context
-) =>
-  await getCampaignStaticProps({
-    slug: context.params?.campaignSlug?.toString() ?? '',
-    regionSlug: context.params?.regionSlug?.toString() ?? '',
-    language: context.params?.lang?.toString(),
-    locale: context.locale
-  })
+// tag that is not a campaign language sends the visitor to the
+// default-language page, keeping the rest of the query.
+export const getStaticProps: GetStaticProps<
+  CampaignStaticProps | LanguageFallbackProps
+> = async (context) =>
+  toLanguageFallback(
+    await getCampaignStaticProps({
+      slug: context.params?.campaignSlug?.toString() ?? '',
+      regionSlug: context.params?.regionSlug?.toString() ?? '',
+      language: context.params?.lang?.toString(),
+      locale: context.locale
+    })
+  )
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return { paths: [], fallback: 'blocking' }
 }
 
-export default CampaignRegionPage
+export default withLanguageFallback(CampaignRegionPage)
