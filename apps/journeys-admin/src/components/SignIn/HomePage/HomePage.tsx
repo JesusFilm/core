@@ -64,7 +64,6 @@ export function HomePage({
       </Box>
       <Stack spacing={3}>
         <SignInServiceButton service="google.com" />
-        <SignInServiceButton service="facebook.com" />
         <SignInServiceButton service="oidc.okta" />
       </Stack>
       <Divider sx={{ my: 3 }}>{t('OR')}</Divider>

@@ -1,4 +1,8 @@
 name = "jf-proxy-dev"
+# Jesus Film Project. Pinned so deploys work with an account-owned API token,
+# which cannot list memberships, and so a local login with several accounts
+# never has to be asked.
+account_id = "365cdc1a5b0a9fbed04a6b09a10732b8"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 main = "src/index.ts"

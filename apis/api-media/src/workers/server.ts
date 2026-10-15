@@ -111,6 +111,12 @@ async function main(): Promise<void> {
       )
       run(
         await import(
+          /* webpackChunkName: "short-link-health" */
+          './shortLinkHealth'
+        )
+      )
+      run(
+        await import(
           /* webpackChunkName: "verify-available-languages" */
           './verifyAvailableLanguages'
         )
