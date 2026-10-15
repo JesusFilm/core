@@ -390,13 +390,7 @@ export function Canvas({
                         onDragEnd={handleDragEnd}
                         onDragCancel={() => setDropTarget(undefined)}
                       >
-                        {header != null && (
-                          <CanvasSection
-                            block={header}
-                            theme={campaign.theme}
-                            previewLanguageId={previewLanguageId}
-                          />
-                        )}
+                        {header != null && <CanvasSection block={header} />}
                         {pageId != null && (
                           <CanvasInsertPoint pageId={pageId} parentOrder={0} />
                         )}
@@ -404,8 +398,6 @@ export function Canvas({
                           <Fragment key={section.id}>
                             <CanvasSection
                               block={section}
-                              theme={campaign.theme}
-                              previewLanguageId={previewLanguageId}
                               draggable
                               dropEdge={
                                 dropTarget?.overId === section.id
@@ -421,13 +413,7 @@ export function Canvas({
                             )}
                           </Fragment>
                         ))}
-                        {footer != null && (
-                          <CanvasSection
-                            block={footer}
-                            theme={campaign.theme}
-                            previewLanguageId={previewLanguageId}
-                          />
-                        )}
+                        {footer != null && <CanvasSection block={footer} />}
                       </DndContext>
                     </Box>
                   </FrameTheme>

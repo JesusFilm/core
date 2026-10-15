@@ -24,7 +24,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'teamId',
         toJourneyId: 'journeyId'
       })
 
@@ -52,7 +51,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'campaignTeamId',
         toJourneyId: 'journeyId'
       })
 
@@ -70,7 +68,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'journeyTeamId',
         toJourneyId: 'journeyId'
       })
 
@@ -90,7 +87,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'teamId',
         toJourneyId: 'journeyId',
         toBlockId: 'blockId'
       })

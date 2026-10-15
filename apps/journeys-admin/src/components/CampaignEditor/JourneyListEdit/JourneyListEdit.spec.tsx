@@ -138,7 +138,6 @@ function ListHarness(): ReactElement {
     <JourneyListEdit
       block={list}
       active={selection.host?.id === list.id}
-      focusRequest={0}
       onSelectCard={(cardId) => selectBlock(cardId)}
     />
   )
