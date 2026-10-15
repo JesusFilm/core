@@ -679,6 +679,50 @@ describe('download processing utilities', () => {
       })
     })
 
+    it('does not treat a URL that merely contains the legacy host as a substring as legacy', async () => {
+      const muxVideoAsset = {
+        playback_ids: [{ id: 'test-playback-id' }],
+        static_renditions: {
+          files: [
+            {
+              resolution: '720p',
+              status: 'ready',
+              filesize: '157286400',
+              height: 720,
+              width: 1280,
+              bitrate: 2500000
+            }
+          ]
+        }
+      }
+
+      prismaMock.videoVariantDownload.findUnique.mockResolvedValue({
+        id: 'existing-high-download',
+        quality: VideoVariantDownloadQuality.high,
+        videoVariantId: 'variant-1',
+        // Not actually hosted on the legacy origin -- the host name only
+        // contains it as a substring, e.g. in a path segment.
+        url: 'https://attacker.example.com/api-media-core.jesusfilm.org/download.mp4',
+        size: 157286400,
+        height: 720,
+        width: 1280,
+        bitrate: 2500000,
+        version: 1,
+        assetId: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+
+      const result = await createDownloadsFromMuxAsset({
+        variantId: 'variant-1',
+        muxVideoAsset
+      })
+
+      expect(result).toBe(0)
+      expect(prismaMock.videoVariantDownload.create).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariantDownload.update).not.toHaveBeenCalled()
+    })
+
     it('does not overwrite a complete non-Mux, non-legacy download (e.g. a publisher-curated URL)', async () => {
       const muxVideoAsset = {
         playback_ids: [{ id: 'test-playback-id' }],

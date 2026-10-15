@@ -17,7 +17,11 @@ const MUX_STREAM_BASE_URL = 'https://stream.mux.com/'
 const LEGACY_DOWNLOAD_URL_HOST = 'api-media-core.jesusfilm.org'
 
 function isLegacyDownloadUrl(url: string): boolean {
-  return url.includes(LEGACY_DOWNLOAD_URL_HOST)
+  try {
+    return new URL(url).hostname === LEGACY_DOWNLOAD_URL_HOST
+  } catch {
+    return false
+  }
 }
 
 function hasMissingDownloadMetadata(download: {
