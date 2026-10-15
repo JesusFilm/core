@@ -300,7 +300,7 @@ A **QR Code** row owned by the Campaign's Team and tied to one region language, 
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
-Re-reading a Share Language's title and description from its linked Journey on request, replacing both; never automatic. The editor runs it as a Command whose undo writes the previous wording back, and asks first only when the snapshot differs from what the Journey says now, since the row keeps no record of who changed it.
+Re-reading a Share Language's or a Journey List card's title and description from its linked Journey on request, replacing both; never automatic. The editor runs it as a Command whose undo writes the previous wording back together with the edited flag, and asks first only when the row's `snapshotEdited` says an author changed the wording by hand; a Journey renamed since linking does not count, and refreshing or linking clears the flag.
 _Avoid_: sync (nothing runs on its own), re-link (the Journey stays the same)
 
 **Unlinked language**:

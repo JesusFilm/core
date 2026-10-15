@@ -246,6 +246,19 @@ describe('LinkSettings', () => {
   })
 
   describe('kinds', () => {
+    it('counts the web address against its cap', () => {
+      renderStatic(campaign)
+
+      fireEvent.click(screen.getByRole('button', { name: 'Web address' }))
+      expect(screen.getByText('0 / 2048')).toBeInTheDocument()
+
+      fireEvent.change(screen.getByRole('textbox', { name: 'Web address' }), {
+        target: { value: 'https://a.co' }
+      })
+
+      expect(screen.getByText('12 / 2048')).toBeInTheDocument()
+    })
+
     it('offers a web address, the sections on this page by title or type, and the regions', () => {
       renderStatic(campaign)
 

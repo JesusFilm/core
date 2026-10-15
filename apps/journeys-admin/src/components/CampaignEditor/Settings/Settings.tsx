@@ -31,6 +31,7 @@ import {
   campaignPermanentAddress,
   campaignPublicAddress
 } from '../campaignAddress'
+import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
 
@@ -217,7 +218,9 @@ export function Settings({
         onBlur={handleTitleBlur}
         onKeyDown={handleKeyDown}
         error={errors.title != null}
-        helperText={errors.title}
+        helperText={
+          errors.title ?? `${textLength(title)} / ${TITLE_MAX_LENGTH}`
+        }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Title') } }}
       />
@@ -240,6 +243,9 @@ export function Settings({
                 {t('Current public address: {{address}}', {
                   address: publicAddress
                 })}
+              </Box>
+              <Box component="span" sx={{ display: 'block' }}>
+                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
               </Box>
             </>
           )

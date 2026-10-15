@@ -63,7 +63,7 @@ A traffic-source node shown in the JourneyFlow during Analytics Mode: where Visi
 _Avoid_: source, channel
 
 **Campaign Editor**:
-The full-screen `/campaigns/[id]` editor for a **Campaign** (the Journeys context's seasonal site), behind the LaunchDarkly flag `campaignBuilder` together with the Campaigns nav item and the `/campaigns` list. Desktop only: below 1280 px it shows an "open this on a larger screen" message and no canvas. One **CommandProvider** spans both Campaign Pages so the undo history survives the **Page Selector**; nothing replaces Save — no Save button, Unsaved chip or save indicator — because every edit is its own mutation (Live Editing) with an optimistic response, and a failed one surfaces as the error snackbar and rolls back.
+The full-screen `/campaigns/[id]` editor for a **Campaign** (the Journeys context's seasonal site), behind the LaunchDarkly flag `campaignBuilder` together with the Campaigns nav item and the `/campaigns` list. Desktop only: below 1280 px it shows an "open this on a larger screen" message and no canvas. One **CommandProvider** spans both Campaign Pages so the undo history survives the **Page Selector**; nothing replaces Save — no Save button, Unsaved chip or save indicator — because every edit is its own mutation (Live Editing) with an optimistic response, and a failed one surfaces as the error snackbar and rolls back. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import that creates the items), there is no optimistic row and the edit shows when the server answers.
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
