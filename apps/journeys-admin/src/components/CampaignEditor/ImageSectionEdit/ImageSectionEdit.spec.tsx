@@ -8,6 +8,7 @@ import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } 
 import { CampaignTextSource } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
+import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignWithColumns, withEmptyTranslations } from '../data'
 import { CommandProbe, QueriedEditor } from '../testing'
@@ -85,6 +86,7 @@ function renderEdit(
       initialState={{ previewLanguageId }}
       mocks={mocks}
     >
+      <CommandUndoItem variant="button" />
       <CommandProbe />
       <CachedImageEdit />
     </QueriedEditor>
@@ -142,7 +144,24 @@ describe('ImageSectionEdit', () => {
 
     await waitFor(() => expect(translation.result).toHaveBeenCalled())
     await waitFor(() => expect(alt).toHaveValue('Lecture en famille'))
-    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('undoes a translated alt by writing the previous translation back', async () => {
+    const write = translationMock('Lecture en famille')
+    const restore = translationMock('Une famille qui lit')
+    renderEdit([write, restore], '496')
+
+    const alt = await screen.findByRole('textbox', { name: 'Alt text' })
+    fireEvent.change(alt, { target: { value: 'Lecture en famille' } })
+    fireEvent.blur(alt)
+    await waitFor(() => expect(write.result).toHaveBeenCalled())
+    await waitFor(() => expect(alt).toHaveValue('Lecture en famille'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(restore.result).toHaveBeenCalled())
+    await waitFor(() => expect(alt).toHaveValue('Une famille qui lit'))
   })
 
   it('clears the translation when the alt text is emptied', async () => {

@@ -7,7 +7,10 @@ import {
 } from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignTextSource
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_CREATE } from '../../../libs/useCampaignRegionCreateMutation'
 import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
@@ -120,6 +123,46 @@ describe('RegionSwitcherEdit', () => {
     expect(
       screen.queryByTestId('RegionCardEdit-afrRegionId')
     ).not.toBeInTheDocument()
+  })
+
+  it('shows each region’s name in the previewed language, falling back to the default name', async () => {
+    const translated = {
+      ...campaignWithRegions,
+      regions: campaignWithRegions.regions.map((region) =>
+        region.id === 'eurRegionId'
+          ? {
+              ...region,
+              nameTranslations: [
+                {
+                  __typename: 'TranslatedValue' as const,
+                  languageId: '496',
+                  value: 'L’Europe',
+                  source: CampaignTextSource.human
+                }
+              ]
+            }
+          : region
+      )
+    }
+    const { unmount } = renderSwitcher(translated, {
+      pageKind: CampaignPageKind.regionTemplate,
+      regionId: 'afrRegionId',
+      previewLanguageId: '496'
+    })
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionCardName')).toHaveTextContent('L’Europe')
+    )
+    unmount()
+
+    renderSwitcher(translated, {
+      pageKind: CampaignPageKind.regionTemplate,
+      regionId: 'afrRegionId',
+      previewLanguageId: '529'
+    })
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionCardName')).toHaveTextContent('Europe')
+    )
   })
 
   it(`carries a "Needs journey" badge while any of the region's languages is unlinked`, async () => {

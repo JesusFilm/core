@@ -8,20 +8,21 @@ import { useCampaignTranslationSetMutation } from '../../../../libs/useCampaignT
 export interface CampaignTranslationWrite {
   /** The cached row the translation belongs to. */
   row: { __typename: string; id: string }
-  target: { blockId: string } | { regionId: string }
+  target: { blockId: string } | { regionId: string } | { stringId: string }
   field: CampaignTextField
   /** The campaign language being previewed; never the default. */
   languageId: string
   value: string
   /** The row's `<field>Translations` list before the write. */
   translations: readonly CampaignTranslatedValue[]
+  /** Apollo link context, e.g. the debounce key of a typed field. */
+  context?: Record<string, unknown>
 }
 
 /**
- * Write one human translation of a field that has no inline text (an image's
- * alt, a region's name) through `campaignTranslationSet`, shown at once and
- * rolled back if the save fails; the result replaces the row's
- * `<field>Translations` list in the cache.
+ * Write one human translation of a field through `campaignTranslationSet`,
+ * shown at once and rolled back if the save fails; the result replaces the
+ * row's `<field>Translations` list in the cache.
  */
 export function useCampaignTranslationWrite(): (
   write: CampaignTranslationWrite
@@ -34,7 +35,8 @@ export function useCampaignTranslationWrite(): (
     field,
     languageId,
     value,
-    translations
+    translations,
+    context
   }) {
     return await translationSet({
       variables: { input: { target, field, languageId, value } },
@@ -45,6 +47,7 @@ export function useCampaignTranslationWrite(): (
           value
         )
       },
+      context,
       update(cache, { data }) {
         if (data == null) return
         cache.modify({

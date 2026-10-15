@@ -13,12 +13,11 @@ import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignImageBlockUpdateMutation } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ImagePicker } from '../Pickers/ImagePicker'
-import { messageOf } from '../utils/messageOf'
 import {
   previousOf,
   useCampaignStyleCommand
 } from '../utils/useCampaignStyleCommand'
-import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
+import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
 /** PRD §15: alt text is at most 500 characters. */
 export const IMAGE_ALT_MAX_LENGTH = 500
@@ -32,7 +31,7 @@ interface ImageSectionEditProps {
  * picker; Remove image clears it) and its alt text, which commits on blur.
  * Each change is one Command through `campaignImageBlockUpdate`; the server
  * measures a new picture. While previewing a non-default language the alt
- * text is that language's translation and writes through
+ * text is that language's translation, one Command through
  * `campaignTranslationSet` instead.
  */
 export function ImageSectionEdit({
@@ -45,9 +44,12 @@ export function ImageSectionEdit({
   } = useCampaignEditor()
   const { addStyle, error } = useCampaignStyleCommand()
   const writeMedia = useCampaignImageBlockUpdateMutation()
-  const writeTranslation = useCampaignTranslationWrite()
+  const {
+    addTranslation,
+    error: translationError,
+    clearError: clearTranslationError
+  } = useCampaignTranslationCommand()
   const [replacing, setReplacing] = useState(false)
-  const [translationError, setTranslationError] = useState<string>()
   const translating = previewLanguageId !== campaign.defaultLanguageId
   const committedAlt = translating
     ? translationValue(block.altTranslations, previewLanguageId)
@@ -56,8 +58,11 @@ export function ImageSectionEdit({
 
   useEffect(() => {
     setAlt(committedAlt)
-    setTranslationError(undefined)
   }, [committedAlt, previewLanguageId])
+
+  useEffect(() => {
+    clearTranslationError()
+  }, [previewLanguageId, clearTranslationError])
 
   function write(input: { src?: string | null; alt?: string | null }): void {
     addStyle({
@@ -73,29 +78,18 @@ export function ImageSectionEdit({
     write({ src })
   }
 
-  async function writeAltTranslation(value: string): Promise<void> {
-    setTranslationError(undefined)
-    try {
-      await writeTranslation({
-        row: block,
-        target: { blockId: block.id },
-        field: CampaignTextField.alt,
-        languageId: previewLanguageId,
-        value,
-        translations: block.altTranslations
-      })
-    } catch (writeError) {
-      setTranslationError(messageOf(writeError))
-      setAlt(committedAlt)
-    }
-  }
-
   function handleAltBlur(): void {
     const trimmed = alt.trim()
     if (trimmed === committedAlt || trimmed.length > IMAGE_ALT_MAX_LENGTH)
       return
     if (translating) {
-      void writeAltTranslation(trimmed)
+      addTranslation({
+        block,
+        field: CampaignTextField.alt,
+        languageId: previewLanguageId,
+        value: trimmed,
+        previous: committedAlt
+      })
       return
     }
     write({ alt: trimmed === '' ? null : trimmed })

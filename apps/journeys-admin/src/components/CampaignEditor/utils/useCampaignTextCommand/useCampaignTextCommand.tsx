@@ -15,13 +15,12 @@ import {
   blockTranslations,
   campaignTextInputKey,
   translationValue,
-  useCampaignBlockTextMutation,
-  withTranslationValue
+  useCampaignBlockTextMutation
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignStringUpdateMutation } from '../../../../libs/useCampaignStringUpdateMutation'
-import { useCampaignTranslationSetMutation } from '../../../../libs/useCampaignTranslationSetMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
+import { useCampaignTranslationWrite } from '../useCampaignTranslationWrite'
 
 /** One inline-editable text: a text field of a campaign block, or a Campaign String. */
 export type CampaignTextTarget =
@@ -144,7 +143,7 @@ export function useCampaignTextCommand(
   } = useCommand()
   const mutateBlock = useCampaignBlockTextMutation()
   const [stringUpdate] = useCampaignStringUpdateMutation()
-  const [translationSet] = useCampaignTranslationSetMutation()
+  const writeTranslation = useCampaignTranslationWrite()
 
   // The value an undo or redo of this field just wrote: the cache has not
   // caught up when the effect below runs, so it is the field's new baseline.
@@ -187,34 +186,14 @@ export function useCampaignTextCommand(
         resolved.field === 'value'
           ? resolved.field
           : campaignTextInputKey(resolved.field)
-      const column = `${apiField}Translations`
-      return await translationSet({
-        variables: {
-          input: {
-            target: resolved.translationTarget,
-            field: CampaignTextFieldEnum[apiField as CampaignTextFieldEnum],
-            languageId,
-            value: nextValue
-          }
-        },
-        optimisticResponse: {
-          campaignTranslationSet: withTranslationValue(
-            resolved.translations,
-            languageId,
-            nextValue
-          )
-        },
-        context: requestContext,
-        update(cache, { data }) {
-          if (data == null) return
-          cache.modify({
-            id: cache.identify({
-              __typename: resolved.__typename,
-              id: resolved.id
-            }),
-            fields: { [column]: () => data.campaignTranslationSet }
-          })
-        }
+      return await writeTranslation({
+        row: resolved,
+        target: resolved.translationTarget,
+        field: CampaignTextFieldEnum[apiField as CampaignTextFieldEnum],
+        languageId,
+        value: nextValue,
+        translations: resolved.translations,
+        context: requestContext
       })
     }
     if (target.string != null) {
