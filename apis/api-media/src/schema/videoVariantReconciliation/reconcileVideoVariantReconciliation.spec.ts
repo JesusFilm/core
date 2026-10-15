@@ -163,24 +163,27 @@ describe('reconcileVideoVariantReconciliation', () => {
       data: { published: true }
     })
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
-    // The parent's failure is persisted as degraded while it's the latest
-    // known state (processingStages isn't asserted here: `stages` is a
-    // single mutable object shared across every persist call in this flow,
-    // so by the time the mock history is inspected it only shows the final
-    // state, not what was true at this call).
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+    // The parent's failure stays recorded even though the child's own
+    // (successful) Video record sync runs afterward on the same shared
+    // algoliaVideo stage -- a later success must not erase it.
+    expect(
+      prismaMock.videoVariantReconciliation.update
+    ).toHaveBeenLastCalledWith({
       where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
         status: 'degraded',
-        errorMessage: 'Algolia unavailable'
+        errorMessage: 'Algolia unavailable',
+        processingStages: expect.objectContaining({
+          algoliaVideo: expect.objectContaining({
+            state: 'failed',
+            error: 'Algolia unavailable'
+          })
+        })
       })
     })
-    // ...but the shared algoliaVideo stage is overwritten once the child's
-    // own (successful) Video record sync runs afterward, so the final
-    // persisted status reflects that, not the parent's transient failure.
     expect(result).toMatchObject({
-      publicationReady: true,
-      status: 'complete'
+      publicationReady: false,
+      status: 'degraded'
     })
   })
 
@@ -238,18 +241,27 @@ describe('reconcileVideoVariantReconciliation', () => {
       data: { published: true }
     })
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
-    // processingStages isn't asserted here for the same reason as above: it's
-    // a single mutable object shared across every persist call in this flow.
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+    // The parent's failure stays recorded even though the child's own
+    // (successful) Video record sync runs afterward on the same shared
+    // algoliaVideo stage -- a later success must not erase it.
+    expect(
+      prismaMock.videoVariantReconciliation.update
+    ).toHaveBeenLastCalledWith({
       where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
         status: 'degraded',
-        errorMessage: 'Algolia unavailable'
+        errorMessage: 'Algolia unavailable',
+        processingStages: expect.objectContaining({
+          algoliaVideo: expect.objectContaining({
+            state: 'failed',
+            error: 'Algolia unavailable'
+          })
+        })
       })
     })
     expect(result).toMatchObject({
-      publicationReady: true,
-      status: 'complete'
+      publicationReady: false,
+      status: 'degraded'
     })
   })
 
