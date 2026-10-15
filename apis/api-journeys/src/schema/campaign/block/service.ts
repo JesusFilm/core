@@ -279,15 +279,12 @@ export async function validateParentBlock(
   return parent
 }
 
-/** `placement` on a section child: `above` or `below`, defaulting to `below`. */
+/** `placement` on a section child: `above` or `below`; an omitted one takes the column default. */
 export function assertPlacement(
   placement: string | null | undefined
-): (typeof CAMPAIGN_CHILD_PLACEMENTS)[number] {
-  return assertEnum(
-    placement ?? 'below',
-    'placement',
-    CAMPAIGN_CHILD_PLACEMENTS
-  )
+): (typeof CAMPAIGN_CHILD_PLACEMENTS)[number] | undefined {
+  if (placement == null) return undefined
+  return assertEnum(placement, 'placement', CAMPAIGN_CHILD_PLACEMENTS)
 }
 
 /**
@@ -796,8 +793,7 @@ export async function reorderBlock(
   if (block.parentOrder == null)
     throw conflict('an owned block has no order to change', 'id')
   assertParentOrder(parentOrder)
-  const nextPlacement =
-    placement == null ? undefined : assertPlacement(placement)
+  const nextPlacement = assertPlacement(placement)
   if (
     nextPlacement != null &&
     (!isCampaignChildTypename(block.typename) || block.parentBlockId == null)

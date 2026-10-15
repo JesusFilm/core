@@ -51,7 +51,7 @@ builder.mutationField('campaignAnalyticsBlockCreate', (t) =>
         context.user,
         () => ({
           ...validateSectionText(input, ['eyebrow', 'title']),
-          showMap: input.showMap ?? false
+          showMap: input.showMap ?? undefined
         })
       )
   })

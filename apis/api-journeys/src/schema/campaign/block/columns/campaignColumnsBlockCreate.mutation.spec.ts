@@ -46,7 +46,7 @@ describe('campaignColumnsBlockCreate', () => {
     }: any) => ({
       ...hero,
       action: null,
-      ratio: null,
+      ratio: 'equal',
       ...data,
       id: data.id ?? 'newColumnsId'
     })) as never)
@@ -83,8 +83,7 @@ describe('campaignColumnsBlockCreate', () => {
         campaignId: 'campaignId',
         pageId: 'landingPageId',
         parentBlockId: null,
-        parentOrder: 5,
-        ratio: 'equal'
+        parentOrder: 5
       }),
       include: { action: true }
     })
