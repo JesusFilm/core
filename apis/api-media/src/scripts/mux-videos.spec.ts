@@ -707,5 +707,27 @@ describe('processDownloads', () => {
         rmSync(cursorFile, { force: true })
       }
     })
+
+    it('drops a retry id that no longer resolves to a variant', async () => {
+      const cursorFile = join(
+        tmpdir(),
+        `mux-download-backfill-cursor-deleted-retry-${Date.now()}.txt`
+      )
+      process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE = cursorFile
+      writeFileSync(cursorFile, 'variant-b\nvariant-b')
+
+      try {
+        ;(prismaMock.$queryRaw as unknown as Mock).mockResolvedValueOnce([])
+        // variant-b was deleted since the last run, so it's no longer found.
+        ;(prismaMock.videoVariant.findMany as Mock).mockResolvedValueOnce([])
+
+        await runProcessDownloads()
+
+        // the stale id must not be written back to the cursor file.
+        expect(readFileSync(cursorFile, 'utf-8')).toBe('variant-b')
+      } finally {
+        rmSync(cursorFile, { force: true })
+      }
+    })
   })
 })

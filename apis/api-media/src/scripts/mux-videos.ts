@@ -612,6 +612,14 @@ export async function processDownloads(): Promise<void> {
       include: { muxVideo: true }
     })
 
+    // A retried variant can be deleted between runs, so findMany won't
+    // return it -- drop its id now or it would sit in the cursor file
+    // forever, retried-in-name-only on every future invocation.
+    const foundRetryVariantIds = new Set(retryVariants.map((v) => v.id))
+    for (const id of retryVariantIds) {
+      if (!foundRetryVariantIds.has(id)) retryVariantIds.delete(id)
+    }
+
     await processConcurrently(retryVariants, concurrency, async (variant) => {
       const completed = await processVariant(variant, [])
       if (completed) retryVariantIds.delete(variant.id)
