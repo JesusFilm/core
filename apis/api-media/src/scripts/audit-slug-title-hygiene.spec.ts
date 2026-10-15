@@ -174,6 +174,51 @@ describe('auditSlugTitleHygiene', () => {
     expect(findings[0]?.needsContentReview).toBe(true)
   })
 
+  it('does not treat a trailing ordinary word as a version-tag remnant', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-7',
+        slug: '6-being-made-new',
+        published: true,
+        title: [{ value: '6. Being Made New', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([])
+  })
+
+  it('flags an underscore-joined trailing word as a version-tag remnant and proposes removing it', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-8',
+        slug: 'ultimate-sacrifice_final',
+        published: true,
+        title: [],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([
+      {
+        videoId: 'video-8',
+        videoSlug: 'ultimate-sacrifice_final',
+        published: true,
+        field: 'Video.slug',
+        languageId: null,
+        variantSlug: null,
+        currentValue: 'ultimate-sacrifice_final',
+        reasons: ['underscore', 'version-tag-remnant'],
+        proposedValue: 'ultimate-sacrifice',
+        needsContentReview: false
+      }
+    ])
+  })
+
   it('never calls a write method on the prisma client', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {

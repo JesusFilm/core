@@ -34,7 +34,12 @@ const UNDERSCORE_RE = /_/
 const WHITESPACE_RE = /^\s|\s$/
 const FILE_EXTENSION_RE =
   /\.(mp4|mov|mxf|wav|mp3|avi|mkv|mpg|mpeg|mts|m4v|m4a|webm)$/i
-const VERSION_TAG_RE = /[_\s-](v\d+|final|draft|master|copy|old|new|temp|tmp)$/i
+// Underscore-only separator: filename-derived version tags are joined with
+// an underscore (e.g. "video_final.mp4"). A space or hyphen before one of
+// these words is far more likely to be an ordinary English word ("Being
+// Made New", "Sacrifício final") than a real version-tag remnant, and
+// mechanically dropping it would silently change the title's meaning.
+const VERSION_TAG_RE = /_(v\d+|final|draft|master|copy|old|new|temp|tmp)$/i
 const DUPLICATED_WORD_RE = /\b([A-Za-z][A-Za-z'-]{2,})\b\s+\1\b/i
 
 // Soft heuristics: flagged for human triage only, never auto-fixed. Both had a
