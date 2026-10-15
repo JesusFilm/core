@@ -33,13 +33,13 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"bash -c 'pnpm exec prisma migrate dev --config libs/prisma/media/prisma.config.ts --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@localhost:5432/media?schema=public \"bash -c 'pnpm exec prisma migrate dev --config libs/prisma/media/prisma.config.ts --name `date +\\\"%Y%m%d%H%M%S\\\"`'\""
         ]
       },
       "configurations": {
         "production": {
           "commands": [
-            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"pnpm exec prisma migrate deploy --config libs/prisma/media/prisma.config.ts\""
+            "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@localhost:5432/media?schema=public \"pnpm exec prisma migrate deploy --config libs/prisma/media/prisma.config.ts\""
           ]
         }
       }
@@ -48,7 +48,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@db:5432/media?schema=public \"pnpm exec prisma migrate reset --config libs/prisma/media/prisma.config.ts --force\""
+          "tools/scripts/env-validator.sh --DOPPLER_CONFIG=dev --PG_DATABASE_URL_MEDIA=postgresql://postgres:postgres@localhost:5432/media?schema=public \"pnpm exec prisma migrate reset --config libs/prisma/media/prisma.config.ts --force\""
         ]
       }
     },

@@ -1,3 +1,4 @@
+import { SxProps, Theme } from '@mui/material/styles'
 import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
@@ -30,14 +31,22 @@ export function Typography({
     displayContent = placeholderText
   }
 
-  // Use settings.color if available, otherwise fall back to enum color
-  const getTextColor = () => {
+  // MUI's Typography `color` prop only understands palette names (primary,
+  // secondary, error...). A hex color from settings, or a palette path like
+  // text.disabled, has to go through `sx` or it is silently dropped.
+  function getCustomColor(): string | undefined {
     if (content === '') return 'text.disabled'
     if (settings?.color != null && settings.color !== '') return settings.color
-    return color ?? undefined
+    return undefined
   }
 
-  const textColor = getTextColor()
+  const customColor = getCustomColor()
+  const paletteColor = customColor == null ? (color ?? undefined) : undefined
+  const sx: SxProps<Theme> = {
+    color: customColor,
+    whiteSpace: 'pre-line',
+    wordBreak: 'break-word'
+  }
 
   return (
     <>
@@ -45,14 +54,11 @@ export function Typography({
         <MuiTypography
           variant={variant ?? undefined}
           align={align ?? undefined}
-          color={textColor}
+          color={paletteColor}
           component="p"
           gutterBottom
           data-testid="JourneysTypography"
-          sx={{
-            whiteSpace: 'pre-line',
-            wordBreak: 'break-word'
-          }}
+          sx={sx}
         >
           {displayContent}
         </MuiTypography>
@@ -60,13 +66,10 @@ export function Typography({
         <MuiTypography
           variant={variant ?? undefined}
           align={align ?? undefined}
-          color={textColor}
+          color={paletteColor}
           gutterBottom
           data-testid="JourneysTypography"
-          sx={{
-            whiteSpace: 'pre-line',
-            wordBreak: 'break-word'
-          }}
+          sx={sx}
         >
           {displayContent}
         </MuiTypography>
