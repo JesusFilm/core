@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
 
@@ -28,10 +28,7 @@ builder.mutationField('campaignLanguageRemove', (t) =>
       const languageId = String(args.languageId)
       const campaign = await prisma.campaign.findUnique({
         where: { id: campaignId },
-        include: {
-          ...INCLUDE_CAMPAIGN_ACL,
-          languages: { orderBy: { order: 'asc' } }
-        }
+        include: INCLUDE_CAMPAIGN_ACL
       })
       if (campaign == null)
         throw new GraphQLError('campaign not found', {
@@ -41,23 +38,41 @@ builder.mutationField('campaignLanguageRemove', (t) =>
         throw new GraphQLError('user is not allowed to update campaign', {
           extensions: { code: 'FORBIDDEN' }
         })
-      const row = campaign.languages.find(
-        (language) => language.languageId === languageId
-      )
-      if (row == null)
-        throw new GraphQLError('language not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (languageId === campaign.defaultLanguageId)
-        throw conflict(
-          'languageId is the default language and cannot be removed'
-        )
-      if (campaign.languages.length === 1)
-        throw conflict('languageId is the last language and cannot be removed')
 
       return await prisma.$transaction(async (tx) => {
+        // A concurrent default-language swap or removal can move the default
+        // or the language list after the read above: lock the campaign row and
+        // judge the removal against what is committed now.
+        await lockCampaign(tx, campaignId)
+        const current = await tx.campaign.findUnique({
+          where: { id: campaignId },
+          select: {
+            defaultLanguageId: true,
+            languages: { orderBy: { order: 'asc' } }
+          }
+        })
+        if (current == null)
+          throw new GraphQLError('campaign not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        const row = current.languages.find(
+          (language) => language.languageId === languageId
+        )
+        if (row == null)
+          throw new GraphQLError('language not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+        if (languageId === current.defaultLanguageId)
+          throw conflict(
+            'languageId is the default language and cannot be removed'
+          )
+        if (current.languages.length === 1)
+          throw conflict(
+            'languageId is the last language and cannot be removed'
+          )
+
         await tx.campaignLanguage.delete({ where: { id: row.id } })
-        const remaining = campaign.languages.filter(
+        const remaining = current.languages.filter(
           (language) => language.id !== row.id
         )
         await Promise.all(

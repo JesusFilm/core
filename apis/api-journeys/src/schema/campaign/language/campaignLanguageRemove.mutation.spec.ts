@@ -137,6 +137,27 @@ describe('campaignLanguageRemove', () => {
     expect(prismaMock.campaignLanguage.delete).not.toHaveBeenCalled()
   })
 
+  it('judges the removal against the state locked inside the transaction (CONFLICT when a concurrent swap made the language the default)', async () => {
+    const campaign = campaignFactory({ role: 'member' })
+      .withLanguage(FRENCH)
+      .build()
+    prismaMock.campaign.findUnique
+      .mockResolvedValueOnce(campaign)
+      .mockResolvedValueOnce({ ...campaign, defaultLanguageId: FRENCH })
+
+    const result = await remove(FRENCH)
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'languageId is the default language and cannot be removed',
+      extensions: { code: 'CONFLICT', field: 'languageId' }
+    })
+    const [lockSql] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
+      readonly string[]
+    ]
+    expect(lockSql.join('')).toContain('FOR UPDATE')
+    expect(prismaMock.campaignLanguage.delete).not.toHaveBeenCalled()
+  })
+
   it('is NOT_FOUND for a language the campaign does not have', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(
       campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()

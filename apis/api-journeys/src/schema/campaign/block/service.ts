@@ -362,6 +362,18 @@ export async function reorderSiblings(
   )
 }
 
+/**
+ * Lock the campaign row until `tx` ends, so a read that follows sees the
+ * latest committed state and no concurrent writer changes it underneath. Used
+ * by edits that must keep the default language inside the language list.
+ */
+export async function lockCampaign(
+  tx: Prisma.TransactionClient,
+  campaignId: string
+): Promise<void> {
+  await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ${campaignId} FOR UPDATE`
+}
+
 /** Every block edit is a campaign edit: bump the campaign's `updatedAt`. */
 export async function touchCampaign(
   tx: Prisma.TransactionClient,

@@ -795,6 +795,24 @@ describe('campaignCreate', () => {
     })
   })
 
+  describe('slug race', () => {
+    it('answers CONFLICT (field slug), not a raw Prisma error, when the retry loses the race too', async () => {
+      const p2002 = new Prisma.PrismaClientKnownRequestError(
+        'unique constraint failed',
+        { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
+      )
+      prismaMock.campaign.create.mockRejectedValue(p2002)
+
+      const result = await create()
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'slug'
+      })
+      expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
+    })
+  })
+
   describe('response', () => {
     it('returns the full campaign so the editor opens it with no second fetch', async () => {
       const result = await create()
