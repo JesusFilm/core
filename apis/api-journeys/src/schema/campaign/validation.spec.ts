@@ -425,7 +425,7 @@ describe('campaign validation', () => {
       })
     })
 
-    it('reserves the shared list plus embed, legal, plausible, campaign, template-gallery, api and _next', async () => {
+    it('reserves the shared list plus the viewer segments and i18n locales', async () => {
       for (const reserved of [
         'admin',
         'embed',
@@ -434,7 +434,8 @@ describe('campaign validation', () => {
         'campaign',
         'template-gallery',
         'api',
-        '_next'
+        'fr',
+        'zh-hans-cn'
       ]) {
         expect(REGION_RESERVED_SLUGS.has(reserved)).toBe(true)
       }
