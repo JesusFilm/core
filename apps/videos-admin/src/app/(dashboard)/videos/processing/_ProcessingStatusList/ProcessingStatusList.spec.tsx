@@ -27,6 +27,8 @@ describe('ProcessingStatusList', () => {
             status: 'degraded',
             videoId: 'episode-1',
             videoVariantId: 'variant-1',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
             errorMessage: 'Parent sync failed',
             updatedAt: '2026-07-21T12:00:00.000Z',
             processingStages: JSON.stringify({
@@ -43,6 +45,8 @@ describe('ProcessingStatusList', () => {
 
     expect(screen.getByText('Parent sync failed')).toBeInTheDocument()
     expect(screen.getByText('parentSync: failed (5)')).toBeInTheDocument()
+    const videoLink = screen.getByRole('link', { name: /English \(base\)/ })
+    expect(videoLink).toHaveAttribute('href', '/videos/episode-1')
     fireEvent.click(screen.getByRole('button', { name: 'Retry processing' }))
 
     expect(retry).toHaveBeenCalledWith({ variables: { id: 'upload-1' } })
@@ -60,6 +64,8 @@ describe('ProcessingStatusList', () => {
             status: 'processing',
             videoId: 'episode-1',
             videoVariantId: 'variant-1',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
             errorMessage: null,
             updatedAt: '2026-07-21T12:00:00.000Z',
             processingStages: JSON.stringify({})
@@ -69,6 +75,8 @@ describe('ProcessingStatusList', () => {
             status: 'complete',
             videoId: 'episode-2',
             videoVariantId: 'variant-2',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
             errorMessage: null,
             updatedAt: '2026-07-21T12:00:00.000Z',
             processingStages: JSON.stringify({})
@@ -138,6 +146,8 @@ describe('ProcessingStatusList', () => {
             status: 'failed',
             videoId: 'episode-1',
             videoVariantId: 'variant-1',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
             errorMessage: 'Mux upload failed',
             updatedAt: '2026-07-21T12:00:00.000Z',
             processingStages: JSON.stringify({
@@ -176,6 +186,8 @@ describe('ProcessingStatusList', () => {
             status: 'failed',
             videoId: 'episode-1',
             videoVariantId: 'variant-1',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
             errorMessage: 'Mux upload failed',
             updatedAt: '2026-07-21T12:00:00.000Z',
             processingStages: JSON.stringify({
@@ -218,5 +230,61 @@ describe('ProcessingStatusList', () => {
 
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
+  })
+
+  it('sends the selected health filter to the query', async () => {
+    const retry = vi.fn()
+    const refetch = vi.fn()
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: { videoVariantReconciliations: [] },
+      loading: false,
+      refetch
+    } as never)
+
+    render(<ProcessingStatusList />)
+
+    fireEvent.mouseDown(screen.getByLabelText('Health'))
+    fireEvent.click(screen.getByRole('option', { name: 'failed' }))
+
+    await waitFor(() => {
+      expect(useQuery).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          variables: expect.objectContaining({ status: 'failed', offset: 0 })
+        })
+      )
+    })
+  })
+
+  it('sends blockingStage and minRetryCount together once both are set', async () => {
+    const retry = vi.fn()
+    const refetch = vi.fn()
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: { videoVariantReconciliations: [] },
+      loading: false,
+      refetch
+    } as never)
+
+    render(<ProcessingStatusList />)
+
+    fireEvent.mouseDown(screen.getByLabelText('Blocking stage'))
+    fireEvent.click(screen.getByRole('option', { name: 'mux' }))
+    fireEvent.change(screen.getByLabelText('Minimum retries'), {
+      target: { value: '3' }
+    })
+
+    await waitFor(() => {
+      expect(useQuery).toHaveBeenLastCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          variables: expect.objectContaining({
+            blockingStage: 'mux',
+            minRetryCount: 3
+          })
+        })
+      )
+    })
   })
 })

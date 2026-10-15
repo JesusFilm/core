@@ -19,8 +19,11 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
+
+import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 const PAGE_SIZE = 50
 
@@ -32,6 +35,7 @@ const PROCESSING_STATUSES = gql`
     $minRetryCount: Int
     $offset: Int
     $limit: Int
+    $nameLanguageId: ID
   ) {
     videoVariantReconciliations(
       status: $status
@@ -45,6 +49,13 @@ const PROCESSING_STATUSES = gql`
       status
       videoId
       videoVariantId
+      edition
+      language {
+        id
+        name(languageId: $nameLanguageId) {
+          value
+        }
+      }
       processingStages
       errorMessage
       updatedAt
@@ -71,6 +82,11 @@ type ProcessingStatus = {
   status: string
   videoId: string
   videoVariantId: string | null
+  edition: string
+  language: {
+    id: string
+    name: Array<{ value: string }>
+  }
   processingStages: string
   errorMessage: string | null
   updatedAt: string
@@ -121,7 +137,8 @@ export function ProcessingStatusList(): ReactElement {
         minRetryCount:
           blockingStage && minRetryCount ? Number(minRetryCount) : undefined,
         offset,
-        limit: PAGE_SIZE
+        limit: PAGE_SIZE,
+        nameLanguageId: DEFAULT_VIDEO_LANGUAGE_ID
       },
       pollInterval: 30_000
     }
@@ -232,7 +249,7 @@ export function ProcessingStatusList(): ReactElement {
           <TableHead>
             <TableRow>
               <TableCell>Health</TableCell>
-              <TableCell>Variant</TableCell>
+              <TableCell>Video</TableCell>
               <TableCell>Stages</TableCell>
               <TableCell>Latest error</TableCell>
               <TableCell>Updated</TableCell>
@@ -272,7 +289,11 @@ export function ProcessingStatusList(): ReactElement {
                   />
                 </TableCell>
                 <TableCell>
-                  {reconciliation.videoVariantId ?? reconciliation.videoId}
+                  <NextLink href={`/videos/${reconciliation.videoId}`}>
+                    {reconciliation.language.name[0]?.value ??
+                      reconciliation.videoId}{' '}
+                    ({reconciliation.edition})
+                  </NextLink>
                 </TableCell>
                 <TableCell>
                   {stageSummary(reconciliation.processingStages)}
