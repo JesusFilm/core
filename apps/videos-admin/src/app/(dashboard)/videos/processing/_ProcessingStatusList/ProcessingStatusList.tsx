@@ -151,18 +151,22 @@ export function ProcessingStatusList(): ReactElement {
     apply()
     setOffset(0)
   }
-  const [retryProcessing, { loading: retrying }] = useMutation(RETRY_PROCESSING)
+  const [retryProcessing] = useMutation(RETRY_PROCESSING)
+  const [retryingId, setRetryingId] = useState<string | null>(null)
 
   const handleRetry = async (id: string): Promise<void> => {
+    setRetryingId(id)
     try {
       await retryProcessing({ variables: { id } })
     } catch {
       enqueueSnackbar('Failed to retry processing', { variant: 'error' })
+      setRetryingId(null)
       return
     }
     // Retry already succeeded server-side; a refetch blip shouldn't be
     // reported as a failed retry. The poll interval will pick up the new state.
     await refetch().catch(() => undefined)
+    setRetryingId(null)
   }
 
   return (
@@ -306,7 +310,7 @@ export function ProcessingStatusList(): ReactElement {
                   <Button
                     size="small"
                     disabled={
-                      retrying ||
+                      retryingId === reconciliation.id ||
                       !RETRYABLE_STATUSES.includes(reconciliation.status)
                     }
                     onClick={() => void handleRetry(reconciliation.id)}

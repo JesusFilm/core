@@ -216,7 +216,7 @@ describe('ProcessingStatusList', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('disables Previous on the first page and Next when a full page is returned', async () => {
+  it('disables Previous and Next when there are no results', async () => {
     const retry = vi.fn()
     const refetch = vi.fn()
     vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
@@ -230,6 +230,33 @@ describe('ProcessingStatusList', () => {
 
     expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
+  })
+
+  it('enables Next when a full page of results is returned', async () => {
+    const retry = vi.fn()
+    const refetch = vi.fn()
+    const fullPage = Array.from({ length: 50 }, (_, index) => ({
+      id: `upload-${index}`,
+      status: 'complete',
+      videoId: `episode-${index}`,
+      videoVariantId: `variant-${index}`,
+      edition: 'base',
+      language: { id: '529', name: [{ value: 'English' }] },
+      errorMessage: null,
+      updatedAt: '2026-07-21T12:00:00.000Z',
+      processingStages: JSON.stringify({})
+    }))
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: { videoVariantReconciliations: fullPage },
+      loading: false,
+      refetch
+    } as never)
+
+    render(<ProcessingStatusList />)
+
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled()
   })
 
   it('sends the selected health filter to the query', async () => {
