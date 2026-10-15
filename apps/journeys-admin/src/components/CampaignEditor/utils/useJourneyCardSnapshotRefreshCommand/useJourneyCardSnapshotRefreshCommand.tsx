@@ -82,7 +82,8 @@ function messageOf(error: unknown, fallback: string): string {
  * title and description and replaces the card's with them, asking first only
  * when the author edited the snapshot by hand (the card's `snapshotEdited`;
  * a journey renamed since linking does not count). A card that already reads
- * as the journey has nothing to refresh. The replacement is one Command:
+ * as the journey has nothing to refresh, whatever its edited flag says (an
+ * undone edit leaves it set), so that case only clears the flag. The replacement is one Command:
  * execute writes the journey's text through
  * `campaignJourneyBlockSnapshotRefresh` (default language only, translations
  * kept, edited flag cleared) and undo writes the text and flag the card had
@@ -170,6 +171,27 @@ export function useJourneyCardSnapshotRefreshCommand(): {
     })
   }
 
+  /**
+   * An edit undone (or retyped) back to the journey's text leaves the flag
+   * set; clearing it keeps a later journey rename from asking to confirm.
+   * Nothing visible changes, so it is not a Command.
+   */
+  function clearEditedFlag(card: JourneyCardBlock, journey: SnapshotText): void {
+    void refresh({
+      variables: { id: card.id },
+      optimisticResponse: {
+        campaignJourneyBlockSnapshotRefresh: {
+          __typename: 'CampaignJourneyBlock',
+          id: card.id,
+          ...journey,
+          snapshotEdited: false
+        }
+      }
+    }).catch((error: unknown) =>
+      notify(error, t('Could not refresh from journey'))
+    )
+  }
+
   async function refreshSnapshot(card: JourneyCardBlock): Promise<void> {
     if (card.journeyId == null) return
     try {
@@ -181,12 +203,13 @@ export function useJourneyCardSnapshotRefreshCommand(): {
         return
       }
       const journey = snapshotOf(data.journey)
-      if (card.snapshotEdited) {
-        setPending({ card, journey })
-        return
-      }
       if (matchesJourney(card, journey)) {
         enqueueSnackbar(t('Already matches the journey'), { variant: 'info' })
+        if (card.snapshotEdited) clearEditedFlag(card, journey)
+        return
+      }
+      if (card.snapshotEdited) {
+        setPending({ card, journey })
         return
       }
       addRefreshCommand(card, journey)

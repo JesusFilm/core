@@ -334,6 +334,33 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
+  it('says it already matches, and clears the flag, when an edited card was undone back to the journey’s text', async () => {
+    const clearFlagMock = {
+      ...refreshMock,
+      result: vi.fn(() => ({
+        data: {
+          campaignJourneyBlockSnapshotRefresh: {
+            __typename: 'CampaignJourneyBlock',
+            id: CARD_ID,
+            title: card.title,
+            description: card.description,
+            snapshotEdited: false
+          }
+        }
+      }))
+    }
+    await renderHarness(journeyMock(sameJourney), [clearFlagMock])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+
+    expect(await screen.findByText('Already matches the journey')).toBeVisible()
+    expect(
+      screen.queryByTestId('CampaignJourneyCardSnapshotRefreshDialog')
+    ).not.toBeInTheDocument()
+    await waitFor(() => expect(clearFlagMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
   it('says so when the journey is no longer published', async () => {
     await renderHarness(journeyMock(null), [refreshMock])
 
