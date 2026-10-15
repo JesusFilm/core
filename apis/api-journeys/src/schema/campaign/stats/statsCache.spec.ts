@@ -70,7 +70,36 @@ describe('statsCache', () => {
         sweep,
         sweptAt: NOW - (STATS_CACHE_TTL_SECONDS - 1) * SECOND,
         fresh: true,
-        backingOff: false
+        backingOff: false,
+        partial: false
+      })
+    })
+
+    it('is fresh while a partial sweep is backing off, then due for a retry long before the TTL', async () => {
+      redis.get.mockResolvedValue(
+        stored({
+          sweptAt: NOW,
+          retryAfter: NOW + SECOND,
+          partial: true,
+          sweep
+        })
+      )
+      expect(await statsCache.get('campaignId')).toEqual({
+        sweep,
+        sweptAt: NOW,
+        fresh: true,
+        backingOff: true,
+        partial: true
+      })
+
+      vi.setSystemTime(NOW + SECOND)
+
+      expect(await statsCache.get('campaignId')).toEqual({
+        sweep,
+        sweptAt: NOW,
+        fresh: false,
+        backingOff: false,
+        partial: true
       })
     })
 
@@ -105,7 +134,8 @@ describe('statsCache', () => {
         sweep: null,
         sweptAt: NOW,
         fresh: false,
-        backingOff: true
+        backingOff: true,
+        partial: false
       })
     })
 
@@ -129,6 +159,22 @@ describe('statsCache', () => {
       expect(redis.set).toHaveBeenCalledWith(
         'campaign-stats:campaignId',
         JSON.stringify({ sweptAt: NOW, sweep }),
+        'EX',
+        24 * 60 * 60
+      )
+    })
+
+    it('stores a partial sweep with a retry time so it is not fresh for the full TTL', async () => {
+      await statsCache.set('campaignId', sweep, { partial: true })
+
+      expect(redis.set).toHaveBeenCalledWith(
+        'campaign-stats:campaignId',
+        JSON.stringify({
+          sweptAt: NOW,
+          retryAfter: NOW + STATS_REFRESH_BACKOFF_SECONDS * SECOND,
+          partial: true,
+          sweep
+        }),
         'EX',
         24 * 60 * 60
       )
@@ -164,7 +210,8 @@ describe('statsCache', () => {
         sweep,
         sweptAt,
         fresh: false,
-        backingOff: false
+        backingOff: false,
+        partial: false
       })
 
       expect(redis.set).toHaveBeenCalledWith(
@@ -179,12 +226,35 @@ describe('statsCache', () => {
       )
     })
 
+    it('keeps a partial sweep partial so it is still retried rather than going fresh', async () => {
+      await statsCache.deferRefresh('campaignId', {
+        sweep,
+        sweptAt: NOW - 60 * SECOND,
+        fresh: false,
+        backingOff: false,
+        partial: true
+      })
+
+      expect(redis.set).toHaveBeenCalledWith(
+        'campaign-stats:campaignId',
+        JSON.stringify({
+          sweptAt: NOW - 60 * SECOND,
+          retryAfter: NOW + STATS_REFRESH_BACKOFF_SECONDS * SECOND,
+          partial: true,
+          sweep
+        }),
+        'EX',
+        24 * 60 * 60 - 60
+      )
+    })
+
     it('does not write an entry that has already outlived its retention', async () => {
       await statsCache.deferRefresh('campaignId', {
         sweep,
         sweptAt: NOW - 24 * 60 * 60 * SECOND,
         fresh: false,
-        backingOff: false
+        backingOff: false,
+        partial: false
       })
 
       expect(redis.set).not.toHaveBeenCalled()

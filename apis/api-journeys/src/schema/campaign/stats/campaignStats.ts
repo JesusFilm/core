@@ -20,6 +20,10 @@ const COUNTRY_ROW_LIMIT = 300
 // At most this many journeys are in flight against Plausible at once, so a
 // large campaign cannot burst through the shared per-key rate limit.
 const SWEEP_CONCURRENCY = 5
+// With nothing cached the request has to wait for the sweep; past this it gives
+// up and leaves the sweep running to fill the cache for the next reader.
+const COLD_SWEEP_DEADLINE_MS = PUBLIC_STATS_TIMEOUT_MS
+const UNAVAILABLE_MESSAGE = 'Campaign stats are temporarily unavailable'
 
 export interface CampaignCountryStat {
   countryCode: string
@@ -122,14 +126,14 @@ async function settleWithConcurrency<Item, Result>(
  * that journey's own site, from the Campaign's first publish (creation for a
  * draft) to now, a few journeys at a time. A journey whose request fails keeps
  * its rows from `previous` (the last sweep over the same window), else counts
- * as no visitors, so one bad site cannot sink the rest. Throws only when every
- * journey failed.
+ * as no visitors, so one bad site cannot sink the rest; `partial` reports that
+ * some failed. Throws only when every journey failed.
  */
 async function sweepCampaign(
   campaign: CampaignStatsSubject,
   now: Date,
   previous: CampaignStatsSweep | null
-): Promise<CampaignStatsSweep> {
+): Promise<{ sweep: CampaignStatsSweep; partial: boolean }> {
   const start = campaign.publishedAt ?? campaign.createdAt
   const from = start.getTime() > now.getTime() ? now : start
   const journeyIds = linkedJourneyIds(
@@ -159,19 +163,22 @@ async function sweepCampaign(
   const fromIso = from.toISOString()
   const reusable = previous?.from === fromIso ? previous.journeys : {}
   return {
-    from: fromIso,
-    to: now.toISOString(),
-    journeys: Object.fromEntries(
-      journeyIds.map((journeyId, index) => {
-        const result = settled[index]
-        return [
-          journeyId,
-          result.status === 'fulfilled'
-            ? result.value
-            : (reusable[journeyId] ?? [])
-        ]
-      })
-    )
+    sweep: {
+      from: fromIso,
+      to: now.toISOString(),
+      journeys: Object.fromEntries(
+        journeyIds.map((journeyId, index) => {
+          const result = settled[index]
+          return [
+            journeyId,
+            result.status === 'fulfilled'
+              ? result.value
+              : (reusable[journeyId] ?? [])
+          ]
+        })
+      )
+    },
+    partial: failures.length > 0
   }
 }
 
@@ -228,6 +235,22 @@ export function sumCampaignStats(
 
 const refreshes = new Map<string, Promise<CampaignStatsSweep>>()
 
+/** `promise`, or a rejection once `ms` pass; the promise itself is left running. */
+async function withDeadline<Value>(
+  promise: Promise<Value>,
+  ms: number
+): Promise<Value> {
+  let timer: NodeJS.Timeout | undefined
+  const deadline = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => reject(new Error(UNAVAILABLE_MESSAGE)), ms)
+  })
+  try {
+    return await Promise.race([promise, deadline])
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 /**
  * Sweep and cache, sharing one in-flight sweep per campaign so concurrent
  * callers cost one round of requests. A failed sweep defers the next refresh
@@ -241,12 +264,12 @@ async function refreshSweep(
   if (inFlight != null) return await inFlight
   const refresh = (async () => {
     try {
-      const sweep = await sweepCampaign(
+      const { sweep, partial } = await sweepCampaign(
         campaign,
         new Date(),
         cached?.sweep ?? null
       )
-      await statsCache.set(campaign.id, sweep)
+      await statsCache.set(campaign.id, sweep, { partial })
       return sweep
     } catch (error) {
       logger.error({ error, campaignId: campaign.id }, 'stats sweep failed')
@@ -311,9 +334,12 @@ function sweepMatchesCampaign(
  * served as it is, however old: when it is stale or no longer matches the
  * campaign (a journey linked or restored since the sweep) a refresh runs in the
  * background for the next reader, so the request never waits on Plausible. Only
- * with nothing cached does the request sweep and wait; if that fails the
- * failure propagates and a marker is cached, so requests in the next few
- * minutes fail fast instead of sweeping again. A failed refresh is not retried
+ * with nothing cached does the request sweep and wait, for at most
+ * `COLD_SWEEP_DEADLINE_MS` (the sweep carries on and fills the cache for the
+ * next reader); if the sweep fails the failure propagates and a marker is
+ * cached, so requests in the next few minutes fail fast instead of sweeping
+ * again. A sweep that kept partial results is served, and the journeys that
+ * failed are retried after the backoff. A failed refresh is not retried
  * for a few minutes; the first request after that retries it.
  */
 export async function getCampaignStats(
@@ -322,9 +348,11 @@ export async function getCampaignStats(
   const campaign = await withExistingJourneys(campaignWithAllJourneys)
   const cached = await statsCache.get(campaign.id)
   if (cached?.sweep == null) {
-    if (cached?.backingOff === true)
-      throw new Error('Campaign stats are temporarily unavailable')
-    return sumCampaignStats(campaign, await refreshSweep(campaign, cached))
+    if (cached?.backingOff === true) throw new Error(UNAVAILABLE_MESSAGE)
+    return sumCampaignStats(
+      campaign,
+      await withDeadline(refreshSweep(campaign, cached), COLD_SWEEP_DEADLINE_MS)
+    )
   }
 
   const current = cached.fresh && sweepMatchesCampaign(campaign, cached.sweep)

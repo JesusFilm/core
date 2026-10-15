@@ -445,7 +445,8 @@ describe('campaignStats', () => {
               { countryCode: 'TZ', visitors: 3 }
             ]
           }
-        })
+        }),
+        { partial: false }
       )
     })
 
@@ -454,6 +455,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now(),
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -488,6 +490,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: false,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -518,6 +521,7 @@ describe('campaignStats', () => {
       const cached = {
         fresh: false,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -553,6 +557,7 @@ describe('campaignStats', () => {
         ...{
           fresh: false,
           backingOff: false,
+          partial: false,
           sweptAt: Date.now() - 3600000,
           sweep: {
             from: '2026-10-05T00:00:00.000Z',
@@ -581,6 +586,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now(),
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -609,6 +615,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: true,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now(),
         sweep: {
           from: '2026-09-01T00:00:00.000Z',
@@ -627,7 +634,8 @@ describe('campaignStats', () => {
       await vi.waitFor(() => {
         expect(mockStatsCache.set).toHaveBeenCalledWith(
           'campaignId',
-          expect.objectContaining({ from: '2026-10-05T00:00:00.000Z' })
+          expect.objectContaining({ from: '2026-10-05T00:00:00.000Z' }),
+          { partial: false }
         )
       })
     })
@@ -655,6 +663,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: false,
         backingOff: true,
+        partial: false,
         sweptAt: Date.now(),
         sweep: null
       })
@@ -705,7 +714,8 @@ describe('campaignStats', () => {
         'campaignId',
         expect.objectContaining({
           journeys: expect.objectContaining({ swJourneyId: [] })
-        })
+        }),
+        { partial: true }
       )
     })
 
@@ -714,6 +724,7 @@ describe('campaignStats', () => {
       mockStatsCache.get.mockResolvedValue({
         fresh: false,
         backingOff: false,
+        partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
           from: '2026-10-05T00:00:00.000Z',
@@ -743,7 +754,8 @@ describe('campaignStats', () => {
             journeys: expect.objectContaining({
               swJourneyId: [{ countryCode: 'KE', visitors: 6 }]
             })
-          })
+          }),
+          { partial: true }
         )
       })
     })
@@ -759,6 +771,53 @@ describe('campaignStats', () => {
 
       expect(result.errors).toHaveLength(1)
       expect(mockStatsCache.set).not.toHaveBeenCalled()
+    })
+
+    it('gives up on a cold cache after the deadline while the sweep carries on', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+      try {
+        prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+        let releasePlausible: () => void = () => undefined
+        const plausibleHangs = new Promise<void>((resolve) => {
+          releasePlausible = resolve
+        })
+        mockAxios.get.mockImplementation((async (url: string, config: any) => {
+          await plausibleHangs
+          return await plausibleCountryRowsBySite(rowsByJourney)(url, config)
+        }) as any)
+
+        let settled = false
+        const request = publicClient({
+          document: CAMPAIGN_STATS,
+          variables: { id: 'campaignId' }
+        }).finally(() => {
+          settled = true
+        })
+        for (let elapsed = 0; elapsed < 9000 && !settled; elapsed += 1000)
+          await vi.advanceTimersByTimeAsync(1000)
+        expect(settled).toBe(false)
+        while (!settled) await vi.advanceTimersByTimeAsync(1000)
+        const result = (await request) as any
+
+        expect(result.errors).toHaveLength(1)
+        expect(mockStatsCache.set).not.toHaveBeenCalled()
+
+        releasePlausible()
+        await vi.waitFor(() => {
+          expect(mockStatsCache.set).toHaveBeenCalledWith(
+            'campaignId',
+            expect.objectContaining({
+              journeys: expect.objectContaining({
+                enJourneyId: expect.any(Array)
+              })
+            }),
+            { partial: false }
+          )
+        })
+        expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 })
