@@ -32,11 +32,15 @@ export function switcherRegions(
   return listedRegions(regions).filter((region) => region.id !== current?.id)
 }
 
-/** The chip label for a Region Country: the owner's primary name, else the id. */
+/**
+ * The chip label for a Region Country: the owner's name in the Page Language,
+ * else its primary name, else the id. api-languages lists the primary name
+ * first and the Page Language name after it (one row when they coincide).
+ */
 export function countryLabel(
   country: CampaignRegion['countries'][number]
 ): string {
-  return country.country.name[0]?.value ?? country.countryId
+  return country.country.name.at(-1)?.value ?? country.countryId
 }
 
 const LAYOUT: Record<CampaignSwitcherVariant, Record<string, unknown>> = {

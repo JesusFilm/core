@@ -276,6 +276,21 @@ describe('CampaignRegionShare', () => {
     expect(await screen.findByText('Lien copié')).toBeInTheDocument()
   })
 
+  it('does not show the copied toast when the clipboard rejects', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      configurable: true
+    })
+    renderShare(region, rewordedCampaign)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copier le lien' }))
+
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalled()
+    )
+    expect(screen.queryByText('Lien copié')).not.toBeInTheDocument()
+  })
+
   it('draws the QR code of the Share Link and downloads it as the named 1024 px PNG', () => {
     const toDataURL = vi
       .spyOn(HTMLCanvasElement.prototype, 'toDataURL')

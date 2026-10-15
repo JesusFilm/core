@@ -23,6 +23,8 @@ import {
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
+  isCampaignSection,
+  isExtra,
   overlayAlpha,
   resolveBand
 } from '@core/journeys/ui/Campaign'
@@ -85,11 +87,7 @@ const SELECTED_OUTLINE = {
 }
 
 function isAbove(child: CanvasBlock): boolean {
-  return (
-    (child.__typename === 'CampaignTypographyBlock' ||
-      child.__typename === 'CampaignButtonBlock') &&
-    child.placement === CampaignChildPlacement.above
-  )
+  return isExtra(child) && child.placement === CampaignChildPlacement.above
 }
 
 interface CanvasExtraProps {
@@ -445,14 +443,7 @@ export function CanvasSection({
     [setDroppableRef, setDraggableRef]
   )
   const band = useMemo(() => {
-    if (
-      block.__typename === 'CampaignTypographyBlock' ||
-      block.__typename === 'CampaignButtonBlock' ||
-      block.__typename === 'CampaignColumnBlock' ||
-      block.__typename === 'CampaignJourneyBlock' ||
-      block.__typename === 'CampaignVideoBlock'
-    )
-      return null
+    if (!isCampaignSection(block)) return null
     return resolveBand(block, theme)
   }, [block, theme])
 

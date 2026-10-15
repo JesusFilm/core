@@ -3,6 +3,7 @@ import Typography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { TypographyAlign } from '../../../../__generated__/globalTypes'
+import { flexAlign } from '../libs/flexAlign'
 import { hasText } from '../types'
 
 interface CampaignSectionHeadingProps {
@@ -30,12 +31,7 @@ export function CampaignSectionHeading({
     <Stack
       spacing={1.5}
       sx={{
-        alignItems:
-          align === TypographyAlign.center
-            ? 'center'
-            : align === TypographyAlign.right
-              ? 'flex-end'
-              : 'flex-start',
+        alignItems: flexAlign(align),
         textAlign: align ?? undefined
       }}
     >

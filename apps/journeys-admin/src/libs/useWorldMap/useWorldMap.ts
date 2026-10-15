@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 
-import { buildWorldMap } from '@core/journeys/ui/Campaign'
 import type {
   WorldAtlasTopology,
   WorldMapShapes
 } from '@core/journeys/ui/Campaign'
+import { buildWorldMap } from '@core/journeys/ui/Campaign/CampaignAnalytics/WorldMap/buildWorldMap'
 
 const JOURNEYS_URL =
   process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
@@ -40,7 +40,12 @@ export function useWorldMap(enabled: boolean): WorldMapShapes | null {
       .then((loaded) => {
         if (!cancelled) setShapes(loaded)
       })
-      .catch(() => undefined)
+      .catch((error: unknown) => {
+        console.error(
+          '[useWorldMap] The Analytics map could not load; it stays hidden.',
+          error
+        )
+      })
     return () => {
       cancelled = true
     }

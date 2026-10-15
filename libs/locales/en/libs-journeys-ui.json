@@ -170,5 +170,10 @@
   "Open journey": "Open journey",
   "Watch on YouTube": "Watch on YouTube",
   "See all on Watch": "See all on Watch",
-  "videos": "videos"
+  "videos": "videos",
+  "QR Code": "QR Code",
+  "Loading QR code": "Loading QR code",
+  "{{count}} videos_one": "{{count}} videos_one",
+  "{{count}} videos_other": "{{count}} videos_other",
+  "Video player": "Video player"
 }
