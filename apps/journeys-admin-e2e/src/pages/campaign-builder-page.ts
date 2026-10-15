@@ -238,16 +238,12 @@ export class CampaignBuilderPage {
       return false
     }
 
-    // A test that died mid-step can leave the Publish popover (a modal with a
-    // backdrop) open, which blocks every click below
-    await this.page.keyboard.press('Escape')
+    // Reloading starts the editor with nothing selected, so Settings shows
+    // the campaign itself, and it drops any popover (a modal with a backdrop)
+    // a test that died mid-step left open. Escape cannot do either safely: with
+    // no popover open it steps the editor selection up instead.
+    await this.page.reload()
 
-    // Both tests end with something selected, so the breadcrumb always offers
-    // the Campaign crumb; selecting it shows the campaign's own Settings
-    await this.page
-      .getByRole('navigation', { name: 'Selection' })
-      .getByRole('button', { name: 'Campaign', exact: true })
-      .click()
     const settingsTab = this.inspectorTabs.getByRole('tab', {
       name: 'Settings'
     })
