@@ -815,7 +815,7 @@ describe('campaign block service', () => {
       async (typename) => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue({
           id: typename === 'CampaignHeaderBlock' ? 'headerId' : 'footerId'
-        })
+        } as never)
 
         const error = await errorOf(
           createTopLevelBlock(
@@ -1269,7 +1269,7 @@ describe('owned images (cover and logo)', () => {
 
     it('rejects an Extra or a missing block (BAD_USER_INPUT, parentBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(
-        fixture.blocks.find((block) => block.id === 'heroButtonId')
+        fixture.blocks.find((block) => block.id === 'heroButtonId')!
       )
       const extra = await errorOf(
         validateImageOwner('heroButtonId', 'campaignId')
@@ -1535,7 +1535,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue({
           id: 'mediaId',
           typename
-        })
+        } as never)
 
         await expect(validateMediaSlotTarget('mediaId', hero)).resolves.toBe(
           'mediaId'
@@ -1583,7 +1583,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
       ['a section', { id: 'mediaId', typename: 'CampaignHeroBlock' }],
       ['not owned by this section or missing', null]
     ])('rejects %s (BAD_USER_INPUT, mediaBlockId)', async (_label, found) => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue(found)
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(found as never)
 
       const error = await errorOf(validateMediaSlotTarget('mediaId', hero))
 
@@ -1731,7 +1731,7 @@ describe('section style (the nine shared section fields)', () => {
     it('resolves a live image block owned by the block for any slot column', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         id: 'logoId'
-      })
+      } as never)
 
       await expect(
         validateImageSlotTarget(
@@ -1783,7 +1783,7 @@ describe('section style (the nine shared section fields)', () => {
     it('resolves a given cover to a live image block owned by the section', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         id: 'coverId'
-      })
+      } as never)
 
       await expect(
         validateSectionStyle(

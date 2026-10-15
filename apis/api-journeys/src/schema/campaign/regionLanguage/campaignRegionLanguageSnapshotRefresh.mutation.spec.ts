@@ -60,7 +60,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
       qrCodeId: 'qrCodeId',
       ...data
     })) as never)
-    prismaMock.journey.findFirst.mockResolvedValue(JOURNEY)
+    prismaMock.journey.findFirst.mockResolvedValue(JOURNEY as never)
   })
 
   async function refresh(id = 'eurRegionId-529'): Promise<any> {
