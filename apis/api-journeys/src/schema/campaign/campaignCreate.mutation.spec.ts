@@ -23,9 +23,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 vi.mock('uuid', () => ({ v4: vi.fn() }))
-vi.mock('../../../../../libs/locales/es-ES/libs-journeys-ui.json', () => ({
-  default: { 'Copy link': 'Copiar enlace' }
-}))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload

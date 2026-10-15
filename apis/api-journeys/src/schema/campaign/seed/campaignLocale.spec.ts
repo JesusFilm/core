@@ -13,6 +13,10 @@ vi.mock('../../../../../../libs/locales/fr-FR/libs-journeys-ui.json', () => ({
   default: { 'Copy link': 'Copier le lien', Open: '  ' }
 }))
 
+vi.mock('../../../../../../libs/locales/fr-FR/apps-journeys-admin.json', () => ({
+  default: { 'Copy link': 'Copier (admin)', 'Link copied': 'Lien copié' }
+}))
+
 describe('campaignLocale', () => {
   describe('English defaults', () => {
     it.each(CAMPAIGN_STRING_KEYS)(
@@ -48,12 +52,13 @@ describe('campaignLocale', () => {
       )
     })
 
-    it('uses the bundle translation when present and English otherwise', async () => {
+    it('prefers the libs bundle, then the admin bundle, then English', async () => {
       const values = await resolveCampaignStringValues('fr')
 
       expect(values).toEqual({
         ...CAMPAIGN_STRING_DEFAULTS,
-        copy: 'Copier le lien'
+        copy: 'Copier le lien',
+        copied: 'Lien copié'
       })
     })
   })
