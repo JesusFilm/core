@@ -21,7 +21,6 @@ export type CampaignThemeRadius =
   | 'slight'
   | 'rounded'
   | 'veryRounded'
-export type CampaignThemeButtonRadius = 'rounded' | 'pill'
 
 /** The `CampaignTheme` columns the MUI theme is built from. */
 export interface CampaignThemeInput {
@@ -38,7 +37,7 @@ export interface CampaignThemeInput {
   contrastBackgroundColor: string
   contrastTextColor: string
   radius: CampaignThemeRadius
-  buttonRadius: CampaignThemeButtonRadius
+  buttonRadius: CampaignThemeRadius
 }
 
 /** `CampaignRadius` → px (PRD §4). */
@@ -52,10 +51,13 @@ export const CAMPAIGN_RADIUS_PX: Record<CampaignThemeRadius, number> = {
 /** The pill shape: a radius larger than any button is tall. */
 export const PILL_RADIUS_PX = 9999
 
-export function campaignButtonRadiusPx(theme: CampaignThemeInput): number {
-  return theme.buttonRadius === 'pill'
-    ? PILL_RADIUS_PX
-    : CAMPAIGN_RADIUS_PX[theme.radius]
+/**
+ * `buttonRadius` → px: the four corner radius values, except very rounded,
+ * which is the pill look at any button height.
+ */
+export const CAMPAIGN_BUTTON_RADIUS_PX: Record<CampaignThemeRadius, number> = {
+  ...CAMPAIGN_RADIUS_PX,
+  veryRounded: PILL_RADIUS_PX
 }
 
 const HEADING_VARIANTS = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const
@@ -115,7 +117,7 @@ export function createCampaignTheme(
     bodyFont: theme.bodyFont ?? '',
     labelFont: theme.labelFont ?? ''
   }
-  const buttonRadius = campaignButtonRadiusPx(theme)
+  const buttonRadius = CAMPAIGN_BUTTON_RADIUS_PX[theme.buttonRadius]
 
   const muiTheme = createTheme(
     deepmerge(

@@ -8,7 +8,6 @@ export { CampaignSwitcherVariant } from './campaignSwitcherVariant'
 export { CampaignJourneyListDisplay } from './campaignJourneyListDisplay'
 export { CampaignColumnsRatio } from './campaignColumnsRatio'
 export { CampaignRadius } from './campaignRadius'
-export { CampaignButtonRadius } from './campaignButtonRadius'
 export { CampaignChildPlacement } from './campaignChildPlacement'
 export { CampaignStringKey } from './campaignStringKey'
 export {

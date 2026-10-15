@@ -13,7 +13,7 @@ const light: CampaignThemeInput = {
   bodyFont: null,
   labelFont: null,
   radius: 'rounded',
-  buttonRadius: 'pill'
+  buttonRadius: 'veryRounded'
 }
 
 describe('themePresets', () => {
@@ -31,23 +31,25 @@ describe('themePresets', () => {
   })
 
   describe('activeThemePreset', () => {
-    it('names the preset the nine values match, whatever the fonts and radii', () => {
+    it('names the preset the ten values match, whatever the fonts and the corner radius', () => {
       expect(activeThemePreset(light)).toBe('light')
       const dark: CampaignThemeInput = {
         ...light,
         ...DARK_PRESET,
         headerFont: 'Oswald',
-        radius: 'square',
-        buttonRadius: 'rounded'
+        radius: 'square'
       }
       expect(activeThemePreset(dark)).toBe('dark')
     })
 
-    it('is custom when any of the nine values differs', () => {
+    it('is custom when any of the ten values differs', () => {
       expect(activeThemePreset({ ...light, accentColor: '#123456' })).toBe(
         'custom'
       )
       expect(activeThemePreset({ ...light, themeMode: 'dark' })).toBe('custom')
+      expect(activeThemePreset({ ...light, buttonRadius: 'slight' })).toBe(
+        'custom'
+      )
     })
 
     it('compares colours case-insensitively', () => {

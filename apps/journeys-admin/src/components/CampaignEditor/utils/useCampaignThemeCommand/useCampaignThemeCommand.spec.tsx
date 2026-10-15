@@ -15,8 +15,16 @@ import { CommandProbe, QueriedEditor, campaignCache } from '../../testing'
 
 import { useCampaignThemeCommand } from './useCampaignThemeCommand'
 
-const darkInput = { ...DARK_PRESET, themeMode: ThemeMode.dark }
-const lightInput = { ...LIGHT_PRESET, themeMode: ThemeMode.light }
+const darkInput = {
+  ...DARK_PRESET,
+  themeMode: ThemeMode.dark,
+  buttonRadius: CampaignRadius.veryRounded
+}
+const lightInput = {
+  ...LIGHT_PRESET,
+  themeMode: ThemeMode.light,
+  buttonRadius: CampaignRadius.veryRounded
+}
 
 function Controls(): ReactElement {
   const { addTheme } = useCampaignThemeCommand()
@@ -138,7 +146,7 @@ describe('useCampaignThemeCommand', () => {
       ...darkInput,
       headerFont: null,
       radius: 'rounded',
-      buttonRadius: 'pill'
+      buttonRadius: 'veryRounded'
     })
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -147,7 +155,7 @@ describe('useCampaignThemeCommand', () => {
       ...lightInput,
       headerFont: null,
       radius: 'rounded',
-      buttonRadius: 'pill'
+      buttonRadius: 'veryRounded'
     })
   })
 

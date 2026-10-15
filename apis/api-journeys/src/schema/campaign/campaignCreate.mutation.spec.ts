@@ -320,7 +320,7 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('seeds the CampaignTheme on the Light preset with null fonts, radius rounded and buttonRadius pill', async () => {
+    it('seeds the CampaignTheme on the Light preset with null fonts, radius rounded and buttonRadius veryRounded', async () => {
       await create()
       expect(prismaMock.campaignTheme.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -338,7 +338,7 @@ describe('campaignCreate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'rounded',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         })
       })
     })
@@ -847,7 +847,7 @@ describe('campaignCreate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'rounded',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         },
         pages: [{ kind: 'landing' }, { kind: 'regionTemplate' }],
         regions: []

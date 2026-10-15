@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, CampaignRadius, CampaignButtonRadius } from "./globalTypes";
+import { ThemeMode, CampaignRadius } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: ThemeFields
@@ -27,5 +27,8 @@ export interface ThemeFields {
   contrastBackgroundColor: string;
   contrastTextColor: string;
   radius: CampaignRadius;
-  buttonRadius: CampaignButtonRadius;
+  /**
+   * Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+   */
+  buttonRadius: CampaignRadius;
 }
