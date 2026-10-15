@@ -1,14 +1,17 @@
-import { useMutation, useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client/react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
 
 import { ProcessingStatusList } from './ProcessingStatusList'
 
-vi.mock('@apollo/client', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('@apollo/client')>()),
-  useMutation: vi.fn(),
-  useQuery: vi.fn()
-}))
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
+  return {
+    ...original,
+    useMutation: vi.fn(),
+    useQuery: vi.fn()
+  }
+})
 
 describe('ProcessingStatusList', () => {
   it('shows degraded stages and lets a Publisher request a retry', async () => {
