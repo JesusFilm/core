@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { appendFile, mkdir, readFile, writeFile } from 'fs/promises'
+import { appendFile, mkdir, readFile, rename, writeFile } from 'fs/promises'
 import path from 'path'
 
 import { prisma } from '@core/prisma/media/client'
@@ -79,11 +79,13 @@ async function savePendingIndexRetries(
   pendingIndexRetries: PendingIndexRetry[]
 ): Promise<void> {
   await ensureReportDir()
+  const tmpPath = `${RETRY_PATH}.tmp`
   await writeFile(
-    RETRY_PATH,
+    tmpPath,
     JSON.stringify(pendingIndexRetries, null, 2),
     'utf-8'
   )
+  await rename(tmpPath, RETRY_PATH)
 }
 
 function retryKey(

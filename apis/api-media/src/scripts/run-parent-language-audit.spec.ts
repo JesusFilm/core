@@ -64,6 +64,11 @@ vi.mock('fs/promises', () => ({
   appendFile: vi.fn((path: string, data: string) => {
     files.set(path, (files.get(path) ?? '') + data)
     return Promise.resolve()
+  }),
+  rename: vi.fn((oldPath: string, newPath: string) => {
+    files.set(newPath, files.get(oldPath) as string)
+    files.delete(oldPath)
+    return Promise.resolve()
   })
 }))
 
