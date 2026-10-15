@@ -13,9 +13,12 @@ vi.mock('../../../../../../libs/locales/fr-FR/libs-journeys-ui.json', () => ({
   default: { 'Copy link': 'Copier le lien', Open: '  ' }
 }))
 
-vi.mock('../../../../../../libs/locales/fr-FR/apps-journeys-admin.json', () => ({
-  default: { 'Copy link': 'Copier (admin)', 'Link copied': 'Lien copié' }
-}))
+vi.mock(
+  '../../../../../../libs/locales/fr-FR/apps-journeys-admin.json',
+  () => ({
+    default: { 'Copy link': 'Copier (admin)', 'Link copied': 'Lien copié' }
+  })
+)
 
 describe('campaignLocale', () => {
   describe('English defaults', () => {
