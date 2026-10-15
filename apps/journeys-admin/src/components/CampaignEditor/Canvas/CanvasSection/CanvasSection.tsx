@@ -695,6 +695,12 @@ export function CanvasSection({
   /** Below `md` the nav sits behind the menu icon; a selected nav button opens it so it can be outlined and scrolled to. */
   const navOpen = menuOpen || navButtonSelected
 
+  /** The phone menu is only for the header: it closes once the selection leaves the header and its nav buttons, so the taller header never covers the section the selection scrolls to. */
+  const selectionInHeader = sectionSelected || navButtonSelected
+  useEffect(() => {
+    if (!selectionInHeader) setMenuOpen(false)
+  }, [selectedId, selectionInHeader])
+
   function handleMenuToggle(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
     if (!navOpen) {
@@ -900,7 +906,8 @@ export function CanvasSection({
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
-        scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
+        scrollMarginTop:
+          chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
