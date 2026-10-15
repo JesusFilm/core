@@ -30,8 +30,6 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
-  /** Bumped by the Edit action; focuses an input that is already mounted. */
-  focusRequest?: number
   /** Clicking the text selects its block. */
   onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
@@ -69,7 +67,6 @@ export function InlineText({
   placeholder,
   editing,
   autoFocus = false,
-  focusRequest = 0,
   onSelect,
   variant,
   component,
@@ -99,12 +96,6 @@ export function InlineText({
     inputRef.current?.focus({ preventScroll: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing])
-
-  useEffect(() => {
-    if (focusRequest === 0 || !autoFocus) return
-    inputRef.current?.focus({ preventScroll: true })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusRequest])
 
   function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>): void {
     const next = event.target.value

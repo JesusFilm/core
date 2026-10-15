@@ -79,11 +79,7 @@ function renderChrome(
     >
       <SelectionProbe />
       <SelectBlockButton blockId="footerId" />
-      <CanvasSection
-        block={chromeBlock(source, typename)}
-        theme={source.theme}
-        previewLanguageId="529"
-      />
+      <CanvasSection block={chromeBlock(source, typename)} />
     </StaticEditor>
   )
 }

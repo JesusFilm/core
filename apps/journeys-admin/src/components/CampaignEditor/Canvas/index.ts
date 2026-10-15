@@ -5,4 +5,3 @@ export {
   dropParentOrder
 } from './Canvas'
 export type { CanvasView, DropEdge, DropTarget } from './Canvas'
-export { scrollFrameToBlock } from './scrollFrameToBlock'

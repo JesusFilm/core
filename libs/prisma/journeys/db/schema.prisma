@@ -987,11 +987,6 @@ enum CampaignStringKey {
   videos
 }
 
-enum CampaignTextSource {
-  human
-  machine
-}
-
 model Campaign {
   id                String             @id @default(uuid())
   teamId            String
@@ -1113,20 +1108,20 @@ model CampaignBlock {
   descriptionTranslations Json?
   // Per-type enum and scalar columns
   align                   CampaignAlign?
-  mediaSide               CampaignMediaSide?
+  mediaSide               CampaignMediaSide?          @default(right)
   layout                  CampaignFeaturedMediaLayout?
   mediaBlockId            String?                     @unique
   logoBlockId             String?                     @unique
-  switcherVariant         CampaignSwitcherVariant?
-  display                 CampaignJourneyListDisplay?
-  showMap                 Boolean?
-  ratio                   CampaignColumnsRatio?
+  switcherVariant         CampaignSwitcherVariant?    @default(cards)
+  display                 CampaignJourneyListDisplay? @default(grid)
+  showMap                 Boolean?                    @default(false)
+  ratio                   CampaignColumnsRatio?       @default(equal)
   typographyVariant       CampaignTypographyVariant?
   buttonVariant           CampaignButtonVariant?
   buttonSize              CampaignButtonSize?
   color                   String?
   labelColor              String?
-  placement               CampaignChildPlacement?
+  placement               CampaignChildPlacement?     @default(below)
   // CampaignVideoBlock and CampaignVideoCarouselBlock
   source                  VideoBlockSource?
   videoId                 String?
@@ -1203,20 +1198,20 @@ model CampaignRegion {
 /// language. The title/description snapshot is the journey's own text and is
 /// not translated.
 model CampaignRegionLanguage {
-  id          String         @id @default(uuid())
-  regionId    String
+  id             String         @id @default(uuid())
+  regionId       String
   /// api-languages Language id.
-  languageId  String
-  journeyId   String?
-  title       String?
-  description String?
+  languageId     String
+  journeyId      String?
+  title          String?
+  description    String?
   /// True once an author changed the snapshot title or description by hand; cleared when the snapshot is re-read from the journey.
-  snapshotEdited Boolean     @default(false)
-  qrCodeId    String?
-  order       Int
-  region      CampaignRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
-  journey     Journey?       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  qrCode      QrCode?        @relation(fields: [qrCodeId], references: [id], onDelete: SetNull)
+  snapshotEdited Boolean        @default(false)
+  qrCodeId       String?
+  order          Int
+  region         CampaignRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  journey        Journey?       @relation(fields: [journeyId], references: [id], onDelete: SetNull)
+  qrCode         QrCode?        @relation(fields: [qrCodeId], references: [id], onDelete: SetNull)
 
   @@unique([regionId, languageId])
   @@index(journeyId)

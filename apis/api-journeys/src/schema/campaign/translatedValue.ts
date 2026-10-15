@@ -1,13 +1,11 @@
-import { CampaignTextSource as PrismaCampaignTextSource } from '@core/prisma/journeys/client'
-
 import { builder } from '../builder'
 
-import { CampaignTextSource } from './enums'
+import { CampaignTextSource, type CampaignTextSourceValue } from './enums'
 
 export interface TranslatedValueShape {
   languageId: string
   value: string
-  source: PrismaCampaignTextSource
+  source: CampaignTextSourceValue
 }
 
 /**
@@ -16,7 +14,7 @@ export interface TranslatedValueShape {
  */
 export type TranslationsJson = Record<
   string,
-  { value: string; source: PrismaCampaignTextSource }
+  { value: string; source: CampaignTextSourceValue }
 >
 
 export const TranslatedValueRef =
