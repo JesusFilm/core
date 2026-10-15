@@ -87,6 +87,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
     }
     ... on CampaignJourneyBlock {
       journeyId
+      snapshotEdited
       titleTranslations {
         ...TranslatedValueFields
       }

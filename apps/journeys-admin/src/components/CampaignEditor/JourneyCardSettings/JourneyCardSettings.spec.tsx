@@ -22,7 +22,8 @@ const titleMock = {
         __typename: 'CampaignJourneyBlock',
         id: 'landingJourneyId',
         title: 'A new title',
-        description: card.description
+        description: card.description,
+        snapshotEdited: true
       }
     }
   }))

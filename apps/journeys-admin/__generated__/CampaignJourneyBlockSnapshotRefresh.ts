@@ -18,11 +18,15 @@ export interface CampaignJourneyBlockSnapshotRefresh_campaignJourneyBlockSnapsho
    * Snapshot of the journey's description, editable; the default-language value.
    */
   description: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+   */
+  snapshotEdited: boolean;
 }
 
 export interface CampaignJourneyBlockSnapshotRefresh {
   /**
-   * Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
+   * Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made, and clear `snapshotEdited`. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 

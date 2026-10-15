@@ -36,7 +36,7 @@ const MEDIA_TRANSLATED_FIELDS: Record<string, readonly string[]> = {
   CampaignVideoBlock: ['title', 'description']
 }
 
-/** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field. */
+/** The viewer's resolved block shape plus the empty translation lists the admin read adds to every text field, and a journey card's unset edited flag. */
 export function withEmptyTranslations(block: {
   __typename: string
 }): CampaignBlock {
@@ -49,7 +49,9 @@ export function withEmptyTranslations(block: {
   const translations = Object.fromEntries(
     fields.map((field) => [`${field}Translations`, []])
   )
-  return { ...block, ...translations } as CampaignBlock
+  const snapshot =
+    block.__typename === 'CampaignJourneyBlock' ? { snapshotEdited: false } : {}
+  return { ...block, ...translations, ...snapshot } as CampaignBlock
 }
 
 const STRING_SEED: Array<[CampaignStringKey, string]> = [

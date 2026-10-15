@@ -42,7 +42,10 @@ const ID_FIELDS = new Set([
 ])
 const TIMESTAMP_FIELDS = new Set(['createdAt', 'updatedAt', 'deletedAt'])
 // Column defaults the seed leaves to Prisma but a stored row always carries.
-const COLUMN_DEFAULTS: Record<string, unknown> = { backgroundKind: 'none' }
+const COLUMN_DEFAULTS: Record<string, unknown> = {
+  backgroundKind: 'none',
+  snapshotEdited: false
+}
 
 /**
  * Strip nulls, timestamps and column defaults, and replace every id with a

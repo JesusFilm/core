@@ -1134,6 +1134,8 @@ model CampaignBlock {
   height                  Int?
   // CampaignJourneyBlock snapshot
   journeyId               String?
+  /// CampaignJourneyBlock: true once an author changed the snapshot title or description by hand; cleared when the snapshot is re-read from the journey.
+  snapshotEdited          Boolean                     @default(false)
   campaign                Campaign                    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   page                    CampaignPage?               @relation(fields: [pageId], references: [id], onDelete: Cascade)
   region                  CampaignRegion?             @relation(fields: [regionId], references: [id], onDelete: Cascade)

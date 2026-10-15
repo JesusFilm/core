@@ -862,6 +862,7 @@ export interface CampaignImageBlockUpdateInput {
 export interface CampaignJourneyBlockUpdateInput {
   title?: string | null;
   description?: string | null;
+  snapshotEdited?: boolean | null;
 }
 
 export interface CampaignJourneyListBlockCreateInput {

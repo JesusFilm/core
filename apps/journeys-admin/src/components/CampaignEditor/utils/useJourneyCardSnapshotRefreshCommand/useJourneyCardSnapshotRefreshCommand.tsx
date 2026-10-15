@@ -52,23 +52,23 @@ export function snapshotOf(journey: {
 }
 
 /**
- * Whether the card's snapshot differs from the journey's current text: an
- * edit the author made (or a change the journey has had since), either of
- * which a refresh would overwrite. Empty and missing descriptions are the same.
+ * Whether the card's snapshot already reads as the journey's current text, so
+ * a refresh would change nothing. Empty and missing descriptions are the same.
  */
-export function isSnapshotEdited(
+export function matchesJourney(
   card: Pick<JourneyCardBlock, 'title' | 'description'>,
   journey: SnapshotText
 ): boolean {
   return (
-    (card.title ?? '') !== (journey.title ?? '') ||
-    (card.description ?? '') !== (journey.description ?? '')
+    (card.title ?? '') === (journey.title ?? '') &&
+    (card.description ?? '') === (journey.description ?? '')
   )
 }
 
 interface RefreshParameters {
   mode: 'refresh' | 'restore'
   text: SnapshotText
+  snapshotEdited: boolean
 }
 
 function messageOf(error: unknown, fallback: string): string {
@@ -79,12 +79,15 @@ function messageOf(error: unknown, fallback: string): string {
 
 /**
  * "Refresh from journey" on a journey-list item. It re-reads the journey's
- * title and description; when they differ from the card's (the author edited
- * the snapshot) it asks before replacing them, otherwise there is nothing to
- * do. The replacement is one Command: execute writes the journey's text
- * through `campaignJourneyBlockSnapshotRefresh` (default language only,
- * translations kept) and undo writes the text the card had back through
- * `campaignJourneyBlockUpdate`.
+ * title and description and replaces the card's with them, asking first only
+ * when the author edited the snapshot by hand (the card's `snapshotEdited`;
+ * a journey renamed since linking does not count). A card that already reads
+ * as the journey has nothing to refresh, whatever its edited flag says (an
+ * undone edit leaves it set), so that case only clears the flag. The replacement is one Command:
+ * execute writes the journey's text through
+ * `campaignJourneyBlockSnapshotRefresh` (default language only, translations
+ * kept, edited flag cleared) and undo writes the text and flag the card had
+ * back through `campaignJourneyBlockUpdate`.
  */
 export function useJourneyCardSnapshotRefreshCommand(): {
   refreshSnapshot: (card: JourneyCardBlock) => Promise<void>
@@ -126,7 +129,7 @@ export function useJourneyCardSnapshotRefreshCommand(): {
       description: card.description
     }
 
-    function run({ mode, text }: RefreshParameters): void {
+    function run({ mode, text, snapshotEdited }: RefreshParameters): void {
       dispatch({
         type: 'SetEditorFocusAction',
         pageKind: cardPageKind,
@@ -135,7 +138,8 @@ export function useJourneyCardSnapshotRefreshCommand(): {
       const optimistic = {
         __typename: 'CampaignJourneyBlock' as const,
         id: card.id,
-        ...text
+        ...text,
+        snapshotEdited
       }
       const request =
         mode === 'refresh'
@@ -146,7 +150,7 @@ export function useJourneyCardSnapshotRefreshCommand(): {
               }
             })
           : update({
-              variables: { id: card.id, input: text },
+              variables: { id: card.id, input: { ...text, snapshotEdited } },
               optimisticResponse: { campaignJourneyBlockUpdate: optimistic }
             })
       void request.catch((error: unknown) =>
@@ -156,11 +160,39 @@ export function useJourneyCardSnapshotRefreshCommand(): {
 
     add<RefreshParameters>({
       parameters: {
-        execute: { mode: 'refresh', text: journey },
-        undo: { mode: 'restore', text: before }
+        execute: { mode: 'refresh', text: journey, snapshotEdited: false },
+        undo: {
+          mode: 'restore',
+          text: before,
+          snapshotEdited: card.snapshotEdited
+        }
       },
       execute: run
     })
+  }
+
+  /**
+   * An edit undone (or retyped) back to the journey's text leaves the flag
+   * set; clearing it keeps a later journey rename from asking to confirm.
+   * Nothing visible changes, so it is not a Command.
+   */
+  function clearEditedFlag(
+    card: JourneyCardBlock,
+    journey: SnapshotText
+  ): void {
+    void refresh({
+      variables: { id: card.id },
+      optimisticResponse: {
+        campaignJourneyBlockSnapshotRefresh: {
+          __typename: 'CampaignJourneyBlock',
+          id: card.id,
+          ...journey,
+          snapshotEdited: false
+        }
+      }
+    }).catch((error: unknown) =>
+      notify(error, t('Could not refresh from journey'))
+    )
   }
 
   async function refreshSnapshot(card: JourneyCardBlock): Promise<void> {
@@ -174,11 +206,16 @@ export function useJourneyCardSnapshotRefreshCommand(): {
         return
       }
       const journey = snapshotOf(data.journey)
-      if (!isSnapshotEdited(card, journey)) {
+      if (matchesJourney(card, journey)) {
         enqueueSnackbar(t('Already matches the journey'), { variant: 'info' })
+        if (card.snapshotEdited) clearEditedFlag(card, journey)
         return
       }
-      setPending({ card, journey })
+      if (card.snapshotEdited) {
+        setPending({ card, journey })
+        return
+      }
+      addRefreshCommand(card, journey)
     } catch (error) {
       notify(error, t('Journey not found or not published'))
     }

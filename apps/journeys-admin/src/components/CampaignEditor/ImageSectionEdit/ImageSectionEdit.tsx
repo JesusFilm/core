@@ -12,6 +12,7 @@ import { CampaignTextField } from '../../../../__generated__/globalTypes'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignImageBlockUpdateMutation } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { textLength } from '../Canvas/InlineText'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import {
   previousOf,
@@ -161,9 +162,20 @@ export function ImageSectionEdit({
         error={altTooLong}
         placeholder={translating ? (block.alt ?? '') : undefined}
         helperText={
-          altTooLong
-            ? t('Alt text must be at most 500 characters')
-            : t('Read aloud by screen readers; shown when the picture fails.')
+          altTooLong ? (
+            t('Alt text must be at most 500 characters')
+          ) : (
+            <>
+              <Box component="span" sx={{ display: 'block' }}>
+                {t(
+                  'Read aloud by screen readers; shown when the picture fails.'
+                )}
+              </Box>
+              <Box component="span" sx={{ display: 'block' }}>
+                {`${textLength(alt)} / ${IMAGE_ALT_MAX_LENGTH}`}
+              </Box>
+            </>
+          )
         }
         size="small"
         multiline

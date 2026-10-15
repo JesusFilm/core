@@ -111,6 +111,11 @@ export const CampaignJourneyBlock = builder.prismaObject('CampaignBlock', {
       description:
         "Snapshot of the journey's title, editable; the default-language value."
     }),
+    snapshotEdited: t.exposeBoolean('snapshotEdited', {
+      nullable: false,
+      description:
+        'True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.'
+    }),
     titleTranslations: t.field({
       type: [TranslatedValueRef],
       nullable: false,
