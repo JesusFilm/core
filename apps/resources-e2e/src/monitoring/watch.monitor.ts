@@ -140,6 +140,14 @@ class VideoMonitoringHelpers {
       )
     }
   }
+
+  static isLitixTelemetryRequest(url: string): boolean {
+    try {
+      return new URL(url).hostname.toLowerCase() === 'inferred.litix.io'
+    } catch {
+      return false
+    }
+  }
 }
 
 test('Video playback and MUX network connectivity monitoring', async ({
@@ -180,9 +188,6 @@ test('Video playback and MUX network connectivity monitoring', async ({
   page.on('requestfailed', (request) => {
     const url = request.url()
     const errorText = request.failure()?.errorText || 'Unknown error'
-
-    // Chromium can abort completed Litix telemetry during page cleanup.
-    if (errorText === 'net::ERR_ABORTED') return
 
     if (VideoMonitoringHelpers.isVideoRelatedUrl(url)) {
       networkRequests.set(url, {
@@ -239,14 +244,23 @@ test('Video playback and MUX network connectivity monitoring', async ({
   await watchNowButton.click()
   await page.waitForSelector('video', { timeout: 15000 })
 
-  // Wait for any video elements to be present and ready
-  await page.waitForFunction(
-    () => {
-      const videos = document.querySelectorAll('video')
-      return videos.length > 0
-    },
-    { timeout: 10000 }
-  )
+  // Require the stream to respond before taking a network snapshot. Browser codec
+  // support can leave readyState at 0 in Checkly even when the HLS stream is healthy.
+  await expect
+    .poll(
+      () =>
+        Array.from(networkRequests.values()).some(
+          (request) =>
+            VideoMonitoringHelpers.isHlsRequest(request.url) &&
+            request.status >= 200 &&
+            request.status < 300
+        ),
+      {
+        message: 'Expected a successful HLS request after starting playback',
+        timeout: 15000
+      }
+    )
+    .toBe(true)
 
   // Convert Map to Array for analysis
   const networkRequestsArray = Array.from(networkRequests.values())
@@ -264,6 +278,9 @@ test('Video playback and MUX network connectivity monitoring', async ({
 
   const hlsRequests = networkRequestsArray.filter((req) =>
     VideoMonitoringHelpers.isHlsRequest(req.url)
+  )
+  const successfulHlsRequests = hlsRequests.filter(
+    (request) => request.status >= 200 && request.status < 300
   )
 
   // Log network analysis
@@ -286,9 +303,15 @@ test('Video playback and MUX network connectivity monitoring', async ({
   }
 
   // Fail if there are failed MUX requests (including HTTP errors with status 400+)
-  const failedMuxRequests = muxRequests.filter(
-    (req) => req.error || req.status >= 400
-  )
+  const failedMuxRequests = muxRequests.filter((request) => {
+    const isExpectedAbort =
+      request.error === 'net::ERR_ABORTED' &&
+      (VideoMonitoringHelpers.isLitixTelemetryRequest(request.url) ||
+        (VideoMonitoringHelpers.isHlsRequest(request.url) &&
+          successfulHlsRequests.length > 0))
+
+    return !isExpectedAbort && (request.error || request.status >= 400)
+  })
   if (failedMuxRequests.length > 0) {
     console.log('🚨 Failed MUX requests:', failedMuxRequests)
     throw new Error(
