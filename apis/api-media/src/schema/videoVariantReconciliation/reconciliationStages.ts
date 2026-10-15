@@ -79,13 +79,20 @@ export function isRetryableError(error: unknown): boolean {
 // The Video record lives in the videos index (Arclight search), not the
 // variants index Watch reads, so a failure here is recorded and retried but
 // never stops the Variant's own record from being written.
+//
+// `stage` is a single slot shared across every Video record synced during
+// one reconciliation run (a parent container, then the child's own Video).
+// Each call still syncs its own videoId regardless, but once a failure is
+// recorded in this run a later call's success must not erase it -- doing so
+// would mask a permanently-failing index from ever being retried.
 export async function syncVideoRecordStage(
   videoId: string,
   stage: ProcessingStage
 ): Promise<ProcessingStage> {
+  const alreadyFailedThisRun = stage.state === 'failed'
   try {
     await updateVideoInAlgolia(videoId)
-    return completedStage(stage.attempts + 1)
+    return alreadyFailedThisRun ? stage : completedStage(stage.attempts + 1)
   } catch (error) {
     return failedStage(error, stage.attempts + 1)
   }
