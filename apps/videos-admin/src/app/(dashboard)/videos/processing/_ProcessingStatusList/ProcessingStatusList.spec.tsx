@@ -211,9 +211,101 @@ describe('ProcessingStatusList', () => {
     await waitFor(() => {
       expect(retry).toHaveBeenCalledWith({ variables: { id: 'upload-1' } })
     })
+    await waitFor(() => {
+      expect(refetch).toHaveBeenCalled()
+    })
     expect(
       screen.queryByText('Failed to retry processing')
     ).not.toBeInTheDocument()
+  })
+
+  it('keeps other rows retryable while one row has a retry in flight', async () => {
+    const retry = vi.fn().mockReturnValue(new Promise(() => undefined))
+    const refetch = vi.fn().mockResolvedValue({ data: {} })
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: {
+        videoVariantReconciliations: [
+          {
+            id: 'upload-1',
+            status: 'failed',
+            videoId: 'episode-1',
+            videoVariantId: 'variant-1',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
+            errorMessage: 'Mux upload failed',
+            updatedAt: '2026-07-21T12:00:00.000Z',
+            processingStages: JSON.stringify({})
+          },
+          {
+            id: 'upload-2',
+            status: 'degraded',
+            videoId: 'episode-2',
+            videoVariantId: 'variant-2',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
+            errorMessage: 'Parent sync failed',
+            updatedAt: '2026-07-21T12:00:00.000Z',
+            processingStages: JSON.stringify({})
+          }
+        ]
+      },
+      loading: false,
+      refetch
+    } as never)
+
+    render(<ProcessingStatusList />)
+
+    const [buttonA, buttonB] = screen.getAllByRole('button', {
+      name: 'Retry processing'
+    })
+    fireEvent.click(buttonA)
+
+    await waitFor(() => {
+      expect(retry).toHaveBeenCalledWith({ variables: { id: 'upload-1' } })
+    })
+    expect(buttonA).toBeDisabled()
+    expect(buttonB).toBeEnabled()
+  })
+
+  it('keeps retry disabled after success until a query confirms the new status', async () => {
+    const retry = vi.fn().mockResolvedValue({ data: {} })
+    const refetch = vi.fn().mockRejectedValue(new Error('network blip'))
+    vi.mocked(useMutation).mockReturnValue([retry, { loading: false }] as never)
+    vi.mocked(useQuery).mockReturnValue({
+      data: {
+        videoVariantReconciliations: [
+          {
+            id: 'upload-1',
+            status: 'failed',
+            videoId: 'episode-1',
+            videoVariantId: 'variant-1',
+            edition: 'base',
+            language: { id: '529', name: [{ value: 'English' }] },
+            errorMessage: 'Mux upload failed',
+            updatedAt: '2026-07-21T12:00:00.000Z',
+            processingStages: JSON.stringify({})
+          }
+        ]
+      },
+      loading: false,
+      refetch
+    } as never)
+
+    render(
+      <SnackbarProvider>
+        <ProcessingStatusList />
+      </SnackbarProvider>
+    )
+
+    const button = screen.getByRole('button', { name: 'Retry processing' })
+    fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(refetch).toHaveBeenCalled()
+    })
+
+    expect(button).toBeDisabled()
   })
 
   it('disables Previous and Next when there are no results', async () => {

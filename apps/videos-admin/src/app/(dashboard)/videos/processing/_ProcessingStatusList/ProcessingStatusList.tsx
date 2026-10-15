@@ -21,7 +21,7 @@ import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
@@ -152,21 +152,50 @@ export function ProcessingStatusList(): ReactElement {
     setOffset(0)
   }
   const [retryProcessing] = useMutation(RETRY_PROCESSING)
-  const [retryingId, setRetryingId] = useState<string | null>(null)
+  const [retryingIds, setRetryingIds] = useState<Set<string>>(new Set())
+
+  // A record only stops being "retrying" once a query confirms it left
+  // degraded/failed — clearing on a bare refetch resolution would re-enable
+  // Retry while the row still reads stale cached status.
+  useEffect(() => {
+    if (data == null) return
+    setRetryingIds((previous) => {
+      if (previous.size === 0) return previous
+      const next = new Set(previous)
+      let changed = false
+      for (const id of previous) {
+        const reconciliation = data.videoVariantReconciliations.find(
+          (item) => item.id === id
+        )
+        if (
+          reconciliation == null ||
+          !RETRYABLE_STATUSES.includes(reconciliation.status)
+        ) {
+          next.delete(id)
+          changed = true
+        }
+      }
+      return changed ? next : previous
+    })
+  }, [data])
 
   const handleRetry = async (id: string): Promise<void> => {
-    setRetryingId(id)
+    setRetryingIds((previous) => new Set(previous).add(id))
     try {
       await retryProcessing({ variables: { id } })
     } catch {
       enqueueSnackbar('Failed to retry processing', { variant: 'error' })
-      setRetryingId(null)
+      setRetryingIds((previous) => {
+        const next = new Set(previous)
+        next.delete(id)
+        return next
+      })
       return
     }
     // Retry already succeeded server-side; a refetch blip shouldn't be
-    // reported as a failed retry. The poll interval will pick up the new state.
+    // reported as a failed retry, and this row stays disabled until
+    // onCompleted (here or the next poll) confirms the new status.
     await refetch().catch(() => undefined)
-    setRetryingId(null)
   }
 
   return (
@@ -310,7 +339,7 @@ export function ProcessingStatusList(): ReactElement {
                   <Button
                     size="small"
                     disabled={
-                      retryingId === reconciliation.id ||
+                      retryingIds.has(reconciliation.id) ||
                       !RETRYABLE_STATUSES.includes(reconciliation.status)
                     }
                     onClick={() => void handleRetry(reconciliation.id)}
