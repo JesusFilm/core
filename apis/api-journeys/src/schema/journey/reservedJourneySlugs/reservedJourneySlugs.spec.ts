@@ -1,4 +1,5 @@
 import { readdirSync } from 'fs'
+import { createRequire } from 'module'
 import { join } from 'path'
 
 import slugify from 'slugify'
@@ -62,10 +63,10 @@ describe('VIEWER_RESERVED_SEGMENTS against apps/journeys', () => {
   })
 
   it('reserves every i18n locale Next strips from the path', () => {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { i18n } = require(join(VIEWER_ROOT, 'next-i18next.config.js')) as {
-      i18n: { locales: string[] }
-    }
+    const loadViewerFile = createRequire(__filename)
+    const { i18n } = loadViewerFile(
+      join(VIEWER_ROOT, 'next-i18next.config.js')
+    ) as { i18n: { locales: string[] } }
 
     expect(i18n.locales.length).toBeGreaterThan(0)
     for (const locale of i18n.locales) {
