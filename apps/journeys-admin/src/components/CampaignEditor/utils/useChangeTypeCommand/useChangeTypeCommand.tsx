@@ -12,6 +12,7 @@ import {
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { newSectionBlock } from '../../sectionTypes'
+import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 interface ChangeTypeParameters {
@@ -32,8 +33,10 @@ interface ChangeTypeParameters {
  * delete went through, the old section is restored so the column is never
  * left empty, and undo carries on to its restore even when its delete finds
  * nothing to remove (the new section never existed). Redo of a refused create
- * runs the whole change again. Every other refusal, the create included, is
- * raised in the editor's error snackbar.
+ * runs the whole change again. Each delete first sends the section's text
+ * edits still waiting on their debounce, so a late-landing save cannot
+ * overtake it. Every other refusal, the create included, is raised in the
+ * editor's error snackbar.
  */
 export function useChangeTypeCommand(): {
   addChangeType: (
@@ -64,7 +67,8 @@ export function useChangeTypeCommand(): {
   async function remove(block: CampaignBlock): Promise<unknown> {
     return await blockDelete({
       variables: { id: block.id },
-      optimisticResponse: { campaignBlockDelete: [] }
+      optimisticResponse: { campaignBlockDelete: [] },
+      context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
     })
   }
 

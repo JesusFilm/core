@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -14,12 +14,14 @@ import {
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
+import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../__generated__/GetCampaignJourneyByLink'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
+import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
@@ -162,8 +164,9 @@ function JourneyCardEdit({
  * The Journey List on the editor canvas: every card, live or not, selectable
  * to edit its title and description in place, and — while the list or one of
  * its cards is selected — the journey paste field that adds another card
- * from an admin link or a public URL. Adding resolves on the server, which
- * snapshots the journey's title and description.
+ * from an admin link or a public URL. Adding is one create Command: the card
+ * shows at once from the journey the paste field resolved, and the server
+ * snapshots the journey's title and description when it answers.
  */
 export function JourneyListEdit({
   block,
@@ -175,8 +178,55 @@ export function JourneyListEdit({
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign, selection } = useCampaignEditor()
   const [journeyCreate] = useCampaignJourneyBlockCreateMutation(campaign.id)
+  const { addBlock } = useCampaignBlockCreateCommand()
+  const [adding, setAdding] = useState(false)
   const cards = journeyCards(block.children)
   const selectedId = selection.block?.id
+
+  async function handleAdd(
+    url: string,
+    journey: ResolvedJourney
+  ): Promise<void> {
+    const list = campaign.blocks.find((candidate) => candidate.id === block.id)
+    const id = uuidv4()
+    const card: CampaignBlock = {
+      __typename: 'CampaignJourneyBlock',
+      id,
+      campaignId: campaign.id,
+      pageId: list?.pageId ?? null,
+      regionId: list?.regionId ?? null,
+      parentBlockId: block.id,
+      parentOrder: cards.length,
+      title: journey.title,
+      description: journey.description,
+      titleTranslations: [],
+      descriptionTranslations: [],
+      journeyStatus: journey.status,
+      journeyUrl: null,
+      journeyImage: null,
+      journeyId: journey.id
+    }
+    let created: Promise<unknown> = Promise.resolve()
+    addBlock({
+      block: card,
+      execute() {
+        created = journeyCreate({
+          variables: { id, parentBlockId: block.id, url },
+          optimisticResponse: { campaignJourneyBlockCreate: card }
+        })
+        return created
+      }
+    })
+    // The paste field stays up while the add is in flight: a refused add
+    // rolls its optimistic card back before the selection returns to the
+    // list, and the field must still be there to show the API's message.
+    setAdding(true)
+    try {
+      await created
+    } finally {
+      setAdding(false)
+    }
+  }
 
   return (
     <Stack
@@ -205,16 +255,9 @@ export function JourneyListEdit({
           ))}
         </Box>
       )}
-      {active ? (
+      {active || adding ? (
         <Box sx={{ maxWidth: 720 }}>
-          <JourneyPasteField
-            label={t('Add a journey')}
-            onLink={async (url) => {
-              await journeyCreate({
-                variables: { id: uuidv4(), parentBlockId: block.id, url }
-              })
-            }}
-          />
+          <JourneyPasteField label={t('Add a journey')} onLink={handleAdd} />
         </Box>
       ) : (
         cards.length === 0 && (

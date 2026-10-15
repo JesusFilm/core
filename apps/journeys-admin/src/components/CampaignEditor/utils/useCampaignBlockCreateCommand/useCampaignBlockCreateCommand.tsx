@@ -37,8 +37,9 @@ interface RedoParameters {
  * new block and runs the create; undo focuses the page it was made on,
  * restores the previous selection and soft-deletes it, with the siblings
  * renumbered at once; redo restores it through `campaignBlockRestore`. When
- * the create is refused the block never existed, so undo has nothing to
- * delete and redo runs the create again instead of restoring it.
+ * the create is refused the block never existed: the selection goes back at
+ * once, undo has nothing to delete and redo runs the create again instead of
+ * restoring it.
  */
 export function useCampaignBlockCreateCommand(): {
   addBlock: (params: AddBlockParameters) => void
@@ -65,13 +66,14 @@ export function useCampaignBlockCreateCommand(): {
     )
     let landed = true
 
-    function create(): void {
+    function create(onRefused?: () => void): void {
       void execute()
         .then(() => {
           landed = true
         })
         .catch((error: unknown) => {
           landed = false
+          onRefused?.()
           reportFailure(error)
         })
     }
@@ -93,7 +95,13 @@ export function useCampaignBlockCreateCommand(): {
           pageKind: blockPageKind,
           selectedBlockId: block.id
         })
-        create()
+        create(() =>
+          dispatch({
+            type: 'SetEditorFocusAction',
+            pageKind: blockPageKind,
+            selectedBlockId
+          })
+        )
       },
       undo({
         block: created,

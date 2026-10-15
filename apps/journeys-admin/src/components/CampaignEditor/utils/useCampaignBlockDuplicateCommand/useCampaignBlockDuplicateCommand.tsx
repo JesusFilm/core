@@ -9,6 +9,7 @@ import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignB
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 export interface CampaignBlockIdMap {
@@ -108,9 +109,11 @@ export function duplicateBlocks(
  * Duplicating a block is one Command: execute selects the copy and runs the
  * duplicate with the whole copied subtree shown at once; undo reselects the
  * original and soft-deletes the copy's root (its descendants fall out of the
- * tree with it); redo restores the root, which brings them back. When the
- * duplicate is refused the copy never existed, so undo has nothing to delete
- * and redo runs the duplicate again instead of restoring it.
+ * tree with it); redo restores the root, which brings them back. A text edit
+ * still waiting on its debounce is sent first, so the copy is never made from
+ * the stale text. When the duplicate is refused the copy never existed, so
+ * undo has nothing to delete and redo runs the duplicate again instead of
+ * restoring it.
  */
 export function useCampaignBlockDuplicateCommand(): {
   addBlockDuplicate: (block: CampaignBlock) => void
@@ -158,7 +161,8 @@ export function useCampaignBlockDuplicateCommand(): {
     function create(): void {
       void duplicate({
         variables: { id: block.id, idMap },
-        optimisticResponse: { campaignBlockDuplicate: subtreeAfter }
+        optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
+        context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
       })
         .then(() => {
           landed = true
