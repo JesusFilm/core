@@ -4,6 +4,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { campaignBasePath } from '../CampaignProvider'
 import { campaignImageSource } from '../libs/campaignImageSource'
 import type { CampaignImageSource } from '../libs/campaignImageSource'
+import { CAMPAIGN_LANGUAGE_PARAM } from '../libs/resolvePageLanguage'
 import { hasText } from '../types'
 import type { CampaignBlockOf, CampaignPublic, CampaignRegion } from '../types'
 
@@ -106,6 +107,24 @@ export function campaignPagePath(
   return basePath === '' ? '/' : basePath
 }
 
+/** One `hreflang` alternate per campaign language, then `x-default` at the bare canonical. */
+function campaignLanguageAlternates(
+  campaign: Pick<CampaignPublic, 'languages'>,
+  canonical: string
+): NonNullable<NextSeoProps['languageAlternates']> {
+  const alternates = campaign.languages.flatMap(({ language }) =>
+    language.bcp47 == null
+      ? []
+      : [
+          {
+            hrefLang: language.bcp47,
+            href: `${canonical}?${CAMPAIGN_LANGUAGE_PARAM}=${language.bcp47}`
+          }
+        ]
+  )
+  return [...alternates, { hrefLang: 'x-default', href: canonical }]
+}
+
 /**
  * The `NextSeo` props for a public campaign page (PRD §11): title from the
  * translated campaign title ("<region> · <title>" on a Region Page);
@@ -114,12 +133,9 @@ export function campaignPagePath(
  * as a `website` with the social image chain and `site_name` = the campaign
  * title.
  *
- * No `hreflang` alternates yet: the pages are ISR (`getStaticProps`) and
- * never read the `lang` query param, and no mutation can add a second
- * campaign language, so every alternate would point at an unserved
- * `<canonical>?lang=<bcp47>` URL that conflicts with the canonical tag. The
- * languages ticket serves `?lang` and adds languages; restore `hreflang`
- * (one per language plus `x-default`) at that point.
+ * `hreflang` alternates (PRD §2): one per campaign language at
+ * `<canonical>?lang=<bcp47>`, the form the page serves a Page Language
+ * under, plus `x-default` at the bare canonical.
  */
 export function campaignSeoProps(
   campaign: CampaignPublic,
@@ -137,6 +153,7 @@ export function campaignSeoProps(
     title,
     description,
     canonical,
+    languageAlternates: campaignLanguageAlternates(campaign, canonical),
     openGraph: {
       type: 'website',
       title,
