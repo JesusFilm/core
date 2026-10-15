@@ -54,29 +54,69 @@ async function getFirebaseAuthToken(): Promise<string> {
   return cachedFirebaseAuthToken
 }
 
-function createGraphQLClient(
+// Upper bound on a single GraphQL round trip. The importer processes files
+// sequentially, so a request that never settles would stall the whole run.
+export const GRAPHQL_REQUEST_TIMEOUT_MS = 60_000
+
+interface GraphQLResponseBody {
+  data?: unknown
+  errors?: GraphQLResponseError[]
+}
+
+async function parseResponseBody(
+  response: Response
+): Promise<GraphQLResponseBody | undefined> {
+  try {
+    return (await response.json()) as GraphQLResponseBody
+  } catch {
+    // Non-JSON body (e.g. an HTML error page from a proxy)
+    return undefined
+  }
+}
+
+export function createGraphQLClient(
   endpoint: string,
-  headers: Record<string, string>
+  headers: Record<string, string>,
+  { timeoutMs = GRAPHQL_REQUEST_TIMEOUT_MS }: { timeoutMs?: number } = {}
 ): GraphQLClient {
   return {
     async request(document, variables) {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({
-          query: typeof document === 'string' ? document : print(document),
-          variables
+      let response: Response
+      try {
+        response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...headers },
+          body: JSON.stringify({
+            query: typeof document === 'string' ? document : print(document),
+            variables
+          }),
+          signal: AbortSignal.timeout(timeoutMs)
         })
-      })
+      } catch (error) {
+        if (error instanceof Error && error.name === 'TimeoutError') {
+          throw new Error(
+            `GraphQL request to ${endpoint} timed out after ${timeoutMs}ms`,
+            { cause: error }
+          )
+        }
+        throw error
+      }
+      const body = await parseResponseBody(response)
+      const errors = body?.errors
       if (!response.ok) {
         throw new GraphQLClientError(
           `GraphQL request failed: ${response.status} ${response.statusText}`,
-          { status: response.status }
+          {
+            status: response.status,
+            ...(errors != null && errors.length > 0 ? { errors } : {})
+          }
         )
       }
-      const { data, errors } = (await response.json()) as {
-        data?: unknown
-        errors?: GraphQLResponseError[]
+      if (body == null) {
+        throw new GraphQLClientError(
+          `GraphQL response was not valid JSON (${response.status} ${response.statusText})`,
+          { status: response.status }
+        )
       }
       if (errors != null && errors.length > 0) {
         throw new GraphQLClientError(errors[0].message, {
@@ -84,7 +124,7 @@ function createGraphQLClient(
           errors
         })
       }
-      return data as never
+      return body.data as never
     }
   }
 }
