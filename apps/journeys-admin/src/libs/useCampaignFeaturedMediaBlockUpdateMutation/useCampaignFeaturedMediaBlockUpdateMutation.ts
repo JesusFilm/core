@@ -34,7 +34,10 @@ export interface CampaignFeaturedMediaInput {
 }
 
 export type CampaignFeaturedMediaMutate = (
-  block: Pick<CampaignFeaturedMediaBlock, 'id' | 'mediaSide' | 'layout' | 'mediaBlockId'>,
+  block: Pick<
+    CampaignFeaturedMediaBlock,
+    'id' | 'mediaSide' | 'layout' | 'mediaBlockId'
+  >,
   input: CampaignFeaturedMediaInput
 ) => Promise<ApolloLink.Result<CampaignFeaturedMediaBlockUpdate>>
 

@@ -109,10 +109,9 @@ describe('MediaSectionEdit', () => {
   it('shows the layout, side by side by default, with the media side enabled', () => {
     renderEdit([])
 
-    expect(screen.getByRole('button', { name: 'Side by side' })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    expect(
+      screen.getByRole('button', { name: 'Side by side' })
+    ).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'Stacked' })).toHaveAttribute(
       'aria-pressed',
       'false'
