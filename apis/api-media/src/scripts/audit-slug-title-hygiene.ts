@@ -51,14 +51,23 @@ const STRUCTURAL_REASONS: readonly SlugTitleHygieneReason[] = [
   'version-tag-remnant'
 ]
 
-function applyMechanicalFix(value: string): string {
-  return value
+function applyMechanicalFix(
+  value: string,
+  field: SlugTitleHygieneField
+): string {
+  // Slugs can't contain spaces, so underscores collapse to dashes there
+  // instead of spaces (titles) — see fix-underscore-video-slugs.ts for the
+  // same dash convention applied to real slug renames.
+  const isSlugField = field !== 'VideoTitle.value'
+  const joiner = isSlugField ? '-' : ' '
+  const fixed = value
     .trim()
     .replace(FILE_EXTENSION_RE, '')
     .replace(VERSION_TAG_RE, '')
-    .replace(/_/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/_/g, joiner)
+    .replace(isSlugField ? /-+/g : /\s+/g, joiner)
     .trim()
+  return isSlugField ? fixed.replace(/^-+|-+$/g, '') : fixed
 }
 
 function detectReasons(value: string): SlugTitleHygieneReason[] {
@@ -87,7 +96,7 @@ function buildFinding(
     STRUCTURAL_REASONS.includes(reason)
   )
   const proposedValue = isPurelyStructural
-    ? applyMechanicalFix(base.currentValue)
+    ? applyMechanicalFix(base.currentValue, base.field)
     : null
   const needsContentReview =
     proposedValue == null || proposedValue === base.currentValue

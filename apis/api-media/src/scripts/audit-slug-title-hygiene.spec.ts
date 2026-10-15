@@ -76,6 +76,35 @@ describe('auditSlugTitleHygiene', () => {
     expect(findings).toEqual([])
   })
 
+  it('proposes a dash-joined value for an underscored slug, never a space-joined one', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-shine',
+        slug: 'shine_films_collection',
+        published: true,
+        title: [],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([
+      {
+        videoId: 'video-shine',
+        videoSlug: 'shine_films_collection',
+        published: true,
+        field: 'Video.slug',
+        languageId: null,
+        variantSlug: null,
+        currentValue: 'shine_films_collection',
+        reasons: ['underscore'],
+        proposedValue: 'shine-films-collection',
+        needsContentReview: false
+      }
+    ])
+  })
+
   it('flags leading/trailing whitespace on a slug and proposes a trimmed value', async () => {
     prismaMock.video.findMany.mockResolvedValue([
       {

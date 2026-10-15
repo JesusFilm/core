@@ -17,7 +17,7 @@ describe('fixUnderscoreVideoTitles', () => {
   })
 
   it('rewrites a title that still matches the known bad value', async () => {
-    prismaMock.videoTitle.findUniqueOrThrow
+    prismaMock.videoTitle.findUnique
       .mockResolvedValueOnce({ id: 'title-1', value: 'Brand_Video' } as never)
       .mockResolvedValueOnce({
         id: 'title-2',
@@ -49,7 +49,7 @@ describe('fixUnderscoreVideoTitles', () => {
   })
 
   it('is a no-op once a title has already been fixed', async () => {
-    prismaMock.videoTitle.findUniqueOrThrow.mockResolvedValue({
+    prismaMock.videoTitle.findUnique.mockResolvedValue({
       id: 'title-1',
       value: 'Brand Video'
     } as never)
@@ -57,6 +57,46 @@ describe('fixUnderscoreVideoTitles', () => {
     const results = await fixUnderscoreVideoTitles()
 
     expect(results.every((r) => !r.updated)).toBe(true)
+    expect(prismaMock.videoTitle.update).not.toHaveBeenCalled()
+    expect(mockedVideoCacheReset).not.toHaveBeenCalled()
+  })
+
+  it('still matches when a prior whitespace-trim already stripped the trailing newline', async () => {
+    prismaMock.videoTitle.findUnique
+      .mockResolvedValueOnce({ id: 'title-1', value: 'Brand_Video' } as never)
+      .mockResolvedValueOnce({
+        id: 'title-2',
+        value: 'La_Busqueda_La Recherche'
+      } as never)
+
+    const results = await fixUnderscoreVideoTitles()
+
+    expect(results.every((r) => r.updated)).toBe(true)
+    expect(prismaMock.videoTitle.update).toHaveBeenCalledWith({
+      where: { id: 'title-2' },
+      data: { value: 'La Búsqueda - La Recherche' }
+    })
+  })
+
+  it('skips a title row that does not exist in this database instead of throwing', async () => {
+    prismaMock.videoTitle.findUnique.mockResolvedValue(null)
+
+    const results = await fixUnderscoreVideoTitles()
+
+    expect(results).toEqual([
+      {
+        videoId: '2_0-Brand_Video',
+        languageId: '529',
+        updated: false,
+        titleNotFound: true
+      },
+      {
+        videoId: '2_0-La_Busqueda_The_Search',
+        languageId: '496',
+        updated: false,
+        titleNotFound: true
+      }
+    ])
     expect(prismaMock.videoTitle.update).not.toHaveBeenCalled()
     expect(mockedVideoCacheReset).not.toHaveBeenCalled()
   })
