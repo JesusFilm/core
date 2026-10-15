@@ -113,7 +113,10 @@ describe('qrCode.service', () => {
       )
 
       await expect(
-        parseAndVerifyTo('https://journeys.example.org/christmas-europe', 'teamId')
+        parseAndVerifyTo(
+          'https://journeys.example.org/christmas-europe',
+          'teamId'
+        )
       ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
       expect(prismaMock.customDomain.findMany).not.toHaveBeenCalled()
     })
@@ -137,7 +140,10 @@ describe('qrCode.service', () => {
       } as never)
 
       await expect(
-        parseAndVerifyTo('https://example.com/christmas-europe/blockId', 'teamId')
+        parseAndVerifyTo(
+          'https://example.com/christmas-europe/blockId',
+          'teamId'
+        )
       ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: 'blockId' })
       expect(prismaMock.block.findFirstOrThrow).toHaveBeenCalledWith({
         where: { journeyId: 'journeyId', id: 'blockId' }
@@ -176,9 +182,9 @@ describe('qrCode.service', () => {
     })
 
     it('rejects an address without a journey slug', async () => {
-      await expect(parseAndVerifyTo('https://example.com/', 'teamId')).rejects.toThrow(
-        'Invalid to'
-      )
+      await expect(
+        parseAndVerifyTo('https://example.com/', 'teamId')
+      ).rejects.toThrow('Invalid to')
     })
   })
 })
