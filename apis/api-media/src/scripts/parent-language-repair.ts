@@ -37,7 +37,7 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error)
 }
 
-function toPendingRetry(
+export function toPendingRetry(
   entry: Pick<
     ParentLanguageRepairOutcome,
     'parentVideoId' | 'childVideoId' | 'languageId' | 'variantId' | 'action'
@@ -160,10 +160,21 @@ async function writeParentLanguageRepair(
  * and safe to leave in place) and the entry is reported as indexIncomplete
  * plus carried forward in pendingIndexRetries for the caller to retry on a
  * later run — without repeating the database write.
+ *
+ * options.onOutcome, when given, fires after each individual gap/retry is
+ * resolved (not just once at the end) so a caller can persist progress
+ * incrementally — a catalog-wide apply run can process many gaps and take
+ * minutes to hours, and without per-item persistence an interruption midway
+ * loses every completed outcome from both the report and the retry file,
+ * even though the underlying database writes already happened.
  */
 export async function applyParentLanguageRepairs(
   gaps: ParentVariantAuditEntry[],
-  options: { apply: boolean; pendingIndexRetries?: PendingIndexRetry[] }
+  options: {
+    apply: boolean
+    pendingIndexRetries?: PendingIndexRetry[]
+    onOutcome?: (outcome: ParentLanguageRepairOutcome) => Promise<void> | void
+  }
 ): Promise<ParentLanguageRepairSummary> {
   if (!options.apply) {
     return {
@@ -179,6 +190,15 @@ export async function applyParentLanguageRepairs(
   const indexIncomplete: ParentLanguageRepairOutcome[] = []
   const failed: ParentLanguageRepairOutcome[] = []
 
+  const record = async (
+    outcome: ParentLanguageRepairOutcome
+  ): Promise<void> => {
+    if (outcome.result === 'failed') failed.push(outcome)
+    else if (outcome.result === 'repaired') repaired.push(outcome)
+    else indexIncomplete.push(outcome)
+    await options.onOutcome?.(outcome)
+  }
+
   for (const gap of gaps) {
     const base = {
       parentVideoId: gap.parentVideoId,
@@ -191,7 +211,7 @@ export async function applyParentLanguageRepairs(
     try {
       variantId = await writeParentLanguageRepair(gap)
     } catch (error) {
-      failed.push({
+      await record({
         ...base,
         variantId: gap.variantId,
         result: 'failed',
@@ -202,9 +222,9 @@ export async function applyParentLanguageRepairs(
 
     try {
       await indexRepairedParentVariant(gap.parentVideoId, variantId)
-      repaired.push({ ...base, variantId, result: 'repaired' })
+      await record({ ...base, variantId, result: 'repaired' })
     } catch (error) {
-      indexIncomplete.push({
+      await record({
         ...base,
         variantId,
         result: 'indexIncomplete',
@@ -216,9 +236,9 @@ export async function applyParentLanguageRepairs(
   for (const retry of options.pendingIndexRetries ?? []) {
     try {
       await indexRepairedParentVariant(retry.parentVideoId, retry.variantId)
-      repaired.push({ ...retry, result: 'repaired' })
+      await record({ ...retry, result: 'repaired' })
     } catch (error) {
-      indexIncomplete.push({
+      await record({
         ...retry,
         result: 'indexIncomplete',
         error: errorMessage(error)

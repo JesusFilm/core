@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { mkdir, readFile, writeFile } from 'fs/promises'
+import { appendFile, mkdir, readFile, writeFile } from 'fs/promises'
 import path from 'path'
 
 import { prisma } from '@core/prisma/media/client'
@@ -12,9 +12,11 @@ import {
 } from './audit-parent-variants'
 import { hasFlag } from './cliFlags'
 import {
+  type ParentLanguageRepairOutcome,
   type ParentLanguageRepairSummary,
   type PendingIndexRetry,
-  applyParentLanguageRepairs
+  applyParentLanguageRepairs,
+  toPendingRetry
 } from './parent-language-repair'
 
 const REPORT_DIR = path.resolve('.cache/api-media')
@@ -67,12 +69,16 @@ async function loadPendingIndexRetries(): Promise<PendingIndexRetry[]> {
   return parsed
 }
 
-async function savePendingIndexRetries(
-  pendingIndexRetries: PendingIndexRetry[]
-): Promise<void> {
+async function ensureReportDir(): Promise<void> {
   if (!fs.existsSync(REPORT_DIR)) {
     await mkdir(REPORT_DIR, { recursive: true })
   }
+}
+
+async function savePendingIndexRetries(
+  pendingIndexRetries: PendingIndexRetry[]
+): Promise<void> {
+  await ensureReportDir()
   await writeFile(
     RETRY_PATH,
     JSON.stringify(pendingIndexRetries, null, 2),
@@ -80,13 +86,39 @@ async function savePendingIndexRetries(
   )
 }
 
+function retryKey(
+  entry: Pick<
+    PendingIndexRetry,
+    'parentVideoId' | 'childVideoId' | 'languageId' | 'variantId'
+  >
+): string {
+  return [
+    entry.parentVideoId,
+    entry.childVideoId,
+    entry.languageId,
+    entry.variantId
+  ].join(':')
+}
+
+async function initReport(
+  records: Array<Record<string, unknown>>
+): Promise<void> {
+  await ensureReportDir()
+  const lines = records.map((record) => JSON.stringify(record)).join('\n')
+  await writeFile(REPORT_PATH, lines.length > 0 ? `${lines}\n` : '', 'utf-8')
+}
+
+async function appendReportRecord(
+  record: Record<string, unknown>
+): Promise<void> {
+  await ensureReportDir()
+  await appendFile(REPORT_PATH, `${JSON.stringify(record)}\n`, 'utf-8')
+}
+
 async function writeReport(
   audit: ParentVariantAuditResult,
   repair: ParentLanguageRepairSummary
 ): Promise<void> {
-  if (!fs.existsSync(REPORT_DIR)) {
-    await mkdir(REPORT_DIR, { recursive: true })
-  }
   const records = [
     ...audit.deterministicGaps.map((entry) => ({ type: 'gap', ...entry })),
     ...audit.ambiguous.map((entry) => ({ type: 'ambiguous', ...entry })),
@@ -97,8 +129,7 @@ async function writeReport(
     })),
     ...repair.failed.map((entry) => ({ type: 'failed', ...entry }))
   ]
-  const lines = records.map((record) => JSON.stringify(record)).join('\n')
-  await writeFile(REPORT_PATH, lines.length > 0 ? `${lines}\n` : '', 'utf-8')
+  await initReport(records)
 }
 
 export async function runParentLanguageAudit(apply: boolean): Promise<{
@@ -107,10 +138,43 @@ export async function runParentLanguageAudit(apply: boolean): Promise<{
 }> {
   const audit = await auditParentVariants()
   const pendingIndexRetries = apply ? await loadPendingIndexRetries() : []
-  const repair = await applyParentLanguageRepairs(audit.deterministicGaps, {
-    apply,
-    pendingIndexRetries
-  })
+
+  // Persisted once up front so an apply run that gets interrupted during the
+  // (potentially long) repair loop below still leaves the detected gaps on
+  // disk, then kept current after every single outcome via onOutcome —
+  // rather than only writing the report and retry file once the whole batch
+  // finishes, which would lose every completed outcome on an interruption
+  // even though the underlying database writes already happened.
+  await initReport([
+    ...audit.deterministicGaps.map((entry) => ({ type: 'gap', ...entry })),
+    ...audit.ambiguous.map((entry) => ({ type: 'ambiguous', ...entry }))
+  ])
+
+  const repairOptions: {
+    apply: boolean
+    pendingIndexRetries: PendingIndexRetry[]
+    onOutcome?: (outcome: ParentLanguageRepairOutcome) => Promise<void>
+  } = { apply, pendingIndexRetries }
+
+  if (apply) {
+    const retries = new Map(
+      pendingIndexRetries.map((retry) => [retryKey(retry), retry])
+    )
+    repairOptions.onOutcome = async (outcome) => {
+      await appendReportRecord({ type: outcome.result, ...outcome })
+      if (outcome.result === 'indexIncomplete') {
+        retries.set(retryKey(outcome), toPendingRetry(outcome))
+      } else if (outcome.result === 'repaired') {
+        retries.delete(retryKey(outcome))
+      }
+      await savePendingIndexRetries([...retries.values()])
+    }
+  }
+
+  const repair = await applyParentLanguageRepairs(
+    audit.deterministicGaps,
+    repairOptions
+  )
 
   await writeReport(audit, repair)
   if (apply) {

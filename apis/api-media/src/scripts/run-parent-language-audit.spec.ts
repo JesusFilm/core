@@ -24,7 +24,20 @@ vi.mock('./audit-parent-variants', () => ({
   auditParentVariants: vi.fn()
 }))
 vi.mock('./parent-language-repair', () => ({
-  applyParentLanguageRepairs: vi.fn()
+  applyParentLanguageRepairs: vi.fn(),
+  toPendingRetry: (entry: {
+    parentVideoId: string
+    childVideoId: string
+    languageId: string
+    variantId: string
+    action: string
+  }) => ({
+    parentVideoId: entry.parentVideoId,
+    childVideoId: entry.childVideoId,
+    languageId: entry.languageId,
+    variantId: entry.variantId,
+    action: entry.action
+  })
 }))
 
 const files = new Map<string, string>()
@@ -46,6 +59,10 @@ vi.mock('fs/promises', () => ({
   }),
   writeFile: vi.fn((path: string, data: string) => {
     files.set(path, data)
+    return Promise.resolve()
+  }),
+  appendFile: vi.fn((path: string, data: string) => {
+    files.set(path, (files.get(path) ?? '') + data)
     return Promise.resolve()
   })
 }))
@@ -81,6 +98,10 @@ const ORIGINAL_ARGV = process.argv
 const RETRY_PATH = path.resolve(
   '.cache/api-media',
   'parent-language-audit-index-retry.json'
+)
+const REPORT_PATH = path.resolve(
+  '.cache/api-media',
+  'parent-language-audit-report.jsonl'
 )
 
 describe('run-parent-language-audit', () => {
@@ -126,9 +147,60 @@ describe('run-parent-language-audit', () => {
 
     expect(mockedRepair).toHaveBeenCalledWith([], {
       apply: true,
-      pendingIndexRetries: [savedRetry]
+      pendingIndexRetries: [savedRetry],
+      onOutcome: expect.any(Function)
     })
     expect(files.get(RETRY_PATH)).toBe('[]')
+  })
+
+  it('persists the report and retry file incrementally as each outcome resolves, not only at the end', async () => {
+    mockedAudit.mockResolvedValue(auditResult())
+    const outcome = {
+      parentVideoId: 'series-1',
+      childVideoId: 'episode-1',
+      languageId: '20770',
+      variantId: '20770_series-1',
+      action: 'createGeneratedParentVariant' as const,
+      result: 'indexIncomplete' as const,
+      error: 'Algolia unavailable'
+    }
+    mockedRepair.mockImplementation(async (_gaps, options) => {
+      await options.onOutcome?.(outcome)
+      // Simulate the file state an interruption would leave behind: the
+      // incremental write from onOutcome already landed even though this
+      // mock never returns a final summary.
+      expect(files.get(RETRY_PATH)).toBe(
+        JSON.stringify(
+          [
+            {
+              parentVideoId: outcome.parentVideoId,
+              childVideoId: outcome.childVideoId,
+              languageId: outcome.languageId,
+              variantId: outcome.variantId,
+              action: outcome.action
+            }
+          ],
+          null,
+          2
+        )
+      )
+      expect(files.get(REPORT_PATH)).toContain('"type":"indexIncomplete"')
+      return repairSummary({
+        applied: true,
+        indexIncomplete: [outcome],
+        pendingIndexRetries: [
+          {
+            parentVideoId: outcome.parentVideoId,
+            childVideoId: outcome.childVideoId,
+            languageId: outcome.languageId,
+            variantId: outcome.variantId,
+            action: outcome.action
+          }
+        ]
+      })
+    })
+
+    await runParentLanguageAudit(true)
   })
 
   it('propagates a non-ENOENT retry-file read error instead of treating it as an empty queue', async () => {
