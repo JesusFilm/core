@@ -145,9 +145,16 @@ describe('createGraphQLClient', () => {
   it('aborts a request that exceeds the timeout', async () => {
     globalThis.fetch = ((_url: string, init?: RequestInit) =>
       new Promise<Response>((_resolve, reject) => {
-        init?.signal?.addEventListener('abort', () =>
-          reject(init.signal?.reason)
+        // AbortSignal.timeout() uses an unref'd timer, so hold the event loop
+        // open until the abort fires (or give up if it never does).
+        const keepAlive = setTimeout(
+          () => reject(new Error('fake fetch was never aborted')),
+          5_000
         )
+        init?.signal?.addEventListener('abort', () => {
+          clearTimeout(keepAlive)
+          reject(init.signal?.reason)
+        })
       })) as unknown as typeof fetch
 
     const client = createGraphQLClient(ENDPOINT, {}, { timeoutMs: 20 })

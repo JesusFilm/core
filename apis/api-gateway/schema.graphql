@@ -3714,7 +3714,7 @@ union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__
 
 union MutationShortLinkDomainPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainPublishSuccess")  = NotFoundError | MutationShortLinkDomainPublishSuccess
 
-union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 union MutationShortLinkPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkPublishSuccess")  = NotFoundError | MutationShortLinkPublishSuccess
 

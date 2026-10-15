@@ -809,7 +809,7 @@ input MutationShortLinkDomainUpdateInput {
   autoFailover: Boolean
 }
 
-union MutationShortLinkDomainUpdateResult = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult = ZodError | NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 type MutationShortLinkDomainUpdateSuccess {
   data: ShortLinkDomain!
