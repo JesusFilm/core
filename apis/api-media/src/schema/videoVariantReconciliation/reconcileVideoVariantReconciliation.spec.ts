@@ -254,7 +254,11 @@ describe('reconcileVideoVariantReconciliation', () => {
         processingStages: expect.objectContaining({
           algoliaVideo: expect.objectContaining({
             state: 'failed',
-            error: 'Algolia unavailable'
+            error: 'Algolia unavailable',
+            // A single sweep syncs two Video records (the parent container's,
+            // then the child's own) on this one shared algoliaVideo slot --
+            // attempts must advance by 1 for the run, not once per videoId.
+            attempts: 1
           })
         })
       })
@@ -262,6 +266,67 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(result).toMatchObject({
       publicationReady: false,
       status: 'degraded'
+    })
+  })
+
+  it('counts a single attempt even when both the parent and child Video-index syncs fail in one run', async () => {
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {
+        algoliaVideo: { state: 'failed', attempts: 2 }
+      },
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: false,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+    vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
+    prismaMock.video.findMany.mockResolvedValue([
+      { id: 'series-1', slug: 'do-you-ever-wonder' }
+    ] as never)
+    prismaMock.videoVariant.findFirst.mockResolvedValue({
+      id: '20770_series-1',
+      hls: '',
+      dash: '',
+      share: '',
+      downloads: []
+    } as never)
+    prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+    vi.mocked(updateVideoInAlgolia)
+      .mockRejectedValueOnce(new Error('Algolia unavailable'))
+      .mockRejectedValueOnce(new Error('Algolia unavailable'))
+
+    await reconcileVideoVariantReconciliation('reconciliation-1')
+
+    expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
+    expect(updateVideoInAlgolia).toHaveBeenCalledWith('episode-1')
+    expect(
+      prismaMock.videoVariantReconciliation.update
+    ).toHaveBeenLastCalledWith({
+      where: { id: 'reconciliation-1' },
+      data: expect.objectContaining({
+        processingStages: expect.objectContaining({
+          algoliaVideo: expect.objectContaining({
+            state: 'failed',
+            attempts: 3
+          })
+        })
+      })
     })
   })
 
@@ -308,6 +373,63 @@ describe('reconcileVideoVariantReconciliation', () => {
       })
     })
     expect(result).toMatchObject({ publicationReady: true, status: 'degraded' })
+  })
+
+  it('still schedules a Downloads retry when algoliaVideo has exhausted its own backoff', async () => {
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      // algoliaVideo is one sync away from retryAtFor's 5-attempt cutoff, so
+      // this run's failure would otherwise persist retryAt: null.
+      processingStages: { algoliaVideo: { state: 'failed', attempts: 4 } },
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: false,
+        downloadable: true,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+    prismaMock.video.findMany.mockResolvedValue([])
+    prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+    vi.mocked(updateVideoInAlgolia).mockRejectedValueOnce(
+      new Error('Algolia unavailable')
+    )
+
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1' },
+      data: expect.objectContaining({
+        status: 'degraded',
+        // Downloads' own 24h-bounded retry wins out over algoliaVideo's
+        // exhausted, null-returning backoff, so the record stays due.
+        retryAt: expect.any(Date),
+        errorMessage: 'Requested Downloads are not ready',
+        processingStages: expect.objectContaining({
+          algoliaVideo: expect.objectContaining({
+            state: 'failed',
+            attempts: 5
+          }),
+          downloads: expect.objectContaining({ state: 'failed' })
+        })
+      })
+    })
+    expect(result).toMatchObject({
+      publicationReady: false,
+      status: 'degraded'
+    })
   })
 
   it('marks an unusable Variant failed after the Mux processing window', async () => {
