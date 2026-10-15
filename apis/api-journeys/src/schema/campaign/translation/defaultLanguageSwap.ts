@@ -2,7 +2,9 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma } from '@core/prisma/journeys/client'
 
+import { lockCampaign, lockCampaignTextRows } from '../block/service'
 import { TranslationsJson } from '../translatedValue'
+import { badUserInput } from '../validation'
 
 import {
   CAMPAIGN_BLOCK_TEXT_FIELDS,
@@ -72,8 +74,11 @@ export function countMissingTranslations(
 
 /**
  * Promote `newDefaultLanguageId` to the campaign's default inside `tx`. The
- * campaign is read again here so the completeness gate and the swap see one
- * consistent snapshot: any missing text on a live block rejects with
+ * text rows, then the campaign row (the order block edits take them in), are
+ * locked and read again here so the language-membership check,
+ * the completeness gate and the swap see one consistent snapshot that a
+ * concurrent language removal cannot change: a language no longer on the
+ * campaign rejects with `BAD_USER_INPUT`, field `defaultLanguageId`; any missing text on a live block rejects with
  * `CONFLICT`, field `defaultLanguageId`, carrying the count, and rolls the
  * transaction back. Soft-deleted blocks are swapped too so a restore finds its
  * text in the right language, but they are not gated: a deleted block with no
@@ -87,11 +92,23 @@ export async function swapDefaultLanguage(
   campaignId: string,
   newDefaultLanguageId: string
 ): Promise<SwappedColumns> {
+  await lockCampaignTextRows(tx, campaignId)
+  await lockCampaign(tx, campaignId)
   const campaign = await tx.campaign.findUniqueOrThrow({
     where: { id: campaignId },
     include: { ...INCLUDE_TRANSLATIONS_CAMPAIGN, blocks: true }
   })
+  if (
+    !campaign.languages.some(
+      (language) => language.languageId === newDefaultLanguageId
+    )
+  )
+    throw badUserInput(
+      'defaultLanguageId must be one of the campaign languages',
+      'defaultLanguageId'
+    )
   const oldDefaultLanguageId = campaign.defaultLanguageId
+  if (oldDefaultLanguageId === newDefaultLanguageId) return {}
   const liveBlocks = campaign.blocks.filter((block) => block.deletedAt == null)
 
   const count = countMissingTranslations(

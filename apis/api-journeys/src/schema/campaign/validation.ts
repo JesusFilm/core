@@ -12,7 +12,9 @@ import {
   SLUG_PATTERN,
   SlugInvalidError,
   SlugReservedError,
-  SlugTakenError
+  SlugTakenError,
+  firstFreeSlug,
+  slugBase
 } from '../templateGalleryPage/generateUniqueSlug'
 
 export { assertHttpsUrl }
@@ -227,23 +229,6 @@ export const REGION_RESERVED_SLUGS: ReadonlySet<string> = new Set([
   '_next'
 ])
 
-function slugBase(source: string, reserved: ReadonlySet<string>): string {
-  const normalized = slugify(source, { lower: true, strict: true })
-  if (normalized === '' || reserved.has(normalized))
-    throw new SlugReservedError(normalized === '' ? '(empty)' : normalized)
-  return normalized.slice(0, SLUG_MAX_LENGTH)
-}
-
-function firstFreeSlug(base: string, taken: ReadonlySet<string>): string {
-  if (!taken.has(base)) return base
-  for (let suffix = 2; suffix <= 50; suffix++) {
-    const suffixPart = `-${suffix}`
-    const candidate = `${base.slice(0, SLUG_MAX_LENGTH - suffixPart.length)}${suffixPart}`
-    if (!taken.has(candidate)) return candidate
-  }
-  throw new SlugTakenError()
-}
-
 function normalizeAuthorSlug(
   rawSlug: string,
   reserved: ReadonlySet<string>
@@ -257,7 +242,8 @@ function normalizeAuthorSlug(
 
 /**
  * Generate a globally unique campaign slug from the title: slugify lower
- * strict, then the first free of `base`, `base-2` … `base-50`.
+ * strict, then the first free of `base`, `base-2` … `base-50`, then a nanoid
+ * suffix.
  */
 export async function generateUniqueCampaignSlug(
   title: string,

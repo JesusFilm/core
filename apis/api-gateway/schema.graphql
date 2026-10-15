@@ -401,7 +401,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
   - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
-  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`.
+  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
@@ -1014,6 +1014,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `defaultLanguageId`): not an api-languages language.
   - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
+  - CONFLICT (field: `slug`): a concurrent create took the generated address twice; retry.
   """
   campaignCreate(input: CampaignCreateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1027,7 +1028,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
   - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
-  - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages.
+  - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
+  - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
   - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -3631,13 +3633,13 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     languageId: ID
   ): CampaignPublic! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is published or archived (a draft, trashed or deleted journey does not count), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
+  The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is not deleted (draft, published and archived all count; a trashed or deleted journey does not), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
   
   Auth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.
   
   Errors:
   - NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.
-  - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served and not retried for a few minutes.
+  - Plausible failure with nothing cached: the query errors; with a cached sweep, that sweep is served however old, and a stale one is refreshed in the background (a failed refresh is not retried for a few minutes). One journey's Plausible failure does not fail the sweep: that journey keeps its last rows, or counts as no visitors.
   """
   campaignStats(id: ID!) : CampaignStats! @join__field(graph: API_JOURNEYS_MODERN) 
   """

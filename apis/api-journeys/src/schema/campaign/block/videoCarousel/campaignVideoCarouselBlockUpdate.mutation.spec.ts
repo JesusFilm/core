@@ -6,7 +6,11 @@ import {
 import { CampaignFixture } from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
-import { fetchWatchVideoById, fetchWatchVideoBySlug } from '../../gatewayClient'
+import {
+  fetchLanguage,
+  fetchWatchVideoById,
+  fetchWatchVideoBySlug
+} from '../../gatewayClient'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -14,6 +18,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 
 vi.mock('../../gatewayClient', async () => ({
   ...(await vi.importActual('../../gatewayClient')),
+  fetchLanguage: vi.fn(),
   fetchWatchVideoBySlug: vi.fn(),
   fetchWatchVideoById: vi.fn()
 }))
@@ -41,6 +46,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
+    vi.mocked(fetchLanguage).mockResolvedValue({ id: '529', bcp47: 'en' })
     const block = campaignBlockWithAcl(fixture, 'carouselId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(block)
     prismaMock.campaignBlock.update.mockImplementation((async ({
@@ -143,6 +149,37 @@ describe('campaignVideoCarouselBlockUpdate', () => {
         videoId: 'watchVideoId',
         videoVariantLanguageId: '496'
       })
+    })
+
+    it('refuses a variant language that is not an api-languages language (BAD_USER_INPUT, videoVariantLanguageId)', async () => {
+      vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
+        id: 'watchVideoId',
+        label: 'collection',
+        childrenCount: 3
+      })
+      vi.mocked(fetchWatchVideoById).mockResolvedValue({
+        id: 'watchVideoId',
+        label: 'series',
+        childrenCount: 8
+      })
+      vi.mocked(fetchLanguage).mockResolvedValue(null)
+
+      const withUrl = await update({
+        url: WATCH_URL,
+        videoVariantLanguageId: 'nope'
+      })
+      const withVideoId = await update({
+        videoId: 'watchVideoId',
+        videoVariantLanguageId: 'nope'
+      })
+
+      for (const result of [withUrl, withVideoId])
+        expect(result.errors[0].extensions).toMatchObject({
+          code: 'BAD_USER_INPUT',
+          field: 'videoVariantLanguageId'
+        })
+      expect(fetchLanguage).toHaveBeenCalledWith('nope')
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
 
     it('refuses a link that is not a Watch video (BAD_USER_INPUT, url)', async () => {

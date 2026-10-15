@@ -1567,6 +1567,7 @@ export interface CampaignCreate {
    * - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
    * - BAD_USER_INPUT (field: `defaultLanguageId`): not an api-languages language.
    * - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
+   * - CONFLICT (field: `slug`): a concurrent create took the generated address twice; retry.
    */
   campaignCreate: CampaignCreate_campaignCreate;
 }

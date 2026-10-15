@@ -693,7 +693,7 @@ describe('campaignCreate', () => {
       expect(rows.every((row) => row.campaignId === 'id-1')).toBe(true)
     })
 
-    it("uses the admin i18next bundle's translation when the default language is not English and has that exact string", async () => {
+    it("uses the libs-journeys-ui bundle's translation when the default language is not English and has that exact string", async () => {
       mockFetchLanguage.mockResolvedValue({ id: '21028', bcp47: 'es' })
       await create({ defaultLanguageId: '21028' })
       const rows = firstCallData<Array<{ key: string; value: string }>>(
@@ -702,7 +702,7 @@ describe('campaignCreate', () => {
       const byKey = Object.fromEntries(
         rows.map(({ key, value }) => [key, value])
       )
-      // "Copy link" exists in the Spanish admin bundle; the other sixteen do
+      // "Copy link" exists in the mocked Spanish bundle; the other sixteen do
       // not and keep their English wording.
       expect(byKey.copy).toBe('Copiar enlace')
       expect(byKey.allRegions).toBe('All regions')
@@ -792,6 +792,24 @@ describe('campaignCreate', () => {
       expect(result.errors).toBeUndefined()
       expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
       expect(prismaMock.$transaction).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('slug race', () => {
+    it('answers CONFLICT (field slug), not a raw Prisma error, when the retry loses the race too', async () => {
+      const p2002 = new Prisma.PrismaClientKnownRequestError(
+        'unique constraint failed',
+        { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
+      )
+      prismaMock.campaign.create.mockRejectedValue(p2002)
+
+      const result = await create()
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'slug'
+      })
+      expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
     })
   })
 

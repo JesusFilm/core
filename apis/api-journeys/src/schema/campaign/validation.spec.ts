@@ -354,6 +354,18 @@ describe('campaign validation', () => {
       )
     })
 
+    it('falls back to a nanoid suffix once base-2…base-50 are taken', async () => {
+      prismaMock.campaign.findMany.mockResolvedValue([
+        { slug: 'christmas' },
+        ...Array.from({ length: 49 }, (_, i) => ({
+          slug: `christmas-${i + 2}`
+        }))
+      ] as any)
+      const slug = await generateUniqueCampaignSlug('Christmas')
+      expect(slug).toMatch(/^christmas-[a-z0-9]{6}$/)
+      expect(SLUG_PATTERN.test(slug)).toBe(true)
+    })
+
     it('uses the gallery SLUG_PATTERN and SLUG_MAX_LENGTH of 200', async () => {
       expect(SLUG_MAX_LENGTH).toBe(200)
       expect(SLUG_PATTERN.test('eur-2026')).toBe(true)

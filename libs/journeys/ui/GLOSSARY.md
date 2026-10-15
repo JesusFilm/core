@@ -47,10 +47,14 @@ _Avoid_: section wrapper, card (a card sits inside a band)
 A campaign button whose action target is missing (a scroll target on another page, a deleted region, no action at all): rendered static with the same look and never hidden.
 
 **Analytics Panel**:
+<<<<<<< HEAD
 The body of the Analytics section, shared by the public page and the editor canvas: the Top country and visitors tiles and a ranked, numbered list of top countries whose rows animate when the ranking changes. The landing page has a tab per region plus an all-regions tab, a Region Page is fixed to its region, and the **World Map** is optional.
 
 **World Map**:
 The Analytics Panel's optional map: the selected tab's Region Countries are shaded by visitors and the view zooms to them. Countries join the map by country code, never by name, so any the map lacks stay in the ranked list only.
+=======
+The body of the Analytics section (`CampaignAnalyticsPanel`), shared by the public page and the editor canvas so both read the same `campaignStats` query and cache. It fetches client-side after render (never in the page payload), then shows the Top country and visitors tiles and a numbered top-10 country list ranked by views, with no bars; rows move to their new rank with a CSS transform transition when the tab or the data changes. The landing page gets region tabs (every listed region, then ALL) that follow the WAI-ARIA tabs pattern (roving tabindex, arrow keys, Home/End, a tab named by its visible region code and described by the region name), a Region Page is fixed to its region. With `showMap` on it also draws the **World Map**: `buildWorldMap` projects `world-atlas/countries-110m.json` (served from the viewer's public folder) once with `d3-geo` into path strings, so it server-renders and zooms with a CSS transition only. The map is letterboxed (`meet`) so the whole atlas and every region zoom stay in view. Countries in the selected tab's Region Countries (ALL: every region's) take the theme accent in four steps by visitors and the tab zooms to their bounding box; every other country is the band's neutral tint. Plausible's alpha-2 codes join the atlas ids through `countryNumericCode`, never by name, so `XK`, `A1` and microstates missing from 110m stay in the ranked list only. Country labels come from `Intl.DisplayNames` in the viewer locale; `totalVisitors`, `topCountry` and `allRegions` are Campaign Strings, the state copy ("No visits yet", "Visitor numbers are temporarily unavailable") is i18next.
+>>>>>>> origin/feature/10-05-SC-feature-9757
 
 ### Playback (viewer-side)
 

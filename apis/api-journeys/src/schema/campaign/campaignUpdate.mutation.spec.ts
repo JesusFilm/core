@@ -599,6 +599,60 @@ describe('campaignUpdate', () => {
       })
     })
 
+    it('rejects a title given together with a changed default language (BAD_USER_INPUT, field title)', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(
+        campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()
+      )
+
+      const result: any = await authClient({
+        document: CAMPAIGN_SET_DEFAULT,
+        variables: {
+          id: 'campaignId',
+          input: { defaultLanguageId: FRENCH, title: 'Noël' }
+        }
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'title'
+      })
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    })
+
+    it('locks the campaign row and re-checks membership in the swap transaction, so a concurrent removal cannot leave the default outside the list (BAD_USER_INPUT, field defaultLanguageId)', async () => {
+      const campaign = campaignFactory({ role: 'member' })
+        .withLanguage(FRENCH)
+        .build()
+      prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+      prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
+        ...campaign,
+        languages: campaign.languages.filter(
+          (language) => language.languageId !== FRENCH
+        )
+      } as any)
+
+      const result = await setDefault(FRENCH)
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'defaultLanguageId'
+      })
+      const lockSql = prismaMock.$queryRaw.mock.calls.map(([strings]) =>
+        (strings as unknown as readonly string[]).join('')
+      )
+      expect(lockSql).toHaveLength(4)
+      expect(lockSql.every((sql) => sql.includes('FOR UPDATE'))).toBe(true)
+      expect(lockSql.map((sql) => sql.match(/"(\w+)"/)?.[1])).toEqual([
+        'CampaignBlock',
+        'CampaignRegion',
+        'CampaignString',
+        'Campaign'
+      ])
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
     it('does nothing when the language is already the default', async () => {
       const campaign = campaignFactory({ role: 'member' }).build()
       prismaMock.campaign.findUnique.mockResolvedValue(campaign)
