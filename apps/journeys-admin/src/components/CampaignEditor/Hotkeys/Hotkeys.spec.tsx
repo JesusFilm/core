@@ -1,6 +1,8 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
+
+import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { StaticEditor } from '../testing'
@@ -9,10 +11,11 @@ import { Hotkeys } from './Hotkeys'
 
 function StateProbe(): ReactElement {
   const {
-    state: { panel, inspectorTab }
+    state: { panel, inspectorTab, navigatorExpandRequest }
   } = useCampaignEditor()
   return (
     <>
+      <span data-testid="NavigatorExpandRequest">{navigatorExpandRequest}</span>
       <span data-testid="Panel">{panel}</span>
       <span data-testid="InspectorTab">{inspectorTab}</span>
     </>
@@ -28,13 +31,39 @@ function FrameHotkeys({ frame }: { frame: Document }): ReactElement {
   )
 }
 
+const undoCommand = vi.fn()
+const redoCommand = vi.fn()
+
+function AddCommand(): ReactElement {
+  const { add } = useCommand()
+  return (
+    <button
+      onClick={() =>
+        add({
+          parameters: { execute: undefined, undo: undefined },
+          execute: () => undefined,
+          undo: undoCommand,
+          redo: redoCommand
+        })
+      }
+    >
+      Add command
+    </button>
+  )
+}
+
 function frameDocument(): Document {
   const iframe = document.createElement('iframe')
   document.body.appendChild(iframe)
   return iframe.contentDocument as Document
 }
 
-function pressInFrame(frame: Document, target: Element, key: string): void {
+function pressInFrame(
+  frame: Document,
+  target: Element,
+  key: string,
+  modifiers: KeyboardEventInit = {}
+): void {
   const FrameKeyboardEvent = (frame.defaultView as Window & typeof globalThis)
     .KeyboardEvent
   act(() => {
@@ -42,7 +71,8 @@ function pressInFrame(frame: Document, target: Element, key: string): void {
       new FrameKeyboardEvent('keydown', {
         key,
         code: key.length === 1 ? `Key${key.toUpperCase()}` : key,
-        bubbles: true
+        bubbles: true,
+        ...modifiers
       })
     )
   })
@@ -50,6 +80,47 @@ function pressInFrame(frame: Document, target: Element, key: string): void {
 
 describe('Hotkeys', () => {
   describe('inside the canvas frame', () => {
+    beforeEach(() => vi.clearAllMocks())
+
+    it('undoes on ⌘Z and redoes on ⇧⌘Z fired on the frame document, even from an input', () => {
+      const frame = frameDocument()
+      render(
+        <StaticEditor>
+          <Hotkeys document={frame} />
+          <AddCommand />
+        </StaticEditor>
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Add command' }))
+      const input = frame.createElement('input')
+      frame.body.appendChild(input)
+      input.focus()
+
+      pressInFrame(frame, input, 'z', { metaKey: true })
+      expect(undoCommand).toHaveBeenCalledTimes(1)
+      expect(redoCommand).not.toHaveBeenCalled()
+
+      pressInFrame(frame, input, 'z', { metaKey: true, shiftKey: true })
+      expect(redoCommand).toHaveBeenCalledTimes(1)
+      expect(undoCommand).toHaveBeenCalledTimes(1)
+    })
+
+    it('expands or collapses the Navigator tree on Option+Z, and Z alone opens the panel', () => {
+      const frame = frameDocument()
+      render(<FrameHotkeys frame={frame} />)
+
+      pressInFrame(frame, frame.body, 'z', { altKey: true })
+      expect(screen.getByTestId('NavigatorExpandRequest')).toHaveTextContent(
+        '1'
+      )
+      expect(screen.getByTestId('Panel')).toHaveTextContent('pages')
+
+      pressInFrame(frame, frame.body, 'z')
+      expect(screen.getByTestId('NavigatorExpandRequest')).toHaveTextContent(
+        '1'
+      )
+      expect(screen.getByTestId('Panel')).toHaveTextContent('navigator')
+    })
+
     it('leaves Escape to a dialog portaled into the frame', () => {
       const frame = frameDocument()
       render(<FrameHotkeys frame={frame} />)

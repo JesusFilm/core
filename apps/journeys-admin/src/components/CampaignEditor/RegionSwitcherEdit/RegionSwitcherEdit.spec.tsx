@@ -122,7 +122,7 @@ describe('RegionSwitcherEdit', () => {
     expect(screen.getByTestId('CampaignRegionCountry')).toHaveTextContent(
       'France'
     )
-    // Africa is unlisted; and the region being rendered never shows itself.
+    // The region being rendered never shows itself.
     expect(
       screen.queryByTestId('RegionCardEdit-afrRegionId')
     ).not.toBeInTheDocument()
@@ -203,8 +203,36 @@ describe('RegionSwitcherEdit', () => {
     })
 
     await waitFor(() =>
-      expect(screen.getByTestId('RegionSwitcherEmpty')).toBeInTheDocument()
+      expect(
+        screen.getByTestId('RegionCardEdit-afrRegionId')
+      ).toBeInTheDocument()
     )
+    expect(
+      screen.queryByTestId('RegionCardEdit-eurRegionId')
+    ).not.toBeInTheDocument()
+  })
+
+  it('draws an unlisted region muted with an eye-slash, and selects it on click', async () => {
+    renderSwitcher(campaignWithRegions)
+
+    const africa = await screen.findByTestId('RegionCardEdit-afrRegionId')
+    expect(africa).toHaveAttribute('data-unlisted', 'true')
+    expect(within(africa).getByTestId('RegionUnlisted')).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId('RegionCardEdit-eurRegionId')).queryByTestId(
+        'RegionUnlisted'
+      )
+    ).not.toBeInTheDocument()
+
+    expect(africa).toHaveStyle({ opacity: '0.5' })
+
+    fireEvent.click(africa)
+
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+    expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+      'afrRegionId'
+    )
+    expect(africa).not.toHaveStyle({ opacity: '0.5' })
   })
 
   it('runs campaignRegionCreate from + Add as a Command and selects the new card', async () => {
@@ -286,7 +314,11 @@ describe('RegionSwitcherEdit', () => {
         screen.getByTestId('RegionCardEdit-eurRegionId')
       ).toBeInTheDocument()
     )
-    fireEvent.click(screen.getByTestId('RegionCardName'))
+    fireEvent.click(
+      within(screen.getByTestId('RegionCardEdit-eurRegionId')).getByTestId(
+        'RegionCardName'
+      )
+    )
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
     expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
       'eurRegionId'
@@ -302,6 +334,17 @@ describe('RegionSwitcherEdit', () => {
     // Escape steps a line up to its region, then the region to its switcher.
     fireEvent.keyDown(document.body, { key: 'Escape' })
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
+    expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+      'eurRegionId'
+    )
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingSwitcherId'
+    )
+    fireEvent.keyDown(document.body, { key: 'Escape' })
+    expect(screen.getByTestId('SelectionKind')).toHaveTextContent('section')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingSwitcherId'
+    )
     fireEvent.keyDown(document.body, { key: 'Escape' })
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('campaign')
   })

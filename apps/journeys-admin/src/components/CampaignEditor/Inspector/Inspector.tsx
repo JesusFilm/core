@@ -86,7 +86,11 @@ export function Inspector({
     >
       <Stack spacing={2} sx={{ p: 4, pb: 2 }}>
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-          {blockIcon(selection.block?.__typename)}
+          {blockIcon(
+            selection.kind === 'region'
+              ? 'CampaignRegionSwitcherBlock'
+              : selection.block?.__typename
+          )}
           <Typography
             variant="subtitle1"
             noWrap
