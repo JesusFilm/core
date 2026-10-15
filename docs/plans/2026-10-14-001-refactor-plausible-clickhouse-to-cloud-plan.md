@@ -1,5 +1,5 @@
 ---
-title: 'refactor: Move Plausible''s ClickHouse from EKS to the shared ClickHouse Cloud service'
+title: "refactor: Move Plausible's ClickHouse from EKS to the shared ClickHouse Cloud service"
 type: refactor
 status: active
 date: 2026-10-14
@@ -22,7 +22,7 @@ Plausible's ClickHouse runs as a `sentry/clickhouse` subchart inside `infrastruc
 
 ## Assumptions
 
-*This plan was authored without synchronous user confirmation. The items below are agent inferences that fill gaps in the input and should be reviewed before implementation proceeds.*
+_This plan was authored without synchronous user confirmation. The items below are agent inferences that fill gaps in the input and should be reviewed before implementation proceeds._
 
 - **"The ClickHouse Cloud used by the shortener" means the same service, not a second service of the same kind.** Plausible gets its own database (`plausible_events_db`) and user on `jfp-short-links-<env>`; the service is renamed to reflect shared ownership. If a separate service per tenant is preferred, U2 shrinks to a second module call and everything else is unchanged.
 - **Plausible stays on v2.1.1 through the migration.** One change at a time: the Plausible version upgrade (chart `0.11.1` → `1.4.0`, CE v3.x) is a separate piece of work. If stage shows v2.1.1 cannot run against ClickHouse Cloud's server version, the fallback sequencing is to upgrade Plausible on EKS first, then migrate.
@@ -73,7 +73,7 @@ Plausible's ClickHouse runs as a `sentry/clickhouse` subchart inside `infrastruc
 - `workers/short-links-redirect/README.md` "Setting up ClickHouse": the runbook pattern to mirror (admin `clickhouse client --secure --port 9440`, `--queries-file`, per-tenant users with `sha256_password`, narrow grants). `workers/short-links-redirect/clickhouse/0001_init.sql`: the checked-in DDL pattern.
 - `infrastructure/GLOSSARY.md` "Short-links ClickHouse" entry explicitly contrasts the managed service with "Plausible's self-hosted ClickHouse on EKS"; it needs rewriting.
 - Plausible v2.1.1 `config/runtime.exs`: `CLICKHOUSE_DATABASE_URL` is an Ecto URL, so `https://user:pass@host:8443/plausible_events_db` works; `CLICKHOUSE_CACERTFILE` and IPv6 transport options exist; `IngestRepo` uses `CLICKHOUSE_INGEST_POOL_SIZE`, `CLICKHOUSE_FLUSH_INTERVAL_MS`, `CLICKHOUSE_MAX_BUFFER_SIZE`. The `ClickhouseRepo` sets `readonly: 1` and `join_algorithm` per query; these are query-level settings and are allowed on Cloud.
-- Plausible v2.1.1 `priv/ingest_repo/migrations`: table engines are `MergeTree` (×10), `SummingMergeTree(value)` (`ingest_counters`), `VersionedCollapsingMergeTree` (`sessions_v2`, since 2024-02) and one `ReplicatedMergeTree`; settings `index_granularity` and `replicated_deduplication_window`. Nothing uses `ON CLUSTER`. ClickHouse Cloud transparently maps the MergeTree family to the Shared* equivalents.
+- Plausible v2.1.1 `priv/ingest_repo/migrations`: table engines are `MergeTree` (×10), `SummingMergeTree(value)` (`ingest_counters`), `VersionedCollapsingMergeTree` (`sessions_v2`, since 2024-02) and one `ReplicatedMergeTree`; settings `index_granularity` and `replicated_deduplication_window`. Nothing uses `ON CLUSTER`. ClickHouse Cloud transparently maps the MergeTree family to the Shared\* equivalents.
 - Consumers of Plausible's ClickHouse are only Plausible itself: `apis/api-journeys/src/schema/plausible/*` and `src/workers/plausible/*` go through Plausible's HTTP Stats API (`PLAUSIBLE_URL`), and `api-analytics` reads Plausible's Postgres. Nothing in the repo queries Plausible's ClickHouse directly.
 
 ### Institutional Learnings
@@ -131,7 +131,7 @@ Plausible's ClickHouse runs as a `sentry/clickhouse` subchart inside `infrastruc
 
 ## High-Level Technical Design
 
-> *This illustrates the intended approach and is directional guidance for review, not implementation specification. The implementing agent should treat it as context, not code to reproduce.*
+> _This illustrates the intended approach and is directional guidance for review, not implementation specification. The implementing agent should treat it as context, not code to reproduce._
 
 ```mermaid
 flowchart LR
@@ -183,9 +183,11 @@ sequenceDiagram
 **Dependencies:** None
 
 **Files:**
+
 - Create: `infrastructure/kube/plausible-analytics/README.md` (runbook; this unit writes the "Before you start" section with the measurement queries and records the stage numbers)
 
 **Approach:**
+
 - From a `kubectl exec` into the ClickHouse pod: list tables in `plausible_events_db`, per-table and per-partition `rows`, `bytes_on_disk` and `data_uncompressed_bytes` from `system.parts`, the `schema_migrations` row count, and the `SHOW CREATE TABLE` of every table.
 - Record the pod's peak memory from Datadog (the Platform Cluster runs the Datadog operator) and the current `CLICKHOUSE_INGEST_POOL_SIZE` / buffer settings in Doppler.
 - Check whether the `-replica` PVC contains data. List any legacy v1 tables and decide (with their sizes) whether they are copied or dropped from scope.
@@ -195,12 +197,15 @@ sequenceDiagram
 - Confirm the Argo CD applications' actual state (`argocd app get plausible-analytics` on each cluster) and whether the live PVCs carry the `app.kubernetes.io/instance=plausible-analytics` label, so U2 knows what the first correctly-pathed sync would prune.
 
 **Patterns to follow:**
+
 - `workers/short-links-redirect/README.md` "Setting up ClickHouse" for runbook tone and the `clickhouse client --secure --port 9440` invocation.
 
 **Test scenarios:**
+
 - Test expectation: none -- measurement and documentation only. The outputs are the numbers written into the runbook.
 
 **Verification:**
+
 - The runbook lists every table with row and byte counts for stage, the chosen replica memory and recovery window per environment, the DDL export location, the pre-flight result, the prod copy-time estimate, and the Argo CD sync and PVC-label state per environment.
 
 ---
@@ -214,6 +219,7 @@ sequenceDiagram
 **Dependencies:** U1 (sizing)
 
 **Files:**
+
 - Modify: `infrastructure/modules/clickhouse/service/main.tf` (service name from a variable, tags, header comment naming both tenants and both runbooks)
 - Modify: `infrastructure/modules/clickhouse/service/variables.tf` (`name` or `service_name` variable; `replica_memory_gb` description mentions both tenants)
 - Modify: `infrastructure/environments/stage/main.tf`, `infrastructure/environments/prod/main.tf` (`module "clickhouse"` with a `moved` block from `module.short_links_clickhouse`, `replica_memory_gb` from U1, comments)
@@ -221,16 +227,19 @@ sequenceDiagram
 - Modify: `infrastructure/GLOSSARY.md` ("Short-links ClickHouse" → "Core ClickHouse" entry describing both tenants, their databases and users, and that Plausible's old EKS ClickHouse is gone after U7)
 
 **Approach:**
+
 - Renaming `clickhouse_service.name` is an in-place update in the provider; the `moved` block keeps the resource address stable so `prevent_destroy` is never challenged. Confirm in the Atlantis plan that the only service change is `name`, `tags` and (if changed) memory.
 - Doppler secret names and values in `core` are unchanged (R4).
 - Stage keeps `idle_scaling = true` for now (see deferred question); prod stays always on.
 - The Argo path fix is its own PR and lands with pruning off: before merging, `helm template` the wrapper chart and `argocd app diff` it against the live stage app; set `prune: false` (or the `Prune=false` sync option) in the stage application in the same change; merge; review what Argo reports as out-of-sync; re-enable pruning only once the diff contains nothing that holds data. Note that the wrapper chart adds two `VolumeSnapshot` objects the deploy script never applied, so the first sync creates two EBS snapshots. Prod has manual sync, so every later prod change (U5 values, U7 removal) is an explicit `argocd app sync`, with `--prune` only in U7.
 
 **Patterns to follow:**
+
 - `infrastructure/AGENTS.md`: variables not hardcoded values, `validation` blocks, `terraform fmt`.
 - Existing `moved` usage in the estate, if any; otherwise the Terraform docs' `moved { from = module.a  to = module.b }` form.
 
 **Test scenarios:**
+
 - Happy path: Atlantis plan for stage shows the service updated in place (name/tags/memory), no destroy, no Doppler secret changes.
 - Edge case: plan for prod with `replica_memory_gb` unchanged shows only name and tags.
 - Error path: if the plan proposes replacing `clickhouse_service.this`, stop; `prevent_destroy` will block it, and the module change must be reworked.
@@ -238,6 +247,7 @@ sequenceDiagram
 - Integration: after the Argo path fix merges to `stage` with pruning off, `argocd app get plausible-analytics` reports Healthy, the ClickHouse pod and both PVCs are untouched, and the only new objects are the two `VolumeSnapshot`s.
 
 **Verification:**
+
 - Both environments' Terraform applied with the service renamed and nothing destroyed; Worker inserts and api-media stats still work on stage; Argo shows both Plausible apps synced from the real chart path with no data-bearing object pruned.
 
 ---
@@ -251,22 +261,26 @@ sequenceDiagram
 **Dependencies:** U1 (DDL export), U2 (service exists in its final shape)
 
 **Files:**
+
 - Create: `infrastructure/kube/plausible-analytics/clickhouse/0001_plausible_events_db.sql` (the DDL generated from the source in U1 with engines rewritten for Cloud; header comment states Plausible's migrations own the schema from now on and this file is the migration-time snapshot)
 - Create: `infrastructure/kube/plausible-analytics/clickhouse/0002_users.sql.example` or a README section (the `plausible` user, settings profile and grants, with placeholder password)
 - Modify: `infrastructure/kube/plausible-analytics/README.md` ("Prepare the tenant" section)
 
 **Approach:**
+
 - DDL rewrite rules: drop `Replicated` parameters, keep `ORDER BY`, `PARTITION BY`, `SETTINGS`, codecs; `schema_migrations` becomes a MergeTree-family table `ORDER BY tuple()` (Cloud maps to Shared). Leave `replicated_deduplication_window` in place; it is a valid MergeTree setting on Cloud.
 - Run the file with `clickhouse client --queries-file` as `default`, like the short-links runbook.
 - The `plausible` user: `sha256_password` with a password that avoids `@ : / ? # %` (it is embedded in an Ecto URL; otherwise percent-encode it), grants on `plausible_events_db.*` only (Plausible's future migrations need DDL rights; try `GRANT ALL`, and keep the explicit list `SELECT, INSERT, ALTER, CREATE TABLE, CREATE DATABASE, DROP, TRUNCATE, OPTIMIZE, SHOW` ready in case Cloud's `default` cannot grant some sub-privilege), and a `SETTINGS PROFILE` with `max_memory_usage`, `max_execution_time` and `max_concurrent_queries_for_user`, sized so concurrency × per-query memory stays within a documented fraction of the replica. Document the chosen numbers and how to lift them temporarily for Plausible's own long-running work (imports, the future v3 data migrations).
 - Verify on stage that the init container's `db createdb` (`CREATE DATABASE IF NOT EXISTS`) succeeds under the database-scoped grant; its access check runs before the existence check, and a failure here crash-loops the pod with `ACCESS_DENIED`.
 - Create a throwaway `migrator` user with no profile and `INSERT` on `plausible_events_db.*` for the push (or push as `default`); it is dropped in U5 after cutover.
-- Set `CLICKHOUSE_DATABASE_URL` in the `plausible` Doppler config as a *second* key for now (e.g. `CLICKHOUSE_DATABASE_URL_CLOUD`) so the value is staged and reviewable before cutover swaps it in.
+- Set `CLICKHOUSE_DATABASE_URL` in the `plausible` Doppler config as a _second_ key for now (e.g. `CLICKHOUSE_DATABASE_URL_CLOUD`) so the value is staged and reviewable before cutover swaps it in.
 
 **Patterns to follow:**
+
 - `workers/short-links-redirect/clickhouse/0001_init.sql` and the user block in its README.
 
 **Test scenarios:**
+
 - Happy path: running the DDL file twice is idempotent (`IF NOT EXISTS` throughout).
 - Happy path: `SHOW CREATE TABLE` on Cloud for each table has the same columns in the same order, and the same order-by and partition expressions, as the source export (diff the normalized output; positional column match matters for the push).
 - Happy path: as `plausible`, `CREATE DATABASE IF NOT EXISTS plausible_events_db` succeeds (what the init container runs).
@@ -275,6 +289,7 @@ sequenceDiagram
 - Edge case: a `CREATE TABLE ... ENGINE = TinyLog` as the `plausible` user fails on Cloud, demonstrating why `schema_migrations` is pre-created.
 
 **Verification:**
+
 - `plausible_events_db` exists with every source table and an empty `schema_migrations`; the `plausible` user can read and write only that database.
 
 ---
@@ -288,24 +303,29 @@ sequenceDiagram
 **Dependencies:** U3
 
 **Files:**
+
 - Modify: `infrastructure/kube/plausible-analytics/README.md` ("Bulk copy" section with the statement shapes, the boundary `W` convention and the verification queries)
 
 **Approach:**
+
 - Choose `W` as a UTC timestamp in the past (for example the most recent midnight UTC, written as `toDateTime('...', 'UTC')`). The `< W` copy of `sessions_v2` and `ingest_counters` must start no earlier than `W` plus the session timeout (30 min) plus margin, so every row it reads is already immutable.
 - From the source pod, as `migrator`/`default`, one slice at a time: `INSERT INTO FUNCTION remoteSecure('<host>:9440', 'plausible_events_db.<table>', '<user>', '<pw>') SELECT * FROM plausible_events_db.<table> WHERE <slice>`. Slices are whole partitions (`_partition_id = '<p>'`) for old months and per-day (`toDate(timestamp) = '<d>'`) for large `events_v2` months, always with `AND timestamp < W` (`event_timestamp` for `ingest_counters`). Copy every in-scope `imported_*` table whole. Copy `schema_migrations` whole.
 - Run the inserts with `max_insert_threads` and a bounded `max_memory_usage` so the 24.3 pod is not OOM-killed; log each completed slice so a failure resumes at the next one. A failed slice is cleared on Cloud with a lightweight `DELETE` of its predicate (or `DROP PARTITION` when the slice is a whole partition and nothing else has landed in it) and re-run; nothing is ever re-inserted on top.
 - Verification per table/partition, same query on both sides: `events_v2` and `imported_*`: `count()`, `uniqExact(session_id)`, `min/max(timestamp)`; `sessions_v2`: `sum(sign)`, `sum(sign * pageviews)` and `count()` under `FINAL` (raw `count()` depends on merge state and will not match); `ingest_counters`: `sum(value) GROUP BY metric`. Always with the `< W` predicate so the source's ongoing writes do not move the numbers.
 
 **Patterns to follow:**
+
 - ClickHouse Cloud migration guide, push variant.
 
 **Test scenarios:**
+
 - Happy path: after the run, every partition's merge-invariant metrics under `< W` match on both sides for all three live tables, and `imported_*` counts match.
 - Error path: a slice insert interrupted mid-way is detected by the metric mismatch, the slice is cleared on Cloud with the documented `DELETE`/`DROP PARTITION`, and the retry produces matching metrics (exercise this deliberately on stage once, on a `sessions_v2` slice, to prove the metrics are stable across merges).
 - Edge case: a table with zero rows (common for `imported_*` on stage) copies without error and verifies as 0 = 0.
 - Integration: Plausible dashboards on the source keep working during the copy, and the short-links Worker's queue shows no rise in retries or dead letters while the Cloud service is ingesting the bulk load.
 
 **Verification:**
+
 - The runbook's count table is filled in for stage with all rows matching; the bulk copy took a recorded wall-clock time that sizes the prod run.
 
 ---
@@ -319,9 +339,11 @@ sequenceDiagram
 **Dependencies:** U4
 
 **Files:**
+
 - Modify: `infrastructure/kube/plausible-analytics/README.md` ("Cutover" and "Rollback" sections)
 
 **Approach:**
+
 - Scale the Plausible deployment to zero (stage: through the chart's `replicaCount` so Argo does not fight a manual scale, or pause auto-sync for the window; prod has manual sync so `kubectl scale` is fine). Wait for termination; the write buffer flushes on shutdown.
 - Push the `>= W` half of `events_v2`, `sessions_v2` and `ingest_counters` (per-day slices for `events_v2` if the delta spans days). If a delta slice fails, clear it with `DELETE ... WHERE <slice predicate>` on Cloud and re-run; never drop the partition, which holds the verified `< W` half. Then verify every partition of every table with the U4 metrics, now without the `< W` predicate; re-verify `imported_*` counts; verify `schema_migrations` row count. Drop the `migrator` user.
 - In Doppler `plausible/<cfg>`, set `CLICKHOUSE_DATABASE_URL` to the Cloud value (`https://plausible:<pw>@<host>:8443/plausible_events_db`); confirm the Doppler operator has refreshed the Kubernetes Secret.
@@ -330,9 +352,11 @@ sequenceDiagram
 - Rollback (documented, rehearsed once on stage): revert the Doppler key, scale down and up. Note the data written to Cloud since cutover is not copied back.
 
 **Patterns to follow:**
+
 - Argo CD sync discipline in `infrastructure/kube/AGENTS.md` (no hand-patching that the next sync undoes).
 
 **Test scenarios:**
+
 - Happy path: post-cutover, every partition of every table matches the source on the merge-invariant metrics taken after scale-down.
 - Error path: a delta slice interrupted mid-way is cleared with the documented `DELETE` and re-run, and the `>= W` metrics then match (rehearse once on stage).
 - Happy path: Plausible starts with "Migrations successful" / nothing pending and no ClickHouse errors in the first ten minutes.
@@ -341,6 +365,7 @@ sequenceDiagram
 - Integration: a pageview sent after cutover appears in the Cloud `events_v2` and in the dashboard; `api-journeys` stats queries return data for a journey with pre-migration traffic.
 
 **Verification:**
+
 - Stage runs on Cloud with counts matching and the smoke checks green; the runbook has the measured gap length; the same runbook executed on prod with recorded numbers.
 
 ---
@@ -354,20 +379,24 @@ sequenceDiagram
 **Dependencies:** U5 on stage
 
 **Files:**
+
 - Modify: `infrastructure/kube/plausible-analytics/README.md` ("What to watch" section)
 - Possibly modify: `infrastructure/environments/stage/main.tf` (`idle_scaling` / `idle_timeout_minutes` if the deferred question resolves to always-on)
 
 **Approach:**
+
 - Watch for a week on stage: Plausible error logs for ClickHouse exceptions (query behaviour differences on the newer server version), ingest counters (`ingest_counters` rows with `metric = 'dropped_*'`), Cloud service idle/wake events, Cloud's server version (note any upgrade during the soak and what it did), and the Worker's queue metrics, specifically retries and dead letters during dashboard-heavy periods (drive a few concurrent dashboard loads deliberately).
 - Gate for prod: no unexplained ClickHouse errors, dashboards and Stats API parity, no Worker dead letters attributable to Plausible load, bulk copy + cutover timing acceptable when scaled by U1's prod sizes.
 - Add a "Restore" section to the runbook: how a Cloud backup is restored (into a new service) and how `plausible_events_db` is pushed back from it, so the recovery window decided in U1 is backed by a procedure.
 
 **Test scenarios:**
+
 - Happy path: seven days of stage traffic with no ClickHouse exceptions in Plausible logs and no short-links dead letters.
 - Edge case: after the service idles, the next pageview and the next dashboard load both succeed (possibly slowly); if the ingest flush is lost on wake, record it and switch stage to always-on.
 - Integration: with several dashboards loading concurrently on stage, the Worker's queue shows no dead letters and `short_links_writer` inserts keep succeeding.
 
 **Verification:**
+
 - A dated "prod go" note in the runbook with the observed numbers; prod cutover then follows U3–U5.
 
 ---
@@ -381,6 +410,7 @@ sequenceDiagram
 **Dependencies:** U5 on prod plus the agreed rollback window (suggest two weeks)
 
 **Files:**
+
 - Modify: `infrastructure/kube/plausible-analytics/values.yaml`, `infrastructure/kube/plausible-analytics/values-stage.yaml` (`clickhouse.enabled: false`, drop the subchart `affinity`/`clickhouse` blocks; keep the Plausible pod affinity only if still wanted)
 - Delete: `infrastructure/kube/plausible-analytics/templates/storage-class.yaml`, `snapshot-class.yaml`, `volume-snapshot.yaml`
 - Modify: `infrastructure/environments/stage/main.tf`, `infrastructure/environments/prod/main.tf` (remove `module "plausible_clickhouse_snapshots"`)
@@ -388,20 +418,24 @@ sequenceDiagram
 - Modify: `infrastructure/GLOSSARY.md` (remove the "Plausible's self-hosted ClickHouse" contrast once gone)
 
 **Approach:**
+
 - Ordering matters: (1) take one final manual EBS snapshot of each prod data volume and tag it with a delete-after date; (2) apply the Terraform that removes the DLM module calls while the volumes are still attached. This is not because the removal would fail later (a module removed from configuration has no preconditions), but because a still-configured module with detached volumes fails every other plan for that environment; removing the `aws_ec2_tag` resources untags the volumes, which is fine. Deleting the policy does not delete its snapshots: delete the DLM-created snapshots (tagged `aws:dlm:lifecycle-policy-id`) explicitly, keeping only the final one from step 1; (3) merge the chart change so Argo removes the StatefulSet (stage: automated; prod: `argocd app sync --prune` by hand); (4) delete the PVCs, then the PVs (`Retain`), then the EBS volumes; (5) delete the `clickhouse-gp3` StorageClass and VolumeSnapshotClass objects, and the two `VolumeSnapshot` objects (their `VolumeSnapshotContent`s are `Retain`; clean them with the existing script's approach or by hand).
 - Stage first, prod after. The prod window should be long enough to have observed at least one Cloud server upgrade on stage (see Key Technical Decisions).
 - Leave `cleanup-csi-snapshots.sh` in place until the snapshot backlog follow-up is done; it does not depend on the StatefulSet.
 
 **Patterns to follow:**
+
 - `infrastructure/modules/aws/ebs-snapshot-policy/main.tf` precondition messages for the ordering rationale.
 
 **Test scenarios:**
+
 - Happy path: Terraform plan removing the DLM modules shows only the policy, role and volume tags being destroyed.
 - Error path: if the StatefulSet is removed first, every plan for that environment fails on the DLM precondition until the module calls are removed; the runbook orders the steps to avoid it and names this as the symptom.
 - Integration: after the Argo sync, Plausible pods are running, no `clickhouse` pods or PVCs remain, and dashboards still work (they never pointed at the subchart after U5).
 - Edge case: the final prod snapshot exists in EC2 with the expected size before any volume is deleted, and no DLM-tagged snapshots remain afterwards.
 
 **Verification:**
+
 - No ClickHouse workload, PVC, PV, EBS volume, DLM policy or DLM snapshot remains for Plausible in either environment; one tagged final snapshot per prod volume; repo contains no references to the removed objects.
 
 ---
@@ -419,22 +453,22 @@ sequenceDiagram
 
 ## Risk Analysis & Mitigation
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Plausible v2.1.1 queries misbehave on Cloud's newer ClickHouse (analyzer or function changes; `compatibility` is fixed at service creation) | Med | High | Stage soak (U6) before prod; fallback is upgrading Plausible on EKS first, which also means bumping the EKS ClickHouse image to 24.12+ for CE v3, then migrating |
-| Cloud upgrades the server after cutover and v2.1.1 breaks with no EKS to roll back to | Med | High | Stated exposure; prod rollback window outlasts one observed stage upgrade; CE v3 upgrade time-boxed as the next piece of work |
-| Basic tier 8/12 GiB cannot serve Plausible's dashboard queries plus Worker inserts | Med | Med | U1 measures peak memory; profile caps Plausible's concurrency × memory; Worker DLQ watched in U6; escalate to Scale tier as an explicit cost decision |
-| Partial or duplicated slice copy | Med | High | Per-slice statements, merge-invariant verification, defined clear-and-rerun per slice kind |
-| Verification false negatives on collapsing/summing tables | High if `count()` is used | Med | Never compare raw `count()` on `sessions_v2` / `ingest_counters`; use `sum(sign)`, `FINAL` counts and summed values |
-| `sessions_v2` rows mutated after the `< W` copy | Low | Med | Start the `< W` copy only after `W` + session timeout; post-shutdown verification covers every partition, not only the current one |
-| Cutover gap loses pageviews and breaks `api-journeys` stats briefly | High | Low | Off-peak window; delta is only `>= W` across the three live tables, so the gap does not depend on day of month; gap length measured on stage and announced for prod |
-| Argo CD's first correctly-pathed sync prunes the ClickHouse PVCs or other live objects | Med | High | Path fix lands with pruning off after a local `argocd app diff`; pruning re-enabled only after review |
-| Recovery window shrinks from weeks of EBS snapshots to Cloud's 24-hour backup | High | Med | Explicit retention decision in U1 (accept, Scale tier, or `BACKUP ... TO S3`); Restore section in the runbook; final tagged EBS snapshot kept |
-| `remoteSecure` TLS from the 24.3 pod fails (server config or CA bundle) | Low | Med | Pre-flight in U1 before any other work; S3 route as fallback |
-| Someone runs `apis/api-analytics/infrastructure/deploy.sh` mid-migration | Low | Med | Called out in the runbook and the deferred-work list; the duplicate is deleted in a follow-up |
-| DLM module precondition breaks Terraform once volumes detach | High if misordered | Med | U7 orders the Terraform apply before the StatefulSet removal |
-| TLS trust from the Plausible image to Cloud | Low | Low | `CLICKHOUSE_CACERTFILE` is available if the system store is not trusted |
-| Stage idle wake drops ingest flushes | Med | Low | Observed in U6; switch stage to always-on if it matters |
+| Risk                                                                                                                                        | Likelihood                | Impact | Mitigation                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plausible v2.1.1 queries misbehave on Cloud's newer ClickHouse (analyzer or function changes; `compatibility` is fixed at service creation) | Med                       | High   | Stage soak (U6) before prod; fallback is upgrading Plausible on EKS first, which also means bumping the EKS ClickHouse image to 24.12+ for CE v3, then migrating    |
+| Cloud upgrades the server after cutover and v2.1.1 breaks with no EKS to roll back to                                                       | Med                       | High   | Stated exposure; prod rollback window outlasts one observed stage upgrade; CE v3 upgrade time-boxed as the next piece of work                                       |
+| Basic tier 8/12 GiB cannot serve Plausible's dashboard queries plus Worker inserts                                                          | Med                       | Med    | U1 measures peak memory; profile caps Plausible's concurrency × memory; Worker DLQ watched in U6; escalate to Scale tier as an explicit cost decision               |
+| Partial or duplicated slice copy                                                                                                            | Med                       | High   | Per-slice statements, merge-invariant verification, defined clear-and-rerun per slice kind                                                                          |
+| Verification false negatives on collapsing/summing tables                                                                                   | High if `count()` is used | Med    | Never compare raw `count()` on `sessions_v2` / `ingest_counters`; use `sum(sign)`, `FINAL` counts and summed values                                                 |
+| `sessions_v2` rows mutated after the `< W` copy                                                                                             | Low                       | Med    | Start the `< W` copy only after `W` + session timeout; post-shutdown verification covers every partition, not only the current one                                  |
+| Cutover gap loses pageviews and breaks `api-journeys` stats briefly                                                                         | High                      | Low    | Off-peak window; delta is only `>= W` across the three live tables, so the gap does not depend on day of month; gap length measured on stage and announced for prod |
+| Argo CD's first correctly-pathed sync prunes the ClickHouse PVCs or other live objects                                                      | Med                       | High   | Path fix lands with pruning off after a local `argocd app diff`; pruning re-enabled only after review                                                               |
+| Recovery window shrinks from weeks of EBS snapshots to Cloud's 24-hour backup                                                               | High                      | Med    | Explicit retention decision in U1 (accept, Scale tier, or `BACKUP ... TO S3`); Restore section in the runbook; final tagged EBS snapshot kept                       |
+| `remoteSecure` TLS from the 24.3 pod fails (server config or CA bundle)                                                                     | Low                       | Med    | Pre-flight in U1 before any other work; S3 route as fallback                                                                                                        |
+| Someone runs `apis/api-analytics/infrastructure/deploy.sh` mid-migration                                                                    | Low                       | Med    | Called out in the runbook and the deferred-work list; the duplicate is deleted in a follow-up                                                                       |
+| DLM module precondition breaks Terraform once volumes detach                                                                                | High if misordered        | Med    | U7 orders the Terraform apply before the StatefulSet removal                                                                                                        |
+| TLS trust from the Plausible image to Cloud                                                                                                 | Low                       | Low    | `CLICKHOUSE_CACERTFILE` is available if the system store is not trusted                                                                                             |
+| Stage idle wake drops ingest flushes                                                                                                        | Med                       | Low    | Observed in U6; switch stage to always-on if it matters                                                                                                             |
 
 ---
 
