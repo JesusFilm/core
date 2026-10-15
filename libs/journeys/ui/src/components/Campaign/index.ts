@@ -7,7 +7,6 @@ export {
   CampaignAnalyticsPanel,
   GET_CAMPAIGN_STATS
 } from './CampaignAnalytics'
-export { buildWorldMap } from './CampaignAnalytics/WorldMap'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
 export {
@@ -121,13 +120,20 @@ export {
 } from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
 export { watchUrl } from './libs/watchUrl'
-export { hasText, isCampaignSection } from './types'
+export {
+  CAMPAIGN_EXTRA_TYPENAMES,
+  CAMPAIGN_NON_SECTION_TYPENAMES,
+  hasText,
+  isCampaignSection,
+  isExtra
+} from './types'
 export type {
   CampaignBlock,
   CampaignBlockOf,
   CampaignPublic,
   CampaignRegion,
   CampaignSectionBlock,
+  CampaignSectionTypename,
   CampaignSectionTree,
   CampaignTree,
   CampaignTreeOf

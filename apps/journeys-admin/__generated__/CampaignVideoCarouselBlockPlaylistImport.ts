@@ -21,6 +21,18 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
   language: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_title_language;
 }
 
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description_language;
+}
+
 export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -50,6 +62,7 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
    */
   childrenCount: number;
   title: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_title[];
+  description: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description[];
   images: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_images[];
   variant: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant | null;
 }

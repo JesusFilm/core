@@ -1,19 +1,18 @@
 import { GetServerSideProps } from 'next'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import {
-  CAMPAIGN_LANGUAGE_COOKIE,
-  matchRegionSlug
-} from '@core/journeys/ui/Campaign'
 import type {
   CampaignPublic,
   CampaignRegion,
   WorldMapShapes
 } from '@core/journeys/ui/Campaign'
+import { matchRegionSlug } from '@core/journeys/ui/Campaign/libs/matchRegionSlug'
+import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -24,7 +23,6 @@ import {
 } from '../../__generated__/GetJourney'
 import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
-import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
@@ -36,6 +34,17 @@ import { getFlags } from '../../src/libs/getFlags'
 import { getWorldMap } from '../../src/libs/getWorldMap'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
+
+// The campaign branch only renders for a Campaign Root domain; journey visitors
+// never download it.
+const CampaignPageWrapper = dynamic(
+  async () =>
+    (
+      await import(
+        /* webpackChunkName: "CampaignPageWrapper" */ '../../src/components/CampaignPageWrapper'
+      )
+    ).CampaignPageWrapper
+)
 
 interface HostJourneyPageProps {
   host: string

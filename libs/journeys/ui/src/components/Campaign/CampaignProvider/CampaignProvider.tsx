@@ -6,9 +6,14 @@ import {
   useMemo
 } from 'react'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignPageKind,
+  CampaignStringKey
+} from '../../../../__generated__/globalTypes'
 import type { WorldMapShapes } from '../CampaignAnalytics/WorldMap'
 import type { CampaignPublic, CampaignRegion } from '../types'
+
+import { campaignString } from './campaignString'
 
 export interface CampaignContextValue {
   campaign: CampaignPublic
@@ -22,12 +27,14 @@ export interface CampaignContextValue {
   worldMap?: WorldMapShapes | null
   /** Ids of every block on the current page, for same-page anchors. */
   pageBlockIds: ReadonlySet<string>
+  /** A Campaign String in the Page Language; empty when the campaign lacks the row or it is blank. */
+  string: (key: CampaignStringKey) => string
 }
 
 const CampaignContext = createContext<CampaignContextValue | null>(null)
 
 interface CampaignProviderProps {
-  value: Omit<CampaignContextValue, 'pageBlockIds' | 'basePath'> & {
+  value: Omit<CampaignContextValue, 'pageBlockIds' | 'basePath' | 'string'> & {
     basePath?: string
   }
   children: ReactNode
@@ -72,7 +79,8 @@ export function CampaignProvider({
     return {
       ...value,
       basePath: value.basePath ?? campaignBasePath(value.campaign.slug),
-      pageBlockIds: new Set(page?.blocks.map((block) => block.id) ?? [])
+      pageBlockIds: new Set(page?.blocks.map((block) => block.id) ?? []),
+      string: (key) => campaignString(value.campaign.strings, key)
     }
   }, [value])
   return (

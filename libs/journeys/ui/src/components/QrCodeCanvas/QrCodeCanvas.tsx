@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
 import Stack from '@mui/material/Stack'
+import { useTranslation } from 'next-i18next/pages'
 import { QRCodeCanvas } from 'qrcode.react'
 import { ReactElement } from 'react'
 import { flushSync } from 'react-dom'
@@ -92,6 +93,7 @@ export function QrCodeCanvas({
   id,
   cornerRadius = 2
 }: QrCodeCanvasProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const showQrCode = value != null && !loading
   const showEmpty = value == null && !loading
   const tileSize = size + 12
@@ -113,7 +115,7 @@ export function QrCodeCanvas({
         >
           <QRCodeCanvas
             id={id}
-            title="QR Code"
+            title={t('QR Code')}
             size={size}
             level={QR_CODE_LEVEL}
             fgColor={QR_CODE_FOREGROUND}
@@ -141,7 +143,7 @@ export function QrCodeCanvas({
       {loading && (
         <Skeleton
           variant="rectangular"
-          aria-label="Loading QR code"
+          aria-label={t('Loading QR code')}
           sx={{
             borderRadius: cornerRadius,
             minHeight: tileSize,

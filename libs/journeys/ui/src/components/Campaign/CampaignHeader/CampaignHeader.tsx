@@ -48,7 +48,7 @@ const LOGO_HEIGHT = CAMPAIGN_HEADER_HEIGHT - 24
 export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const context = useCampaign()
-  const { campaign, region } = context
+  const { campaign, region, string } = context
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
 
   const band = useMemo(
@@ -62,10 +62,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
   )
   const logo = campaignImageSource(block.logo)
   const landingHref = campaignLandingHref(context)
-  const allRegions =
-    campaign.strings.find(
-      (string) => string.key === CampaignStringKey.allRegions
-    )?.value ?? ''
+  const allRegions = string(CampaignStringKey.allRegions)
 
   function handleMenuOpen(event: MouseEvent<HTMLElement>): void {
     setMenuAnchor(event.currentTarget)
@@ -91,7 +88,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
         component="a"
         href={resolved.href}
         target={resolved.target}
-        rel={resolved.target === '_blank' ? 'noopener noreferrer' : undefined}
+        rel="noopener noreferrer"
         onClick={handleMenuClose}
       >
         {button.label}
