@@ -299,4 +299,7 @@ async function main(): Promise<void> {
   )
 }
 
-void main()
+main().catch((error) => {
+  logger.error({ error }, 'run-slug-title-hygiene-audit failed')
+  process.exit(1)
+})

@@ -7,4 +7,7 @@ async function main(): Promise<void> {
   logger.info({ result }, 'Whitespace video title fix result')
 }
 
-void main()
+main().catch((error) => {
+  logger.error({ error }, 'run-fix-whitespace-video-titles failed')
+  process.exit(1)
+})
