@@ -3,7 +3,9 @@
  * (found by its DOM id, which is its block id) into view. It moves that
  * scroller and nothing else: `scrollIntoView` and `focus()` also scroll every
  * ancestor, which would move the editor page that holds the frame. Rects read
- * inside the frame are unscaled, so no scale correction is needed.
+ * inside the frame are unscaled, so no scale correction is needed. The
+ * block's `scroll-margin-top` is kept clear at the top, so a section is not
+ * left under the sticky header.
  */
 export function scrollFrameToBlock(
   frameDocument: Document,
@@ -17,12 +19,17 @@ export function scrollFrameToBlock(
 
   const targetRect = target.getBoundingClientRect()
   const scrollerRect = scroller.getBoundingClientRect()
-  if (targetRect.top < scrollerRect.top) {
-    scroller.scrollTop -= scrollerRect.top - targetRect.top
+  const margin =
+    Number.parseFloat(
+      frameDocument.defaultView?.getComputedStyle(target).scrollMarginTop ?? ''
+    ) || 0
+  const clearTop = targetRect.top - margin
+  if (clearTop < scrollerRect.top) {
+    scroller.scrollTop -= scrollerRect.top - clearTop
     return
   }
   const hidden = targetRect.bottom - scrollerRect.bottom
   if (hidden <= 0) return
-  const room = targetRect.top - scrollerRect.top
+  const room = clearTop - scrollerRect.top
   scroller.scrollTop += Math.min(hidden, room)
 }

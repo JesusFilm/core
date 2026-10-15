@@ -60,6 +60,16 @@ describe('scrollFrameToBlock', () => {
     expect(scroller.scrollTop).toBe(400)
   })
 
+  it('keeps the block clear of the sticky header by its scroll margin', () => {
+    const { scroller } = setup(rect(20, 100))
+    const target = document.getElementById('blockId') as HTMLElement
+    target.style.scrollMarginTop = '64px'
+
+    scrollFrameToBlock(document, 'blockId')
+
+    expect(scroller.scrollTop).toBe(256)
+  })
+
   it('leaves a visible block where it is', () => {
     const { scroller } = setup(rect(100, 100))
 

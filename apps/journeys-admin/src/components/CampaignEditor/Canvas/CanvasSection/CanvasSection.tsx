@@ -2,6 +2,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -421,6 +422,7 @@ export function CanvasSection({
   } = useCampaignEditor()
   const [focusField, setFocusField] = useState<CampaignTextField>()
   const [focusRequest, setFocusRequest] = useState(0)
+  const [menuOpen, setMenuOpen] = useState(false)
   const seenEditRequest = useRef(editRequest)
   const selectedId = selection.block?.id
   const sectionSelected = selectedId === block.id
@@ -685,17 +687,43 @@ export function CanvasSection({
         previewLanguage.language.bcp47 ??
         previewLanguage.languageId)
 
+  /** Only buttons are nav: the public header drops any other child. */
+  const navButtons = extras.filter(
+    (child) => child.__typename === 'CampaignButtonBlock'
+  )
+  const navButtonSelected = navButtons.some((child) => child.id === selectedId)
+  /** Below `md` the nav sits behind the menu icon; a selected nav button opens it so it can be outlined and scrolled to. */
+  const navOpen = menuOpen || navButtonSelected
+
+  function handleMenuToggle(event: MouseEvent<HTMLElement>): void {
+    event.stopPropagation()
+    if (!navOpen) {
+      setMenuOpen(true)
+      return
+    }
+    setMenuOpen(false)
+    if (navButtonSelected) selectBlock(block.id)
+  }
+
   /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language select. */
   const headerBody = (
-    <Stack
-      direction="row"
-      spacing={2}
+    <Box
       data-testid="CanvasHeaderRow"
-      sx={{ alignItems: 'center', height: CAMPAIGN_HEADER_HEIGHT }}
+      sx={{
+        display: 'flex',
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
+        alignItems: 'center',
+        columnGap: 2
+      }}
     >
       <Box
         data-testid="CanvasBrandMark"
-        sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          minWidth: 0,
+          height: CAMPAIGN_HEADER_HEIGHT
+        }}
       >
         {logo != null ? (
           <Box
@@ -723,17 +751,23 @@ export function CanvasSection({
         )}
       </Box>
       <Box sx={{ flexGrow: 1 }} />
-      {extras.length > 0 && (
+      {navButtons.length > 0 && (
         <Box
           component="nav"
+          id={`${block.id}-nav`}
           data-testid="CanvasHeaderNav"
+          data-open={navOpen}
           sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            gap: 1
+            display: { xs: navOpen ? 'flex' : 'none', md: 'flex' },
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'flex-start', md: 'center' },
+            order: { xs: 1, md: 0 },
+            flexBasis: { xs: '100%', md: 'auto' },
+            gap: 1,
+            pb: { xs: 2, md: 0 }
           }}
         >
-          {extras.map(renderExtra)}
+          {navButtons.map(renderExtra)}
         </Box>
       )}
       {campaign.languages.length >= 2 && (
@@ -760,19 +794,22 @@ export function CanvasSection({
           />
         </Box>
       )}
-      {extras.length > 0 && (
-        <Box
+      {navButtons.length > 0 && (
+        <IconButton
           data-testid="CanvasHeaderMenuButton"
+          aria-label={t('Menu')}
+          aria-expanded={navOpen}
+          aria-controls={`${block.id}-nav`}
+          onClick={handleMenuToggle}
           sx={{
             display: { xs: 'inline-flex', md: 'none' },
-            p: 1,
             color: 'var(--campaign-band-text)'
           }}
         >
           <Menu1Icon />
-        </Box>
+        </IconButton>
       )}
-    </Stack>
+    </Box>
   )
 
   const footerLines = extras.filter(
@@ -863,6 +900,7 @@ export function CanvasSection({
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
+        scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
