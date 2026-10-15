@@ -1,0 +1,33 @@
+{
+  "RootIndexPage": {
+    "pageTitle": "Тоглогч",
+    "description": "Тоглуулах жагсаалтыг үзэхийн тулд /pl/[playlistId] руу очно уу"
+  },
+  "Metadata": {
+    "pageTitle": "{title} | Есүс кино төсөл"
+  },
+  "PlaylistRoutePage": {
+    "defaultPageTitle": "Тоглуулах жагсаалт",
+    "pageTitle": "{name}-ийн “{title}”",
+    "thisPlaylistIsEmpty": "Энэ тоглуулах жагсаалт хоосон байна",
+    "defaultDescription": "Таны найз эдгээр видеог танд урам зориг өгөхөөр хуваалцсан. Есүст амар амгаланг олох тухай урам хайрлах түүхүүдийг үзэхийн тулд тоглуулах товчийг дарна уу.",
+    "description": "Таны найз {name} эдгээр видеог танд урам зориг өгөхөөр хуваалцсан. Есүст амар амгаланг олох тухай урам хайрлах түүхүүдийг үзэхийн тулд тоглуулах товчийг дарна уу."
+  },
+  "PlaylistPage": {
+    "noVideoAvailable": "Видео байхгүй"
+  },
+  "PlaylistList": {
+    "noThumbnail": "Өнгөц зураг алга"
+  },
+  "StudyQuestions": {
+    "title": "Судлах асуултууд"
+  },
+  "VideoPlayer": {
+    "lackOfBrowserSupport": "Энэ видеог үзэхийн тулд JavaScript-ийг идэвхжүүлж, мөн <link>HTML5 видеог дэмждэг</link> вэб хөтөч рүү шинэчлэхийг бодолцоно уу"
+  },
+  "SharedPlaylistBanner": {
+    "sharedWithYou": "Таны найз <strong>{name}</strong> эдгээр видеог танд урам зориг өгөхөөр хуваалцсан. Эдгээр видеог үзэх хамгийн сайн арга бол манай аппыг татаж авах юм.",
+    "downloadOnAppStore": "App Store-оос татах",
+    "getItOnGooglePlay": "Google Play-ээс авах"
+  }
+}
