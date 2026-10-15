@@ -25,25 +25,34 @@ function loadWorldMap(): Promise<WorldMapShapes> {
   return worldMap
 }
 
+interface UseWorldMapResult {
+  shapes: WorldMapShapes | null
+  /** Set when the atlas could not be fetched or projected, so the editor can say why the map is missing. */
+  error: Error | null
+}
+
 /**
  * The Analytics world map for the editor canvas, which has no server render
- * to carry it: null until the viewer's atlas has loaded, and for good if it
- * cannot be fetched (the map is then skipped, the rest of the section stays).
+ * to carry it: `shapes` is null until the viewer's atlas has loaded, and for
+ * good if it cannot be fetched, in which case `error` is set (the map is then
+ * skipped, the rest of the section stays).
  */
-export function useWorldMap(enabled: boolean): WorldMapShapes | null {
+export function useWorldMap(enabled: boolean): UseWorldMapResult {
   const [shapes, setShapes] = useState<WorldMapShapes | null>(null)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     if (!enabled) return
     let cancelled = false
+    setError(null)
     loadWorldMap()
       .then((loaded) => {
         if (!cancelled) setShapes(loaded)
       })
-      .catch((error: unknown) => {
-        console.error(
-          '[useWorldMap] The Analytics map could not load; it stays hidden.',
-          error
+      .catch((failure: unknown) => {
+        if (cancelled) return
+        setError(
+          failure instanceof Error ? failure : new Error(String(failure))
         )
       })
     return () => {
@@ -51,5 +60,5 @@ export function useWorldMap(enabled: boolean): WorldMapShapes | null {
     }
   }, [enabled])
 
-  return shapes
+  return { shapes, error }
 }

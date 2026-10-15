@@ -173,7 +173,7 @@
   "videos": "videos",
   "QR Code": "QR Code",
   "Loading QR code": "Loading QR code",
-  "{{count}} videos_one": "{{count}} videos_one",
-  "{{count}} videos_other": "{{count}} videos_other",
+  "{{count}} videos_one": "{{count}} video",
+  "{{count}} videos_other": "{{count}} videos",
   "Video player": "Video player"
 }
