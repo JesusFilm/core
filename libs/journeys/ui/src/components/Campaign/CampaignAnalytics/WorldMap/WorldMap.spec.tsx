@@ -3,6 +3,7 @@ import { resolve } from 'path'
 
 import { lighten } from '@mui/material/styles'
 import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { createInstance } from 'i18next'
 import { I18nContext } from 'next-i18next/pages'
 import { ReactElement } from 'react'
@@ -340,6 +341,24 @@ describe('WorldMap', () => {
       const tooltip = await screen.findByRole('tooltip')
       expect(tooltip).toHaveTextContent('France')
       expect(tooltip).toHaveTextContent('1,234 visitors')
+    })
+
+    it('makes only the countries with visitors keyboard-reachable, naming them and showing the tooltip on focus', async () => {
+      render(
+        map(shapes, {
+          highlightedCodes: ['FR'],
+          visitors: [stat('FR', 1234)]
+        })
+      )
+      const france = screen.getByTestId('WorldMapCountry-250')
+      expect(france).toHaveAttribute('tabindex', '0')
+      expect(france).toHaveAccessibleName('France: 1,234 visitors')
+      expect(screen.getByTestId('WorldMapCountry-756')).not.toHaveAttribute(
+        'tabindex'
+      )
+      await userEvent.tab()
+      expect(france).toHaveFocus()
+      expect(await screen.findByRole('tooltip')).toHaveTextContent('France')
     })
 
     it('shows a country outside the highlighted ones with its visitors too', async () => {

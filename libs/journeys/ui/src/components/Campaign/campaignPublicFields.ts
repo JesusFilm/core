@@ -159,6 +159,13 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
               id
             }
           }
+          description(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
           images(aspectRatio: banner) {
             mobileCinematicHigh
           }
@@ -286,7 +293,7 @@ export const CAMPAIGN_PUBLIC_FIELDS = gql`
         country {
           id
           flagPngSrc
-          name(primary: true) {
+          name(languageId: $languageId, primary: true) {
             value
           }
         }

@@ -1104,6 +1104,18 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVi
   language: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -1133,6 +1145,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVi
    */
   childrenCount: number;
   title: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_description[];
   images: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: CampaignCreate_campaignCreate_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }

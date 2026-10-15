@@ -1104,6 +1104,18 @@ export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title
   language: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title_language;
 }
 
+export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description_language;
+}
+
 export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -1133,6 +1145,7 @@ export interface CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video {
    */
   childrenCount: number;
   title: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_description[];
   images: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: CampaignFields_blocks_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }

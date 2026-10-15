@@ -11,6 +11,8 @@ import {
   useRef
 } from 'react'
 
+import { isExtra } from '@core/journeys/ui/Campaign'
+
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -318,10 +320,7 @@ export function resolveSelection(
     )
     return { kind: 'card', block, host }
   }
-  if (
-    block.__typename === 'CampaignTypographyBlock' ||
-    block.__typename === 'CampaignButtonBlock'
-  ) {
+  if (isExtra(block)) {
     if (block.regionId != null)
       return {
         kind: 'text',

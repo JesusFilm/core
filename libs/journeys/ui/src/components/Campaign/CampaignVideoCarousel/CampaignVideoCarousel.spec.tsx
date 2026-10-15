@@ -366,6 +366,7 @@ describe('CampaignVideoCarousel', () => {
       expect(card).not.toHaveAttribute('href')
       fireEvent.click(card)
 
+      expect(screen.getByRole('dialog')).toHaveAccessibleName()
       expect(screen.getByRole('dialog')).toBeInTheDocument()
       expect(screen.getByTestId('CampaignVideo-muxItemId')).toBeInTheDocument()
     })
