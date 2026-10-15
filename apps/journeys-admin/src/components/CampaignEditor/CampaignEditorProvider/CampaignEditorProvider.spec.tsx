@@ -132,7 +132,6 @@ describe('CampaignEditorProvider', () => {
       pageKind: CampaignPageKind.landing,
       previewLanguageId: '529',
       selectedBlockId: 'heroId',
-      editRequest: 0,
       panel: 'none',
       inspectorTab: 'style',
       navigatorExpandRequest: 0
@@ -157,7 +156,6 @@ describe('CampaignEditorProvider', () => {
         pageKind: CampaignPageKind.regionTemplate,
         previewLanguageId: '529',
         selectedBlockId: undefined,
-        editRequest: 0,
         panel: 'none',
         inspectorTab: 'style',
         navigatorExpandRequest: 0
@@ -191,10 +189,6 @@ describe('CampaignEditorProvider', () => {
         pageKind: CampaignPageKind.landing,
         selectedBlockId: 'navHomeId'
       })
-    })
-
-    it('counts edit requests', () => {
-      expect(reducer(state, { type: 'RequestEditAction' }).editRequest).toBe(1)
     })
 
     it('opens a rail panel and closes it when the same one is named again', () => {
