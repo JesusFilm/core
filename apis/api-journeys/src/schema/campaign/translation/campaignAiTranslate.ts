@@ -296,13 +296,15 @@ async function translateBatch({
   sourceLanguageName,
   targetLanguageName,
   campaignTitle,
-  session
+  session,
+  cancelSignal
 }: {
   batch: TranslationBatch
   sourceLanguageName: string
   targetLanguageName: string
   campaignTitle: string
   session: ReturnType<typeof createOpenrouterFallbackSession>
+  cancelSignal?: AbortSignal
 }): Promise<Map<string, string>> {
   const requested = new Set(
     batch.rows.map((row) => rowKey(targetIdOf(row), row.field))
@@ -321,7 +323,10 @@ Return exactly one entry for every line listed above — do not skip, merge, or 
     let streamError: unknown
     const { elementStream } = streamText({
       model,
-      abortSignal,
+      abortSignal:
+        cancelSignal == null
+          ? abortSignal
+          : AbortSignal.any([abortSignal, cancelSignal]),
       maxRetries: 0,
       instructions: TRANSLATION_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: [{ type: 'text', text: prompt }] }],
@@ -351,13 +356,20 @@ Return exactly one entry for every line listed above — do not skip, merge, or 
   return translated
 }
 
+/**
+ * `cancelSignal` aborts when the caller disconnects (its Cancel). A generator's
+ * `return()` only lands at a `yield`, so without the signal the batch being
+ * translated would still finish its model call and write after the caller left.
+ * With it, an in-flight model call is aborted and nothing more is written.
+ */
 export async function* campaignAiTranslate(
   input: {
     campaignId: string | number
     languageId: string | number
     mode: CampaignAiTranslateMode
   },
-  user: User
+  user: User,
+  cancelSignal?: AbortSignal
 ): AsyncGenerator<CampaignAiTranslateProgress> {
   try {
     if (user == null)
@@ -425,14 +437,17 @@ export async function* campaignAiTranslate(
     const session = createOpenrouterFallbackSession(env.TRANSLATION_AI_MODELS)
     let failedBatches = 0
     for (const [index, batch] of batches.entries()) {
+      if (cancelSignal?.aborted === true) return
       try {
         const translated = await translateBatch({
           batch,
           sourceLanguageName,
           targetLanguageName,
           campaignTitle: campaign.title,
-          session
+          session,
+          cancelSignal
         })
+        if (cancelSignal?.aborted === true) return
         translatedCount += await writeBatch({
           campaignId,
           languageId,
@@ -441,6 +456,7 @@ export async function* campaignAiTranslate(
           translated
         })
       } catch (error) {
+        if (cancelSignal?.aborted === true) return
         failedBatches++
         logger.warn(
           { error, campaignId, languageId, batch: batch.label },
@@ -490,7 +506,11 @@ builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
       input: t.arg({ type: CampaignAiTranslateInput, required: true })
     },
     subscribe: (_root, { input }, context) =>
-      campaignAiTranslate(input, context.user),
+      campaignAiTranslate(
+        input,
+        context.user,
+        (context as { request?: { signal?: AbortSignal } }).request?.signal
+      ),
     resolve: (progressUpdate) => progressUpdate
   })
 )
