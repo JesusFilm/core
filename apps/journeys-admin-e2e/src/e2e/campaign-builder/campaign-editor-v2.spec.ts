@@ -32,9 +32,22 @@ const DEFAULT_LANGUAGE = 'English'
 const HERO_BACKGROUND_KIND = 'Primary'
 const RICH_TEXT_TITLE = 'Playwright rich text title'
 
+// The cleanup counts against the test's own timeout, which a slow cold run can
+// use up; it gets its own budget so the campaign is not left behind
+const CLEANUP_TIMEOUT_MS = 60 * 1000
+
 test.afterEach(async ({ authedPage }) => {
   if (KEEP_CAMPAIGN) return
-  await new CampaignBuilderPage(authedPage).deleteCampaign()
+
+  test.setTimeout(test.info().timeout + CLEANUP_TIMEOUT_MS)
+
+  const deleted = await new CampaignBuilderPage(authedPage).deleteCampaign()
+  if (!deleted) {
+    test.info().annotations.push({
+      type: 'cleanup',
+      description: 'No campaign editor was open, so nothing was deleted'
+    })
+  }
 })
 
 test(

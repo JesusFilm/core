@@ -230,25 +230,35 @@ export class CampaignBuilderPage {
 
   /**
    * Deletes the campaign open in the editor from its Settings, so a run
-   * leaves nothing behind. Does nothing when the run never got as far as an
-   * editor.
+   * leaves nothing behind. Returns false, without deleting, when the run
+   * never got as far as an editor.
    */
-  async deleteCampaign(): Promise<void> {
-    if (!/^\/campaigns\/[^/]+$/.test(new URL(this.page.url()).pathname)) return
+  async deleteCampaign(): Promise<boolean> {
+    if (!/^\/campaigns\/[^/]+$/.test(new URL(this.page.url()).pathname)) {
+      return false
+    }
 
-    // The campaign's Settings show when nothing is selected; the breadcrumb's
-    // last crumb is plain text, not a button, when that is already the case.
-    const selectCampaign = this.page
+    // A test that died mid-step can leave the Publish popover (a modal with a
+    // backdrop) open, which blocks every click below
+    await this.page.keyboard.press('Escape')
+
+    // Both tests end with something selected, so the breadcrumb always offers
+    // the Campaign crumb; selecting it shows the campaign's own Settings
+    await this.page
       .getByRole('navigation', { name: 'Selection' })
       .getByRole('button', { name: 'Campaign', exact: true })
-    if ((await selectCampaign.count()) > 0) await selectCampaign.click()
-
-    await this.inspectorTabs.getByRole('tab', { name: 'Settings' }).click()
+      .click()
+    const settingsTab = this.inspectorTabs.getByRole('tab', {
+      name: 'Settings'
+    })
+    await settingsTab.click()
+    await expect(settingsTab).toHaveAttribute('aria-selected', 'true')
     await this.page.getByRole('button', { name: 'Delete campaign' }).click()
     await this.page
       .getByRole('dialog')
       .getByRole('button', { name: 'Delete', exact: true })
       .click()
     await expect(this.page).toHaveURL(/\/campaigns$/)
+    return true
   }
 }
