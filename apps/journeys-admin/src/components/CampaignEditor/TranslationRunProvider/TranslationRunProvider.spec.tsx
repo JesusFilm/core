@@ -170,7 +170,7 @@ describe('TranslationRunProvider', () => {
     const cache = new InMemoryCache()
     cache.writeQuery({
       query: gql`
-        query StaleRows {
+        query CancelledRunStaleRows {
           campaignTranslations(campaignId: "campaignId", languageId: "496") {
             group
           }
