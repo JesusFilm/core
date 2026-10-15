@@ -10,7 +10,7 @@ import {
 import { GraphQLError } from 'graphql'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { type MockedFunction } from 'vitest'
 
 import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
@@ -21,6 +21,11 @@ import { CAMPAIGN_DELETE } from '../../../libs/useCampaignDeleteMutation'
 import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
 import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'
 import { campaign, publishedCampaign } from '../data'
+import {
+  TranslationRun,
+  TranslationRunContext,
+  TranslationRunProvider
+} from '../TranslationRunProvider'
 
 import { Settings, shapeSlug } from './Settings'
 
@@ -36,12 +41,33 @@ function CommandCount(): ReactElement {
   return <span data-testid="CommandCount">{state.commands.length}</span>
 }
 
+/** The real provider, or a fixed run in flight when one is given. */
+function RunScope({
+  run,
+  children
+}: {
+  run?: TranslationRun
+  children: ReactNode
+}): ReactElement {
+  if (run == null)
+    return <TranslationRunProvider>{children}</TranslationRunProvider>
+  return (
+    <TranslationRunContext.Provider
+      value={{ run, start: vi.fn(), cancel: vi.fn() }}
+    >
+      {children}
+    </TranslationRunContext.Provider>
+  )
+}
+
 interface RenderOptions {
   campaign?: Campaign
   isManager?: boolean
   mocks?: Array<Record<string, unknown>>
   onDefaultLanguageChanged?: () => void
   cache?: InMemoryCache
+  /** A background machine-translation run in flight. */
+  run?: TranslationRun
 }
 
 function renderSettings({
@@ -49,18 +75,21 @@ function renderSettings({
   isManager = true,
   mocks = [],
   onDefaultLanguageChanged,
-  cache
+  cache,
+  run
 }: RenderOptions = {}): void {
   render(
     <MockedProvider mocks={mocks as never} cache={cache}>
       <SnackbarProvider>
         <CommandProvider>
           <CommandCount />
-          <Settings
-            campaign={campaignProp}
-            isManager={isManager}
-            onDefaultLanguageChanged={onDefaultLanguageChanged}
-          />
+          <RunScope run={run}>
+            <Settings
+              campaign={campaignProp}
+              isManager={isManager}
+              onDefaultLanguageChanged={onDefaultLanguageChanged}
+            />
+          </RunScope>
         </CommandProvider>
       </SnackbarProvider>
     </MockedProvider>
@@ -529,6 +558,46 @@ describe('Settings', () => {
       await waitFor(() => expect(onDefaultLanguageChanged).toHaveBeenCalled())
       expect(sweep).toHaveBeenCalled()
       expect(swapped).toHaveBeenCalled()
+    })
+
+    it('disables machine-translating the missing texts while a background run is in flight', async () => {
+      renderSettings({
+        mocks: [
+          updateMock({
+            result: {
+              errors: [
+                new GraphQLError('3 texts have no translation', {
+                  extensions: {
+                    code: 'CONFLICT',
+                    field: 'defaultLanguageId',
+                    count: 3
+                  }
+                })
+              ]
+            }
+          })
+        ],
+        run: {
+          campaignId: 'campaignId',
+          languageId: FRENCH,
+          mode: 'missing',
+          languageName: 'Français',
+          progress: 40,
+          translatedCount: 4
+        }
+      })
+
+      pickFrench()
+      fireEvent.click(screen.getByRole('button', { name: 'Change' }))
+
+      const conflict = await screen.findByTestId(
+        'CampaignDefaultLanguageConflict'
+      )
+      expect(
+        within(conflict).getByRole('button', {
+          name: 'Machine-translate missing into Français'
+        })
+      ).toBeDisabled()
     })
 
     it('shows the API error when the change is refused for another reason', async () => {
