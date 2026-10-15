@@ -214,6 +214,26 @@ module "short_links_clickhouse" {
   doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
 }
 
+# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
+# EKS Platform Cluster. Serves plausible.stage.central.jesusfilm.org (the
+# module's own record) for smoke tests; analytics.stage.central.jesusfilm.org
+# moves here in the cutover step (modules/plausible/README.md). Apply only once
+# this environment's Plausible already uses ClickHouse Cloud.
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
+}
+
 module "postgresql" {
   source                  = "../../modules/aws/aurora"
   name                    = "jfp-core"
