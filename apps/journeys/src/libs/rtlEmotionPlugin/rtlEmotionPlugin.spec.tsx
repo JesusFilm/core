@@ -3,8 +3,8 @@ import { CacheProvider } from '@emotion/react'
 import styled from '@emotion/styled'
 import { documentGetInitialProps } from '@mui/material-nextjs/v15-pagesRouter'
 import type { DocumentContext } from 'next/document'
-import { renderToString } from 'react-dom/server'
 import { ReactElement } from 'react'
+import { renderToString } from 'react-dom/server'
 
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
 
@@ -39,9 +39,7 @@ async function renderDocumentStyles(
     }) => {
       const Enhanced = enhanceApp(TestApp)
       return {
-        html: renderToString(
-          <Enhanced pageProps={pageProps} />
-        )
+        html: renderToString(<Enhanced pageProps={pageProps} />)
       }
     }
   } as unknown as DocumentContext
