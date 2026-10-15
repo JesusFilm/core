@@ -18,7 +18,7 @@ import {
  */
 
 export const INCLUDE_CAMPAIGN_REGION_ACL = {
-  campaign: { include: INCLUDE_CAMPAIGN_ACL }
+  campaign: { include: { ...INCLUDE_CAMPAIGN_ACL, customDomains: true } }
 } satisfies Prisma.CampaignRegionInclude
 
 export type CampaignRegionWithCampaignAcl = Prisma.CampaignRegionGetPayload<{

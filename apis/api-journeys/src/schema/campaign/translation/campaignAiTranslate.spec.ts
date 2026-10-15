@@ -131,12 +131,21 @@ describe('campaignAiTranslate', () => {
 
   async function run(
     input: { languageId?: string; mode: 'all' | 'missing' },
-    user = mockUser
-  ): Promise<Array<{ progress: number; message: string; campaign: unknown }>> {
+    user = mockUser,
+    cancelSignal?: AbortSignal
+  ): Promise<
+    Array<{
+      progress: number
+      message: string
+      translatedCount: number
+      campaign: unknown
+    }>
+  > {
     const updates = []
     for await (const update of campaignAiTranslate(
       { campaignId: 'campaignId', languageId: FRENCH, ...input },
-      user
+      user,
+      cancelSignal
     ))
       updates.push(update)
     return updates
@@ -304,6 +313,7 @@ describe('campaignAiTranslate', () => {
       expect(updates[0]).toEqual({
         progress: 0,
         message: 'Starting translation...',
+        translatedCount: 0,
         campaign: null
       })
       const progress = updates.map((update) => update.progress)
@@ -315,8 +325,18 @@ describe('campaignAiTranslate', () => {
       expect(updates.at(-1)).toEqual({
         progress: 100,
         message: 'Translation completed!',
+        translatedCount: expect.any(Number),
         campaign
       })
+    })
+
+    it('counts the strings written, cumulatively', async () => {
+      const updates = await run({ mode: 'all' })
+
+      const counts = updates.map((update) => update.translatedCount)
+      expect(counts).toEqual([...counts].sort((a, b) => a - b))
+      expect(counts.at(-1)).toBeGreaterThan(0)
+      expect(updates.at(-1)?.translatedCount).toBe(counts.at(-1))
     })
 
     it('bumps the campaign once per batch that wrote something', async () => {
@@ -349,6 +369,36 @@ describe('campaignAiTranslate', () => {
       await run({ mode: 'missing' })
 
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('writes nothing more once the caller disconnects mid-batch', async () => {
+      const disconnect = new AbortController()
+      const scripted = mockStreamText.getMockImplementation()!
+      mockStreamText.mockImplementation((options: unknown) => {
+        disconnect.abort()
+        return scripted(options as never)
+      })
+
+      const updates = await run({ mode: 'all' }, mockUser, disconnect.signal)
+
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignString.update).not.toHaveBeenCalled()
+      expect(updates.every((update) => update.progress < 100)).toBe(true)
+    })
+
+    it('aborts the model call when the caller disconnects', async () => {
+      const disconnect = new AbortController()
+      const scripted = mockStreamText.getMockImplementation()!
+      mockStreamText.mockImplementation((options: unknown) => {
+        disconnect.abort()
+        expect(
+          (options as { abortSignal: AbortSignal }).abortSignal.aborted
+        ).toBe(true)
+        return scripted(options as never)
+      })
+
+      await run({ mode: 'all' }, mockUser, disconnect.signal)
     })
 
     it('fails when every batch fails', async () => {
@@ -424,6 +474,7 @@ describe('campaignAiTranslate', () => {
         campaignAiTranslateSubscription(input: $input) {
           progress
           message
+          translatedCount
           campaign {
             id
           }
@@ -457,11 +508,13 @@ describe('campaignAiTranslate', () => {
       expect(reports[0].data.campaignAiTranslateSubscription).toEqual({
         progress: 0,
         message: 'Starting translation...',
+        translatedCount: 0,
         campaign: null
       })
       expect(reports.at(-1).data.campaignAiTranslateSubscription).toEqual({
         progress: 100,
         message: 'Translation completed!',
+        translatedCount: expect.any(Number),
         campaign: { id: 'campaignId' }
       })
     })

@@ -1,5 +1,5 @@
 export {
-  isSnapshotEdited,
+  matchesJourney,
   snapshotOf,
   useJourneyCardSnapshotRefreshCommand
 } from './useJourneyCardSnapshotRefreshCommand'

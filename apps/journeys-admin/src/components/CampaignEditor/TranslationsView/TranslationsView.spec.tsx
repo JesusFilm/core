@@ -7,6 +7,7 @@ import {
   within
 } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
+import { SnackbarProvider } from 'notistack'
 import { ComponentProps } from 'react'
 
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
@@ -21,6 +22,7 @@ import {
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
 import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
 import { campaign } from '../data'
+import { TranslationRunProvider } from '../TranslationRunProvider'
 
 import { TranslationsView } from './TranslationsView'
 
@@ -174,11 +176,15 @@ function renderView(
 ): ReturnType<typeof render> {
   return render(
     <MockedProvider mocks={mocks as never}>
-      <TranslationsView
-        campaign={campaignProp}
-        initialLanguageId={FRENCH}
-        {...viewProps}
-      />
+      <SnackbarProvider>
+        <TranslationRunProvider>
+          <TranslationsView
+            campaign={campaignProp}
+            initialLanguageId={FRENCH}
+            {...viewProps}
+          />
+        </TranslationRunProvider>
+      </SnackbarProvider>
     </MockedProvider>
   )
 }
@@ -445,6 +451,7 @@ describe('TranslationsView', () => {
               __typename: 'CampaignAiTranslateProgress',
               progress: 100,
               message: 'Translation completed!',
+              translatedCount: 1,
               campaign: {
                 __typename: 'Campaign',
                 id: campaign.id,
@@ -557,11 +564,9 @@ describe('TranslationsView', () => {
           }
         ]
       }
-      render(
-        <MockedProvider mocks={[listMock('9999999')] as never}>
-          <TranslationsView campaign={manualOnly} initialLanguageId="9999999" />
-        </MockedProvider>
-      )
+      renderView([listMock('9999999')], manualOnly, {
+        initialLanguageId: '9999999'
+      })
 
       expect(
         await screen.findByTestId('TranslationsManualOnly')

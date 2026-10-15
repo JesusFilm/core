@@ -8,6 +8,8 @@ import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../qrCode/qrCode.service'
 
+import { fetchLanguage } from './gatewayClient'
+
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
@@ -15,6 +17,18 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 vi.mock('../qrCode/qrCode.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../qrCode/qrCode.service')>()),
   deleteShortLink: vi.fn()
+}))
+
+const { mockQueueAdd } = vi.hoisted(() => ({
+  mockQueueAdd: vi.fn()
+}))
+
+vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
+
+vi.mock('bullmq', () => ({
+  Queue: vi.fn(function () {
+    return { add: mockQueueAdd }
+  })
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -48,6 +62,7 @@ describe('campaignDelete', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
+    mockQueueAdd.mockResolvedValue(undefined)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
@@ -134,6 +149,79 @@ describe('campaignDelete', () => {
     expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
     expect(prismaMock.customDomain.updateMany).not.toHaveBeenCalled()
     expect(prismaMock.customDomain.delete).not.toHaveBeenCalled()
+  })
+
+  it('revalidates every page of a published campaign, domain root and _lang pages included, once the delete committed', async () => {
+    const published = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...published,
+      customDomains: [{ id: 'customDomainId', name: 'christmas.example.org' }]
+    } as any)
+    prismaMock.campaign.delete.mockResolvedValue(published)
+    prismaMock.campaignLanguage.findMany.mockResolvedValue([
+      { languageId: '529' },
+      { languageId: '21028' }
+    ] as any)
+    vi.mocked(fetchLanguage)
+      .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
+      .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
+
+    const result = (await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/christmas-2026/_lang/en',
+      '/home/campaign/christmas-2026/_lang/en/eur',
+      '/home/campaign/christmas-2026/_lang/es',
+      '/home/campaign/christmas-2026/_lang/es/eur',
+      '/christmas.example.org',
+      '/christmas.example.org/eur',
+      '/christmas.example.org/_lang/en',
+      '/christmas.example.org/_lang/en/eur',
+      '/christmas.example.org/_lang/es',
+      '/christmas.example.org/_lang/es/eur'
+    ])
+  })
+
+  it('queues nothing for a draft campaign', async () => {
+    const campaign = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.delete.mockResolvedValue(campaign)
+
+    await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(prismaMock.campaign.delete).toHaveBeenCalledTimes(1)
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('queues nothing when the delete fails', async () => {
+    const published = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(published)
+    prismaMock.campaign.delete.mockRejectedValue(new Error('delete failed'))
+
+    const result = (await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })) as any
+
+    expect(result.errors).toBeDefined()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN for a member', async () => {

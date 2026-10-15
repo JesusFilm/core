@@ -22,6 +22,20 @@ export function campaignPublicAddress(
   return campaignPermanentAddress(slug)
 }
 
+/**
+ * Every address the public page is served at right now: one per Custom Domain
+ * naming the campaign as Campaign Root, else the permanent address.
+ */
+export function campaignPublicAddresses(
+  slug: string,
+  hostnames: string[]
+): string[] {
+  const addresses = hostnames
+    .filter((hostname) => hostname !== '')
+    .map((hostname) => `https://${hostname}`)
+  return addresses.length > 0 ? addresses : [campaignPermanentAddress(slug)]
+}
+
 /** The preview frame's address for a linked journey: the root-domain embed route, kept a preview. */
 export function journeyPreviewAddress(slug: string): string {
   return previewEmbedUrl(`${JOURNEYS_URL}/embed/${slug}`)

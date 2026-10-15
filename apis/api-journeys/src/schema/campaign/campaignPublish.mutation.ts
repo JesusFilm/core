@@ -7,6 +7,7 @@ import { builder } from '../builder'
 import { CampaignRef } from './campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import {
+  campaignLanguageTags,
   campaignPagePaths,
   enqueueCampaignRevalidation
 } from './revalidateCampaign'
@@ -65,7 +66,8 @@ builder.mutationField('campaignPublish', (t) =>
           await enqueueCampaignRevalidation(
             campaignPagePaths({
               ...campaign,
-              hostnames: campaign.customDomains.map(({ name }) => name)
+              hostnames: campaign.customDomains.map(({ name }) => name),
+              languageTags: await campaignLanguageTags(campaign.id)
             })
           )
         return result

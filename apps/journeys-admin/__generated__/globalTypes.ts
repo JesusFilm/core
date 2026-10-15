@@ -116,6 +116,14 @@ export enum CampaignColumnsRatio {
 }
 
 /**
+ * How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+ */
+export enum CampaignFeaturedMediaLayout {
+  sideBySide = "sideBySide",
+  stacked = "stacked",
+}
+
+/**
  * Which slot of its parent an owned CampaignImageBlock fills: the Section Background `cover` of any section or chrome block, the header `logo` (the Brand Mark), or the `media` slot of a hero or Featured Media section. An owned image has `parentOrder: null` and replaces the slot’s previous block.
  */
 export enum CampaignImageSlot {
@@ -750,6 +758,7 @@ export interface CampaignFeaturedMediaBlockUpdateInput {
   lede?: string | null;
   bullets?: string | null;
   mediaSide?: CampaignMediaSide | null;
+  layout?: CampaignFeaturedMediaLayout | null;
   mediaBlockId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
@@ -853,6 +862,7 @@ export interface CampaignImageBlockUpdateInput {
 export interface CampaignJourneyBlockUpdateInput {
   title?: string | null;
   description?: string | null;
+  snapshotEdited?: boolean | null;
 }
 
 export interface CampaignJourneyListBlockCreateInput {

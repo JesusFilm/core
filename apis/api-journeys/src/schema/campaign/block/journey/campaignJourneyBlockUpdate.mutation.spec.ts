@@ -25,6 +25,7 @@ describe('campaignJourneyBlockUpdate', () => {
         journeyId
         title
         description
+        snapshotEdited
         titleTranslations {
           languageId
           value
@@ -88,18 +89,33 @@ describe('campaignJourneyBlockUpdate', () => {
       journeyId: 'journeyId',
       title: 'Christmas, retold',
       description: 'A short journey.',
+      snapshotEdited: true,
       titleTranslations: [
         { languageId: '496', value: 'Histoire', source: 'human' }
       ]
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'journeyItemId' },
-      data: { title: 'Christmas, retold' },
+      data: { title: 'Christmas, retold', snapshotEdited: true },
       include: { action: true }
     })
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
       data: { updatedAt: expect.any(Date) }
+    })
+  })
+
+  it('writes the edited flag outright, for an undo', async () => {
+    const result = await update({
+      title: 'The Christmas story',
+      snapshotEdited: false
+    })
+
+    expect(result.data.campaignJourneyBlockUpdate.snapshotEdited).toBe(false)
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'journeyItemId' },
+      data: { title: 'The Christmas story', snapshotEdited: false },
+      include: { action: true }
     })
   })
 

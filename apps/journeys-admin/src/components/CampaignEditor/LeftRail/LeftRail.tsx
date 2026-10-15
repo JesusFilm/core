@@ -1,3 +1,5 @@
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
 import IconButton from '@mui/material/IconButton'
 import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
@@ -21,6 +23,7 @@ import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { CampaignPanel, useCampaignEditor } from '../CampaignEditorProvider'
 import type { CanvasView } from '../Canvas'
 import { PublishButton } from '../PublishButton'
+import { useTranslationRun } from '../TranslationRunProvider'
 
 /** The Left Rail's width. */
 export const LEFT_RAIL_WIDTH = 56
@@ -37,29 +40,35 @@ interface PanelToggleProps {
   label: string
   shortcut?: string
   icon: ReactNode
+  /** A background operation's progress (0-100), ringed round the icon while it runs. */
+  progress?: number
 }
 
 function PanelToggle({
   panel,
   label,
   shortcut,
-  icon
+  icon,
+  progress
 }: PanelToggleProps): ReactElement {
   const {
     state: { panel: openPanel },
     dispatch
   } = useCampaignEditor()
   const open = openPanel === panel
+  const running = progress != null
+  const tooltip = shortcut == null ? label : `${label} (${shortcut})`
 
   return (
     <Tooltip
-      title={shortcut == null ? label : `${label} (${shortcut})`}
+      title={running ? `${label}: ${Math.round(progress)}%` : tooltip}
       placement="right"
       arrow
     >
       <IconButton
         aria-label={label}
         aria-pressed={open}
+        aria-busy={running}
         onClick={() => dispatch({ type: 'SetPanelAction', panel })}
         sx={{
           color: open ? 'primary.main' : 'text.secondary',
@@ -67,6 +76,20 @@ function PanelToggle({
         }}
       >
         {icon}
+        {running && (
+          <Box
+            aria-hidden
+            data-testid={`${panel}Progress`}
+            sx={{ position: 'absolute', inset: 0, display: 'flex' }}
+          >
+            <CircularProgress
+              variant="determinate"
+              value={progress}
+              size={40}
+              thickness={3}
+            />
+          </Box>
+        )}
       </IconButton>
     </Tooltip>
   )
@@ -85,6 +108,7 @@ export function LeftRail({
   isManager
 }: LeftRailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const { run } = useTranslationRun()
 
   function handleViewChange(
     _event: unknown,
@@ -142,6 +166,7 @@ export function LeftRail({
           panel="localize"
           label={t('Localize')}
           icon={<Globe1Icon />}
+          progress={run?.progress}
         />
       </Stack>
       <Stack spacing={1} sx={{ alignItems: 'center' }}>

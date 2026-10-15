@@ -239,6 +239,19 @@ describe('RegionSettings', () => {
     )
   })
 
+  it('counts the name and the slug against their caps', () => {
+    renderSettings()
+
+    expect(screen.getByText('6 / 60')).toBeInTheDocument()
+    expect(screen.getByText('3 / 200')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), {
+      target: { value: 'Europe!' }
+    })
+
+    expect(screen.getByText('7 / 60')).toBeInTheDocument()
+  })
+
   describe('previewing a non-default language', () => {
     const translated = {
       ...eurRegion,
