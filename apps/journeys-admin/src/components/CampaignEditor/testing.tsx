@@ -1,8 +1,9 @@
-import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
+import { ApolloLink, InMemoryCache } from '@apollo/client'
 import { useApolloClient } from '@apollo/client/react'
 import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { waitFor } from '@testing-library/react'
+import { parse } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement, ReactNode } from 'react'
 
@@ -216,11 +217,13 @@ export async function frameBody(
   return iframe.contentDocument?.body as HTMLElement
 }
 
-const PENDING_TEXT_SAVE = gql`
+// Not an API field, so it is parsed rather than tagged with gql to keep
+// codegen from validating it against the schema.
+const PENDING_TEXT_SAVE = parse(`
   mutation PendingTextSave {
     pendingTextSave
   }
-`
+`)
 
 /**
  * The editor's link with the app's DebounceLink in front, and a spy that
