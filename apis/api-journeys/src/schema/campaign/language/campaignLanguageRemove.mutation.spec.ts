@@ -151,10 +151,14 @@ describe('campaignLanguageRemove', () => {
       message: 'languageId is the default language and cannot be removed',
       extensions: { code: 'CONFLICT', field: 'languageId' }
     })
-    const [lockSql] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
-      readonly string[]
-    ]
-    expect(lockSql.join('')).toContain('FOR UPDATE')
+    const lockSql = prismaMock.$queryRaw.mock.calls.map(([strings]) =>
+      (strings as unknown as readonly string[]).join('')
+    )
+    expect(lockSql.every((sql) => sql.includes('FOR UPDATE'))).toBe(true)
+    expect(lockSql.map((sql) => sql.match(/"(\w+)"/)?.[1])).toEqual([
+      'CampaignLanguage',
+      'Campaign'
+    ])
     expect(prismaMock.campaignLanguage.delete).not.toHaveBeenCalled()
   })
 

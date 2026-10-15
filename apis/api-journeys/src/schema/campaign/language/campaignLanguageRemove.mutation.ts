@@ -3,7 +3,11 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { lockCampaign, touchCampaign } from '../block/service'
+import {
+  lockCampaign,
+  lockCampaignLanguageRows,
+  touchCampaign
+} from '../block/service'
 import { CampaignRef } from '../campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
 
@@ -43,6 +47,7 @@ builder.mutationField('campaignLanguageRemove', (t) =>
         // A concurrent default-language swap or removal can move the default
         // or the language list after the read above: lock the campaign row and
         // judge the removal against what is committed now.
+        await lockCampaignLanguageRows(tx, campaignId)
         await lockCampaign(tx, campaignId)
         const current = await tx.campaign.findUnique({
           where: { id: campaignId },

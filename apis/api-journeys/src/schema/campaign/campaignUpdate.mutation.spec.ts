@@ -638,10 +638,17 @@ describe('campaignUpdate', () => {
         code: 'BAD_USER_INPUT',
         field: 'defaultLanguageId'
       })
-      const [lockSql] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
-        readonly string[]
-      ]
-      expect(lockSql.join('')).toContain('FOR UPDATE')
+      const lockSql = prismaMock.$queryRaw.mock.calls.map(([strings]) =>
+        (strings as unknown as readonly string[]).join('')
+      )
+      expect(lockSql).toHaveLength(4)
+      expect(lockSql.every((sql) => sql.includes('FOR UPDATE'))).toBe(true)
+      expect(lockSql.map((sql) => sql.match(/"(\w+)"/)?.[1])).toEqual([
+        'CampaignBlock',
+        'CampaignRegion',
+        'CampaignString',
+        'Campaign'
+      ])
       expect(prismaMock.campaign.update).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
