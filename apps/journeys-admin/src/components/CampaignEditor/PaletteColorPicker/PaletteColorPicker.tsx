@@ -81,8 +81,9 @@ interface PaletteColorPickerProps {
  * The one colour picker every campaign colour goes through: a hex area, a
  * hex field and the campaign's Palette as eight swatches, newest first. A
  * colour commits as it is picked, as one call to `onCommit`: a swatch at
- * once, a complete six-digit hex or a settled drag on the colour area after a
- * short debounce (so a partial hex never commits), and a shorthand hex on
+ * once, a complete six-digit hex or a keyboard step on the colour area after a
+ * short debounce (so a partial hex never commits), a pointer drag on the
+ * colour area when the pointer lifts, and a shorthand hex on
  * Enter or blur. Clicking away with nothing new commits nothing. The Palette
  * is saved through `campaignUpdate` at the same moment, outside undo. The
  * only pre-validation is the pure hex rule.
@@ -107,6 +108,7 @@ export function PaletteColorPicker({
   const pendingTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
   const pendingHex = useRef<string>(undefined)
   const commitHexRef = useRef<(hex: string) => void>(() => undefined)
+  const stopListeningRef = useRef<() => void>(undefined)
 
   function cancelPendingCommit(): void {
     clearTimeout(pendingTimer.current)
@@ -123,9 +125,28 @@ export function PaletteColorPicker({
     }, COMMIT_DEBOUNCE_MS)
   }
 
+  // A drag on the colour area commits once, when the pointer lifts anywhere
+  // (react-colorful tracks the drag on the document), not on every pause.
+  function startDragging(): void {
+    if (stopListeningRef.current != null) return
+    function handlePointerEnd(): void {
+      stopListeningRef.current?.()
+      const hex = pendingHex.current
+      if (hex != null) commitHexRef.current(hex)
+    }
+    document.addEventListener('pointerup', handlePointerEnd)
+    document.addEventListener('pointercancel', handlePointerEnd)
+    stopListeningRef.current = () => {
+      document.removeEventListener('pointerup', handlePointerEnd)
+      document.removeEventListener('pointercancel', handlePointerEnd)
+      stopListeningRef.current = undefined
+    }
+  }
+
   // A pick still settling when the picker goes away is committed, not lost.
   useEffect(
     () => () => {
+      stopListeningRef.current?.()
       const hex = pendingHex.current
       cancelPendingCommit()
       if (hex != null) commitHexRef.current(hex)
@@ -134,6 +155,8 @@ export function PaletteColorPicker({
   )
 
   useEffect(() => {
+    // The colour changed elsewhere (Reset, undo): a pick still settling is stale.
+    cancelPendingCommit()
     setDraft(committed)
     setText(committed)
     setDirty(false)
@@ -191,7 +214,16 @@ export function PaletteColorPicker({
     setText(hex)
     setDirty(true)
     setError(undefined)
+    if (stopListeningRef.current != null) {
+      pendingHex.current = hex
+      return
+    }
     scheduleCommit(hex)
+  }
+
+  function handleClear(): void {
+    cancelPendingCommit()
+    onClear?.()
   }
 
   function handleTextChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -226,12 +258,14 @@ export function PaletteColorPicker({
       aria-label={label}
       onBlur={handleBlur}
     >
-      <HexColorPicker
-        color={draft}
-        onChange={handlePickerChange}
-        style={{ width: '100%', height: 140 }}
-        data-testid={`${testId}-area`}
-      />
+      <Box onPointerDown={startDragging}>
+        <HexColorPicker
+          color={draft}
+          onChange={handlePickerChange}
+          style={{ width: '100%', height: 140 }}
+          data-testid={`${testId}-area`}
+        />
+      </Box>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <Box
           data-testid={`${testId}-swatch`}
@@ -263,7 +297,7 @@ export function PaletteColorPicker({
             size="small"
             color="secondary"
             disabled={value == null}
-            onClick={onClear}
+            onClick={handleClear}
           >
             {clearLabel ?? t('Clear')}
           </Button>
