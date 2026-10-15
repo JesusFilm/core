@@ -572,11 +572,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   shortLinkCampaignDelete(id: String!) : MutationShortLinkCampaignDeleteResult! @join__field(graph: API_MEDIA) 
   """
-  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
+  Create a new short link domain that can be used for short links (shortLinkAdmin or superAdmin). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
   """
-  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
+  Update the services and edge settings of a short link domain (shortLinkAdmin or superAdmin); routing changes republish every live link on it
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
   """
@@ -584,7 +584,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
   """
-  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
+  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair); shortLinkAdmin or superAdmin
   """
   shortLinkDomainPublish(id: String!) : MutationShortLinkDomainPublishResult! @join__field(graph: API_MEDIA) 
   """

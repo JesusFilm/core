@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql'
 
 import { ShortLinkAssetClass } from '@core/prisma/media/client'
 
-import { contextIsSuperAdmin } from '../../../lib/superAdmin'
 import { Context, isShortLinkAdmin } from '../../builder'
 
 /**
@@ -69,17 +68,4 @@ export function assertInteropAssetClass(
   if (context.type !== 'interop') return
   if (assetClass == null || assetClass === 'standard') return
   throw forbidden(`interop callers may not create or set ${assetClass} links`)
-}
-
-/**
- * superAdmin (the flag on the user in the users database) owns which domains
- * exist and how a domain is wired to the edge: its path prefix, KV namespace
- * and Worker binding.
- */
-export async function assertSuperAdmin(
-  context: Context,
-  message: string
-): Promise<void> {
-  if (await contextIsSuperAdmin(context)) return
-  throw forbidden(message)
 }
