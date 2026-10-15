@@ -1,8 +1,7 @@
-import { GetServerSideProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
-import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign'
 import type { CampaignPublic, WorldMapShapes } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
@@ -16,12 +15,8 @@ import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
-import {
-  campaignPageCacheControl,
-  fetchCampaignPublicInPageLanguageByHostname
-} from '../../src/libs/getCampaignPublic'
+import { getHostCampaignStaticProps } from '../../src/libs/campaignStaticProps'
 import { getFlags } from '../../src/libs/getFlags'
-import { getWorldMap } from '../../src/libs/getWorldMap'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
@@ -29,10 +24,10 @@ import { HostJourneyPage } from './[journeySlug]'
 
 interface HostJourneysPageProps {
   host?: string
-  journeys: GetJourneysSummary['journeys']
+  journeys?: GetJourneysSummary['journeys']
   journey?: GetJourney['journey']
   campaign?: CampaignPublic
-  worldMap?: WorldMapShapes
+  worldMap?: WorldMapShapes | null
 }
 
 function HostJourneysPage({
@@ -52,7 +47,7 @@ function HostJourneysPage({
       />
     )
 
-  if (journey == null) return <JourneysPage journeys={journeys} />
+  if (journey == null) return <JourneysPage journeys={journeys ?? []} />
 
   const { rtl, locale } = getJourneyRTL(journey)
   return (
@@ -65,51 +60,18 @@ function HostJourneysPage({
   )
 }
 
-// The collection and journey branches keep the 60 s shared-cache window the
-// static page gave them.
-const SHARED_CACHE_CONTROL = 'public, s-maxage=60, stale-while-revalidate=300'
-const NOT_FOUND_CACHE_CONTROL = 'public, s-maxage=1'
-
-// Rendered per request: a Campaign Root's landing page is decided in the
-// visitor's Page Language (`?lang` → cookie → `Accept-Language` → default),
-// exactly as at `/campaign/<slug>`, and cached per `campaignPageCacheControl`.
-export const getServerSideProps: GetServerSideProps<
-  HostJourneysPageProps
-> = async (context) => {
-  const apolloClient = createApolloClient()
-  const hostname = context.params?.hostname as string
-
-  // Campaign Root first: a published root campaign owns `/`, else today's
+export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
+  context
+) => {
+  // Campaign Root first: a published root campaign owns `/`, else the
   // collection logic below runs unchanged.
-  const root = await fetchCampaignPublicInPageLanguageByHostname(
-    apolloClient,
-    hostname,
-    {
-      param: context.query.lang,
-      cookie: context.req.cookies[CAMPAIGN_LANGUAGE_COOKIE],
-      acceptLanguage: context.req.headers['accept-language']
-    }
-  )
-  if (root != null) {
-    context.res.setHeader(
-      'Cache-Control',
-      campaignPageCacheControl(root.language, root.campaign.languages.length)
-    )
-    return {
-      props: {
-        flags: await getFlags(),
-        ...(await serverSideTranslations(
-          context.locale ?? 'en',
-          ['apps-journeys', 'libs-journeys-ui'],
-          i18nConfig
-        )),
-        journeys: [],
-        campaign: root.campaign,
-        worldMap: await getWorldMap()
-      }
-    }
-  }
+  const campaignProps = await getHostCampaignStaticProps({
+    hostname: context.params?.hostname as string,
+    locale: context.locale
+  })
+  if (campaignProps != null) return campaignProps
 
+  const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<
     GetJourneysSummary,
     GetJourneysSummaryVariables
@@ -117,7 +79,7 @@ export const getServerSideProps: GetServerSideProps<
     query: GET_JOURNEYS,
     variables: {
       options: {
-        hostname,
+        hostname: context.params?.hostname as string,
         journeyCollection: true
       }
     }
@@ -128,7 +90,6 @@ export const getServerSideProps: GetServerSideProps<
   if (data == null) throw new Error('GetJourneysSummary returned no data')
 
   if (data.journeys === null) {
-    context.res.setHeader('Cache-Control', NOT_FOUND_CACHE_CONTROL)
     return {
       props: {
         ...(await serverSideTranslations(
@@ -137,7 +98,8 @@ export const getServerSideProps: GetServerSideProps<
           i18nConfig
         ))
       },
-      notFound: true
+      notFound: true,
+      revalidate: 1
     }
   } else if (data.journeys.length === 1) {
     try {
@@ -150,7 +112,7 @@ export const getServerSideProps: GetServerSideProps<
           id: data.journeys[0].slug.toString(),
           idType: IdType.slug,
           options: {
-            hostname,
+            hostname: context.params?.hostname?.toString() ?? '',
             status: JOURNEY_STATUS_EXCLUDE_DRAFT
           }
         }
@@ -160,7 +122,6 @@ export const getServerSideProps: GetServerSideProps<
       // the type rather than guarding a reachable branch.
       if (journeyData == null) throw new Error('GetJourney returned no data')
 
-      context.res.setHeader('Cache-Control', SHARED_CACHE_CONTROL)
       return {
         props: {
           flags: await getFlags(),
@@ -172,10 +133,10 @@ export const getServerSideProps: GetServerSideProps<
           )),
           journey: journeyData.journey,
           journeys: []
-        }
+        },
+        revalidate: 60
       }
     } catch {
-      context.res.setHeader('Cache-Control', NOT_FOUND_CACHE_CONTROL)
       return {
         props: {
           ...(await serverSideTranslations(
@@ -184,11 +145,11 @@ export const getServerSideProps: GetServerSideProps<
             i18nConfig
           ))
         },
-        notFound: true
+        notFound: true,
+        revalidate: 1
       }
     }
   }
-  context.res.setHeader('Cache-Control', SHARED_CACHE_CONTROL)
   return {
     props: {
       flags: await getFlags(),
@@ -198,7 +159,15 @@ export const getServerSideProps: GetServerSideProps<
         i18nConfig
       )),
       journeys: data.journeys
-    }
+    },
+    revalidate: 60
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: 'blocking'
   }
 }
 
