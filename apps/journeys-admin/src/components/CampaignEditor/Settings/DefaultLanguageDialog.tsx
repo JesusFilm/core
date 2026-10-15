@@ -18,6 +18,7 @@ import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetC
 import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
+import { useTranslationRun } from '../TranslationRunProvider'
 
 interface DefaultLanguageDialogProps {
   campaign: Campaign
@@ -54,6 +55,7 @@ export function DefaultLanguageDialog({
 }: DefaultLanguageDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const client = useApolloClient()
+  const { run } = useTranslationRun()
   const [campaignUpdate, { loading: changing }] = useCampaignUpdateMutation()
   const [missingCount, setMissingCount] = useState<number>()
   const [sweep, setSweep] = useState<CampaignAiTranslateVariables>()
@@ -183,7 +185,7 @@ export function DefaultLanguageDialog({
             ) : (
               <Button
                 variant="outlined"
-                disabled={translating}
+                disabled={translating || run != null}
                 onClick={handleMachineTranslate}
                 sx={{ alignSelf: 'flex-start' }}
               >
