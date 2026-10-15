@@ -21,6 +21,8 @@ import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegion
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
+import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
 import { CommandProbe, QueriedEditor } from '../testing'
 
@@ -162,6 +164,90 @@ const linkMock = {
   }))
 }
 
+const linkedFrench = {
+  ...eurFrench,
+  journeyId: 'frJourneyId',
+  title: 'Noël en Europe',
+  description: null,
+  snapshotEdited: false,
+  qrCodeId: 'frQrCodeId',
+  journey
+}
+
+const unlinkFrenchMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-496', input: { journeyId: null } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: eurFrench }
+  }))
+}
+
+const relinkFrenchMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-496', input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: linkedFrench }
+  }))
+}
+
+const swapMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: {
+      id: 'eurRegionId-529',
+      input: { url: 'https://admin.nextstep.is/journeys/frJourneyId' }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...eurEnglish,
+        journeyId: 'frJourneyId',
+        title: 'Noël en Europe',
+        description: null,
+        journey
+      }
+    }
+  }))
+}
+
+const swapBackMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-529', input: { journeyId: 'eurJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: eurEnglish }
+  }))
+}
+
+const restoreSnapshotMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: {
+      id: 'eurRegionId-529',
+      input: {
+        title: 'My Christmas title',
+        description: 'A journey for Europe.',
+        snapshotEdited: true
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...eurEnglish,
+        title: 'My Christmas title',
+        snapshotEdited: true
+      }
+    }
+  }))
+}
+
 const linkFailureMock = {
   request: {
     query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
@@ -274,9 +360,16 @@ function renderShare(
           linkMock,
           linkFailureMock,
           unlinkMock,
+          unlinkFrenchMock,
+          relinkFrenchMock,
+          swapMock,
+          swapBackMock,
+          restoreSnapshotMock,
           refreshMock
         ]}
       >
+        <CommandUndoItem variant="button" />
+        <CommandRedoItem variant="button" />
         <CommandProbe />
         <ShareSectionEdit block={{ id: 'regionShareId' }} />
       </QueriedEditor>
@@ -451,6 +544,89 @@ describe('ShareSectionEdit', () => {
       'https://your.nextstep.is/embed/noel-europe?expand=false'
     )
     expect(within(linked).getByTestId('ShareLanguageCopy')).toBeEnabled()
+  })
+
+  it('links as one Command: undo unlinks the language again and redo links the same journey by id', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.type(
+      within(french).getByRole('textbox', { name: 'Journey link' }),
+      'https://admin.nextstep.is/journeys/frJourneyId{enter}'
+    )
+    fireEvent.click(
+      await within(french).findByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Noël en Europe')
+    )
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(linkMock.result).toHaveBeenCalledTimes(1)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(unlinkFrenchMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageHidden'
+        )
+      ).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(relinkFrenchMock.result).toHaveBeenCalled())
+    expect(linkMock.result).toHaveBeenCalledTimes(1)
+  })
+
+  it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
+    renderShare(withEnglish(editedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Swap journey' })
+    )
+    await userEvent.type(
+      within(english).getByRole('textbox', { name: 'New journey link' }),
+      'https://admin.nextstep.is/journeys/frJourneyId{enter}'
+    )
+    fireEvent.click(
+      await within(english).findByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(swapBackMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(restoreSnapshotMock.result).toHaveBeenCalled())
+  })
+
+  it('adds nothing to the undo stack when the link is refused', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.type(
+      within(french).getByRole('textbox', { name: 'Journey link' }),
+      'https://your.nextstep.is/noel-europe{enter}'
+    )
+    fireEvent.click(
+      await within(french).findByRole('button', { name: 'Use this journey' })
+    )
+
+    await within(french).findByText('Journey not found or not published')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
   it("shows the server's message verbatim when the link is refused", async () => {

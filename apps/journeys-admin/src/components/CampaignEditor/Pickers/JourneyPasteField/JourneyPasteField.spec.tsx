@@ -120,7 +120,8 @@ describe('JourneyPasteField', () => {
 
     await waitFor(() =>
       expect(onLink).toHaveBeenCalledWith(
-        'https://admin.nextstep.is/journeys/journeyId'
+        'https://admin.nextstep.is/journeys/journeyId',
+        expect.objectContaining({ id: 'journeyId' })
       )
     )
     await waitFor(() =>

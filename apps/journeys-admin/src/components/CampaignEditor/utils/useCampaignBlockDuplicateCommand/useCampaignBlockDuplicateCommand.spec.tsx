@@ -8,7 +8,14 @@ import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../../data'
 import { Inspector } from '../../Inspector'
-import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
+import {
+  BlocksProbe,
+  PendingTextSave,
+  QueriedEditor,
+  SelectionProbe,
+  campaignCache,
+  debounceSpyLink
+} from '../../testing'
 
 import { duplicateBlocks, subtreeOf } from './useCampaignBlockDuplicateCommand'
 
@@ -82,6 +89,20 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandUndoItem variant="button" />
       <CommandRedoItem variant="button" />
       <SelectionProbe />
+      <BlocksProbe />
+      <Inspector isManager={false} />
+    </QueriedEditor>
+  )
+}
+
+function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
+  return render(
+    <QueriedEditor
+      link={debounceSpyLink(requests, [duplicateMock])}
+      cache={campaignCache()}
+      initialState={{ selectedBlockId: 'heroId' }}
+    >
+      <PendingTextSave block={hero} />
       <BlocksProbe />
       <Inspector isManager={false} />
     </QueriedEditor>
@@ -183,6 +204,19 @@ describe('useCampaignBlockDuplicateCommand', () => {
     )
     expect(duplicateMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(duplicateMock.result).toHaveBeenCalled())
+  })
+
+  it('sends a text edit still waiting on its debounce before the duplicate, so the copy is not made from stale text', async () => {
+    const requests: string[] = []
+    renderWithPendingText(requests)
+    expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
+
+    await waitFor(() =>
+      expect(requests).toEqual(['PendingTextSave', 'CampaignBlockDuplicate'])
+    )
   })
 
   it('undoes by deleting the copy and reselecting the original; redo restores it', async () => {

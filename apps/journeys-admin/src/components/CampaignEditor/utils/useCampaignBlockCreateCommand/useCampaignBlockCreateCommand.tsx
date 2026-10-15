@@ -10,8 +10,11 @@ import { siblingsOf } from '../useCampaignBlockDeleteCommand'
 interface AddBlockParameters {
   /** The new block as its create mutation's optimistic response renders it. */
   block: CampaignBlock
-  /** Runs the create mutation. */
-  execute: () => void
+  /**
+   * Runs the create mutation. Returning its promise lets a refused create be
+   * noticed: the Command then has nothing to undo or redo.
+   */
+  execute: () => Promise<unknown> | void
 }
 
 interface UndoParameters {
@@ -35,7 +38,9 @@ interface RedoParameters {
  * Adding a block (an Extra or a section) is one Command: execute selects the
  * new block and runs the create; undo focuses the page it was made on,
  * restores the previous selection and soft-deletes it, with the siblings
- * renumbered at once; redo restores it through `campaignBlockRestore`.
+ * renumbered at once; redo restores it through `campaignBlockRestore`. A
+ * create that was refused leaves no block: the selection goes back at once,
+ * and its undo and redo do nothing.
  */
 export function useCampaignBlockCreateCommand(): {
   addBlock: (params: AddBlockParameters) => void
@@ -51,6 +56,7 @@ export function useCampaignBlockCreateCommand(): {
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
 
   function addBlock({ block, execute }: AddBlockParameters): void {
+    let refused = false
     const blockPageKind = pageKindOf(block) ?? pageKind
     const siblings = siblingsOf(campaign.blocks, block).map(
       (sibling, parentOrder) => ({
@@ -76,7 +82,14 @@ export function useCampaignBlockCreateCommand(): {
           pageKind: blockPageKind,
           selectedBlockId: block.id
         })
-        execute()
+        void Promise.resolve(execute()).catch(() => {
+          refused = true
+          dispatch({
+            type: 'SetEditorFocusAction',
+            pageKind: blockPageKind,
+            selectedBlockId
+          })
+        })
       },
       undo({
         block: created,
@@ -89,12 +102,14 @@ export function useCampaignBlockCreateCommand(): {
           pageKind: targetPageKind,
           selectedBlockId: previousBlockId
         })
+        if (refused) return
         void blockDelete({
           variables: { id: created.id },
           optimisticResponse: { campaignBlockDelete: siblingsAfter }
         })
       },
       redo({ block: created, pageKind: targetPageKind }) {
+        if (refused) return
         dispatch({
           type: 'SetEditorFocusAction',
           pageKind: targetPageKind,

@@ -12,6 +12,7 @@ import {
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { newSectionBlock } from '../../sectionTypes'
+import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
 
 interface ChangeTypeParameters {
   /** The section the slot held before the change. */
@@ -30,7 +31,9 @@ interface ChangeTypeParameters {
  * at a time and the API refuses a second. If the create is refused after the
  * delete went through, the old section is restored so the column is never
  * left empty, and undo and redo carry on to their restore even when their
- * delete finds nothing to remove (the new section never existed).
+ * delete finds nothing to remove (the new section never existed). Each delete
+ * first sends the section's text edits still waiting on their debounce, so a
+ * late-landing save cannot overtake it.
  */
 export function useChangeTypeCommand(): {
   addChangeType: (
@@ -60,7 +63,8 @@ export function useChangeTypeCommand(): {
   async function remove(block: CampaignBlock): Promise<unknown> {
     return await blockDelete({
       variables: { id: block.id },
-      optimisticResponse: { campaignBlockDelete: [] }
+      optimisticResponse: { campaignBlockDelete: [] },
+      context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
     })
   }
 

@@ -9,6 +9,7 @@ import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignB
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
 
 export interface CampaignBlockIdMap {
   oldId: string
@@ -107,7 +108,9 @@ export function duplicateBlocks(
  * Duplicating a block is one Command: execute selects the copy and runs the
  * duplicate with the whole copied subtree shown at once; undo reselects the
  * original and soft-deletes the copy's root (its descendants fall out of the
- * tree with it); redo restores the root, which brings them back.
+ * tree with it); redo restores the root, which brings them back. A text edit
+ * still waiting on its debounce is sent first, so the copy is never made from
+ * the stale text.
  */
 export function useCampaignBlockDuplicateCommand(): {
   addBlockDuplicate: (block: CampaignBlock) => void
@@ -155,7 +158,8 @@ export function useCampaignBlockDuplicateCommand(): {
         focus(copy.id)
         void duplicate({
           variables: { id: block.id, idMap },
-          optimisticResponse: { campaignBlockDuplicate: subtreeAfter }
+          optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
+          context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
         })
       },
       undo() {

@@ -1,4 +1,6 @@
-import { ApolloLink, InMemoryCache } from '@apollo/client'
+import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
+import { useApolloClient } from '@apollo/client/react'
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { waitFor } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
@@ -7,6 +9,7 @@ import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
 import { CAMPAIGN_POSSIBLE_TYPES } from '../../libs/apolloClient/campaignPossibleTypes'
+import { DebounceLink } from '../../libs/apolloClient/DebounceLink'
 import { GET_CAMPAIGN, useCampaignQuery } from '../../libs/useCampaignQuery'
 
 import {
@@ -15,6 +18,7 @@ import {
   useCampaignEditor
 } from './CampaignEditorProvider'
 import { campaign } from './data'
+import { textDebounceKey } from './utils/useCampaignTextCommand'
 
 /** A cache that matches campaign fragments exactly, as the app's cache does. */
 export function campaignCache(): InMemoryCache {
@@ -205,4 +209,62 @@ export async function frameBody(
     ).not.toBeNull()
   )
   return iframe.contentDocument?.body as HTMLElement
+}
+
+const PENDING_TEXT_SAVE = gql`
+  mutation PendingTextSave {
+    pendingTextSave
+  }
+`
+
+/**
+ * The editor's link with the app's DebounceLink in front, and a spy that
+ * pushes each mutation's name onto `requests` as it reaches the API.
+ */
+export function debounceSpyLink(
+  requests: string[],
+  mocks: Array<Record<string, unknown>> = [],
+  campaignProp: Campaign = campaign
+): ApolloLink {
+  return ApolloLink.from([
+    new DebounceLink(500),
+    new ApolloLink((operation, forward) => {
+      const name = operation.operationName ?? ''
+      if (name !== 'GetCampaign') requests.push(name)
+      return forward(operation)
+    }),
+    new MockLink([
+      getCampaignMockFor(campaignProp),
+      {
+        request: { query: PENDING_TEXT_SAVE },
+        result: { data: { pendingTextSave: true } }
+      },
+      ...mocks
+    ] as never)
+  ])
+}
+
+/**
+ * A button that queues a text save for a block's field on its debounce, as
+ * typing does; it stays pending until something flushes it or 500 ms pass.
+ */
+export function PendingTextSave({
+  block
+}: {
+  block: { __typename: string; id: string }
+}): ReactElement {
+  const client = useApolloClient()
+  return (
+    <button
+      aria-label="Queue text save"
+      onClick={() => {
+        client
+          .mutate({
+            mutation: PENDING_TEXT_SAVE,
+            context: { debounceKey: textDebounceKey(block, 'title') }
+          })
+          .catch(() => undefined)
+      }}
+    />
+  )
 }

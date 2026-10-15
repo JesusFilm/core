@@ -11,8 +11,11 @@ import { newSectionBlock } from '../../sectionTypes'
 import {
   BlocksProbe,
   CommandProbe,
+  PendingTextSave,
   QueriedEditor,
-  SelectionProbe
+  SelectionProbe,
+  campaignCache,
+  debounceSpyLink
 } from '../../testing'
 
 vi.mock('uuid', () => ({ v4: () => 'newId' }))
@@ -113,6 +116,28 @@ function slotBlocks(): string[] {
     .map((item) => item.getAttribute('data-testid') as string)
 }
 
+function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
+  return render(
+    <QueriedEditor
+      campaignData={campaignWithColumns}
+      link={debounceSpyLink(
+        requests,
+        [deleteOldMock, createMock],
+        campaignWithColumns
+      )}
+      cache={campaignCache()}
+      initialState={{
+        selectedBlockId: 'slotRichTextId',
+        inspectorTab: 'settings'
+      }}
+    >
+      <PendingTextSave block={slotRichText} />
+      <BlocksProbe />
+      <Inspector isManager={false} />
+    </QueriedEditor>
+  )
+}
+
 describe('useChangeTypeCommand', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -142,6 +167,26 @@ describe('useChangeTypeCommand', () => {
     expect(calls).toEqual(['delete slotRichTextId', 'create newId'])
     await waitFor(() => expect(slotBlocks()).toEqual(['Block-newId']))
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('column')
+  })
+
+  it('sends a text edit still waiting on its debounce before the delete, so it cannot overtake it', async () => {
+    const requests: string[] = []
+    renderWithPendingText(requests)
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+
+    await waitFor(() =>
+      expect(requests.slice(0, 3)).toEqual([
+        'PendingTextSave',
+        'CampaignBlockDelete',
+        'CampaignHeroBlockCreate'
+      ])
+    )
   })
 
   it('undoes by deleting the new section and restoring the old one, and redoes the other way', async () => {

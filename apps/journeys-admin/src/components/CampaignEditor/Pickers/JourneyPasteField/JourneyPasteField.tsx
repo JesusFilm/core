@@ -52,7 +52,7 @@ function messageOf(error: unknown, fallback: string): string {
 
 interface JourneyPasteFieldProps {
   /** Keep the resolved journey: runs the link mutation; a thrown error's message is shown verbatim. */
-  onLink: (url: string) => Promise<void>
+  onLink: (url: string, journey: ResolvedJourney) => Promise<void>
   /** Shown when nothing has been pasted yet. */
   label?: string
   autoFocus?: boolean
@@ -122,10 +122,10 @@ export function JourneyPasteField({
     event: MouseEvent<HTMLButtonElement>
   ): Promise<void> {
     event.stopPropagation()
-    if (resolvedFor == null) return
+    if (resolvedFor == null || resolved == null) return
     setLinking(true)
     try {
-      await onLink(resolvedFor)
+      await onLink(resolvedFor, resolved)
       setValue('')
       setResolved(undefined)
       setResolvedFor(undefined)
