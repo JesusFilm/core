@@ -17,6 +17,7 @@ import {
   useCampaignAiTranslateSubscription
 } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
@@ -27,6 +28,7 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { useCampaignLanguageAddMutation } from '../../../libs/useCampaignLanguageAddMutation'
 import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLanguageRemoveMutation'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 
 interface LanguagesPanelProps {
   campaign: Campaign
@@ -57,8 +59,8 @@ function messageOf(error: unknown): string {
 }
 
 /**
- * The campaign's Page Languages: the current list in selector order with
- * Remove on each (the default language cannot be removed; the API's
+ * Preview (sets the Preview Language, a view choice, and the previewed row is
+ * marked) and Remove on each (the default language cannot be removed; the API's
  * `CONFLICT` message is shown verbatim when a removal is refused), and the
  * shared language autocomplete (autonym plus English name) to add one
  * through `campaignLanguageAdd`. Neither is a Command. Adding a language
@@ -70,6 +72,10 @@ export function LanguagesPanel({
   campaign
 }: LanguagesPanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { previewLanguageId },
+    dispatch
+  } = useCampaignEditor()
   const [error, setError] = useState<string>()
   const [sweep, setSweep] = useState<CampaignAiTranslateVariables>()
   const [languageAdd, { loading: adding }] = useCampaignLanguageAddMutation()
@@ -123,6 +129,13 @@ export function LanguagesPanel({
     }
   }
 
+  function handlePreview(language: CampaignLanguage): void {
+    dispatch({
+      type: 'SetPreviewLanguageAction',
+      previewLanguageId: language.languageId
+    })
+  }
+
   return (
     <Stack
       spacing={3}
@@ -153,19 +166,36 @@ export function LanguagesPanel({
               <Trash2Icon />
             </IconButton>
           )
+          const previewing = language.languageId === previewLanguageId
+          const previewButton = (
+            <IconButton
+              aria-label={t('Preview {{language}}', { language: autonym })}
+              aria-pressed={previewing}
+              color={previewing ? 'primary' : 'default'}
+              onClick={() => handlePreview(language)}
+            >
+              <EyeOpenIcon />
+            </IconButton>
+          )
           return (
             <ListItem
               key={language.id}
               disableGutters
               data-testid={`CampaignLanguage-${language.languageId}`}
+              sx={{ pr: 12 }}
               secondaryAction={
-                isDefault ? (
-                  <Tooltip title={t('The default language cannot be removed')}>
-                    <span>{removeButton}</span>
-                  </Tooltip>
-                ) : (
-                  removeButton
-                )
+                <Stack direction="row">
+                  {previewButton}
+                  {isDefault ? (
+                    <Tooltip
+                      title={t('The default language cannot be removed')}
+                    >
+                      <span>{removeButton}</span>
+                    </Tooltip>
+                  ) : (
+                    removeButton
+                  )}
+                </Stack>
               }
             >
               <ListItemText
@@ -173,6 +203,7 @@ export function LanguagesPanel({
                 secondary={[
                   localName,
                   isDefault ? t('Default') : undefined,
+                  previewing ? t('Previewing') : undefined,
                   manualOnly ? t('Manual only') : undefined
                 ]
                   .filter((part) => part != null)

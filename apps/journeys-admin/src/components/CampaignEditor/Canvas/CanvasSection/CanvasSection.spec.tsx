@@ -125,6 +125,20 @@ describe('CanvasSection header', () => {
       ).toHaveTextContent('Resources')
     })
 
+    it('shows the language box without a chevron, and clicking it selects the Header block', () => {
+      renderChrome('CampaignHeaderBlock')
+
+      const box = screen.getByTestId('CanvasLanguageSelect')
+      expect(box).toHaveTextContent('English')
+      expect(box.querySelector('svg')).toBeNull()
+
+      fireEvent.click(box)
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'headerId'
+      )
+    })
+
     it('hides the language select for a single-language campaign', () => {
       renderChrome('CampaignHeaderBlock', oneLanguage)
 

@@ -27,7 +27,6 @@ import {
   resolveBand
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -665,7 +664,7 @@ export function CanvasSection({
     if (navButtonSelected) selectBlock(block.id)
   }
 
-  /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language select. */
+  /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language box. The box has no chevron: the canvas never switches language, the Preview Language chip does. */
   const headerBody = (
     <Box
       data-testid="CanvasHeaderRow"
@@ -748,10 +747,6 @@ export function CanvasSection({
           <Typography variant="body1" component="span">
             {previewLanguageLabel}
           </Typography>
-          <ChevronDownIcon
-            fontSize="small"
-            sx={{ color: 'var(--campaign-band-accent)' }}
-          />
         </Box>
       )}
       {navButtons.length > 0 && (
