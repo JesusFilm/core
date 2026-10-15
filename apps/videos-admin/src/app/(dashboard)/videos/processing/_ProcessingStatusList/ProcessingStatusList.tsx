@@ -73,6 +73,8 @@ type ProcessingStatusesData = {
   videoVariantReconciliations: ProcessingStatus[]
 }
 
+const RETRYABLE_STATUSES = ['degraded', 'failed']
+
 function stageSummary(processingStages: string): string {
   try {
     const stages = JSON.parse(processingStages) as Record<
@@ -232,7 +234,10 @@ export function ProcessingStatusList(): ReactElement {
                 <TableCell align="right">
                   <Button
                     size="small"
-                    disabled={retrying || reconciliation.status === 'complete'}
+                    disabled={
+                      retrying ||
+                      !RETRYABLE_STATUSES.includes(reconciliation.status)
+                    }
                     onClick={() => void handleRetry(reconciliation.id)}
                   >
                     Retry processing
