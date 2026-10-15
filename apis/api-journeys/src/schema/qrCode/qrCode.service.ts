@@ -146,8 +146,6 @@ export async function getTo({
   toBlockId
 }: {
   shortLinkId: string
-  /** The QR row's team; kept for callers, the domain comes from the journey's team. */
-  teamId?: string
   toJourneyId: string
   toBlockId?: string | null
 }): Promise<string> {

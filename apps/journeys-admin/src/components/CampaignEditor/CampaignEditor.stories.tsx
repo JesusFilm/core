@@ -56,8 +56,8 @@ export const PanelOverlaysAt1280: Story = {
   play: openPagesPanel
 }
 
-/** At 1440 px an open panel pushes the canvas. */
-export const PanelPushesAt1440: Story = {
+/** At 1440 px an open panel still overlays the canvas. */
+export const PanelOverlaysAt1440: Story = {
   parameters: { chromatic: { viewports: [1440] } },
   play: openPagesPanel
 }
@@ -72,13 +72,13 @@ export const Shell1280: Story = {
   play: openAddPanel
 }
 
-/** The whole shell at 1440 px, the Add panel pushing the canvas. */
+/** The whole shell at 1440 px, the Add panel overlaying the canvas. */
 export const Shell1440: Story = {
   parameters: { chromatic: { viewports: [1440] } },
   play: openAddPanel
 }
 
-/** The whole shell at 1920 px, the Add panel pushing the canvas. */
+/** The whole shell at 1920 px, the Add panel overlaying the canvas. */
 export const Shell1920: Story = {
   parameters: { chromatic: { viewports: [1920] } },
   play: openAddPanel
@@ -99,8 +99,8 @@ export const ScaledFrameAt1920: Story = {
   parameters: { chromatic: { viewports: [1920] } }
 }
 
-/** A pushed panel takes 300 px, so the frame scales further (about 0.58 at 1440 px). */
-export const ScaledFrameWithPushedPanelAt1440: Story = {
+/** An open panel overlays the canvas, so the frame keeps its scale (about 0.83 at 1440 px). */
+export const ScaledFrameWithPanelOpenAt1440: Story = {
   parameters: { chromatic: { viewports: [1440] } },
   play: openPagesPanel
 }

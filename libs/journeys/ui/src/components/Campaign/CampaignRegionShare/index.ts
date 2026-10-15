@@ -4,5 +4,6 @@ export {
   PREVIEW_IFRAME_SANDBOX,
   campaignString,
   previewEmbedUrl,
-  qrCodeFileName
+  qrCodeFileName,
+  shareLanguages
 } from './CampaignRegionShare'

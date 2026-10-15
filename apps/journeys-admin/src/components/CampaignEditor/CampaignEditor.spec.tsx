@@ -19,11 +19,7 @@ import { CAMPAIGN_TRANSLATIONS } from '../../libs/useCampaignTranslationsQuery'
 import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 
-import {
-  CampaignEditor,
-  EDITOR_MIN_WIDTH,
-  PANEL_PUSH_MIN_WIDTH
-} from './CampaignEditor'
+import { CampaignEditor, EDITOR_MIN_WIDTH } from './CampaignEditor'
 import { CURRENT_USER_ID, campaign } from './data'
 import { frameBody } from './testing'
 
@@ -128,16 +124,11 @@ describe('CampaignEditor', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('opens one panel at a time: overlaying the canvas below 1440 px', () => {
-    setViewport(PANEL_PUSH_MIN_WIDTH - 1)
+  it('opens one panel at a time', () => {
     renderEditor()
     expect(screen.queryByTestId('CampaignLeftPanel')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
-    expect(screen.getByTestId('CampaignLeftPanel')).toHaveAttribute(
-      'data-mode',
-      'overlay'
-    )
     expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Localize' }))
@@ -146,16 +137,55 @@ describe('CampaignEditor', () => {
     expect(screen.getByTestId('CampaignLocalizePanel')).toBeInTheDocument()
   })
 
-  it('pushes the canvas at 1440 px and above', () => {
-    setViewport(PANEL_PUSH_MIN_WIDTH)
+  it.each([EDITOR_MIN_WIDTH, 1440, 1920])(
+    'overlays the canvas at %i px, so the frame never moves when a panel opens',
+    (width) => {
+      setViewport(width)
+      renderEditor()
+      const canvas = screen.getByTestId('CampaignCanvas')
+      const frameParent = canvas.parentElement
+
+      fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
+
+      const panel = screen.getByTestId('CampaignLeftPanel')
+      expect(panel.parentElement).toBe(frameParent)
+      expect(screen.getByTestId('CampaignCanvas').parentElement).toBe(
+        frameParent
+      )
+    }
+  )
+
+  it('starts the canvas banner after the open panel', () => {
     renderEditor()
+    expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
+      left: '0px'
+    })
 
     fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
 
-    expect(screen.getByTestId('CampaignLeftPanel')).toHaveAttribute(
-      'data-mode',
-      'push'
-    )
+    expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
+      left: '300px'
+    })
+  })
+
+  it('tabs from the rail to the open panel, then the frame, then the Inspector', () => {
+    renderEditor()
+    fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
+
+    const inOrder = [
+      screen.getByTestId('CampaignLeftRail'),
+      screen.getByTestId('CampaignLeftPanel'),
+      screen.getByTestId('CampaignCanvas'),
+      screen.getByTestId('CampaignInspector')
+    ]
+    inOrder
+      .slice(1)
+      .forEach((element, index) =>
+        expect(
+          inOrder[index].compareDocumentPosition(element) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        ).toBeTruthy()
+      )
   })
 
   it('switches page and Preview Language from the Pages panel', () => {

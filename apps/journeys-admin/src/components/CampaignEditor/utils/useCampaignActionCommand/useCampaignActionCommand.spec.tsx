@@ -129,6 +129,20 @@ const errorMock = {
   }
 }
 
+/** The Harness with a way to unmount it, as selecting another block does. */
+function RemovableHarness(props: {
+  action: CampaignButtonAction | null
+  undoAction?: CampaignButtonAction | null
+}): ReactElement {
+  const [mounted, setMounted] = useState(true)
+  return (
+    <>
+      <button onClick={() => setMounted(false)}>Unmount panel</button>
+      {mounted && <Harness {...props} />}
+    </>
+  )
+}
+
 function renderHarness(
   action: CampaignButtonAction | null,
   undoAction?: CampaignButtonAction | null
@@ -247,5 +261,26 @@ describe('useCampaignActionCommand', () => {
     await waitFor(() =>
       expect(buttonActionText()).toMatch(/\|CampaignScrollToBlockAction$/)
     )
+  })
+
+  it('raises a refused undo in the error snackbar after the panel has unmounted', async () => {
+    render(
+      <QueriedEditor
+        initialState={{ selectedBlockId: 'heroId' }}
+        mocks={[linkMock, errorMock]}
+      >
+        <CommandUndoItem variant="button" />
+        <RemovableHarness action={linkAction} undoAction={badLinkAction} />
+      </QueriedEditor>
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Change link' }))
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Unmount panel' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('url must use the https scheme')
+    ).toBeInTheDocument()
   })
 })

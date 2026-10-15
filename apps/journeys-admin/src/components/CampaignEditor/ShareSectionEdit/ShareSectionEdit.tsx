@@ -52,6 +52,7 @@ import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampai
 import { campaignShareLink, journeyPreviewAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
+import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
 import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
 
 interface ShareSectionEditProps {
@@ -539,10 +540,10 @@ function ShareLanguageRow({
  * (every Share Language, the unlinked ones marked hidden until a journey is
  * linked), then every language of the region being rendered as the visitor
  * will see it, and "Add language" offering the Page Languages first, then
- * the full catalogue through the language autocomplete. Add, remove, link,
- * swap and unlink are not Commands (linking creates the Campaign QR Code on
- * the server and undo does not touch it); "Refresh from journey" is one,
- * confirmed only when the author edited the snapshot.
+ * the full catalogue through the language autocomplete. Add, remove and
+ * unlink are plain saves; linking and swapping a journey are Commands
+ * (a swap retargets the same short link, so undo is safe), and so is "Refresh
+ * from journey", confirmed only when the author edited the snapshot.
  */
 export function ShareSectionEdit({
   block
@@ -561,6 +562,7 @@ export function ShareSectionEdit({
   const [languageCreate] = useCampaignRegionLanguageCreateMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
   const [languageDelete] = useCampaignRegionLanguageDeleteMutation()
+  const { link } = useShareLanguageLinkCommand()
   const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
     useSnapshotRefreshCommand()
   const regionLanguages = useMemo(
@@ -694,11 +696,7 @@ export function ShareSectionEdit({
             onRemove={() => {
               void handleRemove(regionLanguage)
             }}
-            onLink={async (url) => {
-              await languageUpdate({
-                variables: { id: regionLanguage.id, input: { url } }
-              })
-            }}
+            onLink={(url) => link(regionLanguage, url)}
             onUnlink={() => handleUnlink(regionLanguage)}
             onRefresh={() => requestRefresh(regionLanguage)}
             onCopied={handleCopied}

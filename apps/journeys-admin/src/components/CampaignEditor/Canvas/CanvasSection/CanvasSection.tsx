@@ -2,6 +2,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -12,13 +13,11 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState
 } from 'react'
 
 import {
   CAMPAIGN_HEADER_HEIGHT,
-  CampaignAnalyticsPanel,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
@@ -33,8 +32,7 @@ import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_strings as CampaignString,
-  GetCampaign_campaign_theme as CampaignTheme
+  GetCampaign_campaign_strings as CampaignString
 } from '../../../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
@@ -47,8 +45,7 @@ import {
   CAMPAIGN_TEXT_FIELDS,
   CampaignTextBlock,
   CampaignTextField,
-  isCampaignTextBlock,
-  primaryTextField
+  isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
@@ -65,9 +62,6 @@ export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 
 interface CanvasSectionProps {
   block: CanvasBlock
-  theme: CampaignTheme
-  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
-  previewLanguageId: string | null
   /** A page section moves by its drag handle; chrome never does. */
   draggable?: boolean
   /** The drop indicator to show while another section is dragged over this one. */
@@ -96,7 +90,6 @@ interface CanvasExtraProps {
   selected: boolean
   onSelect: () => void
   focusField?: CampaignTextField
-  focusRequest: number
 }
 
 /** A text or button Extra: click to select, edit its one text field in place. */
@@ -104,8 +97,7 @@ function CanvasExtra({
   block,
   selected,
   onSelect,
-  focusField,
-  focusRequest
+  focusField
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -135,7 +127,6 @@ function CanvasExtra({
             placeholder={t('Your text')}
             editing={selected}
             autoFocus={selected && focusField === 'content'}
-            focusRequest={focusRequest}
             onSelect={onSelect}
             variant={block.typographyVariant ?? TypographyVariant.body1}
             variantMapping={{ overline: 'p', caption: 'p' }}
@@ -203,7 +194,6 @@ function CanvasExtra({
               placeholder={t('Button')}
               editing={selected}
               autoFocus={selected && focusField === 'label'}
-              focusRequest={focusRequest}
               onSelect={onSelect}
               variant="inherit"
               component="span"
@@ -223,7 +213,6 @@ interface SectionTextProps {
   field: CampaignTextField
   editing: boolean
   focusField?: CampaignTextField
-  focusRequest: number
   onSelect: (field: CampaignTextField) => void
   titleVariant: 'h1' | 'h2'
 }
@@ -256,7 +245,6 @@ function SectionText({
   field,
   editing,
   focusField,
-  focusRequest,
   onSelect,
   titleVariant
 }: SectionTextProps): ReactElement | null {
@@ -304,7 +292,6 @@ function SectionText({
       placeholder={sectionFieldPlaceholder(t, field)}
       editing={editing}
       autoFocus={editing && focusField === field}
-      focusRequest={focusRequest}
       onSelect={() => onSelect(field)}
       variant={styles.variant}
       sx={styles.sx}
@@ -406,8 +393,6 @@ function CanvasStrings({
  */
 export function CanvasSection({
   block,
-  theme,
-  previewLanguageId,
   draggable = false,
   dropEdge,
   inSlot = false
@@ -417,11 +402,11 @@ export function CanvasSection({
     campaign,
     selection,
     selectBlock,
-    state: { editRequest }
+    state: { previewLanguageId }
   } = useCampaignEditor()
+  const { theme } = campaign
   const [focusField, setFocusField] = useState<CampaignTextField>()
-  const [focusRequest, setFocusRequest] = useState(0)
-  const seenEditRequest = useRef(editRequest)
+  const [menuOpen, setMenuOpen] = useState(false)
   const selectedId = selection.block?.id
   const sectionSelected = selectedId === block.id
   const { setNodeRef: setDroppableRef } = useDroppable({
@@ -453,18 +438,6 @@ export function CanvasSection({
       return null
     return resolveBand(block, theme)
   }, [block, theme])
-
-  useEffect(() => {
-    if (editRequest === seenEditRequest.current) return
-    seenEditRequest.current = editRequest
-    const target = selection.block
-    if (target == null || !isCampaignTextBlock(target)) return
-    const inSection =
-      target.id === block.id || target.parentBlockId === block.id
-    if (!inSection) return
-    setFocusField(primaryTextField(target.__typename))
-    setFocusRequest((request) => request + 1)
-  }, [editRequest, selection.block, block.id])
 
   if (band == null) return null
 
@@ -532,7 +505,6 @@ export function CanvasSection({
         selected={selectedId === child.id}
         onSelect={() => selectChild(child.id, field)}
         focusField={focusField}
-        focusRequest={focusRequest}
       />
     )
   }
@@ -594,7 +566,6 @@ export function CanvasSection({
               field={field}
               editing={sectionSelected}
               focusField={focusField}
-              focusRequest={focusRequest}
               onSelect={handleSelectField}
               titleVariant={titleVariant}
             />
@@ -619,7 +590,6 @@ export function CanvasSection({
               (selection.kind === 'journey' && selection.host?.id === block.id)
             }
             focusField={focusField}
-            focusRequest={focusRequest}
             onSelectCard={selectChild}
           />
         )}
@@ -646,12 +616,7 @@ export function CanvasSection({
             }}
           >
             {slots.map((slot) => (
-              <CanvasColumnSlot
-                key={slot.id}
-                slot={slot}
-                theme={theme}
-                previewLanguageId={previewLanguageId}
-              />
+              <CanvasColumnSlot key={slot.id} slot={slot} />
             ))}
           </Box>
         )}
@@ -685,17 +650,49 @@ export function CanvasSection({
         previewLanguage.language.bcp47 ??
         previewLanguage.languageId)
 
+  /** Only buttons are nav: the public header drops any other child. */
+  const navButtons = extras.filter(
+    (child) => child.__typename === 'CampaignButtonBlock'
+  )
+  const navButtonSelected = navButtons.some((child) => child.id === selectedId)
+  /** Below `md` the nav sits behind the menu icon; a selected nav button opens it so it can be outlined and scrolled to. */
+  const navOpen = menuOpen || navButtonSelected
+
+  /** The phone menu is only for the header: it closes once the selection leaves the header and its nav buttons, so the taller header never covers the section the selection scrolls to. */
+  const selectionInHeader = sectionSelected || navButtonSelected
+  useEffect(() => {
+    if (!selectionInHeader) setMenuOpen(false)
+  }, [selectedId, selectionInHeader])
+
+  function handleMenuToggle(event: MouseEvent<HTMLElement>): void {
+    event.stopPropagation()
+    if (!navOpen) {
+      setMenuOpen(true)
+      return
+    }
+    setMenuOpen(false)
+    if (navButtonSelected) selectBlock(block.id)
+  }
+
   /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language select. */
   const headerBody = (
-    <Stack
-      direction="row"
-      spacing={2}
+    <Box
       data-testid="CanvasHeaderRow"
-      sx={{ alignItems: 'center', height: CAMPAIGN_HEADER_HEIGHT }}
+      sx={{
+        display: 'flex',
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
+        alignItems: 'center',
+        columnGap: 2
+      }}
     >
       <Box
         data-testid="CanvasBrandMark"
-        sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          minWidth: 0,
+          height: CAMPAIGN_HEADER_HEIGHT
+        }}
       >
         {logo != null ? (
           <Box
@@ -723,17 +720,23 @@ export function CanvasSection({
         )}
       </Box>
       <Box sx={{ flexGrow: 1 }} />
-      {extras.length > 0 && (
+      {navButtons.length > 0 && (
         <Box
           component="nav"
+          id={`${block.id}-nav`}
           data-testid="CanvasHeaderNav"
+          data-open={navOpen}
           sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            gap: 1
+            display: { xs: navOpen ? 'flex' : 'none', md: 'flex' },
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'flex-start', md: 'center' },
+            order: { xs: 1, md: 0 },
+            flexBasis: { xs: '100%', md: 'auto' },
+            gap: 1,
+            pb: { xs: 2, md: 0 }
           }}
         >
-          {extras.map(renderExtra)}
+          {navButtons.map(renderExtra)}
         </Box>
       )}
       {campaign.languages.length >= 2 && (
@@ -760,19 +763,22 @@ export function CanvasSection({
           />
         </Box>
       )}
-      {extras.length > 0 && (
-        <Box
+      {navButtons.length > 0 && (
+        <IconButton
           data-testid="CanvasHeaderMenuButton"
+          aria-label={t('Menu')}
+          aria-expanded={navOpen}
+          aria-controls={`${block.id}-nav`}
+          onClick={handleMenuToggle}
           sx={{
             display: { xs: 'inline-flex', md: 'none' },
-            p: 1,
             color: 'var(--campaign-band-text)'
           }}
         >
           <Menu1Icon />
-        </Box>
+        </IconButton>
       )}
-    </Stack>
+    </Box>
   )
 
   const footerLines = extras.filter(
@@ -863,6 +869,8 @@ export function CanvasSection({
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
+        scrollMarginTop:
+          chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,

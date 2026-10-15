@@ -6,6 +6,7 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { useCommandFailure } from '../useCommandFailure'
 
 /** The API's message, verbatim, from a failed mutation. */
 export function messageOf(error: unknown): string {
@@ -17,7 +18,8 @@ export function messageOf(error: unknown): string {
 interface StyleParameters<I> {
   input: I
   pageKind: CampaignPageKind
-  focus: boolean
+  /** Undo and redo: refocus the block, and report a refusal in the snackbar, since the panel that added the Command may have unmounted. */
+  replay: boolean
 }
 
 export interface AddStyleOptions<B extends CampaignBlock, I> {
@@ -56,6 +58,7 @@ export function useCampaignStyleCommand(): CampaignStyleCommand {
   const blocksRef = useRef(campaign.blocks)
   blocksRef.current = campaign.blocks
   const [error, setError] = useState<string>()
+  const reportFailure = useCommandFailure()
   const clearError = useCallback(() => setError(undefined), [])
 
   function addStyle<B extends CampaignBlock, I>({
@@ -68,12 +71,12 @@ export function useCampaignStyleCommand(): CampaignStyleCommand {
     const blockPageKind = pageKindOf(block) ?? pageKind
     add<StyleParameters<I>>({
       parameters: {
-        execute: { input, pageKind: blockPageKind, focus: false },
-        undo: { input: previous, pageKind: blockPageKind, focus: true },
-        redo: { input, pageKind: blockPageKind, focus: true }
+        execute: { input, pageKind: blockPageKind, replay: false },
+        undo: { input: previous, pageKind: blockPageKind, replay: true },
+        redo: { input, pageKind: blockPageKind, replay: true }
       },
-      execute({ input: next, pageKind: targetPageKind, focus }) {
-        if (focus)
+      execute({ input: next, pageKind: targetPageKind, replay }) {
+        if (replay)
           dispatch({
             type: 'SetEditorFocusAction',
             pageKind: targetPageKind,
@@ -84,7 +87,8 @@ export function useCampaignStyleCommand(): CampaignStyleCommand {
             | B
             | undefined) ?? block
         void run(current, next).catch((mutationError: unknown) => {
-          setError(messageOf(mutationError))
+          if (replay) reportFailure(mutationError)
+          else setError(messageOf(mutationError))
         })
       }
     })

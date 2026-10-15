@@ -1,9 +1,11 @@
-import { CampaignTextSource as PrismaCampaignTextSource } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
 
-export const CampaignTextSource = builder.enumType(PrismaCampaignTextSource, {
-  name: 'CampaignTextSource',
+export const CAMPAIGN_TEXT_SOURCES = ['human', 'machine'] as const
+
+export type CampaignTextSourceValue = (typeof CAMPAIGN_TEXT_SOURCES)[number]
+
+export const CampaignTextSource = builder.enumType('CampaignTextSource', {
+  values: CAMPAIGN_TEXT_SOURCES,
   description:
     'Who wrote a translation: a person or the machine-translation sweep.'
 })

@@ -279,15 +279,12 @@ export async function validateParentBlock(
   return parent
 }
 
-/** `placement` on a section child: `above` or `below`, defaulting to `below`. */
+/** `placement` on a section child: `above` or `below`; an omitted one takes the column default. */
 export function assertPlacement(
   placement: string | null | undefined
-): (typeof CAMPAIGN_CHILD_PLACEMENTS)[number] {
-  return assertEnum(
-    placement ?? 'below',
-    'placement',
-    CAMPAIGN_CHILD_PLACEMENTS
-  )
+): (typeof CAMPAIGN_CHILD_PLACEMENTS)[number] | undefined {
+  if (placement == null) return undefined
+  return assertEnum(placement, 'placement', CAMPAIGN_CHILD_PLACEMENTS)
 }
 
 /**
@@ -360,6 +357,46 @@ export async function reorderSiblings(
         })
     )
   )
+}
+
+/**
+ * Lock the campaign row until `tx` ends, so a read that follows sees the
+ * latest committed state and no concurrent writer changes it underneath. Used
+ * by edits that must keep the default language inside the language list.
+ *
+ * Lock order: a campaign edit writes its own rows (block, region, string,
+ * language) and ends with `touchCampaign`, so it takes row locks before the
+ * Campaign lock. A transaction that locks the Campaign row up front must take
+ * the rows it will write first (`lockCampaignTextRows`,
+ * `lockCampaignLanguageRows`) or it can deadlock with such an edit.
+ */
+export async function lockCampaign(
+  tx: Prisma.TransactionClient,
+  campaignId: string
+): Promise<void> {
+  await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ${campaignId} FOR UPDATE`
+}
+
+/**
+ * Lock every block, region and string row of the campaign (in id order, soft-
+ * deleted blocks included) before `lockCampaign`, matching the order of the
+ * single-row edits that lock their row and then touch the campaign.
+ */
+export async function lockCampaignTextRows(
+  tx: Prisma.TransactionClient,
+  campaignId: string
+): Promise<void> {
+  await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
+  await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
+  await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
+}
+
+/** Lock the campaign's language rows (in id order) before `lockCampaign`. */
+export async function lockCampaignLanguageRows(
+  tx: Prisma.TransactionClient,
+  campaignId: string
+): Promise<void> {
+  await tx.$queryRaw`SELECT 1 FROM "CampaignLanguage" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
 }
 
 /** Every block edit is a campaign edit: bump the campaign's `updatedAt`. */
@@ -756,8 +793,7 @@ export async function reorderBlock(
   if (block.parentOrder == null)
     throw conflict('an owned block has no order to change', 'id')
   assertParentOrder(parentOrder)
-  const nextPlacement =
-    placement == null ? undefined : assertPlacement(placement)
+  const nextPlacement = assertPlacement(placement)
   if (
     nextPlacement != null &&
     (!isCampaignChildTypename(block.typename) || block.parentBlockId == null)

@@ -52,7 +52,7 @@ export function Breadcrumb(): ReactElement {
       })
     }
     const regionId = selection.region.id
-    const hostId = selection.host?.id
+    const hostId = selection.regionHost?.id
     crumbs.push({
       label: regionDisplayName(
         selection.region,
@@ -82,7 +82,7 @@ export function Breadcrumb(): ReactElement {
       aria-label={t('Selection')}
       data-testid="CampaignBreadcrumb"
       separator="›"
-      sx={{ minWidth: 200 }}
+      sx={{ '& .MuiBreadcrumbs-li': { minWidth: 0, overflowWrap: 'anywhere' } }}
     >
       {crumbs.map((crumb, index) =>
         index === crumbs.length - 1 ? (

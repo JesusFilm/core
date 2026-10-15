@@ -7,10 +7,11 @@ import { ReactElement } from 'react'
 
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { createEmotionCache } from '@core/shared/ui/createEmotionCache'
-import { getLocaleRTL } from '@core/shared/ui/rtl'
 import { getTheme } from '@core/shared/ui/themes'
 
 import { ThemeMode, ThemeName } from '../__generated__/globalTypes'
+import { getPageRTL } from '../src/libs/getPageRTL'
+import { createRtlEmotionPlugin } from '../src/libs/rtlEmotionPlugin'
 
 interface CampaignPageProps {
   campaign?: { language?: { bcp47?: string | null } | null } | null
@@ -28,7 +29,10 @@ export function documentLanguage(
 ): { lang: string; dir: string } {
   const bcp47 = pageProps?.campaign?.language?.bcp47
   if (bcp47 == null) return { lang: 'en', dir: fallback.rtl ? 'rtl' : '' }
-  return { lang: bcp47, dir: getLocaleRTL(bcp47) ? 'rtl' : 'ltr' }
+  return {
+    lang: bcp47,
+    dir: getPageRTL({ campaign: pageProps?.campaign }) ? 'rtl' : 'ltr'
+  }
 }
 
 export default class MyDocument extends Document<{
@@ -108,7 +112,8 @@ export default class MyDocument extends Document<{
 // it's compatible with static-site generation (SSG).
 MyDocument.getInitialProps = async (ctx) => {
   const initialProps = await documentGetInitialProps(ctx, {
-    emotionCache: createEmotionCache({})
+    emotionCache: createEmotionCache({}),
+    plugins: [createRtlEmotionPlugin()]
   })
 
   // No journey is resolvable at _document level, so RTL falls back to the

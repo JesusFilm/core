@@ -8,6 +8,7 @@ import {
   currentSiblings,
   reorderedSiblings
 } from '../useCampaignBlockOrderCommand'
+import { useCommandFailure } from '../useCommandFailure'
 
 type OrderRows = ReturnType<typeof currentSiblings>
 
@@ -46,6 +47,7 @@ export function useColumnSwapCommand(): {
     pageKindOf
   } = useCampaignEditor()
   const [orderUpdate] = useCampaignBlockOrderUpdateMutation()
+  const reportFailure = useCommandFailure()
 
   function addColumnSwap(slot: CampaignBlock, selectedBlockId?: string): void {
     const other = otherSlotOf(campaign.blocks, slot)
@@ -72,7 +74,7 @@ export function useColumnSwapCommand(): {
         void orderUpdate({
           variables: { id: slot.id, parentOrder },
           optimisticResponse: { campaignBlockOrderUpdate: rows }
-        })
+        }).catch(reportFailure)
       }
     })
   }

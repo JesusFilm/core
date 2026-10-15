@@ -218,7 +218,6 @@ export async function updateTeamShortLinks(teamId: string): Promise<void> {
   for (const qrCode of qrCodes) {
     const to = await getTo({
       shortLinkId: qrCode.shortLinkId,
-      teamId: qrCode.teamId,
       toJourneyId: qrCode.toJourneyId,
       toBlockId: qrCode.toBlockId
     })

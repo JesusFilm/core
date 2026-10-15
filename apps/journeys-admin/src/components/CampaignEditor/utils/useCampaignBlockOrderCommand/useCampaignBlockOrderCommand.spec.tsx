@@ -117,11 +117,18 @@ function CrossBodyHarness(): ReactElement {
   )
 }
 
-function renderEditor(children?: ReactElement): ReturnType<typeof render> {
+function renderEditor(
+  children?: ReactElement,
+  mocks: Array<Record<string, unknown>> = [
+    moveUpMock,
+    moveBackMock,
+    crossBodyMock
+  ]
+): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       initialState={{ selectedBlockId: 'landingSwitcherId' }}
-      mocks={[moveUpMock, moveBackMock, crossBodyMock]}
+      mocks={mocks}
     >
       <CommandUndoItem variant="button" />
       <SelectionProbe />
@@ -221,6 +228,24 @@ describe('useCampaignBlockOrderCommand', () => {
     )
     expect(moveBackMock.result).not.toHaveBeenCalled()
     await waitFor(() => expect(moveBackMock.result).toHaveBeenCalled())
+  })
+
+  it('raises the API message in the error snackbar when the move is refused', async () => {
+    renderEditor(undefined, [
+      {
+        ...moveUpMock,
+        result: { errors: [{ message: 'The request was refused' }] }
+      }
+    ])
+    expect(
+      await screen.findByTestId('Block-landingSwitcherId')
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Move up' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
   })
 
   it('moves an Extra across the Section Body with its placement in the same Command', async () => {

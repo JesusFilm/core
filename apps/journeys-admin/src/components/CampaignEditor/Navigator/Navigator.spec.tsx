@@ -153,6 +153,24 @@ describe('Navigator', () => {
     expect(row('landingSwitcherId__eurRegionId__eurLineId')).toBeInTheDocument()
   })
 
+  it('keeps the badges and the drag handle together in one trailing group', () => {
+    renderNavigator({
+      campaignProp: campaignWithRegions,
+      initialState: { selectedBlockId: 'eurLineId' }
+    })
+
+    const trailing = within(
+      row('landingSwitcherId__afrRegionId')
+    ).getAllByTestId('NavigatorRowTrailing')[0]
+    expect(within(trailing).getByTestId('NavigatorNeedsJourney')).toBeVisible()
+    expect(within(trailing).getByTestId('NavigatorUnlisted')).toBeVisible()
+    expect(
+      within(trailing).getByTestId(
+        'NavigatorDragHandle-landingSwitcherId__afrRegionId'
+      )
+    ).toBeVisible()
+  })
+
   it('tags an Extra above or below its section', () => {
     renderNavigator({ initialState: { selectedBlockId: 'heroButtonId' } })
 

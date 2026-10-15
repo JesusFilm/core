@@ -50,7 +50,7 @@ export function useAddSection(): (
     addBlock({
       block,
       execute() {
-        void sectionCreate(block, input, slots)
+        return sectionCreate(block, input, slots)
       }
     })
   }

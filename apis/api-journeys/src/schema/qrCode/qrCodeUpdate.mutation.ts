@@ -51,7 +51,6 @@ builder.mutationField('qrCodeUpdate', (t) =>
             )
             const to = await getTo({
               shortLinkId: qrCode.shortLinkId,
-              teamId: qrCode.teamId,
               toJourneyId,
               toBlockId
             })

@@ -7,6 +7,7 @@ import {
 } from '../../../../libs/useCampaignBlockActionMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
+import { useCommandFailure } from '../useCommandFailure'
 
 export interface AddActionParameters {
   block: Pick<CampaignButtonBlock, 'id' | 'pageId'>
@@ -20,6 +21,8 @@ export interface AddActionParameters {
 
 interface ActionParameters {
   action: CampaignButtonAction | null
+  /** Undo and redo report a refusal in the snackbar, since the panel that added the Command may have unmounted. */
+  replay: boolean
 }
 
 /**
@@ -27,6 +30,8 @@ interface ActionParameters {
  * button it was made on and writes the action through the mutation for its
  * kind, shown optimistically; undo writes the previous action back the same
  * way, or removes it through `campaignBlockDeleteAction` when there was none.
+ * A refused execute goes to `onError`; a refused undo or redo goes to the
+ * editor's error snackbar.
  */
 export function useCampaignActionCommand(): {
   addAction: (params: AddActionParameters) => void
@@ -38,6 +43,7 @@ export function useCampaignActionCommand(): {
     pageKindOf
   } = useCampaignEditor()
   const mutate = useCampaignBlockActionMutation()
+  const reportFailure = useCommandFailure()
 
   function addAction({
     block,
@@ -47,15 +53,20 @@ export function useCampaignActionCommand(): {
   }: AddActionParameters): void {
     const blockPageKind = pageKindOf(block) ?? pageKind
     add<ActionParameters>({
-      parameters: { execute: { action }, undo: { action: undoAction } },
-      execute({ action: next }) {
+      parameters: {
+        execute: { action, replay: false },
+        undo: { action: undoAction, replay: true },
+        redo: { action, replay: true }
+      },
+      execute({ action: next, replay }) {
         dispatch({
           type: 'SetEditorFocusAction',
           pageKind: blockPageKind,
           selectedBlockId: block.id
         })
         void mutate(block, next).catch((error: unknown) => {
-          onError?.(messageOf(error))
+          if (replay) reportFailure(error)
+          else onError?.(messageOf(error))
         })
       }
     })

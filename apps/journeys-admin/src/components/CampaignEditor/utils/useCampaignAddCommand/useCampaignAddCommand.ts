@@ -98,7 +98,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
       addBlock({
         block,
         execute() {
-          void typographyCreate({
+          return typographyCreate({
             variables: { input },
             optimisticResponse: { campaignTypographyBlockCreate: block }
           })
@@ -121,7 +121,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     addBlock({
       block,
       execute() {
-        void buttonCreate({
+        return buttonCreate({
           variables: { input: { ...input, label: NEW_BUTTON_LABEL } },
           optimisticResponse: { campaignButtonBlockCreate: block }
         })
@@ -152,7 +152,7 @@ export function useCampaignAddCommand(): CampaignAddCommand {
     addBlock({
       block,
       execute() {
-        void typographyCreate({
+        return typographyCreate({
           variables: {
             input: { id, campaignId: campaign.id, regionId: region.id }
           },
