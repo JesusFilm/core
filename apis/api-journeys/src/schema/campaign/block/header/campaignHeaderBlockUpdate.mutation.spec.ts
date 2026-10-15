@@ -91,7 +91,7 @@ describe('campaignHeaderBlockUpdate', () => {
   it('sets logoBlockId to a live image block owned by the header', async () => {
     prismaMock.campaignBlock.findFirst
       .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
-      .mockResolvedValueOnce({ id: 'logoId' })
+      .mockResolvedValueOnce({ id: 'logoId' } as never)
 
     const result = await update({ logoBlockId: 'logoId' })
 

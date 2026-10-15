@@ -152,7 +152,7 @@ describe('campaignColumnsBlockCreate', () => {
       campaignId: 'campaignId',
       pageId: 'landingPageId',
       typename: 'CampaignColumnBlock'
-    })
+    } as never)
 
     const result = await create({ parentBlockId: 'slotId' })
 
