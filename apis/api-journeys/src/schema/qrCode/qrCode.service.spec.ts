@@ -113,7 +113,7 @@ describe('qrCode.service', () => {
       )
 
       await expect(
-        parseAndVerifyTo('https://journeys.example.org/christmas-europe')
+        parseAndVerifyTo('https://journeys.example.org/christmas-europe', 'teamId')
       ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
       expect(prismaMock.customDomain.findMany).not.toHaveBeenCalled()
     })
@@ -124,7 +124,7 @@ describe('qrCode.service', () => {
       )
 
       await expect(
-        parseAndVerifyTo('https://example.com/christmas-europe')
+        parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
       ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
     })
 
@@ -137,7 +137,7 @@ describe('qrCode.service', () => {
       } as never)
 
       await expect(
-        parseAndVerifyTo('https://example.com/christmas-europe/blockId')
+        parseAndVerifyTo('https://example.com/christmas-europe/blockId', 'teamId')
       ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: 'blockId' })
       expect(prismaMock.block.findFirstOrThrow).toHaveBeenCalledWith({
         where: { journeyId: 'journeyId', id: 'blockId' }
@@ -152,12 +152,31 @@ describe('qrCode.service', () => {
       )
 
       await expect(
-        parseAndVerifyTo('https://example.com/christmas-europe')
+        parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
       ).rejects.toThrow('Invalid hostname')
     })
 
+    it("only looks up live journeys that are published or the QR code team's own", async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+
+      await parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
+
+      expect(prismaMock.journey.findFirstOrThrow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            slug: 'christmas-europe',
+            deletedAt: null,
+            trashedAt: null,
+            OR: [{ status: 'published' }, { teamId: 'teamId' }]
+          }
+        })
+      )
+    })
+
     it('rejects an address without a journey slug', async () => {
-      await expect(parseAndVerifyTo('https://example.com/')).rejects.toThrow(
+      await expect(parseAndVerifyTo('https://example.com/', 'teamId')).rejects.toThrow(
         'Invalid to'
       )
     })

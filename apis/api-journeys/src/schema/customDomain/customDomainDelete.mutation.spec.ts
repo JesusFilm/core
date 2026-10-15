@@ -96,7 +96,7 @@ describe('customDomainDelete', () => {
       }
     })
 
-    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId', prismaMock)
+    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
     expect(prismaMock.customDomain.delete).toHaveBeenCalledWith({
       where: { id: 'customDomainId' }
     })

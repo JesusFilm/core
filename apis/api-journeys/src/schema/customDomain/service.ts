@@ -1,7 +1,7 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
-import { CustomDomain, Prisma, prisma } from '@core/prisma/journeys/client'
+import { CustomDomain, prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 
 import { getTo } from '../qrCode/qrCode.service'
@@ -191,28 +191,36 @@ function createGatewayClient(): ApolloClient {
 }
 
 /**
- * Rewrite the short link of every QR code of the team, journey and campaign
- * alike, through `getTo`, so each lands where its journey's team now serves
- * it. Call it after the custom domain row is written or deleted, with the
- * transaction client that wrote it, so `getTo` sees the new state.
+ * Rewrite the short link of every QR code served by the team's domain,
+ * journey and campaign alike, through `getTo`, so each lands where its
+ * journey's team now serves it. The host comes from the target journey's team,
+ * so that is the QR codes the team owns plus the ones another team points at
+ * the team's journeys. Call it once the custom domain row is committed, so
+ * `getTo` sees the new state and no gateway call holds a transaction open.
  */
-export async function updateTeamShortLinks(
-  teamId: string,
-  tx: Prisma.TransactionClient = prisma
-): Promise<void> {
+export async function updateTeamShortLinks(teamId: string): Promise<void> {
   const apollo = createGatewayClient()
 
-  const qrCodes = await tx.qrCode.findMany({ where: { teamId } })
+  const teamJourneys = await prisma.journey.findMany({
+    where: { teamId },
+    select: { id: true }
+  })
+
+  const qrCodes = await prisma.qrCode.findMany({
+    where: {
+      OR: [
+        { teamId },
+        { toJourneyId: { in: teamJourneys.map((journey) => journey.id) } }
+      ]
+    }
+  })
 
   for (const qrCode of qrCodes) {
-    if (qrCode.journeyId !== qrCode.toJourneyId) continue
-
     const to = await getTo({
       shortLinkId: qrCode.shortLinkId,
       teamId: qrCode.teamId,
       toJourneyId: qrCode.toJourneyId,
-      toBlockId: qrCode.toBlockId,
-      client: tx
+      toBlockId: qrCode.toBlockId
     })
 
     await apollo.mutate({

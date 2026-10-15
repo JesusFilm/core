@@ -43,17 +43,69 @@ describe('customDomain service', () => {
   describe('updateTeamShortLinks', () => {
     beforeEach(() => {
       vi.clearAllMocks()
+      prismaMock.journey.findMany.mockResolvedValue([])
     })
 
     it('does nothing for a team without QR codes', async () => {
+      prismaMock.journey.findMany.mockResolvedValue([])
       prismaMock.qrCode.findMany.mockResolvedValue([])
 
       await updateTeamShortLinks('teamId')
 
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
-        where: { teamId: 'teamId' }
+        where: { OR: [{ teamId: 'teamId' }, { toJourneyId: { in: [] } }] }
       })
       expect(mockMutate).not.toHaveBeenCalled()
+    })
+
+    it("selects the QR codes of the team and those pointing at the team's journeys", async () => {
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'journeyId' },
+        { id: 'otherJourneyId' }
+      ] as never)
+      prismaMock.qrCode.findMany.mockResolvedValue([])
+
+      await updateTeamShortLinks('teamId')
+
+      expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
+        where: { teamId: 'teamId' },
+        select: { id: true }
+      })
+      expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { teamId: 'teamId' },
+            { toJourneyId: { in: ['journeyId', 'otherJourneyId'] } }
+          ]
+        }
+      })
+    })
+
+    it("rewrites another team's campaign QR code that points at the team's journey", async () => {
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'journeyId' }
+      ] as never)
+      prismaMock.qrCode.findMany.mockResolvedValue([
+        qrCodeRow({
+          teamId: 'campaignTeamId',
+          journeyId: 'campaignJourneyId',
+          campaignRegionLanguages: [{ id: 'regionLanguageId' }]
+        })
+      ])
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+
+      await updateTeamShortLinks('teamId')
+
+      expect(mockMutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: {
+            input: {
+              id: 'shortLinkId',
+              to: 'https://example.com/my-journey?utm_source=ns-qr-code&utm_campaign=shortLinkId'
+            }
+          }
+        })
+      )
     })
 
     it('rewrites the short link of a journey QR code to the team domain', async () => {
@@ -117,33 +169,19 @@ describe('customDomain service', () => {
       )
     })
 
-    it('leaves a QR code that was retargeted to another journey alone', async () => {
+    it('rewrites a QR code that was retargeted to another journey to that journey', async () => {
+      prismaMock.journey.findMany.mockResolvedValue([] as never)
       prismaMock.qrCode.findMany.mockResolvedValue([
         qrCodeRow({ toJourneyId: 'otherJourneyId' })
       ])
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
 
       await updateTeamShortLinks('teamId')
 
-      expect(mockMutate).not.toHaveBeenCalled()
-    })
-
-    it('reads through the transaction client it is given', async () => {
-      const tx = {
-        qrCode: { findMany: vi.fn().mockResolvedValue([qrCodeRow()]) },
-        journey: {
-          findUniqueOrThrow: vi.fn().mockResolvedValue(journeyRow())
-        },
-        block: { findUniqueOrThrow: vi.fn() }
-      }
-
-      await updateTeamShortLinks('teamId', tx as never)
-
-      expect(tx.qrCode.findMany).toHaveBeenCalledWith({
-        where: { teamId: 'teamId' }
-      })
-      expect(tx.journey.findUniqueOrThrow).toHaveBeenCalled()
-      expect(prismaMock.qrCode.findMany).not.toHaveBeenCalled()
-      expect(prismaMock.journey.findUniqueOrThrow).not.toHaveBeenCalled()
+      expect(prismaMock.journey.findUniqueOrThrow).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: 'otherJourneyId' } })
+      )
+      expect(mockMutate).toHaveBeenCalledTimes(1)
     })
   })
 })

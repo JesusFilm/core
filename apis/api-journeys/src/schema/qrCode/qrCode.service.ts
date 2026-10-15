@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
 
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
@@ -143,25 +143,22 @@ export async function deleteShortLink(id: string): Promise<void> {
 export async function getTo({
   shortLinkId,
   toJourneyId,
-  toBlockId,
-  client = prisma
+  toBlockId
 }: {
   shortLinkId: string
   /** The QR row's team; kept for callers, the domain comes from the journey's team. */
   teamId?: string
   toJourneyId: string
   toBlockId?: string | null
-  /** Read through this client so a caller inside a transaction sees its own writes. */
-  client?: Prisma.TransactionClient
 }): Promise<string> {
-  const journey = await client.journey.findUniqueOrThrow({
+  const journey = await prisma.journey.findUniqueOrThrow({
     where: { id: toJourneyId },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
 
   const block =
     toBlockId != null
-      ? await client.block.findUniqueOrThrow({
+      ? await prisma.block.findUniqueOrThrow({
           where: { journeyId: journey.id, id: toBlockId }
         })
       : null
@@ -177,10 +174,13 @@ export async function getTo({
  * Resolve a pasted address to its journey and block. The address must be on
  * the host that serves the target journey, decided by the journey's own team
  * exactly as `getTo` does, so a campaign QR code can be repointed at another
- * team's journey with that journey's own URL.
+ * team's journey with that journey's own URL. The journey must be published
+ * and not trashed or deleted; a journey of the QR code's own team may also be
+ * a draft or archived.
  */
 export async function parseAndVerifyTo(
-  to: string
+  to: string,
+  teamId: string
 ): Promise<{ toJourneyId: string; toBlockId?: string | null }> {
   const { origin, pathname } = new URL(to)
 
@@ -194,7 +194,12 @@ export async function parseAndVerifyTo(
     })
 
   const journey = await prisma.journey.findFirstOrThrow({
-    where: { slug: journeySlug },
+    where: {
+      slug: journeySlug,
+      deletedAt: null,
+      trashedAt: null,
+      OR: [{ status: JourneyStatus.published }, { teamId }]
+    },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
 

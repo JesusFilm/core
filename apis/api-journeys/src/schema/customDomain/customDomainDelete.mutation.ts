@@ -38,9 +38,10 @@ builder.mutationField('customDomainDelete', (t) =>
 
       await prisma.$transaction(async (tx) => {
         await tx.customDomain.delete({ where: { id } })
-        await updateTeamShortLinks(customDomain.teamId, tx)
         await deleteVercelDomain(customDomain)
       })
+
+      await updateTeamShortLinks(customDomain.teamId)
 
       return customDomain
     }
