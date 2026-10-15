@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./globalTypes";
+import { ThemeMode, CampaignRadius, CampaignButtonRadius, CampaignStringKey, JourneyStatus, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignPageKind } from "./globalTypes";
 
 // ====================================================
 // GraphQL fragment: CampaignPublicFields
@@ -805,6 +805,10 @@ export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
    * Which side the media sits on at `md` and up.
    */
   mediaSide: CampaignMediaSide;
+  /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
@@ -1842,6 +1846,10 @@ export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
@@ -2778,6 +2786,10 @@ export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
    * Which side the media sits on at `md` and up.
    */
   mediaSide: CampaignMediaSide;
+  /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */

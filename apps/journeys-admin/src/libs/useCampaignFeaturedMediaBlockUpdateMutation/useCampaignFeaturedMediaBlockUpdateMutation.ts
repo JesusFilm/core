@@ -7,7 +7,10 @@ import {
   CampaignFeaturedMediaBlockUpdateVariables
 } from '../../../__generated__/CampaignFeaturedMediaBlockUpdate'
 import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../__generated__/GetCampaign'
-import { CampaignMediaSide } from '../../../__generated__/globalTypes'
+import {
+  CampaignFeaturedMediaLayout,
+  CampaignMediaSide
+} from '../../../__generated__/globalTypes'
 
 export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE = gql`
   mutation CampaignFeaturedMediaBlockUpdate(
@@ -17,24 +20,26 @@ export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE = gql`
     campaignFeaturedMediaBlockUpdate(id: $id, input: $input) {
       id
       mediaSide
+      layout
       mediaBlockId
     }
   }
 `
 
-/** The Featured Media layout fields: which side the media sits on, and what fills the slot. */
+/** The Featured Media layout fields: which side the media sits on, whether it is stacked, and what fills the slot. */
 export interface CampaignFeaturedMediaInput {
   mediaSide?: CampaignMediaSide
+  layout?: CampaignFeaturedMediaLayout
   mediaBlockId?: string | null
 }
 
 export type CampaignFeaturedMediaMutate = (
-  block: Pick<CampaignFeaturedMediaBlock, 'id' | 'mediaSide' | 'mediaBlockId'>,
+  block: Pick<CampaignFeaturedMediaBlock, 'id' | 'mediaSide' | 'layout' | 'mediaBlockId'>,
   input: CampaignFeaturedMediaInput
 ) => Promise<ApolloLink.Result<CampaignFeaturedMediaBlockUpdate>>
 
 /**
- * Write a Featured Media section's media side or Media Slot through
+ * Write a Featured Media section's media side, layout or Media Slot through
  * `campaignFeaturedMediaBlockUpdate`, shown optimistically as the block with
  * the input applied.
  */
@@ -53,6 +58,7 @@ export function useCampaignFeaturedMediaBlockUpdateMutation(): CampaignFeaturedM
             __typename: 'CampaignFeaturedMediaBlock',
             id: block.id,
             mediaSide: input.mediaSide ?? block.mediaSide,
+            layout: input.layout ?? block.layout,
             mediaBlockId:
               input.mediaBlockId !== undefined
                 ? input.mediaBlockId

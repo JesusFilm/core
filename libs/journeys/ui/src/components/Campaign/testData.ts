@@ -4,6 +4,7 @@ import {
   CampaignBackgroundKind,
   CampaignButtonRadius,
   CampaignChildPlacement,
+  CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
   CampaignPageKind,
@@ -602,6 +603,7 @@ export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
   lede: 'Short films in the languages your neighbours speak.',
   bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
   mediaSide: CampaignMediaSide.left,
+  layout: CampaignFeaturedMediaLayout.sideBySide,
   mediaBlockId: 'featuredMediaImageId'
 })
 

@@ -11,18 +11,22 @@ interface CampaignMediaSplitProps {
   text: ReactNode | null
   media: CampaignTree | null
   mediaSide?: CampaignMediaSide
+  /** One column at every width: the text, then the media full width. */
+  stacked?: boolean
 }
 
 /**
  * A section body with its Media Slot beside its text: two columns from `md`
  * up with the media on `mediaSide`, a single column below it in the same
- * order. An empty slot leaves the text full width; empty text leaves the
+ * order. `stacked` keeps the single column at every width, the text then the
+ * media. An empty slot leaves the text full width; empty text leaves the
  * media alone.
  */
 export function CampaignMediaSplit({
   text,
   media,
-  mediaSide = CampaignMediaSide.right
+  mediaSide = CampaignMediaSide.right,
+  stacked = false
 }: CampaignMediaSplitProps): ReactElement | null {
   if (!hasCampaignMedia(media)) return <>{text}</>
 
@@ -34,19 +38,21 @@ export function CampaignMediaSplit({
   if (text == null) return mediaColumn
 
   const textColumn = <Box sx={{ minWidth: 0 }}>{text}</Box>
+  const mediaLeft = !stacked && mediaSide === CampaignMediaSide.left
   return (
     <Box
       data-testid="CampaignMediaSplit"
-      data-media-side={mediaSide}
+      data-media-side={stacked ? undefined : mediaSide}
+      data-stacked={stacked || undefined}
       sx={{
         display: 'grid',
         gap: { xs: 4, md: 6 },
         alignItems: 'center',
-        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }
+        gridTemplateColumns: stacked ? '1fr' : { xs: '1fr', md: '1fr 1fr' }
       }}
     >
-      {mediaSide === CampaignMediaSide.left ? mediaColumn : textColumn}
-      {mediaSide === CampaignMediaSide.left ? textColumn : mediaColumn}
+      {mediaLeft ? mediaColumn : textColumn}
+      {mediaLeft ? textColumn : mediaColumn}
     </Box>
   )
 }

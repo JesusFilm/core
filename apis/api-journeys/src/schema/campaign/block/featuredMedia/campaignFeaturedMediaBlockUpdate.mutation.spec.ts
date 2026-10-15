@@ -47,6 +47,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
           value
         }
         mediaSide
+        layout
         mediaBlockId
         backgroundKind
         backgroundOverlay
@@ -155,6 +156,54 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     const result = await update({ title: 'x' })
 
     expect(result.data.campaignFeaturedMediaBlockUpdate.mediaSide).toBe('right')
+  })
+
+  it('stacks the section, then returns it to side by side', async () => {
+    const stacked = await update({ layout: 'stacked' })
+
+    expect(stacked.data.campaignFeaturedMediaBlockUpdate.layout).toBe('stacked')
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'featuredId' },
+      data: { layout: 'stacked' },
+      include: { action: true }
+    })
+
+    prismaMock.campaignBlock.update.mockClear()
+    const sideBySide = await update({ layout: 'sideBySide' })
+
+    expect(sideBySide.data.campaignFeaturedMediaBlockUpdate.layout).toBe(
+      'sideBySide'
+    )
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'featuredId' },
+      data: { layout: 'sideBySide' },
+      include: { action: true }
+    })
+  })
+
+  it('refuses a null layout, which is never null (BAD_USER_INPUT, layout)', async () => {
+    const result = await update({ layout: null })
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'layout'
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('rejects an unknown layout at the schema (the enum) before the resolver', async () => {
+    const result = await update({ layout: 'diagonal' })
+
+    expect(result.errors).toBeDefined()
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('reads a row without a stored layout as side by side', async () => {
+    const result = await update({ title: 'x' })
+
+    expect(result.data.campaignFeaturedMediaBlockUpdate.layout).toBe(
+      'sideBySide'
+    )
   })
 
   describe('mediaBlockId', () => {

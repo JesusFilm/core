@@ -2,6 +2,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import { render, screen, within } from '@testing-library/react'
 
 import {
+  CampaignFeaturedMediaLayout,
   CampaignMediaSide,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
@@ -46,6 +47,15 @@ function emotionClass(element: Element): string {
   )
   if (name == null) throw new Error('no emotion class')
   return name.replace(/[-]/g, '\\-')
+}
+
+/** The element's emotion rule body outside any media query. */
+function baseRule(element: Element): string {
+  return (
+    styleText().match(
+      new RegExp(`(?:^|\\})\\.${emotionClass(element)}\\{([^}]*)\\}`)
+    )?.[1] ?? ''
+  )
 }
 
 /** The element's emotion rule body under the `min-width` media query. */
@@ -155,6 +165,61 @@ describe('CampaignFeaturedMedia', () => {
     renderFeatured(featuredTree())
     const split = screen.getByTestId('CampaignMediaSplit')
     expect(mediaRule(split, 0)).toContain('grid-template-columns:1fr;')
+    expect(mediaRule(split, 600)).toContain('grid-template-columns:1fr 1fr;')
+  })
+
+  describe('stacked layout', () => {
+    const stacked = { layout: CampaignFeaturedMediaLayout.stacked }
+
+    it('renders the title and lede, then the media, in one column at every width', () => {
+      renderFeatured(featuredTree(stacked))
+      const split = screen.getByTestId('CampaignMediaSplit')
+      expect(split).toHaveAttribute('data-stacked', 'true')
+      expect(split).not.toHaveAttribute('data-media-side')
+      expect(baseRule(split)).toContain('grid-template-columns:1fr;')
+      expect(mediaRule(split, 600)).not.toContain('grid-template-columns')
+      expect(split.firstElementChild).toContainElement(
+        screen.getByRole('heading', { name: 'A story for every home' })
+      )
+      expect(split.firstElementChild).toContainElement(
+        screen.getByTestId('CampaignLede')
+      )
+      expect(split.lastElementChild).toHaveAttribute(
+        'data-testid',
+        'CampaignMediaSlot'
+      )
+    })
+
+    it('puts the media after the text whatever the mediaSide', () => {
+      renderFeatured(
+        featuredTree({ ...stacked, mediaSide: CampaignMediaSide.left })
+      )
+      expect(
+        screen.getByTestId('CampaignMediaSplit').lastElementChild
+      ).toHaveAttribute('data-testid', 'CampaignMediaSlot')
+    })
+
+    it('renders bullets under the text, above the media', () => {
+      renderFeatured(featuredTree(stacked))
+      const text = screen.getByTestId('CampaignMediaSplit').firstElementChild
+      expect(text).toContainElement(
+        screen.getByTestId('CampaignFeaturedMediaBullets')
+      )
+    })
+
+    it('omits the lede when it is empty', () => {
+      renderFeatured(featuredTree({ ...stacked, lede: null }))
+      expect(screen.queryByTestId('CampaignLede')).not.toBeInTheDocument()
+      expect(screen.getByTestId('CampaignMediaSlot')).toBeInTheDocument()
+    })
+  })
+
+  it('keeps side by side when the layout is side by side', () => {
+    renderFeatured(
+      featuredTree({ layout: CampaignFeaturedMediaLayout.sideBySide })
+    )
+    const split = screen.getByTestId('CampaignMediaSplit')
+    expect(split).not.toHaveAttribute('data-stacked')
     expect(mediaRule(split, 600)).toContain('grid-template-columns:1fr 1fr;')
   })
 

@@ -1,5 +1,5 @@
 import { builder } from '../../builder'
-import { CampaignMediaSide } from '../enums'
+import { CampaignFeaturedMediaLayout, CampaignMediaSide } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock } from './campaignBlock'
@@ -12,7 +12,7 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
     interfaces: [CampaignBlock, CampaignSectionBlock],
     isTypeOf: (block: any) => block.typename === 'CampaignFeaturedMediaBlock',
     description:
-      'A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.',
+      'A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.',
     fields: (t) => ({
       eyebrow: t.exposeString('eyebrow', { nullable: true }),
       eyebrowTranslations: t.field({
@@ -46,6 +46,13 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
         nullable: false,
         description: 'Which side the media sits on at `md` and up.',
         resolve: (block) => block.mediaSide ?? 'right'
+      }),
+      layout: t.field({
+        type: CampaignFeaturedMediaLayout,
+        nullable: false,
+        description:
+          '`sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.',
+        resolve: (block) => block.layout ?? 'sideBySide'
       }),
       mediaBlockId: t.exposeID('mediaBlockId', {
         nullable: true,
