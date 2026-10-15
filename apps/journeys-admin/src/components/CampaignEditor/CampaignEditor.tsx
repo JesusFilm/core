@@ -23,7 +23,7 @@ import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
 import { Hotkeys } from './Hotkeys'
 import { Inspector } from './Inspector'
-import { LeftPanel } from './LeftPanel'
+import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
 import { LeftRail } from './LeftRail'
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
@@ -106,7 +106,7 @@ function CampaignEditorShell({
           }}
         >
           {leftPanel}
-          <CanvasBanner />
+          <CanvasBanner inset={leftPanel != null ? LEFT_PANEL_WIDTH : 0} />
           <Canvas campaign={campaign} pageKind={pageKind} view={view} />
         </Box>
       </Stack>

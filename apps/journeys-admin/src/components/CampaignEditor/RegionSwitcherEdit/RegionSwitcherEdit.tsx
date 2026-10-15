@@ -66,6 +66,8 @@ function RegionCardEdit({
   const selected =
     selection.kind === 'region' && selection.region?.id === region.id
   const lines = regionLines(campaign.blocks, region.id)
+  const lineSelected = lines.some((line) => line.id === selection.block?.id)
+  const muted = !region.listed && !selected && !lineSelected
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
@@ -91,7 +93,7 @@ function RegionCardEdit({
         backgroundColor: 'var(--campaign-band-card)',
         border: '1px solid var(--campaign-band-border)',
         ...HOVER_OUTLINE_SX,
-        ...(region.listed ? {} : { opacity: 0.5 }),
+        ...(muted ? { opacity: 0.5 } : {}),
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
@@ -169,7 +171,9 @@ function RegionCardEdit({
 /**
  * The Region Switcher on the editor canvas: every region as a card (the
  * current region hidden on its own Region Page), an unlisted one muted with an
- * eye-slash so its Navigator row can hover and select it, and the "+ Add"
+ * eye-slash (until it or one of its lines is selected, so the selection
+ * outline and the line being edited stay at full strength) so its Navigator
+ * row can hover and select it, and the "+ Add"
  * that runs `campaignRegionCreate` as a Command. With no region to show the
  * section reads "Add your first region".
  */

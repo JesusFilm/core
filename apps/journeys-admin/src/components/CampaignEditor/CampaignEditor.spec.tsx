@@ -155,6 +155,19 @@ describe('CampaignEditor', () => {
     }
   )
 
+  it('starts the canvas banner after the open panel', () => {
+    renderEditor()
+    expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
+      left: '0px'
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
+
+    expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
+      left: '300px'
+    })
+  })
+
   it('tabs from the rail to the open panel, then the frame, then the Inspector', () => {
     renderEditor()
     fireEvent.click(screen.getByRole('button', { name: 'Pages' }))

@@ -7,13 +7,18 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { FirstRunHint } from '../FirstRunHint'
 import { OrphanPageBar } from '../OrphanPageBar'
 
+interface CanvasBannerProps {
+  /** Width in px of an open left panel, so the banner centres in the canvas it leaves visible. */
+  inset?: number
+}
+
 /**
  * The floating slot at the top of the canvas area: the First-run Hint and,
  * when the rendered region is unlisted, the orphan page bar. It is not a bar
  * and takes no layout height: it floats over the canvas and only its
  * contents catch the pointer.
  */
-export function CanvasBanner(): ReactElement {
+export function CanvasBanner({ inset = 0 }: CanvasBannerProps): ReactElement {
   const { campaign, currentRegion } = useCampaignEditor()
 
   return (
@@ -23,7 +28,7 @@ export function CanvasBanner(): ReactElement {
       sx={{
         position: 'absolute',
         top: 16,
-        left: 0,
+        left: inset,
         right: 0,
         zIndex: 1,
         alignItems: 'center',

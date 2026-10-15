@@ -224,12 +224,15 @@ describe('RegionSwitcherEdit', () => {
       )
     ).not.toBeInTheDocument()
 
+    expect(africa).toHaveStyle({ opacity: "0.5" })
+
     fireEvent.click(africa)
 
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('region')
     expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
       'afrRegionId'
     )
+    expect(africa).not.toHaveStyle({ opacity: "0.5" })
   })
 
   it('runs campaignRegionCreate from + Add as a Command and selects the new card', async () => {
