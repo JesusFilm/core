@@ -176,7 +176,10 @@ export function useJourneyCardSnapshotRefreshCommand(): {
    * set; clearing it keeps a later journey rename from asking to confirm.
    * Nothing visible changes, so it is not a Command.
    */
-  function clearEditedFlag(card: JourneyCardBlock, journey: SnapshotText): void {
+  function clearEditedFlag(
+    card: JourneyCardBlock,
+    journey: SnapshotText
+  ): void {
     void refresh({
       variables: { id: card.id },
       optimisticResponse: {
