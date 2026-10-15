@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/JesusFilm/core
-    path: infrastructure/kube/plausible
+    path: infrastructure/kube/plausible-analytics
     targetRevision: main
     helm:
       valueFiles:
