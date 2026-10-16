@@ -20,7 +20,7 @@
     "noThumbnail": "ไม่มีภาพขนาดย่อ"
   },
   "StudyQuestions": {
-    "title": "คำถามสำหรับการศึกษา"
+    "title": "คำถามการศึกษา"
   },
   "VideoPlayer": {
     "lackOfBrowserSupport": "เพื่อดูวิดีโอนี้ โปรดเปิดใช้งาน JavaScript และพิจารณาอัปเกรดเว็บเบราว์เซอร์ของคุณที่<link>รองรับวิดีโอ HTML5</link>"

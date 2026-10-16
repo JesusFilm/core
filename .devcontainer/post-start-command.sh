@@ -1,1 +1,1 @@
-corepack enable && corepack prepare pnpm@10.33.2 --activate
+corepack enable

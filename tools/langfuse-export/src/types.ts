@@ -99,12 +99,40 @@ export interface ThemeSynthesis {
 // the browsable data, not a summary.
 // ===========================================================================
 
+// A machine translation of one source string (NES-1762). `sourceLanguage` is
+// what the model detected; `english` is present only when the source was NOT
+// English. Detection and translation come from the same pass, so a record with
+// sourceLanguage 'en' and no `english` means "read as-is, nothing translated".
+export interface Translation {
+  sourceLanguage: string // BCP-47-ish code the model detected, e.g. 'bn', 'es'
+  english?: string // omitted when sourceLanguage === 'en'
+}
+
+// Right-to-left scripts present in the corpus (Arabic, Hebrew, Farsi, Urdu).
+// The viewer sets dir="auto" on original text so RTL renders correctly while
+// the English translation stays LTR.
+export const RTL_LANGUAGES: readonly string[] = [
+  'ar',
+  'fa',
+  'he',
+  'ur',
+  'ps',
+  'sd',
+  'yi'
+]
+
 // One message in a session, in conversation order. `role` distinguishes the
 // (sanitised) user turn from the assistant reply so the viewer can render a
 // real back-and-forth a reader can follow start to finish.
+//
+// `text` is ALWAYS the original, byte-for-byte — translation is additive and
+// never overwrites the source of truth. `textEnglish` is present only when the
+// message was detected as non-English and translated.
 export interface DatasetMessage {
   role: 'user' | 'assistant'
   text: string
+  textEnglish?: string
+  sourceLanguage?: string
   startTime: string
   model: string | null
 }
@@ -114,13 +142,28 @@ export interface DatasetMessage {
 // ipCountry — a region filter), and `language` (the journey's configured
 // BCP-47 language). `count` is the number of sessions carrying the facet
 // (document frequency), shown next to each chip.
-export type FacetKind = 'theme' | 'keyword' | 'country' | 'language'
+// `language` is the journey's CONFIGURED language; `typedLanguage` is what the
+// user actually wrote. They disagree often enough to mislead: 6 sessions on a
+// 'Bengali' journey contain no Bengali at all, and Yiddish/Korean/Hindi were
+// typed but had no journey of their own. Both are facets so the distinction is
+// structural rather than a footnote.
+export type FacetKind =
+  | 'theme'
+  | 'keyword'
+  | 'country'
+  | 'language'
+  | 'typedLanguage'
 
 export interface Facet {
   key: string // stable filter key, e.g. 'keyword:resurrection' or 'theme:Suffering'
   label: string // human label, e.g. 'resurrection'
   kind: FacetKind
   count: number // sessions carrying this facet
+  // Keyword facets are tokenised from raw user messages, so they inherit the
+  // source language. When a keyword is non-English these carry its English
+  // gloss; `label` still holds the original term the filter key is built from.
+  labelEnglish?: string
+  sourceLanguage?: string
 }
 
 // One session in the explorer dataset. `id` is the real (pseudonymous)
@@ -134,8 +177,22 @@ export interface DatasetSession {
   language?: string
   ipCountry?: string
   journeyId?: string
+  // The journey's raw configured language, exactly as the chat client sent it
+  // ('es', or 'Spanish, Latin American'). `languageLabel` is the normalised
+  // display name the facet rail filters on.
+  languageLabel?: string
+  // Distinct non-English languages actually detected in this session's messages,
+  // most frequent first. A session can carry several — and its journey language
+  // frequently disagrees with what the user typed.
+  translatedLanguages: string[]
   messageCount: number
   firstUserMessage: string
+  firstUserMessageEnglish?: string
+  // The language of the machine-translated preview, and only that. Absent when
+  // the preview is English, and absent when the script disproved the model's
+  // label — the card must never name a language the conversation view refuses to.
+  // Distinct from `language`, the journey's configured language.
+  sourceLanguage?: string
   startTime: string
   themes: string[]
   facetKeys: string[]
@@ -155,6 +212,14 @@ export interface DatasetSummary {
   excludedLoadTestTurns: number // turns dropped by the discriminator
   suppressedKeywordCount: number // over-common terms held back as facets
   themesAvailable: boolean // false when the LLM enrichment did not run
+  translationAvailable: boolean // false when the translation pass did not run
+  translatedMessageCount: number // messages carrying an English translation
+  // Keyword facets dropped because their English gloss is a stopword — the
+  // non-English function words the English-only stopword list never caught.
+  suppressedTranslatedKeywordCount: number
+  // Distinct non-English source languages found in the corpus, most frequent
+  // first. Drives the header disclosure ("machine-translated from N languages").
+  sourceLanguages: string[]
 }
 
 // The full bundle payload: the lossless session corpus + the curated facet

@@ -10,6 +10,9 @@ describe('parseArgs', () => {
       '--environment',
       'preview',
       '--llm-scrub',
+      '--translate',
+      '--translation-cache',
+      '/tmp/cache.json',
       '--model',
       'google/gemini-2.5-flash',
       '--debug'
@@ -19,6 +22,8 @@ describe('parseArgs', () => {
       discriminator: 'none',
       environment: 'preview',
       llmScrub: true,
+      translate: true,
+      translationCache: '/tmp/cache.json',
       model: 'google/gemini-2.5-flash',
       debug: true
     })
@@ -30,8 +35,10 @@ describe('parseArgs', () => {
       discriminator: 'default',
       environment: 'production',
       llmScrub: false,
+      translate: false,
       debug: false
     })
+    expect(opts.translationCache).toBeUndefined()
   })
 
   it('defaults fixture to undefined and parses --fixture', () => {
