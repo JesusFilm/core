@@ -38,6 +38,7 @@ import { VideosFilter } from './inputs/videosFilter'
 import { VideoUpdateInput } from './inputs/videoUpdate'
 import {
   findContainerParentIds,
+  updateParentCollectionLanguages,
   updateVideoAvailableLanguages
 } from './lib/updateAvailableLanguages'
 import { videosFilter } from './lib/videosFilter'
@@ -1101,9 +1102,13 @@ builder.mutationFields((t) => ({
         throw new GraphQLError(`Video with id ${videoId} not found`)
       }
 
-      // Use shared helper to recalculate and update availableLanguages
+      // Use shared helper to recalculate and update availableLanguages, then
+      // cascade the recomputed value all the way to the root of the
+      // container hierarchy - a single-hop update here would leave a
+      // grandparent (or higher) stuck on a stale value.
       try {
         await updateVideoAvailableLanguages(videoId)
+        await updateParentCollectionLanguages(videoId)
       } catch (error) {
         console.error('Language management update error:', error)
       }
