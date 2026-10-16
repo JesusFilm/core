@@ -18,6 +18,15 @@ import ChevronRight from '@core/shared/ui/icons/ChevronRight'
 /** Sub-pixel scroll positions would otherwise leave the end arrow enabled. */
 const SCROLL_EDGE_TOLERANCE_PX = 1
 
+/** A whole number of card strides that fits the row, or its width when the stride is unknown. */
+function pageStep(row: HTMLElement): number {
+  const [first, second] = Array.from(row.children) as HTMLElement[]
+  if (first == null || second == null) return row.clientWidth
+  const stride = Math.abs(second.offsetLeft - first.offsetLeft)
+  if (stride <= 0) return row.clientWidth
+  return Math.max(1, Math.floor(row.clientWidth / stride)) * stride
+}
+
 interface CarouselScroll {
   rowRef: RefObject<HTMLDivElement | null>
   canScrollPrevious: boolean
@@ -28,8 +37,10 @@ interface CarouselScroll {
 
 /**
  * Scroll state of a carousel row: whether it can still scroll either way, and
- * a page step (one viewport width of the row) in each direction. Reading
- * direction follows the theme, as `scrollLeft` runs negative in RTL.
+ * a page step in each direction. A page is as many whole cards as fit the row,
+ * so the clipped card that was the scroll hint becomes the first card after
+ * Next. Reading direction follows the theme, as `scrollLeft` runs negative in
+ * RTL.
  */
 export function useCarouselScroll(cardCount: number): CarouselScroll {
   const rowRef = useRef<HTMLDivElement>(null)
@@ -65,11 +76,9 @@ export function useCarouselScroll(cardCount: number): CarouselScroll {
   function scrollPage(towardEnd: boolean): void {
     const row = rowRef.current
     if (row == null) return
+    const step = pageStep(row)
     const towardRight = towardEnd === (direction !== 'rtl')
-    row.scrollBy({
-      left: towardRight ? row.clientWidth : -row.clientWidth,
-      behavior: 'smooth'
-    })
+    row.scrollBy({ left: towardRight ? step : -step, behavior: 'smooth' })
   }
 
   return {
@@ -96,9 +105,11 @@ const arrowSx = {
   color: 'var(--campaign-band-text)',
   borderColor: 'var(--campaign-band-border)',
   '&:hover': { borderColor: 'var(--campaign-band-text)' },
-  '&.Mui-disabled': {
+  '&[aria-disabled="true"]': {
     color: 'var(--campaign-band-text)',
     borderColor: 'var(--campaign-band-border)',
+    backgroundColor: 'transparent',
+    cursor: 'default',
     opacity: 0.4
   }
 } as const
@@ -106,7 +117,8 @@ const arrowSx = {
 /**
  * Previous / next buttons of a carousel row. They take the band's text colour
  * and the theme's button corners, and are hidden below `md`, where swiping
- * stays the way to scroll.
+ * stays the way to scroll. At an edge an arrow is `aria-disabled` rather than
+ * `disabled`, so keyboard focus stays on it instead of dropping to the page.
  */
 export function CampaignCarouselArrows({
   canScrollPrevious,
@@ -136,8 +148,8 @@ export function CampaignCarouselArrows({
       <Button
         variant="outlined"
         aria-label={t('Previous videos')}
-        disabled={!canScrollPrevious}
-        onClick={onPrevious}
+        aria-disabled={!canScrollPrevious}
+        onClick={canScrollPrevious ? onPrevious : undefined}
         sx={arrowSx}
       >
         {rtl ? <ChevronRight /> : <ChevronLeft />}
@@ -145,8 +157,8 @@ export function CampaignCarouselArrows({
       <Button
         variant="outlined"
         aria-label={t('Next videos')}
-        disabled={!canScrollNext}
-        onClick={onNext}
+        aria-disabled={!canScrollNext}
+        onClick={canScrollNext ? onNext : undefined}
         sx={arrowSx}
       >
         {rtl ? <ChevronLeft /> : <ChevronRight />}

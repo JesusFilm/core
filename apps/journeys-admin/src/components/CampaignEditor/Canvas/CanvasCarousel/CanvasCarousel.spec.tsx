@@ -63,8 +63,10 @@ describe('CanvasCarousel', () => {
 
     expect(
       screen.getByRole('button', { name: 'Previous videos' })
-    ).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'Next videos' })).toBeEnabled()
+    ).toHaveAttribute('aria-disabled', 'true')
+    expect(
+      screen.getByRole('button', { name: 'Next videos' })
+    ).toHaveAttribute('aria-disabled', 'false')
   })
 
   it('scrolls the row by its width on next without selecting the block', () => {

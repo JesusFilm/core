@@ -408,6 +408,8 @@ describe('CampaignVideoCarousel', () => {
     beforeEach(() => {
       scrollBy.mockReset()
       geometry.scrollLeft = 0
+      geometry.clientWidth = 900
+      geometry.scrollWidth = 2400
       Element.prototype.scrollBy = scrollBy
       for (const property of Object.keys(geometry))
         Object.defineProperty(HTMLElement.prototype, property, {
@@ -452,8 +454,11 @@ describe('CampaignVideoCarousel', () => {
 
       const previous = screen.getByRole('button', { name: 'Previous videos' })
       const next = screen.getByRole('button', { name: 'Next videos' })
-      expect(previous).toBeDisabled()
-      expect(next).toBeEnabled()
+      expect(previous).toHaveAttribute('aria-disabled', 'true')
+      expect(next).toHaveAttribute('aria-disabled', 'false')
+
+      fireEvent.click(previous)
+      expect(scrollBy).not.toHaveBeenCalled()
 
       fireEvent.click(next)
       expect(scrollBy).toHaveBeenCalledWith({ left: 900, behavior: 'smooth' })
@@ -462,8 +467,12 @@ describe('CampaignVideoCarousel', () => {
       fireEvent.scroll(
         screen.getByTestId('CampaignVideoCarouselCards-carouselId')
       )
-      expect(next).toBeDisabled()
-      expect(previous).toBeEnabled()
+      expect(next).toHaveAttribute('aria-disabled', 'true')
+      expect(previous).toHaveAttribute('aria-disabled', 'false')
+
+      scrollBy.mockClear()
+      fireEvent.click(next)
+      expect(scrollBy).not.toHaveBeenCalled()
 
       fireEvent.click(previous)
       expect(scrollBy).toHaveBeenLastCalledWith({
@@ -478,8 +487,58 @@ describe('CampaignVideoCarousel', () => {
 
       expect(
         screen.getByRole('button', { name: 'Previous videos' })
-      ).toBeDisabled()
-      expect(screen.getByRole('button', { name: 'Next videos' })).toBeDisabled()
+      ).toHaveAttribute('aria-disabled', 'true')
+      expect(
+        screen.getByRole('button', { name: 'Next videos' })
+      ).toHaveAttribute('aria-disabled', 'true')
+    })
+
+    it('keeps keyboard focus on the arrow that reaches its edge', () => {
+      renderOverflowing()
+
+      const next = screen.getByRole('button', { name: 'Next videos' })
+      act(() => next.focus())
+
+      geometry.scrollLeft = 1500
+      fireEvent.scroll(
+        screen.getByTestId('CampaignVideoCarouselCards-carouselId')
+      )
+
+      expect(next).toHaveAttribute('aria-disabled', 'true')
+      expect(next).toHaveFocus()
+    })
+
+    it('pages by whole cards so the clipped card leads after next', () => {
+      const offsets = new WeakMap<Element, number>()
+      Object.defineProperty(HTMLElement.prototype, 'offsetLeft', {
+        configurable: true,
+        get() {
+          return offsets.get(this) ?? 0
+        }
+      })
+      geometry.clientWidth = 1152
+      renderOverflowing()
+      const row = screen.getByTestId('CampaignVideoCarouselCards-carouselId')
+      Array.from(row.children).forEach((card, index) =>
+        offsets.set(card, index * 324)
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Next videos' }))
+      expect(scrollBy).toHaveBeenLastCalledWith({
+        left: 972,
+        behavior: 'smooth'
+      })
+
+      geometry.scrollLeft = 972
+      fireEvent.scroll(row)
+      fireEvent.click(screen.getByRole('button', { name: 'Previous videos' }))
+      expect(scrollBy).toHaveBeenLastCalledWith({
+        left: -972,
+        behavior: 'smooth'
+      })
+
+      delete (HTMLElement.prototype as unknown as Record<string, unknown>)
+        .offsetLeft
     })
 
     it('hides the arrows below md only', () => {
