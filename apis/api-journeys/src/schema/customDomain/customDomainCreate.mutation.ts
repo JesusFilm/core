@@ -39,7 +39,7 @@ builder.mutationField('customDomainCreate', (t) =>
           })
 
         try {
-          return await prisma.$transaction(async (tx) => {
+          const customDomain = await prisma.$transaction(async (tx) => {
             const { apexName } = await createVercelDomain(input.name)
 
             const data: Prisma.CustomDomainCreateInput = {
@@ -56,15 +56,15 @@ builder.mutationField('customDomainCreate', (t) =>
               }
             }
 
-            const customDomain = await tx.customDomain.create({
+            return await tx.customDomain.create({
               ...query,
               data
             })
-
-            await updateTeamShortLinks(customDomain.teamId, customDomain.name)
-
-            return customDomain
           })
+
+          await updateTeamShortLinks(customDomain.teamId)
+
+          return customDomain
         } catch (err: any) {
           if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
             throw new GraphQLError('custom domain already exists', {

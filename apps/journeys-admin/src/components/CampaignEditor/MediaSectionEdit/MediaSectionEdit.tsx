@@ -9,7 +9,10 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useState } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../../__generated__/GetCampaign'
-import { CampaignMediaSide } from '../../../../__generated__/globalTypes'
+import {
+  CampaignFeaturedMediaLayout,
+  CampaignMediaSide
+} from '../../../../__generated__/globalTypes'
 import {
   CampaignFeaturedMediaInput,
   useCampaignFeaturedMediaBlockUpdateMutation
@@ -28,8 +31,8 @@ interface MediaSectionEditProps {
  * The Edit of a section with a Media Slot (the hero and Featured Media):
  * the slot's current video or image, the media paste field to fill or
  * replace it (Watch or YouTube link, Mux upload, image) and Clear media;
- * for Featured Media also which side the media sits on. Each is one
- * Command; the section's text stays inline on the canvas.
+ * for Featured Media also its layout and which side the media sits on (the
+ * side is disabled while stacked). Each is one Command; the section's text stays inline on the canvas.
  */
 export function MediaSectionEdit({
   block
@@ -62,6 +65,17 @@ export function MediaSectionEdit({
       block,
       input: { mediaSide },
       previous: { mediaSide: block.mediaSide },
+      run: writeFeaturedMedia
+    })
+  }
+
+  function handleLayout(layout: CampaignFeaturedMediaLayout | null): void {
+    if (block.__typename !== 'CampaignFeaturedMediaBlock') return
+    if (layout == null || layout === block.layout) return
+    addStyle<CampaignFeaturedMediaBlock, CampaignFeaturedMediaInput>({
+      block,
+      input: { layout },
+      previous: { layout: block.layout },
       run: writeFeaturedMedia
     })
   }
@@ -116,11 +130,33 @@ export function MediaSectionEdit({
       </Stack>
       {block.__typename === 'CampaignFeaturedMediaBlock' && (
         <Stack spacing={2}>
+          <Typography variant="subtitle2">{t('Layout')}</Typography>
+          <ToggleButtonGroup
+            value={block.layout}
+            exclusive
+            size="small"
+            onChange={(_event, value: CampaignFeaturedMediaLayout | null) =>
+              handleLayout(value)
+            }
+            aria-label={t('Layout')}
+          >
+            <ToggleButton value={CampaignFeaturedMediaLayout.sideBySide}>
+              {t('Side by side')}
+            </ToggleButton>
+            <ToggleButton value={CampaignFeaturedMediaLayout.stacked}>
+              {t('Stacked')}
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+      )}
+      {block.__typename === 'CampaignFeaturedMediaBlock' && (
+        <Stack spacing={2}>
           <Typography variant="subtitle2">{t('Media side')}</Typography>
           <ToggleButtonGroup
             value={block.mediaSide}
             exclusive
             size="small"
+            disabled={block.layout === CampaignFeaturedMediaLayout.stacked}
             onChange={(_event, value: CampaignMediaSide | null) =>
               handleMediaSide(value)
             }

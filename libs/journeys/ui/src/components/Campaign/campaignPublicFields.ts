@@ -134,6 +134,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       lede
       bullets
       mediaSide
+      layout
       mediaBlockId
     }
     ... on CampaignVideoBlock {

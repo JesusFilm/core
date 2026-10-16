@@ -12,6 +12,7 @@ export const CAMPAIGN_JOURNEY_BLOCK_SNAPSHOT_REFRESH = gql`
       id
       title
       description
+      snapshotEdited
     }
   }
 `

@@ -25,7 +25,11 @@ import {
 } from '../../../libs/useCampaignBlockActionMutation'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { textLength } from '../Canvas/InlineText'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
+
+/** The API rejects a web address longer than 2048 characters. */
+export const LINK_URL_MAX_LENGTH = 2048
 
 type LinkKind = 'link' | 'scroll' | 'region'
 type Translate = (key: string) => string
@@ -260,8 +264,10 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
             }}
             onKeyDown={handleUrlKeyDown}
             error={error != null}
-            helperText={error}
-            slotProps={{ formHelperText: { role: 'alert' } }}
+            helperText={error ?? `${textLength(url)} / ${LINK_URL_MAX_LENGTH}`}
+            slotProps={{
+              formHelperText: error != null ? { role: 'alert' } : undefined
+            }}
           />
           <Button variant="contained" onClick={handleSaveLink}>
             {t('Save')}

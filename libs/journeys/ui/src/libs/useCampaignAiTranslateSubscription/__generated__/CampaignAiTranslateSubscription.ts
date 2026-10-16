@@ -36,6 +36,10 @@ export interface CampaignAiTranslateSubscription_campaignAiTranslateSubscription
    */
   message: string | null;
   /**
+   * How many strings the run has written so far; they are kept if the run is cancelled
+   */
+  translatedCount: number | null;
+  /**
    * The campaign with its translations written (only present when complete)
    */
   campaign: CampaignAiTranslateSubscription_campaignAiTranslateSubscription_campaign | null;

@@ -146,7 +146,8 @@ const titleUpdateMock = {
         __typename: 'CampaignJourneyBlock',
         id: 'landingJourneyId',
         title: 'Christmas, retold',
-        description: 'A short journey through the nativity.'
+        description: 'A short journey through the nativity.',
+        snapshotEdited: true
       }
     }
   }))

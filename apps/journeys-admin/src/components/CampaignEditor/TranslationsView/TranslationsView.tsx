@@ -10,12 +10,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
-import {
-  CampaignAiTranslateVariables,
-  isMachineTranslatable,
-  useCampaignAiTranslateSubscription
-} from '@core/journeys/ui/useCampaignAiTranslateSubscription'
+import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
@@ -24,6 +19,8 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { useCampaignTranslationsQuery } from '../../../libs/useCampaignTranslationsQuery'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
+import { TranslationRunProgress } from '../TranslationRunProgress'
+import { useTranslationRun } from '../TranslationRunProvider'
 
 import { TranslationRowItem } from './TranslationRow'
 import {
@@ -51,9 +48,11 @@ interface TranslationsViewProps {
  * edits turns Edited and leaves a Needs review or Missing filter as soon as
  * the write lands. Only languages other than the default are listed: the
  * default's text is the field itself. "Machine-translate missing" fills the
- * language's gaps with progress, never touching a line a person wrote; it
- * runs only when pressed, not after edits. A language the model does not
- * support is manual only and has no such button.
+ * language's gaps, never touching a line a person wrote; it runs only when
+ * pressed, not after edits. The run is the editor's background one: its
+ * progress and Cancel show here whichever language is open, and it goes on
+ * when this view closes. A language the model does not support is manual only
+ * and has no such button.
  */
 export function TranslationsView({
   campaign,
@@ -73,16 +72,7 @@ export function TranslationsView({
   )
   const [chosenLanguageId, setChosenLanguageId] = useState(initialLanguageId)
   const [filter, setFilter] = useState<TranslationFilter>('all')
-  const [translating, setTranslating] = useState<CampaignAiTranslateVariables>()
-  const [translateError, setTranslateError] = useState<string>()
-  const { data: progressData } = useCampaignAiTranslateSubscription({
-    variables: translating,
-    onError: (error) => {
-      setTranslateError(error.message)
-      setTranslating(undefined)
-    },
-    onComplete: () => setTranslating(undefined)
-  })
+  const { run, error: translateError, start } = useTranslationRun()
   const languageId = languages.some(
     (language) => language.languageId === chosenLanguageId
   )
@@ -112,9 +102,10 @@ export function TranslationsView({
     edited: t('Edited')
   }
 
-  const bcp47 =
-    languages.find((language) => language.languageId === languageId)?.language
-      .bcp47 ?? ''
+  const selectedLanguage = languages.find(
+    (language) => language.languageId === languageId
+  )
+  const bcp47 = selectedLanguage?.language.bcp47 ?? ''
 
   if (languageId == null || queryVariables == null)
     return (
@@ -133,8 +124,12 @@ export function TranslationsView({
 
   function handleMachineTranslateMissing(): void {
     if (languageId == null) return
-    setTranslateError(undefined)
-    setTranslating({ campaignId: campaign.id, languageId, mode: 'missing' })
+    start(
+      { campaignId: campaign.id, languageId, mode: 'missing' },
+      selectedLanguage == null
+        ? languageId
+        : languageNames(selectedLanguage).autonym
+    )
   }
 
   return (
@@ -163,7 +158,6 @@ export function TranslationsView({
         size="small"
         label={t('Language')}
         value={languageId}
-        disabled={translating != null}
         onChange={(event) => setChosenLanguageId(event.target.value)}
       >
         {languages.map((language) => {
@@ -189,26 +183,14 @@ export function TranslationsView({
         <Button
           variant="outlined"
           size="small"
-          disabled={translating != null}
+          disabled={run != null}
           onClick={handleMachineTranslateMissing}
           sx={{ alignSelf: 'flex-start' }}
         >
           {t('Machine-translate missing')}
         </Button>
       )}
-      {translating != null && (
-        <Stack data-testid="TranslationsProgress">
-          <TranslationProgressBar
-            progress={
-              progressData?.campaignAiTranslateSubscription.progress ?? 0
-            }
-            message={
-              progressData?.campaignAiTranslateSubscription.message ??
-              t('Starting translation...')
-            }
-          />
-        </Stack>
-      )}
+      <TranslationRunProgress data-testid="TranslationsProgress" />
       {translateError != null && (
         <Alert severity="error" data-testid="TranslationsTranslateError">
           {translateError}

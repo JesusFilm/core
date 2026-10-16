@@ -29,8 +29,9 @@ import {
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import {
   campaignPermanentAddress,
-  campaignPublicAddress
+  campaignPublicAddresses
 } from '../campaignAddress'
+import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
 
@@ -196,9 +197,9 @@ export function Settings({
 
   const published = campaign.status === CampaignStatus.published
   const permanentAddress = campaignPermanentAddress(campaign.slug)
-  const publicAddress = campaignPublicAddress(
+  const publicAddresses = campaignPublicAddresses(
     campaign.slug,
-    campaign.customDomains[0]?.name ?? null
+    campaign.customDomains.map(({ name }) => name)
   )
 
   return (
@@ -217,7 +218,9 @@ export function Settings({
         onBlur={handleTitleBlur}
         onKeyDown={handleKeyDown}
         error={errors.title != null}
-        helperText={errors.title}
+        helperText={
+          errors.title ?? `${textLength(title)} / ${TITLE_MAX_LENGTH}`
+        }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Title') } }}
       />
@@ -236,10 +239,13 @@ export function Settings({
                   address: permanentAddress
                 })}
               </Box>
+              {publicAddresses.map((address) => (
+                <Box key={address} component="span" sx={{ display: 'block' }}>
+                  {t('Current public address: {{address}}', { address })}
+                </Box>
+              ))}
               <Box component="span" sx={{ display: 'block' }}>
-                {t('Current public address: {{address}}', {
-                  address: publicAddress
-                })}
+                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
               </Box>
             </>
           )

@@ -2,8 +2,8 @@ import {
   ButtonSize,
   ButtonVariant,
   CampaignBackgroundKind,
-  CampaignButtonRadius,
   CampaignChildPlacement,
+  CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
   CampaignPageKind,
@@ -195,7 +195,7 @@ export const lightTheme: CampaignPublicFields_theme = {
   contrastBackgroundColor: '#26262E',
   contrastTextColor: '#FFFFFF',
   radius: CampaignRadius.rounded,
-  buttonRadius: CampaignButtonRadius.pill
+  buttonRadius: CampaignRadius.veryRounded
 }
 
 const STRING_SEED: Array<[CampaignStringKey, string]> = [
@@ -616,6 +616,7 @@ export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
   lede: 'Short films in the languages your neighbours speak.',
   bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
   mediaSide: CampaignMediaSide.left,
+  layout: CampaignFeaturedMediaLayout.sideBySide,
   mediaBlockId: 'featuredMediaImageId'
 })
 

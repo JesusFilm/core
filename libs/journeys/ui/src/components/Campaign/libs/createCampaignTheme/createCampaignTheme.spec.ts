@@ -20,7 +20,7 @@ const light: CampaignThemeInput = {
   contrastBackgroundColor: '#26262E',
   contrastTextColor: '#FFFFFF',
   radius: 'rounded',
-  buttonRadius: 'pill'
+  buttonRadius: 'veryRounded'
 }
 
 function rootButtonRadius(
@@ -83,18 +83,34 @@ describe('createCampaignTheme', () => {
     ).toBe(24)
   })
 
-  it('maps buttonRadius to the pill shape or the theme radius', () => {
-    expect(rootButtonRadius(createCampaignTheme(light, false))).toBe(
-      PILL_RADIUS_PX
-    )
-    expect(
-      rootButtonRadius(
-        createCampaignTheme(
-          { ...light, buttonRadius: 'rounded', radius: 'slight' },
-          false
+  it.each([
+    ['square', 0],
+    ['slight', 6],
+    ['rounded', 14],
+    ['veryRounded', PILL_RADIUS_PX]
+  ] as const)(
+    'maps buttonRadius %s to %s px, whatever the corner radius',
+    (buttonRadius, px) => {
+      expect(
+        rootButtonRadius(
+          createCampaignTheme(
+            { ...light, buttonRadius, radius: 'slight' },
+            false
+          )
         )
-      )
-    ).toBe(6)
+      ).toBe(px)
+    }
+  )
+
+  it('leaves the corner radius alone when only the button corners change', () => {
+    const theme = createCampaignTheme(
+      { ...light, radius: 'square', buttonRadius: 'veryRounded' },
+      false
+    )
+    expect(theme.shape.borderRadius).toBe(0)
+    expect(theme.components?.MuiPaper?.styleOverrides?.root).toEqual({
+      borderRadius: 0
+    })
   })
 
   it('uses the base Montserrat / Open Sans pairing when the three fonts are null', () => {

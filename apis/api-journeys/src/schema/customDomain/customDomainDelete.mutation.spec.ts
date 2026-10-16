@@ -7,16 +7,13 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-import {
-  deleteVercelDomain,
-  updateTeamShortLinks
-} from './customDomain.service'
+import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-vi.mock('./customDomain.service', () => ({
+vi.mock('./service', () => ({
   deleteVercelDomain: vi.fn().mockResolvedValue(true),
   updateTeamShortLinks: vi.fn().mockResolvedValue(undefined)
 }))
@@ -99,7 +96,7 @@ describe('customDomainDelete', () => {
       }
     })
 
-    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId', 'example.com')
+    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
     expect(prismaMock.customDomain.delete).toHaveBeenCalledWith({
       where: { id: 'customDomainId' }
     })

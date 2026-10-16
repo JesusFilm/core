@@ -18,6 +18,7 @@ const progress = {
   __typename: 'CampaignAiTranslateProgress',
   progress: 100,
   message: 'Translation completed!',
+  translatedCount: 4,
   campaign: {
     __typename: 'Campaign',
     id: 'campaignId',

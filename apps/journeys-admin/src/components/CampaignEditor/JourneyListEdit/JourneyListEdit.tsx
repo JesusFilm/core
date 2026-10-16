@@ -200,7 +200,8 @@ export function JourneyListEdit({
       journeyStatus: journey.status,
       journeyUrl: null,
       journeyImage: null,
-      journeyId: journey.id
+      journeyId: journey.id,
+      snapshotEdited: false
     }
     let created: Promise<unknown> = Promise.resolve()
     addBlock({

@@ -22,6 +22,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
         journeyId
         title
         description
+        snapshotEdited
         titleTranslations {
           languageId
           value
@@ -47,6 +48,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       title: 'Edited title',
       titleTranslations: { '496': { value: 'Titre', source: 'human' } },
       description: 'Edited description',
+      snapshotEdited: true,
       descriptionTranslations: {
         '496': { value: 'Description', source: 'machine' }
       }
@@ -79,6 +81,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       journeyId: 'journeyId',
       title: 'The Christmas story',
       description: 'A short journey through the nativity.',
+      snapshotEdited: false,
       titleTranslations: [{ languageId: '496', value: 'Titre' }],
       descriptionTranslations: [{ languageId: '496', value: 'Description' }]
     })
@@ -86,7 +89,8 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       where: { id: 'journeyItemId' },
       data: {
         title: 'The Christmas story',
-        description: 'A short journey through the nativity.'
+        description: 'A short journey through the nativity.',
+        snapshotEdited: false
       },
       include: { action: true }
     })

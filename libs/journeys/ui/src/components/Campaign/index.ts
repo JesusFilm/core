@@ -98,6 +98,7 @@ export {
   resolvePageLanguage
 } from './libs/resolvePageLanguage'
 export {
+  CAMPAIGN_BUTTON_RADIUS_PX,
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'

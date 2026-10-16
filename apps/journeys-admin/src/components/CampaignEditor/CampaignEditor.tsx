@@ -29,6 +29,7 @@ import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
 import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
+import { TranslationRunProvider } from './TranslationRunProvider'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
 export const EDITOR_MIN_WIDTH = 1280
@@ -122,6 +123,7 @@ function CampaignEditorShell({
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
  * the Mux upload queue (so a Media Slot upload outlives the selection), the
+ * machine-translation run (so it outlives the Localize panel), the
  * Left Rail with its panels, the canvas with its banner and the Inspector.
  * First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
@@ -184,9 +186,11 @@ export function CampaignEditor({
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
         <MuxVideoUploadProvider>
-          <NavigatorHoverProvider>
-            <CampaignEditorShell campaign={campaign} isManager={isManager} />
-          </NavigatorHoverProvider>
+          <TranslationRunProvider>
+            <NavigatorHoverProvider>
+              <CampaignEditorShell campaign={campaign} isManager={isManager} />
+            </NavigatorHoverProvider>
+          </TranslationRunProvider>
         </MuxVideoUploadProvider>
       </CampaignEditorProvider>
     </CommandProvider>

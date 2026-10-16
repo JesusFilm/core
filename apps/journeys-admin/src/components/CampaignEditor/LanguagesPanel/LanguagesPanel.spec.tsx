@@ -7,6 +7,7 @@ import {
   within
 } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
+import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
@@ -17,6 +18,7 @@ import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetC
 import { CAMPAIGN_LANGUAGE_ADD } from '../../../libs/useCampaignLanguageAddMutation'
 import { CAMPAIGN_LANGUAGE_REMOVE } from '../../../libs/useCampaignLanguageRemoveMutation'
 import { campaign } from '../data'
+import { TranslationRunProvider } from '../TranslationRunProvider'
 
 import { LanguagesPanel, languageNames } from './LanguagesPanel'
 
@@ -146,6 +148,7 @@ function sweepMock(languageId: string): {
           __typename: 'CampaignAiTranslateProgress',
           progress: 100,
           message: 'Translation completed!',
+          translatedCount: 1,
           campaign: {
             __typename: 'Campaign',
             id: campaign.id,
@@ -168,10 +171,14 @@ function renderPanel(
 ): ReturnType<typeof render> {
   return render(
     <MockedProvider mocks={[languagesMock, ...mocks] as never}>
-      <CommandProvider>
-        <CommandProbe />
-        <LanguagesPanel campaign={campaignProp} />
-      </CommandProvider>
+      <SnackbarProvider>
+        <CommandProvider>
+          <TranslationRunProvider>
+            <CommandProbe />
+            <LanguagesPanel campaign={campaignProp} />
+          </TranslationRunProvider>
+        </CommandProvider>
+      </SnackbarProvider>
     </MockedProvider>
   )
 }

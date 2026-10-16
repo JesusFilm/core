@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignJourneyBlockCreate
@@ -76,6 +76,10 @@ export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate {
    * The linked journey. Null only if the row predates the link; never exposes the journey itself.
    */
   journeyId: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+   */
+  snapshotEdited: boolean;
   titleTranslations: CampaignJourneyBlockCreate_campaignJourneyBlockCreate_titleTranslations[];
   descriptionTranslations: CampaignJourneyBlockCreate_campaignJourneyBlockCreate_descriptionTranslations[];
 }
