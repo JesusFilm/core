@@ -1364,5 +1364,9 @@
   "This will permanently delete all trashed Templates not in a collection.": "This will permanently delete all trashed Templates not in a collection.",
   "This will archive all active Templates not in a collection.": "This will archive all active Templates not in a collection.",
   "This will trash all active Templates not in a collection.": "This will trash all active Templates not in a collection.",
-  "All Templates": "All Templates"
+  "All Templates": "All Templates",
+  "Unpublished Video": "Unpublished Video",
+  "Use Anyway": "Use Anyway",
+  "This video has not been published yet. It can still be added to a journey, but visitors will not be able to watch it until it is published.": "This video has not been published yet. It can still be added to a journey, but visitors will not be able to watch it until it is published.",
+  "Unpublished": "Unpublished"
 }

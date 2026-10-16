@@ -51,7 +51,8 @@ describe('LocalDetails', () => {
           variant: {
             id: 'variantA',
             duration: 144,
-            hls: 'https://arc.gt/opsgn'
+            hls: 'https://arc.gt/opsgn',
+            published: true
           },
           variantLanguages: [
             {
@@ -145,7 +146,8 @@ describe('LocalDetails', () => {
           variant: {
             id: 'variantA',
             duration: 144,
-            hls: 'https://arc.gt/opsgn'
+            hls: 'https://arc.gt/opsgn',
+            published: true
           },
           variantLanguages: [
             {
@@ -371,5 +373,99 @@ describe('LocalDetails', () => {
         videoVariantLanguageId: '529'
       })
     )
+  })
+
+  describe('unpublished variant', () => {
+    const unpublishedMock = {
+      request: {
+        query: GET_VIDEO,
+        variables: {
+          id: '2_Acts7302-0-0',
+          languageId: '529'
+        }
+      },
+      result: {
+        data: {
+          video: {
+            ...getVideoMock.result.data.video,
+            variant: {
+              id: 'variantA',
+              duration: 144,
+              hls: 'https://arc.gt/opsgn',
+              published: false
+            }
+          }
+        }
+      }
+    }
+
+    it('should show a banner explaining the video is unpublished', async () => {
+      const { getByText } = render(
+        <MockedProvider mocks={[unpublishedMock]}>
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+        </MockedProvider>
+      )
+      await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
+    })
+
+    it('should not show the banner for a published variant', async () => {
+      const { getByRole, queryByText } = render(
+        <MockedProvider mocks={[getVideoMock]}>
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={vi.fn()} />
+        </MockedProvider>
+      )
+      await waitFor(() =>
+        expect(
+          getByRole('heading', { name: 'Jesus Taken Up Into Heaven' })
+        ).toBeInTheDocument()
+      )
+      expect(queryByText('Unpublished')).not.toBeInTheDocument()
+    })
+
+    it('should block the select until the unpublished warning is confirmed', async () => {
+      const onSelect = vi.fn()
+      const { getByRole, getByText, queryByText } = render(
+        <MockedProvider mocks={[unpublishedMock]}>
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+        </MockedProvider>
+      )
+      await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
+
+      fireEvent.click(getByRole('button', { name: 'Select' }))
+      expect(onSelect).not.toHaveBeenCalled()
+      expect(getByText('Unpublished Video')).toBeInTheDocument()
+
+      fireEvent.click(getByRole('button', { name: 'Use Anyway' }))
+      expect(onSelect).toHaveBeenCalledWith({
+        duration: 144,
+        endAt: 144,
+        startAt: 0,
+        source: VideoBlockSource.internal,
+        videoId: '2_Acts7302-0-0',
+        videoVariantLanguageId: '529'
+      })
+      await waitFor(() =>
+        expect(queryByText('Unpublished Video')).not.toBeInTheDocument()
+      )
+    })
+
+    it('should not select when the unpublished warning is cancelled', async () => {
+      const onSelect = vi.fn()
+      const { getByRole, getByText, queryByText } = render(
+        <MockedProvider mocks={[unpublishedMock]}>
+          <LocalDetails id="2_Acts7302-0-0" open onSelect={onSelect} />
+        </MockedProvider>
+      )
+      await waitFor(() => expect(getByText('Unpublished')).toBeInTheDocument())
+
+      fireEvent.click(getByRole('button', { name: 'Select' }))
+      expect(getByText('Unpublished Video')).toBeInTheDocument()
+
+      fireEvent.click(getByRole('button', { name: 'Cancel' }))
+      expect(onSelect).not.toHaveBeenCalled()
+      await waitFor(() =>
+        expect(queryByText('Unpublished Video')).not.toBeInTheDocument()
+      )
+    })
   })
 })
