@@ -686,7 +686,7 @@ describe('Inspector', () => {
         within(screen.getByTestId('CampaignInspector')).getByTestId(
           'CampaignBreadcrumb'
         )
-      ).toHaveTextContent('Campaign›Europe›Text')
+      ).toHaveTextContent('Campaign›Europe›Region Line')
       expect(screen.getByRole('combobox', { name: 'Size' })).toBeEnabled()
       expect(screen.getByRole('button', { name: 'Delete' })).toBeEnabled()
       expect(
