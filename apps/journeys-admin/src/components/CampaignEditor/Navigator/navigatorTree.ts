@@ -48,6 +48,8 @@ export interface NavigatorNode {
   blockId?: string
   /** A region card: the region it selects. */
   regionId?: string
+  /** A Region Line, which the Navigator names apart from other text. */
+  regionLine?: true
   /** A region card: the Region Switcher it sits in. */
   hostBlockId?: string
   /** The block's own title text, shown muted beside the type name. */
@@ -233,6 +235,7 @@ function regionNodes(
               domId: line.id,
               type: line.__typename,
               blockId: line.id,
+              regionLine: true as const,
               secondaryText: secondaryTextOf(line),
               needsJourney: false,
               unlisted: false,

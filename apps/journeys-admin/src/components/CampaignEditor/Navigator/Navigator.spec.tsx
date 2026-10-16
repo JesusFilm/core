@@ -30,6 +30,10 @@ const mockWebFontLoader = { load: vi.fn() }
 
 vi.mock('webfontloader', () => mockWebFontLoader)
 
+// A selection badge subscribes to the canvas hover on its own, the one update a
+// hover is allowed to cause; it is stubbed so the hover specs guard the sections.
+vi.mock('../Canvas/SelectionBadge', () => ({ SelectionBadge: () => null }))
+
 function PanelProbe(): ReactElement {
   const {
     state: { panel }

@@ -1685,6 +1685,9 @@
   "Select a section to add text or a button to it.": "Select a section to add text or a button to it.",
   "Add section here": "Add section here",
   "Add to column": "Add to column",
+  "Region card": "Region card",
+  "Region Line": "Region Line",
+  "Share language": "Share language",
   "Button corners": "Button corners",
   "Translated {{count}} strings into {{language}}_one": "Translated {{count}} string into {{language}}",
   "Translated {{count}} strings into {{language}}_other": "Translated {{count}} strings into {{language}}",
@@ -1698,5 +1701,8 @@
   "or paste a link": "or paste a link",
   "Loading journeys…": "Loading journeys…",
   "Could not load your journeys": "Could not load your journeys",
-  "No journeys found": "No journeys found"
+  "No journeys found": "No journeys found",
+  "Preview {{language}}": "Preview {{language}}",
+  "Previewing": "Previewing",
+  "Preview language: {{language}}": "Preview language: {{language}}"
 }

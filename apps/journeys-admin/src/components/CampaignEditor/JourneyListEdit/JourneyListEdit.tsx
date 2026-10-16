@@ -17,9 +17,11 @@ import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__gene
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../__generated__/GetCampaignJourneyByLink'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
+import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
@@ -96,6 +98,7 @@ function JourneyCardEdit({
       data-hoverable
       onClick={handleClick}
       sx={{
+        position: 'relative',
         overflow: 'hidden',
         borderRadius: 1,
         cursor: 'pointer',
@@ -105,6 +108,12 @@ function JourneyCardEdit({
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
+      <SelectionBadge
+        id={card.id}
+        label={blockLabel(t, card.__typename)}
+        selected={selected}
+        placement="inside"
+      />
       {card.journeyImage != null && (
         <Box
           component="img"

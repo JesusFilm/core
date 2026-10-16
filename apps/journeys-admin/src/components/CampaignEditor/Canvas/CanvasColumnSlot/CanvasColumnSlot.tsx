@@ -9,9 +9,11 @@ import { MouseEvent, ReactElement, useCallback } from 'react'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
+import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { CanvasBlock, CanvasSection } from '../CanvasSection'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
@@ -97,6 +99,11 @@ export function CanvasColumnSlot({
         outlineOffset: -2
       }}
     >
+      <SelectionBadge
+        id={slot.id}
+        label={blockLabel(t, slot.__typename)}
+        selected={slotSelected}
+      />
       <Box
         ref={setActivatorNodeRef}
         {...listeners}
