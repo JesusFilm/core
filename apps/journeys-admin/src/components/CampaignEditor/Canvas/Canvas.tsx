@@ -37,6 +37,7 @@ import { FontLoader } from '../../Editor/FontLoader'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
 import { CanvasHoverReporter } from '../Navigator/NavigatorHover'
+import { PreviewLanguageChip } from '../PreviewLanguageChip'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
@@ -196,7 +197,8 @@ interface CanvasProps {
  * dragged by its handle only; the drop lands before or after the section
  * under the pointer by its midpoint, as one reorder Command. A "+" between
  * sections (and above the first, below the last) opens the Add Panel at that
- * insert point.
+ * insert point. The Preview Language chip sits at the canvas's bottom-right,
+ * outside the frame, in the editor theme.
  *
  * The frame has a fixed width (1200 px Desktop, 390 px Phone) and is scaled
  * down to fit the space it is given with a CSS transform on a wrapper outside
@@ -315,6 +317,7 @@ export function Canvas({
     <Box
       data-testid="CampaignCanvas"
       sx={{
+        position: 'relative',
         flexGrow: 1,
         minHeight: 0,
         minWidth: 0,
@@ -423,6 +426,7 @@ export function Canvas({
           </Box>
         </Box>
       </Box>
+      <PreviewLanguageChip />
     </Box>
   )
 }
