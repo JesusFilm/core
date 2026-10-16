@@ -55,16 +55,28 @@ record so the prod run can be estimated from the stage one.
 
 3. **Pre-flight the push path.** The copy is pushed from the pod with
    `remoteSecure()`, which needs the 24.3 server to complete a TLS handshake to
-   Cloud. Prove it before doing anything else:
+   Cloud. Prove it before doing anything else. First create the throwaway
+   copy user on Cloud, as `default` from the SQL console or `clickhouse client`
+   on your own machine, so the shared admin password never travels to the pod
+   (grants are by name; the database need not exist yet):
+
+   ```sql
+   -- Dropped at cutover. No settings profile, so hour-long inserts are not cut off.
+   CREATE USER migrator IDENTIFIED WITH sha256_password BY '<migrator password>';
+   GRANT INSERT, SELECT ON plausible_events_db.* TO migrator;
+   ```
+
+   Then, from the machine with the kubectl context:
 
    ```bash
    CLICKHOUSE_CLOUD_HOST=<host from SHORT_LINKS_CLICKHOUSE_URL> \
-   CLICKHOUSE_CLOUD_ADMIN_PASSWORD=<SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD> \
+   CLICKHOUSE_CLOUD_PASSWORD=<migrator password> \
    ./export-source-clickhouse.sh stage preflight
    ```
 
-   If this fails on TLS rather than on an idled service, stop: the fallback
-   is staging the data through S3, which is a different runbook.
+   The statement is sent over stdin, so the password is not in the pod's
+   process list. If this fails on TLS rather than on an idled service, stop:
+   the fallback is staging the data through S3, which is a different runbook.
 
 4. **Peak memory.** From Datadog, the ClickHouse pod's peak memory over the
    last month, and Plausible's `CLICKHOUSE_INGEST_POOL_SIZE` /
@@ -106,24 +118,28 @@ clickhouse client --host <host> --port 9440 --secure --user default \
   --queries-file clickhouse/0001_plausible_events_db.sql
 ```
 
-Then the users. Plausible's password goes into an Ecto URL, so generate it
-without `@ : / ? # %` (or percent-encode it); `openssl rand -hex 24` does.
+Then the Plausible user (`migrator` already exists from the pre-flight).
+Plausible's password goes into an Ecto URL, so generate it without
+`@ : / ? # %` (or percent-encode it); `openssl rand -hex 24` does.
 
 ```sql
 -- Plausible: everything on its own database, nothing else. Its migrations
 -- need DDL rights. If GRANT ALL is refused, grant the explicit list:
 -- SELECT, INSERT, ALTER, CREATE TABLE, CREATE DATABASE, DROP, TRUNCATE, OPTIMIZE, SHOW.
+--
+-- Two memory limits, sized together. max_memory_usage caps one query;
+-- max_memory_usage_for_user caps everything Plausible runs at once, and is
+-- the one that protects the short-links tenant: a dashboard fans out several
+-- queries and api-journeys adds more, so per-query x concurrency would
+-- otherwise reach past the replica.
 CREATE SETTINGS PROFILE plausible_profile SETTINGS
   max_memory_usage = <bytes: about 1/4 of the replica>,
+  max_memory_usage_for_user = <bytes: about 1/2 of the replica>,
   max_execution_time = 120,
   max_concurrent_queries_for_user = 8;
 CREATE USER plausible IDENTIFIED WITH sha256_password BY '<plausible password>'
   SETTINGS PROFILE 'plausible_profile';
 GRANT ALL ON plausible_events_db.* TO plausible;
-
--- The copy: no profile, so hour-long inserts are not cut off. Dropped at cutover.
-CREATE USER migrator IDENTIFIED WITH sha256_password BY '<migrator password>';
-GRANT INSERT, SELECT ON plausible_events_db.* TO migrator;
 ```
 
 Checks before going further, each as the user named:
@@ -205,7 +221,9 @@ Raw `count()` is meaningless on `sessions_v2` and `ingest_counters`: it
 depends on how far background merges have collapsed or summed rows on each
 side, and the two sides merge on their own schedules. Compare merge-invariant
 numbers, the same query on both sides, always with the `< W` predicate so the
-source's ongoing writes do not move them:
+source's ongoing writes do not move them. Every query is bucketed by partition
+or by month: one total per table would let a shortfall in one bucket hide
+behind a surplus in another, and a bucket also tells you which slice to rerun.
 
 ```sql
 -- events_v2 (plain MergeTree) and imported_*: counts are fine
@@ -217,12 +235,14 @@ WHERE timestamp < toDateTime('<W>', 'UTC') GROUP BY p ORDER BY p;
 SELECT _partition_id AS p, sum(sign), sum(sign * pageviews), sum(sign * events)
 FROM plausible_events_db.sessions_v2
 WHERE timestamp < toDateTime('<W>', 'UTC') GROUP BY p ORDER BY p;
-SELECT count() FROM plausible_events_db.sessions_v2 FINAL
-WHERE timestamp < toDateTime('<W>', 'UTC');
+SELECT _partition_id AS p, count() FROM plausible_events_db.sessions_v2 FINAL
+WHERE timestamp < toDateTime('<W>', 'UTC') GROUP BY p ORDER BY p;
 
--- ingest_counters: summed values per metric
-SELECT metric, sum(value) FROM plausible_events_db.ingest_counters
-WHERE event_timebucket < toDateTime('<W>', 'UTC') GROUP BY metric ORDER BY metric;
+-- ingest_counters: summed values per month and metric (bucketed by month rather
+-- than _partition_id so the query is the same whether or not the table is partitioned)
+SELECT toYYYYMM(event_timebucket) AS m, metric, sum(value)
+FROM plausible_events_db.ingest_counters
+WHERE event_timebucket < toDateTime('<W>', 'UTC') GROUP BY m, metric ORDER BY m, metric;
 
 -- imported_* and schema_migrations
 SELECT count() FROM plausible_events_db.schema_migrations;
@@ -242,7 +262,12 @@ Plausible is down. Announce the expected length from the stage measurement.
 1. **Stop Plausible.** Stage: pause Argo auto-sync for the app, then
    `kubectl --context stage scale deployment plausible-analytics --replicas=0`.
    Prod has manual sync, so just scale. Wait for the pod to terminate: the write
-   buffer flushes on shutdown.
+   buffer flushes on shutdown. The scale is imperative on purpose: it is a
+   maintenance state inside the window, not a change to the declared state.
+   Doing it through the chart would mean a merge to `stage` or `main` and a
+   sync to go down and the same again to come back, all inside the outage;
+   pausing auto-sync is Argo's own maintenance pattern, and the declared one
+   replica is what the cluster reconciles to when sync resumes.
 2. **Push the `>= W` half** of `events_v2`, `sessions_v2` and `ingest_counters`
    (per day for `events_v2` if the delta spans days). A failed delta slice is
    cleared with `DELETE ... WHERE <that slice's predicate>` and rerun; **never
@@ -296,11 +321,33 @@ fits the window.
 ### Restore
 
 Cloud restores are whole-service into a new service. To recover
-`plausible_events_db` alone: restore the backup into a new service from the
-Cloud console, then push the database back into the live service with the
-same `remoteSecure` statements as the bulk copy (the new service is the
-source, run from any host with `clickhouse client`), then delete the restored
-service. The recovery window is the one decided in "Before you start".
+`plausible_events_db` alone, restore the backup into a new service from the
+Cloud console and push the database back from it. `remoteSecure` inserts
+append, so pushing onto the live tables as they stand duplicates every
+restored row; the live copy of what is being restored is removed first. The
+recovery window is the one decided in "Before you start".
+
+1. Decide the scope: the whole database, or a time range of the three live
+   tables (a bad import, a corrupted partition). Anything written to the live
+   service after the backup was taken is lost in a whole-database restore. To
+   keep it, push the `timestamp >= <backup time>` range of `events_v2`,
+   `sessions_v2` and `ingest_counters` from live into the restored service
+   first, verify it there, and restore from that.
+2. Stop Plausible as in the cutover (pause auto-sync on stage, scale to 0,
+   wait for the pod to terminate).
+3. On the live service, as `default`, clear **only** what is being restored,
+   nothing in `redirects`: `TRUNCATE TABLE plausible_events_db.<table>` for
+   each table in a whole-database restore (the schema stays; nothing is
+   dropped), or `DELETE FROM plausible_events_db.<table> WHERE <range>` for a
+   range.
+4. From any host with `clickhouse client` connected to the restored service,
+   push with the bulk-copy `remoteSecure` statements, the restored service as
+   the source and the live service as the target, as a user with INSERT on
+   `plausible_events_db` (recreate `migrator` for the duration).
+5. Verify with the "Verifying a copy" queries, restored service against live,
+   over the restored scope. Fix any mismatch before going on.
+6. Start Plausible (replicas to 1, resume auto-sync on stage), smoke a
+   dashboard, then drop the temporary user and delete the restored service.
 
 ### Decommission
 
