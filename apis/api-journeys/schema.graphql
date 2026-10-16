@@ -552,12 +552,6 @@ input CampaignButtonBlockUpdateInput {
   placement: CampaignChildPlacement
 }
 
-"""Button corner shape of the Campaign Theme."""
-enum CampaignButtonRadius {
-  rounded
-  pill
-}
-
 """Which side of the Section Body an Extra renders on."""
 enum CampaignChildPlacement {
   above
@@ -2428,7 +2422,7 @@ enum CampaignTextSource {
 }
 
 """
-The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button shape. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
+The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button corners. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
 """
 type CampaignTheme {
   id: ID!
@@ -2448,7 +2442,11 @@ type CampaignTheme {
   contrastBackgroundColor: String!
   contrastTextColor: String!
   radius: CampaignRadius!
-  buttonRadius: CampaignButtonRadius!
+
+  """
+  Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+  """
+  buttonRadius: CampaignRadius!
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
 }
@@ -2502,8 +2500,10 @@ input CampaignThemeUpdateInput {
   """Corner radius: square, slight, rounded or veryRounded."""
   radius: CampaignRadius
 
-  """Button shape: rounded or pill."""
-  buttonRadius: CampaignButtonRadius
+  """
+  Button corners: square, slight, rounded or veryRounded (the pill look).
+  """
+  buttonRadius: CampaignRadius
 }
 
 """
@@ -5152,7 +5152,7 @@ type Mutation {
   campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
 
   """
-  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button corners. Only the given columns change. Applying a Theme Preset is this mutation with the mode, the eight colours and the button corners; fonts and the corner radius stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   

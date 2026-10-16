@@ -161,7 +161,7 @@ describe('campaign', () => {
         themeMode: 'light',
         primaryColor: '#C52D3A',
         radius: 'rounded',
-        buttonRadius: 'pill'
+        buttonRadius: 'veryRounded'
       },
       pages: [{ kind: 'landing' }, { kind: 'regionTemplate' }],
       regions: [

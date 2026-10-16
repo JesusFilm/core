@@ -1688,6 +1688,7 @@
   "Region card": "Region card",
   "Region Line": "Region Line",
   "Share language": "Share language",
+  "Button corners": "Button corners",
   "Translated {{count}} strings into {{language}}_one": "Translated {{count}} string into {{language}}",
   "Translated {{count}} strings into {{language}}_other": "Translated {{count}} strings into {{language}}",
   "Translation into {{language}} cancelled. {{count}} strings kept._one": "Translation into {{language}} cancelled. {{count}} string kept.",

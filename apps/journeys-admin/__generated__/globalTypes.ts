@@ -91,14 +91,6 @@ export enum CampaignBackgroundOverlay {
 }
 
 /**
- * Button corner shape of the Campaign Theme.
- */
-export enum CampaignButtonRadius {
-  pill = "pill",
-  rounded = "rounded",
-}
-
-/**
  * Which side of the Section Body an Extra renders on.
  */
 export enum CampaignChildPlacement {
@@ -1031,7 +1023,7 @@ export interface CampaignThemeUpdateInput {
   contrastBackgroundColor?: string | null;
   contrastTextColor?: string | null;
   radius?: CampaignRadius | null;
-  buttonRadius?: CampaignButtonRadius | null;
+  buttonRadius?: CampaignRadius | null;
 }
 
 /**

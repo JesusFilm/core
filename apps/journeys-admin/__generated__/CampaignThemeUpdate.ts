@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignThemeUpdateInput, ThemeMode, CampaignRadius, CampaignButtonRadius } from "./globalTypes";
+import { CampaignThemeUpdateInput, ThemeMode, CampaignRadius } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignThemeUpdate
@@ -28,12 +28,15 @@ export interface CampaignThemeUpdate_campaignThemeUpdate {
   contrastBackgroundColor: string;
   contrastTextColor: string;
   radius: CampaignRadius;
-  buttonRadius: CampaignButtonRadius;
+  /**
+   * Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+   */
+  buttonRadius: CampaignRadius;
 }
 
 export interface CampaignThemeUpdate {
   /**
-   * Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+   * Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button corners. Only the given columns change. Applying a Theme Preset is this mutation with the mode, the eight colours and the button corners; fonts and the corner radius stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 

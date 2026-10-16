@@ -1,12 +1,13 @@
 import type {
   CampaignThemeInput,
-  CampaignThemeMode
+  CampaignThemeMode,
+  CampaignThemeRadius
 } from '../createCampaignTheme'
 
 /**
- * A Theme Preset: theme mode plus the eight colour columns of a Campaign
- * Theme. Applying one replaces mode and colours only; fonts and both radii are
- * untouched. Nothing records which preset is active: the editor derives it by
+ * A Theme Preset: theme mode, the eight colour columns and the button corners
+ * of a Campaign Theme. Applying one replaces those ten values only; fonts and
+ * the corner radius are untouched. Nothing records which preset is active: the editor derives it by
  * comparing the current values to these constants (PRD §4, §14).
  */
 export interface CampaignThemePreset {
@@ -19,6 +20,7 @@ export interface CampaignThemePreset {
   mutedColor: string
   contrastBackgroundColor: string
   contrastTextColor: string
+  buttonRadius: CampaignThemeRadius
 }
 
 export type CampaignThemePresetName = 'light' | 'dark'
@@ -40,8 +42,12 @@ export const PRESET_COLOR_COLUMNS = [
 
 export type CampaignThemePresetColumn = (typeof PRESET_COLOR_COLUMNS)[number]
 
-/** The nine columns a preset replaces: the mode and the eight colours. */
-export const PRESET_COLUMNS = ['themeMode', ...PRESET_COLOR_COLUMNS] as const
+/** The ten columns a preset replaces: the mode, the eight colours and the button corners. */
+export const PRESET_COLUMNS = [
+  'themeMode',
+  ...PRESET_COLOR_COLUMNS,
+  'buttonRadius'
+] as const
 
 export const LIGHT_PRESET: CampaignThemePreset = {
   themeMode: 'light',
@@ -52,7 +58,8 @@ export const LIGHT_PRESET: CampaignThemePreset = {
   textColor: '#26262E',
   mutedColor: '#6D6F81',
   contrastBackgroundColor: '#26262E',
-  contrastTextColor: '#FFFFFF'
+  contrastTextColor: '#FFFFFF',
+  buttonRadius: 'veryRounded'
 }
 
 export const DARK_PRESET: CampaignThemePreset = {
@@ -64,7 +71,8 @@ export const DARK_PRESET: CampaignThemePreset = {
   textColor: '#FFFFFF',
   mutedColor: '#B9BAC6',
   contrastBackgroundColor: '#F5F2EC',
-  contrastTextColor: '#1A1A22'
+  contrastTextColor: '#1A1A22',
+  buttonRadius: 'veryRounded'
 }
 
 export const CAMPAIGN_THEME_PRESETS: Record<
@@ -81,7 +89,7 @@ export function presetColors(preset: CampaignThemePreset): string[] {
 }
 
 /**
- * Which preset the nine values match, or `custom` when they match neither.
+ * Which preset the ten values match, or `custom` when they match neither.
  * Colours compare case-insensitively so a `#ffffff` read back from an older
  * row still counts; nothing is stored.
  */

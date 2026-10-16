@@ -1,6 +1,6 @@
 import { ThemeMode } from '../../block/card/enums/themeMode'
 import { builder } from '../../builder'
-import { CampaignButtonRadius, CampaignRadius } from '../enums'
+import { CampaignRadius } from '../enums'
 
 export const CampaignThemeUpdateInput = builder.inputType(
   'CampaignThemeUpdateInput',
@@ -66,9 +66,10 @@ export const CampaignThemeUpdateInput = builder.inputType(
         description: 'Corner radius: square, slight, rounded or veryRounded.'
       }),
       buttonRadius: t.field({
-        type: CampaignButtonRadius,
+        type: CampaignRadius,
         required: false,
-        description: 'Button shape: rounded or pill.'
+        description:
+          'Button corners: square, slight, rounded or veryRounded (the pill look).'
       })
     })
   }
