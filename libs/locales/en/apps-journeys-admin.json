@@ -1696,6 +1696,12 @@
   "The map could not be loaded. Try again later.": "The map could not be loaded. Try again later.",
   "Side by side": "Side by side",
   "Stacked": "Stacked",
+  "Search your journeys": "Search your journeys",
+  "Search for a new journey": "Search for a new journey",
+  "or paste a link": "or paste a link",
+  "Loading journeys…": "Loading journeys…",
+  "Could not load your journeys": "Could not load your journeys",
+  "No journeys found": "No journeys found",
   "Preview {{language}}": "Preview {{language}}",
   "Previewing": "Previewing",
   "Preview language: {{language}}": "Preview language: {{language}}"

@@ -79,7 +79,11 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
     })
     expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 'journeyId', status: 'published', deletedAt: null }
+        where: {
+          id: 'journeyId',
+          status: { in: ['published'] },
+          deletedAt: null
+        }
       })
     )
     expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(

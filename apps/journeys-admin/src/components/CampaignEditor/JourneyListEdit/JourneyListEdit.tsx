@@ -23,6 +23,7 @@ import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
+import { JourneyPicker } from '../Pickers/JourneyPicker'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -167,9 +168,10 @@ function JourneyCardEdit({
 /**
  * The Journey List on the editor canvas: every card, live or not, selectable
  * to edit its title and description in place, and — while the list or one of
- * its cards is selected — the journey paste field that adds another card
- * from an admin link or a public URL. Adding is one create Command: the card
- * shows at once from the journey the paste field resolved, and the server
+ * its cards is selected — the journey picker that adds another card from
+ * the journeys the author can read, and beneath it a smaller paste field for
+ * a journey outside that list (an admin link or a public URL). Adding is one create Command: the card
+ * shows at once from the journey picked or resolved, and the server
  * snapshots the journey's title and description when it answers.
  */
 export function JourneyListEdit({
@@ -221,9 +223,9 @@ export function JourneyListEdit({
         return created
       }
     })
-    // The paste field stays up while the add is in flight: a refused add
+    // The add fields stay up while the add is in flight: a refused add
     // rolls its optimistic card back before the selection returns to the
-    // list, and the field must still be there to show the API's message.
+    // list, and the fields must still be there to show the API's message.
     setAdding(true)
     try {
       await created
@@ -259,9 +261,14 @@ export function JourneyListEdit({
         </Box>
       )}
       {active || adding ? (
-        <Box sx={{ maxWidth: 720 }}>
-          <JourneyPasteField label={t('Add a journey')} onLink={handleAdd} />
-        </Box>
+        <Stack spacing={1.5} sx={{ maxWidth: 720 }}>
+          <JourneyPicker label={t('Add a journey')} onLink={handleAdd} />
+          <JourneyPasteField
+            label={t('or paste a link')}
+            compact
+            onLink={handleAdd}
+          />
+        </Stack>
       ) : (
         cards.length === 0 && (
           <Typography

@@ -86,7 +86,7 @@ export interface CampaignJourneyBlockCreate_campaignJourneyBlockCreate {
 
 export interface CampaignJourneyBlockCreate {
   /**
-   * Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
+   * Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published or archived journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -94,7 +94,7 @@ export interface CampaignJourneyBlockCreate {
    * - NOT_FOUND: parentBlockId does not resolve to a live block.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
-   * - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or unpublished).
+   * - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
    */
   campaignJourneyBlockCreate: CampaignJourneyBlockCreate_campaignJourneyBlockCreate;
 }

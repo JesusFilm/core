@@ -55,6 +55,7 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
+import { JourneyPicker } from '../Pickers/JourneyPicker'
 import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
 import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
 
@@ -227,7 +228,7 @@ interface ShareLanguageRowProps {
  * frame, the Share Link, Copy link and Download QR code. A live-published
  * journey previews in the frame with Refresh from journey, Swap and Unlink
  * beside it. An Unlinked Language shows the frame with the "Pick a journey"
- * call to action that opens the paste field, copy and download disabled. A
+ * call to action that opens the journey picker, copy and download disabled. A
  * journey that is no longer published shows the "Journey unpublished"
  * warning in the frame instead of that call to action.
  */
@@ -271,6 +272,11 @@ function ShareLanguageRow({
     previewLanguageId,
     t('Download QR code')
   )
+
+  async function handleLink(url: string): Promise<void> {
+    await onLink(url)
+    setPasting(false)
+  }
 
   async function handleCopy(): Promise<void> {
     if (shortLink == null) return
@@ -540,16 +546,23 @@ function ShareLanguageRow({
             </Stack>
           )}
           {pasting && (
-            <JourneyPasteField
-              label={
-                state === 'unlinked' ? t('Journey link') : t('New journey link')
-              }
-              autoFocus
-              onLink={async (url) => {
-                await onLink(url)
-                setPasting(false)
-              }}
-            />
+            <Stack spacing={1.5}>
+              <JourneyPicker
+                label={
+                  state === 'unlinked'
+                    ? t('Search your journeys')
+                    : t('Search for a new journey')
+                }
+                statuses={[JourneyStatus.published]}
+                autoFocus
+                onLink={handleLink}
+              />
+              <JourneyPasteField
+                label={t('or paste a link')}
+                compact
+                onLink={handleLink}
+              />
+            </Stack>
           )}
         </Stack>
       </Stack>
