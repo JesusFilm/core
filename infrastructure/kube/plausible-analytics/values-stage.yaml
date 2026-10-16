@@ -30,42 +30,12 @@ plausible-analytics:
     #   database: 'plausible'
 
   # -- Clickhouse Database
+  # The in-cluster subchart is gone: Plausible's event store lives in the
+  # shared ClickHouse Cloud service (jfp-clickhouse-stage) and the URL comes
+  # from the Doppler-managed Secret (CLICKHOUSE_DATABASE_URL), not from here.
+  # See README.md, "Migrating ClickHouse to ClickHouse Cloud".
   clickhouse:
-    enabled: true
-    # -- The URL Connection String to clickhouse DB see -> https://clickhouse.tech/docs/en/interfaces/http/
-    #  url: "http://plausible-clickhouse:8123/plausible_events_db"
-    # -- Sub-chart values, see https://artifacthub.io/packages/helm/sentry/clickhouse
-
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: topology.kubernetes.io/zone
-                  operator: In
-                  values:
-                    - us-east-2a
-                - key: eks.amazonaws.com/nodegroup
-                  operator: In
-                  values:
-                    - jfp-eks-node-group-2a-stage
-    clickhouse:
-      replicas: 1
-      # -- Latest sentry/clickhouse chart ships 19.14, which doesn't work together
-      # with latest plausible
-      # https://artifacthub.io/packages/helm/sentry/clickhouse
-      # https://hub.docker.com/r/clickhouse/clickhouse-server/tags
-      image: clickhouse/clickhouse-server
-      imageVersion: '24.3.3.102-alpine'
-      persistentVolumeClaim:
-        enabled: true
-        ## Clickhouse data volume
-        dataPersistentVolume:
-          enabled: true
-          storageClassName: clickhouse-gp3
-          accessModes:
-            - 'ReadWriteOnce'
-          storage: '500Gi'
+    enabled: false
 
   # -- Plausible uses and SMTP server to send transactional emails e.g. account activation, password reset, weekly reports, etc.
   smtp:
