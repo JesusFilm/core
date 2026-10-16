@@ -18,6 +18,14 @@ The fastest and easiest way to try Core out is via using Visual Studio Code with
 
 This repo includes AI skills that automate common engineering tasks (PR review, review feedback handling, stage branch reset). See [docs/ai-foundations.md](docs/ai-foundations.md) for the full guide.
 
+## Hosted dependency updates
+
+[Renovate](renovate.json) caps Node child-process memory at 2048 MiB to leave
+runner overhead within Mend’s 3 GB hosted limit. This follows the
+[Mend pnpm/yarn OOM guidance](https://docs.renovatebot.com/mend-hosted/faq/).
+After changing this limit, verify a new hosted job completes the pnpm lockfile
+update successfully; local config validation alone does not establish recovery.
+
 ## License
 
 [Stratis Icon Set](https://www.figma.com/community/file/1177180791780461401/Stratis-UI-Icons---1000%2B-Free-Figma-icons) by [Monty Hayton](https://www.figma.com/@designproduct) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
