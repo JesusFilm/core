@@ -68,5 +68,38 @@ describe('defaultRenderOption', () => {
     )
     expect(screen.getByRole('option', { name: 'English' })).toBeInTheDocument()
     expect(screen.getByText('English')).toBeInTheDocument()
+    expect(screen.queryByText('ID 529')).not.toBeInTheDocument()
+  })
+
+  it('should show the language id when showLanguageId is set', () => {
+    render(
+      defaultRenderOption({
+        index: 0,
+        style: {},
+        showLanguageId: true,
+        rows: [
+          [
+            {
+              key: 'Dari',
+              tabIndex: -1,
+              role: 'option',
+              id: ':r0:-option-0',
+              'data-option-index': 0,
+              'aria-disabled': false,
+              'aria-selected': false,
+              className: 'MuiAutocomplete-option',
+              onClick: vi.fn()
+            },
+            {
+              id: '53400',
+              localName: 'Dari',
+              nativeName: 'فارسی'
+            },
+            0
+          ]
+        ]
+      } as any)
+    )
+    expect(screen.getByText('ID 53400')).toBeInTheDocument()
   })
 })
