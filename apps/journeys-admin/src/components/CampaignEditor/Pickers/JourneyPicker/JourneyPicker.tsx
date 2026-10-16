@@ -25,6 +25,8 @@ interface JourneyPickerProps {
   onLink: (url: string, journey: AccessibleJourney) => Promise<void>
   /** Shown when nothing has been typed yet. */
   label?: string
+  /** Only journeys in these statuses are offered; both by default. */
+  statuses?: JourneyStatus[]
   autoFocus?: boolean
   disabled?: boolean
 }
@@ -39,6 +41,7 @@ interface JourneyPickerProps {
 export function JourneyPicker({
   onLink,
   label,
+  statuses = [JourneyStatus.published, JourneyStatus.archived],
   autoFocus = false,
   disabled = false
 }: JourneyPickerProps): ReactElement {
@@ -85,7 +88,11 @@ export function JourneyPicker({
     >
       <Autocomplete
         value={null}
-        options={dataState === 'complete' ? data.journeys : []}
+        options={
+          dataState === 'complete'
+            ? data.journeys.filter(({ status }) => statuses.includes(status))
+            : []
+        }
         loading={loading}
         disabled={disabled}
         inputValue={inputValue}

@@ -87,6 +87,23 @@ describe('JourneyPicker', () => {
     expect(archived).toHaveTextContent('Archived')
   })
 
+  it('offers only the journeys in the given statuses', async () => {
+    render(
+      <MockedProvider mocks={[accessibleMock()] as never}>
+        <JourneyPicker
+          onLink={vi.fn(async () => undefined)}
+          statuses={[JourneyStatus.published]}
+        />
+      </MockedProvider>
+    )
+    await userEvent.click(
+      screen.getByRole('combobox', { name: 'Search your journeys' })
+    )
+
+    await screen.findByTestId('JourneyPickerOption-christmasId')
+    expect(screen.queryByTestId('JourneyPickerOption-easterId')).toBeNull()
+  })
+
   it('filters the journeys by title as the author types', async () => {
     renderPicker()
     const field = screen.getByRole('combobox', { name: 'Search your journeys' })

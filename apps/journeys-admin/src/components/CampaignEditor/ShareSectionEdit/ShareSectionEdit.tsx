@@ -553,6 +553,7 @@ function ShareLanguageRow({
                     ? t('Search your journeys')
                     : t('Search for a new journey')
                 }
+                statuses={[JourneyStatus.published]}
                 autoFocus
                 onLink={handleLink}
               />

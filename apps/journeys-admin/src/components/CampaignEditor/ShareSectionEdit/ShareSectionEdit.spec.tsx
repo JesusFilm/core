@@ -131,6 +131,13 @@ const accessibleJourneysMock = {
         {
           ...journey,
           team: { __typename: 'Team', id: 'teamId', title: 'Équipe Europe' }
+        },
+        {
+          ...journey,
+          id: 'archivedJourneyId',
+          title: 'Ancien Noël',
+          status: JourneyStatus.archived,
+          team: { __typename: 'Team', id: 'teamId', title: 'Équipe Europe' }
         }
       ]
     }
@@ -650,6 +657,25 @@ describe('ShareSectionEdit', () => {
         )
       ).toHaveTextContent('Noël en Europe')
     )
+  })
+
+  it('does not offer archived journeys in the search, as a share language only links published ones', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.click(
+      within(french).getByRole('combobox', { name: 'Search your journeys' })
+    )
+
+    expect(
+      await screen.findByTestId('JourneyPickerOption-frJourneyId')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyPickerOption-archivedJourneyId')
+    ).toBeNull()
   })
 
   it('links the first journey as a plain save, so there is nothing to undo', async () => {
