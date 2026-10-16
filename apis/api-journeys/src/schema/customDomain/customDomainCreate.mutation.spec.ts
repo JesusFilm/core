@@ -69,7 +69,8 @@ describe('customDomainCreate', () => {
     apexName: 'example.com',
     teamId: 'teamId',
     routeAllTeamJourneys: true,
-    journeyCollectionId: null
+    journeyCollectionId: null,
+    campaignId: null
   }
 
   beforeEach(() => {
@@ -122,10 +123,7 @@ describe('customDomainCreate', () => {
     })
     expect(mockIsDomainValid).toHaveBeenCalledWith('www.example.com')
     expect(mockCreateVercelDomain).toHaveBeenCalledWith('www.example.com')
-    expect(mockUpdateTeamShortLinks).toHaveBeenCalledWith(
-      'teamId',
-      'www.example.com'
-    )
+    expect(mockUpdateTeamShortLinks).toHaveBeenCalledWith('teamId')
   })
 
   it('should create a custom domain with all optional fields', async () => {

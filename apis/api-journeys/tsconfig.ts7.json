@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "noEmit": true,
+    "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "target": "es2021",
     "jsx": "react-jsx",

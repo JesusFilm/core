@@ -1,6 +1,11 @@
 import { GraphQLError } from 'graphql'
 
-import { QrCode, prisma } from '@core/prisma/journeys/client'
+import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
+
+import {
+  INCLUDE_JOURNEY_PUBLIC_URL,
+  getJourneyPublicUrl
+} from '../campaign/getJourneyPublicUrl'
 
 interface ShortLinkCreateInput {
   id: string
@@ -16,7 +21,6 @@ interface ShortLinkUpdateInput {
 
 const GATEWAY_URL = process.env.GATEWAY_URL
 const INTEROP_TOKEN = process.env.INTEROP_TOKEN ?? ''
-const JOURNEYS_URL = process.env.JOURNEYS_URL
 const JOURNEYS_SHORTLINK_DOMAIN = process.env.JOURNEYS_SHORTLINK_DOMAIN
 
 async function graphqlRequest(
@@ -127,29 +131,28 @@ export async function deleteShortLink(id: string): Promise<void> {
   await graphqlRequest(query, { id })
 }
 
+/**
+ * The short-link target: the journey's public address, decided by the
+ * target journey's own team (a route-all custom domain, else a collection
+ * domain containing it, else the root domain), plus the block path and the
+ * QR attribution parameters. The QR row's own team no longer decides the
+ * domain, so a campaign QR code pointing at another team's journey lands
+ * where that team serves it; for a QR whose team owns the journey the
+ * result is unchanged.
+ */
 export async function getTo({
   shortLinkId,
-  teamId,
   toJourneyId,
   toBlockId
 }: {
   shortLinkId: string
-  teamId: string
   toJourneyId: string
   toBlockId?: string | null
 }): Promise<string> {
-  if (JOURNEYS_URL == null)
-    throw new GraphQLError('Journeys url not added', {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
   const journey = await prisma.journey.findUniqueOrThrow({
-    where: { id: toJourneyId }
+    where: { id: toJourneyId },
+    include: INCLUDE_JOURNEY_PUBLIC_URL
   })
-
-  const customDomain = (
-    await prisma.customDomain.findMany({ where: { teamId } })
-  )[0]
 
   const block =
     toBlockId != null
@@ -158,51 +161,50 @@ export async function getTo({
         })
       : null
 
-  const base =
-    customDomain?.name != null ? `https://${customDomain.name}` : JOURNEYS_URL
-
-  const path = `${journey.slug}${block != null ? `/${block.id}` : ''}`
+  const url = getJourneyPublicUrl(journey)
+  const path = block != null ? `/${block.id}` : ''
   const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
 
-  return `${base}/${path}${utm}`
+  return `${url}${path}${utm}`
 }
 
+/**
+ * Resolve a pasted address to its journey and block. The address must be on
+ * the host that serves the target journey, decided by the journey's own team
+ * exactly as `getTo` does, so a campaign QR code can be repointed at another
+ * team's journey with that journey's own URL. The journey must be published
+ * and not trashed or deleted; a journey of the QR code's own team may also be
+ * a draft or archived.
+ */
 export async function parseAndVerifyTo(
-  qrCode: QrCode,
-  to: string
+  to: string,
+  teamId: string
 ): Promise<{ toJourneyId: string; toBlockId?: string | null }> {
-  const { origin, hostname, pathname } = new URL(to)
+  const { origin, pathname } = new URL(to)
 
   const pathArray = pathname.split('/')
   const journeySlug = pathArray[1]
   const blockId = pathArray[2]
 
-  if (hostname == null || journeySlug == null)
+  if (journeySlug == null || journeySlug === '')
     throw new GraphQLError('Invalid to', {
       extensions: { code: 'BAD_USER_INPUT' }
     })
 
-  const customDomain = (
-    await prisma.customDomain.findMany({ where: { teamId: qrCode.teamId } })
-  )[0]
-
-  if (
-    customDomain != null &&
-    customDomain.name != null &&
-    customDomain.name !== hostname
-  ) {
-    throw new GraphQLError('Invalid hostname', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
-  } else if (origin !== JOURNEYS_URL) {
-    throw new GraphQLError('Invalid hostname', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
-  }
-
   const journey = await prisma.journey.findFirstOrThrow({
-    where: { slug: journeySlug }
+    where: {
+      slug: journeySlug,
+      deletedAt: null,
+      trashedAt: null,
+      OR: [{ status: JourneyStatus.published }, { teamId }]
+    },
+    include: INCLUDE_JOURNEY_PUBLIC_URL
   })
+
+  if (new URL(getJourneyPublicUrl(journey)).origin !== origin)
+    throw new GraphQLError('Invalid hostname', {
+      extensions: { code: 'BAD_USER_INPUT' }
+    })
 
   const block =
     blockId != null

@@ -5,7 +5,12 @@ import { Logger } from 'pino'
 
 import { env } from '../../../env'
 
-import { ApiRevalidateJobs, RevalidateJob } from './types'
+import {
+  ApiRevalidateJobs,
+  RevalidatePathsJob,
+  RevalidateSlugJob,
+  isRevalidatePathsJob
+} from './types'
 
 async function sleep(ms: number | undefined): Promise<void> {
   return await new Promise((resolve) => {
@@ -35,12 +40,41 @@ export async function service(
 ): Promise<void> {
   switch (job.name) {
     case 'revalidate':
-      await revalidate(job, logger)
+      if (isRevalidatePathsJob(job.data)) {
+        await revalidatePaths(job as Job<RevalidatePathsJob>, logger)
+        break
+      }
+      await revalidate(job as Job<RevalidateSlugJob>, logger)
       break
   }
 }
 
-export async function revalidate(job: Job<RevalidateJob>, logger?: Logger) {
+/**
+ * The `paths[]` job variant: one `/api/revalidate` call per Next.js page path,
+ * for pages that are not addressed by a journey slug (the campaign pages).
+ */
+export async function revalidatePaths(
+  job: Job<RevalidatePathsJob>,
+  logger?: Logger
+): Promise<void> {
+  for (const path of job.data.paths) {
+    const params = new URLSearchParams({
+      accessToken: env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
+      path
+    })
+    try {
+      const response = await fetch(
+        `${env.JOURNEYS_URL}/api/revalidate?${params.toString()}`
+      )
+      if (!response.ok)
+        logger?.error(`Failed to revalidate ${path}: HTTP ${response.status}`)
+    } catch (error) {
+      logger?.error(`Failed to revalidate ${path}: ${error as Error}`)
+    }
+  }
+}
+
+export async function revalidate(job: Job<RevalidateSlugJob>, logger?: Logger) {
   const { slug, hostname } = job.data
   const path = hostname != null ? `/${slug}` : `/home/${slug}`
   const journeyUrl =

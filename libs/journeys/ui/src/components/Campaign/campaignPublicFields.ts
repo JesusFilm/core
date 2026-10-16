@@ -1,0 +1,340 @@
+import { gql } from '@apollo/client'
+
+/**
+ * Every Campaign Block field the public page reads, as one flat-list item.
+ * The three per-type `variant` fields and the rich text `content` are
+ * aliased because they return different types and GraphQL forbids one
+ * response name with two shapes. A Campaign Video's and an expanded
+ * carousel's Watch titles (the carousel's `video { children }` is the
+ * gateway's join) read the enclosing query's `$languageId` (the Page
+ * Language), as do their `variant`s: the children are not resolved through
+ * `resolveReference`, so without it the gateway falls back to English. Every
+ * operation spreading this fragment declares it.
+ */
+export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
+  fragment CampaignPublicBlockFields on CampaignBlock {
+    __typename
+    id
+    campaignId
+    pageId
+    regionId
+    parentBlockId
+    parentOrder
+    ... on CampaignSectionBlock {
+      backgroundKind
+      backgroundColor
+      coverBlockId
+      backgroundOverlay
+      headingColor
+      textColor
+      buttonColor
+      buttonTextColor
+      accentColor
+    }
+    ... on CampaignHeroBlock {
+      eyebrow
+      title
+      lede
+      align
+      mediaBlockId
+    }
+    ... on CampaignRegionSwitcherBlock {
+      title
+      switcherVariant: variant
+    }
+    ... on CampaignVideoCarouselBlock {
+      eyebrow
+      title
+      videoId
+      videoVariantLanguageId
+      video {
+        id
+        label
+        slug
+        childrenCount
+        title(languageId: $languageId, primary: true) {
+          value
+          primary
+          language {
+            id
+          }
+        }
+        images(aspectRatio: banner) {
+          mobileCinematicHigh
+        }
+        variant(languageId: $languageId) {
+          id
+          duration
+          slug
+        }
+        children {
+          id
+          label
+          slug
+          childrenCount
+          title(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          images(aspectRatio: banner) {
+            mobileCinematicHigh
+          }
+          variant(languageId: $languageId) {
+            id
+            duration
+            slug
+          }
+        }
+      }
+    }
+    ... on CampaignJourneyListBlock {
+      eyebrow
+      title
+      lede
+      display
+    }
+    ... on CampaignJourneyBlock {
+      title
+      description
+      journeyStatus
+      journeyUrl
+      journeyImage {
+        src
+        alt
+      }
+    }
+    ... on CampaignAnalyticsBlock {
+      eyebrow
+      title
+      showMap
+    }
+    ... on CampaignRegionHeaderBlock {
+      intro
+    }
+    ... on CampaignRegionShareBlock {
+      title
+      intro
+    }
+    ... on CampaignRichTextBlock {
+      title
+      richTextContent: content
+    }
+    ... on CampaignColumnsBlock {
+      ratio
+    }
+    ... on CampaignHeaderBlock {
+      logoBlockId
+    }
+    ... on CampaignFeaturedMediaBlock {
+      eyebrow
+      title
+      lede
+      bullets
+      mediaSide
+      layout
+      mediaBlockId
+    }
+    ... on CampaignVideoBlock {
+      source
+      videoId
+      videoVariantLanguageId
+      title
+      description
+      image
+      duration
+      mediaVideo {
+        __typename
+        ... on Video {
+          id
+          label
+          slug
+          childrenCount
+          title(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          description(languageId: $languageId, primary: true) {
+            value
+            primary
+            language {
+              id
+            }
+          }
+          images(aspectRatio: banner) {
+            mobileCinematicHigh
+          }
+          variant {
+            id
+            hls
+            duration
+            slug
+          }
+        }
+        ... on MuxVideo {
+          id
+          playbackId
+        }
+        ... on YouTube {
+          id
+        }
+      }
+    }
+    ... on CampaignImageBlock {
+      src
+      alt
+      width
+      height
+    }
+    ... on CampaignTypographyBlock {
+      content
+      typographyVariant: variant
+      align
+      color
+      placement
+    }
+    ... on CampaignButtonBlock {
+      label
+      buttonVariant: variant
+      size
+      align
+      color
+      labelColor
+      placement
+      action {
+        __typename
+        parentBlockId
+        ... on CampaignLinkAction {
+          url
+          target
+        }
+        ... on CampaignScrollToBlockAction {
+          blockId
+        }
+        ... on CampaignNavigateToRegionAction {
+          regionId
+        }
+      }
+    }
+  }
+`
+
+/**
+ * The one page query's payload: a published campaign with every text field
+ * already resolved to the Page Language, both pages' blocks and the chrome as
+ * flat lists, and each region with its Share Languages and resolved URLs.
+ */
+export const CAMPAIGN_PUBLIC_FIELDS = gql`
+  ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  fragment CampaignPublicFields on CampaignPublic {
+    __typename
+    id
+    teamId
+    slug
+    title
+    defaultLanguageId
+    languageId
+    customDomainNames
+    publishedAt
+    language {
+      id
+      bcp47
+    }
+    languages {
+      id
+      languageId
+      order
+      language {
+        id
+        bcp47
+        name(primary: true) {
+          value
+          primary
+        }
+      }
+    }
+    theme {
+      id
+      themeMode
+      headerFont
+      bodyFont
+      labelFont
+      primaryColor
+      accentColor
+      backgroundColor
+      surfaceColor
+      textColor
+      mutedColor
+      contrastBackgroundColor
+      contrastTextColor
+      radius
+      buttonRadius
+    }
+    strings {
+      id
+      key
+      value
+    }
+    regions {
+      id
+      slug
+      name
+      listed
+      order
+      countries {
+        id
+        countryId
+        order
+        country {
+          id
+          flagPngSrc
+          name(languageId: $languageId, primary: true) {
+            value
+          }
+        }
+      }
+      languages {
+        id
+        languageId
+        order
+        journeyStatus
+        title
+        shortLinkUrl
+        journeyUrl
+        embedUrl
+        language {
+          id
+          bcp47
+          name(primary: true) {
+            value
+            primary
+          }
+        }
+      }
+      lines {
+        ...CampaignPublicBlockFields
+      }
+    }
+    header {
+      ...CampaignPublicBlockFields
+    }
+    footer {
+      ...CampaignPublicBlockFields
+    }
+    chrome {
+      ...CampaignPublicBlockFields
+    }
+    pages {
+      id
+      kind
+      blocks {
+        ...CampaignPublicBlockFields
+      }
+    }
+  }
+`

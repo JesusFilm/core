@@ -7,16 +7,13 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-import {
-  deleteVercelDomain,
-  updateTeamShortLinks
-} from './customDomain.service'
+import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-vi.mock('./customDomain.service', () => ({
+vi.mock('./service', () => ({
   deleteVercelDomain: vi.fn().mockResolvedValue(true),
   updateTeamShortLinks: vi.fn().mockResolvedValue(undefined)
 }))
@@ -50,6 +47,7 @@ describe('customDomainDelete', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollectionId: null,
+    campaignId: null,
     routeAllTeamJourneys: true,
     team: {
       id: 'teamId',
@@ -98,7 +96,7 @@ describe('customDomainDelete', () => {
       }
     })
 
-    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId', 'example.com')
+    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
     expect(prismaMock.customDomain.delete).toHaveBeenCalledWith({
       where: { id: 'customDomainId' }
     })
@@ -108,6 +106,22 @@ describe('customDomainDelete', () => {
         name: 'example.com'
       })
     )
+  })
+
+  it('should change no campaign row when a domain with a Campaign Root is deleted', async () => {
+    const attached = { ...mockCustomDomain, campaignId: 'campaignId' }
+    prismaMock.customDomain.findUnique.mockResolvedValue(attached)
+    prismaMock.customDomain.delete.mockResolvedValue(attached)
+
+    await authClient({
+      document: CUSTOM_DOMAIN_DELETE_MUTATION,
+      variables: { id: 'customDomainId' }
+    })
+
+    expect(prismaMock.customDomain.delete).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
+    expect(prismaMock.campaign.delete).not.toHaveBeenCalled()
   })
 
   it('should return NOT_FOUND when custom domain does not exist', async () => {

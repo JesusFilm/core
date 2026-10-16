@@ -4,7 +4,12 @@ import fetch from 'node-fetch'
 import { Logger } from 'pino'
 import { type MockedFunction, vi } from 'vitest'
 
-import { generateFacebookAppAccessToken, revalidate, service } from './service'
+import {
+  generateFacebookAppAccessToken,
+  revalidate,
+  revalidatePaths,
+  service
+} from './service'
 
 vi.mock('node-fetch')
 
@@ -37,6 +42,84 @@ describe('RevalidateService', () => {
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://example.com/api/revalidate?accessToken=test-token&slug=test-journey'
+      )
+    })
+
+    it('should handle the paths[] job variant beside the slug job', async () => {
+      const job = {
+        name: 'revalidate',
+        data: {
+          paths: ['/home/campaign/christmas', '/home/campaign/christmas/eur']
+        }
+      } as Job
+
+      mockFetch.mockResolvedValue({ ok: true } as any)
+
+      await service(job)
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        'https://example.com/api/revalidate?accessToken=test-token&path=%2Fhome%2Fcampaign%2Fchristmas'
+      )
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
+        'https://example.com/api/revalidate?accessToken=test-token&path=%2Fhome%2Fcampaign%2Fchristmas%2Feur'
+      )
+    })
+  })
+
+  describe('revalidatePaths', () => {
+    it('calls /api/revalidate once per path', async () => {
+      const job = {
+        data: {
+          paths: [
+            '/home/campaign/a',
+            '/custom.example.com',
+            '/custom.example.com/eur'
+          ]
+        }
+      } as Job
+
+      mockFetch.mockResolvedValue({ ok: true } as any)
+
+      await revalidatePaths(job)
+
+      expect(mockFetch.mock.calls.map((call) => call[0])).toEqual([
+        'https://example.com/api/revalidate?accessToken=test-token&path=%2Fhome%2Fcampaign%2Fa',
+        'https://example.com/api/revalidate?accessToken=test-token&path=%2Fcustom.example.com',
+        'https://example.com/api/revalidate?accessToken=test-token&path=%2Fcustom.example.com%2Feur'
+      ])
+    })
+
+    it('logs a failed path and continues with the rest', async () => {
+      const job = {
+        data: { paths: ['/home/campaign/a', '/home/campaign/a/eur'] }
+      } as Job
+
+      mockFetch
+        .mockRejectedValueOnce(new Error('Network error'))
+        .mockResolvedValueOnce({ ok: true } as any)
+
+      await revalidatePaths(job, mockLogger as unknown as Logger)
+
+      expect(mockFetch).toHaveBeenCalledTimes(2)
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to revalidate /home/campaign/a: Error: Network error'
+      )
+    })
+
+    it('logs a rejected revalidation with its status', async () => {
+      const job = {
+        data: { paths: ['/home/campaign/a'] }
+      } as Job
+
+      mockFetch.mockResolvedValueOnce({ ok: false, status: 401 } as any)
+
+      await revalidatePaths(job, mockLogger as unknown as Logger)
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to revalidate /home/campaign/a: HTTP 401'
       )
     })
   })
