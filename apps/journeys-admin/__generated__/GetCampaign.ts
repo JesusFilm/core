@@ -1562,7 +1562,7 @@ export interface GetCampaign_campaign {
    */
   theme: GetCampaign_campaign_theme;
   /**
-   * The seventeen Campaign Strings.
+   * The eighteen Campaign Strings.
    */
   strings: GetCampaign_campaign_strings[];
   /**

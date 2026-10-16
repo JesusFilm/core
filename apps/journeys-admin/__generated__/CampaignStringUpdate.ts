@@ -21,7 +21,7 @@ export interface CampaignStringUpdate_campaignStringUpdate {
 
 export interface CampaignStringUpdate {
   /**
-   * Update the default-language wording of one Campaign String. The seventeen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
+   * Update the default-language wording of one Campaign String. The eighteen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 

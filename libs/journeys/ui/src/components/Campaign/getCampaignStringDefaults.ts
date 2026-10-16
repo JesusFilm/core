@@ -3,7 +3,7 @@ import { TFunction } from 'i18next'
 import { CampaignStringKey } from '../../../__generated__/globalTypes'
 
 /**
- * The English wording of the seventeen Campaign Strings, written as `t()` calls
+ * The English wording of the eighteen Campaign Strings, written as `t()` calls
  * so extraction puts each one in the libs-journeys-ui bundle. The API seeds a
  * new campaign by looking these English strings up in the campaign language's
  * bundle (apis/api-journeys/src/schema/campaign/seed/campaignLocale.ts), so
@@ -31,6 +31,9 @@ export function getCampaignStringDefaults(
     [CampaignStringKey.totalVisitors]: t('Total visitors'),
     [CampaignStringKey.topCountry]: t('Top country'),
     [CampaignStringKey.seeAllOnWatch]: t('See all on Watch'),
-    [CampaignStringKey.videos]: t('videos')
+    [CampaignStringKey.videos]: t('videos'),
+    [CampaignStringKey.noJourneys]: t(
+      'Journeys for this region are coming soon'
+    )
   }
 }

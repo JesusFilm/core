@@ -71,10 +71,11 @@ const STRING_SEED: Array<[CampaignStringKey, string]> = [
   [CampaignStringKey.totalVisitors, 'Total visitors'],
   [CampaignStringKey.topCountry, 'Top country'],
   [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
-  [CampaignStringKey.videos, 'videos']
+  [CampaignStringKey.videos, 'videos'],
+  [CampaignStringKey.noJourneys, 'Journeys for this region are coming soon']
 ]
 
-/** The seventeen seeded Campaign Strings, untranslated. */
+/** The eighteen seeded Campaign Strings, untranslated. */
 export const campaignStrings: CampaignString[] = STRING_SEED.map(
   ([key, value]) => ({
     __typename: 'CampaignString',

@@ -994,7 +994,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionLanguageDelete(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
+  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
   
@@ -1073,7 +1073,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignUnpublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the default-language wording of one Campaign String. The seventeen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
+  Update the default-language wording of one Campaign String. The eighteen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -1665,7 +1665,7 @@ type Campaign @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   regions: [CampaignRegion!]!
   """
-  The seventeen Campaign Strings.
+  The eighteen Campaign Strings.
   """
   strings: [CampaignString!]!
   """
@@ -2306,7 +2306,7 @@ type CampaignPublic @join__type(graph: API_JOURNEYS_MODERN)  {
   languages: [CampaignLanguage!]!
   theme: CampaignTheme!
   """
-  The seventeen Campaign Strings, values resolved.
+  The eighteen Campaign Strings, values resolved.
   """
   strings: [CampaignString!]!
   """
@@ -6282,6 +6282,7 @@ enum CampaignStringKey @join__type(graph: API_JOURNEYS_MODERN)  {
   topCountry @join__enumValue(graph: API_JOURNEYS_MODERN) 
   seeAllOnWatch @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videos @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  noJourneys @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """

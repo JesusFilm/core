@@ -3144,7 +3144,7 @@ export interface GetCampaignPublic_campaignPublic {
   languages: GetCampaignPublic_campaignPublic_languages[];
   theme: GetCampaignPublic_campaignPublic_theme;
   /**
-   * The seventeen Campaign Strings, values resolved.
+   * The eighteen Campaign Strings, values resolved.
    */
   strings: GetCampaignPublic_campaignPublic_strings[];
   /**

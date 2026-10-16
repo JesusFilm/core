@@ -34,7 +34,7 @@ import type {
  * One published `CampaignPublic` payload as `campaignPublic` returns it, after
  * the VideoLibrary `data.ts` precedent: the Light theme; both pages with the
  * seed sections, which between them cover every section typename, plus
- * Typography and Button Extras; the chrome; the seventeen strings; two
+ * Typography and Button Extras; the chrome; the eighteen strings; two
  * regions with one linked journey each and resolved URLs. Every seam-2 spec
  * renders this. Later tickets extend it, never fork it.
  */
@@ -215,7 +215,8 @@ const STRING_SEED: Array<[CampaignStringKey, string]> = [
   [CampaignStringKey.totalVisitors, 'Total visitors'],
   [CampaignStringKey.topCountry, 'Top country'],
   [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
-  [CampaignStringKey.videos, 'videos']
+  [CampaignStringKey.videos, 'videos'],
+  [CampaignStringKey.noJourneys, 'Journeys for this region are coming soon']
 ]
 
 export const campaignStrings: CampaignPublicFields_strings[] = STRING_SEED.map(

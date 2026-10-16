@@ -344,7 +344,7 @@ describe('campaignPublic', () => {
       footer: { id: 'footerId', backgroundKind: 'surface' }
     })
 
-    expect(campaign.strings).toHaveLength(17)
+    expect(campaign.strings).toHaveLength(18)
     expect(campaign.strings.find((s: any) => s.key === 'copy').value).toBe(
       'Copier le lien'
     )

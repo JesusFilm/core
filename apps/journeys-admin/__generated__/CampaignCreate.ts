@@ -1562,7 +1562,7 @@ export interface CampaignCreate_campaignCreate {
    */
   theme: CampaignCreate_campaignCreate_theme;
   /**
-   * The seventeen Campaign Strings.
+   * The eighteen Campaign Strings.
    */
   strings: CampaignCreate_campaignCreate_strings[];
   /**
@@ -1581,7 +1581,7 @@ export interface CampaignCreate_campaignCreate {
 
 export interface CampaignCreate {
   /**
-   * Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
+   * Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
    * 
    * Auth: campaign Create — any member or manager of `input.teamId`.
    * 

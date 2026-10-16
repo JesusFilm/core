@@ -1,6 +1,6 @@
 import { CampaignStringKey } from '@core/prisma/journeys/client'
 
-/** The seventeen Campaign Strings in seed order. */
+/** The eighteen Campaign Strings in seed order. */
 export const CAMPAIGN_STRING_KEYS: readonly CampaignStringKey[] = [
   'allRegions',
   'step1',
@@ -18,7 +18,8 @@ export const CAMPAIGN_STRING_KEYS: readonly CampaignStringKey[] = [
   'totalVisitors',
   'topCountry',
   'seeAllOnWatch',
-  'videos'
+  'videos',
+  'noJourneys'
 ]
 
 /** Final English wording (PRD §14). */
@@ -39,5 +40,6 @@ export const CAMPAIGN_STRING_DEFAULTS: Record<CampaignStringKey, string> = {
   totalVisitors: 'Total visitors',
   topCountry: 'Top country',
   seeAllOnWatch: 'See all on Watch',
-  videos: 'videos'
+  videos: 'videos',
+  noJourneys: 'Journeys for this region are coming soon'
 }
