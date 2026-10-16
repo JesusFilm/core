@@ -1,0 +1,295 @@
+import { describe, expect, it } from 'vitest'
+
+import { prismaMock } from '../../test/prismaMock'
+
+import { auditSlugTitleHygiene } from './audit-slug-title-hygiene'
+
+describe('auditSlugTitleHygiene', () => {
+  it('flags a raw production filename as a high-confidence, auto-fixable title', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-1',
+        slug: 'brand-video',
+        published: true,
+        title: [{ value: 'Brand_Video', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([
+      {
+        videoId: 'video-1',
+        videoSlug: 'brand-video',
+        published: true,
+        field: 'VideoTitle.value',
+        languageId: '529',
+        variantSlug: null,
+        currentValue: 'Brand_Video',
+        reasons: ['underscore'],
+        proposedValue: 'Brand Video',
+        needsContentReview: false
+      }
+    ])
+  })
+
+  it('flags a dash-separated bilingual title for review without proposing a fix', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-2',
+        slug: 'la-busqueda-the-search',
+        published: true,
+        title: [{ value: 'La Búsqueda - The Search', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toHaveLength(1)
+    expect(findings[0]).toMatchObject({
+      field: 'VideoTitle.value',
+      reasons: ['possible-multilingual-concatenation'],
+      proposedValue: null,
+      needsContentReview: true
+    })
+  })
+
+  it('does not flag a concatenated two-word title with no separator', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-3',
+        slug: 'tumlukden-nura',
+        published: true,
+        title: [{ value: 'Tümlükden Nura', languageId: '4797' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    // Documented limitation: an unseparated multilingual concatenation is
+    // indistinguishable from an ordinary two-word title by pattern-matching
+    // alone. Confirming this case requires a human or a per-language
+    // reference-title comparison, not a mechanical rule.
+    expect(findings).toEqual([])
+  })
+
+  it('proposes a dash-joined value for an underscored slug, never a space-joined one', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-shine',
+        slug: 'shine_films_collection',
+        published: true,
+        title: [],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([
+      {
+        videoId: 'video-shine',
+        videoSlug: 'shine_films_collection',
+        published: true,
+        field: 'Video.slug',
+        languageId: null,
+        variantSlug: null,
+        currentValue: 'shine_films_collection',
+        reasons: ['underscore'],
+        proposedValue: 'shine-films-collection',
+        needsContentReview: false
+      }
+    ])
+  })
+
+  it('flags leading/trailing whitespace on a slug and proposes a trimmed value', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-4',
+        slug: ' stray-space-slug ',
+        published: false,
+        title: [],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([
+      {
+        videoId: 'video-4',
+        videoSlug: ' stray-space-slug ',
+        published: false,
+        field: 'Video.slug',
+        languageId: null,
+        variantSlug: null,
+        currentValue: ' stray-space-slug ',
+        reasons: ['leading-or-trailing-whitespace'],
+        proposedValue: 'stray-space-slug',
+        needsContentReview: false
+      }
+    ])
+  })
+
+  it('flags a legitimate all-caps brand token only as low-confidence review, never auto-fixed', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-5',
+        slug: 'lumo-luke',
+        published: true,
+        title: [{ value: 'LUMO: Luke', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toHaveLength(1)
+    expect(findings[0]?.needsContentReview).toBe(true)
+    expect(findings[0]?.proposedValue).toBeNull()
+    expect(findings[0]?.reasons).toContain('all-caps-token')
+  })
+
+  it('does not flag clean data', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-6',
+        slug: 'jesus',
+        published: true,
+        title: [{ value: 'JESUS', languageId: '529' }],
+        variants: [{ slug: 'jesus/english', languageId: '529' }]
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    // "JESUS" still trips the low-confidence all-caps heuristic by design —
+    // this repo's own catalog has legitimate all-caps titles, so that
+    // heuristic can never be zero-hit. Assert it is review-only, not silent.
+    expect(findings).toHaveLength(1)
+    expect(findings[0]?.field).toBe('VideoTitle.value')
+    expect(findings[0]?.needsContentReview).toBe(true)
+  })
+
+  it('does not treat a trailing ordinary word as a version-tag remnant', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-7',
+        slug: '6-being-made-new',
+        published: true,
+        title: [{ value: '6. Being Made New', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([])
+  })
+
+  it('flags an underscore-joined trailing word as a version-tag remnant and proposes removing it', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-8',
+        slug: 'ultimate-sacrifice_final',
+        published: true,
+        title: [],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([
+      {
+        videoId: 'video-8',
+        videoSlug: 'ultimate-sacrifice_final',
+        published: true,
+        field: 'Video.slug',
+        languageId: null,
+        variantSlug: null,
+        currentValue: 'ultimate-sacrifice_final',
+        reasons: ['underscore', 'version-tag-remnant'],
+        proposedValue: 'ultimate-sacrifice',
+        needsContentReview: false
+      }
+    ])
+  })
+
+  it('does not treat a word immediately followed by a diacritic-initial word as a duplicate', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-9',
+        slug: 'sach-thi-thien-tap-11',
+        published: true,
+        // ASCII-only word-boundary matching would misread the boundary right
+        // before "ê", splitting "Thiên" into a false "Thi" that then looks
+        // identical to the preceding "Thi".
+        title: [{ value: 'Sách Thi Thiên (Tập 11)', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toEqual([])
+  })
+
+  it('flags an ordinary duplicated word as low-confidence review, never auto-fixed', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-10',
+        slug: 'the-the-quick-fox',
+        published: true,
+        title: [{ value: 'The The Quick Fox', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const findings = await auditSlugTitleHygiene()
+
+    expect(findings).toHaveLength(1)
+    expect(findings[0]?.reasons).toContain('duplicated-word')
+    expect(findings[0]?.proposedValue).toBeNull()
+    expect(findings[0]?.needsContentReview).toBe(true)
+  })
+
+  it('scans a long non-matching title in linear time instead of backtracking', async () => {
+    const longTitle = Array.from({ length: 200 }, () => 'Word').join(' ')
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-11',
+        slug: 'long-title-video',
+        published: true,
+        title: [{ value: longTitle, languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    const start = Date.now()
+    await auditSlugTitleHygiene()
+    expect(Date.now() - start).toBeLessThan(1000)
+  })
+
+  it('never calls a write method on the prisma client', async () => {
+    prismaMock.video.findMany.mockResolvedValue([
+      {
+        id: 'video-1',
+        slug: 'brand-video',
+        published: true,
+        title: [{ value: 'Brand_Video', languageId: '529' }],
+        variants: []
+      }
+    ] as never)
+
+    await auditSlugTitleHygiene()
+
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
+    expect(prismaMock.video.updateMany).not.toHaveBeenCalled()
+    expect(prismaMock.videoTitle.update).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+  })
+})
