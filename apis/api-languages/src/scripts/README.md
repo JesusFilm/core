@@ -67,13 +67,14 @@ Each WESS import maps one WESS QueryRunner query id (`QueryId=…`) to a Prisma 
 
 ### WESS Languages Import (QueryId 154)
 
-Imports language rows into `Language` and `LanguageName` (English label, `languageId=529`).
+Imports language rows into `Language` and `LanguageName` (English label, `languageId=529`; autonym, `languageId=<the language's own id>`).
 
 ```bash
 nx run api-languages:wess-languages-import
 ```
 
 - **Slug:** derived from WESS `slug` if set, otherwise display name, otherwise `id` — lowercased, spaces/commas/underscores and other non-alphanumeric runs become `-`, collisions get `-2`, `-3`, … . Set on **create**, and on **update** only when `slug` is currently null or empty (existing non-empty slugs are not overwritten).
+- `NATIVE_LAN_NAME` is returned by WESS (the language's autonym, e.g. `Español` for Spanish) and is imported into `LanguageName` as a second row per language — `parentLanguageId`/`languageId` both set to the row's own language id — which becomes that language's Primary Name. Writing it demotes every other stored `LanguageName` row for that language (including the English row) to `primary: false`; a run whose response omits `NATIVE_LAN_NAME` for a language leaves its already-stored autonym and primary flag untouched. Blank/whitespace-only values are treated as absent.
 - `ImportTimes.modelName`: `wessLanguageImport`.
 
 ### WESS Countries Import (QueryId 156)
