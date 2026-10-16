@@ -1,3 +1,7 @@
+export {
+  CampaignCarouselArrows,
+  useCarouselScroll
+} from './CampaignCarouselArrows'
 export { CampaignVideoCarousel } from './CampaignVideoCarousel'
 export {
   WATCH_EXPANSION_LIMIT,

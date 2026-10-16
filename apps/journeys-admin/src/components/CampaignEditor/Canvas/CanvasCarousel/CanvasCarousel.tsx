@@ -5,7 +5,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
-import { carouselCards } from '@core/journeys/ui/Campaign'
+import {
+  CampaignCarouselArrows,
+  carouselCards,
+  useCarouselScroll
+} from '@core/journeys/ui/Campaign'
 import type { CampaignCarouselCard } from '@core/journeys/ui/Campaign'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -28,13 +32,15 @@ interface CanvasCarouselProps {
  * then "See all on Watch", or the Video itself), or the explicit items. An
  * explicit item's card selects it for the card bar (Edit, ← →, bin); the
  * expanded cards belong to the section. A dashed placeholder points at Edit
- * while there is nothing to show.
+ * while there is nothing to show. From `md` up the row has the same previous /
+ * next arrows as the public page; they only scroll, they never edit.
  */
 export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign, selection, selectBlock } = useCampaignEditor()
   const cards = carouselCards(block, campaign.defaultLanguageId)
   const explicit = block.videoId == null
+  const { rowRef, ...scroll } = useCarouselScroll(cards.length)
 
   if (cards.length === 0)
     return (
@@ -177,13 +183,22 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
   }
 
   return (
-    <Stack
-      direction="row"
-      spacing={2}
-      data-testid={`CanvasCarousel-${block.id}`}
-      sx={{ width: '100%', overflowX: 'auto', pb: 1 }}
-    >
-      {cards.map(renderCard)}
+    <Stack spacing={2} sx={{ width: '100%' }}>
+      <CampaignCarouselArrows
+        canScrollPrevious={scroll.canScrollPrevious}
+        canScrollNext={scroll.canScrollNext}
+        onPrevious={scroll.scrollPrevious}
+        onNext={scroll.scrollNext}
+      />
+      <Stack
+        ref={rowRef}
+        direction="row"
+        spacing={2}
+        data-testid={`CanvasCarousel-${block.id}`}
+        sx={{ width: '100%', overflowX: 'auto', pb: 1 }}
+      >
+        {cards.map(renderCard)}
+      </Stack>
     </Stack>
   )
 }
