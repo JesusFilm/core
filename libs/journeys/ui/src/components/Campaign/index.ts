@@ -82,9 +82,11 @@ export {
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideo } from './CampaignVideo'
 export {
+  CampaignCarouselArrows,
   CampaignVideoCarousel,
   carouselCards,
-  hasCarouselCards
+  hasCarouselCards,
+  useCarouselScroll
 } from './CampaignVideoCarousel'
 export {
   campaignFontsHref,

@@ -17,6 +17,10 @@ import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
 import type { CampaignTreeOf } from '../types'
 
 import {
+  CampaignCarouselArrows,
+  useCarouselScroll
+} from './CampaignCarouselArrows'
+import {
   CampaignCarouselSeeAllCard,
   CampaignCarouselVideoCard,
   carouselCards
@@ -220,7 +224,8 @@ function SeeAllCard({
  * or the Video itself when it has none; explicit mode shows the ordered
  * CampaignVideoBlock children. Watch and YouTube cards open the video on
  * its site; an uploaded video plays in a dialog. Every card carries the
- * duration badge, or "<n> videos" for a container.
+ * duration badge, or "<n> videos" for a container. From `md` up, previous /
+ * next arrows scroll the row by a page; the clipped card stays the hint.
  */
 export function CampaignVideoCarousel({
   block
@@ -232,30 +237,40 @@ export function CampaignVideoCarousel({
     [block, campaign.languageId]
   )
   const [playing, setPlaying] = useState<CampaignCarouselVideoCard>()
+  const { rowRef, ...scroll } = useCarouselScroll(cards.length)
 
   return (
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading eyebrow={block.eyebrow} title={block.title} />
       {cards.length > 0 && (
-        <Stack
-          direction="row"
-          spacing={3}
-          data-testid={`CampaignVideoCarouselCards-${block.id}`}
-          sx={{
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            pb: 1,
-            mx: { xs: -2, sm: 0 },
-            px: { xs: 2, sm: 0 }
-          }}
-        >
-          {cards.map((card) =>
-            card.kind === 'seeAll' ? (
-              <SeeAllCard key={card.id} card={card} />
-            ) : (
-              <VideoCard key={card.id} card={card} onPlay={setPlaying} />
-            )
-          )}
+        <Stack spacing={2}>
+          <CampaignCarouselArrows
+            canScrollPrevious={scroll.canScrollPrevious}
+            canScrollNext={scroll.canScrollNext}
+            onPrevious={scroll.scrollPrevious}
+            onNext={scroll.scrollNext}
+          />
+          <Stack
+            ref={rowRef}
+            direction="row"
+            spacing={3}
+            data-testid={`CampaignVideoCarouselCards-${block.id}`}
+            sx={{
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              pb: 1,
+              mx: { xs: -2, sm: 0 },
+              px: { xs: 2, sm: 0 }
+            }}
+          >
+            {cards.map((card) =>
+              card.kind === 'seeAll' ? (
+                <SeeAllCard key={card.id} card={card} />
+              ) : (
+                <VideoCard key={card.id} card={card} onPlay={setPlaying} />
+              )
+            )}
+          </Stack>
         </Stack>
       )}
       <Dialog
