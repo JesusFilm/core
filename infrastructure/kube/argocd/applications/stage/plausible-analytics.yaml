@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/JesusFilm/core
-    path: infrastructure/kube/plausible
+    path: infrastructure/kube/plausible-analytics
     targetRevision: stage
     helm:
       valueFiles:
@@ -17,6 +17,13 @@ spec:
     namespace: default
   syncPolicy:
     automated:
-      prune: true
+      # Pruning is off until the first sync from the real chart path has been
+      # reviewed. The live release was installed by helm upgrade from
+      # apis/api-analytics/infrastructure/deploy-stage.sh, so every live object
+      # carries the plausible-analytics instance label, and a pruning sync
+      # would delete anything with that label the chart does not render, the
+      # ClickHouse PVCs included. Re-enable once `argocd app diff` is clean
+      # (infrastructure/kube/plausible-analytics/README.md, "Before you start").
+      prune: false
       selfHeal: true
       enabled: true
