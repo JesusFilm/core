@@ -629,10 +629,9 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published:
-              input.published === undefined
-                ? undefined
-                : currentVariant.published,
+            // Unpublishing takes effect immediately. Publishing is left to
+            // reconciliation, which flips the row once media is ready.
+            published: input.published === false ? false : undefined,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
