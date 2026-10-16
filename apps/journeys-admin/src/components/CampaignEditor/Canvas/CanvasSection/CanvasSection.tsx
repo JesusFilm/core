@@ -51,6 +51,7 @@ import {
   isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
+import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
@@ -60,6 +61,7 @@ import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
+import { SelectionBadge } from '../SelectionBadge'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 
@@ -115,12 +117,18 @@ function CanvasExtra({
           data-hoverable
           onClick={handleClick}
           sx={{
+            position: 'relative',
             width: '100%',
             cursor: 'pointer',
             ...HOVER_OUTLINE_SX,
             ...(selected ? SELECTED_OUTLINE : {})
           }}
         >
+          <SelectionBadge
+            id={block.id}
+            label={blockLabel(t, block.__typename)}
+            selected={selected}
+          />
           <InlineText
             target={{ block, field: 'content' }}
             placeholder={t('Your text')}
@@ -144,6 +152,7 @@ function CanvasExtra({
           data-hoverable
           onClick={handleClick}
           sx={{
+            position: 'relative',
             display: 'flex',
             cursor: 'pointer',
             ...HOVER_OUTLINE_SX,
@@ -158,6 +167,11 @@ function CanvasExtra({
                     : 'inherit'
           }}
         >
+          <SelectionBadge
+            id={block.id}
+            label={blockLabel(t, block.__typename)}
+            selected={selected}
+          />
           <Button
             component="div"
             variant={buttonVariant}
@@ -733,7 +747,7 @@ export function CanvasSection({
             alignItems: { xs: 'flex-start', md: 'center' },
             order: { xs: 1, md: 0 },
             flexBasis: { xs: '100%', md: 'auto' },
-            gap: 1,
+            gap: { xs: 1.5, md: 1 },
             pb: { xs: 2, md: 0 }
           }}
         >
@@ -802,7 +816,7 @@ export function CanvasSection({
       }}
     >
       {footerLines.length > 0 && (
-        <Stack spacing={0.5} data-testid="CanvasFooterLines">
+        <Stack spacing={1.5} data-testid="CanvasFooterLines">
           {footerLines.map(renderExtra)}
         </Stack>
       )}
@@ -835,7 +849,7 @@ export function CanvasSection({
           position: 'sticky' as const,
           top: 0,
           zIndex: 2,
-          overflow: 'hidden',
+          overflowX: 'clip' as const,
           borderBottom: '1px solid var(--campaign-band-border)'
         }
       : chrome === 'footer'
@@ -873,12 +887,22 @@ export function CanvasSection({
         scrollMarginTop:
           chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
+        // Keeps the badges inside this section from competing with the sticky header.
+        ...(chrome !== 'header' && !inSlot
+          ? { isolation: 'isolate' as const }
+          : {}),
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
         ...HOVER_OUTLINE_SX,
         ...(sectionSelected ? SELECTED_OUTLINE : {})
       }}
     >
+      <SelectionBadge
+        id={block.id}
+        label={blockLabel(t, block.__typename)}
+        selected={sectionSelected}
+        placement={inSlot ? 'above' : 'inside'}
+      />
       {draggable && (
         <Box
           ref={setActivatorNodeRef}

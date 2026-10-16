@@ -5,7 +5,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
-import { blockLabel } from '../blockLabel'
+import { blockLabel, regionLineLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { regionDisplayName } from '../utils/regionDisplayName'
 
@@ -64,7 +64,10 @@ export function Breadcrumb(): ReactElement {
     if (selection.block != null && selection.block.id !== selection.host?.id) {
       const blockId = selection.block.id
       crumbs.push({
-        label: blockLabel(t, selection.block.__typename),
+        label:
+          selection.block.__typename === 'CampaignTypographyBlock'
+            ? regionLineLabel(t)
+            : blockLabel(t, selection.block.__typename),
         onClick: () => selectBlock(blockId)
       })
     }

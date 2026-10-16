@@ -20,6 +20,7 @@ import {
   useCampaignEditor
 } from './CampaignEditorProvider'
 import { campaign } from './data'
+import { NavigatorHoverProvider } from './Navigator/NavigatorHover'
 import { TranslationRunProvider } from './TranslationRunProvider'
 import { textDebounceKey } from './utils/useCampaignTextCommand'
 
@@ -127,7 +128,7 @@ function QueriedEditorInner({
       campaign={data.campaign}
       initialState={initialState}
     >
-      {children}
+      <NavigatorHoverProvider>{children}</NavigatorHoverProvider>
     </CampaignEditorProvider>
   )
 }
@@ -202,7 +203,9 @@ export function StaticEditor({
             campaign={campaignProp}
             initialState={initialState}
           >
-            <TranslationRunProvider>{children}</TranslationRunProvider>
+            <NavigatorHoverProvider>
+              <TranslationRunProvider>{children}</TranslationRunProvider>
+            </NavigatorHoverProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>

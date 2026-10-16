@@ -49,8 +49,11 @@ import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
+import { shareLanguageLabel } from '../blockLabel'
 import { campaignShareLink, journeyPreviewAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
+import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
 import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
@@ -207,6 +210,8 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
 }
 
 interface ShareLanguageRowProps {
+  /** The Share section the row sits in; clicking the row selects it. */
+  hostBlockId: string
   campaign: Campaign
   region: CampaignRegion
   regionLanguage: CampaignRegionLanguage
@@ -227,6 +232,7 @@ interface ShareLanguageRowProps {
  * warning in the frame instead of that call to action.
  */
 function ShareLanguageRow({
+  hostBlockId,
   campaign,
   region,
   regionLanguage,
@@ -238,8 +244,10 @@ function ShareLanguageRow({
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { previewLanguageId }
+    state: { previewLanguageId },
+    selectBlock
   } = useCampaignEditor()
+  const rowId = `${hostBlockId}__${regionLanguage.languageId}`
   const [pasting, setPasting] = useState(false)
   const state = shareLanguageState(regionLanguage)
   const shortLink =
@@ -281,15 +289,29 @@ function ShareLanguageRow({
   return (
     <Stack
       spacing={2}
+      id={rowId}
       data-testid={`ShareLanguageRow-${regionLanguage.languageId}`}
       data-state={state}
+      data-hoverable
+      onClick={(event: MouseEvent<HTMLElement>) => {
+        stop(event)
+        selectBlock(hostBlockId)
+      }}
       sx={{
+        position: 'relative',
+        cursor: 'pointer',
         p: 2,
         borderRadius: 1,
         backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
+        border: '1px solid var(--campaign-band-border)',
+        ...HOVER_OUTLINE_SX
       }}
     >
+      <SelectionBadge
+        id={rowId}
+        label={shareLanguageLabel(t)}
+        selected={false}
+      />
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <Typography
           variant="subtitle1"
@@ -690,6 +712,7 @@ export function ShareSectionEdit({
         {regionLanguages.map((regionLanguage) => (
           <ShareLanguageRow
             key={regionLanguage.id}
+            hostBlockId={block.id}
             campaign={campaign}
             region={region}
             regionLanguage={regionLanguage}
