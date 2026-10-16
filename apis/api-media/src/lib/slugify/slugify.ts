@@ -35,3 +35,12 @@ export function slugify(
   usedSlugs[slug] = id
   return slug
 }
+
+// A slug is public-style if it's non-empty, made up of letter/number runs
+// separated by single hyphens (no leading/trailing/doubled hyphens), and
+// already a fixed point of convertToSlug - i.e. lowercase.
+const PUBLIC_SLUG_SHAPE = /^[\p{L}\p{N}]+(-[\p{L}\p{N}]+)*$/u
+
+export function isPublicSlug(slug: string): boolean {
+  return PUBLIC_SLUG_SHAPE.test(slug) && convertToSlug(slug) === slug
+}
