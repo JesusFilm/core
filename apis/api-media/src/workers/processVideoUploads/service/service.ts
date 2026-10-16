@@ -67,11 +67,19 @@ export async function service(
       uploadId != null
         ? await prisma.videoVariantUpload.findUnique({
             where: { id: uploadId },
-            select: { id: true, muxNonStandardInputDetectedAt: true }
+            select: {
+              id: true,
+              published: true,
+              muxNonStandardInputDetectedAt: true
+            }
           })
         : await prisma.videoVariantUpload.findFirst({
             where: { muxVideoId },
-            select: { id: true, muxNonStandardInputDetectedAt: true }
+            select: {
+              id: true,
+              published: true,
+              muxNonStandardInputDetectedAt: true
+            }
           })
 
     const durableUploadId = uploadId ?? durableUpload?.id
@@ -102,6 +110,10 @@ export async function service(
         version,
         muxVideoId,
         playbackId,
+        // The Draft/Published choice lives on the durable upload, not the job
+        // payload. With no upload row there is no recorded intent, so stay
+        // Draft rather than publishing on the publisher's behalf (VMT-349).
+        published: durableUpload?.published ?? false,
         metadata: {
           ...metadata,
           duration:
