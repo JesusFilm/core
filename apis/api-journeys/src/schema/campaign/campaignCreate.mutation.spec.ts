@@ -668,7 +668,7 @@ describe('campaignCreate', () => {
   })
 
   describe('strings seed', () => {
-    it('seeds the 17 CampaignString rows with the PRD §14 English wording', async () => {
+    it('seeds the 18 CampaignString rows with the PRD §14 English wording', async () => {
       await create()
       expect(prismaMock.campaignString.createMany).toHaveBeenCalledTimes(1)
       const rows = firstCallData<
@@ -691,7 +691,8 @@ describe('campaignCreate', () => {
         { key: 'totalVisitors', value: 'Total visitors' },
         { key: 'topCountry', value: 'Top country' },
         { key: 'seeAllOnWatch', value: 'See all on Watch' },
-        { key: 'videos', value: 'videos' }
+        { key: 'videos', value: 'videos' },
+        { key: 'noJourneys', value: 'Journeys for this region are coming soon' }
       ])
       expect(rows.every((row) => row.campaignId === 'id-1')).toBe(true)
     })
@@ -705,7 +706,7 @@ describe('campaignCreate', () => {
       const byKey = Object.fromEntries(
         rows.map(({ key, value }) => [key, value])
       )
-      // "Copy link" exists in the mocked Spanish bundle; the other sixteen do
+      // "Copy link" exists in the mocked Spanish bundle; the other seventeen do
       // not and keep their English wording.
       expect(byKey.copy).toBe('Copiar enlace')
       expect(byKey.allRegions).toBe('All regions')
@@ -852,7 +853,7 @@ describe('campaignCreate', () => {
         pages: [{ kind: 'landing' }, { kind: 'regionTemplate' }],
         regions: []
       })
-      expect(campaign.strings).toHaveLength(17)
+      expect(campaign.strings).toHaveLength(18)
       expect(campaign.blocks).toHaveLength(18)
       expect(campaign.blocks.map((block: any) => block.__typename)).toEqual(
         fixture.blocks.map((block) => block.typename)

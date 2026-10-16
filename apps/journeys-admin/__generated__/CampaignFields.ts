@@ -1562,7 +1562,7 @@ export interface CampaignFields {
    */
   theme: CampaignFields_theme;
   /**
-   * The seventeen Campaign Strings.
+   * The eighteen Campaign Strings.
    */
   strings: CampaignFields_strings[];
   /**

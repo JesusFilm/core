@@ -116,7 +116,7 @@ export const CampaignRef = builder.prismaObject('Campaign', {
     }),
     strings: t.relation('strings', {
       nullable: false,
-      description: 'The seventeen Campaign Strings.',
+      description: 'The eighteen Campaign Strings.',
       query: { orderBy: { key: 'asc' } }
     }),
     customDomains: t.relation('customDomains', {

@@ -68,7 +68,8 @@ const CAMPAIGN_STRING_SEED: Array<[CampaignString['key'], string]> = [
   ['totalVisitors', 'Total visitors'],
   ['topCountry', 'Top country'],
   ['seeAllOnWatch', 'See all on Watch'],
-  ['videos', 'videos']
+  ['videos', 'videos'],
+  ['noJourneys', 'Journeys for this region are coming soon']
 ]
 
 const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {

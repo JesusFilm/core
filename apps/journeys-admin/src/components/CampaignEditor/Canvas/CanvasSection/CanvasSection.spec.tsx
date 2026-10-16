@@ -1,10 +1,17 @@
-import { RenderResult, fireEvent, render, screen } from '@testing-library/react'
+import {
+  RenderResult,
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import { ReactElement } from 'react'
 
 import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
 import { headerLogoBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
+import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
 import { SelectionProbe, StaticEditor } from '../../testing'
@@ -320,5 +327,72 @@ describe('CanvasSection footer', () => {
         'footerTermsId'
       )
     })
+  })
+})
+
+describe('CanvasSection journey list strings', () => {
+  const journeyList = transformCampaignBlocks(campaign.blocks).find(
+    (block) => block.id === 'landingJourneyListId'
+  ) as CanvasBlock
+  const noJourneys = campaign.strings.find(
+    (string) => string.key === 'noJourneys'
+  )
+
+  function stringMock(value: string) {
+    return {
+      request: {
+        query: CAMPAIGN_STRING_UPDATE,
+        variables: { campaignId: campaign.id, key: 'noJourneys', value }
+      },
+      result: vi.fn(() => ({
+        data: {
+          campaignStringUpdate: {
+            __typename: 'CampaignString',
+            id: noJourneys?.id,
+            key: 'noJourneys',
+            value
+          }
+        }
+      }))
+    }
+  }
+
+  it('lists the noJourneys string under the Campaign strings of the selected Journey list', () => {
+    render(
+      <StaticEditor
+        initialState={{
+          selectedBlockId: 'landingJourneyListId',
+          previewLanguageId: '529'
+        }}
+      >
+        <CanvasSection block={journeyList} />
+      </StaticEditor>
+    )
+
+    expect(screen.getByText('Campaign strings')).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'noJourneys' })).toHaveValue(
+      'Journeys for this region are coming soon'
+    )
+  })
+
+  it('saves an edit to the noJourneys string through campaignStringUpdate', async () => {
+    const mock = stringMock('Coming soon')
+    render(
+      <StaticEditor
+        mocks={[mock]}
+        initialState={{
+          selectedBlockId: 'landingJourneyListId',
+          previewLanguageId: '529'
+        }}
+      >
+        <CanvasSection block={journeyList} />
+      </StaticEditor>
+    )
+
+    const input = screen.getByRole('textbox', { name: 'noJourneys' })
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Coming soon' } })
+
+    await waitFor(() => expect(mock.result).toHaveBeenCalled())
   })
 })

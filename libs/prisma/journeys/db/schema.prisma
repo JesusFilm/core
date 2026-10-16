@@ -980,6 +980,7 @@ enum CampaignStringKey {
   topCountry
   seeAllOnWatch
   videos
+  noJourneys
 }
 
 model Campaign {

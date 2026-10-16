@@ -3144,7 +3144,7 @@ export interface CampaignPublicFields {
   languages: CampaignPublicFields_languages[];
   theme: CampaignPublicFields_theme;
   /**
-   * The seventeen Campaign Strings, values resolved.
+   * The eighteen Campaign Strings, values resolved.
    */
   strings: CampaignPublicFields_strings[];
   /**

@@ -224,7 +224,7 @@ export const CAMPAIGN_REGION_FIELDS = gql`
  * and the Languages panel (autonym plus the English name),
  * the theme, both pages, every live block as one flat list (the block
  * fields are the ones the public page reads, shared with the viewer, plus
- * each text field's translations) and the seventeen Campaign Strings.
+ * each text field's translations) and the eighteen Campaign Strings.
  */
 export const CAMPAIGN_FIELDS = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}

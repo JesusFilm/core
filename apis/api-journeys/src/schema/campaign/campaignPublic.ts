@@ -244,7 +244,7 @@ builder.objectType(CampaignPublicRef, {
     strings: t.field({
       type: [CampaignStringRef],
       nullable: false,
-      description: 'The seventeen Campaign Strings, values resolved.',
+      description: 'The eighteen Campaign Strings, values resolved.',
       resolve: (campaign) => campaign.strings
     }),
     regions: t.field({

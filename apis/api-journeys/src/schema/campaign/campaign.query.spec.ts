@@ -204,7 +204,7 @@ describe('campaign', () => {
       parentBlockId: 'footerTermsId',
       url: 'https://www.cru.org/us/en/about/terms-of-use.html'
     })
-    expect(campaign.strings).toHaveLength(17)
+    expect(campaign.strings).toHaveLength(18)
     expect(prismaMock.campaign.findUnique).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
       include: { team: { include: { userTeams: true } } }

@@ -81,7 +81,7 @@ export function campaignLocaleFolder(
 }
 
 /**
- * The seventeen Campaign String values for a campaign whose default language
+ * The eighteen Campaign String values for a campaign whose default language
  * has the given bcp47 tag: the English wording, or the libs-journeys-ui
  * bundle's translation when the language is not English and the bundle has
  * that exact string, falling back per key to the admin bundle's translation

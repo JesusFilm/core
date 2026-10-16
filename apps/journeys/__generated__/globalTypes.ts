@@ -152,6 +152,7 @@ export enum CampaignStringKey {
   copied = "copied",
   copy = "copy",
   downloadQr = "downloadQr",
+  noJourneys = "noJourneys",
   open = "open",
   openTemplate = "openTemplate",
   seeAllOnWatch = "seeAllOnWatch",

@@ -176,7 +176,8 @@ describe('campaignTranslations', () => {
         'totalVisitors',
         'topCountry',
         'seeAllOnWatch',
-        'videos'
+        'videos',
+        'noJourneys'
       ].map(
         (key) =>
           `interface:CampaignString:value:${key === 'copy' ? 'machine' : 'null'}`

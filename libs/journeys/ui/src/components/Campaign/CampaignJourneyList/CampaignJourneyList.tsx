@@ -133,7 +133,8 @@ function JourneyCard({
  * as a grid or a list (`display`), one column below `md`. Each card carries
  * the journey's snapshot title and description, its primary image read live,
  * and an "Open journey" button (the campaign's `openTemplate` string) to the
- * journey's own public address.
+ * journey's own public address. With no live card it shows the campaign's
+ * `noJourneys` string under the heading instead.
  */
 export function CampaignJourneyList({
   block
@@ -142,6 +143,7 @@ export function CampaignJourneyList({
   const cards = liveJourneyCards(block)
   const display = block.display ?? CampaignJourneyListDisplay.grid
   const openLabel = string(CampaignStringKey.openTemplate)
+  const noJourneysLabel = string(CampaignStringKey.noJourneys)
 
   return (
     <CampaignSectionBand block={block}>
@@ -150,6 +152,15 @@ export function CampaignJourneyList({
         title={block.title}
         lede={block.lede}
       />
+      {cards.length === 0 && hasText(noJourneysLabel) && (
+        <Typography
+          variant="body1"
+          data-testid="CampaignJourneyListEmpty"
+          sx={{ color: 'var(--campaign-band-muted)' }}
+        >
+          {noJourneysLabel}
+        </Typography>
+      )}
       {cards.length > 0 && (
         <Box
           data-testid="CampaignJourneyCards"

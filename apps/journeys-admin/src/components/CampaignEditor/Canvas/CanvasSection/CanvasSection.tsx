@@ -339,7 +339,10 @@ export const CAMPAIGN_SECTION_STRING_KEYS: Partial<
     CampaignStringKey.seeAllOnWatch,
     CampaignStringKey.videos
   ],
-  CampaignJourneyListBlock: [CampaignStringKey.openTemplate],
+  CampaignJourneyListBlock: [
+    CampaignStringKey.openTemplate,
+    CampaignStringKey.noJourneys
+  ],
   CampaignAnalyticsBlock: [
     CampaignStringKey.totalVisitors,
     CampaignStringKey.topCountry
