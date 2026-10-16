@@ -79,6 +79,7 @@
         "{workspaceRoot}/.github/workflows/autofix.ci.yml",
         "{workspaceRoot}/package.json",
         "{workspaceRoot}/pnpm-lock.yaml",
+        { "env": "APOLLO_GRAPHQL_VERSION" },
         { "externalDependencies": ["gql.tada"] }
       ]
     },
