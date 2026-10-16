@@ -574,7 +574,7 @@ type MutationPlaylistItemsReorderSuccess {
   data: [PlaylistItem!]!
 }
 
-union MutationPlaylistUpdateResult = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
 
 type MutationPlaylistUpdateSuccess {
   data: Playlist!
@@ -687,7 +687,7 @@ input MutationShortLinkCreateInput {
   global: Boolean
 }
 
-union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -755,7 +755,7 @@ input MutationShortLinkDomainCreateInput {
   vercel: Boolean
 }
 
-union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -809,7 +809,7 @@ input MutationShortLinkDomainUpdateInput {
   autoFailover: Boolean
 }
 
-union MutationShortLinkDomainUpdateResult = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult = ZodError | NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 type MutationShortLinkDomainUpdateSuccess {
   data: ShortLinkDomain!
@@ -873,7 +873,7 @@ input MutationShortLinkUpdateInput {
   global: Boolean
 }
 
-union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!
