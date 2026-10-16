@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 
 import {
   CampaignPageKind,
@@ -398,6 +398,115 @@ describe('CampaignVideoCarousel', () => {
           context
         )
       ).toBe(true)
+    })
+  })
+
+  describe('arrows', () => {
+    const scrollBy = vi.fn()
+    const geometry = { scrollLeft: 0, clientWidth: 900, scrollWidth: 2400 }
+
+    beforeEach(() => {
+      scrollBy.mockReset()
+      geometry.scrollLeft = 0
+      Element.prototype.scrollBy = scrollBy
+      for (const property of Object.keys(geometry))
+        Object.defineProperty(HTMLElement.prototype, property, {
+          configurable: true,
+          get: () => geometry[property as keyof typeof geometry],
+          set: (value: number) => {
+            geometry[property as keyof typeof geometry] = value
+          }
+        })
+    })
+
+    afterEach(() => {
+      for (const property of Object.keys(geometry))
+        delete (HTMLElement.prototype as unknown as Record<string, unknown>)[
+          property
+        ]
+    })
+
+    function renderOverflowing() {
+      return renderCarousel(
+        carousel({}, [
+          item(youTubeVideoBlock, 'youTubeItemId', 0),
+          item(heroVideoBlock, 'watchItemId', 1),
+          item(muxVideoBlock, 'muxItemId', 2)
+        ])
+      )
+    }
+
+    it('names both arrows and reaches them by keyboard', () => {
+      renderOverflowing()
+
+      const next = screen.getByRole('button', { name: 'Next videos' })
+      expect(
+        screen.getByRole('button', { name: 'Previous videos' })
+      ).toBeInTheDocument()
+      act(() => next.focus())
+      expect(next).toHaveFocus()
+    })
+
+    it('scrolls the row by its width on next and disables next at the end', () => {
+      renderOverflowing()
+
+      const previous = screen.getByRole('button', { name: 'Previous videos' })
+      const next = screen.getByRole('button', { name: 'Next videos' })
+      expect(previous).toBeDisabled()
+      expect(next).toBeEnabled()
+
+      fireEvent.click(next)
+      expect(scrollBy).toHaveBeenCalledWith({ left: 900, behavior: 'smooth' })
+
+      geometry.scrollLeft = 1500
+      fireEvent.scroll(
+        screen.getByTestId('CampaignVideoCarouselCards-carouselId')
+      )
+      expect(next).toBeDisabled()
+      expect(previous).toBeEnabled()
+
+      fireEvent.click(previous)
+      expect(scrollBy).toHaveBeenLastCalledWith({
+        left: -900,
+        behavior: 'smooth'
+      })
+    })
+
+    it('disables both arrows when every card fits', () => {
+      geometry.scrollWidth = 900
+      renderOverflowing()
+
+      expect(
+        screen.getByRole('button', { name: 'Previous videos' })
+      ).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Next videos' })).toBeDisabled()
+    })
+
+    it('hides the arrows below md only', () => {
+      renderOverflowing()
+
+      const rules = Array.from(document.styleSheets).flatMap((sheet) =>
+        Array.from(sheet.cssRules)
+      )
+      const arrowsClass = Array.from(
+        screen.getByTestId('CampaignCarouselArrows').classList
+      ).find((name) => name.startsWith('css-'))
+      const hidden = rules.filter(
+        (rule) =>
+          rule instanceof CSSMediaRule &&
+          rule.conditionText.includes('max-width') &&
+          rule.cssText.includes(`.${arrowsClass}`) &&
+          rule.cssText.includes('display: none')
+      )
+      expect(hidden).toHaveLength(1)
+    })
+
+    it('renders no arrows without cards', () => {
+      renderCarousel(carousel())
+
+      expect(
+        screen.queryByTestId('CampaignCarouselArrows')
+      ).not.toBeInTheDocument()
     })
   })
 })
