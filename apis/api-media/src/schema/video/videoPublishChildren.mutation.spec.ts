@@ -6,7 +6,11 @@ import { prismaMock } from '../../../test/prismaMock'
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { handleParentVariantCreation } from '../videoVariant/videoVariant'
 
-vi.mock('../../workers/videoAlgoliaSync', () => ({
+// Spread the real module: updateAvailableLanguages, which the parent-variant
+// recovery path now calls, also imports `videoOnlyScope` from here. A factory
+// that returns only enqueueVideoAlgoliaSync leaves that export undefined.
+vi.mock('../../workers/videoAlgoliaSync', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../workers/videoAlgoliaSync')>()),
   enqueueVideoAlgoliaSync: vi.fn()
 }))
 
