@@ -12,15 +12,21 @@ import {
 } from '../../../workers/videoAlgoliaSync'
 import { logger } from '../../logger'
 
-// Calculates what availableLanguages should be for a given video
-// Does NOT update the database - only calculates the correct value
-export async function calculateAvailableLanguages(
-  videoId: string
-): Promise<string[]> {
+// Calculates what availableLanguages should be for a given video, and
+// returns it alongside the value currently stored on the row. Both come off
+// a single `findUnique` - the caller (e.g. the cascade walker) needs the
+// stored ("previous") value too, and adding it to this same select avoids a
+// second dedicated read of the same row immediately before/after this one.
+// Does NOT update the database - only calculates the correct value.
+export async function calculateAvailableLanguages(videoId: string): Promise<{
+  languages: string[]
+  previousLanguages: string[]
+}> {
   const video = await prisma.video.findUnique({
     where: { id: videoId },
     select: {
       label: true,
+      availableLanguages: true,
       variants: {
         where: { published: true },
         select: { languageId: true }
@@ -33,7 +39,7 @@ export async function calculateAvailableLanguages(
   })
 
   if (video == null) {
-    return []
+    return { languages: [], previousLanguages: [] }
   }
 
   const languageSet = new Set<string>()
@@ -51,7 +57,10 @@ export async function calculateAvailableLanguages(
     }
   }
 
-  return Array.from(languageSet).sort((a, b) => Number(a) - Number(b))
+  return {
+    languages: Array.from(languageSet).sort((a, b) => Number(a) - Number(b)),
+    previousLanguages: video.availableLanguages
+  }
 }
 
 // Updates a video's availableLanguages field based on current state
@@ -62,8 +71,9 @@ export async function updateVideoAvailableLanguages(
     skipCache?: boolean
     skipAlgolia?: boolean
   } = {}
-): Promise<string[]> {
-  const availableLanguages = await calculateAvailableLanguages(videoId)
+): Promise<{ before: string[]; after: string[] }> {
+  const { languages: availableLanguages, previousLanguages } =
+    await calculateAvailableLanguages(videoId)
 
   // Update the video
   await prisma.video.update({
@@ -88,7 +98,7 @@ export async function updateVideoAvailableLanguages(
     }
   }
 
-  return availableLanguages
+  return { before: previousLanguages, after: availableLanguages }
 }
 
 // Adds a language to a video's availableLanguages if not already present.
@@ -100,6 +110,16 @@ export async function updateVideoAvailableLanguages(
 // write clobbers the first. Instead, do the read-modify-write as a single
 // atomic UPDATE so Postgres serializes concurrent callers on the row.
 // COALESCE handles the nullable column so array_append always has a base array.
+//
+// This is kept as a hot-path primitive for a video's *own* value
+// deliberately, rather than retired in favor of `calculateAvailableLanguages`
+// everywhere: a plain recompute (read current variants, write the union) does
+// not have the same serialization guarantee as this single atomic statement -
+// two independent read/write pairs can still interleave and clobber each
+// other's write. The "always fully recompute, never incrementally mutate"
+// principle is applied at the cascade level instead (see
+// `updateParentCollectionLanguages` below), which isn't on this hot
+// concurrent-write path.
 export async function addLanguageToVideo(
   videoId: string,
   languageId: string
@@ -168,18 +188,124 @@ export async function findContainerParentIds(
   return parents.map((parent) => parent.id)
 }
 
-// Updates all parent videos (collections) when a child video's languages change
-// Ensures collections always reflect the union of their children's languages
+// True when two availableLanguages values represent the same set of
+// languages, irrespective of order or duplicates. Used to decide whether a
+// recompute actually changed a video's stored value, and therefore whether
+// the cascade needs to keep walking upward past it.
+export function sameLanguageSet(a: string[], b: string[]): boolean {
+  const setA = new Set(a)
+  const setB = new Set(b)
+  if (setA.size !== setB.size) return false
+  return [...setA].every((languageId) => setB.has(languageId))
+}
+
+// Updates all parent videos (collections) when a child video's languages
+// change, cascading all the way to the root of the container hierarchy - a
+// three-or-more-level-deep hierarchy (e.g. featureFilm -> series -> video)
+// gets every level updated, not just the immediate parent.
+//
+// The walk is level-batched, per #9517: every ancestor at depth N is
+// collected first and recomputed as one batch, and only then does the walk
+// move to depth N+1. Batching by level is what makes a diamond ancestry
+// correct. When two parents share a grandparent, that grandparent is
+// collected once for its level and recomputed once in total; a depth-first
+// walk would recompute it once per incoming path, which is both wasted work
+// and a hazard if the two recomputes interleave.
+//
+// Each ancestor's value is always fully recomputed from its own current
+// source data (own published variants union its live children's current
+// values) rather than incrementally mutated. A level whose recomputed value
+// doesn't change contributes nothing to the next level, so unaffected
+// ancestors are never even queried, let alone written.
+//
+// Termination: `visited` holds every video already recomputed by this
+// cascade. An ancestor already in it is not walked again, so a cycle in the
+// children/parents relation (A contains B, B contains A) terminates instead
+// of recursing forever.
+//
+// Known limitation of that guard: it also skips a "skewed" ancestor that is
+// genuinely reachable at two different depths (a container that is both a
+// direct parent of the changed video and, via another branch, its own
+// grandparent). Such an ancestor settles at the shallower depth and is not
+// revisited once the deeper branch lands, so it can be left stale. This is
+// the trade the level-batched shape makes for a bounded walk; a full
+// topological ordering would be needed to close it, and no caller today
+// builds that shape. Tracked as a follow-up rather than fixed here.
+//
+// Failures do not stop the walk, but they are never swallowed. A failed
+// recompute is recorded, that ancestor's own parents are not walked (they
+// would only be recomputed from a value known to be stale), the rest of the
+// level and any independent branches still complete, and the collected
+// errors are rethrown as an `AggregateError` once the walk finishes - so the
+// caller can retry or roll back instead of silently inheriting a stale tree.
 export async function updateParentCollectionLanguages(
   childVideoId: string
 ): Promise<void> {
-  const parentIds = await findContainerParentIds(childVideoId)
+  const visited = new Set<string>([childVideoId])
+  const failures: Array<{ videoId: string; error: unknown }> = []
 
-  // Update each parent collection
-  for (const parentId of parentIds) {
-    await updateVideoAvailableLanguages(parentId, {
-      skipCache: false,
-      skipAlgolia: false
-    })
+  let currentLevel = await collectNextLevel([childVideoId], visited)
+
+  while (currentLevel.length > 0) {
+    for (const videoId of currentLevel) {
+      visited.add(videoId)
+    }
+
+    // Ancestors at this depth whose recomputed value actually changed -
+    // only those can affect the level above them.
+    const changed: string[] = []
+
+    for (const videoId of currentLevel) {
+      try {
+        const { before, after } = await updateVideoAvailableLanguages(videoId)
+
+        if (!sameLanguageSet(before, after)) {
+          changed.push(videoId)
+        }
+      } catch (error) {
+        failures.push({ videoId, error })
+        logger.error(
+          { videoId, error },
+          'Failed to recompute availableLanguages for an ancestor video - continuing the rest of the cascade, but the error will be rethrown'
+        )
+      }
+    }
+
+    currentLevel = await collectNextLevel(changed, visited)
   }
+
+  if (failures.length > 0) {
+    throw new AggregateError(
+      failures.map(({ error }) => error),
+      `Failed to cascade availableLanguages from video ${childVideoId} to ${failures.length} ancestor video(s): ${failures
+        .map(({ videoId }) => videoId)
+        .join(', ')}`
+    )
+  }
+}
+
+// Collects the next level of the walk: the container parents of every video
+// whose value changed at the level just recomputed, deduplicated, with any
+// video this cascade already recomputed dropped.
+async function collectNextLevel(
+  videoIds: readonly string[],
+  visited: ReadonlySet<string>
+): Promise<string[]> {
+  const nextLevel = new Set<string>()
+
+  for (const videoId of videoIds) {
+    for (const parentId of await findContainerParentIds(videoId)) {
+      if (visited.has(parentId)) {
+        logger.error(
+          { videoId: parentId, childVideoId: videoId },
+          'Skipping an ancestor already recomputed in this availableLanguages cascade - a cycle or a re-converging path in the video children/parents relation'
+        )
+        continue
+      }
+
+      nextLevel.add(parentId)
+    }
+  }
+
+  return Array.from(nextLevel)
 }
