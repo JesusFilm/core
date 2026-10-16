@@ -32,6 +32,9 @@ describe('PreviewLanguageChip', () => {
 
     const chip = screen.getByTestId('PreviewLanguageChip')
     expect(chip).toHaveTextContent('English')
+    expect(
+      screen.getByRole('button', { name: 'Preview language: English' })
+    ).toBe(chip)
 
     fireEvent.click(chip)
 

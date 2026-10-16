@@ -33,6 +33,7 @@ export function PreviewLanguageChip(): ReactElement | null {
   const current = languages.find(
     (language) => language.languageId === previewLanguageId
   )
+  const currentAutonym = current != null ? languageNames(current).autonym : ''
 
   function handleOpen(event: MouseEvent<HTMLElement>): void {
     setAnchor(event.currentTarget)
@@ -55,10 +56,12 @@ export function PreviewLanguageChip(): ReactElement | null {
       <Chip
         clickable
         color="default"
-        label={current != null ? languageNames(current).autonym : ''}
+        label={currentAutonym}
         icon={<ChevronDownIcon fontSize="small" />}
         onClick={handleOpen}
-        aria-label={t('Preview language')}
+        aria-label={t('Preview language: {{language}}', {
+          language: currentAutonym
+        })}
         aria-haspopup="menu"
         aria-expanded={anchor != null}
         data-testid="PreviewLanguageChip"

@@ -72,6 +72,7 @@ export function LocalizePanel({
           <LanguagesPanel campaign={campaign} />
         ) : (
           <TranslationsView
+            key={previewLanguageId}
             campaign={campaign}
             initialLanguageId={previewLanguageId}
             showPromotionNotice={promotionNotice}

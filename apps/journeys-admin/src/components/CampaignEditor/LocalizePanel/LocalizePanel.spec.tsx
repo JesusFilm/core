@@ -6,7 +6,9 @@ import { ReactElement, useState } from 'react'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
+import { campaign } from '../data'
 import { LeftRail } from '../LeftRail'
+import { PreviewLanguageChip } from '../PreviewLanguageChip'
 import { StaticEditor } from '../testing'
 
 import { LocalizePanel } from './LocalizePanel'
@@ -85,6 +87,64 @@ describe('LocalizePanel', () => {
       screen.queryByTestId('TranslationsPromotionNotice')
     ).not.toBeInTheDocument()
     expect(screen.getByTestId('TranslationsView')).toBeInTheDocument()
+  })
+
+  it('follows the Preview Language chosen on the canvas chip while on Translations', async () => {
+    const spanish = {
+      ...campaign.languages[1],
+      id: 'campaignLanguageEsId',
+      languageId: '21028',
+      order: 2,
+      language: {
+        ...campaign.languages[1].language,
+        id: '21028',
+        bcp47: 'es',
+        name: [
+          {
+            __typename: 'LanguageName' as const,
+            value: 'Español',
+            primary: true
+          }
+        ]
+      }
+    }
+    const spanishTranslationsMock = {
+      ...translationsMock,
+      request: {
+        ...translationsMock.request,
+        variables: {
+          ...translationsMock.request.variables,
+          languageId: '21028'
+        }
+      }
+    }
+    render(
+      <StaticEditor
+        campaignProp={{
+          ...campaign,
+          languages: [...campaign.languages, spanish]
+        }}
+        mocks={[languagesMock, translationsMock, spanishTranslationsMock]}
+      >
+        <LocalizePanel
+          tab="translations"
+          onTabChange={() => undefined}
+          promotionNotice={false}
+          onPromotionNoticeClose={() => undefined}
+        />
+        <PreviewLanguageChip />
+      </StaticEditor>
+    )
+    expect(
+      await screen.findByRole('combobox', { name: 'Language' })
+    ).toHaveTextContent('Français')
+
+    fireEvent.click(screen.getByTestId('PreviewLanguageChip'))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Español' }))
+
+    expect(
+      await screen.findByRole('combobox', { name: 'Language' })
+    ).toHaveTextContent('Español')
   })
 })
 
