@@ -26,7 +26,6 @@ import Type2Icon from '@core/shared/ui/icons/Type2'
 import Type3Icon from '@core/shared/ui/icons/Type3'
 
 import {
-  CampaignButtonRadius,
   CampaignRadius,
   ThemeMode
 } from '../../../../__generated__/globalTypes'
@@ -47,11 +46,6 @@ export const RADIUS_OPTIONS = [
   CampaignRadius.veryRounded
 ] as const
 
-export const BUTTON_RADIUS_OPTIONS = [
-  CampaignButtonRadius.rounded,
-  CampaignButtonRadius.pill
-] as const
-
 type FontColumn = 'headerFont' | 'bodyFont' | 'labelFont'
 
 /** The four colours a preset swatch shows, the band colours first. */
@@ -66,11 +60,12 @@ const SWATCH_COLUMNS: readonly CampaignThemePresetColumn[] = [
  * The campaign Theme: the Light and Dark Theme Preset swatches, the
  * six base colours and the two contrast colours as swatch plus hex, the three
  * font selects over the journeys theme dialog's curated lists, the four
- * corner radii and the two button shapes. Every change is one Command
+ * corner radii and the same four for the button corners. Every change is one Command
  * through `campaignThemeUpdate` with an optimistic response. The panel shows
  * Light, Dark or Custom by comparing the current values to the preset
- * constants; nothing is stored. A preset replaces the mode and the eight
- * colours only; fonts, both radii and the Palette stay.
+ * constants; nothing is stored. A preset replaces the mode, the eight
+ * colours and the button corners only; fonts, the corner radius and the
+ * Palette stay.
  */
 export function ThemePanel(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -100,10 +95,6 @@ export function ThemePanel(): ReactElement {
     rounded: t('Rounded'),
     veryRounded: t('Very rounded')
   }
-  const buttonRadiusLabels: Record<CampaignButtonRadius, string> = {
-    rounded: t('Rounded'),
-    pill: t('Pill')
-  }
 
   function handlePresetChange(
     _event: unknown,
@@ -120,7 +111,8 @@ export function ThemePanel(): ReactElement {
       textColor: preset.textColor,
       mutedColor: preset.mutedColor,
       contrastBackgroundColor: preset.contrastBackgroundColor,
-      contrastTextColor: preset.contrastTextColor
+      contrastTextColor: preset.contrastTextColor,
+      buttonRadius: preset.buttonRadius as CampaignRadius
     })
   }
 
@@ -140,7 +132,7 @@ export function ThemePanel(): ReactElement {
 
   function handleButtonRadiusChange(
     _event: unknown,
-    buttonRadius: CampaignButtonRadius | null
+    buttonRadius: CampaignRadius | null
   ): void {
     if (buttonRadius == null || buttonRadius === theme.buttonRadius) return
     addTheme({ buttonRadius })
@@ -266,18 +258,18 @@ export function ThemePanel(): ReactElement {
         </ToggleButtonGroup>
       </Stack>
       <Stack spacing={2}>
-        <Typography variant="subtitle2">{t('Button shape')}</Typography>
+        <Typography variant="subtitle2">{t('Button corners')}</Typography>
         <ToggleButtonGroup
           exclusive
           fullWidth
           size="small"
           value={theme.buttonRadius}
           onChange={handleButtonRadiusChange}
-          aria-label={t('Button shape')}
+          aria-label={t('Button corners')}
         >
-          {BUTTON_RADIUS_OPTIONS.map((buttonRadius) => (
+          {RADIUS_OPTIONS.map((buttonRadius) => (
             <ToggleButton key={buttonRadius} value={buttonRadius}>
-              {buttonRadiusLabels[buttonRadius]}
+              {radiusLabels[buttonRadius]}
             </ToggleButton>
           ))}
         </ToggleButtonGroup>

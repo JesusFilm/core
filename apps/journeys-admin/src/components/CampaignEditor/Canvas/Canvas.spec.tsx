@@ -7,6 +7,7 @@ import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
+  CampaignFeaturedMediaLayout,
   CampaignPageKind,
   CampaignTextSource,
   VideoBlockSource
@@ -402,6 +403,48 @@ describe('Canvas', () => {
     expect(
       featuredSection.querySelector('[data-testid="InlineText-bullets"]')
     ).toHaveTextContent('Free to share In many languages')
+  })
+
+  it('lays a stacked Featured Media section out as one column at every width, the media under the text', async () => {
+    const hero = campaign.blocks.find((block) => block.id === 'heroId')
+    if (hero == null) throw new Error('no hero')
+    const featured = (id: string, layout: CampaignFeaturedMediaLayout) => ({
+      ...newSectionBlock('CampaignFeaturedMediaBlock', {
+        id,
+        campaignId: campaign.id,
+        pageId: hero.pageId ?? '',
+        parentOrder: 5
+      }),
+      layout
+    })
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'desktop', {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks,
+        featured('stackedId', CampaignFeaturedMediaLayout.stacked),
+        featured('sideBySideId', CampaignFeaturedMediaLayout.sideBySide)
+      ]
+    })
+    const body = await frameBody(baseElement, 'CanvasSection-stackedId')
+    const styles = Array.from(body.ownerDocument.querySelectorAll('style'))
+      .map((node) => node.textContent ?? '')
+      .join('')
+    function flexRules(sectionId: string): string {
+      const media = body.querySelector(
+        `[data-testid="CanvasSection-${sectionId}"] [data-testid="CanvasSectionMedia"]`
+      ) as HTMLElement
+      expect(media.previousElementSibling).not.toBeNull()
+      const className = Array.from(
+        (media.parentElement as HTMLElement).classList
+      ).find((name) => name.startsWith('iframe-'))
+      return (
+        styles.match(new RegExp(`\\.${className}\\{[^}]*\\}`, 'g')) ?? []
+      ).join('')
+    }
+
+    expect(flexRules('sideBySideId')).toContain('flex-direction:row')
+    expect(flexRules('stackedId')).toContain('flex-direction:column')
+    expect(flexRules('stackedId')).not.toContain('flex-direction:row')
   })
 
   it('selects a section on click and turns its text into inline inputs', async () => {

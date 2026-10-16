@@ -1,11 +1,10 @@
 export {
+  CAMPAIGN_BUTTON_RADIUS_PX,
   CAMPAIGN_RADIUS_PX,
   PILL_RADIUS_PX,
-  campaignButtonRadiusPx,
   createCampaignTheme
 } from './createCampaignTheme'
 export type {
-  CampaignThemeButtonRadius,
   CampaignThemeInput,
   CampaignThemeMode,
   CampaignThemeRadius

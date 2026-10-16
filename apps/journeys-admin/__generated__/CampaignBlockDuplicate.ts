@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBlockDuplicateIdMapInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignBlockDuplicateIdMapInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockDuplicate
@@ -901,6 +901,10 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedM
    */
   mediaSide: CampaignMediaSide;
   /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
@@ -977,6 +981,10 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBl
    * The linked journey. Null only if the row predates the link; never exposes the journey itself.
    */
   journeyId: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+   */
+  snapshotEdited: boolean;
   titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBlock_titleTranslations[];
   descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBlock_descriptionTranslations[];
 }

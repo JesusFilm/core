@@ -478,7 +478,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     url: String!
   ): CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched.
+  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -489,7 +489,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignJourneyBlockUpdate(id: ID!, input: CampaignJourneyBlockUpdateInput!) : CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
+  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made, and clear `snapshotEdited`. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -725,7 +725,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!) : CampaignFeaturedMediaBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -734,6 +734,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
+  - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -1023,7 +1024,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button corners. Only the given columns change. Applying a Theme Preset is this mutation with the mode, the eight colours and the button corners; fonts and the corner radius stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -1042,7 +1043,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     input: CampaignThemeUpdateInput!
   ): CampaignTheme! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
+  Hard-delete a Campaign. A published campaign queues on-demand revalidation of its pages, so they stop serving within the publish bound. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
   
   Auth: campaign Delete — a manager of the campaign’s team.
   
@@ -1686,6 +1687,10 @@ type CampaignAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   message: String
   """
+  How many strings the run has written so far; they are kept if the run is cancelled
+  """
+  translatedCount: Int
+  """
   The campaign with its translations written (only present when complete)
   """
   campaign: Campaign
@@ -1853,7 +1858,7 @@ type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
   id: ID!
@@ -1904,6 +1909,10 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   Which side the media sits on at `md` and up.
   """
   mediaSide: CampaignMediaSide!
+  """
+  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+  """
+  layout: CampaignFeaturedMediaLayout!
   """
   The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
   """
@@ -2128,6 +2137,10 @@ type CampaignJourneyBlock implements CampaignBlock @join__type(graph: API_JOURNE
   Snapshot of the journey's title, editable; the default-language value.
   """
   title: String
+  """
+  True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+  """
+  snapshotEdited: Boolean!
   titleTranslations: [TranslatedValue!]!
   """
   Snapshot of the journey's description, editable; the default-language value.
@@ -2695,7 +2708,7 @@ type CampaignString @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button shape. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
+The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button corners. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
 """
 type CampaignTheme @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
@@ -2716,7 +2729,10 @@ type CampaignTheme @join__type(graph: API_JOURNEYS_MODERN)  {
   contrastBackgroundColor: String!
   contrastTextColor: String!
   radius: CampaignRadius!
-  buttonRadius: CampaignButtonRadius!
+  """
+  Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+  """
+  buttonRadius: CampaignRadius!
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
 }
@@ -6165,14 +6181,6 @@ enum CampaignChildPlacement @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-Button corner shape of the Campaign Theme.
-"""
-enum CampaignButtonRadius @join__type(graph: API_JOURNEYS_MODERN)  {
-  rounded @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  pill @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
-"""
 The width ratio of the two Column Slots of a Columns section.
 """
 enum CampaignColumnsRatio @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -6187,6 +6195,14 @@ Which side of a Featured Media section the Media Slot renders on.
 enum CampaignMediaSide @join__type(graph: API_JOURNEYS_MODERN)  {
   left @join__enumValue(graph: API_JOURNEYS_MODERN) 
   right @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+"""
+enum CampaignFeaturedMediaLayout @join__type(graph: API_JOURNEYS_MODERN)  {
+  sideBySide @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  stacked @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -7265,6 +7281,7 @@ input CampaignFeaturedMediaBlockUpdateInput @join__type(graph: API_JOURNEYS_MODE
   """
   bullets: String
   mediaSide: CampaignMediaSide
+  layout: CampaignFeaturedMediaLayout
   """
   The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
   """
@@ -7569,6 +7586,10 @@ input CampaignJourneyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Default-language description. At most 1000 characters.
   """
   description: String
+  """
+  Set the edited flag outright, for an undo that writes a previous title and description back together with the flag they had. Without it, editing `title` or `description` marks the snapshot edited.
+  """
+  snapshotEdited: Boolean
 }
 
 input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -8053,9 +8074,9 @@ input CampaignThemeUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   radius: CampaignRadius
   """
-  Button shape: rounded or pill.
+  Button corners: square, slight, rounded or veryRounded (the pill look).
   """
-  buttonRadius: CampaignButtonRadius
+  buttonRadius: CampaignRadius
 }
 
 """

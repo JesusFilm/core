@@ -20,6 +20,7 @@ export const CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION = gql`
     ) {
       progress
       message
+      translatedCount
       campaign {
         id
         titleTranslations {

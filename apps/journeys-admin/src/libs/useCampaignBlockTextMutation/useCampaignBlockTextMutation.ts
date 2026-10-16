@@ -113,6 +113,7 @@ export const CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT = gql`
       id
       title
       description
+      snapshotEdited
     }
   }
 `
@@ -286,6 +287,7 @@ export function campaignTextOptimisticResponse(
       candidate
     ]
   current[field] = value
+  if (block.__typename === 'CampaignJourneyBlock') current.snapshotEdited = true
   return { [TEXT_OPERATIONS[block.__typename].operation]: current }
 }
 

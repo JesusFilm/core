@@ -135,6 +135,21 @@ describe('ButtonControls', () => {
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
   })
 
+  it('commits a palette pick at once as one Command, without clicking away', async () => {
+    const mocks = [
+      buttonMock({ color: '#F2B544' }),
+      paletteMock(nextPalette(campaign.palette, '#F2B544'))
+    ]
+    renderControls(mocks)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Use #F2B544' }))
+
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
   it('sets color and labelColor through the palette pickers, one Command each, and Reset writes null', async () => {
     const mocks = [
       buttonMock({ color: '#112233' }),

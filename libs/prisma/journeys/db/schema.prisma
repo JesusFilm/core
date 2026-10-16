@@ -933,6 +933,11 @@ enum CampaignMediaSide {
   right
 }
 
+enum CampaignFeaturedMediaLayout {
+  sideBySide
+  stacked
+}
+
 enum CampaignSwitcherVariant {
   cards
   list
@@ -955,11 +960,6 @@ enum CampaignRadius {
   slight
   rounded
   veryRounded
-}
-
-enum CampaignButtonRadius {
-  rounded
-  pill
 }
 
 enum CampaignStringKey {
@@ -1042,7 +1042,8 @@ model CampaignTheme {
   contrastBackgroundColor String
   contrastTextColor       String
   radius                  CampaignRadius       @default(rounded)
-  buttonRadius            CampaignButtonRadius @default(pill)
+  /// Button corners: the same four values as `radius`, applied to buttons only.
+  buttonRadius            CampaignRadius       @default(veryRounded)
   createdAt               DateTime             @default(now())
   updatedAt               DateTime             @updatedAt
   campaign                Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
@@ -1104,6 +1105,7 @@ model CampaignBlock {
   // Per-type enum and scalar columns
   align                   CampaignAlign?
   mediaSide               CampaignMediaSide?          @default(right)
+  layout                  CampaignFeaturedMediaLayout?
   mediaBlockId            String?                     @unique
   logoBlockId             String?                     @unique
   switcherVariant         CampaignSwitcherVariant?    @default(cards)
@@ -1128,6 +1130,8 @@ model CampaignBlock {
   height                  Int?
   // CampaignJourneyBlock snapshot
   journeyId               String?
+  /// CampaignJourneyBlock: true once an author changed the snapshot title or description by hand; cleared when the snapshot is re-read from the journey.
+  snapshotEdited          Boolean                     @default(false)
   campaign                Campaign                    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   page                    CampaignPage?               @relation(fields: [pageId], references: [id], onDelete: Cascade)
   region                  CampaignRegion?             @relation(fields: [regionId], references: [id], onDelete: Cascade)

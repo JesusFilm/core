@@ -20,6 +20,7 @@ import {
   useCampaignEditor
 } from './CampaignEditorProvider'
 import { campaign } from './data'
+import { TranslationRunProvider } from './TranslationRunProvider'
 import { textDebounceKey } from './utils/useCampaignTextCommand'
 
 /** A cache that matches campaign fragments exactly, as the app's cache does. */
@@ -170,32 +171,38 @@ export function QueriedEditor({
     >
       <SnackbarProvider>
         <CommandProvider>
-          <QueriedEditorInner initialState={initialState}>
-            {children}
-          </QueriedEditorInner>
+          <TranslationRunProvider>
+            <QueriedEditorInner initialState={initialState}>
+              {children}
+            </QueriedEditorInner>
+          </TranslationRunProvider>
         </CommandProvider>
       </SnackbarProvider>
     </MockedProvider>
   )
 }
 
-/** The editor's providers over the static campaign fixture. */
+/** The editor's providers over the static campaign fixture; a custom `link` replaces `mocks`. */
 export function StaticEditor({
   children,
   initialState,
   mocks = [],
   cache = campaignCache(),
+  link,
   campaignProp = campaign
 }: RenderEditorProps): ReactElement {
   return (
-    <MockedProvider mocks={mocks as never} cache={cache}>
+    <MockedProvider
+      {...(link != null ? { link } : { mocks: mocks as never })}
+      cache={cache}
+    >
       <SnackbarProvider>
         <CommandProvider>
           <CampaignEditorProvider
             campaign={campaignProp}
             initialState={initialState}
           >
-            {children}
+            <TranslationRunProvider>{children}</TranslationRunProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>

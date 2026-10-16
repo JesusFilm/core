@@ -42,7 +42,10 @@ const ID_FIELDS = new Set([
 ])
 const TIMESTAMP_FIELDS = new Set(['createdAt', 'updatedAt', 'deletedAt'])
 // Column defaults the seed leaves to Prisma but a stored row always carries.
-const COLUMN_DEFAULTS: Record<string, unknown> = { backgroundKind: 'none' }
+const COLUMN_DEFAULTS: Record<string, unknown> = {
+  backgroundKind: 'none',
+  snapshotEdited: false
+}
 
 /**
  * Strip nulls, timestamps and column defaults, and replace every id with a
@@ -317,7 +320,7 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('seeds the CampaignTheme on the Light preset with null fonts, radius rounded and buttonRadius pill', async () => {
+    it('seeds the CampaignTheme on the Light preset with null fonts, radius rounded and buttonRadius veryRounded', async () => {
       await create()
       expect(prismaMock.campaignTheme.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -335,7 +338,7 @@ describe('campaignCreate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'rounded',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         })
       })
     })
@@ -844,7 +847,7 @@ describe('campaignCreate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'rounded',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         },
         pages: [{ kind: 'landing' }, { kind: 'regionTemplate' }],
         regions: []

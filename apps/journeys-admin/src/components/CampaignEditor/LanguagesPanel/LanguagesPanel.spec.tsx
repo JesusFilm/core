@@ -146,6 +146,7 @@ function sweepMock(languageId: string): {
           __typename: 'CampaignAiTranslateProgress',
           progress: 100,
           message: 'Translation completed!',
+          translatedCount: 1,
           campaign: {
             __typename: 'Campaign',
             id: campaign.id,

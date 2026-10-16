@@ -90,7 +90,7 @@ describe('campaignThemeUpdate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'square',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         }
       }
     })
@@ -105,14 +105,14 @@ describe('campaignThemeUpdate', () => {
     )
   })
 
-  it('applies a preset as the mode and the eight colours in one call, leaving fonts and radii alone', async () => {
+  it('applies a preset as the mode, the eight colours and the button corners in one call, leaving fonts and the corner radius alone', async () => {
     const result = await update({ ...DARK_PRESET })
 
     expect(result.data.campaignThemeUpdate).toMatchObject({
       ...DARK_PRESET,
       headerFont: null,
       radius: 'rounded',
-      buttonRadius: 'pill'
+      buttonRadius: 'veryRounded'
     })
     expect(prismaMock.campaignTheme.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: DARK_PRESET })
@@ -177,7 +177,7 @@ describe('campaignThemeUpdate', () => {
   it.each([
     ['themeMode', 'dark', 'midnight'],
     ['radius', 'veryRounded', 'circle'],
-    ['buttonRadius', 'rounded', 'square']
+    ['buttonRadius', 'slight', 'pill']
   ])('takes %s from its enum only', async (column, valid, invalid) => {
     const accepted = await update({ [column]: valid })
     expect(accepted.data.campaignThemeUpdate[column]).toBe(valid)

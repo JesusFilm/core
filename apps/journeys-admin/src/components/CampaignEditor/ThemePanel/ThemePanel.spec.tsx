@@ -15,7 +15,6 @@ import {
 } from '@core/shared/ui/fontFamilies'
 
 import {
-  CampaignButtonRadius,
   CampaignRadius,
   ThemeMode
 } from '../../../../__generated__/globalTypes'
@@ -27,8 +26,16 @@ import { CommandProbe, QueriedEditor, campaignCache } from '../testing'
 
 import { ThemePanel } from './ThemePanel'
 
-const darkInput = { ...DARK_PRESET, themeMode: ThemeMode.dark }
-const lightInput = { ...LIGHT_PRESET, themeMode: ThemeMode.light }
+const darkInput = {
+  ...DARK_PRESET,
+  themeMode: ThemeMode.dark,
+  buttonRadius: CampaignRadius.veryRounded
+}
+const lightInput = {
+  ...LIGHT_PRESET,
+  themeMode: ThemeMode.light,
+  buttonRadius: CampaignRadius.veryRounded
+}
 
 function renderPanel(
   mocks: StyleMock[],
@@ -60,7 +67,7 @@ describe('ThemePanel', () => {
   beforeEach(() => vi.clearAllMocks())
 
   describe('presets', () => {
-    it('derives Light from the nine values and marks that swatch pressed', async () => {
+    it('derives Light from the ten values and marks that swatch pressed', async () => {
       renderPanel([])
 
       expect(
@@ -80,7 +87,7 @@ describe('ThemePanel', () => {
       )
     })
 
-    it('applies Dark as one Command replacing the mode and the eight colours only; undo restores the nine values', async () => {
+    it('applies Dark as one Command replacing the mode, the eight colours and the button corners only; undo restores the ten values', async () => {
       const cache = campaignCache()
       const mocks = [themeMock(darkInput), themeMock(lightInput)]
       renderPanel(mocks, cache)
@@ -96,7 +103,7 @@ describe('ThemePanel', () => {
         bodyFont: null,
         labelFont: null,
         radius: 'rounded',
-        buttonRadius: 'pill'
+        buttonRadius: 'veryRounded'
       })
       expect(screen.getByTestId('CampaignThemePreset')).toHaveTextContent(
         'Dark'
@@ -114,7 +121,7 @@ describe('ThemePanel', () => {
       )
     })
 
-    it('keeps the fonts and both radii a preset does not own', async () => {
+    it('keeps the fonts and the corner radius a preset does not own', async () => {
       const cache = campaignCache()
       const mocks = [
         themeMock({ headerFont: 'Oswald' }),
@@ -131,7 +138,12 @@ describe('ThemePanel', () => {
       )
       fireEvent.click(screen.getByRole('option', { name: 'Oswald' }))
       await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
-      fireEvent.click(screen.getByRole('button', { name: 'Square' }))
+      fireEvent.click(
+        within(screen.getByRole('group', { name: 'Corner radius' })).getByRole(
+          'button',
+          { name: 'Square' }
+        )
+      )
       await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
 
       fireEvent.click(screen.getByRole('button', { name: 'Dark' }))
@@ -141,14 +153,40 @@ describe('ThemePanel', () => {
         ...darkInput,
         headerFont: 'Oswald',
         radius: 'square',
-        buttonRadius: 'pill'
+        buttonRadius: 'veryRounded'
       })
       expect(screen.getByTestId('CampaignThemePreset')).toHaveTextContent(
         'Dark'
       )
     })
 
-    it('shows Custom once any of the nine values differs, with neither swatch pressed, and records nothing', async () => {
+    it('sets the button corners a preset carries, and shows Custom while they differ', async () => {
+      const cache = campaignCache()
+      const mocks = [
+        themeMock({ buttonRadius: CampaignRadius.slight }),
+        themeMock(darkInput, { buttonRadius: CampaignRadius.slight })
+      ]
+      renderPanel(mocks, cache)
+
+      const corners = within(
+        await screen.findByRole('group', { name: 'Button corners' })
+      )
+      fireEvent.click(corners.getByRole('button', { name: 'Slight' }))
+      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+      expect(screen.getByTestId('CampaignThemePreset')).toHaveTextContent(
+        'Custom'
+      )
+
+      fireEvent.click(screen.getByRole('button', { name: 'Dark' }))
+      await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+
+      expect(readTheme(cache)?.buttonRadius).toBe('veryRounded')
+      expect(screen.getByTestId('CampaignThemePreset')).toHaveTextContent(
+        'Dark'
+      )
+    })
+
+    it('shows Custom once any of the ten values differs, with neither swatch pressed, and records nothing', async () => {
       const cache = campaignCache()
       const mocks = [themeMock({ accentColor: '#123456' })]
       renderPanel(mocks, cache)
@@ -237,6 +275,31 @@ describe('ThemePanel', () => {
         expect(readTheme(cache)?.contrastTextColor).toBe('#123456')
       )
       expect(mocks[0].result).not.toHaveBeenCalled()
+      await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+      await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+      expect(readTheme(cache)?.contrastTextColor).toBe('#FFFFFF')
+    })
+
+    it('commits a palette pick at once as one Command, without clicking away; undo reverses that one pick', async () => {
+      const cache = campaignCache()
+      const mocks = [
+        themeMock({ contrastTextColor: '#F2B544' }),
+        themeMock({ contrastTextColor: '#FFFFFF' }),
+        paletteMock(nextPalette(campaign.palette, '#F2B544'))
+      ]
+      renderPanel(mocks, cache)
+
+      fireEvent.click(
+        await screen.findByTestId('ThemeColour-contrastTextColor')
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Use #F2B544' }))
+
+      expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+      await waitFor(() =>
+        expect(readTheme(cache)?.contrastTextColor).toBe('#F2B544')
+      )
       await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
 
       fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -348,12 +411,12 @@ describe('ThemePanel', () => {
   })
 
   describe('shape', () => {
-    it('offers four corner radii and two button shapes, each change one Command', async () => {
+    it('offers four corner radii and four button corners, each change one Command', async () => {
       const cache = campaignCache()
       const mocks = [
         themeMock({ radius: CampaignRadius.veryRounded }),
         themeMock(
-          { buttonRadius: CampaignButtonRadius.rounded },
+          { buttonRadius: CampaignRadius.rounded },
           { radius: CampaignRadius.veryRounded }
         )
       ]
@@ -369,30 +432,38 @@ describe('ThemePanel', () => {
         'Very rounded'
       ])
       expect(radii[2]).toHaveAttribute('aria-pressed', 'true')
-      const shapes = within(
-        screen.getByRole('group', { name: 'Button shape' })
+      expect(
+        screen.queryByRole('group', { name: 'Button shape' })
+      ).not.toBeInTheDocument()
+      const corners = within(
+        screen.getByRole('group', { name: 'Button corners' })
       ).getAllByRole('button')
-      expect(shapes.map((button) => button.textContent)).toEqual([
+      expect(corners.map((button) => button.textContent)).toEqual([
+        'Square',
+        'Slight',
         'Rounded',
-        'Pill'
+        'Very rounded'
       ])
-      expect(shapes[1]).toHaveAttribute('aria-pressed', 'true')
+      expect(corners[3]).toHaveAttribute('aria-pressed', 'true')
 
       fireEvent.click(radii[3])
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
       await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
       expect(readTheme(cache)?.radius).toBe('veryRounded')
 
-      fireEvent.click(shapes[0])
+      fireEvent.click(corners[2])
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('2')
       await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
       expect(readTheme(cache)?.buttonRadius).toBe('rounded')
     })
 
-    it('does nothing when the current radius is clicked again', async () => {
+    it('does nothing when the current button corners are clicked again', async () => {
       renderPanel([])
 
-      fireEvent.click(await screen.findByRole('button', { name: 'Pill' }))
+      const corners = within(
+        await screen.findByRole('group', { name: 'Button corners' })
+      )
+      fireEvent.click(corners.getByRole('button', { name: 'Very rounded' }))
 
       expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
     })

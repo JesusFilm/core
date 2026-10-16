@@ -91,14 +91,6 @@ export enum CampaignBackgroundOverlay {
 }
 
 /**
- * Button corner shape of the Campaign Theme.
- */
-export enum CampaignButtonRadius {
-  pill = "pill",
-  rounded = "rounded",
-}
-
-/**
  * Which side of the Section Body an Extra renders on.
  */
 export enum CampaignChildPlacement {
@@ -113,6 +105,14 @@ export enum CampaignColumnsRatio {
   equal = "equal",
   wideLeft = "wideLeft",
   wideRight = "wideRight",
+}
+
+/**
+ * How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+ */
+export enum CampaignFeaturedMediaLayout {
+  sideBySide = "sideBySide",
+  stacked = "stacked",
 }
 
 /**
@@ -750,6 +750,7 @@ export interface CampaignFeaturedMediaBlockUpdateInput {
   lede?: string | null;
   bullets?: string | null;
   mediaSide?: CampaignMediaSide | null;
+  layout?: CampaignFeaturedMediaLayout | null;
   mediaBlockId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
@@ -853,6 +854,7 @@ export interface CampaignImageBlockUpdateInput {
 export interface CampaignJourneyBlockUpdateInput {
   title?: string | null;
   description?: string | null;
+  snapshotEdited?: boolean | null;
 }
 
 export interface CampaignJourneyListBlockCreateInput {
@@ -1021,7 +1023,7 @@ export interface CampaignThemeUpdateInput {
   contrastBackgroundColor?: string | null;
   contrastTextColor?: string | null;
   radius?: CampaignRadius | null;
-  buttonRadius?: CampaignButtonRadius | null;
+  buttonRadius?: CampaignRadius | null;
 }
 
 /**

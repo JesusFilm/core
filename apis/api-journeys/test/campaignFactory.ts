@@ -107,6 +107,7 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   descriptionTranslations: null,
   align: null,
   mediaSide: null,
+  layout: null,
   mediaBlockId: null,
   logoBlockId: null,
   switcherVariant: null,
@@ -127,7 +128,8 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   src: null,
   width: null,
   height: null,
-  journeyId: null
+  journeyId: null,
+  snapshotEdited: false
 }
 
 function block(
@@ -538,7 +540,7 @@ export function campaignFactory(
       contrastBackgroundColor: '#26262E',
       contrastTextColor: '#FFFFFF',
       radius: 'rounded',
-      buttonRadius: 'pill',
+      buttonRadius: 'veryRounded',
       createdAt,
       updatedAt: createdAt
     },
