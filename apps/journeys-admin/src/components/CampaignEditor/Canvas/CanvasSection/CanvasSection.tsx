@@ -849,14 +849,13 @@ export function CanvasSection({
           position: 'sticky' as const,
           top: 0,
           zIndex: 2,
-          overflowX: 'clip',
+          overflowX: 'clip' as const,
           borderBottom: '1px solid var(--campaign-band-border)'
         }
       : chrome === 'footer'
         ? {
             minHeight: footerEmpty ? 24 : undefined,
             py: footerEmpty ? 0 : { xs: 4, md: 5 },
-            isolation: 'isolate',
             borderTop: '1px solid var(--campaign-band-border)'
           }
         : inSlot
@@ -864,7 +863,7 @@ export function CanvasSection({
             block.backgroundKind !== CampaignBackgroundKind.none
             ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
             : {}
-          : { py: { xs: 6, md: 10 }, isolation: 'isolate' }
+          : { py: { xs: 6, md: 10 } }
 
   return (
     <Box
@@ -888,6 +887,10 @@ export function CanvasSection({
         scrollMarginTop:
           chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
+        // Keeps the badges inside this section from competing with the sticky header.
+        ...(chrome !== 'header' && !inSlot
+          ? { isolation: 'isolate' as const }
+          : {}),
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
         ...HOVER_OUTLINE_SX,
