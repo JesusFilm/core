@@ -1694,5 +1694,6 @@
   "Side by side": "Side by side",
   "Stacked": "Stacked",
   "Preview {{language}}": "Preview {{language}}",
-  "Previewing": "Previewing"
+  "Previewing": "Previewing",
+  "Preview language: {{language}}": "Preview language: {{language}}"
 }
