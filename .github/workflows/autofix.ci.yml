@@ -51,6 +51,14 @@ jobs:
           DISABLE_ERD: true
       - name: Install apollo and graphql for codegen
         run: npm i -g apollo@2.34.0 graphql@16.10.0 # npm because apollo is deprecated and conflicts with graphql
+      - name: Record Apollo GraphQL version for codegen cache
+        run: |
+          node - "$(npm root -g)" <<'NODE' >> "$GITHUB_ENV"
+          const path = require('node:path')
+          const { createRequire } = require('node:module')
+          const requireFromApollo = createRequire(path.join(process.argv[2], 'apollo/package.json'))
+          console.log(`APOLLO_GRAPHQL_VERSION=${requireFromApollo('graphql/package.json').version}`)
+          NODE
       - name: Codegen
         uses: mansagroup/nrwl-nx-action@v3
         with:
