@@ -1,6 +1,9 @@
+import { prismaMock } from '../../test/prismaMock'
+
 import {
   extractWessRowArray,
-  normalizeWessCountryRow
+  normalizeWessCountryRow,
+  runWessCountriesImport
 } from './wess-countries-import'
 
 describe('extractWessRowArray', () => {
@@ -76,5 +79,73 @@ describe('normalizeWessCountryRow', () => {
       COUNTRY_POPULATION: 'n/a'
     })
     expect(normalized?.population).toBeNull()
+  })
+})
+
+describe('runWessCountriesImport', () => {
+  beforeEach(() => {
+    vi.stubEnv('WESS_API_TOKEN', 'token')
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify([
+            {
+              COUNTRY_CODE: 'US',
+              COUNTRY_NAME: 'United States',
+              COUNTRY_POPULATION: 331000000
+            },
+            {
+              COUNTRY_CODE: 'XK',
+              COUNTRY_NAME: 'Kosovo',
+              COUNTRY_POPULATION: 2093754
+            }
+          ])
+        )
+      )
+    )
+    prismaMock.country.findMany.mockResolvedValue([
+      { id: 'US' }
+    ] as unknown as Awaited<ReturnType<typeof prismaMock.country.findMany>>)
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
+  })
+
+  it('updates countries that already exist', async () => {
+    await runWessCountriesImport()
+
+    expect(prismaMock.country.update).toHaveBeenCalledWith({
+      where: { id: 'US' },
+      data: { population: 331000000 }
+    })
+    expect(prismaMock.countryName.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { languageId_countryId: { languageId: '529', countryId: 'US' } }
+      })
+    )
+  })
+
+  it('does not create countries missing from the database', async () => {
+    // WESS has no continent, and a Country without one breaks the non-null
+    // GraphQL `Country.continent` field for the whole `countries` query.
+    await runWessCountriesImport()
+
+    expect(prismaMock.country.upsert).not.toHaveBeenCalled()
+    expect(prismaMock.country.create).not.toHaveBeenCalled()
+    expect(prismaMock.country.update).not.toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: 'XK' } })
+    )
+    expect(prismaMock.countryName.upsert).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { languageId_countryId: { languageId: '529', countryId: 'XK' } }
+      })
+    )
+  })
+
+  it('returns the number of countries updated', async () => {
+    await expect(runWessCountriesImport()).resolves.toBe(1)
   })
 })
