@@ -154,6 +154,8 @@ function RegionCardEdit({
             sx={{
               position: 'relative',
               width: '100%',
+              // Room for the line's badge above it, clear of the text before it.
+              mt: 1,
               ...HOVER_OUTLINE_SX,
               ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
             }}

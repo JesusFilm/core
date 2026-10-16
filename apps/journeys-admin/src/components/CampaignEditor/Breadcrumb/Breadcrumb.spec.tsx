@@ -55,4 +55,19 @@ describe('Breadcrumb', () => {
       'Campaign›Europe'
     )
   })
+
+  it('names a selected Region Line as a Region Line', () => {
+    render(
+      <StaticEditor
+        campaignProp={translated}
+        initialState={{ selectedBlockId: 'eurLineId' }}
+      >
+        <Breadcrumb />
+      </StaticEditor>
+    )
+
+    expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(
+      'Campaign›Europe›Region Line'
+    )
+  })
 })

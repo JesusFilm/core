@@ -52,7 +52,7 @@ export function SelectionBadge({
         top: 0,
         left: 0,
         transform: placement === 'above' ? 'translateY(-100%)' : undefined,
-        zIndex: 3,
+        zIndex: selected ? 4 : 3,
         maxWidth: '100%',
         px: 0.75,
         overflow: 'hidden',

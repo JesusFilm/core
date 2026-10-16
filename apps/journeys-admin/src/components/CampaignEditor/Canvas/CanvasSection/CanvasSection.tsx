@@ -61,7 +61,7 @@ import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
-import { SelectionBadge, SelectionBadgePlacement } from '../SelectionBadge'
+import { SelectionBadge } from '../SelectionBadge'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 
@@ -91,8 +91,6 @@ interface CanvasExtraProps {
   selected: boolean
   onSelect: () => void
   focusField?: CampaignTextField
-  /** `inside` where the header clips what leaves the block. */
-  badgePlacement?: SelectionBadgePlacement
 }
 
 /** A text or button Extra: click to select, edit its one text field in place. */
@@ -100,8 +98,7 @@ function CanvasExtra({
   block,
   selected,
   onSelect,
-  focusField,
-  badgePlacement
+  focusField
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -131,7 +128,6 @@ function CanvasExtra({
             id={block.id}
             label={blockLabel(t, block.__typename)}
             selected={selected}
-            placement={badgePlacement}
           />
           <InlineText
             target={{ block, field: 'content' }}
@@ -175,7 +171,6 @@ function CanvasExtra({
             id={block.id}
             label={blockLabel(t, block.__typename)}
             selected={selected}
-            placement={badgePlacement}
           />
           <Button
             component="div"
@@ -511,10 +506,6 @@ export function CanvasSection({
     selectBlock(childId)
   }
 
-  /** The header clips what leaves it, so its Extras' badges sit inside their corner. */
-  const extraBadgePlacement: SelectionBadgePlacement =
-    block.__typename === 'CampaignHeaderBlock' ? 'inside' : 'above'
-
   function renderExtra(child: CanvasBlock): ReactElement | null {
     const field: CampaignTextField =
       child.__typename === 'CampaignButtonBlock' ? 'label' : 'content'
@@ -525,7 +516,6 @@ export function CanvasSection({
         selected={selectedId === child.id}
         onSelect={() => selectChild(child.id, field)}
         focusField={focusField}
-        badgePlacement={extraBadgePlacement}
       />
     )
   }
@@ -757,7 +747,7 @@ export function CanvasSection({
             alignItems: { xs: 'flex-start', md: 'center' },
             order: { xs: 1, md: 0 },
             flexBasis: { xs: '100%', md: 'auto' },
-            gap: 1,
+            gap: { xs: 1.5, md: 1 },
             pb: { xs: 2, md: 0 }
           }}
         >
@@ -826,7 +816,7 @@ export function CanvasSection({
       }}
     >
       {footerLines.length > 0 && (
-        <Stack spacing={0.5} data-testid="CanvasFooterLines">
+        <Stack spacing={1.5} data-testid="CanvasFooterLines">
           {footerLines.map(renderExtra)}
         </Stack>
       )}
@@ -859,13 +849,14 @@ export function CanvasSection({
           position: 'sticky' as const,
           top: 0,
           zIndex: 2,
-          overflow: 'hidden',
+          overflowX: 'clip',
           borderBottom: '1px solid var(--campaign-band-border)'
         }
       : chrome === 'footer'
         ? {
             minHeight: footerEmpty ? 24 : undefined,
             py: footerEmpty ? 0 : { xs: 4, md: 5 },
+            isolation: 'isolate',
             borderTop: '1px solid var(--campaign-band-border)'
           }
         : inSlot
@@ -873,7 +864,7 @@ export function CanvasSection({
             block.backgroundKind !== CampaignBackgroundKind.none
             ? { p: { xs: 3, md: 4 }, borderRadius: 1 }
             : {}
-          : { py: { xs: 6, md: 10 } }
+          : { py: { xs: 6, md: 10 }, isolation: 'isolate' }
 
   return (
     <Box
