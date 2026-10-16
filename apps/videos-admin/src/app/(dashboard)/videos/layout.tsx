@@ -17,7 +17,8 @@ export default function VideosLayout({
     pathname === '/videos' ||
     pathname === '/videos/algolia' ||
     pathname === '/videos/algolia-debugging' ||
-    pathname === '/videos/library'
+    pathname === '/videos/library' ||
+    pathname === '/videos/processing'
 
   return (
     <>
