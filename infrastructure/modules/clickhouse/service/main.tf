@@ -1,11 +1,15 @@
-# One ClickHouse Cloud service per environment for short-link scan events:
-# the redirect Worker inserts rows over HTTPS, api-media reads aggregates.
-# The service is all Terraform manages here. The database, table and the two
-# limited users are created by hand from the runbook in
-# workers/short-links-redirect/README.md ("Setting up ClickHouse").
+# One shared ClickHouse Cloud service per environment, one database per
+# tenant:
+#   - `redirects`: short-link scan events; the redirect Worker inserts rows
+#     over HTTPS, api-media reads aggregates. Runbook:
+#     workers/short-links-redirect/README.md ("Setting up ClickHouse").
+#   - `plausible_events_db`: Plausible Analytics' event store, moved here from
+#     the EKS StatefulSet. Runbook: infrastructure/kube/plausible-analytics/README.md.
+# The service is all Terraform manages here. Databases, tables and the
+# per-tenant users are created by hand from those runbooks, as `default`.
 
 locals {
-  name           = "jfp-short-links-${var.env}"
+  name           = "${var.name}-${var.env}"
   doppler_config = var.env == "prod" ? "prd" : "stg"
 }
 
@@ -48,14 +52,21 @@ resource "clickhouse_service" "this" {
 
   tags = {
     env     = var.env
-    service = "short-links"
+    service = "clickhouse"
+    tenants = "short-links plausible"
   }
 
-  # A destroy deletes every scan event; the provider has no deletion protection.
+  # A destroy deletes every scan event and all of Plausible's history; the
+  # provider has no deletion protection.
   lifecycle {
     prevent_destroy = true
   }
 }
+
+# The Doppler keys keep their SHORT_LINKS_ prefix: the Worker, api-media and
+# the short-links runbook consume them, and the admin password is per service,
+# not per tenant. Plausible's own URL (its user, its database) is set by hand
+# in the `plausible` Doppler project, for which Terraform holds no token.
 
 resource "doppler_secret" "url" {
   project = var.doppler_project
