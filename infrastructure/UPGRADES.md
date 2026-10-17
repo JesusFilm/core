@@ -1,8 +1,14 @@
 # Staged infrastructure version upgrades
 
 The rollout targets EKS **1.36** and Aurora PostgreSQL **17.11** in staging and
-production. This PR defaults to `prepare`: both control planes and databases
-retain their current versions. Live EKS preconditions reject skipped minors,
+production.
+
+**Current state (2026-10-17): the committed default is `stage-1.36`.** Staging
+has completed `prepare`, `stage-addons` and every minor through 1.36: control
+plane, workers and add-ons are on 1.36, with Aurora still 13.23 on I/O-Optimized
+storage. Production is unchanged (control plane 1.32, workers 1.31, Aurora 13.23).
+
+Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
 Aurora precondition rejects a major change unless that environment's explicit
 approval variable is true. Completing EKS never implicitly approves Aurora.
@@ -10,9 +16,9 @@ approval variable is true. Completing EKS never implicitly approves Aurora.
 Use the existing Atlantis project and state. Resolve another PR's project lock
 through its owner; never unlock or apply another PR's plan. **The current
 `automerge: true` configuration merges a PR after its first successful apply and
-deletes its branch.** This PR delivers staging preparation and the approved staging I/O-Optimized
-storage switch; each subsequent
-phase needs its own reviewed PR that advances the committed `upgrade_phase`
+deletes its branch.** This PR delivers the staging EKS upgrade to 1.36 and the
+approved staging I/O-Optimized storage switch; each subsequent phase needs its
+own reviewed PR that advances the committed `upgrade_phase`
 default to that phase. Retain the successfully applied phase as the default so
 future autoplan does not request a downgrade or a later upgrade. Never commit a
 future phase before its predecessors have completed and passed their health checks.
