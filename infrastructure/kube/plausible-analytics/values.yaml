@@ -185,7 +185,14 @@ plausible-analytics:
         hosts:
           - analytics.jesusfilm.org
 
-  resources: {}
+  # Without a memory limit a runaway Plausible process can exhaust a node and
+  # take its kubelet down; the limit confines that to a container restart.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      memory: 2Gi
 
   autoscaling:
     enabled: false

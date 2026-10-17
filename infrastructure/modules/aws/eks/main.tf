@@ -46,7 +46,7 @@ resource "aws_security_group" "eks-cluster" {
 resource "aws_eks_cluster" "this" {
   name     = "${var.name}-${var.env}"
   role_arn = aws_iam_role.eks-cluster.arn
-  version  = "1.32"
+  version  = var.cluster_version
 
   vpc_config {
     security_group_ids = concat([aws_security_group.eks-cluster.id], var.security_group_ids)
@@ -60,6 +60,59 @@ resource "aws_eks_cluster" "this" {
 
   tags = {
     "alpha.eksctl.io/cluster-oidc-enabled" = "true"
+  }
+
+  lifecycle {
+    precondition {
+      condition = var.enforce_sequential_upgrade ? (
+        tonumber(split(".", var.cluster_version)[1]) >= tonumber(split(".", data.aws_eks_cluster.live[0].version)[1]) &&
+        tonumber(split(".", var.cluster_version)[1]) <= tonumber(split(".", data.aws_eks_cluster.live[0].version)[1]) + 1
+      ) : true
+      error_message = "EKS upgrades must advance one minor at a time and cannot plan a downgrade. Select the next upgrade_phase from UPGRADES.md."
+    }
+    precondition {
+      condition = var.enforce_sequential_upgrade ? (
+        var.cluster_version == data.aws_eks_cluster.live[0].version ||
+        data.aws_eks_node_group.live[0].version == data.aws_eks_cluster.live[0].version
+      ) : true
+      error_message = "Align the existing managed nodes with the current control-plane version before upgrading the control plane."
+    }
+  }
+}
+
+data "aws_eks_cluster" "live" {
+  count = var.enforce_sequential_upgrade ? 1 : 0
+  name  = "${var.name}-${var.env}"
+}
+
+data "aws_eks_node_group" "live" {
+  count           = var.enforce_sequential_upgrade ? 1 : 0
+  cluster_name    = "${var.name}-${var.env}"
+  node_group_name = "jfp-eks-node-group-2a-${var.env}"
+}
+
+data "aws_eks_addon" "existing" {
+  for_each = { for name, addon in var.addons : name => addon if addon.existing }
+
+  cluster_name = "${var.name}-${var.env}"
+  addon_name   = each.key
+}
+
+resource "aws_eks_addon" "core" {
+  for_each = var.addons
+
+  cluster_name                = aws_eks_cluster.this.name
+  addon_name                  = each.key
+  addon_version               = each.value.version
+  configuration_values        = each.value.existing ? data.aws_eks_addon.existing[each.key].configuration_values : each.value.configuration_values
+  service_account_role_arn    = each.value.existing ? data.aws_eks_addon.existing[each.key].service_account_role_arn : null
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "PRESERVE"
+  preserve                    = true
+
+  tags = {
+    Name        = "${var.name}-${var.env}-${each.key}"
+    Environment = var.env
   }
 }
 
@@ -157,16 +210,6 @@ resource "aws_security_group_rule" "eks-cluster-ingress-node-https" {
   type                     = "ingress"
 }
 
-data "aws_ami" "eks-worker" {
-  filter {
-    name   = "name"
-    values = ["amazon-eks-node-${aws_eks_cluster.this.version}-v*"]
-  }
-
-  most_recent = true
-  owners      = ["602401143452"] # Amazon EKS AMI Account ID
-}
-
 # # This data source is included for ease of sample architecture deployment
 # # and can be swapped out as necessary.
 # data "aws_region" "current" {}
@@ -217,18 +260,22 @@ resource "aws_eks_node_group" "az_2a_ondemand" {
   node_group_name = "jfp-eks-node-group-2a-${var.env}"
   node_role_arn   = aws_iam_role.eks-node.arn
   subnet_ids      = var.subnet_ids_2a
+  version         = var.node_version
+  ami_type        = var.node_ami_type
 
   scaling_config {
-    desired_size = 3
-    max_size     = 5
-    min_size     = 3
+    desired_size = var.node_scaling_config.desired_size
+    max_size     = var.node_scaling_config.max_size
+    min_size     = var.node_scaling_config.min_size
   }
 
   update_config {
-    max_unavailable = 2
+    max_unavailable = var.node_max_unavailable
   }
   node_repair_config {
-    enabled = true
+    enabled                                 = true
+    max_parallel_nodes_repaired_percentage  = var.node_repair_thresholds.max_parallel_nodes_repaired_percentage
+    max_unhealthy_node_threshold_percentage = var.node_repair_thresholds.max_unhealthy_node_threshold_percentage
   }
   capacity_type = "ON_DEMAND"
 
@@ -240,5 +287,6 @@ resource "aws_eks_node_group" "az_2a_ondemand" {
     aws_iam_role_policy_attachment.eks-node-AmazonEKSWorkerNodePolicy,
     aws_iam_role_policy_attachment.eks-node-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.eks-node-AmazonEC2ContainerRegistryReadOnly,
+    aws_eks_addon.core,
   ]
 }
