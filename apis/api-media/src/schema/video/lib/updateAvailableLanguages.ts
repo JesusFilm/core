@@ -393,7 +393,13 @@ async function collectNextLevel(
   for (const videoId of videoIds) {
     for (const parentId of await findContainerParentIds(videoId)) {
       if (visited.has(parentId)) {
-        logger.error(
+        // This guard fires for two different, indistinguishable-from-here
+        // situations: a genuine cycle in the children/parents relation (a
+        // data-integrity bug), or the documented "skewed" case above - an
+        // ancestor legitimately reachable at two different depths, which is
+        // not a bug. Logged at warn rather than error so the accepted,
+        // tolerated shape doesn't read as an incident on every occurrence.
+        logger.warn(
           { videoId: parentId, childVideoId: videoId },
           'Skipping an ancestor already recomputed in this availableLanguages cascade - a cycle or a re-converging path in the video children/parents relation'
         )

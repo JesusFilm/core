@@ -38,7 +38,7 @@ vi.mock('../../logger', () => ({
 
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 const mockedVideoCacheReset = vi.mocked(videoCacheReset)
-const mockedLoggerError = vi.mocked(logger.error)
+const mockedLoggerWarn = vi.mocked(logger.warn)
 
 // The recompute reads and writes availableLanguages inside an interactive
 // transaction so it can hold the video's row lock across both; run the
@@ -407,7 +407,7 @@ describe('cascading availableLanguages upward to the root', () => {
     // A and B were each written exactly once - the cycle back to A was
     // detected and abandoned rather than recomputing forever.
     expect(prismaMock.video.update).toHaveBeenCalledTimes(2)
-    expect(mockedLoggerError).toHaveBeenCalledWith(
+    expect(mockedLoggerWarn).toHaveBeenCalledWith(
       expect.objectContaining({ videoId: 'A' }),
       expect.stringContaining(
         'already recomputed in this availableLanguages cascade'
