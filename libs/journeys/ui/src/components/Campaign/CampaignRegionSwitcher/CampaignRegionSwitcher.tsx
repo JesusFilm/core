@@ -14,6 +14,12 @@ import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { CampaignTypography } from '../CampaignTypography'
 import type { CampaignRegion, CampaignTreeOf } from '../types'
 
+/** A plain style object: it spreads into another `sx`, unlike the array and function forms of `SxProps`. */
+type StyleObject = Exclude<
+  SxProps<Theme>,
+  ReadonlyArray<unknown> | ((theme: Theme) => unknown)
+>
+
 interface CampaignRegionSwitcherProps {
   block: CampaignTreeOf<'CampaignRegionSwitcherBlock'>
 }
@@ -76,9 +82,7 @@ export function switcherLayoutSx(
 }
 
 /** One region's frame, for its variant: a card, a full-width row or a pill. */
-export function regionFrameSx(
-  variant: CampaignSwitcherVariant
-): SxProps<Theme> {
+export function regionFrameSx(variant: CampaignSwitcherVariant): StyleObject {
   const pill = variant === CampaignSwitcherVariant.pills
   const list = variant === CampaignSwitcherVariant.list
   return {

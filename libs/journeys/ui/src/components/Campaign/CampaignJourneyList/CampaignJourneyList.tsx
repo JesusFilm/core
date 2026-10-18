@@ -16,6 +16,12 @@ import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { hasText } from '../types'
 import type { CampaignBlockOf, CampaignTreeOf } from '../types'
 
+/** A plain style object: it spreads into another `sx`, unlike the array and function forms of `SxProps`. */
+type StyleObject = Exclude<
+  SxProps<Theme>,
+  ReadonlyArray<unknown> | ((theme: Theme) => unknown)
+>
+
 interface CampaignJourneyListProps {
   block: CampaignTreeOf<'CampaignJourneyListBlock'>
 }
@@ -50,7 +56,7 @@ export function liveJourneyCards(
 /** One card's frame, for the list's `display`: a column, or an image beside the text from `md`. */
 export function journeyCardFrameSx(
   display: CampaignJourneyListDisplay
-): SxProps<Theme> {
+): StyleObject {
   return {
     flexDirection:
       display === CampaignJourneyListDisplay.list
@@ -66,7 +72,7 @@ export function journeyCardFrameSx(
 /** A card's image, for the list's `display`. */
 export function journeyCardImageSx(
   display: CampaignJourneyListDisplay
-): SxProps<Theme> {
+): StyleObject {
   return {
     display: 'block',
     width:
