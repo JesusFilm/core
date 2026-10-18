@@ -3,11 +3,14 @@
 The rollout targets EKS **1.36** and Aurora PostgreSQL **17.11** in staging and
 production.
 
-**Current state (2026-10-17): the committed default is `stage-1.36`.** Staging
+**Current state (2026-10-18): the committed default is `prod-prepare`.** Staging
 has completed `prepare`, `stage-addons` and every minor through 1.36: control
 plane, workers and add-ons are on 1.36, with Aurora still 13.23 on I/O-Optimized
 storage. Production is unchanged (control plane 1.32, workers 1.31, Aurora 13.23),
 apart from moving its EBS CSI driver to the Argo-managed 1.53.0 on 2026-10-18.
+`prod-prepare` is the next phase: production workers 1.31 → 1.32 and adoption
+of its self-managed kube-proxy, VPC CNI and CoreDNS as EKS add-ons at their
+current versions.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live

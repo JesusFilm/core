@@ -1,8 +1,8 @@
 variable "upgrade_phase" {
   type        = string
   description = "Reviewed upgrade phase. Apply prepare and each Kubernetes minor in order, staging before production, then Aurora staging before production."
-  # Last applied phase: staging reached 1.36 on 2026-10-17. Production unchanged.
-  default = "stage-1.36"
+  # Phase this PR applies. Last applied: stage-1.36 (staging reached 1.36 on 2026-10-17).
+  default = "prod-prepare"
 
   validation {
     condition = contains([
