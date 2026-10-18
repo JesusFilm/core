@@ -675,8 +675,23 @@ builder.mutationFields((t) => ({
       // Handle parent variant changes if published status changed
       const wasPublished = currentVariant.published
       const isNowPublished = input.published ?? currentVariant.published
+      // An explicit unpublish must reach reconciliation even when the
+      // published column does not change, so it overwrites any pending
+      // deferred-publish intent left there by an earlier request -- otherwise
+      // reconciliation would still publish the Variant once Mux is ready. A
+      // deferred publish needs the same treatment: nextPublished stays
+      // undefined while Mux is still processing, so the column itself does
+      // not change either.
+      const explicitUnpublish = input.published === false
+      const deferredPublish =
+        input.published === true && nextPublished === undefined
 
-      if (wasPublished !== isNowPublished || languageChanged) {
+      if (
+        wasPublished !== isNowPublished ||
+        explicitUnpublish ||
+        deferredPublish ||
+        languageChanged
+      ) {
         const reason = languageChanged
           ? 'video-variant-language-change'
           : 'video-variant-publication-change'

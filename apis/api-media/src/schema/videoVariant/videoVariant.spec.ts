@@ -1995,6 +1995,39 @@ describe('videoVariant', () => {
             })
           )
         })
+
+        it('should request reconciliation for an explicit unpublish even when the published column is already false', async () => {
+          // Simulates a deferred publish still pending in reconciliation: the
+          // column itself never flipped to true, but reconciliation would
+          // still publish the Variant once Mux is ready unless this unpublish
+          // overwrites that intent.
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: null,
+            share: null,
+            muxVideo: { readyToStream: false }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: false
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: false } }
+          })
+
+          expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+            expect.objectContaining({
+              videoVariantId: 'id',
+              published: false,
+              reason: 'video-variant-publication-change'
+            })
+          )
+        })
       })
 
       it('should fail if not publisher', async () => {
