@@ -158,17 +158,28 @@ describe('RegionSwitcherEdit', () => {
       const card = screen.getByTestId('RegionCardEdit-eurRegionId')
       const rounded = parseFloat(getComputedStyle(card).borderRadius) > 100
       expect(rounded).toBe(variant === CampaignSwitcherVariant.pills)
-      // A pill is the name and flags only: its Region Lines are not drawn.
-      if (variant === CampaignSwitcherVariant.pills)
-        expect(
-          screen.queryByTestId('RegionLineEdit-eurLineId')
-        ).not.toBeInTheDocument()
-      else
-        expect(
-          screen.getByTestId('RegionLineEdit-eurLineId')
-        ).toBeInTheDocument()
+      // Every variant keeps its Region Lines on the canvas so they stay editable.
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
     }
   )
+
+  it('keeps a Region Line selectable and editable in the pills variant', async () => {
+    renderSwitcher(
+      campaignWithRegions,
+      { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+      [],
+      CampaignSwitcherVariant.pills
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('RegionLineEdit-eurLineId'))
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'Your text' })).toBeVisible()
+    )
+  })
 
   it('shows each region’s name in the previewed language, falling back to the default name', async () => {
     const translated = {

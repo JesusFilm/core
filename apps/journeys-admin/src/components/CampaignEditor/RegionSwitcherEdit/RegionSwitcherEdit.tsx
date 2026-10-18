@@ -37,6 +37,7 @@ import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { regionDisplayName } from '../utils/regionDisplayName'
+import { regionLineColor } from '../utils/regionLineColor'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -147,9 +148,11 @@ function RegionCardEdit({
           />
         )}
       </Stack>
-      <CampaignRegionLines variant={variant}>
-        {lines.map((line) =>
-          line.__typename === 'CampaignTypographyBlock' ? (
+      <CampaignRegionLines variant={variant} showInPill>
+        {lines.map((line) => {
+          if (line.__typename !== 'CampaignTypographyBlock') return null
+          const lineVariant = line.typographyVariant ?? TypographyVariant.body1
+          return (
             <Box
               key={line.id}
               id={line.id}
@@ -180,14 +183,14 @@ function RegionCardEdit({
                 editing={selection.block?.id === line.id}
                 autoFocus={selection.block?.id === line.id}
                 onSelect={() => selectBlock(line.id)}
-                variant={line.typographyVariant ?? TypographyVariant.body1}
+                variant={lineVariant}
                 variantMapping={{ overline: 'p', caption: 'p' }}
                 align={line.align ?? undefined}
-                sx={{ color: line.color ?? 'var(--campaign-band-text)' }}
+                sx={{ color: regionLineColor(line.color, lineVariant) }}
               />
             </Box>
-          ) : null
-        )}
+          )
+        })}
       </CampaignRegionLines>
       <CampaignRegionCountries region={region} />
     </Box>

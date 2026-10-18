@@ -90,7 +90,7 @@ export {
   campaignSeoProps,
   campaignSocialImage
 } from './CampaignSeo'
-export { CampaignTypography } from './CampaignTypography'
+export { CampaignTypography, isHeadingVariant } from './CampaignTypography'
 export { CampaignVideo } from './CampaignVideo'
 export {
   CampaignCarouselArrows,

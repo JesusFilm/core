@@ -164,6 +164,24 @@ describe('CampaignRegionSwitcher', () => {
     expect(getComputedStyle(lines).flexShrink).toBe('0')
   })
 
+  it('caps the region lines at half the row from md in the list variant, so a long line wraps and leaves the name and chips their room', () => {
+    renderSwitcher(
+      switcherTree({ switcherVariant: CampaignSwitcherVariant.list })
+    )
+
+    const lines = within(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).getByTestId('CampaignRegionLines')
+    const rules = Array.from(document.styleSheets)
+      .flatMap((sheet) => Array.from(sheet.cssRules))
+      .map((rule) => rule.cssText)
+      .filter((cssText) =>
+        lines.className.split(' ').some((name) => cssText.includes(name))
+      )
+      .join(' ')
+    expect(rules).toMatch(/max-width:\s*50%/)
+  })
+
   it('keeps pills to the name and flags, without lines', () => {
     renderSwitcher(
       switcherTree({ switcherVariant: CampaignSwitcherVariant.pills })

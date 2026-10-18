@@ -108,18 +108,23 @@ export function regionNameVariant(
 
 interface CampaignRegionLinesProps {
   variant: CampaignSwitcherVariant
+  /** Show the lines in a pill too: the editor needs them there to edit. */
+  showInPill?: boolean
   children: ReactNode
 }
 
 /**
- * A region's Region Lines beneath its name (a pill has none). In a row they
- * keep their width, so a short code never wraps while the chips give way.
+ * A region's Region Lines beneath its name (a pill has none on the public
+ * page). In a row they keep their width up to half of it, so a short code
+ * never wraps while a long sentence wraps within its half and leaves the
+ * name and the chips their room.
  */
 export function CampaignRegionLines({
   variant,
+  showInPill = false,
   children
 }: CampaignRegionLinesProps): ReactElement | null {
-  if (variant === CampaignSwitcherVariant.pills) return null
+  if (variant === CampaignSwitcherVariant.pills && !showInPill) return null
   if (Children.toArray(children).length === 0) return null
   return (
     <Stack
@@ -129,7 +134,10 @@ export function CampaignRegionLines({
       sx={{
         flexGrow: variant === CampaignSwitcherVariant.list ? 1 : 0,
         flexShrink: 0,
-        maxWidth: '100%',
+        maxWidth:
+          variant === CampaignSwitcherVariant.list
+            ? { xs: '100%', md: '50%' }
+            : '100%',
         alignItems: 'flex-start'
       }}
     >

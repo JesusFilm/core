@@ -451,6 +451,77 @@ describe('CanvasSection region header', () => {
     expect(screen.getByTestId('CanvasRegionLine')).toHaveTextContent('EUR')
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
   })
+
+  function withLine(
+    overrides: Record<string, unknown>
+  ): typeof campaignWithRegions {
+    return {
+      ...campaignWithRegions,
+      blocks: campaignWithRegions.blocks.map((block) =>
+        block.id === 'eurLineId'
+          ? ({ ...block, ...overrides } as typeof block)
+          : block
+      )
+    }
+  }
+
+  function renderHeader(
+    campaignProp: typeof campaignWithRegions,
+    previewLanguageId: string
+  ): void {
+    render(
+      <StaticEditor
+        campaignProp={campaignProp}
+        initialState={{
+          pageKind: CampaignPageKind.regionTemplate,
+          regionId: 'eurRegionId',
+          previewLanguageId
+        }}
+      >
+        <CanvasSection block={regionHeader} />
+      </StaticEditor>
+    )
+  }
+
+  it('shows a line in the previewed language, falling back to the default text', () => {
+    renderHeader(
+      withLine({
+        contentTranslations: [
+          {
+            __typename: 'TranslatedValue',
+            languageId: '496',
+            value: 'EUR en français',
+            source: 'human'
+          }
+        ]
+      }),
+      '496'
+    )
+
+    expect(screen.getByTestId('CanvasRegionLine')).toHaveTextContent(
+      'EUR en français'
+    )
+  })
+
+  it('falls back to the default text when the line has no translation', () => {
+    renderHeader(withLine({}), '496')
+
+    expect(screen.getByTestId('CanvasRegionLine')).toHaveTextContent('EUR')
+  })
+
+  it('colours a heading line with the band heading colour and body text with the text colour', () => {
+    renderHeader(withLine({ typographyVariant: 'h3', color: null }), '529')
+    expect(screen.getByTestId('CanvasRegionLine')).toHaveStyle({
+      color: 'var(--campaign-band-heading)'
+    })
+  })
+
+  it('colours a body line with the band text colour', () => {
+    renderHeader(withLine({ typographyVariant: 'body1', color: null }), '529')
+    expect(screen.getByTestId('CanvasRegionLine')).toHaveStyle({
+      color: 'var(--campaign-band-text)'
+    })
+  })
 })
 
 describe('CanvasSection rich text in a column slot', () => {

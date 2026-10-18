@@ -48,7 +48,9 @@ import {
   CAMPAIGN_TEXT_FIELDS,
   CampaignTextBlock,
   CampaignTextField,
-  isCampaignTextBlock
+  blockTranslations,
+  isCampaignTextBlock,
+  translationValue
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { blockLabel } from '../../blockLabel'
@@ -57,6 +59,7 @@ import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { regionDisplayName } from '../../utils/regionDisplayName'
+import { regionLineColor } from '../../utils/regionLineColor'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
@@ -358,36 +361,49 @@ export const CAMPAIGN_SECTION_STRING_KEYS: Partial<
 interface CanvasRegionHeadingProps {
   name: string
   lines: CampaignBlock[]
+  previewLanguageId: string
+  defaultLanguageId: string
 }
 
 /** The previewed region's name and Region Lines as the public Region Header sets them; read-only, the lines edit on the Region Switcher. */
 function CanvasRegionHeading({
   name,
-  lines
+  lines,
+  previewLanguageId,
+  defaultLanguageId
 }: CanvasRegionHeadingProps): ReactElement {
   return (
     <>
       <CampaignRegionName>{name}</CampaignRegionName>
-      {lines.map((line) =>
-        line.__typename === 'CampaignTypographyBlock' &&
-        line.content != null &&
-        line.content.trim() !== '' ? (
+      {lines.map((line) => {
+        if (line.__typename !== 'CampaignTypographyBlock') return null
+        const content =
+          previewLanguageId === defaultLanguageId
+            ? (line.content ?? '')
+            : translationValue(
+                blockTranslations(line, 'content'),
+                previewLanguageId
+              ) ||
+              (line.content ?? '')
+        if (content.trim() === '') return null
+        const variant = line.typographyVariant ?? TypographyVariant.body1
+        return (
           <Typography
             key={line.id}
-            variant={line.typographyVariant ?? TypographyVariant.body1}
+            variant={variant}
             variantMapping={{ overline: 'p', caption: 'p' }}
             align={line.align ?? undefined}
             data-testid="CanvasRegionLine"
             sx={{
-              color: line.color ?? 'var(--campaign-band-text)',
+              color: regionLineColor(line.color, variant),
               whiteSpace: 'pre-line',
               wordBreak: 'break-word'
             }}
           >
-            {line.content}
+            {content}
           </Typography>
-        ) : null
-      )}
+        )
+      })}
     </>
   )
 }
@@ -626,6 +642,8 @@ export function CanvasSection({
                 campaign.defaultLanguageId
               )}
               lines={regionLines(campaign.blocks, currentRegion.id)}
+              previewLanguageId={previewLanguageId}
+              defaultLanguageId={campaign.defaultLanguageId}
             />
           )}
         {isCampaignTextBlock(block) &&
