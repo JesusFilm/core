@@ -40,7 +40,7 @@ import { logger } from '../../logger'
  * visible -- either hidden by an operator (searchable: false) or not yet
  * promoted (hasVideos: false).
  */
-async function findHiddenLanguageIds(): Promise<string[]> {
+export async function findHiddenLanguageIds(): Promise<string[]> {
   const withVariants = await mediaPrisma.videoVariant.groupBy({
     by: ['languageId']
   })
@@ -59,7 +59,7 @@ async function findHiddenLanguageIds(): Promise<string[]> {
   return hidden.map(({ id }) => id)
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   logger.info('reindexing languages with videos in algolia')
 
   const { count } = await reindexLanguagesWithVideosInAlgolia(logger)
