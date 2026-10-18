@@ -25,7 +25,7 @@ export interface SeedCampaignInput {
   title: string
   slug: string
   defaultLanguageId: string
-  /** The seventeen string values, already resolved for the default language. */
+  /** The eighteen string values, already resolved for the default language. */
   strings: Record<CampaignStringKey, string>
   /** The creation year, printed in the footer copyright line. */
   year: number
@@ -75,8 +75,7 @@ export async function seedCampaign(
       headerFont: null,
       bodyFont: null,
       labelFont: null,
-      radius: 'rounded',
-      buttonRadius: 'pill'
+      radius: 'rounded'
     }
   })
 

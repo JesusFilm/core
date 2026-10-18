@@ -29,9 +29,11 @@ import {
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import {
   campaignPermanentAddress,
-  campaignPublicAddress
+  campaignPublicAddresses
 } from '../campaignAddress'
+import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
+import { campaignStatusCopy } from '../PublishButton/statusCopy'
 
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
 
@@ -195,30 +197,19 @@ export function Settings({
 
   const published = campaign.status === CampaignStatus.published
   const permanentAddress = campaignPermanentAddress(campaign.slug)
-  const publicAddress = campaignPublicAddress(
+  const publicAddresses = campaignPublicAddresses(
     campaign.slug,
-    campaign.customDomains[0]?.name ?? null
+    campaign.customDomains.map(({ name }) => name)
   )
 
   return (
-    <Stack
-      spacing={5}
-      sx={{ p: 4, pt: 5, width: '100%' }}
-      data-testid="CampaignSettings"
-    >
-      <Typography variant="h6">{t('Settings')}</Typography>
+    <Stack spacing={5} data-testid="CampaignSettings">
       <Typography
         variant="body2"
         color="text.secondary"
         data-testid="CampaignStatusCopy"
       >
-        {published
-          ? t(
-              'Published. Edits are saved as you make them and reach the public page shortly.'
-            )
-          : t(
-              'Draft. Edits are saved as you make them; nothing is public until you publish.'
-            )}
+        {campaignStatusCopy(t, published)}
       </Typography>
       <TextField
         label={t('Title')}
@@ -227,7 +218,9 @@ export function Settings({
         onBlur={handleTitleBlur}
         onKeyDown={handleKeyDown}
         error={errors.title != null}
-        helperText={errors.title}
+        helperText={
+          errors.title ?? `${textLength(title)} / ${TITLE_MAX_LENGTH}`
+        }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Title') } }}
       />
@@ -246,10 +239,13 @@ export function Settings({
                   address: permanentAddress
                 })}
               </Box>
+              {publicAddresses.map((address) => (
+                <Box key={address} component="span" sx={{ display: 'block' }}>
+                  {t('Current public address: {{address}}', { address })}
+                </Box>
+              ))}
               <Box component="span" sx={{ display: 'block' }}>
-                {t('Current public address: {{address}}', {
-                  address: publicAddress
-                })}
+                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
               </Box>
             </>
           )

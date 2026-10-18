@@ -1,21 +1,20 @@
 import Alert from '@mui/material/Alert'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import X2Icon from '@core/shared/ui/icons/X2'
-
+import { CampaignTextField } from '../../../../__generated__/globalTypes'
+import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import {
   CampaignVideoTextInput,
   useCampaignVideoBlockUpdateMutation
 } from '../../../libs/useCampaignVideoBlockUpdateMutation'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
 import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
 /** The API's caps on a Campaign Video's overrides (PRD §15). */
 const TITLE_MAX = 200
@@ -25,35 +24,65 @@ type VideoTextField = keyof CampaignVideoTextInput
 
 interface CarouselCardEditProps {
   block: CampaignVideoBlock
-  onClose?: () => void
 }
 
 /**
  * The Edit of a carousel card: the video it shows and its title and
  * description overrides. Each field is written when it loses focus, as one
- * Command; an empty field falls back to the video's own text.
+ * Command; an empty field falls back to the video's own text. While
+ * previewing a non-default language each field is that language's
+ * translation, written through `campaignTranslationSet` instead.
  */
 export function CarouselCardEdit({
-  block,
-  onClose
+  block
 }: CarouselCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { addStyle, error } = useCampaignStyleCommand()
   const writeText = useCampaignVideoBlockUpdateMutation()
-  const [values, setValues] = useState({
-    title: block.title ?? '',
-    description: block.description ?? ''
-  })
+  const {
+    campaign,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
+  const {
+    addTranslation,
+    error: translationError,
+    clearError: clearTranslationError
+  } = useCampaignTranslationCommand()
+  const translating = previewLanguageId !== campaign.defaultLanguageId
+  const committed = translating
+    ? {
+        title: translationValue(block.titleTranslations, previewLanguageId),
+        description: translationValue(
+          block.descriptionTranslations,
+          previewLanguageId
+        )
+      }
+    : { title: block.title ?? '', description: block.description ?? '' }
+  const [values, setValues] = useState(committed)
+
+  const { title: committedTitle, description: committedDescription } = committed
 
   useEffect(() => {
-    setValues({
-      title: block.title ?? '',
-      description: block.description ?? ''
-    })
-  }, [block.title, block.description])
+    setValues({ title: committedTitle, description: committedDescription })
+  }, [committedTitle, committedDescription, previewLanguageId])
+
+  useEffect(() => {
+    clearTranslationError()
+  }, [previewLanguageId, clearTranslationError])
 
   function handleBlur(field: VideoTextField): void {
     const value = values[field].trim()
+    if (translating) {
+      if (value === committed[field]) return
+      addTranslation({
+        block,
+        field: CampaignTextField[field],
+        languageId: previewLanguageId,
+        value,
+        previous: committed[field]
+      })
+      return
+    }
     const next = value === '' ? null : value
     if (next === (block[field] ?? null)) return
     addStyle<CampaignVideoBlock, CampaignVideoTextInput>({
@@ -67,26 +96,12 @@ export function CarouselCardEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignCarouselCardEdit"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Edit')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t('Video card')}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
-      {error != null && (
+      {(error ?? translationError) != null && (
         <Alert severity="error" role="alert">
-          {error}
+          {error ?? translationError}
         </Alert>
       )}
       <CanvasMedia media={block} />
@@ -97,6 +112,7 @@ export function CarouselCardEdit({
           setValues((current) => ({ ...current, title: event.target.value }))
         }
         onBlur={() => handleBlur('title')}
+        placeholder={translating ? (block.title ?? '') : undefined}
         helperText={`${values.title.length} / ${TITLE_MAX}`}
         slotProps={{ htmlInput: { maxLength: TITLE_MAX } }}
         size="small"
@@ -112,6 +128,7 @@ export function CarouselCardEdit({
           }))
         }
         onBlur={() => handleBlur('description')}
+        placeholder={translating ? (block.description ?? '') : undefined}
         helperText={`${values.description.length} / ${DESCRIPTION_MAX}`}
         slotProps={{ htmlInput: { maxLength: DESCRIPTION_MAX } }}
         size="small"

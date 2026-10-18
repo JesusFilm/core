@@ -1,6 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
 
-import { CAMPAIGN_POSSIBLE_TYPES } from './campaignPossibleTypes'
+import { CAMPAIGN_POSSIBLE_TYPES } from '@core/journeys/ui/Campaign/libs/campaignPossibleTypes'
 
 export const cache = (): InMemoryCache =>
   new InMemoryCache({

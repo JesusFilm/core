@@ -42,7 +42,10 @@ const ID_FIELDS = new Set([
 ])
 const TIMESTAMP_FIELDS = new Set(['createdAt', 'updatedAt', 'deletedAt'])
 // Column defaults the seed leaves to Prisma but a stored row always carries.
-const COLUMN_DEFAULTS: Record<string, unknown> = { backgroundKind: 'none' }
+const COLUMN_DEFAULTS: Record<string, unknown> = {
+  backgroundKind: 'none',
+  snapshotEdited: false
+}
 
 /**
  * Strip nulls, timestamps and column defaults, and replace every id with a
@@ -317,7 +320,7 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('seeds the CampaignTheme on the Light preset with null fonts, radius rounded and buttonRadius pill', async () => {
+    it('seeds the CampaignTheme on the Light preset with null fonts, radius rounded and buttonRadius veryRounded', async () => {
       await create()
       expect(prismaMock.campaignTheme.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -335,7 +338,7 @@ describe('campaignCreate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'rounded',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         })
       })
     })
@@ -665,7 +668,7 @@ describe('campaignCreate', () => {
   })
 
   describe('strings seed', () => {
-    it('seeds the 17 CampaignString rows with the PRD §14 English wording', async () => {
+    it('seeds the 18 CampaignString rows with the PRD §14 English wording', async () => {
       await create()
       expect(prismaMock.campaignString.createMany).toHaveBeenCalledTimes(1)
       const rows = firstCallData<
@@ -688,12 +691,13 @@ describe('campaignCreate', () => {
         { key: 'totalVisitors', value: 'Total visitors' },
         { key: 'topCountry', value: 'Top country' },
         { key: 'seeAllOnWatch', value: 'See all on Watch' },
-        { key: 'videos', value: 'videos' }
+        { key: 'videos', value: 'videos' },
+        { key: 'noJourneys', value: 'Journeys for this region are coming soon' }
       ])
       expect(rows.every((row) => row.campaignId === 'id-1')).toBe(true)
     })
 
-    it("uses the admin i18next bundle's translation when the default language is not English and has that exact string", async () => {
+    it("uses the libs-journeys-ui bundle's translation when the default language is not English and has that exact string", async () => {
       mockFetchLanguage.mockResolvedValue({ id: '21028', bcp47: 'es' })
       await create({ defaultLanguageId: '21028' })
       const rows = firstCallData<Array<{ key: string; value: string }>>(
@@ -702,7 +706,7 @@ describe('campaignCreate', () => {
       const byKey = Object.fromEntries(
         rows.map(({ key, value }) => [key, value])
       )
-      // "Copy link" exists in the Spanish admin bundle; the other sixteen do
+      // "Copy link" exists in the mocked Spanish bundle; the other seventeen do
       // not and keep their English wording.
       expect(byKey.copy).toBe('Copiar enlace')
       expect(byKey.allRegions).toBe('All regions')
@@ -795,6 +799,24 @@ describe('campaignCreate', () => {
     })
   })
 
+  describe('slug race', () => {
+    it('answers CONFLICT (field slug), not a raw Prisma error, when the retry loses the race too', async () => {
+      const p2002 = new Prisma.PrismaClientKnownRequestError(
+        'unique constraint failed',
+        { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
+      )
+      prismaMock.campaign.create.mockRejectedValue(p2002)
+
+      const result = await create()
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'slug'
+      })
+      expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
+    })
+  })
+
   describe('response', () => {
     it('returns the full campaign so the editor opens it with no second fetch', async () => {
       const result = await create()
@@ -826,12 +848,12 @@ describe('campaignCreate', () => {
           contrastBackgroundColor: '#26262E',
           contrastTextColor: '#FFFFFF',
           radius: 'rounded',
-          buttonRadius: 'pill'
+          buttonRadius: 'veryRounded'
         },
         pages: [{ kind: 'landing' }, { kind: 'regionTemplate' }],
         regions: []
       })
-      expect(campaign.strings).toHaveLength(17)
+      expect(campaign.strings).toHaveLength(18)
       expect(campaign.blocks).toHaveLength(18)
       expect(campaign.blocks.map((block: any) => block.__typename)).toEqual(
         fixture.blocks.map((block) => block.typename)

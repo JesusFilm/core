@@ -46,3 +46,18 @@ export function blockLabel(
       return t('Button')
   }
 }
+
+/** The name of a region card on the canvas and in the Navigator. */
+export function regionCardLabel(t: Translate): string {
+  return t('Region card')
+}
+
+/** The name of a Region Line, the text a region card carries. */
+export function regionLineLabel(t: Translate): string {
+  return t('Region Line')
+}
+
+/** The name of one Share Language row of a Region Share section. */
+export function shareLanguageLabel(t: Translate): string {
+  return t('Share language')
+}

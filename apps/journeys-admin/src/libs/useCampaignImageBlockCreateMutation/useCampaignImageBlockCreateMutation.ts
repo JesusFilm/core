@@ -20,17 +20,20 @@ import {
   campaignBlockCreateUpdate,
   campaignBlockSlotWrite
 } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export type CampaignImageBlock = GetCampaign_campaign_blocks_CampaignImageBlock
 
 export const CAMPAIGN_IMAGE_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignImageBlockCreate(
     $input: CampaignImageBlockCreateInput!
     $languageId: ID
   ) {
     campaignImageBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `
@@ -69,6 +72,7 @@ export function newOwnedImageBlock(
     accentColor: null,
     src,
     alt: null,
+    altTranslations: [],
     width: null,
     height: null
   }

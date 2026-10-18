@@ -41,18 +41,48 @@ import {
   GetCampaign_campaign_regions as CampaignRegion,
   GetCampaign_campaign_regions_languages as CampaignRegionLanguage
 } from '../../../../__generated__/GetCampaign'
-import { JourneyStatus } from '../../../../__generated__/globalTypes'
+import {
+  CampaignStringKey,
+  JourneyStatus
+} from '../../../../__generated__/globalTypes'
+import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
+import { shareLanguageLabel } from '../blockLabel'
 import { campaignShareLink, journeyPreviewAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
+import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
+import { JourneyPicker } from '../Pickers/JourneyPicker'
+import { useShareLanguageLinkCommand } from '../utils/useShareLanguageLinkCommand'
 import { useSnapshotRefreshCommand } from '../utils/useSnapshotRefreshCommand'
 
 interface ShareSectionEditProps {
   /** The Share section this editor sits in. */
   block: Pick<CampaignBlock, 'id'>
+}
+
+/**
+ * A Campaign String as the visitor reads it in the previewed language: its
+ * translation there, else its default-language wording, else `fallback`
+ * (what the public page shows for a row the campaign lacks or left blank).
+ */
+export function campaignStringText(
+  campaign: Pick<Campaign, 'strings' | 'defaultLanguageId'>,
+  key: CampaignStringKey,
+  previewLanguageId: string,
+  fallback: string
+): string {
+  const string = campaign.strings.find((candidate) => candidate.key === key)
+  if (string == null) return fallback
+  const translated =
+    previewLanguageId === campaign.defaultLanguageId
+      ? ''
+      : translationValue(string.valueTranslations, previewLanguageId)
+  if (translated.trim() !== '') return translated
+  return string.value.trim() === '' ? fallback : string.value
 }
 
 /** The editor label of a Share Language: autonym plus local name when they differ. */
@@ -181,6 +211,8 @@ function PhoneFrame({ children }: PhoneFrameProps): ReactElement {
 }
 
 interface ShareLanguageRowProps {
+  /** The Share section the row sits in; clicking the row selects it. */
+  hostBlockId: string
   campaign: Campaign
   region: CampaignRegion
   regionLanguage: CampaignRegionLanguage
@@ -196,11 +228,12 @@ interface ShareLanguageRowProps {
  * frame, the Share Link, Copy link and Download QR code. A live-published
  * journey previews in the frame with Refresh from journey, Swap and Unlink
  * beside it. An Unlinked Language shows the frame with the "Pick a journey"
- * call to action that opens the paste field, copy and download disabled. A
+ * call to action that opens the journey picker, copy and download disabled. A
  * journey that is no longer published shows the "Journey unpublished"
  * warning in the frame instead of that call to action.
  */
 function ShareLanguageRow({
+  hostBlockId,
   campaign,
   region,
   regionLanguage,
@@ -211,11 +244,39 @@ function ShareLanguageRow({
   onCopied
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { previewLanguageId },
+    selectBlock
+  } = useCampaignEditor()
+  const rowId = `${hostBlockId}__${regionLanguage.languageId}`
   const [pasting, setPasting] = useState(false)
   const state = shareLanguageState(regionLanguage)
   const shortLink =
     state === 'live' ? campaignShareLink(regionLanguage.qrCode) : undefined
   const slug = regionLanguage.journey?.slug
+  const openLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.open,
+    previewLanguageId,
+    t('Open')
+  )
+  const copyLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.copy,
+    previewLanguageId,
+    t('Copy link')
+  )
+  const downloadLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.downloadQr,
+    previewLanguageId,
+    t('Download QR code')
+  )
+
+  async function handleLink(url: string): Promise<void> {
+    await onLink(url)
+    setPasting(false)
+  }
 
   async function handleCopy(): Promise<void> {
     if (shortLink == null) return
@@ -234,15 +295,29 @@ function ShareLanguageRow({
   return (
     <Stack
       spacing={2}
+      id={rowId}
       data-testid={`ShareLanguageRow-${regionLanguage.languageId}`}
       data-state={state}
+      data-hoverable
+      onClick={(event: MouseEvent<HTMLElement>) => {
+        stop(event)
+        selectBlock(hostBlockId)
+      }}
       sx={{
+        position: 'relative',
+        cursor: 'pointer',
         p: 2,
         borderRadius: 1,
         backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
+        border: '1px solid var(--campaign-band-border)',
+        ...HOVER_OUTLINE_SX
       }}
     >
+      <SelectionBadge
+        id={rowId}
+        label={shareLanguageLabel(t)}
+        selected={false}
+      />
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <Typography
           variant="subtitle1"
@@ -378,13 +453,13 @@ function ShareLanguageRow({
               >
                 {shortLink.replace(/^https?:\/\//, '')}
               </Typography>
-              <Tooltip title={t('Open')}>
+              <Tooltip title={openLabel}>
                 <IconButton
                   component="a"
                   href={shortLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={t('Open')}
+                  aria-label={openLabel}
                   size="small"
                   onClick={stop}
                 >
@@ -411,7 +486,7 @@ function ShareLanguageRow({
                   void handleCopy()
                 }}
               >
-                {t('Copy link')}
+                {copyLabel}
               </Button>
               <Button
                 size="small"
@@ -425,7 +500,7 @@ function ShareLanguageRow({
                   handleDownload()
                 }}
               >
-                {t('Download QR code')}
+                {downloadLabel}
               </Button>
             </Stack>
           </Stack>
@@ -471,16 +546,23 @@ function ShareLanguageRow({
             </Stack>
           )}
           {pasting && (
-            <JourneyPasteField
-              label={
-                state === 'unlinked' ? t('Journey link') : t('New journey link')
-              }
-              autoFocus
-              onLink={async (url) => {
-                await onLink(url)
-                setPasting(false)
-              }}
-            />
+            <Stack spacing={1.5}>
+              <JourneyPicker
+                label={
+                  state === 'unlinked'
+                    ? t('Search your journeys')
+                    : t('Search for a new journey')
+                }
+                statuses={[JourneyStatus.published]}
+                autoFocus
+                onLink={handleLink}
+              />
+              <JourneyPasteField
+                label={t('or paste a link')}
+                compact
+                onLink={handleLink}
+              />
+            </Stack>
           )}
         </Stack>
       </Stack>
@@ -493,17 +575,21 @@ function ShareLanguageRow({
  * (every Share Language, the unlinked ones marked hidden until a journey is
  * linked), then every language of the region being rendered as the visitor
  * will see it, and "Add language" offering the Page Languages first, then
- * the full catalogue through the language autocomplete. Add, remove, link,
- * swap and unlink are not Commands (linking creates the Campaign QR Code on
- * the server and undo does not touch it); "Refresh from journey" is one,
- * confirmed only when the author edited the snapshot.
+ * the full catalogue through the language autocomplete. Add, remove and
+ * unlink are plain saves; linking and swapping a journey are Commands
+ * (a swap retargets the same short link, so undo is safe), and so is "Refresh
+ * from journey", confirmed only when the author edited the snapshot.
  */
 export function ShareSectionEdit({
   block
 }: ShareSectionEditProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const { campaign, currentRegion } = useCampaignEditor()
+  const {
+    campaign,
+    currentRegion,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const containerRef = useRef<HTMLDivElement>(null)
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529'
@@ -511,6 +597,7 @@ export function ShareSectionEdit({
   const [languageCreate] = useCampaignRegionLanguageCreateMutation()
   const [languageUpdate] = useCampaignRegionLanguageUpdateMutation()
   const [languageDelete] = useCampaignRegionLanguageDeleteMutation()
+  const { link } = useShareLanguageLinkCommand()
   const { requestRefresh, pending, confirmRefresh, cancelRefresh } =
     useSnapshotRefreshCommand()
   const regionLanguages = useMemo(
@@ -583,10 +670,18 @@ export function ShareSectionEdit({
   }
 
   function handleCopied(): void {
-    enqueueSnackbar(t('Link copied'), {
-      variant: 'success',
-      preventDuplicate: true
-    })
+    enqueueSnackbar(
+      campaignStringText(
+        campaign,
+        CampaignStringKey.copied,
+        previewLanguageId,
+        t('Link copied')
+      ),
+      {
+        variant: 'success',
+        preventDuplicate: true
+      }
+    )
   }
 
   return (
@@ -630,17 +725,14 @@ export function ShareSectionEdit({
         {regionLanguages.map((regionLanguage) => (
           <ShareLanguageRow
             key={regionLanguage.id}
+            hostBlockId={block.id}
             campaign={campaign}
             region={region}
             regionLanguage={regionLanguage}
             onRemove={() => {
               void handleRemove(regionLanguage)
             }}
-            onLink={async (url) => {
-              await languageUpdate({
-                variables: { id: regionLanguage.id, input: { url } }
-              })
-            }}
+            onLink={(url) => link(regionLanguage, url)}
             onUnlink={() => handleUnlink(regionLanguage)}
             onRefresh={() => requestRefresh(regionLanguage)}
             onCopied={handleCopied}

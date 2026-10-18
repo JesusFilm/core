@@ -7,7 +7,6 @@ export {
   CampaignAnalyticsPanel,
   GET_CAMPAIGN_STATS
 } from './CampaignAnalytics'
-export { buildWorldMap } from './CampaignAnalytics/WorldMap'
 export { CampaignButton, resolveCampaignAction } from './CampaignButton'
 export { CampaignColumns, columnsGridTemplate } from './CampaignColumns'
 export {
@@ -83,9 +82,11 @@ export {
 export { CampaignTypography } from './CampaignTypography'
 export { CampaignVideo } from './CampaignVideo'
 export {
+  CampaignCarouselArrows,
   CampaignVideoCarousel,
   carouselCards,
-  hasCarouselCards
+  hasCarouselCards,
+  useCarouselScroll
 } from './CampaignVideoCarousel'
 export {
   campaignFontsHref,
@@ -99,6 +100,7 @@ export {
   resolvePageLanguage
 } from './libs/resolvePageLanguage'
 export {
+  CAMPAIGN_BUTTON_RADIUS_PX,
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
@@ -121,13 +123,20 @@ export {
 } from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
 export { watchUrl } from './libs/watchUrl'
-export { hasText, isCampaignSection } from './types'
+export {
+  CAMPAIGN_EXTRA_TYPENAMES,
+  CAMPAIGN_NON_SECTION_TYPENAMES,
+  hasText,
+  isCampaignSection,
+  isExtra
+} from './types'
 export type {
   CampaignBlock,
   CampaignBlockOf,
   CampaignPublic,
   CampaignRegion,
   CampaignSectionBlock,
+  CampaignSectionTypename,
   CampaignSectionTree,
   CampaignTree,
   CampaignTreeOf

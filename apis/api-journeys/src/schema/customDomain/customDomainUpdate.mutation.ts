@@ -5,14 +5,15 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import {
+  campaignLanguageTags,
   campaignPagePaths,
   enqueueCampaignRevalidation
 } from '../campaign/revalidateCampaign'
-import { badUserInput } from '../campaign/validation'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
 import { CustomDomainUpdateInput } from './inputs'
+import { updateTeamShortLinks } from './service'
 
 /**
  * A Campaign Root change moves the domain form of the old and new campaign
@@ -29,10 +30,16 @@ async function revalidateCampaignRootChange(
     where: { id: { in: ids } },
     include: { regions: true }
   })
-  const paths = campaigns.flatMap((campaign) =>
-    campaignPagePaths({ ...campaign, hostnames: [hostname] })
+  const paths = await Promise.all(
+    campaigns.map(async (campaign) =>
+      campaignPagePaths({
+        ...campaign,
+        hostnames: [hostname],
+        languageTags: await campaignLanguageTags(campaign.id)
+      })
+    )
   )
-  await enqueueCampaignRevalidation(paths)
+  await enqueueCampaignRevalidation(paths.flat())
 }
 
 builder.mutationField('customDomainUpdate', (t) =>
@@ -57,8 +64,7 @@ builder.mutationField('customDomainUpdate', (t) =>
         })
       }
 
-      const action = 'campaignId' in input ? Action.Manage : Action.Update
-      if (!canAccessCustomDomain(action, customDomain, context.user)) {
+      if (!canAccessCustomDomain(Action.Update, customDomain, context.user)) {
         throw new GraphQLError('user is not allowed to update custom domain', {
           extensions: { code: 'FORBIDDEN' }
         })
@@ -107,9 +113,9 @@ builder.mutationField('customDomainUpdate', (t) =>
           })
 
           if (campaign == null)
-            throw badUserInput(
+            throw new GraphQLError(
               'campaign not found for this custom domain team',
-              'campaignId'
+              { extensions: { code: 'FORBIDDEN' } }
             )
 
           campaignUpdate = { connect: { id: campaign.id } }
@@ -135,6 +141,15 @@ builder.mutationField('customDomainUpdate', (t) =>
             customDomain.name
           )
       }
+
+      const routeAllChanged =
+        input.routeAllTeamJourneys != null &&
+        input.routeAllTeamJourneys !== customDomain.routeAllTeamJourneys
+      const journeyCollectionChanged =
+        'journeyCollectionId' in input &&
+        (input.journeyCollectionId ?? null) !== customDomain.journeyCollectionId
+      if (routeAllChanged || journeyCollectionChanged)
+        await updateTeamShortLinks(customDomain.teamId)
 
       return updated
     }

@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoCarouselBlockPlaylistImport
@@ -19,6 +19,18 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
   value: string;
   primary: boolean;
   language: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_title_language;
+}
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description_language;
 }
 
 export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_images {
@@ -50,6 +62,7 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
    */
   childrenCount: number;
   title: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_title[];
+  description: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_description[];
   images: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_images[];
   variant: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant | null;
 }
@@ -66,6 +79,26 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
 }
 
 export type CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo = CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video | CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_MuxVideo | CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_YouTube;
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport {
   __typename: "CampaignVideoBlock";
@@ -116,6 +149,8 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
    * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
    */
   mediaVideo: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo | null;
+  titleTranslations: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_titleTranslations[];
+  descriptionTranslations: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_descriptionTranslations[];
 }
 
 export interface CampaignVideoCarouselBlockPlaylistImport {

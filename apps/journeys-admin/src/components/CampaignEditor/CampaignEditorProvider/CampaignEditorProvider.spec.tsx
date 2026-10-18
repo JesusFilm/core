@@ -7,8 +7,8 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
+import { Breadcrumb } from '../Breadcrumb'
 import { Canvas } from '../Canvas'
-import { ContextBar } from '../ContextBar'
 import { campaign, campaignWithColumns } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { SelectionProbe, StaticEditor, frameBody } from '../testing'
@@ -69,7 +69,7 @@ function renderEditor(
       <SelectionProbe />
       <RegionPageCommand onUndo={onUndo} />
       <PageKindCanvas />
-      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <Breadcrumb />
     </StaticEditor>
   )
 }
@@ -132,7 +132,9 @@ describe('CampaignEditorProvider', () => {
       pageKind: CampaignPageKind.landing,
       previewLanguageId: '529',
       selectedBlockId: 'heroId',
-      editRequest: 0
+      panel: 'none',
+      inspectorTab: 'style',
+      navigatorExpandRequest: 0
     }
 
     it('changes the preview language without touching the selection', () => {
@@ -154,8 +156,17 @@ describe('CampaignEditorProvider', () => {
         pageKind: CampaignPageKind.regionTemplate,
         previewLanguageId: '529',
         selectedBlockId: undefined,
-        editRequest: 0
+        panel: 'none',
+        inspectorTab: 'style',
+        navigatorExpandRequest: 0
       })
+    })
+
+    it('counts Navigator expand-all requests', () => {
+      expect(
+        reducer(state, { type: 'ToggleNavigatorExpandAction' })
+          .navigatorExpandRequest
+      ).toBe(1)
     })
 
     it('focuses a page and a block together for undo', () => {
@@ -180,8 +191,24 @@ describe('CampaignEditorProvider', () => {
       })
     })
 
-    it('counts edit requests', () => {
-      expect(reducer(state, { type: 'RequestEditAction' }).editRequest).toBe(1)
+    it('opens a rail panel and closes it when the same one is named again', () => {
+      const opened = reducer(state, { type: 'SetPanelAction', panel: 'add' })
+      expect(opened.panel).toBe('add')
+      expect(
+        reducer(opened, { type: 'SetPanelAction', panel: 'navigator' }).panel
+      ).toBe('navigator')
+      expect(
+        reducer(opened, { type: 'SetPanelAction', panel: 'add' }).panel
+      ).toBe('none')
+    })
+
+    it('sets the Inspector tab without touching the selection', () => {
+      expect(
+        reducer(state, {
+          type: 'SetInspectorTabAction',
+          inspectorTab: 'settings'
+        })
+      ).toEqual({ ...state, inspectorTab: 'settings' })
     })
   })
 
@@ -233,7 +260,7 @@ describe('CampaignEditorProvider', () => {
       >
         <Hotkeys />
         <SelectionProbe />
-        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <Breadcrumb />
       </StaticEditor>
     )
     expect(screen.getByTestId('CampaignBreadcrumb')).toHaveTextContent(

@@ -174,8 +174,8 @@ function resolveChatModel():
     apiKey
   })
   // Gateway-specific id format with `/` separators (see
-  // scripts/apologist-stream-test.sh). Overridable via env for rotation
-  // without redeploy.
+  // scripts/apologist-stream-test.sh). Model environment changes take effect
+  // after Journeys is redeployed with the updated variables.
   const modelId = process.env.APOLOGIST_MODEL_ID ?? 'openai/gpt/4o-mini'
   return {
     ok: true,

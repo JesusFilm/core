@@ -24,6 +24,10 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 export const PALETTE_SIZE = 8
 
 const HEX_PATTERN = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i
+const FULL_HEX_PATTERN = /^#?[0-9a-f]{6}$/i
+
+/** How long a typed or dragged colour settles before it commits. */
+export const COMMIT_DEBOUNCE_MS = 300
 
 /**
  * The editor's pure hex rule, mirroring the API's `assertHex`: trim, accept
@@ -65,7 +69,7 @@ interface PaletteColorPickerProps {
   fallback?: string
   /** Names the picker for assistive technology and the hex field. */
   label: string
-  /** One call per commit (picker blur, Enter in the hex field, a palette swatch) with `#RRGGBB`. */
+  /** One call per pick (a palette swatch, a complete hex, the colour area settling, Enter or blur) with `#RRGGBB`. */
   onCommit: (hex: string) => void
   /** Offered when the field may inherit; writes null. */
   onClear?: () => void
@@ -75,11 +79,14 @@ interface PaletteColorPickerProps {
 
 /**
  * The one colour picker every campaign colour goes through: a hex area, a
- * hex field and the campaign's Palette as eight swatches, newest first. The
- * colour commits when a drag on the area ends, on blur (or Enter, or a
- * swatch), as one call to `onCommit`;
- * the Palette is saved through `campaignUpdate` at the same moment, outside
- * undo. The only pre-validation is the pure hex rule.
+ * hex field and the campaign's Palette as eight swatches, newest first. A
+ * colour commits as it is picked, as one call to `onCommit`: a swatch at
+ * once, a complete six-digit hex or a keyboard step on the colour area after a
+ * short debounce (so a partial hex never commits), a pointer drag on the
+ * colour area when the pointer lifts, and a shorthand hex on
+ * Enter or blur. Clicking away with nothing new commits nothing. The Palette
+ * is saved through `campaignUpdate` at the same moment, outside undo. The
+ * only pre-validation is the pure hex rule.
  */
 export function PaletteColorPicker({
   value,
@@ -98,10 +105,58 @@ export function PaletteColorPicker({
   const [text, setText] = useState(committed)
   const [dirty, setDirty] = useState(false)
   const [error, setError] = useState<string>()
-  /** The last colour the area produced, read when the drag ends. */
-  const areaDraft = useRef<string | undefined>(undefined)
+  const pendingTimer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const pendingHex = useRef<string>(undefined)
+  const commitHexRef = useRef<(hex: string) => void>(() => undefined)
+  const stopListeningRef = useRef<() => void>(undefined)
+
+  function cancelPendingCommit(): void {
+    clearTimeout(pendingTimer.current)
+    pendingTimer.current = undefined
+    pendingHex.current = undefined
+  }
+
+  function scheduleCommit(hex: string): void {
+    cancelPendingCommit()
+    pendingHex.current = hex
+    pendingTimer.current = setTimeout(() => {
+      cancelPendingCommit()
+      commitHexRef.current(hex)
+    }, COMMIT_DEBOUNCE_MS)
+  }
+
+  // A drag on the colour area commits once, when the pointer lifts anywhere
+  // (react-colorful tracks the drag on the document), not on every pause.
+  function startDragging(): void {
+    if (stopListeningRef.current != null) return
+    function handlePointerEnd(): void {
+      stopListeningRef.current?.()
+      const hex = pendingHex.current
+      if (hex != null) commitHexRef.current(hex)
+    }
+    document.addEventListener('pointerup', handlePointerEnd)
+    document.addEventListener('pointercancel', handlePointerEnd)
+    stopListeningRef.current = () => {
+      document.removeEventListener('pointerup', handlePointerEnd)
+      document.removeEventListener('pointercancel', handlePointerEnd)
+      stopListeningRef.current = undefined
+    }
+  }
+
+  // A pick still settling when the picker goes away is committed, not lost.
+  useEffect(
+    () => () => {
+      stopListeningRef.current?.()
+      const hex = pendingHex.current
+      cancelPendingCommit()
+      if (hex != null) commitHexRef.current(hex)
+    },
+    []
+  )
 
   useEffect(() => {
+    // The colour changed elsewhere (Reset, undo): a pick still settling is stale.
+    cancelPendingCommit()
     setDraft(committed)
     setText(committed)
     setDirty(false)
@@ -132,6 +187,7 @@ export function PaletteColorPicker({
   }
 
   function commitHex(hex: string): void {
+    cancelPendingCommit()
     setDraft(hex)
     setText(hex)
     setDirty(false)
@@ -139,6 +195,8 @@ export function PaletteColorPicker({
     savePalette(hex)
     if (hex !== value) onCommit(hex)
   }
+
+  commitHexRef.current = commitHex
 
   function commit(): void {
     if (!dirty) return
@@ -152,19 +210,20 @@ export function PaletteColorPicker({
 
   function handlePickerChange(next: string): void {
     const hex = next.toUpperCase()
-    areaDraft.current = hex
     setDraft(hex)
     setText(hex)
     setDirty(true)
     setError(undefined)
+    if (stopListeningRef.current != null) {
+      pendingHex.current = hex
+      return
+    }
+    scheduleCommit(hex)
   }
 
-  /** A drag (or arrow-key step) on the area ends: commit at once, no click-out needed. */
-  function handleAreaEnd(): void {
-    const hex = areaDraft.current
-    if (hex == null) return
-    areaDraft.current = undefined
-    commitHex(hex)
+  function handleClear(): void {
+    cancelPendingCommit()
+    onClear?.()
   }
 
   function handleTextChange(event: ChangeEvent<HTMLInputElement>): void {
@@ -172,8 +231,11 @@ export function PaletteColorPicker({
     setText(next)
     setDirty(true)
     setError(undefined)
+    cancelPendingCommit()
     const hex = normalizeHex(next)
-    if (hex != null) setDraft(hex)
+    if (hex == null) return
+    setDraft(hex)
+    if (FULL_HEX_PATTERN.test(next.trim())) scheduleCommit(hex)
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>): void {
@@ -196,7 +258,7 @@ export function PaletteColorPicker({
       aria-label={label}
       onBlur={handleBlur}
     >
-      <Box onPointerUp={handleAreaEnd} onKeyUp={handleAreaEnd}>
+      <Box onPointerDown={startDragging}>
         <HexColorPicker
           color={draft}
           onChange={handlePickerChange}
@@ -235,7 +297,7 @@ export function PaletteColorPicker({
             size="small"
             color="secondary"
             disabled={value == null}
-            onClick={onClear}
+            onClick={handleClear}
           >
             {clearLabel ?? t('Clear')}
           </Button>

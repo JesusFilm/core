@@ -1,5 +1,6 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
+import ButtonBase from '@mui/material/ButtonBase'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -8,32 +9,31 @@ import { MouseEvent, ReactElement, useCallback } from 'react'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import { GetCampaign_campaign_theme as CampaignTheme } from '../../../../../__generated__/GetCampaign'
+import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { CanvasBlock, CanvasSection } from '../CanvasSection'
+import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
-  theme: CampaignTheme
-  previewLanguageId: string | null
 }
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
 /**
  * One Column Slot on the canvas: the section it holds, or a placeholder when
- * empty (the context bar then offers the type picker). The slot is its own
+ * empty (clicking it opens the Add Panel, preset to the slot, offering the
+ * types that fit). The slot is its own
  * drop target and, by its handle, a drag source: dropping it on the other
  * slot of the same Columns section swaps the two. Only slots of one Columns
  * section ever collide with each other.
  */
 export function CanvasColumnSlot({
-  slot,
-  theme,
-  previewLanguageId
+  slot
 }: CanvasColumnSlotProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { selection, selectBlock } = useCampaignEditor()
+  const { selection, selectBlock, dispatch } = useCampaignEditor()
   const section = slot.children[0]
   const dragData = { slot: true, columnsId: slot.parentBlockId }
   const slotSelected = selection.block?.id === slot.id
@@ -67,17 +67,30 @@ export function CanvasColumnSlot({
     selectBlock(slot.id)
   }
 
+  function handlePlaceholderClick(event: MouseEvent<HTMLElement>): void {
+    event.stopPropagation()
+    selectBlock(slot.id)
+    if (slot.pageId == null) return
+    dispatch({
+      type: 'OpenAddPanelAction',
+      preset: { pageId: slot.pageId, parentOrder: 0, parentBlockId: slot.id }
+    })
+  }
+
   return (
     <Box
       ref={setSlotRef}
+      id={slot.id}
       data-testid={`CanvasColumnSlot-${slot.id}`}
       data-selected={slotSelected}
+      data-hoverable
       onClick={handleClick}
       sx={{
         position: 'relative',
         minHeight: 96,
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
+        ...HOVER_OUTLINE_SX,
         outline: dropTarget
           ? `3px solid ${adminPrimary.main}`
           : slotSelected
@@ -86,6 +99,11 @@ export function CanvasColumnSlot({
         outlineOffset: -2
       }}
     >
+      <SelectionBadge
+        id={slot.id}
+        label={blockLabel(t, slot.__typename)}
+        selected={slotSelected}
+      />
       <Box
         ref={setActivatorNodeRef}
         {...listeners}
@@ -115,16 +133,14 @@ export function CanvasColumnSlot({
         <DragIcon fontSize="small" />
       </Box>
       {section != null ? (
-        <CanvasSection
-          block={section}
-          theme={theme}
-          previewLanguageId={previewLanguageId}
-          inSlot
-        />
+        <CanvasSection block={section} inSlot />
       ) : (
-        <Box
+        <ButtonBase
           data-testid={`CanvasEmptyColumn-${slot.id}`}
+          aria-label={t('Add to column')}
+          onClick={handlePlaceholderClick}
           sx={{
+            width: '100%',
             height: '100%',
             minHeight: 96,
             display: 'flex',
@@ -139,7 +155,7 @@ export function CanvasColumnSlot({
           <Typography variant="body2" sx={{ opacity: 0.6 }}>
             {t('Empty column')}
           </Typography>
-        </Box>
+        </ButtonBase>
       )}
     </Box>
   )

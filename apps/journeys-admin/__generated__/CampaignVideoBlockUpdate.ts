@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoBlockUpdate
@@ -19,6 +19,18 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Vi
   value: string;
   primary: boolean;
   language: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_title_language;
+}
+
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_description_language;
 }
 
 export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_images {
@@ -50,6 +62,7 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Vi
    */
   childrenCount: number;
   title: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_title[];
+  description: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_description[];
   images: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_images[];
   variant: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant | null;
 }

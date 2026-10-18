@@ -10,8 +10,8 @@ import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { ContextBar } from '../../ContextBar'
 import { campaign } from '../../data'
+import { Inspector } from '../../Inspector'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
 import { siblingsOf } from './useCampaignBlockDeleteCommand'
@@ -58,16 +58,20 @@ const restoreMock = {
   }))
 }
 
-function renderEditor(): ReturnType<typeof render> {
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
+function renderEditor(
+  mocks: Array<Record<string, unknown>> = [deleteMock, restoreMock]
+): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       initialState={{ selectedBlockId: 'footerTermsId' }}
-      mocks={[deleteMock, restoreMock]}
+      mocks={mocks}
     >
       <CommandUndoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <Inspector isManager={false} />
     </QueriedEditor>
   )
 }
@@ -127,6 +131,30 @@ describe('useCampaignBlockDeleteCommand', () => {
     await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
   })
 
+  it('raises the API message in the error snackbar when the delete is refused', async () => {
+    renderEditor([{ ...deleteMock, result: refusal }])
+    expect(await screen.findByTestId('Block-footerTermsId')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('raises the API message when the undo restore is refused', async () => {
+    renderEditor([deleteMock, { ...restoreMock, result: refusal }])
+    expect(await screen.findByTestId('Block-footerTermsId')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
   describe('sections', () => {
     const hero = campaign.blocks.find((block) => block.id === 'heroId')!
     const landingSections = [
@@ -181,7 +209,7 @@ describe('useCampaignBlockDeleteCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+          <Inspector isManager={false} />
         </QueriedEditor>
       )
     }

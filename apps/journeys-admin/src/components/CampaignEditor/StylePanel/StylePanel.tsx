@@ -1,10 +1,6 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import List from '@mui/material/List'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemText from '@mui/material/ListItemText'
 import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
@@ -15,7 +11,6 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
 import { campaignImageSource, resolveBand } from '@core/journeys/ui/Campaign'
-import X2Icon from '@core/shared/ui/icons/X2'
 
 import {
   CampaignBackgroundKind,
@@ -29,8 +24,8 @@ import {
   SectionOverrideField,
   useCampaignSectionStyleMutation
 } from '../../../libs/useCampaignSectionStyleMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { ColourRows } from '../ColourRows'
 import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
@@ -57,7 +52,6 @@ export const BACKGROUND_OVERLAYS = [
 
 interface StylePanelProps {
   block: CampaignStyledBlock
-  onClose?: () => void
 }
 
 /**
@@ -70,13 +64,12 @@ interface StylePanelProps {
  * override writes null. Only the pure hex and https rules are checked here;
  * the API's message is shown verbatim otherwise.
  */
-export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
+export function StylePanel({ block }: StylePanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addOwnedImage, addStyle, error } = useCampaignOwnedImageCommand()
   const writeStyle = useCampaignSectionStyleMutation()
   const [tab, setTab] = useState<StyleTab>('background')
-  const [override, setOverride] = useState<SectionOverrideField>('headingColor')
   /** The author chose Image but the section has no cover yet: the picker shows, no Command until a picture is kept. */
   const [choosingCover, setChoosingCover] = useState(false)
   const band = useMemo(
@@ -179,23 +172,9 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
   return (
     <Stack
       spacing={4}
-      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignStylePanel"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Style')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {blockLabel(t, block.__typename)}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
       <Tabs
         value={tab}
         onChange={(_event, next: StyleTab) => setTab(next)}
@@ -301,41 +280,18 @@ export function StylePanel({ block, onClose }: StylePanelProps): ReactElement {
       )}
       {tab === 'colours' && (
         <Stack spacing={4} role="tabpanel" data-testid="StyleColoursTab">
-          <List dense disablePadding aria-label={t('Colour overrides')}>
-            {SECTION_OVERRIDE_FIELDS.map((field) => (
-              <ListItemButton
-                key={field}
-                selected={override === field}
-                onClick={() => setOverride(field)}
-                data-testid={`StyleOverride-${field}`}
-              >
-                <Box
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    mr: 3,
-                    borderRadius: '50%',
-                    bgcolor: block[field] ?? bandValues[field],
-                    border: '1px solid',
-                    borderColor: 'divider'
-                  }}
-                />
-                <ListItemText
-                  primary={overrideLabels[field]}
-                  secondary={block[field] ?? t('Inherited')}
-                />
-              </ListItemButton>
-            ))}
-          </List>
-          <PaletteColorPicker
-            key={override}
-            label={overrideLabels[override]}
-            value={block[override]}
-            fallback={bandValues[override]}
-            onCommit={(hex) => addSectionStyle(block, { [override]: hex })}
-            onClear={() => addSectionStyle(block, { [override]: null })}
-            clearLabel={t('Inherit')}
-            testId="StyleOverrideColor"
+          <ColourRows
+            label={t('Colour overrides')}
+            rows={SECTION_OVERRIDE_FIELDS.map((field) => ({
+              key: field,
+              label: overrideLabels[field],
+              value: block[field],
+              inherited: bandValues[field]
+            }))}
+            rowTestId="StyleOverride"
+            pickerTestId="StyleOverrideColor"
+            onCommit={(field, hex) => addSectionStyle(block, { [field]: hex })}
+            onReset={(field) => addSectionStyle(block, { [field]: null })}
           />
         </Stack>
       )}

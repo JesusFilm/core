@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignBlockRestore
@@ -645,6 +645,26 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBl
   introTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignRegionShareBlock_introTranslations[];
 }
 
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock_richTextContentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock {
   __typename: "CampaignRichTextBlock";
   id: string;
@@ -685,6 +705,8 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock
    * Paragraphs separated by blank lines.
    */
   richTextContent: string | null;
+  titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock_titleTranslations[];
+  richTextContentTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignRichTextBlock_richTextContentTranslations[];
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignColumnsBlock {
@@ -726,6 +748,16 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignColumnsBlock 
    * Width of the two slots at `md` and up; defaults to equal.
    */
   ratio: CampaignColumnsRatio;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock_altTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock {
@@ -779,6 +811,47 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  altTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignImageBlock_altTranslations[];
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_bulletsTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock {
@@ -828,15 +901,43 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
    */
   mediaSide: CampaignMediaSide;
   /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_eyebrowTranslations[];
+  titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_titleTranslations[];
+  ledeTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_ledeTranslations[];
+  bulletsTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_journeyImage {
   __typename: "CampaignJourneyImage";
   src: string;
   alt: string | null;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock {
@@ -880,6 +981,12 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock 
    * The linked journey. Null only if the row predates the link; never exposes the journey itself.
    */
   journeyId: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+   */
+  snapshotEdited: boolean;
+  titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_title_language {
@@ -892,6 +999,18 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_me
   value: string;
   primary: boolean;
   language: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_title_language;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description_language;
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_images {
@@ -923,6 +1042,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_me
    */
   childrenCount: number;
   title: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_title[];
+  description: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_description[];
   images: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_images[];
   variant: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video_variant | null;
 }
@@ -939,6 +1059,26 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_me
 }
 
 export type CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo = CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_Video | CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_MuxVideo | CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo_YouTube;
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock {
   __typename: "CampaignVideoBlock";
@@ -989,6 +1129,8 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock {
    * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
    */
   mediaVideo: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_mediaVideo | null;
+  titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignVideoBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignTypographyBlock_contentTranslations {

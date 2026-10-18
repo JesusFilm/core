@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement } from 'react'
+import { MouseEvent, ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -14,11 +14,17 @@ import {
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
+import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../__generated__/GetCampaignJourneyByLink'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
+import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
+import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
+import { JourneyPicker } from '../Pickers/JourneyPicker'
+import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
@@ -39,9 +45,8 @@ interface JourneyListEditProps {
   }
   /** The list, or one of its cards, is the current selection. */
   active: boolean
-  /** The card field the bar's Edit asked to focus. */
+  /** The card field that was clicked, which takes focus. */
   focusField?: CampaignTextField
-  focusRequest: number
   /** Select a card, naming the field that was clicked. */
   onSelectCard: (cardId: string, field: CampaignTextField) => void
 }
@@ -62,7 +67,6 @@ interface JourneyCardEditProps {
   card: JourneyCardBlock
   selected: boolean
   focusField?: CampaignTextField
-  focusRequest: number
   onSelect: (field: CampaignTextField) => void
 }
 
@@ -76,7 +80,6 @@ function JourneyCardEdit({
   card,
   selected,
   focusField,
-  focusRequest,
   onSelect
 }: JourneyCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -89,18 +92,28 @@ function JourneyCardEdit({
 
   return (
     <Stack
+      id={card.id}
       data-testid={`JourneyCard-${card.id}`}
       data-selected={selected}
+      data-hoverable
       onClick={handleClick}
       sx={{
+        position: 'relative',
         overflow: 'hidden',
         borderRadius: 1,
         cursor: 'pointer',
         backgroundColor: 'var(--campaign-band-card)',
         border: '1px solid var(--campaign-band-border)',
+        ...HOVER_OUTLINE_SX,
         ...(selected ? SELECTED_OUTLINE : {})
       }}
     >
+      <SelectionBadge
+        id={card.id}
+        label={blockLabel(t, card.__typename)}
+        selected={selected}
+        placement="inside"
+      />
       {card.journeyImage != null && (
         <Box
           component="img"
@@ -133,7 +146,6 @@ function JourneyCardEdit({
           placeholder={t('Journey title')}
           editing={selected}
           autoFocus={selected && focusField === 'title'}
-          focusRequest={focusRequest}
           onSelect={() => onSelect('title')}
           variant="h5"
           component="h3"
@@ -144,7 +156,6 @@ function JourneyCardEdit({
           placeholder={t('Journey description')}
           editing={selected}
           autoFocus={selected && focusField === 'description'}
-          focusRequest={focusRequest}
           onSelect={() => onSelect('description')}
           variant="body2"
           sx={{ color: 'var(--campaign-band-muted)' }}
@@ -157,22 +168,71 @@ function JourneyCardEdit({
 /**
  * The Journey List on the editor canvas: every card, live or not, selectable
  * to edit its title and description in place, and — while the list or one of
- * its cards is selected — the journey paste field that adds another card
- * from an admin link or a public URL. Adding resolves on the server, which
- * snapshots the journey's title and description.
+ * its cards is selected — the journey picker that adds another card from
+ * the journeys the author can read, and beneath it a smaller paste field for
+ * a journey outside that list (an admin link or a public URL). Adding is one create Command: the card
+ * shows at once from the journey picked or resolved, and the server
+ * snapshots the journey's title and description when it answers.
  */
 export function JourneyListEdit({
   block,
   active,
   focusField,
-  focusRequest,
   onSelectCard
 }: JourneyListEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign, selection } = useCampaignEditor()
   const [journeyCreate] = useCampaignJourneyBlockCreateMutation(campaign.id)
+  const { addBlock } = useCampaignBlockCreateCommand()
+  const [adding, setAdding] = useState(false)
   const cards = journeyCards(block.children)
   const selectedId = selection.block?.id
+
+  async function handleAdd(
+    url: string,
+    journey: ResolvedJourney
+  ): Promise<void> {
+    const list = campaign.blocks.find((candidate) => candidate.id === block.id)
+    const id = uuidv4()
+    const card: CampaignBlock = {
+      __typename: 'CampaignJourneyBlock',
+      id,
+      campaignId: campaign.id,
+      pageId: list?.pageId ?? null,
+      regionId: list?.regionId ?? null,
+      parentBlockId: block.id,
+      parentOrder: cards.length,
+      title: journey.title,
+      description: journey.description,
+      titleTranslations: [],
+      descriptionTranslations: [],
+      journeyStatus: journey.status,
+      journeyUrl: null,
+      journeyImage: null,
+      journeyId: journey.id,
+      snapshotEdited: false
+    }
+    let created: Promise<unknown> = Promise.resolve()
+    addBlock({
+      block: card,
+      execute() {
+        created = journeyCreate({
+          variables: { id, parentBlockId: block.id, url },
+          optimisticResponse: { campaignJourneyBlockCreate: card }
+        })
+        return created
+      }
+    })
+    // The add fields stay up while the add is in flight: a refused add
+    // rolls its optimistic card back before the selection returns to the
+    // list, and the fields must still be there to show the API's message.
+    setAdding(true)
+    try {
+      await created
+    } finally {
+      setAdding(false)
+    }
+  }
 
   return (
     <Stack
@@ -195,23 +255,20 @@ export function JourneyListEdit({
               card={card}
               selected={selectedId === card.id}
               focusField={focusField}
-              focusRequest={focusRequest}
               onSelect={(field) => onSelectCard(card.id, field)}
             />
           ))}
         </Box>
       )}
-      {active ? (
-        <Box sx={{ maxWidth: 720 }}>
+      {active || adding ? (
+        <Stack spacing={1.5} sx={{ maxWidth: 720 }}>
+          <JourneyPicker label={t('Add a journey')} onLink={handleAdd} />
           <JourneyPasteField
-            label={t('Add a journey')}
-            onLink={async (url) => {
-              await journeyCreate({
-                variables: { id: uuidv4(), parentBlockId: block.id, url }
-              })
-            }}
+            label={t('or paste a link')}
+            compact
+            onLink={handleAdd}
           />
-        </Box>
+        </Stack>
       ) : (
         cards.length === 0 && (
           <Typography

@@ -5,7 +5,7 @@ import type {
 } from '../__generated__/CampaignPublicBlockFields'
 import {
   campaignVideoDetails,
-  watchTitle
+  watchText
 } from '../CampaignVideo/campaignVideoDetails'
 import { watchUrl } from '../libs/watchUrl'
 import { hasText } from '../types'
@@ -55,7 +55,7 @@ function watchCard(
     kind: 'video',
     id: video.id,
     source: 'watch',
-    title: watchTitle(video.title, languageId),
+    title: watchText(video.title, languageId),
     poster: video.images[0]?.mobileCinematicHigh ?? null,
     duration: video.variant?.duration ?? null,
     childrenCount: video.childrenCount,

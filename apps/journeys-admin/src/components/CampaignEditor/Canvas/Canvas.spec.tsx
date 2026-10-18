@@ -7,6 +7,7 @@ import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
+  CampaignFeaturedMediaLayout,
   CampaignPageKind,
   CampaignTextSource,
   VideoBlockSource
@@ -187,7 +188,7 @@ describe('Canvas', () => {
 
     const iframe = baseElement.getElementsByTagName('iframe')[0]
     expect(iframe).toBeInTheDocument()
-    expect(iframe).toHaveAttribute('width', '100%')
+    expect(iframe).toHaveAttribute('width', '1200')
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     expect(body.textContent).toContain('Share the story of Christmas')
     expect(body.textContent).toContain('Choose your region')
@@ -332,10 +333,23 @@ describe('Canvas', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Toggle view' }))
     expect(baseElement.getElementsByTagName('iframe')[0]).toHaveAttribute(
       'width',
-      '100%'
+      '1200'
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
+
+  it.each<CanvasView>(['desktop', 'phone'])(
+    'shows the Preview Language chip over the canvas, outside the frame, in %s view',
+    (view) => {
+      const { baseElement } = renderCanvas(CampaignPageKind.landing, view)
+
+      const chip = screen.getByTestId('PreviewLanguageChip')
+      expect(screen.getByTestId('CampaignCanvas')).toContainElement(chip)
+      expect(baseElement.getElementsByTagName('iframe')[0].contains(chip)).toBe(
+        false
+      )
+    }
+  )
 
   it('shows the hero’s media slot beside its text, and a Featured Media section’s placeholder and bullets', async () => {
     const hero = campaign.blocks.find((block) => block.id === 'heroId')
@@ -389,6 +403,48 @@ describe('Canvas', () => {
     expect(
       featuredSection.querySelector('[data-testid="InlineText-bullets"]')
     ).toHaveTextContent('Free to share In many languages')
+  })
+
+  it('lays a stacked Featured Media section out as one column at every width, the media under the text', async () => {
+    const hero = campaign.blocks.find((block) => block.id === 'heroId')
+    if (hero == null) throw new Error('no hero')
+    const featured = (id: string, layout: CampaignFeaturedMediaLayout) => ({
+      ...newSectionBlock('CampaignFeaturedMediaBlock', {
+        id,
+        campaignId: campaign.id,
+        pageId: hero.pageId ?? '',
+        parentOrder: 5
+      }),
+      layout
+    })
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'desktop', {
+      ...campaign,
+      blocks: [
+        ...campaign.blocks,
+        featured('stackedId', CampaignFeaturedMediaLayout.stacked),
+        featured('sideBySideId', CampaignFeaturedMediaLayout.sideBySide)
+      ]
+    })
+    const body = await frameBody(baseElement, 'CanvasSection-stackedId')
+    const styles = Array.from(body.ownerDocument.querySelectorAll('style'))
+      .map((node) => node.textContent ?? '')
+      .join('')
+    function flexRules(sectionId: string): string {
+      const media = body.querySelector(
+        `[data-testid="CanvasSection-${sectionId}"] [data-testid="CanvasSectionMedia"]`
+      ) as HTMLElement
+      expect(media.previousElementSibling).not.toBeNull()
+      const className = Array.from(
+        (media.parentElement as HTMLElement).classList
+      ).find((name) => name.startsWith('iframe-'))
+      return (
+        styles.match(new RegExp(`\\.${className}\\{[^}]*\\}`, 'g')) ?? []
+      ).join('')
+    }
+
+    expect(flexRules('sideBySideId')).toContain('flex-direction:row')
+    expect(flexRules('stackedId')).toContain('flex-direction:column')
+    expect(flexRules('stackedId')).not.toContain('flex-direction:row')
   })
 
   it('selects a section on click and turns its text into inline inputs', async () => {
@@ -666,6 +722,199 @@ describe('Canvas', () => {
   })
 })
 
+describe('Canvas scaled to fit', () => {
+  /** The size the stage reports to the canvas's ResizeObserver. */
+  const stage = { width: 900, height: 600 }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.reject(new Error('offline')))
+    )
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(private readonly callback: ResizeObserverCallback) {}
+
+        observe(): void {
+          this.callback([{ contentRect: stage } as ResizeObserverEntry], this)
+        }
+
+        disconnect = vi.fn()
+        unobserve = vi.fn()
+      }
+    )
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    stage.width = 900
+  })
+
+  it('keeps the Desktop frame 1200 px wide and scales a wrapper outside it to the stage', async () => {
+    const { baseElement } = renderCanvas()
+    await frameBody(baseElement, 'CanvasSection-heroId')
+
+    const wrapper = screen.getByTestId('CampaignCanvasScale')
+    expect(wrapper).toHaveAttribute('data-scale', String(900 / 1200))
+    expect(wrapper).toHaveStyle({ width: '900px' })
+    const iframe = baseElement.getElementsByTagName('iframe')[0]
+    expect(iframe).toHaveAttribute('width', '1200')
+    const scaled = iframe.parentElement as HTMLElement
+    expect(scaled).toHaveStyle({
+      width: '1200px',
+      transform: `scale(${900 / 1200})`,
+      transformOrigin: 'top left'
+    })
+    expect(scaled).toHaveStyle({ height: '800px' })
+  })
+
+  it('never scales below 0.5', async () => {
+    stage.width = 400
+    const { baseElement } = renderCanvas()
+    await frameBody(baseElement, 'CanvasSection-heroId')
+
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveAttribute(
+      'data-scale',
+      '0.5'
+    )
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveStyle({
+      width: '600px'
+    })
+  })
+
+  it('does not enlarge the frame on a wide stage, and leaves the Phone frame at 390 px', async () => {
+    stage.width = 1472
+    const { baseElement } = renderCanvas(CampaignPageKind.landing, 'phone')
+    await frameBody(baseElement, 'CanvasSection-heroId')
+
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveAttribute(
+      'data-scale',
+      '1'
+    )
+    expect(screen.getByTestId('CampaignCanvasScale')).toHaveStyle({
+      width: '390px'
+    })
+    expect(baseElement.getElementsByTagName('iframe')[0]).toHaveAttribute(
+      'width',
+      '390'
+    )
+  })
+
+  it('still reorders a section dragged by its handle, by the midpoint of the section under the pointer', async () => {
+    const { baseElement } = renderCanvas()
+    const body = await frameBody(
+      baseElement,
+      'CanvasSection-landingAnalyticsId'
+    )
+    stackSections(body)
+    const frameDocument = body.ownerDocument
+    const handle = body.querySelector(
+      '[data-testid="CanvasSectionDragHandle-heroId"]'
+    )!
+
+    fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+    fireEvent.mouseMove(frameDocument, { clientX: 20, clientY: 60 })
+    fireEvent.mouseMove(frameDocument, { clientX: 20, clientY: 180 })
+
+    await waitFor(() =>
+      expect(
+        body.querySelector('[data-testid="CanvasDropIndicator"]')
+      ).toHaveAttribute('data-edge', 'after')
+    )
+    fireEvent.mouseUp(frameDocument, { clientX: 20, clientY: 180 })
+
+    await waitFor(() => expect(orderMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('still swaps the slots of a Columns section', async () => {
+    const { baseElement } = render(
+      <StaticEditor campaignProp={campaignWithColumns} mocks={[swapMock]}>
+        <CommandProbe />
+        <Canvas
+          campaign={campaignWithColumns}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+    ;['slotLeftId', 'slotRightId'].forEach((id, index) => {
+      const slot = body.querySelector(
+        `[data-testid="CanvasColumnSlot-${id}"]`
+      ) as HTMLElement
+      const left = index * 400
+      slot.getBoundingClientRect = () => ({
+        top: 0,
+        bottom: 100,
+        left,
+        right: left + 400,
+        width: 400,
+        height: 100,
+        x: left,
+        y: 0,
+        toJSON: () => ({})
+      })
+    })
+    const frameDocument = body.ownerDocument
+    const handle = body.querySelector(
+      '[data-testid="CanvasColumnDragHandle-slotLeftId"]'
+    )!
+
+    fireEvent.mouseDown(handle, { clientX: 20, clientY: 50, button: 0 })
+    fireEvent.mouseMove(frameDocument, { clientX: 40, clientY: 50 })
+    fireEvent.mouseMove(frameDocument, { clientX: 600, clientY: 50 })
+    fireEvent.mouseUp(frameDocument, { clientX: 600, clientY: 50 })
+
+    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('edits text inline with its character counter', async () => {
+    const { baseElement } = renderCanvas()
+    const body = await frameBody(baseElement, 'CanvasSection-heroId')
+    fireEvent.click(body.querySelector('[data-testid="CanvasSection-heroId"]')!)
+    const title = await waitFor(() => {
+      const input = body.querySelector('textarea[name="title"]')
+      expect(input).not.toBeNull()
+      return input as HTMLTextAreaElement
+    })
+
+    fireEvent.change(title, { target: { value: 'x'.repeat(130) } })
+
+    await waitFor(() => expect(body.textContent).toContain('130 / 150'))
+  })
+
+  it('focuses an inline input without scrolling the editor page', async () => {
+    const { baseElement } = render(
+      <StaticEditor mocks={[orderMock]}>
+        <Canvas
+          campaign={campaign}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+    const body = await frameBody(baseElement, 'CanvasExtra-heroButtonId')
+    // The input lives in the frame's window, which has its own HTMLElement.
+    const frameWindow = body.ownerDocument.defaultView as Window &
+      typeof globalThis
+    const focus = vi.spyOn(frameWindow.HTMLElement.prototype, 'focus')
+
+    fireEvent.click(
+      body.querySelector('[data-testid="CanvasExtra-heroButtonId"]')!
+    )
+
+    await waitFor(() => expect(focus).toHaveBeenCalled())
+    expect(
+      focus.mock.calls.every(([options]) => options?.preventScroll === true)
+    ).toBe(true)
+    focus.mockRestore()
+  })
+})
+
 describe('Canvas preview language', () => {
   const translated: typeof campaign = {
     ...campaign,
@@ -686,7 +935,7 @@ describe('Canvas preview language', () => {
     )
   }
 
-  it('renders the campaign text in the preview language the top bar chose, falling back to the default where no translation exists', async () => {
+  it('renders the campaign text in the preview language the Pages panel chose, falling back to the default where no translation exists', async () => {
     const { baseElement } = render(
       <StaticEditor
         campaignProp={translated}

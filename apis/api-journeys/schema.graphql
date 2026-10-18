@@ -247,7 +247,7 @@ type Campaign {
   """Every Campaign Region, listed and orphan, in switcher order."""
   regions: [CampaignRegion!]!
 
-  """The seventeen Campaign Strings."""
+  """The eighteen Campaign Strings."""
   strings: [CampaignString!]!
 
   """
@@ -291,6 +291,11 @@ type CampaignAiTranslateProgress {
 
   """Current translation step message"""
   message: String
+
+  """
+  How many strings the run has written so far; they are kept if the run is cancelled
+  """
+  translatedCount: Int
 
   """
   The campaign with its translations written (only present when complete)
@@ -547,12 +552,6 @@ input CampaignButtonBlockUpdateInput {
   placement: CampaignChildPlacement
 }
 
-"""Button corner shape of the Campaign Theme."""
-enum CampaignButtonRadius {
-  rounded
-  pill
-}
-
 """Which side of the Section Body an Extra renders on."""
 enum CampaignChildPlacement {
   above
@@ -720,7 +719,7 @@ input CampaignCreateInput {
 }
 
 """
-A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -769,6 +768,11 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
 
   """Which side the media sits on at `md` and up."""
   mediaSide: CampaignMediaSide!
+
+  """
+  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+  """
+  layout: CampaignFeaturedMediaLayout!
 
   """The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot."""
   mediaBlockId: ID
@@ -820,6 +824,7 @@ input CampaignFeaturedMediaBlockUpdateInput {
   """One bullet per line; at most 1000 characters."""
   bullets: String
   mediaSide: CampaignMediaSide
+  layout: CampaignFeaturedMediaLayout
 
   """
   The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
@@ -858,6 +863,14 @@ input CampaignFeaturedMediaBlockUpdateInput {
 
   """`#RRGGBB` or null to inherit."""
   accentColor: String
+}
+
+"""
+How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+"""
+enum CampaignFeaturedMediaLayout {
+  sideBySide
+  stacked
 }
 
 """
@@ -1317,6 +1330,11 @@ type CampaignJourneyBlock implements CampaignBlock {
 
   """Snapshot of the journey's title, editable; the default-language value."""
   title: String
+
+  """
+  True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+  """
+  snapshotEdited: Boolean!
   titleTranslations: [TranslatedValue!]!
 
   """
@@ -1345,6 +1363,11 @@ input CampaignJourneyBlockUpdateInput {
 
   """Default-language description. At most 1000 characters."""
   description: String
+
+  """
+  Set the edited flag outright, for an undo that writes a previous title and description back together with the flag they had. Without it, editing `title` or `description` marks the snapshot edited.
+  """
+  snapshotEdited: Boolean
 }
 
 """
@@ -1520,7 +1543,6 @@ input CampaignLinkActionInput {
 enum CampaignMediaSide {
   left
   right
-  below
 }
 
 """
@@ -1598,7 +1620,7 @@ type CampaignPublic {
   languages: [CampaignLanguage!]!
   theme: CampaignTheme!
 
-  """The seventeen Campaign Strings, values resolved."""
+  """The eighteen Campaign Strings, values resolved."""
   strings: [CampaignString!]!
 
   """Every Campaign Region, listed and orphan, in switcher order."""
@@ -2367,6 +2389,7 @@ enum CampaignStringKey {
   topCountry
   seeAllOnWatch
   videos
+  noJourneys
 }
 
 """How a Region Switcher lists the regions: cards, a list, or pills."""
@@ -2400,7 +2423,7 @@ enum CampaignTextSource {
 }
 
 """
-The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button shape. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
+The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button corners. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
 """
 type CampaignTheme {
   id: ID!
@@ -2420,7 +2443,11 @@ type CampaignTheme {
   contrastBackgroundColor: String!
   contrastTextColor: String!
   radius: CampaignRadius!
-  buttonRadius: CampaignButtonRadius!
+
+  """
+  Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+  """
+  buttonRadius: CampaignRadius!
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
 }
@@ -2474,8 +2501,10 @@ input CampaignThemeUpdateInput {
   """Corner radius: square, slight, rounded or veryRounded."""
   radius: CampaignRadius
 
-  """Button shape: rounded or pill."""
-  buttonRadius: CampaignButtonRadius
+  """
+  Button corners: square, slight, rounded or veryRounded (the pill look).
+  """
+  buttonRadius: CampaignRadius
 }
 
 """
@@ -4460,7 +4489,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
   - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
-  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`.
+  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
@@ -4518,7 +4547,7 @@ type Mutation {
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!): CampaignJourneyListBlock!
 
   """
-  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
+  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published or archived journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -4526,7 +4555,7 @@ type Mutation {
   - NOT_FOUND: parentBlockId does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
-  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or unpublished).
+  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
   """
   campaignJourneyBlockCreate(
     """A client-chosen id for the new item."""
@@ -4540,7 +4569,7 @@ type Mutation {
   ): CampaignJourneyBlock!
 
   """
-  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched.
+  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -4552,7 +4581,7 @@ type Mutation {
   campaignJourneyBlockUpdate(id: ID!, input: CampaignJourneyBlockUpdateInput!): CampaignJourneyBlock!
 
   """
-  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
+  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made, and clear `snapshotEdited`. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -4804,7 +4833,7 @@ type Mutation {
   campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!): CampaignFeaturedMediaBlock!
 
   """
-  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -4813,6 +4842,7 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
+  - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -5091,19 +5121,7 @@ type Mutation {
   campaignRegionLanguageDelete(id: ID!): CampaignRegionLanguage!
 
   """
-  Move a Share Language to `order` among its region’s languages (a position past the end moves it last) and renumber them contiguously; the public Share selector follows this order. Returns every Share Language of the region with its new `order`.
-  
-  Auth: campaign Update — any member or manager of the campaign’s team.
-  
-  Errors:
-  - NOT_FOUND: id does not resolve.
-  - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `order`): negative.
-  """
-  campaignRegionLanguageOrderUpdate(id: ID!, order: Int!): [CampaignRegionLanguage!]!
-
-  """
-  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
+  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
   
@@ -5113,6 +5131,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `defaultLanguageId`): not an api-languages language.
   - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
+  - CONFLICT (field: `slug`): a concurrent create took the generated address twice; retry.
   """
   campaignCreate(input: CampaignCreateInput!): Campaign!
 
@@ -5127,13 +5146,14 @@ type Mutation {
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
   - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
-  - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages.
+  - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
+  - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
   - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!): Campaign!
 
   """
-  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button corners. Only the given columns change. Applying a Theme Preset is this mutation with the mode, the eight colours and the button corners; fonts and the corner radius stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -5151,7 +5171,7 @@ type Mutation {
   ): CampaignTheme!
 
   """
-  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
+  Hard-delete a Campaign. A published campaign queues on-demand revalidation of its pages, so they stop serving within the publish bound. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
   
   Auth: campaign Delete — a manager of the campaign’s team.
   
@@ -5184,7 +5204,7 @@ type Mutation {
   campaignUnpublish(id: ID!): Campaign!
 
   """
-  Update the default-language wording of one Campaign String. The seventeen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
+  Update the default-language wording of one Campaign String. The eighteen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -5840,13 +5860,13 @@ type Query {
   ): CampaignPublic!
 
   """
-  The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is published or archived (a draft, trashed or deleted journey does not count), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
+  The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is not deleted (draft, published and archived all count; a trashed or deleted journey does not), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
   
   Auth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.
   
   Errors:
   - NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.
-  - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served and not retried for a few minutes.
+  - Plausible failure with nothing cached: the query errors; with a cached sweep, that sweep is served however old, and a stale one is refreshed in the background (a failed refresh is not retried for a few minutes). One journey's Plausible failure does not fail the sweep: that journey keeps its last rows, or counts as no visitors.
   """
   campaignStats(id: ID!): CampaignStats!
 
@@ -5873,7 +5893,17 @@ type Query {
   integrations(teamId: ID!): [Integration!]!
   integrationGooglePickerToken(integrationId: ID!): String!
   adminJourney(id: ID!, idType: IdType = slug): Journey!
-  adminJourneys(status: [JourneyStatus!], template: Boolean, teamId: ID, useLastActiveTeamId: Boolean): [Journey!]!
+  adminJourneys(
+    status: [JourneyStatus!]
+    template: Boolean
+    teamId: ID
+    useLastActiveTeamId: Boolean
+
+    """
+    Return every journey the caller can read, across all of their teams and those shared with them, in one list. Skips the default shared-with-me branch and leaves the read-access filter to decide.
+    """
+    allAccessible: Boolean
+  ): [Journey!]!
   adminJourneysReport(reportType: JourneysReportType!): PowerBiEmbed
   journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions): Journey!
   journeys(where: JourneysFilter, options: JourneysQueryOptions): [Journey!]!

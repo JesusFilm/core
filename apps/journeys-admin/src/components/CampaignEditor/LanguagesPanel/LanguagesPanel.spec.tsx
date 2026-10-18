@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
   render,
@@ -9,14 +8,15 @@ import {
 import { GraphQLError } from 'graphql'
 import { ReactElement } from 'react'
 
-import { CommandProvider, useCommand } from '@core/journeys/ui/CommandProvider'
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CAMPAIGN_LANGUAGE_ADD } from '../../../libs/useCampaignLanguageAddMutation'
 import { CAMPAIGN_LANGUAGE_REMOVE } from '../../../libs/useCampaignLanguageRemoveMutation'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
+import { CommandProbe, StaticEditor } from '../testing'
 
 import { LanguagesPanel, languageNames } from './LanguagesPanel'
 
@@ -146,6 +146,7 @@ function sweepMock(languageId: string): {
           __typename: 'CampaignAiTranslateProgress',
           progress: 100,
           message: 'Translation completed!',
+          translatedCount: 1,
           campaign: {
             __typename: 'Campaign',
             id: campaign.id,
@@ -157,9 +158,11 @@ function sweepMock(languageId: string): {
   }
 }
 
-function CommandProbe(): ReactElement {
-  const { state } = useCommand()
-  return <span data-testid="CommandCount">{state.commands.length}</span>
+function PreviewLanguageProbe(): ReactElement {
+  const {
+    state: { previewLanguageId }
+  } = useCampaignEditor()
+  return <span data-testid="PreviewLanguageId">{previewLanguageId}</span>
 }
 
 function renderPanel(
@@ -167,12 +170,11 @@ function renderPanel(
   campaignProp: Campaign = campaign
 ): ReturnType<typeof render> {
   return render(
-    <MockedProvider mocks={[languagesMock, ...mocks] as never}>
-      <CommandProvider>
-        <CommandProbe />
-        <LanguagesPanel campaign={campaignProp} />
-      </CommandProvider>
-    </MockedProvider>
+    <StaticEditor mocks={[languagesMock, ...mocks]} campaignProp={campaignProp}>
+      <CommandProbe />
+      <PreviewLanguageProbe />
+      <LanguagesPanel campaign={campaignProp} />
+    </StaticEditor>
   )
 }
 
@@ -184,7 +186,7 @@ describe('LanguagesPanel', () => {
     const list = screen.getByTestId('CampaignLanguagesList')
     const rows = within(list).getAllByRole('listitem')
     expect(rows.map((row) => row.textContent)).toEqual([
-      'EnglishDefault',
+      'EnglishDefault · Previewing',
       'Français'
     ])
     expect(
@@ -193,6 +195,38 @@ describe('LanguagesPanel', () => {
     expect(
       screen.getByRole('button', { name: 'Remove Français' })
     ).toBeEnabled()
+  })
+
+  it('previews a language from its row, marking it, without adding a Command', () => {
+    renderPanel([])
+    expect(screen.getByTestId('CampaignLanguage-529')).toHaveTextContent(
+      'Previewing'
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview Français' }))
+
+    expect(screen.getByTestId('PreviewLanguageId')).toHaveTextContent('496')
+    expect(screen.getByTestId('CampaignLanguage-496')).toHaveTextContent(
+      'Previewing'
+    )
+    expect(screen.getByTestId('CampaignLanguage-529')).not.toHaveTextContent(
+      'Previewing'
+    )
+    expect(
+      screen.getByRole('button', { name: 'Preview Français' })
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('keeps the Preview Language when a language is added', async () => {
+    renderPanel([addMock, sweepMock(SPANISH)])
+    const input = await screen.findByRole('combobox')
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Span' } })
+    fireEvent.click((await screen.findAllByRole('option'))[0])
+
+    await waitFor(() => expect(addResult).toHaveBeenCalled())
+    expect(screen.getByTestId('PreviewLanguageId')).toHaveTextContent('529')
   })
 
   it('shows the autonym with the English name beside it', () => {

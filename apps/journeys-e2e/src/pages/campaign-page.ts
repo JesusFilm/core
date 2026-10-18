@@ -15,17 +15,58 @@ export class CampaignPage {
   }
 
   get qrCodeCanvas(): Locator {
-    return this.page.getByTestId('QrCodeCanvas').locator('canvas')
+    return this.page.getByTitle('QR Code')
   }
 
   async openLandingPage(slug: string, heroTitle: string): Promise<void> {
-    // 90s: a published page can be served stale until its 60s ISR revalidation, so reload until the hero shows
+    // 90s: publish queues an on-demand revalidation, but a not-found cached before it can outlive the revalidate worker's run by up to the 60s ISR window, so reload until the hero shows
     await expect(async () => {
       await this.page.goto(`/campaign/${slug}`)
       await expect(
         this.page.getByRole('heading', { level: 1, name: heroTitle })
       ).toBeVisible({ timeout: 5000 })
     }).toPass({ timeout: 90000 })
+  }
+
+  /** Like `openLandingPage`, but waits for a section added after the first publish to show. */
+  async openLandingPageShowingSection(
+    slug: string,
+    sectionTitle: string
+  ): Promise<void> {
+    // 90s: an edit to a published campaign queues no revalidation, so the page shows it once its 60s ISR window lapses; reload until the new section shows
+    await expect(async () => {
+      await this.page.goto(`/campaign/${slug}`)
+      await expect(this.sectionHeading(sectionTitle)).toBeVisible({
+        timeout: 5000
+      })
+    }).toPass({ timeout: 90000 })
+  }
+
+  private sectionHeading(title: string): Locator {
+    return this.page.getByRole('heading', { name: title, exact: true })
+  }
+
+  /** The section holding the heading paints its band as its background colour. */
+  async verifySectionBackground(
+    headingTitle: string,
+    backgroundColor: string
+  ): Promise<void> {
+    const section = this.page
+      .locator('section')
+      .filter({ has: this.sectionHeading(headingTitle) })
+    await expect(section).toHaveCSS('background-color', backgroundColor)
+  }
+
+  /** The new section's heading sits under the hero's on the page. */
+  async verifySectionBelowHero(
+    heroTitle: string,
+    sectionTitle: string
+  ): Promise<void> {
+    const heroBox = await this.sectionHeading(heroTitle).boundingBox()
+    const sectionBox = await this.sectionHeading(sectionTitle).boundingBox()
+    if (heroBox == null || sectionBox == null)
+      throw new Error('The hero and the new section must both be on the page')
+    expect(sectionBox.y).toBeGreaterThan(heroBox.y)
   }
 
   async verifyRegionSwitcherCard(): Promise<void> {

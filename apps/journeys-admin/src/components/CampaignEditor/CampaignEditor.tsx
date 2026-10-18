@@ -9,37 +9,30 @@ import { ReactElement, useEffect, useState } from 'react'
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
-import {
-  CampaignPageKind,
-  UserTeamRole
-} from '../../../__generated__/globalTypes'
+import { UserTeamRole } from '../../../__generated__/globalTypes'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
+import { AddPanel } from './AddPanel'
 import {
   CampaignEditorProvider,
   useCampaignEditor
 } from './CampaignEditorProvider'
 import { Canvas } from './Canvas'
 import type { CanvasView } from './Canvas'
-import { ContextBar } from './ContextBar'
-import {
-  DOCKED_PANEL_WIDTH,
-  EditorPanel,
-  EditorPanelsProvider,
-  useEditorPanels
-} from './EditorPanel'
-import { FirstRunHint } from './FirstRunHint'
+import { CanvasBanner } from './CanvasBanner'
 import { Hotkeys } from './Hotkeys'
-import { LanguagesPanel } from './LanguagesPanel'
-import { RegionSettings } from './RegionSettings'
-import { Settings } from './Settings'
-import { ThemePanel } from './ThemePanel'
-import { TopBar } from './TopBar'
-import { TranslationsView } from './TranslationsView'
+import { Inspector } from './Inspector'
+import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
+import { LeftRail } from './LeftRail'
+import { LocalizePanel } from './LocalizePanel'
+import type { LocalizeTab } from './LocalizePanel'
+import { Navigator, NavigatorHoverProvider } from './Navigator'
+import { PagesPanel } from './PagesPanel'
+import { TranslationRunProvider } from './TranslationRunProvider'
 
 /** The editor shell is desktop only: narrower viewports get a message, no canvas. */
-export const EDITOR_MIN_WIDTH = 980
+export const EDITOR_MIN_WIDTH = 1280
 
 interface CampaignEditorProps {
   campaign?: Campaign
@@ -50,137 +43,78 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the top bar, the hint, the context bar, the canvas, the docked column and the panels. */
+/** Everything inside the providers: the rail, the open panel (floating over the canvas, ahead of it in Tab order), the canvas with its banner, and the Inspector. */
 function CampaignEditorShell({
   campaign,
   isManager
 }: CampaignEditorShellProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
   const {
-    state: { pageKind, previewLanguageId },
-    currentRegion,
-    selection,
+    state: { pageKind, panel },
     dispatch
   } = useCampaignEditor()
-  const { mode, setMode, dockOpen, setDockElement } = useEditorPanels()
   const [view, setView] = useState<CanvasView>('desktop')
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [themeOpen, setThemeOpen] = useState(false)
-  const [languagesOpen, setLanguagesOpen] = useState(false)
-  const [regionSettingsOpen, setRegionSettingsOpen] = useState(false)
-  const settingsRegion =
-    selection.kind === 'region' ? selection.region : undefined
-  const [translationsOpen, setTranslationsOpen] = useState(false)
-  const [promotionNoticeShown, setPromotionNoticeShown] = useState(false)
+  const [localizeTab, setLocalizeTab] = useState<LocalizeTab>('languages')
+  const [promotionNotice, setPromotionNotice] = useState(false)
 
-  function handlePageKindChange(
-    nextPageKind: CampaignPageKind,
-    regionId?: string
-  ): void {
-    dispatch({ type: 'SetPageKindAction', pageKind: nextPageKind, regionId })
+  /** A default-language swap opens Localize on Translations with the promotion notice. */
+  function handleDefaultLanguageChanged(): void {
+    setLocalizeTab('translations')
+    setPromotionNotice(true)
+    if (panel !== 'localize')
+      dispatch({ type: 'SetPanelAction', panel: 'localize' })
   }
 
-  function handlePreviewLanguageChange(languageId: string): void {
-    dispatch({
-      type: 'SetPreviewLanguageAction',
-      previewLanguageId: languageId
-    })
-  }
+  const leftPanel =
+    panel === 'add' ? (
+      <LeftPanel label={t('Add')}>
+        <AddPanel />
+      </LeftPanel>
+    ) : panel === 'pages' ? (
+      <LeftPanel label={t('Pages')}>
+        <PagesPanel />
+      </LeftPanel>
+    ) : panel === 'navigator' ? (
+      <LeftPanel label={t('Navigator')}>
+        <Navigator />
+      </LeftPanel>
+    ) : panel === 'localize' ? (
+      <LeftPanel label={t('Localize')}>
+        <LocalizePanel
+          tab={localizeTab}
+          onTabChange={setLocalizeTab}
+          promotionNotice={promotionNotice}
+          onPromotionNoticeClose={() => setPromotionNotice(false)}
+        />
+      </LeftPanel>
+    ) : null
 
   return (
-    <Stack data-testid="CampaignEditor" sx={{ height: '100vh' }}>
+    <Stack
+      direction="row"
+      data-testid="CampaignEditor"
+      sx={{ height: '100vh' }}
+    >
       <Hotkeys />
-      <TopBar
-        campaign={campaign}
-        pageKind={pageKind}
-        regionId={currentRegion?.id}
-        onPageKindChange={handlePageKindChange}
-        previewLanguageId={previewLanguageId}
-        onPreviewLanguageChange={handlePreviewLanguageChange}
-        view={view}
-        onViewChange={setView}
-        isManager={isManager}
-        panelMode={mode}
-        onPanelModeChange={setMode}
-      />
-      <Stack direction="row" sx={{ flexGrow: 1, minHeight: 0 }}>
-        <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
-          <FirstRunHint campaignId={campaign.id} />
-          <ContextBar
-            onSettingsClick={() => setSettingsOpen(true)}
-            onThemeClick={() => setThemeOpen(true)}
-            onLanguagesClick={() => setLanguagesOpen(true)}
-            onRegionSettingsClick={() => setRegionSettingsOpen(true)}
-            onTranslationsClick={() => setTranslationsOpen(true)}
-          />
-          <Canvas campaign={campaign} pageKind={pageKind} view={view} />
-        </Stack>
+      <LeftRail view={view} onViewChange={setView} isManager={isManager} />
+      <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
         <Box
-          ref={setDockElement}
-          data-testid="CampaignEditorDock"
           sx={{
-            display: dockOpen ? 'block' : 'none',
-            width: DOCKED_PANEL_WIDTH,
-            flexShrink: 0,
-            overflowY: 'auto',
-            borderLeft: 1,
-            borderColor: 'divider',
-            bgcolor: 'background.paper'
+            position: 'relative',
+            flexGrow: 1,
+            minHeight: 0,
+            display: 'flex'
           }}
-        />
+        >
+          {leftPanel}
+          <CanvasBanner inset={leftPanel != null ? LEFT_PANEL_WIDTH : 0} />
+          <Canvas campaign={campaign} pageKind={pageKind} view={view} />
+        </Box>
       </Stack>
-      <EditorPanel
-        id="settings"
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        closeButton
-      >
-        <Settings
-          campaign={campaign}
-          isManager={isManager}
-          onDefaultLanguageChanged={() => setPromotionNoticeShown(true)}
-        />
-      </EditorPanel>
-      <EditorPanel
-        id="regionSettings"
-        open={regionSettingsOpen && settingsRegion != null}
-        onClose={() => setRegionSettingsOpen(false)}
-        closeButton
-      >
-        {settingsRegion != null && <RegionSettings region={settingsRegion} />}
-      </EditorPanel>
-      <EditorPanel
-        id="theme"
-        open={themeOpen}
-        onClose={() => setThemeOpen(false)}
-      >
-        <ThemePanel onClose={() => setThemeOpen(false)} />
-      </EditorPanel>
-      <EditorPanel
-        id="languages"
-        open={languagesOpen}
-        onClose={() => setLanguagesOpen(false)}
-        closeButton
-      >
-        <LanguagesPanel campaign={campaign} />
-      </EditorPanel>
-      <EditorPanel
-        id="translations"
-        open={translationsOpen}
-        onClose={() => {
-          setTranslationsOpen(false)
-          setPromotionNoticeShown(false)
-        }}
-        float
-        width={640}
-        closeButton
-      >
-        <TranslationsView
-          campaign={campaign}
-          initialLanguageId={previewLanguageId}
-          showPromotionNotice={promotionNoticeShown}
-          onPromotionNoticeClose={() => setPromotionNoticeShown(false)}
-        />
-      </EditorPanel>
+      <Inspector
+        isManager={isManager}
+        onDefaultLanguageChanged={handleDefaultLanguageChanged}
+      />
     </Stack>
   )
 }
@@ -188,9 +122,10 @@ function CampaignEditorShell({
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
- * the Mux upload queue (so a Media Slot upload outlives its panel), the
- * top bar, the first-run hint, the contextual bar floating under it, the
- * canvas and the panels beside or over it. First open after create shows the landing page, nothing selected,
+ * the Mux upload queue (so a Media Slot upload outlives the selection), the
+ * machine-translation run (so it outlives the Localize panel), the
+ * Left Rail with its panels, the canvas with its banner and the Inspector.
+ * First open after create shows the landing page, nothing selected,
  * Desktop view, the default language as the Preview Language. Nothing
  * replaces Save.
  */
@@ -221,7 +156,7 @@ export function CampaignEditor({
           {t('Open this on a larger screen')}
         </Typography>
         <Typography color="text.secondary">
-          {t('The campaign editor needs a window at least 980 pixels wide.')}
+          {t('The campaign editor needs a window at least 1280 pixels wide.')}
         </Typography>
       </Stack>
     )
@@ -241,8 +176,8 @@ export function CampaignEditor({
       </Box>
     )
 
-  // Matched by email, as TeamManageWrapper does: `me.id` is the users
-  // table id while a UserTeam's `user.id` is the Firebase uid, so the two
+  // Matched by email, as CustomDomainDialog does: `me.id` is the users
+  // table uuid while a UserTeam's `user.id` is the Firebase uid, so the two
   // never compare equal.
   const isManager =
     currentUser.__typename === 'AuthenticatedUser' &&
@@ -257,9 +192,11 @@ export function CampaignEditor({
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
         <MuxVideoUploadProvider>
-          <EditorPanelsProvider>
-            <CampaignEditorShell campaign={campaign} isManager={isManager} />
-          </EditorPanelsProvider>
+          <TranslationRunProvider>
+            <NavigatorHoverProvider>
+              <CampaignEditorShell campaign={campaign} isManager={isManager} />
+            </NavigatorHoverProvider>
+          </TranslationRunProvider>
         </MuxVideoUploadProvider>
       </CampaignEditorProvider>
     </CommandProvider>

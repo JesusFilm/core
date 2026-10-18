@@ -53,6 +53,7 @@ describe('campaignButtonBlockCreate', () => {
       ...campaignBlockWithAcl(fixture, 'navHomeId'),
       action: null,
       ...data,
+      placement: data.placement === undefined ? 'below' : data.placement,
       id: data.id ?? 'newButtonId'
     })) as never)
   })

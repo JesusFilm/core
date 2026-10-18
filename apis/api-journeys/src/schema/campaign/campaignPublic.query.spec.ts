@@ -338,13 +338,13 @@ describe('campaignPublic', () => {
         themeMode: 'light',
         primaryColor: '#C52D3A',
         radius: 'rounded',
-        buttonRadius: 'pill'
+        buttonRadius: 'veryRounded'
       },
       header: { id: 'headerId', logoBlockId: null, backgroundKind: 'none' },
       footer: { id: 'footerId', backgroundKind: 'surface' }
     })
 
-    expect(campaign.strings).toHaveLength(17)
+    expect(campaign.strings).toHaveLength(18)
     expect(campaign.strings.find((s: any) => s.key === 'copy').value).toBe(
       'Copier le lien'
     )
@@ -665,6 +665,7 @@ describe('campaignPublic', () => {
               }
               ... on CampaignFeaturedMediaBlock {
                 mediaSide
+                layout
                 mediaBlockId
               }
               ... on CampaignVideoBlock {
@@ -738,6 +739,7 @@ describe('campaignPublic', () => {
             parentOrder: 5,
             titleTranslations: null,
             mediaSide: 'left' as const,
+            layout: 'stacked' as const,
             mediaBlockId: 'youTubeVideoId'
           },
           {
@@ -804,9 +806,11 @@ describe('campaignPublic', () => {
       expect(byId('youTubeSectionId')).toMatchObject({
         __typename: 'CampaignFeaturedMediaBlock',
         mediaSide: 'left',
+        layout: 'stacked',
         mediaBlockId: 'youTubeVideoId'
       })
       expect(byId('muxSectionId').mediaSide).toBe('right')
+      expect(byId('muxSectionId').layout).toBe('sideBySide')
 
       expect(byId('heroVideoId')).toEqual({
         __typename: 'CampaignVideoBlock',

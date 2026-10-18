@@ -2,6 +2,7 @@ import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generat
 import {
   CampaignBackgroundKind,
   CampaignColumnsRatio,
+  CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
   CampaignPageKind,
@@ -154,7 +155,9 @@ export function newSectionBlock(
         __typename: typename,
         ...shared,
         title: null,
-        richTextContent: null
+        richTextContent: null,
+        titleTranslations: [],
+        richTextContentTranslations: []
       }
     case 'CampaignColumnsBlock':
       return {
@@ -168,6 +171,7 @@ export function newSectionBlock(
         ...shared,
         src: null,
         alt: null,
+        altTranslations: [],
         width: null,
         height: null
       }
@@ -180,7 +184,12 @@ export function newSectionBlock(
         lede: null,
         bullets: null,
         mediaSide: CampaignMediaSide.right,
-        mediaBlockId: null
+        layout: CampaignFeaturedMediaLayout.sideBySide,
+        mediaBlockId: null,
+        eyebrowTranslations: [],
+        titleTranslations: [],
+        ledeTranslations: [],
+        bulletsTranslations: []
       }
   }
 }

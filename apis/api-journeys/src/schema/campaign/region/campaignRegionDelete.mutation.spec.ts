@@ -182,6 +182,31 @@ describe('campaignRegionDelete', () => {
     ])
   })
 
+  it('revalidates the domain form of the deleted path for a Custom Domain Campaign Root', async () => {
+    const published = campaignFactory()
+      .withRegion('EUR')
+      .withRegion('AFR')
+      .published()
+      .build()
+    prismaMock.campaignRegion.findUnique.mockResolvedValue(
+      campaignRegionWithAcl(
+        { ...published, customDomains: [{ name: 'gifts.org' } as never] },
+        'eurRegionId',
+        { listed: false }
+      )
+    )
+
+    await remove()
+
+    const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
+    expect(paths).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/gifts.org',
+      '/gifts.org/eur'
+    ])
+  })
+
   it('queues no revalidation for a draft campaign', async () => {
     await remove()
 

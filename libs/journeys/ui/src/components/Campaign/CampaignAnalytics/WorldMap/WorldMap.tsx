@@ -28,8 +28,6 @@ const STEP_TONES: ReadonlyArray<(accent: string) => string> = [
 ]
 
 interface WorldMapProps {
-  /** `contain` letterboxes the whole drawing; `cover` fills the box, trimming the edges. */
-  fit?: 'contain' | 'cover'
   shapes: WorldMapShapes
   /** The selected tab's Region Countries (ALL: every region's), as alpha-2 codes; only these are coloured. */
   highlightedCodes: ReadonlyArray<string>
@@ -68,8 +66,7 @@ export function WorldMap({
   visitors,
   accentColor,
   neutralColor = 'var(--campaign-band-card)',
-  locale,
-  fit = 'contain'
+  locale
 }: WorldMapProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   const numberFormat = useMemo(() => new Intl.NumberFormat(locale), [locale])
@@ -114,14 +111,18 @@ export function WorldMap({
       component="svg"
       data-testid="WorldMap"
       viewBox={`0 0 ${shapes.width} ${shapes.height}`}
-      preserveAspectRatio={fit === 'cover' ? 'xMidYMid slice' : 'xMidYMid meet'}
-      role="img"
+      preserveAspectRatio="xMidYMid meet"
+      role="group"
       aria-label={t('Visitors by country')}
       sx={{
         display: 'block',
         width: '100%',
         height: 'auto',
-        '& path:hover': { opacity: 0.8 }
+        '& path:hover': { opacity: 0.8 },
+        '& path:focus-visible': {
+          outline: '2px solid var(--campaign-band-accent)',
+          outlineOffset: 1
+        }
       }}
     >
       <Box
@@ -144,11 +145,23 @@ export function WorldMap({
               ? shadeStep(count, topVisitors)
               : null
           const key = country.id ?? `${country.name}-${index}`
+          const countryVisitors = t('{{visitors}} visitors', {
+            visitors: numberFormat.format(count)
+          })
+          const focusable = step != null
           const shape = (
             <path
               d={country.d}
               data-testid={`WorldMapCountry-${country.id ?? country.name}`}
               data-step={step ?? undefined}
+              // Only countries with data take a tab stop; the rest are decoration.
+              role={focusable ? 'img' : undefined}
+              tabIndex={focusable ? 0 : undefined}
+              aria-label={
+                focusable
+                  ? `${labelOf(country)}: ${countryVisitors}`
+                  : undefined
+              }
               style={{
                 fill: step == null ? neutralColor : stepColors[step],
                 stroke: 'var(--campaign-band-background)',
@@ -167,9 +180,7 @@ export function WorldMap({
                     {labelOf(country)}
                   </Box>
                   <Box component="span" sx={{ display: 'block' }}>
-                    {t('{{visitors}} visitors', {
-                      visitors: numberFormat.format(count)
-                    })}
+                    {countryVisitors}
                   </Box>
                 </>
               }

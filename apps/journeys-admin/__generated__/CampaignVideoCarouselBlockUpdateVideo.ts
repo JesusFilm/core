@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoCarouselBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoCarouselBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoCarouselBlockUpdateVideo
@@ -161,7 +161,7 @@ export interface CampaignVideoCarouselBlockUpdateVideo {
    * - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
    * - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
    * - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
-   * - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`.
+   * - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
    * - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).

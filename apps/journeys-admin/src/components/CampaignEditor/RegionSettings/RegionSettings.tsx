@@ -1,10 +1,10 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Autocomplete from '@mui/material/Autocomplete'
 import Avatar from '@mui/material/Avatar'
+import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import {
@@ -17,11 +17,15 @@ import {
 
 import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
+import { CampaignTextField } from '../../../../__generated__/globalTypes'
+import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
+import { textLength } from '../Canvas/InlineText'
 import { shapeSlug } from '../Settings'
+import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
 
 export const REGION_NAME_MAX_LENGTH = 60
 const SLUG_MAX_LENGTH = 200
@@ -30,6 +34,11 @@ type RegionField = 'name' | 'slug' | 'countryId'
 
 interface RegionSettingsProps {
   region: CampaignRegion
+  /**
+   * The non-default campaign language being previewed: the name then reads
+   * and writes that language's translation. Absent for the default language.
+   */
+  translationLanguageId?: string
 }
 
 function countryName(country: Pick<Country, 'id' | 'name'>): string {
@@ -52,20 +61,30 @@ function fieldErrorOf(
 
 /**
  * Region settings: the name and slug saved through `campaignRegionUpdate`
- * as each field commits, and the country chips picked from api-languages'
+ * as each field commits (the name through `campaignTranslationSet` while
+ * previewing a non-default language, where clearing it falls back to the
+ * default name), and the country chips picked from api-languages'
  * countries, added and removed one row at a time. Never Commands, so undo
  * does not touch them; the only pre-validation is the pure length rule and
  * the API's own messages are shown verbatim under the field that failed.
  */
-export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
+export function RegionSettings({
+  region,
+  translationLanguageId
+}: RegionSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const [name, setName] = useState(region.name)
+  const committedName =
+    translationLanguageId == null
+      ? region.name
+      : translationValue(region.nameTranslations, translationLanguageId)
+  const [name, setName] = useState(committedName)
   const [slug, setSlug] = useState(region.slug)
   const [errors, setErrors] = useState<Partial<Record<RegionField, string>>>({})
   const [regionUpdate] = useCampaignRegionUpdateMutation()
   const [countryAdd] = useCampaignRegionCountryAddMutation()
   const [countryRemove] = useCampaignRegionCountryRemoveMutation()
+  const writeTranslation = useCampaignTranslationWrite()
   const { data: countriesData, loading: countriesLoading } =
     useCampaignCountriesQuery()
   const countries = countriesData?.countries ?? []
@@ -73,8 +92,8 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
   const chosenIds = new Set(chosen.map((country) => country.countryId))
 
   useEffect(() => {
-    setName(region.name)
-  }, [region.name])
+    setName(committedName)
+  }, [committedName])
   useEffect(() => {
     setSlug(region.slug)
   }, [region.slug])
@@ -104,7 +123,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
     field: 'name' | 'slug',
     value: string
   ): string | undefined {
-    if (value === '')
+    if (value === '' && !(field === 'name' && translationLanguageId != null))
       return field === 'name' ? t('Name is required') : t('Slug is required')
     const max = field === 'name' ? REGION_NAME_MAX_LENGTH : SLUG_MAX_LENGTH
     if ([...value].length > max)
@@ -116,7 +135,8 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
     const value =
       field === 'slug' ? rawValue.replace(/-+$/, '') : rawValue.trim()
     if (field === 'slug') setSlug(value)
-    if (value === region[field]) {
+    const committed = field === 'name' ? committedName : region.slug
+    if (value === committed) {
       setFieldError(field, undefined)
       return
     }
@@ -126,6 +146,18 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
       return
     }
     try {
+      if (field === 'name' && translationLanguageId != null) {
+        await writeTranslation({
+          row: region,
+          target: { regionId: region.id },
+          field: CampaignTextField.name,
+          languageId: translationLanguageId,
+          value,
+          translations: region.nameTranslations
+        })
+        setFieldError(field, undefined)
+        return
+      }
       await regionUpdate({
         variables: { id: region.id, input: { [field]: value } },
         optimisticResponse: {
@@ -141,7 +173,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
       setFieldError(field, undefined)
     } catch (error) {
       showError(error, t('Could not save region'))
-      if (field === 'name') setName(region.name)
+      if (field === 'name') setName(committedName)
       if (field === 'slug') setSlug(region.slug)
     }
   }
@@ -198,12 +230,7 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
   }
 
   return (
-    <Stack
-      spacing={5}
-      sx={{ p: 4, pt: 5, width: '100%' }}
-      data-testid="RegionSettings"
-    >
-      <Typography variant="h6">{t('Region settings')}</Typography>
+    <Stack spacing={5} data-testid="RegionSettings">
       <TextField
         label={t('Name')}
         value={name}
@@ -212,9 +239,12 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
           void save('name', event.target.value)
         }}
         onKeyDown={handleKeyDown}
+        placeholder={translationLanguageId == null ? undefined : region.name}
         error={errors.name != null}
-        helperText={errors.name}
-        required
+        helperText={
+          errors.name ?? `${textLength(name)} / ${REGION_NAME_MAX_LENGTH}`
+        }
+        required={translationLanguageId == null}
         fullWidth
         slotProps={{
           htmlInput: {
@@ -233,8 +263,18 @@ export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
         onKeyDown={handleKeyDown}
         error={errors.slug != null}
         helperText={
-          errors.slug ??
-          t('Changing this breaks links to this page you have already shared.')
+          errors.slug ?? (
+            <>
+              <Box component="span" sx={{ display: 'block' }}>
+                {t(
+                  'Changing this breaks links to this page you have already shared.'
+                )}
+              </Box>
+              <Box component="span" sx={{ display: 'block' }}>
+                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
+              </Box>
+            </>
+          )
         }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}

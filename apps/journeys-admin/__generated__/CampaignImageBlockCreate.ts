@@ -3,11 +3,21 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignImageBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignImageBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignImageBlockCreate
 // ====================================================
+
+export interface CampaignImageBlockCreate_campaignImageBlockCreate_altTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignImageBlockCreate_campaignImageBlockCreate {
   __typename: "CampaignImageBlock";
@@ -60,6 +70,7 @@ export interface CampaignImageBlockCreate_campaignImageBlockCreate {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  altTranslations: CampaignImageBlockCreate_campaignImageBlockCreate_altTranslations[];
 }
 
 export interface CampaignImageBlockCreate {

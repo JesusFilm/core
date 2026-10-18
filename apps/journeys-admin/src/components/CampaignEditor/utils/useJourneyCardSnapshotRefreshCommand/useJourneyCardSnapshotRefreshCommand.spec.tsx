@@ -21,7 +21,7 @@ import { CommandProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
 import {
   JourneyCardBlock,
-  isSnapshotEdited,
+  matchesJourney,
   snapshotOf,
   useJourneyCardSnapshotRefreshCommand
 } from './useJourneyCardSnapshotRefreshCommand'
@@ -32,6 +32,14 @@ const JOURNEY_ID = 'landingJourneyId-journeyId'
 const card = campaign.blocks.find(
   (block) => block.id === CARD_ID
 ) as JourneyCardBlock
+
+/** The seeded campaign with the author having edited the card's snapshot by hand. */
+const editedCampaign = {
+  ...campaign,
+  blocks: campaign.blocks.map((block) =>
+    block.id === CARD_ID ? { ...block, snapshotEdited: true } : block
+  )
+}
 
 function journeyMock(
   journey: Record<string, unknown> | null
@@ -71,7 +79,8 @@ const refreshMock = {
         __typename: 'CampaignJourneyBlock',
         id: CARD_ID,
         title: liveJourney.title,
-        description: liveJourney.description
+        description: liveJourney.description,
+        snapshotEdited: false
       }
     }
   }))
@@ -82,7 +91,11 @@ const restoreMock = {
     query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
     variables: {
       id: CARD_ID,
-      input: { title: card.title, description: card.description }
+      input: {
+        title: card.title,
+        description: card.description,
+        snapshotEdited: true
+      }
     }
   },
   result: vi.fn(() => ({
@@ -91,7 +104,33 @@ const restoreMock = {
         __typename: 'CampaignJourneyBlock',
         id: CARD_ID,
         title: card.title,
-        description: card.description
+        description: card.description,
+        snapshotEdited: true
+      }
+    }
+  }))
+}
+
+const restoreUneditedMock = {
+  request: {
+    query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
+    variables: {
+      id: CARD_ID,
+      input: {
+        title: card.title,
+        description: card.description,
+        snapshotEdited: false
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignJourneyBlockUpdate: {
+        __typename: 'CampaignJourneyBlock',
+        id: CARD_ID,
+        title: card.title,
+        description: card.description,
+        snapshotEdited: false
       }
     }
   }))
@@ -123,11 +162,15 @@ function Harness(): ReactElement {
 
 async function renderHarness(
   journeyResponse: ReturnType<typeof journeyMock>,
-  extraMocks: Array<Record<string, unknown>> = []
+  extraMocks: Array<Record<string, unknown>> = [],
+  campaignProp = editedCampaign
 ): Promise<void> {
   render(
     <SnackbarProvider>
-      <QueriedEditor mocks={[journeyResponse, ...extraMocks]}>
+      <QueriedEditor
+        mocks={[journeyResponse, ...extraMocks]}
+        campaignProp={campaignProp}
+      >
         <CommandUndoItem variant="button" />
         <CommandProbe />
         <SelectionProbe />
@@ -138,35 +181,35 @@ async function renderHarness(
   await screen.findByTestId('CardText')
 }
 
-describe('isSnapshotEdited', () => {
-  it('is false while the card matches the journey, treating empty and missing descriptions alike', () => {
+describe('matchesJourney', () => {
+  it('is true while the card reads as the journey, treating empty and missing descriptions alike', () => {
     expect(
-      isSnapshotEdited(
+      matchesJourney(
         { title: 'Title', description: null },
         { title: 'Title', description: '' }
       )
-    ).toBe(false)
+    ).toBe(true)
     expect(
-      isSnapshotEdited(
+      matchesJourney(
         { title: 'Title', description: 'Text' },
         { title: 'Title', description: 'Text' }
       )
-    ).toBe(false)
+    ).toBe(true)
   })
 
-  it('is true when the title or the description differs', () => {
+  it('is false when the title or the description differs', () => {
     expect(
-      isSnapshotEdited(
+      matchesJourney(
         { title: 'Mine', description: 'Text' },
         { title: 'Title', description: 'Text' }
       )
-    ).toBe(true)
+    ).toBe(false)
     expect(
-      isSnapshotEdited(
+      matchesJourney(
         { title: 'Title', description: 'Mine' },
         { title: 'Title', description: null }
       )
-    ).toBe(true)
+    ).toBe(false)
   })
 })
 
@@ -250,8 +293,36 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     )
   })
 
-  it('does not ask, or write, when the card already matches the journey', async () => {
-    await renderHarness(journeyMock(sameJourney), [refreshMock])
+  it('refreshes without asking when the author never edited the snapshot, even if the journey has changed since', async () => {
+    await renderHarness(
+      journeyMock(liveJourney),
+      [refreshMock, restoreUneditedMock],
+      campaign
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+
+    expect(
+      screen.queryByTestId('CampaignJourneyCardSnapshotRefreshDialog')
+    ).not.toBeInTheDocument()
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CardText')).toHaveTextContent(
+      'Christmas, straight from the journey|What the journey says now.'
+    )
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(restoreUneditedMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(screen.getByTestId('CardText')).toHaveTextContent(
+        'The Christmas story|A short journey through the nativity.'
+      )
+    )
+  })
+
+  it('does not ask, or write, when an unedited card already matches the journey', async () => {
+    await renderHarness(journeyMock(sameJourney), [refreshMock], campaign)
 
     fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
 
@@ -260,6 +331,33 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
       screen.queryByTestId('CampaignJourneyCardSnapshotRefreshDialog')
     ).not.toBeInTheDocument()
     expect(refreshMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('says it already matches, and clears the flag, when an edited card was undone back to the journey’s text', async () => {
+    const clearFlagMock = {
+      ...refreshMock,
+      result: vi.fn(() => ({
+        data: {
+          campaignJourneyBlockSnapshotRefresh: {
+            __typename: 'CampaignJourneyBlock',
+            id: CARD_ID,
+            title: card.title,
+            description: card.description,
+            snapshotEdited: false
+          }
+        }
+      }))
+    }
+    await renderHarness(journeyMock(sameJourney), [clearFlagMock])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
+
+    expect(await screen.findByText('Already matches the journey')).toBeVisible()
+    expect(
+      screen.queryByTestId('CampaignJourneyCardSnapshotRefreshDialog')
+    ).not.toBeInTheDocument()
+    await waitFor(() => expect(clearFlagMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 

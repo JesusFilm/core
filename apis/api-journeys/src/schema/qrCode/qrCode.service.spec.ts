@@ -1,6 +1,6 @@
 import { prismaMock } from '../../../test/prismaMock'
 
-import { getTo } from './qrCode.service'
+import { getTo, parseAndVerifyTo } from './qrCode.service'
 
 function journeyRow(
   slug: string,
@@ -24,7 +24,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'teamId',
         toJourneyId: 'journeyId'
       })
 
@@ -52,7 +51,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'campaignTeamId',
         toJourneyId: 'journeyId'
       })
 
@@ -70,7 +68,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'journeyTeamId',
         toJourneyId: 'journeyId'
       })
 
@@ -90,7 +87,6 @@ describe('qrCode.service', () => {
 
       const to = await getTo({
         shortLinkId: 'shortLinkId',
-        teamId: 'teamId',
         toJourneyId: 'journeyId',
         toBlockId: 'blockId'
       })
@@ -101,6 +97,90 @@ describe('qrCode.service', () => {
       expect(prismaMock.block.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { journeyId: 'journeyId', id: 'blockId' }
       })
+    })
+  })
+
+  describe('parseAndVerifyTo', () => {
+    it("accepts the target journey's own team domain, whichever team owns the QR row", async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe', [
+          { name: 'journeys.example.org', routeAllTeamJourneys: true }
+        ]) as never
+      )
+
+      await expect(
+        parseAndVerifyTo(
+          'https://journeys.example.org/christmas-europe',
+          'teamId'
+        )
+      ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
+      expect(prismaMock.customDomain.findMany).not.toHaveBeenCalled()
+    })
+
+    it('accepts the root domain for a journey without a custom domain', async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+
+      await expect(
+        parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
+      ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: undefined })
+    })
+
+    it('resolves the block of the address', async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+      prismaMock.block.findFirstOrThrow.mockResolvedValue({
+        id: 'blockId'
+      } as never)
+
+      await expect(
+        parseAndVerifyTo(
+          'https://example.com/christmas-europe/blockId',
+          'teamId'
+        )
+      ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: 'blockId' })
+      expect(prismaMock.block.findFirstOrThrow).toHaveBeenCalledWith({
+        where: { journeyId: 'journeyId', id: 'blockId' }
+      })
+    })
+
+    it('rejects a host that does not serve the journey', async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe', [
+          { name: 'journeys.example.org', routeAllTeamJourneys: true }
+        ]) as never
+      )
+
+      await expect(
+        parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
+      ).rejects.toThrow('Invalid hostname')
+    })
+
+    it("only looks up live journeys that are published or the QR code team's own", async () => {
+      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+
+      await parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
+
+      expect(prismaMock.journey.findFirstOrThrow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            slug: 'christmas-europe',
+            deletedAt: null,
+            trashedAt: null,
+            OR: [{ status: 'published' }, { teamId: 'teamId' }]
+          }
+        })
+      )
+    })
+
+    it('rejects an address without a journey slug', async () => {
+      await expect(
+        parseAndVerifyTo('https://example.com/', 'teamId')
+      ).rejects.toThrow('Invalid to')
     })
   })
 })

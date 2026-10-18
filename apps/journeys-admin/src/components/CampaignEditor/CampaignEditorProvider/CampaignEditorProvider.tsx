@@ -1,13 +1,17 @@
 import {
   Dispatch,
+  MutableRefObject,
   ReactElement,
   ReactNode,
   createContext,
   useCallback,
   useContext,
   useMemo,
-  useReducer
+  useReducer,
+  useRef
 } from 'react'
+
+import { isExtra } from '@core/journeys/ui/Campaign'
 
 import {
   GetCampaign_campaign as Campaign,
@@ -16,6 +20,23 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { isInColumnSlot } from '../sectionTypes'
+
+/** The left rail panel that is open; `none` while all are closed. */
+export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize' | 'none'
+
+/**
+ * An insert point the canvas chose for the Add Panel: a page and a position
+ * among its sections, or a Column Slot, whose one section is at position 0.
+ * It lasts while the Add panel stays open and the selection stays put.
+ */
+export interface CampaignAddPreset {
+  pageId: string
+  parentOrder: number
+  parentBlockId?: string
+}
+
+/** The Inspector tab the selection shows. */
+export type CampaignInspectorTab = 'style' | 'settings'
 
 export interface CampaignEditorState {
   /** The page the canvas shows; a view choice, never a Command. */
@@ -28,12 +49,18 @@ export interface CampaignEditorState {
    * translations for it. A view choice, never a Command.
    */
   previewLanguageId: string
-  /** The selected block; undefined is the campaign row (or a region card). */
+  /** The selected block; undefined is the campaign (or a region card). */
   selectedBlockId?: string
   /** The selected region card; its switcher, if known, is `selectedBlockId`. */
   selectedRegionId?: string
-  /** Bumped by the bar's Edit so the selected block's primary text takes focus. */
-  editRequest: number
+  /** The open rail panel; a view choice, never a Command. */
+  panel: CampaignPanel
+  /** The Inspector tab; a view choice, never a Command. */
+  inspectorTab: CampaignInspectorTab
+  /** The insert point the canvas "+" or an empty slot preset; a view choice, never a Command. */
+  addPreset?: CampaignAddPreset
+  /** Bumped by Option+Z so the Navigator expands or collapses its whole tree. */
+  navigatorExpandRequest: number
 }
 
 interface SetPageKindAction {
@@ -64,20 +91,38 @@ interface SetEditorFocusAction {
   selectedBlockId?: string
   selectedRegionId?: string
 }
-interface RequestEditAction {
-  type: 'RequestEditAction'
-}
 interface SetPreviewLanguageAction {
   type: 'SetPreviewLanguageAction'
   previewLanguageId: string
+}
+/** Open a rail panel, or close it when it is the one already open. */
+interface SetPanelAction {
+  type: 'SetPanelAction'
+  panel: CampaignPanel
+}
+/** Open the Add panel at an insert point the canvas chose. */
+interface OpenAddPanelAction {
+  type: 'OpenAddPanelAction'
+  preset: CampaignAddPreset
+}
+interface SetInspectorTabAction {
+  type: 'SetInspectorTabAction'
+  inspectorTab: CampaignInspectorTab
+}
+/** Ask the Navigator to expand every row, or collapse them all when already expanded. */
+interface ToggleNavigatorExpandAction {
+  type: 'ToggleNavigatorExpandAction'
 }
 export type CampaignEditorAction =
   | SetPageKindAction
   | SelectBlockAction
   | SelectRegionAction
   | SetEditorFocusAction
-  | RequestEditAction
   | SetPreviewLanguageAction
+  | SetPanelAction
+  | OpenAddPanelAction
+  | SetInspectorTabAction
+  | ToggleNavigatorExpandAction
 
 export function reducer(
   state: CampaignEditorState,
@@ -90,19 +135,22 @@ export function reducer(
         pageKind: action.pageKind,
         regionId: action.regionId ?? state.regionId,
         selectedBlockId: undefined,
-        selectedRegionId: undefined
+        selectedRegionId: undefined,
+        addPreset: undefined
       }
     case 'SelectBlockAction':
       return {
         ...state,
         selectedBlockId: action.blockId,
-        selectedRegionId: undefined
+        selectedRegionId: undefined,
+        addPreset: undefined
       }
     case 'SelectRegionAction':
       return {
         ...state,
         selectedBlockId: action.hostBlockId,
-        selectedRegionId: action.regionId
+        selectedRegionId: action.regionId,
+        addPreset: undefined
       }
     case 'SetEditorFocusAction':
       return {
@@ -110,12 +158,28 @@ export function reducer(
         pageKind: action.pageKind ?? state.pageKind,
         regionId: action.regionId ?? state.regionId,
         selectedBlockId: action.selectedBlockId,
-        selectedRegionId: action.selectedRegionId
+        selectedRegionId: action.selectedRegionId,
+        addPreset: undefined
       }
-    case 'RequestEditAction':
-      return { ...state, editRequest: state.editRequest + 1 }
     case 'SetPreviewLanguageAction':
       return { ...state, previewLanguageId: action.previewLanguageId }
+    case 'SetPanelAction': {
+      const panel = state.panel === action.panel ? 'none' : action.panel
+      return {
+        ...state,
+        panel,
+        addPreset: panel === 'add' ? state.addPreset : undefined
+      }
+    }
+    case 'OpenAddPanelAction':
+      return { ...state, panel: 'add', addPreset: action.preset }
+    case 'SetInspectorTabAction':
+      return { ...state, inspectorTab: action.inspectorTab }
+    case 'ToggleNavigatorExpandAction':
+      return {
+        ...state,
+        navigatorExpandRequest: state.navigatorExpandRequest + 1
+      }
   }
 }
 
@@ -133,7 +197,7 @@ export type CampaignSelectionKind =
 
 export interface CampaignSelection {
   kind: CampaignSelectionKind
-  /** The selected block; undefined on the campaign row or a region card. */
+  /** The selected block; undefined on the campaign or a region card. */
   block?: CampaignBlock
   /**
    * The section or chrome block hosting the selection; the block itself when
@@ -142,6 +206,8 @@ export interface CampaignSelection {
   host?: CampaignBlock
   /** The selected region card, or the region a selected Region Line belongs to. */
   region?: CampaignRegion
+  /** The Region Switcher the selected region card or Region Line sits in; the host a step up to the region keeps. */
+  regionHost?: CampaignBlock
 }
 
 export const CAMPAIGN_SELECTION: CampaignSelection = { kind: 'campaign' }
@@ -195,6 +261,29 @@ export function regionLines(
 }
 
 /**
+ * The Region Switcher a region card or Region Line is reached through: the
+ * one the card was clicked in, else the switcher on the page being shown (a
+ * Region Line carries no host of its own), else the first one.
+ */
+function regionSwitcherOf(
+  campaign: Pick<Campaign, 'blocks' | 'pages'>,
+  host: CampaignBlock | undefined,
+  pageKind: CampaignPageKind
+): CampaignBlock | undefined {
+  if (host != null) return host
+  const switchers = campaign.blocks.filter(
+    (block) => block.__typename === 'CampaignRegionSwitcherBlock'
+  )
+  return (
+    switchers.find(
+      (block) =>
+        campaign.pages.find((page) => page.id === block.pageId)?.kind ===
+        pageKind
+    ) ?? switchers[0]
+  )
+}
+
+/**
  * Resolve the selection from the block and region lists: what is selected
  * and where it sits. A region card wins when one is selected and still
  * exists; a Region Line resolves to text with its region and no host.
@@ -231,10 +320,7 @@ export function resolveSelection(
     )
     return { kind: 'card', block, host }
   }
-  if (
-    block.__typename === 'CampaignTypographyBlock' ||
-    block.__typename === 'CampaignButtonBlock'
-  ) {
+  if (isExtra(block)) {
     if (block.regionId != null)
       return {
         kind: 'text',
@@ -268,20 +354,26 @@ export interface CampaignEditorContextValue {
   selection: CampaignSelection
   /** The region the canvas renders the Region Page for; undefined on the landing page or with no regions. */
   currentRegion?: CampaignRegion
-  /** Select a block, or the campaign row when no id is given. */
+  /** Select a block, or the campaign when no id is given. */
   selectBlock: (blockId?: string) => void
   /** Select a region card, naming the switcher it sits in when known. */
   selectRegion: (regionId: string, hostBlockId?: string) => void
   /**
    * Escape: an Extra or a card steps up to its section, a line to its region,
    * a region to its switcher, a Column Slot or the section in one to its
-   * Columns section, a section or chrome block to the campaign row.
+   * Columns section, a section or chrome block to the campaign.
    */
   escape: () => void
   /** The page a block sits on; undefined for chrome and Region Lines, which every page shows. */
   pageKindOf: (
     block: Pick<CampaignBlock, 'pageId'>
   ) => CampaignPageKind | undefined
+  /**
+   * The canvas frame's document, set by the canvas while the frame is
+   * mounted. A ref, so reading it for scroll-to or a hover attribute never
+   * re-renders the editor.
+   */
+  frameDocumentRef: MutableRefObject<Document | null>
 }
 
 export const CampaignEditorContext = createContext<
@@ -299,7 +391,7 @@ interface CampaignEditorProviderProps {
  * which region the Region Page is rendered for) and which block or region
  * card is selected. The selection resolves against the campaign's block and
  * region lists, so a row that leaves the cache (deleted, undone) falls back
- * to the campaign row without a dispatch. The Preview Language is clamped the
+ * to the campaign without a dispatch. The Preview Language is clamped the
  * same way: when its language leaves `campaign.languages` (removed in the
  * Languages panel) the preview falls back to the campaign default.
  */
@@ -308,10 +400,15 @@ export function CampaignEditorProvider({
   initialState,
   children
 }: CampaignEditorProviderProps): ReactElement {
-  const [rawState, dispatch] = useReducer(reducer, {
+  const defaultState: CampaignEditorState = {
     pageKind: CampaignPageKind.landing,
     previewLanguageId: campaign.defaultLanguageId,
-    editRequest: 0,
+    panel: 'none',
+    inspectorTab: 'style',
+    navigatorExpandRequest: 0
+  }
+  const [rawState, dispatch] = useReducer(reducer, {
+    ...defaultState,
     ...initialState
   })
   const previewLanguageId = campaign.languages.some(
@@ -323,21 +420,19 @@ export function CampaignEditorProvider({
     () => ({ ...rawState, previewLanguageId }),
     [rawState, previewLanguageId]
   )
-  const selection = useMemo(
-    () =>
-      resolveSelection(
-        campaign.blocks,
-        state.selectedBlockId,
-        campaign.regions,
-        state.selectedRegionId
-      ),
-    [
+  const selection = useMemo(() => {
+    const resolved = resolveSelection(
       campaign.blocks,
-      campaign.regions,
       state.selectedBlockId,
+      campaign.regions,
       state.selectedRegionId
-    ]
-  )
+    )
+    if (resolved.region == null) return resolved
+    return {
+      ...resolved,
+      regionHost: regionSwitcherOf(campaign, resolved.host, state.pageKind)
+    }
+  }, [campaign, state.selectedBlockId, state.selectedRegionId, state.pageKind])
   const currentRegion = useMemo(() => {
     if (state.pageKind !== CampaignPageKind.regionTemplate) return undefined
     const regions = sortedRegions(campaign.regions)
@@ -361,7 +456,7 @@ export function CampaignEditorProvider({
       return
     }
     if (selection.kind === 'text' && selection.region != null) {
-      selectRegion(selection.region.id)
+      selectRegion(selection.region.id, selection.regionHost?.id)
       return
     }
     if (
@@ -391,6 +486,7 @@ export function CampaignEditorProvider({
       campaign.pages.find((page) => page.id === block.pageId)?.kind,
     [campaign.pages]
   )
+  const frameDocumentRef = useRef<Document | null>(null)
   const value = useMemo(
     () => ({
       campaign,
@@ -401,7 +497,8 @@ export function CampaignEditorProvider({
       selectBlock,
       selectRegion,
       escape,
-      pageKindOf
+      pageKindOf,
+      frameDocumentRef
     }),
     [
       campaign,

@@ -1,7 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { GetCampaign_campaign_blocks_CampaignFeaturedMediaBlock as CampaignFeaturedMediaBlock } from '../../../../__generated__/GetCampaign'
-import { CampaignMediaSide } from '../../../../__generated__/globalTypes'
+import {
+  CampaignFeaturedMediaLayout,
+  CampaignMediaSide
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE } from '../../../libs/useCampaignFeaturedMediaBlockUpdateMutation'
 import type { CampaignFeaturedMediaInput } from '../../../libs/useCampaignFeaturedMediaBlockUpdateMutation'
 import { newOwnedImageBlock } from '../../../libs/useCampaignImageBlockCreateMutation'
@@ -36,6 +39,7 @@ function updateMock(input: CampaignFeaturedMediaInput) {
           __typename: 'CampaignFeaturedMediaBlock',
           id: 'featuredId',
           mediaSide: input.mediaSide ?? featured.mediaSide,
+          layout: input.layout ?? featured.layout,
           mediaBlockId:
             input.mediaBlockId !== undefined
               ? input.mediaBlockId
@@ -46,18 +50,21 @@ function updateMock(input: CampaignFeaturedMediaInput) {
   }
 }
 
-function renderEdit(mocks: Array<Record<string, unknown>>): void {
+function renderEdit(
+  mocks: Array<Record<string, unknown>>,
+  block: CampaignFeaturedMediaBlock = featured
+): void {
   render(
     <StaticEditor
       mocks={mocks}
       campaignProp={{
         ...campaign,
-        blocks: [...campaign.blocks, featured, featuredImage]
+        blocks: [...campaign.blocks, block, featuredImage]
       }}
       initialState={{ selectedBlockId: 'featuredId' }}
     >
       <CommandProbe />
-      <MediaSectionEdit block={featured} />
+      <MediaSectionEdit block={block} />
     </StaticEditor>
   )
 }
@@ -70,7 +77,6 @@ describe('MediaSectionEdit', () => {
   it('shows the media the slot holds with Replace and Clear, and the media side', () => {
     renderEdit([])
 
-    expect(screen.getByText('Featured media')).toBeInTheDocument()
     expect(screen.getByTestId('CanvasMediaImage')).toHaveAttribute('src', SRC)
     expect(
       screen.getByRole('button', { name: 'Replace media' })
@@ -98,6 +104,41 @@ describe('MediaSectionEdit', () => {
 
     await waitFor(() => expect(left.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('shows the layout, side by side by default, with the media side enabled', () => {
+    renderEdit([])
+
+    expect(
+      screen.getByRole('button', { name: 'Side by side' })
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'Stacked' })).toHaveAttribute(
+      'aria-pressed',
+      'false'
+    )
+    expect(screen.getByRole('button', { name: 'Left' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Right' })).toBeEnabled()
+  })
+
+  it('stacks the section as one Command', async () => {
+    const stacked = updateMock({ layout: CampaignFeaturedMediaLayout.stacked })
+    renderEdit([stacked])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Stacked' }))
+
+    await waitFor(() => expect(stacked.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('disables the media side while the section is stacked', () => {
+    renderEdit([], { ...featured, layout: CampaignFeaturedMediaLayout.stacked })
+
+    expect(screen.getByRole('button', { name: 'Stacked' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+    expect(screen.getByRole('button', { name: 'Left' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Right' })).toBeDisabled()
   })
 
   it('clears the media as one Command', async () => {

@@ -64,7 +64,7 @@ describe('journeyUpdate', () => {
 
     expect(result.errors?.[0]).toMatchObject({
       message: 'slug is reserved',
-      extensions: { code: 'BAD_USER_INPUT' }
+      extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
     })
     expect(prismaMock.$transaction).not.toHaveBeenCalled()
     expect(prismaMock.journey.update).not.toHaveBeenCalled()

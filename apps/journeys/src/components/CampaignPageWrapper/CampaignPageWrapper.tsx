@@ -19,6 +19,7 @@ import type {
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import { CampaignPageKind } from '../../../__generated__/globalTypes'
+import { CampaignLanguageRedirect } from '../CampaignLanguageRedirect'
 
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'your.nextstep.is'
 
@@ -40,7 +41,9 @@ interface CampaignPageWrapperProps {
  * Fonts link, SEO and social tags (`CampaignSeo`, canonical in the preferred
  * address form), and Plausible page views on the campaign team's existing site through the same `/plausible` proxy journeys use (page path
  * as rendered; automatic page views, so nothing is reported from the admin
- * canvas, which uses its own components).
+ * canvas, which uses its own components). The page is static, so a visitor
+ * whose cookie or browser languages name another campaign language is sent on
+ * to it by `CampaignLanguageRedirect`.
  */
 export function CampaignPageWrapper({
   campaign,
@@ -66,6 +69,7 @@ export function CampaignPageWrapper({
       <Head>
         <link rel="stylesheet" href={campaignFontsHref(campaign.theme)} />
       </Head>
+      <CampaignLanguageRedirect campaign={campaign} />
       <CampaignSeo
         campaign={campaign}
         pageKind={pageKind}

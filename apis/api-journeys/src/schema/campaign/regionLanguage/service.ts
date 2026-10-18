@@ -16,7 +16,6 @@ import {
   getTo,
   updateShortLink
 } from '../../qrCode/qrCode.service'
-import { touchCampaign } from '../block/service'
 import { Action, campaignAcl } from '../campaign.acl'
 import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
 
@@ -96,7 +95,7 @@ export async function createRegionLanguageQrCode(
   journeyId: string
 ): Promise<{ qrCodeId: string; step: ShortLinkStep }> {
   const shortLinkId = uuidv4()
-  const to = await getTo({ shortLinkId, teamId, toJourneyId: journeyId })
+  const to = await getTo({ shortLinkId, toJourneyId: journeyId })
   const qrCode = await tx.qrCode.create({
     data: { teamId, journeyId, toJourneyId: journeyId, shortLinkId }
   })
@@ -133,12 +132,10 @@ export async function retargetRegionLanguageQrCode(
 ): Promise<ShortLinkStep> {
   const to = await getTo({
     shortLinkId: qrCode.shortLinkId,
-    teamId: qrCode.teamId,
     toJourneyId: journeyId
   })
   const previousTo = await getTo({
     shortLinkId: qrCode.shortLinkId,
-    teamId: qrCode.teamId,
     toJourneyId: qrCode.toJourneyId
   })
   await tx.qrCode.update({
@@ -254,25 +251,4 @@ export async function reorderRegionLanguages(
         })
     )
   )
-}
-
-/**
- * Move a Share Language to `order` among its region's languages (clamped to
- * the end) and renumber them contiguously, inside `tx`. Returns every row.
- */
-export async function moveRegionLanguage(
-  tx: Prisma.TransactionClient,
-  regionLanguage: CampaignRegionLanguage,
-  campaignId: string,
-  order: number
-): Promise<CampaignRegionLanguage[]> {
-  const all = await getRegionLanguages(regionLanguage.regionId, tx)
-  const self =
-    all.find((candidate) => candidate.id === regionLanguage.id) ??
-    regionLanguage
-  const others = all.filter((candidate) => candidate.id !== regionLanguage.id)
-  others.splice(Math.min(order, others.length), 0, self)
-  const rows = await reorderRegionLanguages(others, tx)
-  await touchCampaign(tx, campaignId)
-  return rows
 }

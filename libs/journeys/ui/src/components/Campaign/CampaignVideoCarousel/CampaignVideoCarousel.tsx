@@ -4,6 +4,7 @@ import Dialog from '@mui/material/Dialog'
 import DialogContent from '@mui/material/DialogContent'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode, useMemo, useState } from 'react'
 
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
@@ -12,9 +13,13 @@ import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
-import { CampaignVideo } from '../CampaignVideo'
+import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
 import type { CampaignTreeOf } from '../types'
 
+import {
+  CampaignCarouselArrows,
+  useCarouselScroll
+} from './CampaignCarouselArrows'
 import {
   CampaignCarouselSeeAllCard,
   CampaignCarouselVideoCard,
@@ -87,15 +92,21 @@ function VideoCard({
   card: CampaignCarouselVideoCard
   onPlay: (card: CampaignCarouselVideoCard) => void
 }): ReactElement {
-  const { campaign } = useCampaign()
-  const string = (key: CampaignStringKey): string =>
-    campaign.strings.find((candidate) => candidate.key === key)?.value ?? ''
-  const action =
-    card.childrenCount > 0
-      ? `${card.childrenCount} ${string(CampaignStringKey.videos)}`.trim()
-      : card.source === 'youTube'
-        ? string(CampaignStringKey.youtube)
-        : string(CampaignStringKey.watch)
+  const { t } = useTranslation('libs-journeys-ui')
+  const { string } = useCampaign()
+
+  function cardAction(): string {
+    if (card.childrenCount > 0)
+      return videoCountLabel(
+        card.childrenCount,
+        string(CampaignStringKey.videos),
+        t
+      )
+    if (card.source === 'youTube') return string(CampaignStringKey.youtube)
+    return string(CampaignStringKey.watch)
+  }
+
+  const action = cardAction()
   const showDuration =
     card.childrenCount === 0 && card.duration != null && card.duration > 0
 
@@ -180,11 +191,8 @@ function SeeAllCard({
 }: {
   card: CampaignCarouselSeeAllCard
 }): ReactElement {
-  const { campaign } = useCampaign()
-  const label =
-    campaign.strings.find(
-      (candidate) => candidate.key === CampaignStringKey.seeAllOnWatch
-    )?.value ?? ''
+  const { string } = useCampaign()
+  const label = string(CampaignStringKey.seeAllOnWatch)
   return (
     <CardFrame testId="CampaignVideoCarouselSeeAll" href={card.href}>
       <Box
@@ -216,45 +224,60 @@ function SeeAllCard({
  * or the Video itself when it has none; explicit mode shows the ordered
  * CampaignVideoBlock children. Watch and YouTube cards open the video on
  * its site; an uploaded video plays in a dialog. Every card carries the
- * duration badge, or "<n> videos" for a container.
+ * duration badge, or "<n> videos" for a container. From `md` up, previous /
+ * next arrows scroll the row by a page; the clipped card stays the hint.
  */
 export function CampaignVideoCarousel({
   block
 }: CampaignVideoCarouselProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const { campaign } = useCampaign()
   const cards = useMemo(
     () => carouselCards(block, campaign.languageId),
     [block, campaign.languageId]
   )
   const [playing, setPlaying] = useState<CampaignCarouselVideoCard>()
+  const { rowRef, ...scroll } = useCarouselScroll(cards.length)
 
   return (
     <CampaignSectionBand block={block}>
       <CampaignSectionHeading eyebrow={block.eyebrow} title={block.title} />
       {cards.length > 0 && (
-        <Stack
-          direction="row"
-          spacing={3}
-          data-testid={`CampaignVideoCarouselCards-${block.id}`}
-          sx={{
-            overflowX: 'auto',
-            scrollSnapType: 'x mandatory',
-            pb: 1,
-            mx: { xs: -2, sm: 0 },
-            px: { xs: 2, sm: 0 }
-          }}
-        >
-          {cards.map((card) =>
-            card.kind === 'seeAll' ? (
-              <SeeAllCard key={card.id} card={card} />
-            ) : (
-              <VideoCard key={card.id} card={card} onPlay={setPlaying} />
-            )
-          )}
+        <Stack spacing={2}>
+          <CampaignCarouselArrows
+            canScrollPrevious={scroll.canScrollPrevious}
+            canScrollNext={scroll.canScrollNext}
+            onPrevious={scroll.scrollPrevious}
+            onNext={scroll.scrollNext}
+          />
+          <Stack
+            ref={rowRef}
+            direction="row"
+            spacing={3}
+            data-testid={`CampaignVideoCarouselCards-${block.id}`}
+            sx={{
+              overflowX: 'auto',
+              scrollSnapType: 'x mandatory',
+              pb: 1,
+              mx: { xs: -2, sm: 0 },
+              px: { xs: 2, sm: 0 }
+            }}
+          >
+            {cards.map((card) =>
+              card.kind === 'seeAll' ? (
+                <SeeAllCard key={card.id} card={card} />
+              ) : (
+                <VideoCard key={card.id} card={card} onPlay={setPlaying} />
+              )
+            )}
+          </Stack>
         </Stack>
       )}
       <Dialog
         open={playing?.block != null}
+        slotProps={{
+          paper: { 'aria-label': playing?.title ?? t('Video player') }
+        }}
         onClose={() => setPlaying(undefined)}
         maxWidth="md"
         fullWidth

@@ -30,8 +30,6 @@ interface InlineTextProps
   editing: boolean
   /** Take focus when the input mounts. */
   autoFocus?: boolean
-  /** Bumped by the Edit action; focuses an input that is already mounted. */
-  focusRequest?: number
   /** Clicking the text selects its block. */
   onSelect?: () => void
   variantMapping?: TypographyProps['variantMapping']
@@ -69,7 +67,6 @@ export function InlineText({
   placeholder,
   editing,
   autoFocus = false,
-  focusRequest = 0,
   onSelect,
   variant,
   component,
@@ -91,11 +88,14 @@ export function InlineText({
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
 
+  // Focus without scrolling: a plain focus() (and the autoFocus attribute)
+  // scrolls every ancestor to centre the input, including the editor page that
+  // holds the scaled frame.
   useEffect(() => {
-    if (focusRequest === 0 || !autoFocus) return
-    inputRef.current?.focus()
+    if (!editing || !autoFocus) return
+    inputRef.current?.focus({ preventScroll: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusRequest])
+  }, [editing])
 
   function handleInputChange(event: ChangeEvent<HTMLTextAreaElement>): void {
     const next = event.target.value
@@ -148,7 +148,6 @@ export function InlineText({
       name={target.string != null ? target.string.key : target.field}
       fullWidth
       multiline={!autoWidth}
-      autoFocus={autoFocus}
       inputRef={inputRef}
       value={value}
       placeholder={fallback !== '' ? fallback : placeholder}

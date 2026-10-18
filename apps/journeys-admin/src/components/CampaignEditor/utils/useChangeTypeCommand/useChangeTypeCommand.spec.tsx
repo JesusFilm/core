@@ -5,14 +5,17 @@ import { CAMPAIGN_BLOCK_RESTORE } from '../../../../libs/useCampaignBlockRestore
 import { CAMPAIGN_HERO_BLOCK_CREATE } from '../../../../libs/useCampaignSectionCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
-import { ContextBar } from '../../ContextBar'
 import { campaignWithColumns } from '../../data'
+import { Inspector } from '../../Inspector'
 import { newSectionBlock } from '../../sectionTypes'
 import {
   BlocksProbe,
   CommandProbe,
+  PendingTextSave,
   QueriedEditor,
-  SelectionProbe
+  SelectionProbe,
+  campaignCache,
+  debounceSpyLink
 } from '../../testing'
 
 vi.mock('uuid', () => ({ v4: () => 'newId' }))
@@ -73,6 +76,8 @@ const createMock = {
   })
 }
 
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
 const deleteOldMock = deleteMock('slotRichTextId')
 const deleteOldAgainMock = deleteMock('slotRichTextId')
 const deleteNewMock = deleteMock('newId')
@@ -83,7 +88,10 @@ function renderEditor(): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       campaignData={campaignWithColumns}
-      initialState={{ selectedBlockId: 'slotRichTextId' }}
+      initialState={{
+        selectedBlockId: 'slotRichTextId',
+        inspectorTab: 'settings'
+      }}
       mocks={[
         deleteOldMock,
         createMock,
@@ -98,7 +106,7 @@ function renderEditor(): ReturnType<typeof render> {
       <CommandProbe />
       <SelectionProbe />
       <BlocksProbe />
-      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <Inspector isManager={false} />
     </QueriedEditor>
   )
 }
@@ -108,6 +116,28 @@ function slotBlocks(): string[] {
     .getAllByTestId(/^Block-/)
     .filter((item) => item.textContent?.includes('|slotLeftId|'))
     .map((item) => item.getAttribute('data-testid') as string)
+}
+
+function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
+  return render(
+    <QueriedEditor
+      campaignData={campaignWithColumns}
+      link={debounceSpyLink(
+        requests,
+        [deleteOldMock, createMock],
+        campaignWithColumns
+      )}
+      cache={campaignCache()}
+      initialState={{
+        selectedBlockId: 'slotRichTextId',
+        inspectorTab: 'settings'
+      }}
+    >
+      <PendingTextSave block={slotRichText} />
+      <BlocksProbe />
+      <Inspector isManager={false} />
+    </QueriedEditor>
+  )
 }
 
 describe('useChangeTypeCommand', () => {
@@ -139,6 +169,26 @@ describe('useChangeTypeCommand', () => {
     expect(calls).toEqual(['delete slotRichTextId', 'create newId'])
     await waitFor(() => expect(slotBlocks()).toEqual(['Block-newId']))
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('column')
+  })
+
+  it('sends a text edit still waiting on its debounce before the delete, so it cannot overtake it', async () => {
+    const requests: string[] = []
+    renderWithPendingText(requests)
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+
+    await waitFor(() =>
+      expect(requests.slice(0, 3)).toEqual([
+        'PendingTextSave',
+        'CampaignBlockDelete',
+        'CampaignHeroBlockCreate'
+      ])
+    )
   })
 
   it('undoes by deleting the new section and restoring the old one, and redoes the other way', async () => {
@@ -174,11 +224,14 @@ describe('useChangeTypeCommand', () => {
     render(
       <QueriedEditor
         campaignData={campaignWithColumns}
-        initialState={{ selectedBlockId: 'slotRichTextId' }}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
         mocks={[deleteOldMock, failingCreate, restoreOldMock]}
       >
         <BlocksProbe />
-        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <Inspector isManager={false} />
       </QueriedEditor>
     )
     await waitFor(() =>
@@ -193,6 +246,152 @@ describe('useChangeTypeCommand', () => {
     await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
   })
 
+  it('raises the API message when the delete is refused, and creates nothing', async () => {
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
+        mocks={[{ ...deleteOldMock, result: refusal }, createMock]}
+      >
+        <BlocksProbe />
+        <Inspector isManager={false} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+    expect(createMock.result).not.toHaveBeenCalled()
+  })
+
+  it('raises the API message when the create is refused, and still restores the old section', async () => {
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
+        mocks={[
+          deleteOldMock,
+          { ...createMock, result: refusal },
+          restoreOldMock
+        ]}
+      >
+        <BlocksProbe />
+        <Inspector isManager={false} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+  })
+
+  it('stays quiet when an undo finds the never-created section missing, but raises a refused restore', async () => {
+    const failingCreate = { ...createMock, error: new Error('refused') }
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
+        mocks={[
+          deleteOldMock,
+          failingCreate,
+          restoreOldMock,
+          { ...deleteNewMock, error: new Error('NOT_FOUND') },
+          {
+            ...restoreMock('slotRichTextId', slotRichText),
+            result: { errors: [{ message: 'Restore refused' }] }
+          }
+        ]}
+      >
+        <CommandUndoItem variant="button" />
+        <BlocksProbe />
+        <Inspector isManager={false} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(await screen.findByText('Restore refused')).toBeInTheDocument()
+    expect(screen.queryByText('NOT_FOUND')).not.toBeInTheDocument()
+  })
+
+  it('runs the whole change again on redo when the create was refused, instead of restoring the section it never made', async () => {
+    const failingCreate = { ...createMock, error: new Error('refused') }
+    const deleteMissingNew = {
+      ...deleteNewMock,
+      error: new Error('NOT_FOUND')
+    }
+    const restoreOldOnUndo = restoreMock('slotRichTextId', slotRichText)
+    render(
+      <QueriedEditor
+        campaignData={campaignWithColumns}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
+        mocks={[
+          deleteOldMock,
+          failingCreate,
+          restoreOldMock,
+          deleteMissingNew,
+          restoreOldOnUndo,
+          deleteOldAgainMock,
+          createMock
+        ]}
+      >
+        <CommandUndoItem variant="button" />
+        <CommandRedoItem variant="button" />
+        <BlocksProbe />
+        <Inspector isManager={false} />
+      </QueriedEditor>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('Block-slotRichTextId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change type' }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Hero' }))
+    await waitFor(() => expect(restoreOldMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(restoreOldOnUndo.result).toHaveBeenCalled())
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-slotRichTextId']))
+    calls.length = 0
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
+
+    await waitFor(() =>
+      expect(calls).toEqual(['delete slotRichTextId', 'create newId'])
+    )
+    await waitFor(() => expect(slotBlocks()).toEqual(['Block-newId']))
+    expect(screen.queryByText('NOT_FOUND')).not.toBeInTheDocument()
+  })
+
   it('still restores the old section on undo when the new one was never created', async () => {
     const failingCreate = { ...createMock, error: new Error('refused') }
     const deleteMissingNew = {
@@ -202,7 +401,10 @@ describe('useChangeTypeCommand', () => {
     render(
       <QueriedEditor
         campaignData={campaignWithColumns}
-        initialState={{ selectedBlockId: 'slotRichTextId' }}
+        initialState={{
+          selectedBlockId: 'slotRichTextId',
+          inspectorTab: 'settings'
+        }}
         mocks={[
           deleteOldMock,
           failingCreate,
@@ -213,7 +415,7 @@ describe('useChangeTypeCommand', () => {
       >
         <CommandUndoItem variant="button" />
         <BlocksProbe />
-        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <Inspector isManager={false} />
       </QueriedEditor>
     )
     await waitFor(() =>

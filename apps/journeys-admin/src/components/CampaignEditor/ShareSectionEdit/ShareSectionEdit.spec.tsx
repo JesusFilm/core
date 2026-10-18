@@ -13,14 +13,18 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import {
   CampaignPageKind,
+  CampaignTextSource,
   IdType,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
 import { CAMPAIGN_REGION_LANGUAGE_CREATE } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { CAMPAIGN_REGION_LANGUAGE_DELETE } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH } from '../../../libs/useCampaignRegionLanguageSnapshotRefreshMutation'
 import { CAMPAIGN_REGION_LANGUAGE_UPDATE } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
+import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
+import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
 import { CommandProbe, QueriedEditor } from '../testing'
 
@@ -64,7 +68,8 @@ const languagesMock = {
           id: '496',
           slug: 'french',
           name: [
-            { __typename: 'LanguageName', value: 'Français', primary: true }
+            { __typename: 'LanguageName', value: 'Français', primary: true },
+            { __typename: 'LanguageName', value: 'French', primary: false }
           ]
         }
       ]
@@ -118,6 +123,27 @@ const journey = {
   status: JourneyStatus.published
 }
 
+const accessibleJourneysMock = {
+  request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
+  result: vi.fn(() => ({
+    data: {
+      journeys: [
+        {
+          ...journey,
+          team: { __typename: 'Team', id: 'teamId', title: 'Équipe Europe' }
+        },
+        {
+          ...journey,
+          id: 'archivedJourneyId',
+          title: 'Ancien Noël',
+          status: JourneyStatus.archived,
+          team: { __typename: 'Team', id: 'teamId', title: 'Équipe Europe' }
+        }
+      ]
+    }
+  }))
+}
+
 const resolveMock = {
   request: {
     query: GET_CAMPAIGN_JOURNEY_BY_LINK,
@@ -157,6 +183,79 @@ const linkMock = {
             }
           }
         }
+      }
+    }
+  }))
+}
+
+const swapMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: {
+      id: 'eurRegionId-529',
+      input: { url: 'https://admin.nextstep.is/journeys/frJourneyId' }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...eurEnglish,
+        journeyId: 'frJourneyId',
+        title: 'Noël en Europe',
+        description: null,
+        journey
+      }
+    }
+  }))
+}
+
+const swapRelinkMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-529', input: { journeyId: 'frJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...eurEnglish,
+        journeyId: 'frJourneyId',
+        title: 'Noël en Europe',
+        description: null,
+        journey
+      }
+    }
+  }))
+}
+
+const swapBackMock = {
+  delay: 50,
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: { id: 'eurRegionId-529', input: { journeyId: 'eurJourneyId' } }
+  },
+  result: vi.fn(() => ({
+    data: { campaignRegionLanguageUpdate: eurEnglish }
+  }))
+}
+
+const restoreSnapshotMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_UPDATE,
+    variables: {
+      id: 'eurRegionId-529',
+      input: {
+        title: 'My Christmas title',
+        description: 'A journey for Europe.',
+        snapshotEdited: true
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageUpdate: {
+        ...eurEnglish,
+        title: 'My Christmas title',
+        snapshotEdited: true
       }
     }
   }))
@@ -254,7 +353,8 @@ function withEnglish(english: typeof eurEnglish): typeof campaignWithRegions {
 }
 
 function renderShare(
-  campaignProp = campaignWithRegions
+  campaignProp = campaignWithRegions,
+  previewLanguageId?: string
 ): ReturnType<typeof render> {
   return render(
     <SnackbarProvider>
@@ -263,20 +363,28 @@ function renderShare(
         initialState={{
           pageKind: CampaignPageKind.regionTemplate,
           regionId: 'eurRegionId',
-          selectedBlockId: 'regionShareId'
+          selectedBlockId: 'regionShareId',
+          ...(previewLanguageId != null && { previewLanguageId })
         }}
         mocks={[
           languagesMock,
           createMock,
           deleteMock,
           resolveMock,
+          accessibleJourneysMock,
           resolveBySlugMock,
           linkMock,
           linkFailureMock,
           unlinkMock,
+          swapMock,
+          swapRelinkMock,
+          swapBackMock,
+          restoreSnapshotMock,
           refreshMock
         ]}
       >
+        <CommandUndoItem variant="button" />
+        <CommandRedoItem variant="button" />
         <CommandProbe />
         <ShareSectionEdit block={{ id: 'regionShareId' }} />
       </QueriedEditor>
@@ -366,6 +474,79 @@ describe('ShareSectionEdit', () => {
     ])
   })
 
+  describe('Campaign Strings', () => {
+    function withStrings(
+      overrides: Record<
+        string,
+        Partial<(typeof campaignWithRegions.strings)[number]>
+      >
+    ): typeof campaignWithRegions {
+      return {
+        ...campaignWithRegions,
+        strings: campaignWithRegions.strings.map((string) => ({
+          ...string,
+          ...overrides[string.key]
+        }))
+      }
+    }
+
+    it("labels Open, Copy link and Download QR code with the campaign's own wording, not the admin's", async () => {
+      renderShare(
+        withStrings({
+          open: { value: 'Visit' },
+          copy: { value: 'Share this link' },
+          downloadQr: { value: 'Get the QR code' }
+        })
+      )
+
+      const english = await screen.findByTestId('ShareLanguageRow-529')
+      expect(
+        within(english).getByRole('link', { name: 'Visit' })
+      ).toBeInTheDocument()
+      expect(
+        within(english).getByTestId('ShareLanguageCopy')
+      ).toHaveTextContent('Share this link')
+      expect(
+        within(english).getByTestId('ShareLanguageDownload')
+      ).toHaveTextContent('Get the QR code')
+    })
+
+    it('shows the previewed language’s translation, falling back to the default wording where there is none', async () => {
+      renderShare(
+        withStrings({
+          copy: {
+            valueTranslations: [
+              {
+                __typename: 'TranslatedValue',
+                languageId: '496',
+                value: 'Copier le lien',
+                source: CampaignTextSource.human
+              }
+            ]
+          }
+        }),
+        '496'
+      )
+
+      const english = await screen.findByTestId('ShareLanguageRow-529')
+      expect(
+        within(english).getByTestId('ShareLanguageCopy')
+      ).toHaveTextContent('Copier le lien')
+      expect(
+        within(english).getByTestId('ShareLanguageDownload')
+      ).toHaveTextContent('Download QR code')
+    })
+
+    it('copies the link and announces it with the campaign’s own "copied" string', async () => {
+      renderShare(withStrings({ copied: { value: 'Copied it' } }))
+
+      const english = await screen.findByTestId('ShareLanguageRow-529')
+      fireEvent.click(within(english).getByTestId('ShareLanguageCopy'))
+
+      expect(await screen.findByText('Copied it')).toBeInTheDocument()
+    })
+  })
+
   it('offers the page languages first, then the full catalogue, and adds the chosen one', async () => {
     renderShare()
 
@@ -416,7 +597,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Pick a journey' })
     )
     const field = within(french).getByRole('textbox', {
-      name: 'Journey link'
+      name: 'or paste a link'
     })
     await userEvent.type(
       field,
@@ -453,6 +634,142 @@ describe('ShareSectionEdit', () => {
     expect(within(linked).getByTestId('ShareLanguageCopy')).toBeEnabled()
   })
 
+  it('links a journey picked from the search with the admin link built from its id', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.click(
+      within(french).getByRole('combobox', { name: 'Search your journeys' })
+    )
+    const option = await screen.findByTestId('JourneyPickerOption-frJourneyId')
+    expect(option).toHaveTextContent('Noël en Europe')
+    expect(option).toHaveTextContent('Équipe Europe')
+    fireEvent.click(option)
+
+    await waitFor(() => expect(linkMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Noël en Europe')
+    )
+  })
+
+  it('does not offer archived journeys in the search, as a share language only links published ones', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.click(
+      within(french).getByRole('combobox', { name: 'Search your journeys' })
+    )
+
+    expect(
+      await screen.findByTestId('JourneyPickerOption-frJourneyId')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('JourneyPickerOption-archivedJourneyId')
+    ).toBeNull()
+  })
+
+  it('links the first journey as a plain save, so there is nothing to undo', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.type(
+      within(french).getByRole('textbox', { name: 'or paste a link' }),
+      'https://admin.nextstep.is/journeys/frJourneyId{enter}'
+    )
+    fireEvent.click(
+      await within(french).findByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
+          'ShareLanguageJourney'
+        )
+      ).toHaveTextContent('Noël en Europe')
+    )
+    expect(linkMock.result).toHaveBeenCalledTimes(1)
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('swaps as one Command: undo links the previous journey again and puts back the snapshot the author edited', async () => {
+    renderShare(withEnglish(editedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Swap journey' })
+    )
+    await userEvent.type(
+      within(english).getByRole('textbox', { name: 'or paste a link' }),
+      'https://admin.nextstep.is/journeys/frJourneyId{enter}'
+    )
+    fireEvent.click(
+      await within(english).findByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(swapBackMock.result).toHaveBeenCalled())
+    await waitFor(() => expect(restoreSnapshotMock.result).toHaveBeenCalled())
+  })
+
+  it('keeps a quick undo then redo of a swap in order, so the swapped-in journey does not get the restored title', async () => {
+    renderShare(withEnglish(editedEnglish))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Swap journey' })
+    )
+    await userEvent.type(
+      within(english).getByRole('textbox', { name: 'or paste a link' }),
+      'https://admin.nextstep.is/journeys/frJourneyId{enter}'
+    )
+    fireEvent.click(
+      await within(english).findByRole('button', { name: 'Use this journey' })
+    )
+    await waitFor(() => expect(swapMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(swapRelinkMock.result).toHaveBeenCalled())
+    expect(restoreSnapshotMock.result.mock.invocationCallOrder[0]).toBeLessThan(
+      swapRelinkMock.result.mock.invocationCallOrder[0]
+    )
+  })
+
+  it('adds nothing to the undo stack when the link is refused', async () => {
+    renderShare()
+
+    const french = await screen.findByTestId('ShareLanguageRow-496')
+    fireEvent.click(
+      within(french).getByRole('button', { name: 'Pick a journey' })
+    )
+    await userEvent.type(
+      within(french).getByRole('textbox', { name: 'or paste a link' }),
+      'https://your.nextstep.is/noel-europe{enter}'
+    )
+    fireEvent.click(
+      await within(french).findByRole('button', { name: 'Use this journey' })
+    )
+
+    await within(french).findByText('Journey not found or not published')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
   it("shows the server's message verbatim when the link is refused", async () => {
     renderShare()
 
@@ -461,7 +778,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Pick a journey' })
     )
     const field = within(french).getByRole('textbox', {
-      name: 'Journey link'
+      name: 'or paste a link'
     })
     await userEvent.type(field, 'https://your.nextstep.is/noel-europe{enter}')
     fireEvent.click(

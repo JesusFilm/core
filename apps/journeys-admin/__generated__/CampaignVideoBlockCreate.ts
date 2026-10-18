@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignVideoBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignVideoBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignVideoBlockCreate
@@ -19,6 +19,18 @@ export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Vi
   value: string;
   primary: boolean;
   language: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_title_language;
+}
+
+export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_description_language {
+  __typename: "Language";
+  id: string;
+}
+
+export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_description {
+  __typename: "VideoDescription";
+  value: string;
+  primary: boolean;
+  language: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_description_language;
 }
 
 export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_images {
@@ -50,6 +62,7 @@ export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Vi
    */
   childrenCount: number;
   title: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_title[];
+  description: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_description[];
   images: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_images[];
   variant: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video_variant | null;
 }
@@ -66,6 +79,26 @@ export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Yo
 }
 
 export type CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo = CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_Video | CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_MuxVideo | CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo_YouTube;
+
+export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignVideoBlockCreate_campaignVideoBlockCreate_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignVideoBlockCreate_campaignVideoBlockCreate {
   __typename: "CampaignVideoBlock";
@@ -116,6 +149,8 @@ export interface CampaignVideoBlockCreate_campaignVideoBlockCreate {
    * The federated video reference (`Video`, `YouTube` or `MuxVideo` by `source`, with `id` and `primaryLanguageId`); the gateway resolves it, api-journeys never does.
    */
   mediaVideo: CampaignVideoBlockCreate_campaignVideoBlockCreate_mediaVideo | null;
+  titleTranslations: CampaignVideoBlockCreate_campaignVideoBlockCreate_titleTranslations[];
+  descriptionTranslations: CampaignVideoBlockCreate_campaignVideoBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignVideoBlockCreate {

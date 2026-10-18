@@ -14,9 +14,12 @@ import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
 import { journeyCard } from '@core/journeys/ui/Campaign/testData'
 
 import { IdType, JourneyStatus } from '../../../../__generated__/globalTypes'
+import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
+import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_CREATE } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../libs/useCampaignJourneyByLinkLazyQuery'
+import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { QueriedEditor, SelectionProbe } from '../testing'
 
@@ -35,6 +38,29 @@ const resolvedJourney = {
   status: JourneyStatus.published
 }
 
+const accessibleJourneysMock = {
+  request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
+  result: vi.fn(() => ({
+    data: {
+      journeys: [
+        {
+          ...resolvedJourney,
+          team: { __typename: 'Team', id: 'teamId', title: 'Ministry team' }
+        },
+        {
+          __typename: 'Journey',
+          id: 'archivedJourneyId',
+          title: 'Easter, retold',
+          description: null,
+          slug: 'easter-retold',
+          status: JourneyStatus.archived,
+          team: { __typename: 'Team', id: 'teamId', title: 'Ministry team' }
+        }
+      ]
+    }
+  }))
+}
+
 const resolveMock = {
   request: {
     query: GET_CAMPAIGN_JOURNEY_BY_LINK,
@@ -44,6 +70,7 @@ const resolveMock = {
 }
 
 const createMock = {
+  delay: 500,
   request: {
     query: CAMPAIGN_JOURNEY_BLOCK_CREATE,
     variables: {
@@ -54,15 +81,42 @@ const createMock = {
   },
   result: vi.fn(() => ({
     data: {
-      campaignJourneyBlockCreate: journeyCard({
-        id: 'newJourneyItemId',
-        pageId: 'landingPageId',
-        parentBlockId: 'landingJourneyListId',
-        parentOrder: 3,
-        journeyId: 'newJourneyId',
-        title: 'The Christmas story',
-        description: 'A short journey through the nativity.'
-      })
+      campaignJourneyBlockCreate: {
+        ...journeyCard({
+          id: 'newJourneyItemId',
+          pageId: 'landingPageId',
+          parentBlockId: 'landingJourneyListId',
+          parentOrder: 3,
+          journeyId: 'newJourneyId',
+          title: 'The Christmas story',
+          description: 'A short journey through the nativity.'
+        }),
+        titleTranslations: [],
+        descriptionTranslations: []
+      }
+    }
+  }))
+}
+
+const deleteMock = {
+  request: {
+    query: CAMPAIGN_BLOCK_DELETE,
+    variables: { id: 'newJourneyItemId' }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignBlockDelete: [
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'landingJourneyId',
+          parentOrder: 0
+        },
+        {
+          __typename: 'CampaignJourneyBlock',
+          id: 'landingDraftJourneyId',
+          parentOrder: 1
+        }
+      ]
     }
   }))
 }
@@ -92,7 +146,8 @@ const titleUpdateMock = {
         __typename: 'CampaignJourneyBlock',
         id: 'landingJourneyId',
         title: 'Christmas, retold',
-        description: 'A short journey through the nativity.'
+        description: 'A short journey through the nativity.',
+        snapshotEdited: true
       }
     }
   }))
@@ -108,7 +163,6 @@ function ListHarness(): ReactElement {
     <JourneyListEdit
       block={list}
       active={selection.host?.id === list.id}
-      focusRequest={0}
       onSelectCard={(cardId) => selectBlock(cardId)}
     />
   )
@@ -121,6 +175,7 @@ async function renderList(
   const result = render(
     <SnackbarProvider>
       <QueriedEditor initialState={{ selectedBlockId }} mocks={mocks}>
+        <CommandUndoItem variant="button" />
         <SelectionProbe />
         <ListHarness />
       </QueriedEditor>
@@ -206,30 +261,71 @@ describe('JourneyListEdit', () => {
     )
   })
 
-  it('offers the journey paste field only while the list or one of its cards is selected', async () => {
+  it('offers the journey picker and the paste field only while the list or one of its cards is selected', async () => {
     const { unmount } = await renderList()
     expect(
-      screen.queryByRole('textbox', { name: 'Add a journey' })
+      screen.queryByRole('combobox', { name: 'Add a journey' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('textbox', { name: 'or paste a link' })
     ).not.toBeInTheDocument()
     unmount()
 
     const list = await renderList('landingJourneyListId')
     expect(
-      screen.getByRole('textbox', { name: 'Add a journey' })
+      screen.getByRole('combobox', { name: 'Add a journey' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('textbox', { name: 'or paste a link' })
     ).toBeInTheDocument()
     list.unmount()
 
     await renderList('landingJourneyId')
     expect(
-      screen.getByRole('textbox', { name: 'Add a journey' })
+      screen.getByRole('combobox', { name: 'Add a journey' })
     ).toBeInTheDocument()
+  })
+
+  it('searches the accessible journeys and adds the picked one as a create Command, undoable', async () => {
+    await renderList('landingJourneyListId', [
+      accessibleJourneysMock,
+      createMock,
+      deleteMock
+    ])
+
+    const picker = screen.getByRole('combobox', { name: 'Add a journey' })
+    await userEvent.click(picker)
+    expect(
+      await screen.findByTestId('JourneyPickerOption-newJourneyId')
+    ).toHaveTextContent('Ministry team')
+    expect(
+      screen.getByTestId('JourneyPickerOption-archivedJourneyId')
+    ).toHaveTextContent('Archived')
+
+    await userEvent.type(picker, 'Christmas')
+    expect(
+      screen.queryByTestId('JourneyPickerOption-archivedJourneyId')
+    ).toBeNull()
+    fireEvent.click(screen.getByTestId('JourneyPickerOption-newJourneyId'))
+
+    expect(
+      await screen.findByTestId('JourneyCard-newJourneyItemId')
+    ).toHaveTextContent('The Christmas story')
+    await waitFor(() => expect(createMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() =>
+      expect(screen.queryByTestId('JourneyCard-newJourneyItemId')).toBeNull()
+    )
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
   })
 
   it('shows the resolved journey first, then adds the card from the pasted link', async () => {
     await renderList('landingJourneyListId', [resolveMock, createMock])
 
     await userEvent.type(
-      screen.getByRole('textbox', { name: 'Add a journey' }),
+      screen.getByRole('textbox', { name: 'or paste a link' }),
       `${ADMIN_LINK}{enter}`
     )
     expect(await screen.findByTestId('JourneyPasteResolved')).toHaveTextContent(
@@ -252,11 +348,14 @@ describe('JourneyListEdit', () => {
     ])
   })
 
-  it("shows the server's message verbatim when the link is refused", async () => {
-    await renderList('landingJourneyListId', [resolveMock, createFailureMock])
-
+  it('shows the new card at once as one create Command, selected, and undo removes it', async () => {
+    await renderList('landingJourneyListId', [
+      resolveMock,
+      createMock,
+      deleteMock
+    ])
     await userEvent.type(
-      screen.getByRole('textbox', { name: 'Add a journey' }),
+      screen.getByRole('textbox', { name: 'or paste a link' }),
       `${ADMIN_LINK}{enter}`
     )
     fireEvent.click(
@@ -264,8 +363,65 @@ describe('JourneyListEdit', () => {
     )
 
     expect(
-      await screen.findByText('Journey not found or not published')
-    ).toBeInTheDocument()
+      await screen.findByTestId('JourneyCard-newJourneyItemId')
+    ).toHaveTextContent('The Christmas story')
+    expect(createMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'newJourneyItemId'
+    )
+    await waitFor(() => expect(createMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingJourneyListId'
+    )
+    await waitFor(() =>
+      expect(screen.queryByTestId('JourneyCard-newJourneyItemId')).toBeNull()
+    )
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+  })
+
+  it('leaves nothing to undo when the add is refused, and keeps the list selected', async () => {
+    await renderList('landingJourneyListId', [
+      resolveMock,
+      createFailureMock,
+      deleteMock
+    ])
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'or paste a link' }),
+      `${ADMIN_LINK}{enter}`
+    )
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Use this journey' })
+    )
+    await screen.findAllByText('Journey not found or not published')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingJourneyListId'
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingJourneyListId'
+    )
+    expect(deleteMock.result).not.toHaveBeenCalled()
+  })
+
+  it("shows the server's message verbatim when the link is refused", async () => {
+    await renderList('landingJourneyListId', [resolveMock, createFailureMock])
+
+    await userEvent.type(
+      screen.getByRole('textbox', { name: 'or paste a link' }),
+      `${ADMIN_LINK}{enter}`
+    )
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Use this journey' })
+    )
+
+    expect(
+      await screen.findAllByText('Journey not found or not published')
+    ).not.toHaveLength(0)
     expect(screen.queryByTestId('JourneyCard-newJourneyItemId')).toBeNull()
   })
 })

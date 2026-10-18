@@ -10,13 +10,9 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
-import {
-  CampaignAiTranslateVariables,
-  isMachineTranslatable,
-  useCampaignAiTranslateSubscription
-} from '@core/journeys/ui/useCampaignAiTranslateSubscription'
+import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
 import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
@@ -27,6 +23,9 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { useCampaignLanguageAddMutation } from '../../../libs/useCampaignLanguageAddMutation'
 import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLanguageRemoveMutation'
+import { useCampaignEditor } from '../CampaignEditorProvider'
+import { TranslationRunProgress } from '../TranslationRunProgress'
+import { useTranslationRun } from '../TranslationRunProvider'
 
 interface LanguagesPanelProps {
   campaign: Campaign
@@ -57,33 +56,29 @@ function messageOf(error: unknown): string {
 }
 
 /**
- * The campaign's Page Languages: the current list in selector order with
- * Remove on each (the default language cannot be removed; the API's
+ * Preview (sets the Preview Language, a view choice, and the previewed row is
+ * marked) and Remove on each (the default language cannot be removed; the API's
  * `CONFLICT` message is shown verbatim when a removal is refused), and the
  * shared language autocomplete (autonym plus English name) to add one
  * through `campaignLanguageAdd`. Neither is a Command. Adding a language
- * machine-translates the whole campaign into it, with progress; a language
- * the model does not support is marked "manual only" and is added without
- * that run.
+ * starts the editor's background machine-translation run into it, shown here
+ * with progress and Cancel; a language the model does not support is marked
+ * "manual only" and is added without that run.
  */
 export function LanguagesPanel({
   campaign
 }: LanguagesPanelProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { previewLanguageId },
+    dispatch
+  } = useCampaignEditor()
   const [error, setError] = useState<string>()
-  const [sweep, setSweep] = useState<CampaignAiTranslateVariables>()
+  const { run, error: runError, start } = useTranslationRun()
   const [languageAdd, { loading: adding }] = useCampaignLanguageAddMutation()
   const [languageRemove, { loading: removing }] =
     useCampaignLanguageRemoveMutation()
   const { data, loading } = useLanguagesQuery({ languageId: '529' })
-  const { data: sweepData } = useCampaignAiTranslateSubscription({
-    variables: sweep,
-    onError: (sweepError) => {
-      setError(sweepError.message)
-      setSweep(undefined)
-    },
-    onComplete: () => setSweep(undefined)
-  })
 
   const languages = useMemo(
     () => [...campaign.languages].sort((a, b) => a.order - b.order),
@@ -102,11 +97,10 @@ export function LanguagesPanel({
         variables: { campaignId: campaign.id, languageId: option.id }
       })
       if (isMachineTranslatable(option.id))
-        setSweep({
-          campaignId: campaign.id,
-          languageId: option.id,
-          mode: 'missing'
-        })
+        start(
+          { campaignId: campaign.id, languageId: option.id, mode: 'missing' },
+          option.nativeName ?? option.localName ?? option.id
+        )
     } catch (addError) {
       setError(messageOf(addError))
     }
@@ -123,11 +117,18 @@ export function LanguagesPanel({
     }
   }
 
+  function handlePreview(language: CampaignLanguage): void {
+    dispatch({
+      type: 'SetPreviewLanguageAction',
+      previewLanguageId: language.languageId
+    })
+  }
+
   return (
     <Stack
       spacing={3}
       data-testid="CampaignLanguagesPanel"
-      sx={{ p: 4, pt: 5, width: '100%' }}
+      sx={{ width: '100%' }}
     >
       <Stack spacing={1}>
         <Typography variant="h6">{t('Languages')}</Typography>
@@ -153,19 +154,36 @@ export function LanguagesPanel({
               <Trash2Icon />
             </IconButton>
           )
+          const previewing = language.languageId === previewLanguageId
+          const previewButton = (
+            <IconButton
+              aria-label={t('Preview {{language}}', { language: autonym })}
+              aria-pressed={previewing}
+              color={previewing ? 'primary' : 'default'}
+              onClick={() => handlePreview(language)}
+            >
+              <EyeOpenIcon />
+            </IconButton>
+          )
           return (
             <ListItem
               key={language.id}
               disableGutters
               data-testid={`CampaignLanguage-${language.languageId}`}
+              sx={{ pr: 12 }}
               secondaryAction={
-                isDefault ? (
-                  <Tooltip title={t('The default language cannot be removed')}>
-                    <span>{removeButton}</span>
-                  </Tooltip>
-                ) : (
-                  removeButton
-                )
+                <Stack direction="row">
+                  {previewButton}
+                  {isDefault ? (
+                    <Tooltip
+                      title={t('The default language cannot be removed')}
+                    >
+                      <span>{removeButton}</span>
+                    </Tooltip>
+                  ) : (
+                    removeButton
+                  )}
+                </Stack>
               }
             >
               <ListItemText
@@ -173,6 +191,7 @@ export function LanguagesPanel({
                 secondary={[
                   localName,
                   isDefault ? t('Default') : undefined,
+                  previewing ? t('Previewing') : undefined,
                   manualOnly ? t('Manual only') : undefined
                 ]
                   .filter((part) => part != null)
@@ -187,23 +206,13 @@ export function LanguagesPanel({
         value={undefined}
         languages={options}
         loading={loading || adding}
-        disabled={adding || sweep != null}
+        disabled={adding || run != null}
         helperText={t('Add a language')}
       />
-      {sweep != null && (
-        <Stack data-testid="CampaignLanguageSweep">
-          <TranslationProgressBar
-            progress={sweepData?.campaignAiTranslateSubscription.progress ?? 0}
-            message={
-              sweepData?.campaignAiTranslateSubscription.message ??
-              t('Starting translation...')
-            }
-          />
-        </Stack>
-      )}
-      {error != null && (
+      <TranslationRunProgress data-testid="CampaignLanguageSweep" />
+      {(error ?? runError) != null && (
         <Alert severity="error" data-testid="CampaignLanguagesError">
-          {error}
+          {error ?? runError}
         </Alert>
       )}
     </Stack>

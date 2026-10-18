@@ -2,8 +2,8 @@ import {
   ButtonSize,
   ButtonVariant,
   CampaignBackgroundKind,
-  CampaignButtonRadius,
   CampaignChildPlacement,
+  CampaignFeaturedMediaLayout,
   CampaignJourneyListDisplay,
   CampaignMediaSide,
   CampaignPageKind,
@@ -34,7 +34,7 @@ import type {
  * One published `CampaignPublic` payload as `campaignPublic` returns it, after
  * the VideoLibrary `data.ts` precedent: the Light theme; both pages with the
  * seed sections, which between them cover every section typename, plus
- * Typography and Button Extras; the chrome; the seventeen strings; two
+ * Typography and Button Extras; the chrome; the eighteen strings; two
  * regions with one linked journey each and resolved URLs. Every seam-2 spec
  * renders this. Later tickets extend it, never fork it.
  */
@@ -195,7 +195,7 @@ export const lightTheme: CampaignPublicFields_theme = {
   contrastBackgroundColor: '#26262E',
   contrastTextColor: '#FFFFFF',
   radius: CampaignRadius.rounded,
-  buttonRadius: CampaignButtonRadius.pill
+  buttonRadius: CampaignRadius.veryRounded
 }
 
 const STRING_SEED: Array<[CampaignStringKey, string]> = [
@@ -215,7 +215,8 @@ const STRING_SEED: Array<[CampaignStringKey, string]> = [
   [CampaignStringKey.totalVisitors, 'Total visitors'],
   [CampaignStringKey.topCountry, 'Top country'],
   [CampaignStringKey.seeAllOnWatch, 'See all on Watch'],
-  [CampaignStringKey.videos, 'videos']
+  [CampaignStringKey.videos, 'videos'],
+  [CampaignStringKey.noJourneys, 'Journeys for this region are coming soon']
 ]
 
 export const campaignStrings: CampaignPublicFields_strings[] = STRING_SEED.map(
@@ -519,6 +520,20 @@ function watchVideo(
         language: { __typename: 'Language', id: '496' }
       }
     ],
+    description: [
+      {
+        __typename: 'VideoDescription',
+        value: 'The story of the first Christmas.',
+        primary: true,
+        language: { __typename: 'Language', id: '529' }
+      },
+      {
+        __typename: 'VideoDescription',
+        value: 'L histoire du premier Noël.',
+        primary: false,
+        language: { __typename: 'Language', id: '496' }
+      }
+    ],
     images: [
       {
         __typename: 'CloudflareImage',
@@ -602,6 +617,7 @@ export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
   lede: 'Short films in the languages your neighbours speak.',
   bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
   mediaSide: CampaignMediaSide.left,
+  layout: CampaignFeaturedMediaLayout.sideBySide,
   mediaBlockId: 'featuredMediaImageId'
 })
 

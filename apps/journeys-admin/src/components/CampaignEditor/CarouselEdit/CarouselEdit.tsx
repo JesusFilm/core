@@ -1,24 +1,19 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import X2Icon from '@core/shared/ui/icons/X2'
-
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { CampaignVideoCarouselBlock } from '../../../libs/useCampaignVideoCarouselBlockUpdateMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
 import { useCampaignCarouselCommand } from '../utils/useCampaignCarouselCommand'
 
 interface CarouselEditProps {
   block: CampaignVideoCarouselBlock
-  onClose?: () => void
 }
 
 /**
@@ -30,10 +25,7 @@ interface CarouselEditProps {
  * own videos" (explicit mode); the explicit items are reordered and removed
  * from their cards on the canvas. Each change is one Command.
  */
-export function CarouselEdit({
-  block,
-  onClose
-}: CarouselEditProps): ReactElement {
+export function CarouselEdit({ block }: CarouselEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { setWatchVideo, clearWatchVideo, addItem, importPlaylist, error } =
@@ -60,23 +52,9 @@ export function CarouselEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignCarouselEdit"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Edit')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {blockLabel(t, block.__typename)}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
       {error != null && (
         <Alert severity="error" role="alert">
           {error}

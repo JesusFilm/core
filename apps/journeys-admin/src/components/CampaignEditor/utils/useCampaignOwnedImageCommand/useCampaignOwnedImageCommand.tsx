@@ -43,7 +43,9 @@ export interface CampaignOwnedImageCommand extends CampaignStyleCommand {
  * overlay, or `logoBlockId` — so the canvas shows the picture at once; undo
  * restores the image the slot held (the create soft-deleted it) and writes
  * the owner's previous fields back, leaving the new image row behind, out of
- * the tree; redo writes the fields again without a second create.
+ * the tree; redo writes the fields again without a second create. A refused
+ * create is retried by redo, and its undo restores nothing, since nothing
+ * was deleted.
  * `addStyle` is the plain style Command for the slot's other edits (Clear
  * logo, the overlay), sharing this hook's error.
  */
@@ -69,17 +71,22 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
       input: input(imageId),
       previous,
       async run(current, next) {
-        if (!created) {
-          created = true
-          await createOwnedImage({
-            id: imageId,
-            owner: current,
-            slot,
-            src
-          })
-        }
         const targetImageId = imageIdOf(next)
-        if (targetImageId != null && targetImageId !== imageId)
+        if (targetImageId === imageId && !created) {
+          created = true
+          try {
+            await createOwnedImage({
+              id: imageId,
+              owner: current,
+              slot,
+              src
+            })
+          } catch (error) {
+            created = false
+            throw error
+          }
+        }
+        if (created && targetImageId != null && targetImageId !== imageId)
           await restoreBlock({ variables: { id: targetImageId } })
         return await write(current, next)
       }

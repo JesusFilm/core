@@ -81,8 +81,11 @@ function Probe(): ReactElement {
   )
 }
 
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
 function renderHook(
-  english: CampaignRegionLanguage
+  english: CampaignRegionLanguage,
+  mocks: Array<Record<string, unknown>> = [refreshMock, undoMock]
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
@@ -99,7 +102,7 @@ function renderHook(
         regionId: 'eurRegionId',
         selectedBlockId: 'regionShareId'
       }}
-      mocks={[refreshMock, undoMock]}
+      mocks={mocks}
     >
       <CommandProbe />
       <Probe />
@@ -162,6 +165,31 @@ describe('useSnapshotRefreshCommand', () => {
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('raises the API message in the error snackbar when the refresh is refused', async () => {
+    renderHook(eurEnglish, [{ ...refreshMock, result: refusal }])
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('raises the API message when the undo write is refused', async () => {
+    renderHook(edited, [refreshMock, { ...undoMock, result: refusal }])
+    await screen.findByText('Refresh')
+    fireEvent.click(screen.getByText('Refresh'))
+    fireEvent.click(screen.getByText('Confirm'))
+    await waitFor(() => expect(refreshMock.result).toHaveBeenCalledTimes(1))
+
+    fireEvent.click(screen.getByText('Undo'))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
   })
 
   it('restores the previous title and description on undo and refreshes again on redo', async () => {

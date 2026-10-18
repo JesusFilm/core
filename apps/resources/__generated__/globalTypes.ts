@@ -86,14 +86,6 @@ export enum CampaignBackgroundOverlay {
 }
 
 /**
- * Button corner shape of the Campaign Theme.
- */
-export enum CampaignButtonRadius {
-  pill = "pill",
-  rounded = "rounded",
-}
-
-/**
  * Which side of the Section Body an Extra renders on.
  */
 export enum CampaignChildPlacement {
@@ -108,6 +100,14 @@ export enum CampaignColumnsRatio {
   equal = "equal",
   wideLeft = "wideLeft",
   wideRight = "wideRight",
+}
+
+/**
+ * How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+ */
+export enum CampaignFeaturedMediaLayout {
+  sideBySide = "sideBySide",
+  stacked = "stacked",
 }
 
 /**
@@ -152,6 +152,7 @@ export enum CampaignStringKey {
   copied = "copied",
   copy = "copy",
   downloadQr = "downloadQr",
+  noJourneys = "noJourneys",
   open = "open",
   openTemplate = "openTemplate",
   seeAllOnWatch = "seeAllOnWatch",

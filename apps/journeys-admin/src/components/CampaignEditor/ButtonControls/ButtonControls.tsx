@@ -1,25 +1,20 @@
 import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
-import Divider from '@mui/material/Divider'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Popover from '@mui/material/Popover'
 import Stack from '@mui/material/Stack'
+import ToggleButton from '@mui/material/ToggleButton'
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useState } from 'react'
-
-import PaletteIcon from '@core/shared/ui/icons/Palette'
-import Type1Icon from '@core/shared/ui/icons/Type1'
+import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignButtonBlock as ButtonBlock } from '../../../../__generated__/GetCampaign'
 import {
   ButtonSize,
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
-import { BarButton } from '../BarButton'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { PaletteColorPicker } from '../PaletteColorPicker'
+import { ColourRows } from '../ColourRows'
+import { AlignRow, StyleRow } from '../StyleRow'
 import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
+import { useHostBand } from '../utils/useHostBand'
 
 export const BUTTON_VARIANTS = [
   ButtonVariant.contained,
@@ -33,25 +28,23 @@ export const BUTTON_SIZES = [
   ButtonSize.large
 ] as const
 
-type Control = 'variant' | 'size' | 'colours'
+type ButtonColourField = 'color' | 'labelColor'
 
 interface ButtonControlsProps {
   block: ButtonBlock
 }
 
 /**
- * The button Extra's bar controls: Variant (text, contained, outlined),
- * Size (small, medium, large) and Colours (the fill `color` and the label
- * `labelColor`, each a hex or following the section). One Command each.
+ * The button Extra's inline rows: Variant (text, contained, outlined), Size
+ * (small, medium, large), Align, and the fill `color` and `labelColor`, each
+ * a hex or following the section. Align and the colours show whether they
+ * follow the section and Reset back to it. One Command each.
  */
 export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addButtonStyle, error } = useCampaignExtraStyleCommand()
-  const [open, setOpen] = useState<{
-    control: Control
-    anchor: HTMLElement
-  } | null>(null)
+  const band = useHostBand()
 
   const variantLabels: Record<ButtonVariant, string> = {
     contained: t('Contained'),
@@ -66,123 +59,80 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
   const currentVariant = block.buttonVariant ?? ButtonVariant.contained
   const currentSize = block.size ?? ButtonSize.medium
 
-  function openControl(control: Control) {
-    return (event: MouseEvent<HTMLButtonElement>) =>
-      setOpen({ control, anchor: event.currentTarget })
-  }
-
-  function close(): void {
-    setOpen(null)
-  }
-
-  function handleVariant(variant: ButtonVariant): void {
-    close()
-    if (variant === currentVariant) return
+  function handleVariant(_event: unknown, variant: ButtonVariant | null): void {
+    if (variant == null || variant === currentVariant) return
     addButtonStyle(block, { variant })
   }
 
-  function handleSize(size: ButtonSize): void {
-    close()
-    if (size === currentSize) return
+  function handleSize(_event: unknown, size: ButtonSize | null): void {
+    if (size == null || size === currentSize) return
     addButtonStyle(block, { size })
   }
 
-  const menuOrigin = {
-    anchorOrigin: { vertical: 'top', horizontal: 'left' },
-    transformOrigin: { vertical: 'bottom', horizontal: 'left' }
-  } as const
-
   return (
-    <>
-      <BarButton
-        label={t('Variant')}
-        icon={<Type1Icon />}
-        onClick={openControl('variant')}
-        active={open?.control === 'variant'}
+    <Stack spacing={4} data-testid="ButtonControls">
+      {error != null && (
+        <Alert severity="error" role="alert">
+          {error}
+        </Alert>
+      )}
+      <StyleRow label={t('Variant')}>
+        <ToggleButtonGroup
+          exclusive
+          fullWidth
+          size="small"
+          value={currentVariant}
+          onChange={handleVariant}
+          aria-label={t('Variant')}
+        >
+          {BUTTON_VARIANTS.map((variant) => (
+            <ToggleButton key={variant} value={variant}>
+              {variantLabels[variant]}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </StyleRow>
+      <StyleRow label={t('Size')}>
+        <ToggleButtonGroup
+          exclusive
+          fullWidth
+          size="small"
+          value={currentSize}
+          onChange={handleSize}
+          aria-label={t('Size')}
+        >
+          {BUTTON_SIZES.map((size) => (
+            <ToggleButton key={size} value={size}>
+              {sizeLabels[size]}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </StyleRow>
+      <AlignRow
+        value={block.align}
+        onChange={(align) => addButtonStyle(block, { align })}
       />
-      <BarButton
-        label={t('Size')}
-        icon={<Type1Icon />}
-        onClick={openControl('size')}
-        active={open?.control === 'size'}
-      />
-      <BarButton
+      <ColourRows<ButtonColourField>
         label={t('Colours')}
-        icon={<PaletteIcon />}
-        onClick={openControl('colours')}
-        active={open?.control === 'colours'}
+        rows={[
+          {
+            key: 'color',
+            label: t('Button colour'),
+            value: block.color,
+            inherited: band?.button ?? campaign.theme.primaryColor
+          },
+          {
+            key: 'labelColor',
+            label: t('Button text colour'),
+            value: block.labelColor,
+            inherited: band?.buttonLabel ?? campaign.theme.surfaceColor
+          }
+        ]}
+        rowTestId="ButtonColourRow"
+        pickerTestId="ButtonColour"
+        onCommit={(field, hex) => addButtonStyle(block, { [field]: hex })}
+        onReset={(field) => addButtonStyle(block, { [field]: null })}
       />
-      <Menu
-        anchorEl={open?.anchor}
-        open={open?.control === 'variant'}
-        onClose={close}
-        {...menuOrigin}
-        data-testid="ButtonVariantMenu"
-      >
-        {BUTTON_VARIANTS.map((variant) => (
-          <MenuItem
-            key={variant}
-            selected={variant === currentVariant}
-            onClick={() => handleVariant(variant)}
-          >
-            {variantLabels[variant]}
-          </MenuItem>
-        ))}
-      </Menu>
-      <Menu
-        anchorEl={open?.anchor}
-        open={open?.control === 'size'}
-        onClose={close}
-        {...menuOrigin}
-        data-testid="ButtonSizeMenu"
-      >
-        {BUTTON_SIZES.map((size) => (
-          <MenuItem
-            key={size}
-            selected={size === currentSize}
-            onClick={() => handleSize(size)}
-          >
-            {sizeLabels[size]}
-          </MenuItem>
-        ))}
-      </Menu>
-      <Popover
-        anchorEl={open?.anchor}
-        open={open?.control === 'colours'}
-        onClose={close}
-        {...menuOrigin}
-        data-testid="ButtonColoursPopover"
-      >
-        <Stack spacing={4} sx={{ p: 4, width: 320 }}>
-          {error != null && (
-            <Alert severity="error" role="alert">
-              {error}
-            </Alert>
-          )}
-          <PaletteColorPicker
-            label={t('Button colour')}
-            value={block.color}
-            fallback={campaign.theme.primaryColor}
-            onCommit={(hex) => addButtonStyle(block, { color: hex })}
-            onClear={() => addButtonStyle(block, { color: null })}
-            clearLabel={t('Follow section')}
-            testId="ButtonColour"
-          />
-          <Divider />
-          <PaletteColorPicker
-            label={t('Button text colour')}
-            value={block.labelColor}
-            fallback={campaign.theme.surfaceColor}
-            onCommit={(hex) => addButtonStyle(block, { labelColor: hex })}
-            onClear={() => addButtonStyle(block, { labelColor: null })}
-            clearLabel={t('Follow section')}
-            testId="ButtonLabelColour"
-          />
-          <Button size="small" color="secondary" onClick={close}>
-            {t('Done')}
-          </Button>
-        </Stack>
-      </Popover>
-    </>
+    </Stack>
   )
 }

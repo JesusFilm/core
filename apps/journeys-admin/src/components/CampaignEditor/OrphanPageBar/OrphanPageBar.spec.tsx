@@ -11,7 +11,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_DELETE } from '../../../libs/useCampaignRegionDeleteMutation'
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
-import { ContextBar } from '../ContextBar'
+import { CanvasBanner } from '../CanvasBanner'
 import { campaignWithRegions } from '../data'
 import {
   CommandProbe,
@@ -47,7 +47,7 @@ const listMock = {
   }))
 }
 
-function renderBar(
+function renderBanner(
   initialState: Partial<CampaignEditorState>
 ): ReturnType<typeof render> {
   return render(
@@ -60,7 +60,7 @@ function renderBar(
         <SelectionProbe />
         <CommandProbe />
         <RegionsProbe />
-        <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+        <CanvasBanner />
       </QueriedEditor>
     </SnackbarProvider>
   )
@@ -70,7 +70,7 @@ describe('OrphanPageBar', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it("offers List on switcher and Delete region on an unlisted region's page bar", async () => {
-    renderBar({
+    renderBanner({
       pageKind: CampaignPageKind.regionTemplate,
       regionId: 'afrRegionId'
     })
@@ -87,30 +87,22 @@ describe('OrphanPageBar', () => {
   })
 
   it("offers no delete on a listed region's page or on the landing page", async () => {
-    const { unmount } = renderBar({
+    const { unmount } = renderBanner({
       pageKind: CampaignPageKind.regionTemplate,
       regionId: 'eurRegionId'
     })
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'Settings' })
-      ).toBeInTheDocument()
-    )
+    await screen.findByTestId('CampaignCanvasBanner')
     expect(screen.queryByTestId('OrphanPageDelete')).not.toBeInTheDocument()
     unmount()
 
-    renderBar({ pageKind: CampaignPageKind.landing })
-    await waitFor(() =>
-      expect(
-        screen.getByRole('button', { name: 'Settings' })
-      ).toBeInTheDocument()
-    )
+    renderBanner({ pageKind: CampaignPageKind.landing })
+    await screen.findByTestId('CampaignCanvasBanner')
     expect(screen.queryByTestId('OrphanPageDelete')).not.toBeInTheDocument()
   })
 
   it('lists the region on the switcher as a Command', async () => {
-    renderBar({
+    renderBanner({
       pageKind: CampaignPageKind.regionTemplate,
       regionId: 'afrRegionId'
     })
@@ -129,7 +121,7 @@ describe('OrphanPageBar', () => {
   })
 
   it('confirms the delete naming what goes, hard-deletes without a Command and returns to the landing page', async () => {
-    renderBar({
+    renderBanner({
       pageKind: CampaignPageKind.regionTemplate,
       regionId: 'afrRegionId'
     })
@@ -157,7 +149,7 @@ describe('OrphanPageBar', () => {
   })
 
   it('does not delete when the confirmation is cancelled', async () => {
-    renderBar({
+    renderBanner({
       pageKind: CampaignPageKind.regionTemplate,
       regionId: 'afrRegionId'
     })

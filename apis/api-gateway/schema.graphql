@@ -401,7 +401,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
   - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
-  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`.
+  - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
@@ -453,7 +453,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
+  Add a journey card to a journey list from a pasted link: an admin link (`/journeys/<id>`) or a public URL on any domain resolves to a published or archived journey of any team, with the routing filter skipped, and its title and description are snapshotted as the default-language values. The item lands last among the list’s children (`parentOrder = siblings.length`), copying the list’s page scoping down. Linking another team’s journey needs no rights there.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -461,7 +461,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: parentBlockId does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
-  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or unpublished).
+  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
   """
   campaignJourneyBlockCreate(
     """
@@ -478,7 +478,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     url: String!
   ): CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched.
+  Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -489,7 +489,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignJourneyBlockUpdate(id: ID!, input: CampaignJourneyBlockUpdateInput!) : CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
+  Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made, and clear `snapshotEdited`. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -725,7 +725,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!) : CampaignFeaturedMediaBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -734,6 +734,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
+  - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -993,18 +994,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionLanguageDelete(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Move a Share Language to `order` among its region’s languages (a position past the end moves it last) and renumber them contiguously; the public Share selector follows this order. Returns every Share Language of the region with its new `order`.
-  
-  Auth: campaign Update — any member or manager of the campaign’s team.
-  
-  Errors:
-  - NOT_FOUND: id does not resolve.
-  - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `order`): negative.
-  """
-  campaignRegionLanguageOrderUpdate(id: ID!, order: Int!) : [CampaignRegionLanguage!]! @join__field(graph: API_JOURNEYS_MODERN) 
-  """
-  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the seventeen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
+  Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.
   
   Auth: campaign Create — any member or manager of `input.teamId`.
   
@@ -1014,6 +1004,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `defaultLanguageId`): not an api-languages language.
   - BAD_USER_INPUT (field: `slug`): the title normalises to empty or to a reserved word.
+  - CONFLICT (field: `slug`): a concurrent create took the generated address twice; retry.
   """
   campaignCreate(input: CampaignCreateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1027,12 +1018,13 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
   - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
-  - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages.
+  - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
+  - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
   - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button shape. Only the given columns change. Applying a Theme Preset is this mutation with the mode and the eight colours; fonts and both radii stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
+  Update the Campaign Theme: its mode, any of the three fonts, any of the eight colours, the corner radius or the button corners. Only the given columns change. Applying a Theme Preset is this mutation with the mode, the eight colours and the button corners; fonts and the corner radius stay. Nothing records which preset is active. Each call is one Command in the editor; undo writes the previous values back through the same mutation.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -1051,7 +1043,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     input: CampaignThemeUpdateInput!
   ): CampaignTheme! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Hard-delete a Campaign. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
+  Hard-delete a Campaign. A published campaign queues on-demand revalidation of its pages, so they stop serving within the publish bound. The database cascade removes its blocks, actions, pages, languages, theme, strings, regions and their rows; every Campaign QR Code of its Share Languages is deleted with its short link; a Custom Domain naming it as Campaign Root is released, and the linked journeys are untouched. Returns the deleted campaign as its last canonical view.
   
   Auth: campaign Delete — a manager of the campaign’s team.
   
@@ -1081,7 +1073,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignUnpublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the default-language wording of one Campaign String. The seventeen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
+  Update the default-language wording of one Campaign String. The eighteen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -1436,29 +1428,53 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   playlistItemRemove(playlistId: ID!, itemId: ID!) : MutationPlaylistItemRemoveResult @join__field(graph: API_MEDIA) 
   playlistItemsReorder(playlistId: ID!, itemIds: [ID!]!) : MutationPlaylistItemsReorderResult @join__field(graph: API_MEDIA) 
   """
-  Create a new short link domain that can be used for short links (this domain must have a CNAME record pointing to the short link service)
+  create a short link campaign
+  """
+  shortLinkCampaignCreate(input: MutationShortLinkCampaignCreateInput!) : ShortLinkCampaign! @join__field(graph: API_MEDIA) 
+  """
+  update a short link campaign
+  """
+  shortLinkCampaignUpdate(input: MutationShortLinkCampaignUpdateInput!) : MutationShortLinkCampaignUpdateResult! @join__field(graph: API_MEDIA) 
+  """
+  delete a short link campaign; its links are detached, not deleted
+  """
+  shortLinkCampaignDelete(id: String!) : MutationShortLinkCampaignDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
   """
-  Update services that can use this short link domain
+  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
   """
-  delete an existing short link domain (all related short links must be deleted first)
+  delete an existing short link domain (superAdmin only; all related short links must be deleted first)
   """
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
+  """
+  shortLinkDomainPublish(id: String!) : MutationShortLinkDomainPublishResult! @join__field(graph: API_MEDIA) 
   """
   create a new short link
   """
   shortLinkCreate(input: MutationShortLinkCreateInput!) : MutationShortLinkCreateResult! @join__field(graph: API_MEDIA) 
   """
-  update an existing short link
+  update an existing short link (the pathname is immutable). Changing `to` on a permanent or videoEmbedded link needs a short link admin; videoEmbedded also needs a note
   """
   shortLinkUpdate(input: MutationShortLinkUpdateInput!) : MutationShortLinkUpdateResult! @join__field(graph: API_MEDIA) 
   """
-  delete an existing short link
+  soft delete an existing short link: it stops resolving and its pathname is never reissued. Permanent and videoEmbedded links need a short link admin
   """
   shortLinkDelete(id: String!) : MutationShortLinkDeleteResult! @join__field(graph: API_MEDIA) 
+  """
+  pause, resume, retag or re-campaign several short links at once; every link is republished to the edge
+  """
+  shortLinkBulkUpdate(input: MutationShortLinkBulkUpdateInput!) : MutationShortLinkBulkUpdateResult! @join__field(graph: API_MEDIA) 
+  """
+  republish one short link routing record to the edge store (publish-gap repair)
+  """
+  shortLinkPublish(id: String!) : MutationShortLinkPublishResult! @join__field(graph: API_MEDIA) 
   userMediaProfileUpdate(input: UserMediaProfileUpdateInput!) : UserMediaProfile! @join__field(graph: API_MEDIA) 
   videoSubtitleCreate(input: VideoSubtitleCreateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
   videoSubtitleUpdate(input: VideoSubtitleUpdateInput!) : VideoSubtitle! @join__field(graph: API_MEDIA) 
@@ -1649,7 +1665,7 @@ type Campaign @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   regions: [CampaignRegion!]!
   """
-  The seventeen Campaign Strings.
+  The eighteen Campaign Strings.
   """
   strings: [CampaignString!]!
   """
@@ -1670,6 +1686,10 @@ type CampaignAiTranslateProgress @join__type(graph: API_JOURNEYS_MODERN)  {
   Current translation step message
   """
   message: String
+  """
+  How many strings the run has written so far; they are kept if the run is cancelled
+  """
+  translatedCount: Int
   """
   The campaign with its translations written (only present when complete)
   """
@@ -1838,7 +1858,7 @@ type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
   id: ID!
@@ -1889,6 +1909,10 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   Which side the media sits on at `md` and up.
   """
   mediaSide: CampaignMediaSide!
+  """
+  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+  """
+  layout: CampaignFeaturedMediaLayout!
   """
   The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
   """
@@ -2113,6 +2137,10 @@ type CampaignJourneyBlock implements CampaignBlock @join__type(graph: API_JOURNE
   Snapshot of the journey's title, editable; the default-language value.
   """
   title: String
+  """
+  True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+  """
+  snapshotEdited: Boolean!
   titleTranslations: [TranslatedValue!]!
   """
   Snapshot of the journey's description, editable; the default-language value.
@@ -2278,7 +2306,7 @@ type CampaignPublic @join__type(graph: API_JOURNEYS_MODERN)  {
   languages: [CampaignLanguage!]!
   theme: CampaignTheme!
   """
-  The seventeen Campaign Strings, values resolved.
+  The eighteen Campaign Strings, values resolved.
   """
   strings: [CampaignString!]!
   """
@@ -2680,7 +2708,7 @@ type CampaignString @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button shape. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
+The one look-and-feel row every Campaign has: theme mode, the three font roles, six base colours, two contrast-band colours, corner radius and button corners. Text over a coloured band is computed for contrast, never stored. Nothing records which Theme Preset is active.
 """
 type CampaignTheme @join__type(graph: API_JOURNEYS_MODERN)  {
   id: ID!
@@ -2701,7 +2729,10 @@ type CampaignTheme @join__type(graph: API_JOURNEYS_MODERN)  {
   contrastBackgroundColor: String!
   contrastTextColor: String!
   radius: CampaignRadius!
-  buttonRadius: CampaignButtonRadius!
+  """
+  Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
+  """
+  buttonRadius: CampaignRadius!
   createdAt: DateTimeISO!
   updatedAt: DateTimeISO!
 }
@@ -3607,13 +3638,13 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     languageId: ID
   ): CampaignPublic! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is published or archived (a draft, trashed or deleted journey does not count), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
+  The Campaign's visitor stats from one cached Plausible sweep over every linked journey that is not deleted (draft, published and archived all count; a trashed or deleted journey does not), summed by the campaign's regions: total visitors and visitors by ISO alpha-2 country for the whole campaign and for each region. The server reads Plausible with the service key; the caller never does.
   
   Auth: a published campaign is readable by anyone, anonymous or authenticated; a draft only with campaign Read.
   
   Errors:
   - NOT_FOUND: id does not resolve, or the campaign is a draft the caller cannot read.
-  - Plausible failure with nothing cached: the query errors; with a cached sweep, the last sweep is served and not retried for a few minutes.
+  - Plausible failure with nothing cached: the query errors; with a cached sweep, that sweep is served however old, and a stale one is refreshed in the background (a failed refresh is not retried for a few minutes). One journey's Plausible failure does not fail the sweep: that journey keeps its last rows, or counts as no visitors.
   """
   campaignStats(id: ID!) : CampaignStats! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -3644,6 +3675,10 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     template: Boolean
     teamId: ID
     useLastActiveTeamId: Boolean
+    """
+    Return every journey the caller can read, across all of their teams and those shared with them, in one list. Skips the default shared-with-me branch and leaves the read-access filter to decide.
+    """
+    allAccessible: Boolean
   ): [Journey!]! @join__field(graph: API_JOURNEYS_MODERN) 
   adminJourneysReport(reportType: JourneysReportType!) : PowerBiEmbed @join__field(graph: API_JOURNEYS_MODERN) 
   journey(id: ID!, idType: IdType = slug, options: JourneysQueryOptions) : Journey! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -3825,6 +3860,23 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   playlists: [Playlist!] @join__field(graph: API_MEDIA) 
   playlist(id: ID!, idType: IdType! = databaseId) : QueryPlaylistResult @join__field(graph: API_MEDIA) 
   """
+  list short link campaigns, optionally filtered by name
+  """
+  shortLinkCampaigns(
+    """
+    case-insensitive match against the campaign name
+    """
+    search: String
+    before: String
+    after: String
+    first: Int
+    last: Int
+  ): QueryShortLinkCampaignsConnection! @join__field(graph: API_MEDIA) 
+  """
+  find a short link campaign by id
+  """
+  shortLinkCampaign(id: String!) : QueryShortLinkCampaignResult! @join__field(graph: API_MEDIA) 
+  """
   List of short link domains that can be used for short links
   """
   shortLinkDomains(
@@ -3838,11 +3890,20 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
     last: Int
   ): QueryShortLinkDomainsConnection! @join__field(graph: API_MEDIA) 
   """
+  find a short link domain by hostname. Public: the redirect Worker reads it when its edge store has no domain record for the host
+  """
+  shortLinkDomainByHostname(
+    """
+    the hostname including subdomain, domain, and TLD, but excluding port
+    """
+    hostname: String!
+  ): QueryShortLinkDomainByHostnameResult! @join__field(graph: API_MEDIA) 
+  """
   Find a short link domain by id
   """
   shortLinkDomain(id: String!) : QueryShortLinkDomainResult! @join__field(graph: API_MEDIA) 
   """
-  find a short link by path and hostname
+  find a live short link by path and hostname (deleted and retired links are not found; paused links are)
   """
   shortLinkByPath(
     """
@@ -3859,18 +3920,33 @@ type Query @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS_MO
   """
   shortLink(id: String!) : QueryShortLinkResult! @join__field(graph: API_MEDIA) 
   """
-  find all short links with optional hostname filter
+  find all short links with optional hostname filter (soft-deleted links are excluded unless filter.includeDeleted is set)
   """
   shortLinks(
     """
     the hostname including subdomain, domain, and TLD, but excluding port
     """
     hostname: String
+    filter: ShortLinksFilter
     before: String
     after: String
     first: Int
     last: Int
   ): QueryShortLinksConnection! @join__field(graph: API_MEDIA) 
+  """
+  what the edge Worker would answer for this hostname and pathname (Test Redirect); mirrors the Worker lookup order
+  """
+  shortLinkResolve(
+    hostname: String!
+    """
+    path with or without the leading slash
+    """
+    pathname: String!
+  ): ShortLinkResolution! @join__field(graph: API_MEDIA) 
+  """
+  redirect counts from the edge analytics store for a date range (zeros when analytics is not configured)
+  """
+  shortLinkStats(filter: ShortLinkStatsFilter!) : ShortLinkStats! @join__field(graph: API_MEDIA) 
   userMediaProfile: UserMediaProfile @join__field(graph: API_MEDIA) 
   videoSubtitles(where: VideoSubtitlesFilter, offset: Int, limit: Int) : [VideoSubtitle!]! @join__field(graph: API_MEDIA) 
   videoSubtitlesCount(where: VideoSubtitlesFilter) : Int! @join__field(graph: API_MEDIA) 
@@ -3990,6 +4066,72 @@ type ShortLink @join__type(graph: API_JOURNEYS_MODERN, key: "id", extension: tru
   a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
   """
   sourceRef: String @join__field(graph: API_MEDIA) 
+  """
+  human label shown in the admin app
+  """
+  name: String @join__field(graph: API_MEDIA) 
+  description: String @join__field(graph: API_MEDIA) 
+  """
+  drives the protection rules: permanent and videoEmbedded links need a short link admin to change their destination or be deleted
+  """
+  assetClass: ShortLinkAssetClass! @join__field(graph: API_MEDIA) 
+  status: ShortLinkStatus! @join__field(graph: API_MEDIA) 
+  """
+  per-link override of the domain redirect status
+  """
+  redirectStatus: Int @join__field(graph: API_MEDIA) 
+  """
+  per-link override of the domain fallbackTo, used while paused
+  """
+  fallbackTo: String @join__field(graph: API_MEDIA) 
+  placement: ShortLinkPlacement @join__field(graph: API_MEDIA) 
+  """
+  BCP-47 language tag
+  """
+  language: String @join__field(graph: API_MEDIA) 
+  tags: [String!]! @join__field(graph: API_MEDIA) 
+  """
+  core Video this link belongs to
+  """
+  videoId: String @join__field(graph: API_MEDIA) 
+  """
+  YouTube video id the link is placed in
+  """
+  youtubeVideoId: String @join__field(graph: API_MEDIA) 
+  campaigns: [ShortLinkCampaign!]! @join__field(graph: API_MEDIA) 
+  """
+  every change to `to`, newest first
+  """
+  destinationHistory: [ShortLinkDestinationHistory!]! @join__field(graph: API_MEDIA) 
+  """
+  the user that created this short link (empty when created by a subgraph)
+  """
+  userId: String @join__field(graph: API_MEDIA) 
+  createdAt: DateTime! @join__field(graph: API_MEDIA) 
+  updatedAt: DateTime! @join__field(graph: API_MEDIA) 
+  deletedAt: DateTime @join__field(graph: API_MEDIA) 
+  """
+  when the routing record was last written to the edge store
+  """
+  edgePublishedAt: DateTime @join__field(graph: API_MEDIA) 
+  healthStatus: ShortLinkHealth @join__field(graph: API_MEDIA) 
+  healthCheckedAt: DateTime @join__field(graph: API_MEDIA) 
+  """
+  set while the link is paused by the health check (auto failover); it resumes on its own when the destination recovers, and a manual status change clears this
+  """
+  pausedByHealthCheckAt: DateTime @join__field(graph: API_MEDIA) 
+  """
+  when true the pathname also resolves on every domain that has no link of its own for it; global pathnames are unique across all domains and never reissued
+  """
+  global: Boolean! @join__field(graph: API_MEDIA) 
+  """
+  https://<hostname>/<pathname>, or https://<hostname>/<pathPrefix>/<pathname> when the domain has a path prefix
+  """
+  shortUrl: String! @join__field(graph: API_MEDIA) 
+  """
+  shortUrl + ?qr=1 — what QR images encode
+  """
+  qrUrl: String! @join__field(graph: API_MEDIA) 
 }
 
 type SignUpBlock implements Block @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "Block")  {
@@ -4971,6 +5113,18 @@ type MutationPlaylistUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: Playlist!
 }
 
+type MutationShortLinkBulkUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: [ShortLink!]!
+}
+
+type MutationShortLinkCampaignDeleteSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkCampaign!
+}
+
+type MutationShortLinkCampaignUpdateSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkCampaign!
+}
+
 type MutationShortLinkCreateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
@@ -4987,8 +5141,16 @@ type MutationShortLinkDomainDeleteSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
 
+type MutationShortLinkDomainPublishSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
 type MutationShortLinkDomainUpdateSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
+}
+
+type MutationShortLinkPublishSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLink!
 }
 
 type MutationShortLinkUpdateSuccess @join__type(graph: API_MEDIA)  {
@@ -5077,6 +5239,25 @@ type QueryShortLinkByPathSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLink!
 }
 
+type QueryShortLinkCampaignSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkCampaign!
+}
+
+type QueryShortLinkCampaignsConnection @join__type(graph: API_MEDIA)  {
+  pageInfo: PageInfo!
+  edges: [QueryShortLinkCampaignsConnectionEdge]
+  totalCount: Int!
+}
+
+type QueryShortLinkCampaignsConnectionEdge @join__type(graph: API_MEDIA)  {
+  node: ShortLinkCampaign
+  cursor: String!
+}
+
+type QueryShortLinkDomainByHostnameSuccess @join__type(graph: API_MEDIA)  {
+  data: ShortLinkDomain!
+}
+
 type QueryShortLinkDomainSuccess @join__type(graph: API_MEDIA)  {
   data: ShortLinkDomain!
 }
@@ -5112,6 +5293,45 @@ type QueryYoutubeClosedCaptionLanguagesSuccess @join__type(graph: API_MEDIA)  {
 }
 
 """
+A named group of short links (a YouTube push, a season, a partner) with an optional date range and owner
+"""
+type ShortLinkCampaign @join__type(graph: API_MEDIA)  {
+  id: ID!
+  name: String!
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]!
+  """
+  user id of the campaign owner
+  """
+  ownerId: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  """
+  live (not soft-deleted) links in this campaign
+  """
+  shortLinks: [ShortLink!]!
+  linkCount: Int!
+}
+
+"""
+A change to a short link destination — the accountability record for links embedded in published assets
+"""
+type ShortLinkDestinationHistory @join__type(graph: API_MEDIA)  {
+  id: ID!
+  shortLinkId: String!
+  from: String!
+  to: String!
+  """
+  user id (or calling service name) that made the change
+  """
+  changedBy: String
+  changedAt: DateTime!
+  note: String
+}
+
+"""
 A domain that can be used for short links
 """
 type ShortLinkDomain @join__type(graph: API_MEDIA)  {
@@ -5128,6 +5348,57 @@ type ShortLinkDomain @join__type(graph: API_MEDIA)  {
   check status of the domain
   """
   check: ShortLinkDomainCheck!
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty means the root of the hostname
+  """
+  pathPrefix: String!
+  """
+  HTTP status the edge redirects with (301, 302, 307, 308) unless a link overrides it
+  """
+  redirectStatus: Int!
+  """
+  regex character-class body describing the characters a pathname may use
+  """
+  slugAllowedChars: String!
+  slugMinLength: Int!
+  slugMaxLength: Int!
+  """
+  when false, pathnames are lower-cased on create and matched case-insensitively at the edge
+  """
+  slugCaseSensitive: Boolean!
+  """
+  first path segments that are never minted as short links
+  """
+  reservedPaths: [String!]!
+  """
+  where unresolved traffic goes when notFound is fallback, and where paused links go unless they override it
+  """
+  fallbackTo: String
+  notFound: ShortLinkNotFound!
+  """
+  origin that receives unresolved requests with their path and query intact when notFound is passthrough
+  """
+  passthroughOrigin: String
+  """
+  when true, a failing destination health check pauses the link (never for videoEmbedded)
+  """
+  autoFailover: Boolean!
+  """
+  when the domain record was last written to the edge store
+  """
+  edgePublishedAt: DateTime
+  """
+  id of the Cloudflare KV namespace holding this domain routing records; unset means the domain links are not published to the edge
+  """
+  kvNamespaceId: String
+  """
+  name of the Worker binding for that namespace (e.g. KV_JESUS_FILM)
+  """
+  kvBinding: String
+  """
+  live (not soft-deleted) links on this domain
+  """
+  linkCount: Int!
 }
 
 type ShortLinkDomainCheck @join__type(graph: API_MEDIA)  {
@@ -5162,6 +5433,64 @@ type ShortLinkDomainVerfication @join__type(graph: API_MEDIA)  {
   Reason for the verification
   """
   reason: String!
+}
+
+"""
+What the edge Worker would answer for a hostname + pathname, computed from the control-plane data (Test Redirect)
+"""
+type ShortLinkResolution @join__type(graph: API_MEDIA)  {
+  """
+  true when a live short link answered
+  """
+  found: Boolean!
+  """
+  redirect target; null for the lost page
+  """
+  location: String
+  """
+  HTTP status the edge responds with (404 for the lost page)
+  """
+  status: Int!
+  source: ShortLinkResolutionSource!
+  shortLink: ShortLink
+}
+
+"""
+Redirect counts for a date range, with breakdowns
+"""
+type ShortLinkStats @join__type(graph: API_MEDIA)  {
+  total: Int!
+  qr: Int!
+  direct: Int!
+  """
+  key = YYYY-MM-DD (UTC)
+  """
+  byDay: [ShortLinkStatsPoint!]!
+  """
+  key = short link id
+  """
+  byLink: [ShortLinkStatsPoint!]!
+  """
+  key = campaign id
+  """
+  byCampaign: [ShortLinkStatsPoint!]!
+  byCountry: [ShortLinkStatsPoint!]!
+  byDeviceClass: [ShortLinkStatsPoint!]!
+  byPlacement: [ShortLinkStatsPoint!]!
+  byReferrerHost: [ShortLinkStatsPoint!]!
+  byAttribution: [ShortLinkStatsPoint!]!
+}
+
+"""
+One bucket of a short link scan breakdown
+"""
+type ShortLinkStatsPoint @join__type(graph: API_MEDIA)  {
+  key: String!
+  count: Int!
+  """
+  the subset of count attributed to a QR scan
+  """
+  qrCount: Int!
 }
 
 type TagName @join__type(graph: API_MEDIA)  {
@@ -5717,6 +6046,12 @@ union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__u
 
 union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
 
+union MutationShortLinkBulkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkBulkUpdateSuccess")  = NotFoundError | MutationShortLinkBulkUpdateSuccess
+
+union MutationShortLinkCampaignDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCampaignDeleteSuccess")  = NotFoundError | MutationShortLinkCampaignDeleteSuccess
+
+union MutationShortLinkCampaignUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCampaignUpdateSuccess")  = NotFoundError | MutationShortLinkCampaignUpdateSuccess
+
 union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
@@ -5725,7 +6060,11 @@ union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
-union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainPublishSuccess")  = NotFoundError | MutationShortLinkDomainPublishSuccess
+
+union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+
+union MutationShortLinkPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkPublishSuccess")  = NotFoundError | MutationShortLinkPublishSuccess
 
 union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
 
@@ -5734,6 +6073,10 @@ union QueryGetMyGeneratedMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @
 union QueryPlaylistResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryPlaylistSuccess")  = NotFoundError | QueryPlaylistSuccess
 
 union QueryShortLinkByPathResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkByPathSuccess")  = NotFoundError | QueryShortLinkByPathSuccess
+
+union QueryShortLinkCampaignResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkCampaignSuccess")  = NotFoundError | QueryShortLinkCampaignSuccess
+
+union QueryShortLinkDomainByHostnameResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainByHostnameSuccess")  = NotFoundError | QueryShortLinkDomainByHostnameSuccess
 
 union QueryShortLinkDomainResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "QueryShortLinkDomainSuccess")  = NotFoundError | QueryShortLinkDomainSuccess
 
@@ -5842,14 +6185,6 @@ enum CampaignChildPlacement @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-Button corner shape of the Campaign Theme.
-"""
-enum CampaignButtonRadius @join__type(graph: API_JOURNEYS_MODERN)  {
-  rounded @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  pill @join__enumValue(graph: API_JOURNEYS_MODERN) 
-}
-
-"""
 The width ratio of the two Column Slots of a Columns section.
 """
 enum CampaignColumnsRatio @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -5863,8 +6198,15 @@ Which side of a Featured Media section the Media Slot renders on.
 """
 enum CampaignMediaSide @join__type(graph: API_JOURNEYS_MODERN)  {
   left @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  right @join__enumValue(graph: API_JOURNEYS_MODERN)
-  below @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  right @join__enumValue(graph: API_JOURNEYS_MODERN) 
+}
+
+"""
+How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+"""
+enum CampaignFeaturedMediaLayout @join__type(graph: API_JOURNEYS_MODERN)  {
+  sideBySide @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  stacked @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -5940,6 +6282,7 @@ enum CampaignStringKey @join__type(graph: API_JOURNEYS_MODERN)  {
   topCountry @join__enumValue(graph: API_JOURNEYS_MODERN) 
   seeAllOnWatch @join__enumValue(graph: API_JOURNEYS_MODERN) 
   videos @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  noJourneys @join__enumValue(graph: API_JOURNEYS_MODERN) 
 }
 
 """
@@ -6355,6 +6698,8 @@ enum DefaultPlatform @join__type(graph: API_MEDIA)  {
 enum MediaRole @join__type(graph: API_MEDIA)  {
   publisher @join__enumValue(graph: API_MEDIA) 
   youtubeAdmin @join__enumValue(graph: API_MEDIA) 
+  shortLinkEditor @join__enumValue(graph: API_MEDIA) 
+  shortLinkAdmin @join__enumValue(graph: API_MEDIA) 
 }
 
 enum ImageAspectRatio @join__type(graph: API_MEDIA)  {
@@ -6382,6 +6727,12 @@ enum VideoPublishMode @join__type(graph: API_MEDIA)  {
   parentVariantsOnly @join__enumValue(graph: API_MEDIA) 
 }
 
+enum ShortLinkStatus @join__type(graph: API_MEDIA)  {
+  active @join__enumValue(graph: API_MEDIA) 
+  paused @join__enumValue(graph: API_MEDIA) 
+  retired @join__enumValue(graph: API_MEDIA) 
+}
+
 enum Service @join__type(graph: API_MEDIA)  {
   apiJourneys @join__enumValue(graph: API_MEDIA) 
   apiLanguages @join__enumValue(graph: API_MEDIA) 
@@ -6397,6 +6748,27 @@ enum RedirectType @join__type(graph: API_MEDIA)  {
   dl @join__enumValue(graph: API_MEDIA) 
   dh @join__enumValue(graph: API_MEDIA) 
   s @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkAssetClass @join__type(graph: API_MEDIA)  {
+  standard @join__enumValue(graph: API_MEDIA) 
+  permanent @join__enumValue(graph: API_MEDIA) 
+  videoEmbedded @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkPlacement @join__type(graph: API_MEDIA)  {
+  description @join__enumValue(graph: API_MEDIA) 
+  endScreen @join__enumValue(graph: API_MEDIA) 
+  card @join__enumValue(graph: API_MEDIA) 
+  communityPost @join__enumValue(graph: API_MEDIA) 
+  inVideoQr @join__enumValue(graph: API_MEDIA) 
+  other @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkNotFound @join__type(graph: API_MEDIA)  {
+  lostPage @join__enumValue(graph: API_MEDIA) 
+  fallback @join__enumValue(graph: API_MEDIA) 
+  passthrough @join__enumValue(graph: API_MEDIA) 
 }
 
 enum Platform @join__type(graph: API_MEDIA)  {
@@ -6449,6 +6821,29 @@ enum VideoVariantProcessingStage @join__type(graph: API_MEDIA)  {
   downloads @join__enumValue(graph: API_MEDIA) 
   algoliaVideo @join__enumValue(graph: API_MEDIA) 
   algoliaVariant @join__enumValue(graph: API_MEDIA) 
+}
+
+enum ShortLinkHealth @join__type(graph: API_MEDIA)  {
+  ok @join__enumValue(graph: API_MEDIA) 
+  notFound @join__enumValue(graph: API_MEDIA) 
+  serverError @join__enumValue(graph: API_MEDIA) 
+  timeout @join__enumValue(graph: API_MEDIA) 
+  dns @join__enumValue(graph: API_MEDIA) 
+  tls @join__enumValue(graph: API_MEDIA) 
+  redirectLoop @join__enumValue(graph: API_MEDIA) 
+  unknown @join__enumValue(graph: API_MEDIA) 
+}
+
+"""
+Which rule produced a short link resolution: the link itself, its fallback, the domain fallback, a passthrough to the domain origin, the lost page, or a reserved path
+"""
+enum ShortLinkResolutionSource @join__type(graph: API_MEDIA)  {
+  link @join__enumValue(graph: API_MEDIA) 
+  linkFallback @join__enumValue(graph: API_MEDIA) 
+  domainFallback @join__enumValue(graph: API_MEDIA) 
+  passthrough @join__enumValue(graph: API_MEDIA) 
+  lostPage @join__enumValue(graph: API_MEDIA) 
+  reserved @join__enumValue(graph: API_MEDIA) 
 }
 
 enum VideoLabel @join__type(graph: API_MEDIA)  {
@@ -6891,6 +7286,7 @@ input CampaignFeaturedMediaBlockUpdateInput @join__type(graph: API_JOURNEYS_MODE
   """
   bullets: String
   mediaSide: CampaignMediaSide
+  layout: CampaignFeaturedMediaLayout
   """
   The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
   """
@@ -7195,6 +7591,10 @@ input CampaignJourneyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   Default-language description. At most 1000 characters.
   """
   description: String
+  """
+  Set the edited flag outright, for an undo that writes a previous title and description back together with the flag they had. Without it, editing `title` or `description` marks the snapshot edited.
+  """
+  snapshotEdited: Boolean
 }
 
 input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -7679,9 +8079,9 @@ input CampaignThemeUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   radius: CampaignRadius
   """
-  Button shape: rounded or pill.
+  Button corners: square, slight, rounded or veryRounded (the pill look).
   """
-  buttonRadius: CampaignButtonRadius
+  buttonRadius: CampaignRadius
 }
 
 """
@@ -9145,13 +9545,42 @@ input MutationBibleCitationUpdateInput @join__type(graph: API_MEDIA)  {
   order: Int
 }
 
+input MutationShortLinkBulkUpdateInput @join__type(graph: API_MEDIA)  {
+  """
+  at most 100 ids
+  """
+  ids: [String!]!
+  status: ShortLinkStatus
+  addTags: [String!]
+  removeTags: [String!]
+  addCampaignIds: [String!]
+  removeCampaignIds: [String!]
+}
+
+input MutationShortLinkCampaignCreateInput @join__type(graph: API_MEDIA)  {
+  name: String!
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]
+}
+
+input MutationShortLinkCampaignUpdateInput @join__type(graph: API_MEDIA)  {
+  id: String!
+  name: String
+  description: String
+  startsAt: DateTime
+  endsAt: DateTime
+  tags: [String!]
+}
+
 input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
   the unique identifier for the short link (will generate if not given)
   """
   id: String
   """
-  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly)
+  short link path not including the leading slash (defaults to a random 11 character string that is URL friendly). Must satisfy the domain slug grammar and must not be a reserved path
   """
   pathname: String
   """
@@ -9159,7 +9588,7 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   """
   to: String!
   """
-  the fully qualified domain name (FQDN) to redirect the short link service should redirect the user to
+  the hostname including subdomain, domain, and TLD, but excluding port
   """
   hostname: String!
   """
@@ -9182,6 +9611,37 @@ input MutationShortLinkCreateInput @join__type(graph: API_MEDIA)  {
   a single namespaced `<scheme>:<value>` attribution for the thing this short link was minted for, one value per link. Registered schemes: `youtube-channel:<channelId>`
   """
   sourceRef: String
+  name: String
+  description: String
+  """
+  defaults to standard
+  """
+  assetClass: ShortLinkAssetClass
+  """
+  defaults to active
+  """
+  status: ShortLinkStatus
+  """
+  per-link override of the domain redirect status
+  """
+  redirectStatus: Int
+  """
+  per-link override of the domain fallbackTo, used while paused
+  """
+  fallbackTo: String
+  placement: ShortLinkPlacement
+  """
+  BCP-47 language tag
+  """
+  language: String
+  tags: [String!]
+  videoId: String
+  youtubeVideoId: String
+  campaignIds: [String!]
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case
+  """
+  global: Boolean
 }
 
 input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
@@ -9193,6 +9653,56 @@ input MutationShortLinkDomainCreateInput @join__type(graph: API_MEDIA)  {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); defaults to empty (root of the hostname)
+  """
+  pathPrefix: String
+  """
+  defaults to 307
+  """
+  redirectStatus: Int
+  """
+  defaults to A-Za-z0-9_-
+  """
+  slugAllowedChars: String
+  """
+  defaults to 1
+  """
+  slugMinLength: Int
+  """
+  defaults to 64
+  """
+  slugMaxLength: Int
+  """
+  defaults to true
+  """
+  slugCaseSensitive: Boolean
+  reservedPaths: [String!]
+  fallbackTo: String
+  """
+  defaults to lostPage
+  """
+  notFound: ShortLinkNotFound
+  """
+  required when notFound is passthrough
+  """
+  passthroughOrigin: String
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+  """
+  defaults to false
+  """
+  autoFailover: Boolean
+  """
+  register the hostname on the legacy Vercel short links project; defaults to true. Pass false for a domain served by the redirect Worker
+  """
+  vercel: Boolean
 }
 
 input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
@@ -9201,6 +9711,31 @@ input MutationShortLinkDomainUpdateInput @join__type(graph: API_MEDIA)  {
   the services that are enabled for this domain, if empty then this domain can be used by all services
   """
   services: [Service!]!
+  """
+  path the short links live under, without leading or trailing slashes (e.g. s); empty serves links at the root of the hostname
+  """
+  pathPrefix: String
+  redirectStatus: Int
+  slugAllowedChars: String
+  slugMinLength: Int
+  slugMaxLength: Int
+  slugCaseSensitive: Boolean
+  reservedPaths: [String!]
+  fallbackTo: String
+  notFound: ShortLinkNotFound
+  """
+  required when notFound is passthrough
+  """
+  passthroughOrigin: String
+  """
+  id of the Cloudflare KV namespace this domain publishes its routing records to; empty clears it (the domain links are then not published)
+  """
+  kvNamespaceId: String
+  """
+  Worker binding name of that namespace (e.g. KV_JESUS_FILM); empty clears it
+  """
+  kvBinding: String
+  autoFailover: Boolean
 }
 
 input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
@@ -9221,6 +9756,41 @@ input MutationShortLinkUpdateInput @join__type(graph: API_MEDIA)  {
   bitrate of the video variant download
   """
   bitrate: Int
+  name: String
+  description: String
+  """
+  changing a permanent or videoEmbedded link to another class needs a short link admin
+  """
+  assetClass: ShortLinkAssetClass
+  status: ShortLinkStatus
+  """
+  per-link override of the domain redirect status
+  """
+  redirectStatus: Int
+  """
+  per-link override of the domain fallbackTo, used while paused
+  """
+  fallbackTo: String
+  placement: ShortLinkPlacement
+  """
+  BCP-47 language tag
+  """
+  language: String
+  tags: [String!]
+  videoId: String
+  youtubeVideoId: String
+  """
+  replaces the campaign membership when given
+  """
+  campaignIds: [String!]
+  """
+  recorded on the destination history row when `to` changes; required for videoEmbedded links
+  """
+  note: String
+  """
+  resolve this pathname on every domain (short link admin only); the pathname must be lower-case. Clearing it releases the global pathname
+  """
+  global: Boolean
 }
 
 input MutationVideoOriginCreateInput @join__type(graph: API_MEDIA)  {
@@ -9262,6 +9832,49 @@ input PlaylistUpdateInput @join__type(graph: API_MEDIA)  {
   note: String
   noteSharedAt: DateTime
   sharedAt: DateTime
+}
+
+input ShortLinkStatsFilter @join__type(graph: API_MEDIA)  {
+  linkId: String
+  campaignId: String
+  hostname: String
+  videoId: String
+  youtubeVideoId: String
+  """
+  inclusive start of the range
+  """
+  from: DateTime!
+  """
+  exclusive end of the range
+  """
+  to: DateTime!
+}
+
+input ShortLinksFilter @join__type(graph: API_MEDIA)  {
+  """
+  the hostname including subdomain, domain, and TLD, but excluding port
+  """
+  hostname: String
+  """
+  case-insensitive match against pathname, destination, name, description and youtubeVideoId
+  """
+  search: String
+  status: ShortLinkStatus
+  assetClass: ShortLinkAssetClass
+  campaignId: String
+  placement: ShortLinkPlacement
+  videoId: String
+  youtubeVideoId: String
+  tag: String
+  service: Service
+  """
+  only global links (true) or only domain-scoped links (false)
+  """
+  global: Boolean
+  """
+  include soft-deleted links (default false)
+  """
+  includeDeleted: Boolean
 }
 
 input UserMediaProfileUpdateInput @join__type(graph: API_MEDIA)  {

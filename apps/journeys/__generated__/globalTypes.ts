@@ -86,14 +86,6 @@ export enum CampaignBackgroundOverlay {
 }
 
 /**
- * Button corner shape of the Campaign Theme.
- */
-export enum CampaignButtonRadius {
-  pill = "pill",
-  rounded = "rounded",
-}
-
-/**
  * Which side of the Section Body an Extra renders on.
  */
 export enum CampaignChildPlacement {
@@ -111,6 +103,14 @@ export enum CampaignColumnsRatio {
 }
 
 /**
+ * How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+ */
+export enum CampaignFeaturedMediaLayout {
+  sideBySide = "sideBySide",
+  stacked = "stacked",
+}
+
+/**
  * How a Journey List renders its items: a card grid or a list.
  */
 export enum CampaignJourneyListDisplay {
@@ -122,7 +122,6 @@ export enum CampaignJourneyListDisplay {
  * Which side of a Featured Media section the Media Slot renders on.
  */
 export enum CampaignMediaSide {
-  below = "below",
   left = "left",
   right = "right",
 }
@@ -153,6 +152,7 @@ export enum CampaignStringKey {
   copied = "copied",
   copy = "copy",
   downloadQr = "downloadQr",
+  noJourneys = "noJourneys",
   open = "open",
   openTemplate = "openTemplate",
   seeAllOnWatch = "seeAllOnWatch",

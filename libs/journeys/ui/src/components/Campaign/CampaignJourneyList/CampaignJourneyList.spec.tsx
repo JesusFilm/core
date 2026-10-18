@@ -174,7 +174,7 @@ describe('CampaignJourneyList', () => {
     )
   })
 
-  it('renders only the heading when no journey is live', () => {
+  it('renders the heading and the noJourneys string when no journey is live', () => {
     renderList(
       listTree([
         item('draft', 0, {
@@ -187,7 +187,40 @@ describe('CampaignJourneyList', () => {
     expect(screen.getByTestId('CampaignTitle')).toHaveTextContent(
       'Ready-made journeys'
     )
+    expect(screen.getByTestId('CampaignJourneyListEmpty')).toHaveTextContent(
+      'Journeys for this region are coming soon'
+    )
     expect(screen.queryByTestId('CampaignJourneyCards')).not.toBeInTheDocument()
+  })
+
+  it('renders the noJourneys string on a list with no items at all', () => {
+    renderList(listTree([]))
+
+    expect(screen.getByTestId('CampaignJourneyListEmpty')).toBeInTheDocument()
+  })
+
+  it('renders the cards and no noJourneys string when a journey is live', () => {
+    renderList(listTree([item('live', 0)]))
+
+    expect(screen.getByTestId('CampaignJourneyCards')).toBeInTheDocument()
+    expect(
+      screen.queryByTestId('CampaignJourneyListEmpty')
+    ).not.toBeInTheDocument()
+  })
+
+  it('takes the empty-state line from the campaign’s own noJourneys string', () => {
+    renderList(listTree([]), {
+      ...campaignPublic,
+      strings: campaignPublic.strings.map((string) =>
+        string.key === CampaignStringKey.noJourneys
+          ? { ...string, value: 'Bientôt des parcours' }
+          : string
+      )
+    })
+
+    expect(screen.getByTestId('CampaignJourneyListEmpty')).toHaveTextContent(
+      'Bientôt des parcours'
+    )
   })
 
   describe('liveJourneyCards', () => {

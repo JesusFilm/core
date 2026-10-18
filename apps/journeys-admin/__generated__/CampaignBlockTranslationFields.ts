@@ -10,7 +10,7 @@ import { CampaignTextSource } from "./globalTypes";
 // ====================================================
 
 export interface CampaignBlockTranslationFields_CampaignHeaderBlock {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignVideoBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock" | "CampaignColumnBlock";
+  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignColumnsBlock" | "CampaignColumnBlock";
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations {
@@ -225,12 +225,153 @@ export interface CampaignBlockTranslationFields_CampaignButtonBlock {
   labelTranslations: CampaignBlockTranslationFields_CampaignButtonBlock_labelTranslations[];
 }
 
+export interface CampaignBlockTranslationFields_CampaignJourneyBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignJourneyBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignBlockTranslationFields_CampaignJourneyBlock {
   __typename: "CampaignJourneyBlock";
   /**
    * The linked journey. Null only if the row predates the link; never exposes the journey itself.
    */
   journeyId: string | null;
+  /**
+   * True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.
+   */
+  snapshotEdited: boolean;
+  titleTranslations: CampaignBlockTranslationFields_CampaignJourneyBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignJourneyBlock_descriptionTranslations[];
 }
 
-export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignHeaderBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock;
+export interface CampaignBlockTranslationFields_CampaignRichTextBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignRichTextBlock_richTextContentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  titleTranslations: CampaignBlockTranslationFields_CampaignRichTextBlock_titleTranslations[];
+  richTextContentTranslations: CampaignBlockTranslationFields_CampaignRichTextBlock_richTextContentTranslations[];
+}
+
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_bulletsTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  eyebrowTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_eyebrowTranslations[];
+  titleTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_titleTranslations[];
+  ledeTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_ledeTranslations[];
+  bulletsTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_bulletsTranslations[];
+}
+
+export interface CampaignBlockTranslationFields_CampaignImageBlock_altTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  altTranslations: CampaignBlockTranslationFields_CampaignImageBlock_altTranslations[];
+}
+
+export interface CampaignBlockTranslationFields_CampaignVideoBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignVideoBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockTranslationFields_CampaignVideoBlock {
+  __typename: "CampaignVideoBlock";
+  titleTranslations: CampaignBlockTranslationFields_CampaignVideoBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignVideoBlock_descriptionTranslations[];
+}
+
+export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignHeaderBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock | CampaignBlockTranslationFields_CampaignRichTextBlock | CampaignBlockTranslationFields_CampaignFeaturedMediaBlock | CampaignBlockTranslationFields_CampaignImageBlock | CampaignBlockTranslationFields_CampaignVideoBlock;

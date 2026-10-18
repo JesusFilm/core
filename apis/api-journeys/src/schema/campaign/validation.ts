@@ -5,6 +5,7 @@ import type { ZodType } from 'zod'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { FONT_FAMILIES } from '@core/shared/ui/fontFamilies'
 
+import { VIEWER_RESERVED_SEGMENTS } from '../journey/reservedJourneySlugs/reservedJourneySlugs'
 import { assertHttpsUrl } from '../templateGalleryPage/assertHttpsUrl'
 import {
   RESERVED_SLUGS,
@@ -12,7 +13,9 @@ import {
   SLUG_PATTERN,
   SlugInvalidError,
   SlugReservedError,
-  SlugTakenError
+  SlugTakenError,
+  firstFreeSlug,
+  slugBase
 } from '../templateGalleryPage/generateUniqueSlug'
 
 export { assertHttpsUrl }
@@ -218,31 +221,8 @@ export { RESERVED_SLUGS, SLUG_MAX_LENGTH, SLUG_PATTERN }
 
 export const REGION_RESERVED_SLUGS: ReadonlySet<string> = new Set([
   ...RESERVED_SLUGS,
-  'embed',
-  'legal',
-  'plausible',
-  'campaign',
-  'template-gallery',
-  'api',
-  '_next'
+  ...VIEWER_RESERVED_SEGMENTS
 ])
-
-function slugBase(source: string, reserved: ReadonlySet<string>): string {
-  const normalized = slugify(source, { lower: true, strict: true })
-  if (normalized === '' || reserved.has(normalized))
-    throw new SlugReservedError(normalized === '' ? '(empty)' : normalized)
-  return normalized.slice(0, SLUG_MAX_LENGTH)
-}
-
-function firstFreeSlug(base: string, taken: ReadonlySet<string>): string {
-  if (!taken.has(base)) return base
-  for (let suffix = 2; suffix <= 50; suffix++) {
-    const suffixPart = `-${suffix}`
-    const candidate = `${base.slice(0, SLUG_MAX_LENGTH - suffixPart.length)}${suffixPart}`
-    if (!taken.has(candidate)) return candidate
-  }
-  throw new SlugTakenError()
-}
 
 function normalizeAuthorSlug(
   rawSlug: string,
@@ -257,7 +237,8 @@ function normalizeAuthorSlug(
 
 /**
  * Generate a globally unique campaign slug from the title: slugify lower
- * strict, then the first free of `base`, `base-2` … `base-50`.
+ * strict, then the first free of `base`, `base-2` … `base-50`, then a nanoid
+ * suffix.
  */
 export async function generateUniqueCampaignSlug(
   title: string,

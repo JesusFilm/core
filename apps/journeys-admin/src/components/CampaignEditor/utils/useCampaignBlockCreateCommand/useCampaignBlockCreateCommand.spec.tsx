@@ -8,9 +8,9 @@ import { CAMPAIGN_ANALYTICS_BLOCK_CREATE } from '../../../../libs/useCampaignSec
 import { CAMPAIGN_TYPOGRAPHY_BLOCK_CREATE } from '../../../../libs/useCampaignTypographyBlockCreateMutation'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
+import { AddPanel } from '../../AddPanel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { Canvas } from '../../Canvas'
-import { ContextBar } from '../../ContextBar'
 import { campaign } from '../../data'
 import {
   BlocksProbe,
@@ -107,25 +107,34 @@ function PageCanvas(): ReactElement {
   return <Canvas campaign={campaign} pageKind={pageKind} view="desktop" />
 }
 
-function renderEditor(): ReturnType<typeof render> {
+const refusal = { errors: [{ message: 'The request was refused' }] }
+
+function renderEditor(
+  mocks: Array<Record<string, unknown>> = [
+    textCreateMock,
+    buttonCreateMock,
+    deleteMock,
+    restoreTextMock
+  ]
+): ReturnType<typeof render> {
   return render(
-    <QueriedEditor
-      initialState={{ selectedBlockId: 'heroId' }}
-      mocks={[textCreateMock, buttonCreateMock, deleteMock, restoreTextMock]}
-    >
+    <QueriedEditor initialState={{ selectedBlockId: 'heroId' }} mocks={mocks}>
       <CommandUndoItem variant="button" />
       <CommandRedoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
       <PageCanvas />
-      <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+      <AddPanel />
     </QueriedEditor>
   )
 }
 
-async function addExtra(item: string): Promise<void> {
-  fireEvent.click(await screen.findByRole('button', { name: 'Add' }))
-  fireEvent.click(screen.getByRole('menuitem', { name: item }))
+async function addExtra(
+  item: 'Text' | 'Button',
+  placement: 'Above text' | 'Below text'
+): Promise<void> {
+  fireEvent.click(await screen.findByRole('button', { name: placement }))
+  fireEvent.click(screen.getByRole('button', { name: item }))
 }
 
 describe('useCampaignBlockCreateCommand', () => {
@@ -134,7 +143,7 @@ describe('useCampaignBlockCreateCommand', () => {
   it('adds an empty text Extra with the chosen placement, following the section, and selects it', async () => {
     const { baseElement } = renderEditor()
 
-    await addExtra('Text above')
+    await addExtra('Text', 'Above text')
 
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
     await waitFor(() =>
@@ -153,7 +162,7 @@ describe('useCampaignBlockCreateCommand', () => {
   it('adds a "Button" Extra below the body with no action', async () => {
     renderEditor()
 
-    await addExtra('Button below')
+    await addExtra('Button', 'Below text')
 
     await waitFor(() =>
       expect(screen.getByTestId('Block-newId')).toHaveTextContent(
@@ -165,7 +174,7 @@ describe('useCampaignBlockCreateCommand', () => {
 
   it('undoes by deleting the Extra and restoring the previous selection; redo recreates it', async () => {
     renderEditor()
-    await addExtra('Text above')
+    await addExtra('Text', 'Above text')
     await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -188,6 +197,67 @@ describe('useCampaignBlockCreateCommand', () => {
       )
     )
     await waitFor(() => expect(restoreTextMock.result).toHaveBeenCalled())
+  })
+
+  it('raises the API message in the error snackbar when a create is refused', async () => {
+    renderEditor([{ ...textCreateMock, result: refusal }])
+
+    await addExtra('Text', 'Above text')
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('sends no delete on undo, and creates again on redo, when the create was refused', async () => {
+    renderEditor([
+      { ...textCreateMock, result: refusal },
+      textCreateMock,
+      deleteMock
+    ])
+    await addExtra('Text', 'Above text')
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(textCreateMock.result).toHaveBeenCalledTimes(1))
+    expect(deleteMock.result).not.toHaveBeenCalled()
+    expect(
+      screen.queryByText(/No more mocked responses/)
+    ).not.toBeInTheDocument()
+  })
+
+  it('raises the API message when the undo delete is refused', async () => {
+    renderEditor([textCreateMock, { ...deleteMock, result: refusal }])
+    await addExtra('Text', 'Above text')
+    await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
+  })
+
+  it('raises the API message when the redo restore is refused', async () => {
+    renderEditor([
+      textCreateMock,
+      deleteMock,
+      { ...restoreTextMock, result: refusal }
+    ])
+    await addExtra('Text', 'Above text')
+    await waitFor(() => expect(textCreateMock.result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+    await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    expect(
+      await screen.findByText('The request was refused')
+    ).toBeInTheDocument()
   })
 
   describe('sections', () => {
@@ -260,18 +330,33 @@ describe('useCampaignBlockCreateCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <ContextBar onSettingsClick={vi.fn()} onThemeClick={vi.fn()} />
+          <AddPanel />
         </QueriedEditor>
       )
     }
+
+    it('raises the API message when a section create is refused', async () => {
+      render(
+        <QueriedEditor
+          initialState={{ selectedBlockId: 'heroId' }}
+          mocks={[{ ...sectionCreateMock, result: refusal }]}
+        >
+          <AddPanel />
+        </QueriedEditor>
+      )
+
+      fireEvent.click(await screen.findByRole('button', { name: 'Analytics' }))
+
+      expect(
+        await screen.findByText('The request was refused')
+      ).toBeInTheDocument()
+    })
 
     it('adds a section below the selected one as a page-level sibling, shifting the later sections, and undo deletes it', async () => {
       renderSectionEditor()
       expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
 
-      fireEvent.click(screen.getByRole('button', { name: 'Add' }))
-      fireEvent.click(screen.getByRole('menuitem', { name: 'Section below' }))
-      fireEvent.click(screen.getByRole('menuitem', { name: 'Analytics' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Analytics' }))
 
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
       await waitFor(() =>

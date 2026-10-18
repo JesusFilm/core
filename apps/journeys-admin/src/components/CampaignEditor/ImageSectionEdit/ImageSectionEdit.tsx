@@ -1,53 +1,69 @@
 import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import X2Icon from '@core/shared/ui/icons/X2'
-
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
+import { CampaignTextField } from '../../../../__generated__/globalTypes'
+import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignImageBlockUpdateMutation } from '../../../libs/useCampaignImageBlockUpdateMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { textLength } from '../Canvas/InlineText'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import {
   previousOf,
   useCampaignStyleCommand
 } from '../utils/useCampaignStyleCommand'
+import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
 /** PRD §15: alt text is at most 500 characters. */
 export const IMAGE_ALT_MAX_LENGTH = 500
 
 interface ImageSectionEditProps {
   block: CampaignImageBlock
-  onClose?: () => void
 }
 
 /**
  * An Image section's Edit: the picture (upload or paste through the image
- * picker; Remove image clears it) and its default-language alt text, which
- * commits on blur. Each change is one Command through
- * `campaignImageBlockUpdate`; the server measures a new picture.
+ * picker; Remove image clears it) and its alt text, which commits on blur.
+ * Each change is one Command through `campaignImageBlockUpdate`; the server
+ * measures a new picture. While previewing a non-default language the alt
+ * text is that language's translation, one Command through
+ * `campaignTranslationSet` instead.
  */
 export function ImageSectionEdit({
-  block,
-  onClose
+  block
 }: ImageSectionEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign } = useCampaignEditor()
+  const {
+    campaign,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const { addStyle, error } = useCampaignStyleCommand()
   const writeMedia = useCampaignImageBlockUpdateMutation()
+  const {
+    addTranslation,
+    error: translationError,
+    clearError: clearTranslationError
+  } = useCampaignTranslationCommand()
   const [replacing, setReplacing] = useState(false)
-  const [alt, setAlt] = useState(block.alt ?? '')
+  const translating = previewLanguageId !== campaign.defaultLanguageId
+  const committedAlt = translating
+    ? translationValue(block.altTranslations, previewLanguageId)
+    : (block.alt ?? '')
+  const [alt, setAlt] = useState(committedAlt)
 
   useEffect(() => {
-    setAlt(block.alt ?? '')
-  }, [block.alt])
+    setAlt(committedAlt)
+  }, [committedAlt, previewLanguageId])
+
+  useEffect(() => {
+    clearTranslationError()
+  }, [previewLanguageId, clearTranslationError])
 
   function write(input: { src?: string | null; alt?: string | null }): void {
     addStyle({
@@ -65,8 +81,18 @@ export function ImageSectionEdit({
 
   function handleAltBlur(): void {
     const trimmed = alt.trim()
-    if (trimmed === (block.alt ?? '') || trimmed.length > IMAGE_ALT_MAX_LENGTH)
+    if (trimmed === committedAlt || trimmed.length > IMAGE_ALT_MAX_LENGTH)
       return
+    if (translating) {
+      addTranslation({
+        block,
+        field: CampaignTextField.alt,
+        languageId: previewLanguageId,
+        value: trimmed,
+        previous: committedAlt
+      })
+      return
+    }
     write({ alt: trimmed === '' ? null : trimmed })
   }
 
@@ -75,26 +101,12 @@ export function ImageSectionEdit({
   return (
     <Stack
       spacing={4}
-      sx={{ p: 4, width: '100%' }}
       data-testid="CampaignImageSectionEdit"
       data-block-id={block.id}
     >
-      <Stack direction="row" sx={{ alignItems: 'center' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Typography variant="h6">{t('Edit')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {blockLabel(t, block.__typename)}
-          </Typography>
-        </Box>
-        {onClose != null && (
-          <IconButton aria-label={t('Close')} onClick={onClose}>
-            <X2Icon />
-          </IconButton>
-        )}
-      </Stack>
-      {error != null && (
+      {(error ?? translationError) != null && (
         <Alert severity="error" role="alert">
-          {error}
+          {error ?? translationError}
         </Alert>
       )}
       <Stack spacing={2}>
@@ -103,7 +115,7 @@ export function ImageSectionEdit({
           <Box
             component="img"
             src={block.src}
-            alt={block.alt ?? ''}
+            alt={committedAlt}
             data-testid="CampaignImageSectionEditPicture"
             sx={{
               width: '100%',
@@ -148,10 +160,22 @@ export function ImageSectionEdit({
         onChange={(event) => setAlt(event.target.value)}
         onBlur={handleAltBlur}
         error={altTooLong}
+        placeholder={translating ? (block.alt ?? '') : undefined}
         helperText={
-          altTooLong
-            ? t('Alt text must be at most 500 characters')
-            : t('Read aloud by screen readers; shown when the picture fails.')
+          altTooLong ? (
+            t('Alt text must be at most 500 characters')
+          ) : (
+            <>
+              <Box component="span" sx={{ display: 'block' }}>
+                {t(
+                  'Read aloud by screen readers; shown when the picture fails.'
+                )}
+              </Box>
+              <Box component="span" sx={{ display: 'block' }}>
+                {`${textLength(alt)} / ${IMAGE_ALT_MAX_LENGTH}`}
+              </Box>
+            </>
+          )
         }
         size="small"
         multiline

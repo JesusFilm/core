@@ -9,6 +9,8 @@ import {
   KeyboardEvent,
   MouseEvent,
   ReactElement,
+  useEffect,
+  useRef,
   useState
 } from 'react'
 
@@ -50,11 +52,13 @@ function messageOf(error: unknown, fallback: string): string {
 
 interface JourneyPasteFieldProps {
   /** Keep the resolved journey: runs the link mutation; a thrown error's message is shown verbatim. */
-  onLink: (url: string) => Promise<void>
+  onLink: (url: string, journey: ResolvedJourney) => Promise<void>
   /** Shown when nothing has been pasted yet. */
   label?: string
   autoFocus?: boolean
   disabled?: boolean
+  /** The secondary form, under the journey picker: no standing helper text, only an error. */
+  compact?: boolean
 }
 
 /**
@@ -68,7 +72,8 @@ export function JourneyPasteField({
   onLink,
   label,
   autoFocus = false,
-  disabled = false
+  disabled = false,
+  compact = false
 }: JourneyPasteFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [value, setValue] = useState('')
@@ -77,6 +82,13 @@ export function JourneyPasteField({
   const [resolvedFor, setResolvedFor] = useState<string>()
   const [linking, setLinking] = useState(false)
   const [resolve, { loading: resolving }] = useCampaignJourneyByLinkLazyQuery()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Without scrolling: the field sits in the scaled canvas frame, and a plain
+  // focus() would scroll the editor page that holds it.
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus({ preventScroll: true })
+  }, [autoFocus])
 
   async function handleResolve(raw: string): Promise<void> {
     const trimmed = raw.trim()
@@ -113,10 +125,10 @@ export function JourneyPasteField({
     event: MouseEvent<HTMLButtonElement>
   ): Promise<void> {
     event.stopPropagation()
-    if (resolvedFor == null) return
+    if (resolvedFor == null || resolved == null) return
     setLinking(true)
     try {
-      await onLink(resolvedFor)
+      await onLink(resolvedFor, resolved)
       setValue('')
       setResolved(undefined)
       setResolvedFor(undefined)
@@ -154,9 +166,12 @@ export function JourneyPasteField({
         onKeyDown={handleKeyDown}
         error={error != null}
         helperText={
-          error ?? t('Paste the journey’s admin link or its public address.')
+          error ??
+          (compact
+            ? undefined
+            : t('Paste the journey’s admin link or its public address.'))
         }
-        autoFocus={autoFocus}
+        inputRef={inputRef}
         disabled={disabled || linking}
         fullWidth
         size="small"

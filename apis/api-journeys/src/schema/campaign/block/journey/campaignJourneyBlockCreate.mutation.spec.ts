@@ -101,7 +101,11 @@ describe('campaignJourneyBlockCreate', () => {
       }
     })
     expect(prismaMock.journey.findFirst).toHaveBeenCalledWith({
-      where: { id: 'journeyId', status: 'published', deletedAt: null },
+      where: {
+        id: 'journeyId',
+        status: { in: ['published', 'archived'] },
+        deletedAt: null
+      },
       include: expect.anything()
     })
     expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
@@ -132,7 +136,11 @@ describe('campaignJourneyBlockCreate', () => {
 
     expect(result.errors).toBeUndefined()
     expect(prismaMock.journey.findFirst).toHaveBeenCalledWith({
-      where: { slug: 'christmas-story', status: 'published', deletedAt: null },
+      where: {
+        slug: 'christmas-story',
+        status: { in: ['published', 'archived'] },
+        deletedAt: null
+      },
       include: expect.anything()
     })
     expect(result.data.campaignJourneyBlockCreate.journeyId).toBe('journeyId')

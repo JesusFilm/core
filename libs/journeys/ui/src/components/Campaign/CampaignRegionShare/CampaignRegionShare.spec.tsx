@@ -12,11 +12,17 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import { shouldRenderSection } from '../CampaignPage'
 import { CampaignProvider } from '../CampaignProvider'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { transformCampaignBlocks } from '../libs/transformer'
 import { campaignPublic, eurRegion, regionPageBlocks } from '../testData'
-import type { CampaignPublic, CampaignRegion, CampaignTreeOf } from '../types'
+import type {
+  CampaignPublic,
+  CampaignRegion,
+  CampaignSectionTree,
+  CampaignTreeOf
+} from '../types'
 
 import {
   CampaignRegionShare,
@@ -270,6 +276,21 @@ describe('CampaignRegionShare', () => {
     expect(await screen.findByText('Lien copié')).toBeInTheDocument()
   })
 
+  it('does not show the copied toast when the clipboard rejects', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },
+      configurable: true
+    })
+    renderShare(region, rewordedCampaign)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Copier le lien' }))
+
+    await waitFor(() =>
+      expect(navigator.clipboard.writeText).toHaveBeenCalled()
+    )
+    expect(screen.queryByText('Lien copié')).not.toBeInTheDocument()
+  })
+
   it('draws the QR code of the Share Link and downloads it as the named 1024 px PNG', () => {
     const toDataURL = vi
       .spyOn(HTMLCanvasElement.prototype, 'toDataURL')
@@ -356,5 +377,42 @@ describe('CampaignRegionShare', () => {
     renderShare(null)
 
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument()
+  })
+
+  describe('shouldRenderSection', () => {
+    const blank = { title: '', intro: '' }
+    function renders(regionProp: CampaignRegion | null): boolean {
+      return shouldRenderSection(shareTree(blank), {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: regionProp,
+        regions: [eurRegion]
+      })
+    }
+
+    it('renders a blank-text Share section when a language has a live-published journey', () => {
+      expect(renders(region)).toBe(true)
+    })
+
+    it('skips a blank-text Share section when no language has a live-published journey', () => {
+      expect(
+        renders({
+          ...region,
+          languages: languages.filter(
+            (l) => l.journeyStatus !== JourneyStatus.published
+          )
+        })
+      ).toBe(false)
+      expect(renders(null)).toBe(false)
+    })
+
+    it('renders a Share section with text and no linked journey', () => {
+      expect(
+        shouldRenderSection(shareTree() as CampaignSectionTree, {
+          pageKind: CampaignPageKind.regionTemplate,
+          region: { ...region, languages: [] },
+          regions: [eurRegion]
+        })
+      ).toBe(true)
+    })
   })
 })

@@ -7,6 +7,8 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
+import { fetchLanguage } from './gatewayClient'
+
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
@@ -14,6 +16,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 const { mockQueueAdd } = vi.hoisted(() => ({
   mockQueueAdd: vi.fn()
 }))
+
+vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 vi.mock('bullmq', () => ({
   Queue: vi.fn(function () {
@@ -114,6 +118,40 @@ describe('campaignUnpublish', () => {
     })
     expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
     expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('also revalidates the _lang page of every campaign language, so an unpublish reaches ?lang= visitors', async () => {
+    const published = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(published)
+    prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
+      ...published,
+      status: 'draft'
+    })
+    prismaMock.campaignLanguage.findMany.mockResolvedValue([
+      { languageId: '529' },
+      { languageId: '21028' }
+    ] as any)
+    vi.mocked(fetchLanguage)
+      .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
+      .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
+
+    await authClient({
+      document: CAMPAIGN_UNPUBLISH,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/christmas-2026/_lang/en',
+      '/home/campaign/christmas-2026/_lang/en/eur',
+      '/home/campaign/christmas-2026/_lang/es',
+      '/home/campaign/christmas-2026/_lang/es/eur'
+    ])
   })
 
   it('enqueues exactly one revalidate job per affected path through the paths[] variant', async () => {

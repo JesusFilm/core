@@ -1,14 +1,15 @@
 import Box from '@mui/material/Box'
 import MuiButton from '@mui/material/Button'
+import type { CSSObject } from '@mui/material/styles'
 import { MouseEvent, ReactElement } from 'react'
 
 import {
   ButtonSize,
-  ButtonVariant,
-  TypographyAlign
+  ButtonVariant
 } from '../../../../__generated__/globalTypes'
 import { useCampaign } from '../CampaignProvider'
 import { useCampaignSection } from '../CampaignSectionBand'
+import { flexAlign } from '../libs/flexAlign'
 import { hasText } from '../types'
 import type { CampaignBlockOf } from '../types'
 
@@ -18,10 +19,20 @@ interface CampaignButtonProps {
   block: CampaignBlockOf<'CampaignButtonBlock'>
 }
 
-function justifyFor(align: TypographyAlign | null): string {
-  if (align === TypographyAlign.center) return 'center'
-  if (align === TypographyAlign.right) return 'flex-end'
-  return 'flex-start'
+function variantColors(
+  variant: ButtonVariant,
+  fill: string | undefined,
+  label: string | undefined
+): CSSObject {
+  if (variant === ButtonVariant.contained)
+    return {
+      backgroundColor: fill,
+      color: label,
+      '&:hover': { backgroundColor: fill, filter: 'brightness(0.92)' }
+    }
+  if (variant === ButtonVariant.outlined)
+    return { borderColor: fill, color: fill, '&:hover': { borderColor: fill } }
+  return { color: fill }
 }
 
 /**
@@ -45,16 +56,7 @@ export function CampaignButton({
   const label = block.labelColor ?? section?.band.buttonLabel
   const resolved = resolveCampaignAction(block.action, campaign)
 
-  const colorSx =
-    variant === ButtonVariant.contained
-      ? {
-          backgroundColor: fill,
-          color: label,
-          '&:hover': { backgroundColor: fill, filter: 'brightness(0.92)' }
-        }
-      : variant === ButtonVariant.outlined
-        ? { borderColor: fill, color: fill, '&:hover': { borderColor: fill } }
-        : { color: fill }
+  const colorSx = variantColors(variant, fill, label)
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>): void {
     if (resolved?.scrollToBlockId == null) return
@@ -66,7 +68,7 @@ export function CampaignButton({
   }
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: justifyFor(align) }}>
+    <Box sx={{ display: 'flex', justifyContent: flexAlign(align) }}>
       {resolved == null ? (
         <MuiButton
           component="span"

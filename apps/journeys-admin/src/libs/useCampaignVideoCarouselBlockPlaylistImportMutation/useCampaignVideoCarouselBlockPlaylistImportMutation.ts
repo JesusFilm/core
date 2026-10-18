@@ -9,9 +9,11 @@ import {
   CampaignVideoCarouselBlockPlaylistImportVariables
 } from '../../../__generated__/CampaignVideoCarouselBlockPlaylistImport'
 import { campaignBlocksAdd } from '../campaignBlockCache'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
 
 export const CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignVideoCarouselBlockPlaylistImport(
     $id: ID!
     $url: String!
@@ -19,6 +21,7 @@ export const CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT = gql`
   ) {
     campaignVideoCarouselBlockPlaylistImport(id: $id, url: $url) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `

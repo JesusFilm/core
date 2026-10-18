@@ -2,6 +2,7 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
@@ -12,33 +13,32 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState
 } from 'react'
 
 import {
   CAMPAIGN_HEADER_HEIGHT,
-  CampaignAnalyticsPanel,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
+  isCampaignSection,
+  isExtra,
   overlayAlpha,
   resolveBand
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
-import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_strings as CampaignString,
-  GetCampaign_campaign_theme as CampaignTheme
+  GetCampaign_campaign_strings as CampaignString
 } from '../../../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
   CampaignChildPlacement,
+  CampaignFeaturedMediaLayout,
   CampaignMediaSide,
   CampaignStringKey,
   TypographyVariant
@@ -47,10 +47,10 @@ import {
   CAMPAIGN_TEXT_FIELDS,
   CampaignTextBlock,
   CampaignTextField,
-  isCampaignTextBlock,
-  primaryTextField
+  isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
+import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
@@ -58,15 +58,14 @@ import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
+import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
+import { SelectionBadge } from '../SelectionBadge'
 
 export type CanvasBlock = CampaignTreeBlock<CampaignBlock>
 
 interface CanvasSectionProps {
   block: CanvasBlock
-  theme: CampaignTheme
-  /** The preview language id: resolves each text field's `*Translations`; null keeps the default-language value. */
-  previewLanguageId: string | null
   /** A page section moves by its drag handle; chrome never does. */
   draggable?: boolean
   /** The drop indicator to show while another section is dragged over this one. */
@@ -83,11 +82,7 @@ const SELECTED_OUTLINE = {
 }
 
 function isAbove(child: CanvasBlock): boolean {
-  return (
-    (child.__typename === 'CampaignTypographyBlock' ||
-      child.__typename === 'CampaignButtonBlock') &&
-    child.placement === CampaignChildPlacement.above
-  )
+  return isExtra(child) && child.placement === CampaignChildPlacement.above
 }
 
 interface CanvasExtraProps {
@@ -95,7 +90,6 @@ interface CanvasExtraProps {
   selected: boolean
   onSelect: () => void
   focusField?: CampaignTextField
-  focusRequest: number
 }
 
 /** A text or button Extra: click to select, edit its one text field in place. */
@@ -103,8 +97,7 @@ function CanvasExtra({
   block,
   selected,
   onSelect,
-  focusField,
-  focusRequest
+  focusField
 }: CanvasExtraProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -117,20 +110,29 @@ function CanvasExtra({
     case 'CampaignTypographyBlock':
       return (
         <Box
+          id={block.id}
           data-testid={`CanvasExtra-${block.id}`}
+          data-selected={selected}
+          data-hoverable
           onClick={handleClick}
           sx={{
+            position: 'relative',
             width: '100%',
             cursor: 'pointer',
+            ...HOVER_OUTLINE_SX,
             ...(selected ? SELECTED_OUTLINE : {})
           }}
         >
+          <SelectionBadge
+            id={block.id}
+            label={blockLabel(t, block.__typename)}
+            selected={selected}
+          />
           <InlineText
             target={{ block, field: 'content' }}
             placeholder={t('Your text')}
             editing={selected}
             autoFocus={selected && focusField === 'content'}
-            focusRequest={focusRequest}
             onSelect={onSelect}
             variant={block.typographyVariant ?? TypographyVariant.body1}
             variantMapping={{ overline: 'p', caption: 'p' }}
@@ -143,11 +145,16 @@ function CanvasExtra({
       const buttonVariant = block.buttonVariant ?? 'contained'
       return (
         <Box
+          id={block.id}
           data-testid={`CanvasExtra-${block.id}`}
+          data-selected={selected}
+          data-hoverable
           onClick={handleClick}
           sx={{
+            position: 'relative',
             display: 'flex',
             cursor: 'pointer',
+            ...HOVER_OUTLINE_SX,
             ...(selected ? SELECTED_OUTLINE : {}),
             justifyContent:
               block.align === 'center'
@@ -159,6 +166,11 @@ function CanvasExtra({
                     : 'inherit'
           }}
         >
+          <SelectionBadge
+            id={block.id}
+            label={blockLabel(t, block.__typename)}
+            selected={selected}
+          />
           <Button
             component="div"
             variant={buttonVariant}
@@ -194,7 +206,6 @@ function CanvasExtra({
               placeholder={t('Button')}
               editing={selected}
               autoFocus={selected && focusField === 'label'}
-              focusRequest={focusRequest}
               onSelect={onSelect}
               variant="inherit"
               component="span"
@@ -214,7 +225,6 @@ interface SectionTextProps {
   field: CampaignTextField
   editing: boolean
   focusField?: CampaignTextField
-  focusRequest: number
   onSelect: (field: CampaignTextField) => void
   titleVariant: 'h1' | 'h2'
 }
@@ -247,7 +257,6 @@ function SectionText({
   field,
   editing,
   focusField,
-  focusRequest,
   onSelect,
   titleVariant
 }: SectionTextProps): ReactElement | null {
@@ -295,7 +304,6 @@ function SectionText({
       placeholder={sectionFieldPlaceholder(t, field)}
       editing={editing}
       autoFocus={editing && focusField === field}
-      focusRequest={focusRequest}
       onSelect={() => onSelect(field)}
       variant={styles.variant}
       sx={styles.sx}
@@ -331,7 +339,10 @@ export const CAMPAIGN_SECTION_STRING_KEYS: Partial<
     CampaignStringKey.seeAllOnWatch,
     CampaignStringKey.videos
   ],
-  CampaignJourneyListBlock: [CampaignStringKey.openTemplate],
+  CampaignJourneyListBlock: [
+    CampaignStringKey.openTemplate,
+    CampaignStringKey.noJourneys
+  ],
   CampaignAnalyticsBlock: [
     CampaignStringKey.totalVisitors,
     CampaignStringKey.topCountry
@@ -388,7 +399,8 @@ function CanvasStrings({
  * Strings its public rendering reads, then the Extras placed below. A hero
  * with media and a Featured Media section put their Media Slot beside that
  * text (Featured Media on its `mediaSide`, with a placeholder while empty),
- * stacked below `md`; a Video Carousel shows its cards below its text.
+ * stacked below `md` (Featured Media stacked at every width when its layout
+ * is `stacked`, the media full width under the text); a Video Carousel shows its cards below its text.
  * Clicking anywhere selects the section; clicking an Extra or a carousel
  * item selects it. The selected block's text fields and strings become
  * inline inputs. The chrome follows the public layout instead: the header
@@ -397,8 +409,6 @@ function CanvasStrings({
  */
 export function CanvasSection({
   block,
-  theme,
-  previewLanguageId,
   draggable = false,
   dropEdge,
   inSlot = false
@@ -408,11 +418,11 @@ export function CanvasSection({
     campaign,
     selection,
     selectBlock,
-    state: { editRequest }
+    state: { previewLanguageId }
   } = useCampaignEditor()
+  const { theme } = campaign
   const [focusField, setFocusField] = useState<CampaignTextField>()
-  const [focusRequest, setFocusRequest] = useState(0)
-  const seenEditRequest = useRef(editRequest)
+  const [menuOpen, setMenuOpen] = useState(false)
   const selectedId = selection.block?.id
   const sectionSelected = selectedId === block.id
   const { setNodeRef: setDroppableRef } = useDroppable({
@@ -434,28 +444,9 @@ export function CanvasSection({
     [setDroppableRef, setDraggableRef]
   )
   const band = useMemo(() => {
-    if (
-      block.__typename === 'CampaignTypographyBlock' ||
-      block.__typename === 'CampaignButtonBlock' ||
-      block.__typename === 'CampaignColumnBlock' ||
-      block.__typename === 'CampaignJourneyBlock' ||
-      block.__typename === 'CampaignVideoBlock'
-    )
-      return null
+    if (!isCampaignSection(block)) return null
     return resolveBand(block, theme)
   }, [block, theme])
-
-  useEffect(() => {
-    if (editRequest === seenEditRequest.current) return
-    seenEditRequest.current = editRequest
-    const target = selection.block
-    if (target == null || !isCampaignTextBlock(target)) return
-    const inSection =
-      target.id === block.id || target.parentBlockId === block.id
-    if (!inSection) return
-    setFocusField(primaryTextField(target.__typename))
-    setFocusRequest((request) => request + 1)
-  }, [editRequest, selection.block, block.id])
 
   if (band == null) return null
 
@@ -499,13 +490,13 @@ export function CanvasSection({
   const showMedia =
     block.__typename === 'CampaignFeaturedMediaBlock' ||
     (block.__typename === 'CampaignHeroBlock' && block.media != null)
+  const stacked =
+    block.__typename === 'CampaignFeaturedMediaBlock' &&
+    block.layout === CampaignFeaturedMediaLayout.stacked
   const mediaLeft =
     block.__typename === 'CampaignFeaturedMediaBlock' &&
+    !stacked &&
     block.mediaSide === CampaignMediaSide.left
-  /** `below`: text on top, the media full width under it, at every size. */
-  const mediaBelow =
-    block.__typename === 'CampaignFeaturedMediaBlock' &&
-    block.mediaSide === CampaignMediaSide.below
 
   function handleSelectField(field: CampaignTextField): void {
     setFocusField(field)
@@ -527,7 +518,6 @@ export function CanvasSection({
         selected={selectedId === child.id}
         onSelect={() => selectChild(child.id, field)}
         focusField={focusField}
-        focusRequest={focusRequest}
       />
     )
   }
@@ -535,7 +525,7 @@ export function CanvasSection({
   const sectionBody = (
     <Stack
       direction={
-        mediaBelow
+        stacked
           ? 'column'
           : { xs: 'column', md: mediaLeft ? 'row-reverse' : 'row' }
       }
@@ -593,7 +583,6 @@ export function CanvasSection({
               field={field}
               editing={sectionSelected}
               focusField={focusField}
-              focusRequest={focusRequest}
               onSelect={handleSelectField}
               titleVariant={titleVariant}
             />
@@ -618,7 +607,6 @@ export function CanvasSection({
               (selection.kind === 'journey' && selection.host?.id === block.id)
             }
             focusField={focusField}
-            focusRequest={focusRequest}
             onSelectCard={selectChild}
           />
         )}
@@ -645,12 +633,7 @@ export function CanvasSection({
             }}
           >
             {slots.map((slot) => (
-              <CanvasColumnSlot
-                key={slot.id}
-                slot={slot}
-                theme={theme}
-                previewLanguageId={previewLanguageId}
-              />
+              <CanvasColumnSlot key={slot.id} slot={slot} />
             ))}
           </Box>
         )}
@@ -684,17 +667,49 @@ export function CanvasSection({
         previewLanguage.language.bcp47 ??
         previewLanguage.languageId)
 
-  /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language select. */
+  /** Only buttons are nav: the public header drops any other child. */
+  const navButtons = extras.filter(
+    (child) => child.__typename === 'CampaignButtonBlock'
+  )
+  const navButtonSelected = navButtons.some((child) => child.id === selectedId)
+  /** Below `md` the nav sits behind the menu icon; a selected nav button opens it so it can be outlined and scrolled to. */
+  const navOpen = menuOpen || navButtonSelected
+
+  /** The phone menu is only for the header: it closes once the selection leaves the header and its nav buttons, so the taller header never covers the section the selection scrolls to. */
+  const selectionInHeader = sectionSelected || navButtonSelected
+  useEffect(() => {
+    if (!selectionInHeader) setMenuOpen(false)
+  }, [selectedId, selectionInHeader])
+
+  function handleMenuToggle(event: MouseEvent<HTMLElement>): void {
+    event.stopPropagation()
+    if (!navOpen) {
+      setMenuOpen(true)
+      return
+    }
+    setMenuOpen(false)
+    if (navButtonSelected) selectBlock(block.id)
+  }
+
+  /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language box. The box has no chevron: the canvas never switches language, the Preview Language chip does. */
   const headerBody = (
-    <Stack
-      direction="row"
-      spacing={2}
+    <Box
       data-testid="CanvasHeaderRow"
-      sx={{ alignItems: 'center', height: CAMPAIGN_HEADER_HEIGHT }}
+      sx={{
+        display: 'flex',
+        flexWrap: { xs: 'wrap', md: 'nowrap' },
+        alignItems: 'center',
+        columnGap: 2
+      }}
     >
       <Box
         data-testid="CanvasBrandMark"
-        sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          minWidth: 0,
+          height: CAMPAIGN_HEADER_HEIGHT
+        }}
       >
         {logo != null ? (
           <Box
@@ -722,17 +737,23 @@ export function CanvasSection({
         )}
       </Box>
       <Box sx={{ flexGrow: 1 }} />
-      {extras.length > 0 && (
+      {navButtons.length > 0 && (
         <Box
           component="nav"
+          id={`${block.id}-nav`}
           data-testid="CanvasHeaderNav"
+          data-open={navOpen}
           sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            gap: 1
+            display: { xs: navOpen ? 'flex' : 'none', md: 'flex' },
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'flex-start', md: 'center' },
+            order: { xs: 1, md: 0 },
+            flexBasis: { xs: '100%', md: 'auto' },
+            gap: { xs: 1.5, md: 1 },
+            pb: { xs: 2, md: 0 }
           }}
         >
-          {extras.map(renderExtra)}
+          {navButtons.map(renderExtra)}
         </Box>
       )}
       {campaign.languages.length >= 2 && (
@@ -753,25 +774,24 @@ export function CanvasSection({
           <Typography variant="body1" component="span">
             {previewLanguageLabel}
           </Typography>
-          <ChevronDownIcon
-            fontSize="small"
-            sx={{ color: 'var(--campaign-band-accent)' }}
-          />
         </Box>
       )}
-      {extras.length > 0 && (
-        <Box
+      {navButtons.length > 0 && (
+        <IconButton
           data-testid="CanvasHeaderMenuButton"
+          aria-label={t('Menu')}
+          aria-expanded={navOpen}
+          aria-controls={`${block.id}-nav`}
+          onClick={handleMenuToggle}
           sx={{
             display: { xs: 'inline-flex', md: 'none' },
-            p: 1,
             color: 'var(--campaign-band-text)'
           }}
         >
           <Menu1Icon />
-        </Box>
+        </IconButton>
       )}
-    </Stack>
+    </Box>
   )
 
   const footerLines = extras.filter(
@@ -794,7 +814,7 @@ export function CanvasSection({
       }}
     >
       {footerLines.length > 0 && (
-        <Stack spacing={0.5} data-testid="CanvasFooterLines">
+        <Stack spacing={1.5} data-testid="CanvasFooterLines">
           {footerLines.map(renderExtra)}
         </Stack>
       )}
@@ -827,7 +847,7 @@ export function CanvasSection({
           position: 'sticky' as const,
           top: 0,
           zIndex: 2,
-          overflow: 'hidden',
+          overflowX: 'clip' as const,
           borderBottom: '1px solid var(--campaign-band-border)'
         }
       : chrome === 'footer'
@@ -850,6 +870,7 @@ export function CanvasSection({
       id={block.id}
       data-testid={`CanvasSection-${block.id}`}
       data-selected={sectionSelected}
+      data-hoverable
       style={bandCssVariables(band)}
       onClick={(event: MouseEvent<HTMLElement>) => {
         event.stopPropagation()
@@ -861,12 +882,25 @@ export function CanvasSection({
         backgroundColor: 'var(--campaign-band-background)',
         color: 'var(--campaign-band-text)',
         textAlign: align ?? undefined,
+        scrollMarginTop:
+          chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
+        // Keeps the badges inside this section from competing with the sticky header.
+        ...(chrome !== 'header' && !inSlot
+          ? { isolation: 'isolate' as const }
+          : {}),
         cursor: 'pointer',
         opacity: isDragging ? 0.6 : 1,
+        ...HOVER_OUTLINE_SX,
         ...(sectionSelected ? SELECTED_OUTLINE : {})
       }}
     >
+      <SelectionBadge
+        id={block.id}
+        label={blockLabel(t, block.__typename)}
+        selected={sectionSelected}
+        placement={inSlot ? 'above' : 'inside'}
+      />
       {draggable && (
         <Box
           ref={setActivatorNodeRef}

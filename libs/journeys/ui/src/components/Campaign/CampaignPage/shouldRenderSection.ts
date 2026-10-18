@@ -2,6 +2,7 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { featuredMediaBullets } from '../CampaignFeaturedMedia'
 import { liveJourneyCards } from '../CampaignJourneyList'
 import { hasCampaignMedia } from '../CampaignMediaSlot'
+import { shareLanguages } from '../CampaignRegionShare'
 import { listedRegions } from '../CampaignRegionSwitcher'
 import { splitParagraphs } from '../CampaignRichText'
 import { hasCarouselCards } from '../CampaignVideoCarousel'
@@ -53,7 +54,7 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * children is still its own card; a Journey List with no
  * live-published journeys renders its text if any, else is skipped;
  * Analytics always renders; Region Header and Region Share render on a
- * Region Page (Share needs text until a language is linked); Rich Text needs
+ * Region Page (Share needs text, an Extra or a language with a live-published journey); Rich Text needs
  * a title or a non-empty paragraph; Columns needs a Column Slot whose section
  * itself renders, or an Extra, so two empty slots skip the band; an Image
  * section renders with a picture or an Extra, else is skipped.
@@ -108,7 +109,10 @@ export function shouldRenderSection(
     case 'CampaignRegionShareBlock':
       return (
         context.pageKind === CampaignPageKind.regionTemplate &&
-        (hasText(section.title) || hasText(section.intro) || extras)
+        (hasText(section.title) ||
+          hasText(section.intro) ||
+          extras ||
+          (context.region != null && shareLanguages(context.region).length > 0))
       )
     case 'CampaignRichTextBlock':
       return (

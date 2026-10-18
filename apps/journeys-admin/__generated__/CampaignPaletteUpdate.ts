@@ -30,7 +30,8 @@ export interface CampaignPaletteUpdate {
    * - BAD_USER_INPUT (field: `title`): empty or over 100 characters.
    * - BAD_USER_INPUT (field: `slug`): fails the shape, length, reserved-word or global-uniqueness checks (including the concurrent-update race on the unique constraint).
    * - BAD_USER_INPUT (field: `palette`): an entry is not a hex colour.
-   * - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages.
+   * - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
+   * - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
    * - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
    */
   campaignUpdate: CampaignPaletteUpdate_campaignUpdate;
