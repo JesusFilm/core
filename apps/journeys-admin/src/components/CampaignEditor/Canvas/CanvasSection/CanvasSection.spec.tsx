@@ -458,9 +458,7 @@ describe('CanvasSection region header', () => {
     return {
       ...campaignWithRegions,
       blocks: campaignWithRegions.blocks.map((block) =>
-        block.id === 'eurLineId'
-          ? ({ ...block, ...overrides })
-          : block
+        block.id === 'eurLineId' ? { ...block, ...overrides } : block
       )
     }
   }
