@@ -24,7 +24,7 @@ const ORIGINAL_ARGV = process.argv
 describe('backfill-language-searchable', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.videoVariant.groupBy.mockReset()
+    vi.mocked(prismaMock.videoVariant.groupBy).mockReset()
     languagesPrismaMock.language.findMany.mockReset()
     languagesPrismaMock.language.updateMany.mockReset()
     process.argv = ['node', 'backfill-language-searchable.ts']
@@ -35,7 +35,7 @@ describe('backfill-language-searchable', () => {
   })
 
   it('does nothing when no languages have variants', async () => {
-    prismaMock.videoVariant.groupBy.mockResolvedValue([])
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([])
 
     await main()
 
@@ -44,7 +44,7 @@ describe('backfill-language-searchable', () => {
   })
 
   it('does nothing when no hidden languages are found', async () => {
-    prismaMock.videoVariant.groupBy.mockResolvedValue([
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' }
     ] as never)
     languagesPrismaMock.language.findMany.mockResolvedValue([])
@@ -55,7 +55,7 @@ describe('backfill-language-searchable', () => {
   })
 
   it('dry run reports candidates without writing', async () => {
-    prismaMock.videoVariant.groupBy.mockResolvedValue([
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' },
       { languageId: '5678' }
     ] as never)
@@ -78,7 +78,7 @@ describe('backfill-language-searchable', () => {
 
   it('--apply marks the hidden languages searchable: false', async () => {
     process.argv.push('--apply')
-    prismaMock.videoVariant.groupBy.mockResolvedValue([
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' }
     ] as never)
     languagesPrismaMock.language.findMany.mockResolvedValue([

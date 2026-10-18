@@ -36,12 +36,12 @@ const mockedRemove = removeLanguagesFromAlgolia as unknown as ReturnType<
 
 describe('findHiddenLanguageIds', () => {
   beforeEach(() => {
-    prismaMock.videoVariant.groupBy.mockReset()
+    vi.mocked(prismaMock.videoVariant.groupBy).mockReset()
     languagesPrismaMock.language.findMany.mockReset()
   })
 
   it('returns no ids when no languages have variants', async () => {
-    prismaMock.videoVariant.groupBy.mockResolvedValue([])
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([])
 
     const result = await findHiddenLanguageIds()
 
@@ -50,7 +50,7 @@ describe('findHiddenLanguageIds', () => {
   })
 
   it('scopes the hidden-language query to languages with variants and either flag off', async () => {
-    prismaMock.videoVariant.groupBy.mockResolvedValue([
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' },
       { languageId: '5678' }
     ] as never)
@@ -73,7 +73,7 @@ describe('findHiddenLanguageIds', () => {
 
 describe('main', () => {
   beforeEach(() => {
-    prismaMock.videoVariant.groupBy.mockReset()
+    vi.mocked(prismaMock.videoVariant.groupBy).mockReset()
     languagesPrismaMock.language.findMany.mockReset()
     mockedReindex.mockReset()
     mockedRemove.mockReset()
@@ -81,7 +81,7 @@ describe('main', () => {
 
   it('reindexes publicly visible languages and removes the hidden ones', async () => {
     mockedReindex.mockResolvedValue({ count: 3 })
-    prismaMock.videoVariant.groupBy.mockResolvedValue([
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([
       { languageId: '1234' }
     ] as never)
     languagesPrismaMock.language.findMany.mockResolvedValue([
@@ -97,7 +97,7 @@ describe('main', () => {
 
   it('reports zero removed when nothing is hidden', async () => {
     mockedReindex.mockResolvedValue({ count: 3 })
-    prismaMock.videoVariant.groupBy.mockResolvedValue([])
+    vi.mocked(prismaMock.videoVariant.groupBy).mockResolvedValue([])
     mockedRemove.mockResolvedValue({ removed: 0 })
 
     await main()
