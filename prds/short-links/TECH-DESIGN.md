@@ -504,6 +504,8 @@ Only `jesus.film/s` and `jesus.movie/s` to start. Stage is proven first on `stag
 
 ### Permissions
 
+Amended by "Domains belong to shortLinkAdmin and superAdmin" below: `shortLinkDomainCreate`, all of `shortLinkDomainUpdate` and `shortLinkDomainPublish` are open to the `shortLinkAdmin` role and superAdmin, and closed to `publisher`.
+
 | Action                                                                        | Who                                       |
 | ----------------------------------------------------------------------------- | ----------------------------------------- |
 | Redirect, slug, services settings; `shortLinkDomainPublish`                   | `shortLinkAdmin`, `publisher`, superAdmin |
@@ -545,3 +547,14 @@ What is given up: during a KV-only outage every redirect goes through api-media 
 Decision: the scan-event store is one ClickHouse Cloud service per environment, provisioned by Terraform (`infrastructure/modules/clickhouse/service`, called from each environment's `main.tf`), billed through the AWS Marketplace subscription. Stage comes first and idles after 15 quiet minutes (scans lost while it wakes only affect stage); prod is added once stage is proven and is always on. Stage and prod are separate services on purpose: stage secrets are visible to developers, and on a shared service they would sit next to prod data and prod capacity. Terraform manages the **service only** and publishes `SHORT_LINKS_CLICKHOUSE_URL` and `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD` into the `core` Doppler project (`stg` / `prd`); the database, table and the two limited users (`short_links_writer`: INSERT on `redirects.redirect_events`; `short_links_reader`: SELECT on `redirects.*`) are created by hand from the runbook in `workers/short-links-redirect/README.md`, "Setting up ClickHouse". The service accepts connections from anywhere (`0.0.0.0/0`) because Cloudflare Workers have no fixed egress addresses; protection is TLS, strong passwords and the two users.
 
 Prerequisites: a ClickHouse Cloud organisation on the Basic tier, an Admin API key, and the SSM parameters `/terraform/prd/CLICKHOUSE_ORG_ID`, `/terraform/prd/CLICKHOUSE_CLOUD_API_KEY`, `/terraform/prd/CLICKHOUSE_CLOUD_API_SECRET`. Smallest service is 1 × 8 GiB; the always-on list price is about $160/month (us-east-1 list, us-east-2 assumed equal). The table above gains `global UInt8` and `owner_hostname LowCardinality(String)`, which `clickhouse/0001_init.sql` and the Worker already had.
+
+## Domains belong to shortLinkAdmin and superAdmin (2026-10-14)
+
+Decision: adding a domain, changing any of its settings (the three edge-wiring fields included) and republishing it need the `shortLinkAdmin` role or the superAdmin flag. The rule behind it: `shortLinkAdmin` is the admin for everything short-link, superAdmin for everything in core. That deliberately includes `kvNamespaceId`, which names the namespace the account-wide `CLOUDFLARE_SHORT_LINKS_API_TOKEN` publishes into; the role is granted on that trust rather than gating the field or validating the id against an allowlist (raised in review of PR #9782, 2026-10-15). `publisher`, which everywhere else has the powers of `shortLinkAdmin` (including `shortLinkPublish` for a single link), only reads domains; this is the one place the two differ. The per-field superAdmin check inside `shortLinkDomainUpdate` is gone. A new scope, `isShortLinkDomainAdmin`, is the `shortLinkAdmin` role alone (the existing `isShortLinkAdmin` scope includes `publisher`); the three domain mutations run under `$any: { isShortLinkDomainAdmin, isSuperAdmin }`, so the users-database lookup still only happens when the role scope fails. Removing a domain stays superAdmin-only.
+
+| Action                                                                     | Who                          |
+| -------------------------------------------------------------------------- | ---------------------------- |
+| `shortLinkDomainCreate`, `shortLinkDomainUpdate`, `shortLinkDomainPublish` | `shortLinkAdmin`, superAdmin |
+| `shortLinkDomainDelete`                                                    | superAdmin                   |
+
+Admin app: `isDomainAdmin` (the `shortLinkAdmin` role or superAdmin) gates **Add domain** and **Republish domain** and makes the domain form editable; the path prefix and KV fields, previously shown to a superAdmin only, are part of the form for every domain admin. A `publisher` still reaches the Domains section but sees the form read-only with no Save, Republish or Remove button and a note. **Remove domain** stays superAdmin-only.

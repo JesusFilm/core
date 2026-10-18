@@ -11,11 +11,13 @@ describe('getShortLinkAccess', () => {
     expect(getShortLinkAccess()).toEqual({
       isEditor: false,
       isAdmin: false,
+      isDomainAdmin: false,
       isSuperAdmin: false
     })
     expect(getShortLinkAccess(['youtubeAdmin'])).toEqual({
       isEditor: false,
       isAdmin: false,
+      isDomainAdmin: false,
       isSuperAdmin: false
     })
   })
@@ -24,19 +26,22 @@ describe('getShortLinkAccess', () => {
     expect(getShortLinkAccess(['shortLinkEditor'])).toEqual({
       isEditor: true,
       isAdmin: false,
+      isDomainAdmin: false,
       isSuperAdmin: false
     })
   })
 
-  it('treats shortLinkAdmin and publisher as admin and editor', () => {
+  it('treats shortLinkAdmin and publisher as admin and editor, but only shortLinkAdmin as domain admin', () => {
     expect(getShortLinkAccess(['shortLinkAdmin'])).toEqual({
       isEditor: true,
       isAdmin: true,
+      isDomainAdmin: true,
       isSuperAdmin: false
     })
     expect(getShortLinkAccess(['publisher'])).toEqual({
       isEditor: true,
       isAdmin: true,
+      isDomainAdmin: false,
       isSuperAdmin: false
     })
   })
@@ -45,11 +50,13 @@ describe('getShortLinkAccess', () => {
     expect(getShortLinkAccess([], true)).toEqual({
       isEditor: false,
       isAdmin: false,
+      isDomainAdmin: true,
       isSuperAdmin: true
     })
     expect(getShortLinkAccess(['shortLinkEditor'], true)).toEqual({
       isEditor: true,
       isAdmin: false,
+      isDomainAdmin: true,
       isSuperAdmin: true
     })
     expect(getShortLinkAccess(['publisher'], null).isSuperAdmin).toBe(false)
