@@ -3,13 +3,13 @@
 The rollout targets EKS **1.36** and Aurora PostgreSQL **17.11** in staging and
 production.
 
-**Current state (2026-10-18): the committed default is `prod-addons`.** Staging
+**Current state (2026-10-18): the committed default is `prod-1.33`.** Staging
 has completed `prepare`, `stage-addons` and every minor through 1.36: control
 plane, workers and add-ons are on 1.36, with Aurora still 13.23 on I/O-Optimized
-storage. Production completed `prod-prepare` and `prod-addons` on 2026-10-18: control
-plane and workers are on 1.32, kube-proxy, VPC CNI and CoreDNS are EKS add-ons
-on their 1.32 pins, and its EBS CSI driver is the Argo-managed 1.53.0. Aurora is
-still 13.23. `prod-1.33` is the next phase.
+storage. Production completed `prod-prepare`, `prod-addons` and `prod-1.33` on
+2026-10-18: control plane and workers are on 1.33, kube-proxy, VPC CNI and CoreDNS
+are EKS add-ons on their 1.33 pins, and its EBS CSI driver is the Argo-managed
+1.53.0. Aurora is still 13.23. `prod-1.34` is the next phase.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
@@ -155,7 +155,11 @@ After staging workload verification, target `module.prod.module.eks`:
 | `prod-1.36`    | 1.36                     | 1.36                            |
 
 Before each production phase, confirm the production `aws-ebs-csi-driver` Argo
-application is Synced/Healthy and its volume attachments are healthy.
+application is Healthy and its volume attachments are healthy. On 1.33 it shows
+OutOfSync on the `CSIDriver` alone: the chart sets
+`nodeAllocatableUpdatePeriodSeconds`, which 1.33 drops because its feature gate
+is still alpha. Sync the application by hand after `prod-1.34`, where the field
+is stored, and expect Synced from then on.
 Production worker alignment is required before advancing its control plane.
 Use the same health checks and saved-plan review at each minor. Do not lower the
 phase for a live cluster that has already advanced; the precondition rejects it.
