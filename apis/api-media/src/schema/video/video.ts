@@ -1138,7 +1138,7 @@ builder.mutationFields((t) => ({
         await updateVideoAvailableLanguages(videoId)
         await updateParentCollectionLanguages(videoId)
       } catch (error) {
-        console.error('Language management update error:', error)
+        logger.error({ error, videoId }, 'availableLanguages recompute error')
       }
 
       return true
