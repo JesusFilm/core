@@ -21,12 +21,22 @@ const meta: Meta<typeof CampaignAnalytics> = {
 
 type Story = StoryObj<ComponentProps<typeof CampaignAnalytics>>
 
+const analytics = landingTree(
+  'landingAnalyticsId'
+) as CampaignTreeOf<'CampaignAnalyticsBlock'>
+
 export const Default: Story = {
-  args: {
-    block: landingTree(
-      'landingAnalyticsId'
-    ) as CampaignTreeOf<'CampaignAnalyticsBlock'>
-  }
+  args: { block: analytics }
+}
+
+/** Tiles and the world map on the left, the region chips and ranks on the right. */
+export const MapOn: Story = {
+  args: { block: { ...analytics, showMap: true } }
+}
+
+/** Chips, tiles, then the ranks in two columns across the full width. */
+export const MapOff: Story = {
+  args: { block: { ...analytics, showMap: false } }
 }
 
 export default meta

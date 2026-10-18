@@ -24,8 +24,12 @@ export {
 export { CampaignHero } from './CampaignHero'
 export { CampaignImage, CampaignPicture } from './CampaignImage'
 export {
+  CampaignJourneyCards,
   CampaignJourneyList,
+  CampaignJourneyOpenButton,
   isJourneyCardVisible,
+  journeyCardFrameSx,
+  journeyCardImageSx,
   liveJourneyCards
 } from './CampaignJourneyList'
 export {
@@ -46,7 +50,10 @@ export {
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'
-export { CampaignRegionHeader } from './CampaignRegionHeader'
+export {
+  CampaignRegionHeader,
+  CampaignRegionName
+} from './CampaignRegionHeader'
 export {
   CampaignRegionShare,
   PREVIEW_IFRAME_ALLOW,
@@ -56,9 +63,13 @@ export {
 } from './CampaignRegionShare'
 export {
   CampaignRegionCountries,
+  CampaignRegionLines,
   CampaignRegionSwitcher,
   countryLabel,
   listedRegions,
+  regionFrameSx,
+  regionNameVariant,
+  switcherLayoutSx,
   switcherRegions
 } from './CampaignRegionSwitcher'
 export { CampaignRenderer } from './CampaignRenderer'
@@ -79,7 +90,7 @@ export {
   campaignSeoProps,
   campaignSocialImage
 } from './CampaignSeo'
-export { CampaignTypography } from './CampaignTypography'
+export { CampaignTypography, isHeadingVariant } from './CampaignTypography'
 export { CampaignVideo } from './CampaignVideo'
 export {
   CampaignCarouselArrows,

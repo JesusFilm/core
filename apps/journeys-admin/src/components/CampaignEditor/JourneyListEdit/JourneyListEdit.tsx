@@ -8,13 +8,21 @@ import { MouseEvent, ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
+  CampaignJourneyCards,
+  CampaignJourneyOpenButton,
   type CampaignTreeBlock,
-  isJourneyCardVisible
+  isJourneyCardVisible,
+  journeyCardFrameSx,
+  journeyCardImageSx
 } from '@core/journeys/ui/Campaign'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../__generated__/GetCampaignJourneyByLink'
+import {
+  CampaignJourneyListDisplay,
+  CampaignStringKey
+} from '../../../../__generated__/globalTypes'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { blockLabel } from '../blockLabel'
@@ -24,6 +32,7 @@ import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
+import { campaignStringText } from '../ShareSectionEdit/ShareSectionEdit'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 
 const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
@@ -42,6 +51,7 @@ interface JourneyListEditProps {
   /** The journey list this editor sits in, with its treed children. */
   block: Pick<CampaignBlock, 'id'> & {
     children: Array<CampaignTreeBlock<CampaignBlock>>
+    display?: CampaignJourneyListDisplay | null
   }
   /** The list, or one of its cards, is the current selection. */
   active: boolean
@@ -65,6 +75,8 @@ export function journeyCards(
 
 interface JourneyCardEditProps {
   card: JourneyCardBlock
+  display: CampaignJourneyListDisplay
+  openLabel: string
   selected: boolean
   focusField?: CampaignTextField
   onSelect: (field: CampaignTextField) => void
@@ -78,6 +90,8 @@ interface JourneyCardEditProps {
  */
 function JourneyCardEdit({
   card,
+  display,
+  openLabel,
   selected,
   focusField,
   onSelect
@@ -98,12 +112,9 @@ function JourneyCardEdit({
       data-hoverable
       onClick={handleClick}
       sx={{
+        ...journeyCardFrameSx(display),
         position: 'relative',
-        overflow: 'hidden',
-        borderRadius: 1,
         cursor: 'pointer',
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)',
         ...HOVER_OUTLINE_SX,
         ...(selected ? SELECTED_OUTLINE : {})
       }}
@@ -120,15 +131,10 @@ function JourneyCardEdit({
           src={card.journeyImage.src}
           alt={card.journeyImage.alt ?? ''}
           data-testid="JourneyCardImage"
-          sx={{
-            display: 'block',
-            width: '100%',
-            aspectRatio: '16 / 9',
-            objectFit: 'cover'
-          }}
+          sx={journeyCardImageSx(display)}
         />
       )}
-      <Stack spacing={1} sx={{ p: 3, alignItems: 'flex-start' }}>
+      <Stack spacing={1} sx={{ p: 3, flexGrow: 1, alignItems: 'flex-start' }}>
         {!live && (
           <Chip
             size="small"
@@ -160,6 +166,8 @@ function JourneyCardEdit({
           variant="body2"
           sx={{ color: 'var(--campaign-band-muted)' }}
         />
+        <Box sx={{ flexGrow: 1 }} />
+        <CampaignJourneyOpenButton label={openLabel} />
       </Stack>
     </Stack>
   )
@@ -181,12 +189,23 @@ export function JourneyListEdit({
   onSelectCard
 }: JourneyListEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { campaign, selection } = useCampaignEditor()
+  const {
+    campaign,
+    selection,
+    state: { previewLanguageId }
+  } = useCampaignEditor()
   const [journeyCreate] = useCampaignJourneyBlockCreateMutation(campaign.id)
   const { addBlock } = useCampaignBlockCreateCommand()
   const [adding, setAdding] = useState(false)
   const cards = journeyCards(block.children)
   const selectedId = selection.block?.id
+  const display = block.display ?? CampaignJourneyListDisplay.grid
+  const openLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.openTemplate,
+    previewLanguageId,
+    t('Open journey')
+  )
 
   async function handleAdd(
     url: string,
@@ -241,24 +260,19 @@ export function JourneyListEdit({
       sx={{ width: '100%', alignItems: 'stretch' }}
     >
       {cards.length > 0 && (
-        <Box
-          data-testid="JourneyListCards"
-          sx={{
-            display: 'grid',
-            gap: 2,
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))'
-          }}
-        >
+        <CampaignJourneyCards display={display}>
           {cards.map((card) => (
             <JourneyCardEdit
               key={card.id}
               card={card}
+              display={display}
+              openLabel={openLabel}
               selected={selectedId === card.id}
               focusField={focusField}
               onSelect={(field) => onSelectCard(card.id, field)}
             />
           ))}
-        </Box>
+        </CampaignJourneyCards>
       )}
       {active || adding ? (
         <Stack spacing={1.5} sx={{ maxWidth: 720 }}>

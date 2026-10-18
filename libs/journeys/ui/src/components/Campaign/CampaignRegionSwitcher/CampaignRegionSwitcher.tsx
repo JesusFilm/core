@@ -3,8 +3,9 @@ import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
+import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { Children, ReactElement, ReactNode } from 'react'
 
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
 import { campaignPageHref, useCampaign } from '../CampaignProvider'
@@ -12,6 +13,12 @@ import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { CampaignTypography } from '../CampaignTypography'
 import type { CampaignRegion, CampaignTreeOf } from '../types'
+
+/** A plain style object: it spreads into another `sx`, unlike the array and function forms of `SxProps`. */
+type StyleObject = Exclude<
+  SxProps<Theme>,
+  ReadonlyArray<unknown> | ((theme: Theme) => unknown)
+>
 
 interface CampaignRegionSwitcherProps {
   block: CampaignTreeOf<'CampaignRegionSwitcherBlock'>
@@ -43,7 +50,7 @@ export function countryLabel(
   return country.country.name.at(-1)?.value ?? country.countryId
 }
 
-const LAYOUT: Record<CampaignSwitcherVariant, Record<string, unknown>> = {
+const LAYOUT: Record<CampaignSwitcherVariant, SxProps<Theme>> = {
   // Cards auto-fill at 230 px minimum from `md` up, one column below it.
   [CampaignSwitcherVariant.cards]: {
     display: 'grid',
@@ -65,6 +72,78 @@ const LAYOUT: Record<CampaignSwitcherVariant, Record<string, unknown>> = {
     flexWrap: 'wrap',
     gap: 1.5
   }
+}
+
+/** The container a switcher's regions sit in, for its variant. */
+export function switcherLayoutSx(
+  variant: CampaignSwitcherVariant
+): SxProps<Theme> {
+  return LAYOUT[variant]
+}
+
+/** One region's frame, for its variant: a card, a full-width row or a pill. */
+export function regionFrameSx(variant: CampaignSwitcherVariant): StyleObject {
+  const pill = variant === CampaignSwitcherVariant.pills
+  const list = variant === CampaignSwitcherVariant.list
+  return {
+    display: 'flex',
+    flexDirection: list ? { xs: 'column', md: 'row' } : 'column',
+    alignItems: list ? { xs: 'flex-start', md: 'center' } : 'flex-start',
+    gap: pill ? 1 : list ? 2 : 0.5,
+    px: pill ? 2 : 3,
+    py: pill ? 1 : 3,
+    borderRadius: pill ? 999 : 1,
+    textAlign: 'left',
+    backgroundColor: 'var(--campaign-band-card)',
+    border: '1px solid var(--campaign-band-border)'
+  }
+}
+
+/** The typography variant of a region's name: a subtitle in a pill, a heading otherwise. */
+export function regionNameVariant(
+  variant: CampaignSwitcherVariant
+): 'subtitle1' | 'h5' {
+  return variant === CampaignSwitcherVariant.pills ? 'subtitle1' : 'h5'
+}
+
+interface CampaignRegionLinesProps {
+  variant: CampaignSwitcherVariant
+  /** Show the lines in a pill too: the editor needs them there to edit. */
+  showInPill?: boolean
+  children: ReactNode
+}
+
+/**
+ * A region's Region Lines beneath its name (a pill has none on the public
+ * page). In a row they keep their width up to half of it, so a short code
+ * never wraps while a long sentence wraps within its half and leaves the
+ * name and the chips their room.
+ */
+export function CampaignRegionLines({
+  variant,
+  showInPill = false,
+  children
+}: CampaignRegionLinesProps): ReactElement | null {
+  if (variant === CampaignSwitcherVariant.pills && !showInPill) return null
+  if (Children.toArray(children).length === 0) return null
+  return (
+    <Stack
+      component="span"
+      spacing={0.5}
+      data-testid="CampaignRegionLines"
+      sx={{
+        flexGrow: variant === CampaignSwitcherVariant.list ? 1 : 0,
+        flexShrink: 0,
+        maxWidth:
+          variant === CampaignSwitcherVariant.list
+            ? { xs: '100%', md: '50%' }
+            : '100%',
+        alignItems: 'flex-start'
+      }}
+    >
+      {children}
+    </Stack>
+  )
 }
 
 interface CampaignRegionCountriesProps {
@@ -121,46 +200,27 @@ function CampaignRegionCard({
   variant,
   href
 }: CampaignRegionCardProps): ReactElement {
-  const pill = variant === CampaignSwitcherVariant.pills
-  const list = variant === CampaignSwitcherVariant.list
   return (
     <ButtonBase
       href={href}
       data-testid={`CampaignRegionCard-${region.id}`}
-      sx={{
-        display: 'flex',
-        flexDirection: list ? { xs: 'column', md: 'row' } : 'column',
-        alignItems: list ? { xs: 'flex-start', md: 'center' } : 'flex-start',
-        gap: pill ? 1 : list ? 2 : 0.5,
-        px: pill ? 2 : 3,
-        py: pill ? 1 : 3,
-        borderRadius: pill ? 999 : 1,
-        textAlign: 'left',
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
-      }}
+      sx={regionFrameSx(variant)}
     >
       <Typography
-        variant={pill ? 'subtitle1' : 'h5'}
+        variant={regionNameVariant(variant)}
         component="span"
         data-testid="CampaignRegionCardName"
         sx={{ color: 'var(--campaign-band-heading)' }}
       >
         {region.name}
       </Typography>
-      {!pill && (
-        <Stack
-          component="span"
-          spacing={0.5}
-          sx={{ flexGrow: list ? 1 : 0, alignItems: 'flex-start' }}
-        >
-          {region.lines.map((line) =>
-            line.__typename === 'CampaignTypographyBlock' ? (
-              <CampaignTypography key={line.id} block={line} />
-            ) : null
-          )}
-        </Stack>
-      )}
+      <CampaignRegionLines variant={variant}>
+        {region.lines.map((line) =>
+          line.__typename === 'CampaignTypographyBlock' ? (
+            <CampaignTypography key={line.id} block={line} />
+          ) : null
+        )}
+      </CampaignRegionLines>
       <CampaignRegionCountries region={region} />
     </ButtonBase>
   )
@@ -185,7 +245,7 @@ export function CampaignRegionSwitcher({
       <Box
         data-testid="CampaignRegionSwitcherGrid"
         data-variant={variant}
-        sx={LAYOUT[variant]}
+        sx={switcherLayoutSx(variant)}
       >
         {regions.map((region) => (
           <CampaignRegionCard

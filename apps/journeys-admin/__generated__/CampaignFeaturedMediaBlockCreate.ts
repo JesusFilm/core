@@ -3,11 +3,51 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignFeaturedMediaBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignFeaturedMediaBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignFeaturedMediaBlockCreate
 // ====================================================
+
+export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_ledeTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_bulletsTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate {
   __typename: "CampaignFeaturedMediaBlock";
@@ -63,6 +103,10 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
+  eyebrowTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_eyebrowTranslations[];
+  titleTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_titleTranslations[];
+  ledeTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_ledeTranslations[];
+  bulletsTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_bulletsTranslations[];
 }
 
 export interface CampaignFeaturedMediaBlockCreate {

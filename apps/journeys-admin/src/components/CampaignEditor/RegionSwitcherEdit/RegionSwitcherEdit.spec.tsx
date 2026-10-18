@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import {
   CampaignPageKind,
+  CampaignSwitcherVariant,
   CampaignTextSource
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_CREATE } from '../../../libs/useCampaignRegionCreateMutation'
@@ -71,7 +72,8 @@ const refusal = { errors: [{ message: 'The request was refused' }] }
 function renderSwitcher(
   campaignProp = campaign,
   initialState?: Partial<CampaignEditorState>,
-  mocks: Array<Record<string, unknown>> = [createMock, unlistMock, deleteMock]
+  mocks: Array<Record<string, unknown>> = [createMock, unlistMock, deleteMock],
+  switcherVariant?: CampaignSwitcherVariant
 ): ReturnType<typeof render> {
   return render(
     <QueriedEditor
@@ -83,7 +85,9 @@ function renderSwitcher(
       <SelectionProbe />
       <CommandProbe />
       <RegionsProbe />
-      <RegionSwitcherEdit block={{ id: 'landingSwitcherId' }} />
+      <RegionSwitcherEdit
+        block={{ id: 'landingSwitcherId', switcherVariant }}
+      />
     </QueriedEditor>
   )
 }
@@ -126,6 +130,55 @@ describe('RegionSwitcherEdit', () => {
     expect(
       screen.queryByTestId('RegionCardEdit-afrRegionId')
     ).not.toBeInTheDocument()
+  })
+
+  it.each([
+    [CampaignSwitcherVariant.cards],
+    [CampaignSwitcherVariant.list],
+    [CampaignSwitcherVariant.pills]
+  ])(
+    'lays the regions out as %s, as the public switcher does',
+    async (variant) => {
+      renderSwitcher(
+        campaignWithRegions,
+        { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+        [],
+        variant
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('RegionCardEdit-eurRegionId')
+        ).toBeInTheDocument()
+      )
+      expect(screen.getByTestId('RegionSwitcherEditGrid')).toHaveAttribute(
+        'data-variant',
+        variant
+      )
+      const card = screen.getByTestId('RegionCardEdit-eurRegionId')
+      const rounded = parseFloat(getComputedStyle(card).borderRadius) > 100
+      expect(rounded).toBe(variant === CampaignSwitcherVariant.pills)
+      // Every variant keeps its Region Lines on the canvas so they stay editable.
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
+    }
+  )
+
+  it('keeps a Region Line selectable and editable in the pills variant', async () => {
+    renderSwitcher(
+      campaignWithRegions,
+      { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+      [],
+      CampaignSwitcherVariant.pills
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
+    )
+    fireEvent.click(screen.getByTestId('RegionLineEdit-eurLineId'))
+
+    await waitFor(() =>
+      expect(screen.getByRole('textbox', { name: 'Your text' })).toBeVisible()
+    )
   })
 
   it('shows each region’s name in the previewed language, falling back to the default name', async () => {

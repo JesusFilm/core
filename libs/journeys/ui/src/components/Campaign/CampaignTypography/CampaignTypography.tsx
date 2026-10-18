@@ -22,12 +22,17 @@ const HEADING_VARIANTS = new Set<TypographyVariant>([
   TypographyVariant.h6
 ])
 
+/** Whether a text variant takes the band's heading colour rather than its text colour. */
+export function isHeadingVariant(variant: TypographyVariant): boolean {
+  return HEADING_VARIANTS.has(variant)
+}
+
 function sectionColorFor(
   section: NonNullable<ReturnType<typeof useCampaignSection>> | null,
   variant: TypographyVariant
 ): string | undefined {
   if (section == null) return undefined
-  if (HEADING_VARIANTS.has(variant)) return section.band.heading
+  if (isHeadingVariant(variant)) return section.band.heading
   return section.band.text
 }
 

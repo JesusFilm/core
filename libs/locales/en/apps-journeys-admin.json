@@ -1610,8 +1610,8 @@
   "Showing the videos of {{title}} from Watch": "Showing the videos of {{title}} from Watch",
   "Showing the videos of a Watch video": "Showing the videos of a Watch video",
   "Use my own videos": "Use my own videos",
-  "{{count}} videos. Select a card on the canvas to move or remove it._one": "{{count}} videos. Select a card on the canvas to move or remove it._one",
-  "{{count}} videos. Select a card on the canvas to move or remove it._other": "{{count}} videos. Select a card on the canvas to move or remove it._other",
+  "{{count}} videos. Select a card on the canvas to move or remove it._one": "{{count}} video. Select a card on the canvas to move or remove it.",
+  "{{count}} videos. Select a card on the canvas to move or remove it._other": "{{count}} videos. Select a card on the canvas to move or remove it.",
   "Paste a Watch link to show its videos, or add YouTube videos, a playlist or uploads.": "Paste a Watch link to show its videos, or add YouTube videos, a playlist or uploads.",
   "That YouTube playlist could not be found": "That YouTube playlist could not be found",
   "YouTube playlist": "YouTube playlist",
@@ -1704,5 +1704,6 @@
   "No journeys found": "No journeys found",
   "Preview {{language}}": "Preview {{language}}",
   "Previewing": "Previewing",
-  "Preview language: {{language}}": "Preview language: {{language}}"
+  "Preview language: {{language}}": "Preview language: {{language}}",
+  "Open journey": "Open journey"
 }

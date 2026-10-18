@@ -147,12 +147,14 @@ export const CAMPAIGN_REGION_SHARE_BLOCK_CREATE = gql`
 
 export const CAMPAIGN_RICH_TEXT_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignRichTextBlockCreate(
     $input: CampaignRichTextBlockCreateInput!
     $languageId: ID
   ) {
     campaignRichTextBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `
@@ -171,12 +173,14 @@ export const CAMPAIGN_COLUMNS_BLOCK_CREATE = gql`
 
 export const CAMPAIGN_FEATURED_MEDIA_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
+  ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignFeaturedMediaBlockCreate(
     $input: CampaignFeaturedMediaBlockCreateInput!
     $languageId: ID
   ) {
     campaignFeaturedMediaBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
+      ...CampaignBlockTranslationFields
     }
   }
 `

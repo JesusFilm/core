@@ -24,7 +24,8 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 /**
  * One Column Slot on the canvas: the section it holds, or a placeholder when
  * empty (clicking it opens the Add Panel, preset to the slot, offering the
- * types that fit). The slot is its own
+ * types that fit). Clicking the slot around a section selects that section.
+ * The slot is its own
  * drop target and, by its handle, a drag source: dropping it on the other
  * slot of the same Columns section swaps the two. Only slots of one Columns
  * section ever collide with each other.
@@ -64,7 +65,7 @@ export function CanvasColumnSlot({
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
-    selectBlock(slot.id)
+    selectBlock(section?.id ?? slot.id)
   }
 
   function handlePlaceholderClick(event: MouseEvent<HTMLElement>): void {

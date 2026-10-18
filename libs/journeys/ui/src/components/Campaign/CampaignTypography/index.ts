@@ -1,1 +1,1 @@
-export { CampaignTypography } from './CampaignTypography'
+export { CampaignTypography, isHeadingVariant } from './CampaignTypography'

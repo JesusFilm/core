@@ -101,4 +101,16 @@ describe('AnalyticsEdit', () => {
     expect(screen.queryByTestId('WorldMap')).not.toBeInTheDocument()
     expect(fetchMock).not.toHaveBeenCalled()
   })
+
+  it.each([[true], [false]])(
+    'fills the section width with the map %s, as the public page does',
+    async (showMap) => {
+      renderEdit(showMap)
+      await screen.findByTestId('CampaignAnalyticsStats')
+
+      expect(getComputedStyle(screen.getByTestId('AnalyticsEdit')).width).toBe(
+        '100%'
+      )
+    }
+  )
 })

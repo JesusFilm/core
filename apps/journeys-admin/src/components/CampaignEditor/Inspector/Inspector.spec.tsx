@@ -31,7 +31,13 @@ import {
 } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
-import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
+import {
+  BlocksProbe,
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  StaticEditor
+} from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
 import { textStyleRow } from '../utils/useCampaignExtraStyleCommand'
 
@@ -1261,6 +1267,39 @@ describe('Inspector', () => {
       expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
         'carouselId'
       )
+    })
+  })
+
+  describe('choosing a type for an empty column slot', () => {
+    it('trees the new child under the slot from the cache, and selects it', async () => {
+      render(
+        <QueriedEditor
+          initialState={{
+            selectedBlockId: 'slotRightId',
+            inspectorTab: 'settings'
+          }}
+          campaignProp={campaignWithColumns}
+          mocks={[richTextInSlotMock]}
+        >
+          <SelectionProbe />
+          <BlocksProbe />
+          <Inspector isManager={false} />
+        </QueriedEditor>
+      )
+
+      await waitFor(() =>
+        expect(screen.getByTestId('SelectionKind')).toHaveTextContent('slot')
+      )
+      fireEvent.click(screen.getByRole('button', { name: 'Choose type' }))
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Rich text' }))
+
+      await waitFor(() =>
+        expect(screen.getByTestId('Block-newId')).toHaveTextContent(
+          'CampaignRichTextBlock|slotRightId|0'
+        )
+      )
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
+      expect(screen.getByTestId('SelectionKind')).toHaveTextContent('column')
     })
   })
 })

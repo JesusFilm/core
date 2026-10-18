@@ -3,11 +3,31 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRichTextBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignRichTextBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignRichTextBlockCreate
 // ====================================================
+
+export interface CampaignRichTextBlockCreate_campaignRichTextBlockCreate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRichTextBlockCreate_campaignRichTextBlockCreate_richTextContentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
 
 export interface CampaignRichTextBlockCreate_campaignRichTextBlockCreate {
   __typename: "CampaignRichTextBlock";
@@ -49,6 +69,8 @@ export interface CampaignRichTextBlockCreate_campaignRichTextBlockCreate {
    * Paragraphs separated by blank lines.
    */
   richTextContent: string | null;
+  titleTranslations: CampaignRichTextBlockCreate_campaignRichTextBlockCreate_titleTranslations[];
+  richTextContentTranslations: CampaignRichTextBlockCreate_campaignRichTextBlockCreate_richTextContentTranslations[];
 }
 
 export interface CampaignRichTextBlockCreate {
