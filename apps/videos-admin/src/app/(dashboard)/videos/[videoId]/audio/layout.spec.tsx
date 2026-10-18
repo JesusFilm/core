@@ -401,6 +401,85 @@ describe('ClientLayout', () => {
     await waitFor(() => expect(mockRefetch).toHaveBeenCalled())
   })
 
+  it('refetches variants when an upload finishes in the same tick a new one starts', async () => {
+    let uploads: unknown[] = [
+      {
+        id: 'upload1',
+        source: 'videos-admin',
+        sourceKey: 'source-key-1',
+        status: 'muxCreated',
+        videoId: 'video123',
+        languageId: '184631',
+        language: { id: '184631', name: [{ value: 'Upload English' }] },
+        edition: 'base',
+        originalFilename: 'test-video.mp4',
+        contentType: 'video/mp4',
+        contentLength: '12345',
+        errorMessage: null,
+        r2AssetId: 'r2-id',
+        muxVideoId: 'mux-id',
+        videoVariantId: null,
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      }
+    ]
+    mockQueriesInOrder(
+      () =>
+        queryResult({
+          adminVideo: {
+            id: 'video123',
+            slug: 'test-video',
+            published: true,
+            variants: mockVideoVariants
+          }
+        }),
+      () => queryResult({ videoVariantUploads: uploads })
+    )
+
+    const { rerender } = render(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    expect(mockRefetch).not.toHaveBeenCalled()
+
+    // upload1 finished and a brand new upload2 started in the same poll
+    // tick, so the list length stays at 1
+    uploads = [
+      {
+        id: 'upload2',
+        source: 'videos-admin',
+        sourceKey: 'source-key-2',
+        status: 'muxCreated',
+        videoId: 'video123',
+        languageId: '184632',
+        language: { id: '184632', name: [{ value: 'Upload Spanish' }] },
+        edition: 'base',
+        originalFilename: 'test-video-2.mp4',
+        contentType: 'video/mp4',
+        contentLength: '12345',
+        errorMessage: null,
+        r2AssetId: 'r2-id-2',
+        muxVideoId: 'mux-id-2',
+        videoVariantId: null,
+        updatedAt: new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      }
+    ]
+    rerender(
+      <MockedProvider>
+        <ClientLayout>
+          <div>Child content</div>
+        </ClientLayout>
+      </MockedProvider>
+    )
+
+    await waitFor(() => expect(mockRefetch).toHaveBeenCalled())
+  })
+
   it('should render variants', () => {
     render(
       <MockedProvider>

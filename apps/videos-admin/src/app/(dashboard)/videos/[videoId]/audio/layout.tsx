@@ -206,14 +206,20 @@ export default function ClientLayout({
 
   // An upload leaves the in-progress list once the worker has created its
   // Variant. Nothing else refetches the Variants, so without this the new
-  // audio language only appears after a full page reload.
-  const previousIncompleteUploadCount = useRef(0)
+  // audio language only appears after a full page reload. Tracking ids
+  // rather than just the count catches a finish and a new upload starting
+  // in the same poll tick, where the count alone wouldn't change.
+  const previousIncompleteUploadIds = useRef<Set<string>>(new Set())
   useEffect(() => {
-    if (incompleteUploads.length < previousIncompleteUploadCount.current) {
+    const currentIds = new Set(incompleteUploads.map((upload) => upload.id))
+    const hasFinishedUpload = Array.from(
+      previousIncompleteUploadIds.current
+    ).some((id) => !currentIds.has(id))
+    if (hasFinishedUpload) {
       void refetch()
     }
-    previousIncompleteUploadCount.current = incompleteUploads.length
-  }, [incompleteUploads.length, refetch])
+    previousIncompleteUploadIds.current = currentIds
+  }, [incompleteUploads, refetch])
 
   useEffect(() => {
     if (incompleteUploads.length > 0 || resumingUploadId != null) {
