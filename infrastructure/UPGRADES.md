@@ -3,10 +3,13 @@
 The rollout targets EKS **1.36** and Aurora PostgreSQL **17.11** in staging and
 production.
 
-**Current state (2026-10-17): the committed default is `stage-1.36`.** Staging
+**Current state (2026-10-18): the committed default is `prod-prepare`.** Staging
 has completed `prepare`, `stage-addons` and every minor through 1.36: control
 plane, workers and add-ons are on 1.36, with Aurora still 13.23 on I/O-Optimized
-storage. Production is unchanged (control plane 1.32, workers 1.31, Aurora 13.23).
+storage. Production completed `prod-prepare` on 2026-10-18: control plane and workers
+are on 1.32, kube-proxy, VPC CNI and CoreDNS are EKS add-ons at their prior
+versions, and its EBS CSI driver is the Argo-managed 1.53.0. Aurora is still
+13.23. `prod-addons` is the next phase.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
@@ -124,18 +127,21 @@ phase advances it to production's existing 1.4.0 pin. The observed Pod Identity
 association lists were empty; stop and review if that changes before import.
 
 **EBS CSI is excluded from this Terraform module and its imports.** Both
-repository ArgoCD applications point to the existing wrapper Helm chart in
-`infrastructure/kube/aws-ebs-csi-driver`, pinned to driver 1.53.0. Live staging
-was Synced/Healthy on that driver. Live production was OutOfSync/Healthy while
-the native EKS add-on and its workload images remained on 1.31.0. This existing
-ownership discrepancy must be resolved through a separately reviewed controller
-handoff before production rollout. Confirm the live owner, service-account IRSA,
-volume attachments and ClickHouse/Plausible persistent-volume health. Do not run
-`deploy-prod.sh` as a preflight: it deletes the EKS add-on and changes IAM trust.
-Do not delete the native add-on, Argo application or driver objects automatically.
-Any driver version update belongs to the confirmed owner, with its compatibility
-and storage checks reviewed before advancing EKS. This PR introduces no second
-Terraform driver owner and makes no CSI compatibility/readiness claim for 1.36.
+environments run the driver from the ArgoCD wrapper Helm chart in
+`infrastructure/kube/aws-ebs-csi-driver`, pinned to driver 1.53.0, with no
+native EKS add-on. Production was handed over on 2026-10-18: its native add-on
+(1.31.0, supported only through Kubernetes 1.34) was deleted and the manual
+production Argo application synced from `main`. The Helm chart adds a selector
+label that existing objects cannot take, so the handoff deleted the add-on
+without `--preserve` and let Argo create fresh objects. Mounted volumes stayed
+attached throughout, IRSA kept the existing role and service account, and every
+node re-registered the driver. DescribeAddonVersions lists driver 1.53.0 as
+compatible with Kubernetes 1.32 through 1.36, and staging has run it at 1.36,
+including a ClickHouse volume reattachment. Do not run `deploy-prod.sh` or
+`deploy-stage.sh`: they delete the EKS add-on and rewrite IAM trust, and neither
+is needed now. Any driver version update goes through the wrapper chart and the
+Argo applications. Production's Argo application does not sync automatically,
+so sync it by hand after the change merges to `main`.
 
 After staging workload verification, target `module.prod.module.eks`:
 
@@ -148,7 +154,8 @@ After staging workload verification, target `module.prod.module.eks`:
 | `prod-1.35`    | 1.35                     | 1.35                            |
 | `prod-1.36`    | 1.36                     | 1.36                            |
 
-The CSI ownership and compatibility checks above are a production rollout gate.
+Before each production phase, confirm the production `aws-ebs-csi-driver` Argo
+application is Synced/Healthy and its volume attachments are healthy.
 Production worker alignment is required before advancing its control plane.
 Use the same health checks and saved-plan review at each minor. Do not lower the
 phase for a live cluster that has already advanced; the precondition rejects it.
