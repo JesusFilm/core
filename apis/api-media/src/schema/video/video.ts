@@ -920,7 +920,10 @@ builder.mutationFields((t) => ({
             await updateParentCollectionLanguages(video.id)
           }
         } catch (error) {
-          console.error('availableLanguages recompute error:', error)
+          logger.error(
+            { error, videoId: video.id },
+            'availableLanguages recompute error'
+          )
         }
       }
 
