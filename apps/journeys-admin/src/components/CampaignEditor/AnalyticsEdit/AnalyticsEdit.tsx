@@ -30,6 +30,7 @@ export function AnalyticsEdit({ block }: AnalyticsEditProps): ReactElement {
   return (
     <Box
       data-testid="AnalyticsEdit"
+      sx={{ width: '100%' }}
       onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
     >
       <CampaignAnalyticsPanel

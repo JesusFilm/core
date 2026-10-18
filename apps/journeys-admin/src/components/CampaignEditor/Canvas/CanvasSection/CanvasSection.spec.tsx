@@ -13,8 +13,11 @@ import { headerLogoBlock } from '@core/journeys/ui/Campaign/testData'
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
 import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaign } from '../../data'
-import { SelectionProbe, StaticEditor } from '../../testing'
+import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
+import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
+import { newSectionBlock } from '../../sectionTypes'
+import { SelectionProbe, StaticEditor, frameBody } from '../../testing'
+import { Canvas } from '../Canvas'
 
 import { CanvasBlock, CanvasSection } from './CanvasSection'
 
@@ -394,5 +397,116 @@ describe('CanvasSection journey list strings', () => {
     fireEvent.change(input, { target: { value: 'Coming soon' } })
 
     await waitFor(() => expect(mock.result).toHaveBeenCalled())
+  })
+})
+
+describe('CanvasSection campaign strings', () => {
+  const journeyList = transformCampaignBlocks(campaign.blocks).find(
+    (block) => block.id === 'landingJourneyListId'
+  ) as CanvasBlock
+
+  it('keeps the Campaign strings label on a section that is not selected', () => {
+    render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <CanvasSection block={journeyList} />
+      </StaticEditor>
+    )
+
+    expect(screen.getByText('Campaign strings')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('InlineText-string-noJourneys')
+    ).toBeInTheDocument()
+  })
+})
+
+describe('CanvasSection region header', () => {
+  const regionHeader = {
+    ...newSectionBlock('CampaignRegionHeaderBlock', {
+      id: 'regionHeaderId',
+      campaignId: campaign.id,
+      pageId: 'regionPageId',
+      parentOrder: 0
+    }),
+    children: [],
+    cover: null,
+    media: null,
+    logo: null
+  } as unknown as CanvasBlock
+
+  it('shows the previewed region’s name and its lines, read-only', () => {
+    render(
+      <StaticEditor
+        campaignProp={campaignWithRegions}
+        initialState={{
+          pageKind: CampaignPageKind.regionTemplate,
+          regionId: 'eurRegionId',
+          previewLanguageId: '529'
+        }}
+      >
+        <CanvasSection block={regionHeader} />
+      </StaticEditor>
+    )
+
+    expect(screen.getByTestId('CampaignRegionName')).toHaveTextContent('Europe')
+    expect(screen.getByTestId('CanvasRegionLine')).toHaveTextContent('EUR')
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+  })
+})
+
+describe('CanvasSection rich text in a column slot', () => {
+  const emptyRichText: Campaign = {
+    ...campaignWithColumns,
+    blocks: campaignWithColumns.blocks.map((block) =>
+      block.id === 'slotRichTextId'
+        ? ({ ...block, title: null, richTextContent: null } as typeof block)
+        : block
+    )
+  }
+
+  function renderColumns(selectedBlockId?: string): RenderResult {
+    return render(
+      <StaticEditor
+        campaignProp={emptyRichText}
+        initialState={{ selectedBlockId, previewLanguageId: '529' }}
+      >
+        <SelectionProbe />
+        <Canvas
+          campaign={emptyRichText}
+          pageKind={CampaignPageKind.landing}
+          view="desktop"
+        />
+      </StaticEditor>
+    )
+  }
+
+  it('shows the Title and Your text placeholders while empty and not selected', async () => {
+    const { baseElement } = renderColumns()
+    const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+
+    expect(
+      body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotLeftId"] [data-testid="InlineText-title"]'
+      )
+    ).toHaveTextContent('Title')
+    expect(
+      body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotLeftId"] [data-testid="InlineText-richTextContent"]'
+      )
+    ).toHaveTextContent('Your text')
+  })
+
+  it('selects the Rich text, not the Column, when the slot is clicked', async () => {
+    const { baseElement } = renderColumns()
+    const body = await frameBody(baseElement, 'CanvasColumns-columnsId')
+
+    fireEvent.click(
+      body.querySelector(
+        '[data-testid="CanvasColumnSlot-slotLeftId"]'
+      ) as Element
+    )
+
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'slotRichTextId'
+    )
   })
 })

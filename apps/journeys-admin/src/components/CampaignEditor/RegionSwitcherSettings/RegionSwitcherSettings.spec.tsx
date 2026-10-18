@@ -1,12 +1,19 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ReactElement } from 'react'
 import { GraphQLError } from 'graphql'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_REGION_SWITCHER_BLOCK_UPDATE_VARIANT } from '../../../libs/useCampaignRegionSwitcherBlockVariantMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  StaticEditor
+} from '../testing'
 
 import { RegionSwitcherSettings } from './RegionSwitcherSettings'
 
@@ -37,6 +44,16 @@ function variantMock(
           }
     )
   }
+}
+
+/** The settings over the block as the cache holds it, so a saved value flows back in. */
+function CachedSettings(): ReactElement | null {
+  const { campaign: current } = useCampaignEditor()
+  const block = current.blocks.find(
+    (candidate) => candidate.id === 'landingSwitcherId'
+  )
+  if (block?.__typename !== 'CampaignRegionSwitcherBlock') return null
+  return <RegionSwitcherSettings block={block} />
 }
 
 function renderSettings(mocks: Array<Record<string, unknown>> = []): void {
@@ -111,4 +128,32 @@ describe('RegionSwitcherSettings', () => {
       'variant is not allowed'
     )
   })
+
+  it.each([[CampaignSwitcherVariant.list], [CampaignSwitcherVariant.pills]])(
+    'round-trips %s through the cache',
+    async (value) => {
+      const mock = variantMock(value)
+      render(
+        <QueriedEditor mocks={[mock]}>
+          <CachedSettings />
+        </QueriedEditor>
+      )
+      await screen.findByRole('button', { name: 'Cards' })
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: value === CampaignSwitcherVariant.list ? 'List' : 'Pills'
+        })
+      )
+
+      await waitFor(() => expect(mock.result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(
+          screen.getByRole('button', {
+            name: value === CampaignSwitcherVariant.list ? 'List' : 'Pills'
+          })
+        ).toHaveAttribute('aria-pressed', 'true')
+      )
+    }
+  )
 })

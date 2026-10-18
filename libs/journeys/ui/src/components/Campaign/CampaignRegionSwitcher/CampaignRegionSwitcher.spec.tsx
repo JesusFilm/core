@@ -153,6 +153,17 @@ describe('CampaignRegionSwitcher', () => {
     expect(screen.getAllByRole('link')).toHaveLength(2)
   })
 
+  it('keeps the region lines at their width in the list variant, so a code never wraps', () => {
+    renderSwitcher(
+      switcherTree({ switcherVariant: CampaignSwitcherVariant.list })
+    )
+
+    const lines = within(
+      screen.getByTestId('CampaignRegionCard-eurRegionId')
+    ).getByTestId('CampaignRegionLines')
+    expect(getComputedStyle(lines).flexShrink).toBe('0')
+  })
+
   it('keeps pills to the name and flags, without lines', () => {
     renderSwitcher(
       switcherTree({ switcherVariant: CampaignSwitcherVariant.pills })

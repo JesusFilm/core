@@ -18,6 +18,7 @@ import {
 
 import {
   CAMPAIGN_HEADER_HEIGHT,
+  CampaignRegionName,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
@@ -51,10 +52,11 @@ import {
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { blockLabel } from '../../blockLabel'
-import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
+import { regionDisplayName } from '../../utils/regionDisplayName'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
@@ -227,6 +229,8 @@ interface SectionTextProps {
   focusField?: CampaignTextField
   onSelect: (field: CampaignTextField) => void
   titleVariant: 'h1' | 'h2'
+  /** Show the field's placeholder while it is empty, selected or not. */
+  showEmpty?: boolean
 }
 
 function sectionFieldPlaceholder(
@@ -258,11 +262,13 @@ function SectionText({
   editing,
   focusField,
   onSelect,
-  titleVariant
+  titleVariant,
+  showEmpty = false
 }: SectionTextProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const value = (block as unknown as Record<string, string | null>)[field]
-  if (!editing && (value == null || value.trim() === '')) return null
+  if (!editing && !showEmpty && (value == null || value.trim() === ''))
+    return null
   const styles = {
     eyebrow: {
       variant: 'overline' as const,
@@ -349,6 +355,43 @@ export const CAMPAIGN_SECTION_STRING_KEYS: Partial<
   ]
 }
 
+interface CanvasRegionHeadingProps {
+  name: string
+  lines: CampaignBlock[]
+}
+
+/** The previewed region's name and Region Lines as the public Region Header sets them; read-only, the lines edit on the Region Switcher. */
+function CanvasRegionHeading({
+  name,
+  lines
+}: CanvasRegionHeadingProps): ReactElement {
+  return (
+    <>
+      <CampaignRegionName>{name}</CampaignRegionName>
+      {lines.map((line) =>
+        line.__typename === 'CampaignTypographyBlock' &&
+        line.content != null &&
+        line.content.trim() !== '' ? (
+          <Typography
+            key={line.id}
+            variant={line.typographyVariant ?? TypographyVariant.body1}
+            variantMapping={{ overline: 'p', caption: 'p' }}
+            align={line.align ?? undefined}
+            data-testid="CanvasRegionLine"
+            sx={{
+              color: line.color ?? 'var(--campaign-band-text)',
+              whiteSpace: 'pre-line',
+              wordBreak: 'break-word'
+            }}
+          >
+            {line.content}
+          </Typography>
+        ) : null
+      )}
+    </>
+  )
+}
+
 interface CanvasStringsProps {
   strings: CampaignString[]
   editing: boolean
@@ -369,15 +412,13 @@ function CanvasStrings({
       data-testid="CanvasStrings"
       sx={{ width: '100%', maxWidth: 720, alignItems: 'inherit' }}
     >
-      {editing && (
-        <Typography
-          variant="overline"
-          component="p"
-          sx={{ color: 'var(--campaign-band-muted)' }}
-        >
-          {t('Campaign strings')}
-        </Typography>
-      )}
+      <Typography
+        variant="overline"
+        component="p"
+        sx={{ color: 'var(--campaign-band-muted)' }}
+      >
+        {t('Campaign strings')}
+      </Typography>
       {strings.map((string) => (
         <InlineText
           key={string.id}
@@ -416,6 +457,7 @@ export function CanvasSection({
   const { t } = useTranslation('apps-journeys-admin')
   const {
     campaign,
+    currentRegion,
     selection,
     selectBlock,
     state: { previewLanguageId }
@@ -575,6 +617,17 @@ export function CanvasSection({
               </Typography>
             </Box>
           ))}
+        {block.__typename === 'CampaignRegionHeaderBlock' &&
+          currentRegion != null && (
+            <CanvasRegionHeading
+              name={regionDisplayName(
+                currentRegion,
+                previewLanguageId,
+                campaign.defaultLanguageId
+              )}
+              lines={regionLines(campaign.blocks, currentRegion.id)}
+            />
+          )}
         {isCampaignTextBlock(block) &&
           textFields.map((field) => (
             <SectionText
@@ -585,6 +638,7 @@ export function CanvasSection({
               focusField={focusField}
               onSelect={handleSelectField}
               titleVariant={titleVariant}
+              showEmpty={inSlot && block.__typename === 'CampaignRichTextBlock'}
             />
           ))}
         {block.__typename === 'CampaignVideoCarouselBlock' && (

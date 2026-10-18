@@ -1,1 +1,4 @@
-export { CampaignRegionHeader } from './CampaignRegionHeader'
+export {
+  CampaignRegionHeader,
+  CampaignRegionName
+} from './CampaignRegionHeader'

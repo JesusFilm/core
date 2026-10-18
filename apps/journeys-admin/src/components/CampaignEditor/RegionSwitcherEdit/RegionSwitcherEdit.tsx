@@ -7,7 +7,13 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
-import { CampaignRegionCountries } from '@core/journeys/ui/Campaign'
+import {
+  CampaignRegionCountries,
+  CampaignRegionLines,
+  regionFrameSx,
+  regionNameVariant,
+  switcherLayoutSx
+} from '@core/journeys/ui/Campaign'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -16,7 +22,10 @@ import {
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_regions as CampaignRegion
 } from '../../../../__generated__/GetCampaign'
-import { TypographyVariant } from '../../../../__generated__/globalTypes'
+import {
+  CampaignSwitcherVariant,
+  TypographyVariant
+} from '../../../../__generated__/globalTypes'
 import { regionCardLabel, regionLineLabel } from '../blockLabel'
 import {
   regionLines,
@@ -39,12 +48,15 @@ const SELECTED_OUTLINE = {
 
 interface RegionSwitcherEditProps {
   /** The switcher section this editor sits in. */
-  block: Pick<CampaignBlock, 'id'>
+  block: Pick<CampaignBlock, 'id'> & {
+    switcherVariant?: CampaignSwitcherVariant | null
+  }
 }
 
 interface RegionCardEditProps {
   region: CampaignRegion
   hostBlockId: string
+  variant: CampaignSwitcherVariant
 }
 
 /**
@@ -55,7 +67,8 @@ interface RegionCardEditProps {
  */
 function RegionCardEdit({
   region,
-  hostBlockId
+  hostBlockId,
+  variant
 }: RegionCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -84,21 +97,16 @@ function RegionCardEdit({
       data-unlisted={!region.listed}
       data-hoverable
       onClick={handleClick}
-      sx={{
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        gap: 0.5,
-        p: 3,
-        borderRadius: 1,
-        cursor: 'pointer',
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)',
-        ...HOVER_OUTLINE_SX,
-        ...(muted ? { opacity: 0.5 } : {}),
-        ...(selected ? SELECTED_OUTLINE : {})
-      }}
+      sx={[
+        regionFrameSx(variant),
+        {
+          position: 'relative',
+          cursor: 'pointer',
+          ...HOVER_OUTLINE_SX,
+          ...(muted ? { opacity: 0.5 } : {}),
+          ...(selected ? SELECTED_OUTLINE : {})
+        }
+      ]}
     >
       <SelectionBadge
         id={`${hostBlockId}__${region.id}`}
@@ -111,7 +119,7 @@ function RegionCardEdit({
         sx={{ alignItems: 'center', flexWrap: 'wrap' }}
       >
         <Typography
-          variant="h5"
+          variant={regionNameVariant(variant)}
           component="span"
           data-testid="RegionCardName"
           sx={{ color: 'var(--campaign-band-heading)' }}
@@ -139,46 +147,48 @@ function RegionCardEdit({
           />
         )}
       </Stack>
-      {lines.map((line) =>
-        line.__typename === 'CampaignTypographyBlock' ? (
-          <Box
-            key={line.id}
-            id={line.id}
-            data-testid={`RegionLineEdit-${line.id}`}
-            data-selected={selection.block?.id === line.id}
-            data-hoverable
-            onClick={(event: MouseEvent<HTMLElement>) => {
-              event.stopPropagation()
-              selectBlock(line.id)
-            }}
-            sx={{
-              position: 'relative',
-              width: '100%',
-              // Room for the line's badge above it, clear of the text before it.
-              mt: 1,
-              ...HOVER_OUTLINE_SX,
-              ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
-            }}
-          >
-            <SelectionBadge
+      <CampaignRegionLines variant={variant}>
+        {lines.map((line) =>
+          line.__typename === 'CampaignTypographyBlock' ? (
+            <Box
+              key={line.id}
               id={line.id}
-              label={regionLineLabel(t)}
-              selected={selection.block?.id === line.id}
-            />
-            <InlineText
-              target={{ block: line, field: 'content' }}
-              placeholder={t('Your text')}
-              editing={selection.block?.id === line.id}
-              autoFocus={selection.block?.id === line.id}
-              onSelect={() => selectBlock(line.id)}
-              variant={line.typographyVariant ?? TypographyVariant.body1}
-              variantMapping={{ overline: 'p', caption: 'p' }}
-              align={line.align ?? undefined}
-              sx={{ color: line.color ?? 'var(--campaign-band-text)' }}
-            />
-          </Box>
-        ) : null
-      )}
+              data-testid={`RegionLineEdit-${line.id}`}
+              data-selected={selection.block?.id === line.id}
+              data-hoverable
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                event.stopPropagation()
+                selectBlock(line.id)
+              }}
+              sx={{
+                position: 'relative',
+                width: '100%',
+                // Room for the line's badge above it, clear of the text before it.
+                mt: 1,
+                ...HOVER_OUTLINE_SX,
+                ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
+              }}
+            >
+              <SelectionBadge
+                id={line.id}
+                label={regionLineLabel(t)}
+                selected={selection.block?.id === line.id}
+              />
+              <InlineText
+                target={{ block: line, field: 'content' }}
+                placeholder={t('Your text')}
+                editing={selection.block?.id === line.id}
+                autoFocus={selection.block?.id === line.id}
+                onSelect={() => selectBlock(line.id)}
+                variant={line.typographyVariant ?? TypographyVariant.body1}
+                variantMapping={{ overline: 'p', caption: 'p' }}
+                align={line.align ?? undefined}
+                sx={{ color: line.color ?? 'var(--campaign-band-text)' }}
+              />
+            </Box>
+          ) : null
+        )}
+      </CampaignRegionLines>
       <CampaignRegionCountries region={region} />
     </Box>
   )
@@ -198,6 +208,7 @@ export function RegionSwitcherEdit({
 }: RegionSwitcherEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign, currentRegion } = useCampaignEditor()
+  const variant = block.switcherVariant ?? CampaignSwitcherVariant.cards
   const { addRegion } = useCampaignRegionCommand()
   const regions = sortedRegions(campaign.regions).filter(
     (region) => region.id !== currentRegion?.id
@@ -239,20 +250,15 @@ export function RegionSwitcherEdit({
     <Stack spacing={2} data-testid="RegionSwitcherEdit" sx={{ width: '100%' }}>
       <Box
         data-testid="RegionSwitcherEditGrid"
-        sx={{
-          display: 'grid',
-          gap: 2,
-          gridTemplateColumns: {
-            xs: '1fr',
-            md: 'repeat(auto-fill, minmax(230px, 1fr))'
-          }
-        }}
+        data-variant={variant}
+        sx={switcherLayoutSx(variant)}
       >
         {regions.map((region) => (
           <RegionCardEdit
             key={region.id}
             region={region}
             hostBlockId={block.id}
+            variant={variant}
           />
         ))}
       </Box>

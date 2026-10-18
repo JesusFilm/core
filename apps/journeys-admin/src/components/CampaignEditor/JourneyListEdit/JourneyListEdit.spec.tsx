@@ -13,7 +13,11 @@ import { ReactElement } from 'react'
 import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
 import { journeyCard } from '@core/journeys/ui/Campaign/testData'
 
-import { IdType, JourneyStatus } from '../../../../__generated__/globalTypes'
+import {
+  CampaignJourneyListDisplay,
+  IdType,
+  JourneyStatus
+} from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_ACCESSIBLE_JOURNEYS } from '../../../libs/useCampaignAccessibleJourneysLazyQuery'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT } from '../../../libs/useCampaignBlockTextMutation'
@@ -153,7 +157,11 @@ const titleUpdateMock = {
   }))
 }
 
-function ListHarness(): ReactElement {
+function ListHarness({
+  display
+}: {
+  display?: CampaignJourneyListDisplay
+}): ReactElement {
   const { campaign, selection, selectBlock } = useCampaignEditor()
   const list = transformCampaignBlocks(campaign.blocks).find(
     (block) => block.id === 'landingJourneyListId'
@@ -161,7 +169,7 @@ function ListHarness(): ReactElement {
   if (list == null) throw new Error('fixture')
   return (
     <JourneyListEdit
-      block={list}
+      block={display == null ? list : { ...list, display }}
       active={selection.host?.id === list.id}
       onSelectCard={(cardId) => selectBlock(cardId)}
     />
@@ -170,14 +178,15 @@ function ListHarness(): ReactElement {
 
 async function renderList(
   selectedBlockId?: string,
-  mocks: Array<Record<string, unknown>> = []
+  mocks: Array<Record<string, unknown>> = [],
+  display?: CampaignJourneyListDisplay
 ): Promise<ReturnType<typeof render>> {
   const result = render(
     <SnackbarProvider>
       <QueriedEditor initialState={{ selectedBlockId }} mocks={mocks}>
         <CommandUndoItem variant="button" />
         <SelectionProbe />
-        <ListHarness />
+        <ListHarness display={display} />
       </QueriedEditor>
     </SnackbarProvider>
   )
@@ -187,6 +196,28 @@ async function renderList(
 
 describe('JourneyListEdit', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it.each([
+    [CampaignJourneyListDisplay.grid],
+    [CampaignJourneyListDisplay.list]
+  ])('lays the cards out as a %s, as the public list does', async (display) => {
+    await renderList(undefined, [], display)
+
+    expect(screen.getByTestId('CampaignJourneyCards')).toHaveAttribute(
+      'data-display',
+      display
+    )
+  })
+
+  it('shows each card’s Open journey button, read-only', async () => {
+    await renderList()
+
+    const live = within(screen.getByTestId('JourneyCard-landingJourneyId'))
+    const open = live.getByTestId('CampaignJourneyCardOpen')
+    expect(open).toHaveTextContent('Open journey')
+    expect(open).not.toHaveAttribute('href')
+    expect(open).toHaveAttribute('tabindex', '-1')
+  })
 
   it('shows every card in order, live or not, the unpublished one with a warning', async () => {
     await renderList()

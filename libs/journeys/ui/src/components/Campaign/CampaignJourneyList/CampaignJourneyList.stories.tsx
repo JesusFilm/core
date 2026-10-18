@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite'
 import { ComponentProps } from 'react'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignJourneyListDisplay,
+  CampaignPageKind
+} from '../../../../__generated__/globalTypes'
 import {
   campaignStoryConfig,
   landingTree,
@@ -31,6 +34,24 @@ export const Default: Story = {
     block: landingTree(
       'landingJourneyListId'
     ) as CampaignTreeOf<'CampaignJourneyListBlock'>
+  }
+}
+
+const journeyList = landingTree(
+  'landingJourneyListId'
+) as CampaignTreeOf<'CampaignJourneyListBlock'>
+
+/** Cards in a grid that fills at 260 px from `md`, one column below it. */
+export const Grid: Story = {
+  args: {
+    block: { ...journeyList, display: CampaignJourneyListDisplay.grid }
+  }
+}
+
+/** One full-width row per card, the image beside the text from `md`. */
+export const List: Story = {
+  args: {
+    block: { ...journeyList, display: CampaignJourneyListDisplay.list }
   }
 }
 

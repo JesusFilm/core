@@ -1,8 +1,9 @@
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
+import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import {
   CampaignJourneyListDisplay,
@@ -46,6 +47,104 @@ export function liveJourneyCards(
     .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
 }
 
+/** One card's frame, for the list's `display`: a column, or an image beside the text from `md`. */
+export function journeyCardFrameSx(
+  display: CampaignJourneyListDisplay
+): SxProps<Theme> {
+  return {
+    flexDirection:
+      display === CampaignJourneyListDisplay.list
+        ? { xs: 'column', md: 'row' }
+        : 'column',
+    overflow: 'hidden',
+    borderRadius: 1,
+    backgroundColor: 'var(--campaign-band-card)',
+    border: '1px solid var(--campaign-band-border)'
+  }
+}
+
+/** A card's image, for the list's `display`. */
+export function journeyCardImageSx(
+  display: CampaignJourneyListDisplay
+): SxProps<Theme> {
+  return {
+    display: 'block',
+    width:
+      display === CampaignJourneyListDisplay.list
+        ? { xs: '100%', md: 240 }
+        : '100%',
+    flexShrink: 0,
+    aspectRatio: '16 / 9',
+    objectFit: 'cover'
+  }
+}
+
+interface CampaignJourneyCardsProps {
+  display: CampaignJourneyListDisplay
+  children: ReactNode
+}
+
+/** The container of a list's cards: a grid that fills at 260 px, or one full-width row each. */
+export function CampaignJourneyCards({
+  display,
+  children
+}: CampaignJourneyCardsProps): ReactElement {
+  return (
+    <Box
+      data-testid="CampaignJourneyCards"
+      data-display={display}
+      sx={
+        display === CampaignJourneyListDisplay.list
+          ? { display: 'flex', flexDirection: 'column', gap: 2 }
+          : {
+              display: 'grid',
+              gap: 2,
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: 'repeat(auto-fill, minmax(260px, 1fr))'
+              }
+            }
+      }
+    >
+      {children}
+    </Box>
+  )
+}
+
+interface CampaignJourneyOpenButtonProps {
+  label: string
+  /** The journey's address; without one the button is a read-only preview. */
+  href?: string
+}
+
+/** A card's "Open journey" button; the canvas shows it without an address. */
+export function CampaignJourneyOpenButton({
+  label,
+  href
+}: CampaignJourneyOpenButtonProps): ReactElement {
+  return (
+    <Button
+      {...(href == null
+        ? { component: 'div', tabIndex: -1, disableRipple: true }
+        : { href })}
+      variant="contained"
+      size="small"
+      data-testid="CampaignJourneyCardOpen"
+      sx={{
+        mt: 1,
+        backgroundColor: 'var(--campaign-band-button)',
+        color: 'var(--campaign-band-button-label)',
+        '&:hover': {
+          backgroundColor: 'var(--campaign-band-button)',
+          filter: 'brightness(0.92)'
+        }
+      }}
+    >
+      {label}
+    </Button>
+  )
+}
+
 interface JourneyCardProps {
   card: CampaignJourneyCard
   display: CampaignJourneyListDisplay
@@ -57,17 +156,10 @@ function JourneyCard({
   display,
   openLabel
 }: JourneyCardProps): ReactElement {
-  const list = display === CampaignJourneyListDisplay.list
   return (
     <Stack
       data-testid={`CampaignJourneyCard-${card.id}`}
-      sx={{
-        flexDirection: list ? { xs: 'column', md: 'row' } : 'column',
-        overflow: 'hidden',
-        borderRadius: 1,
-        backgroundColor: 'var(--campaign-band-card)',
-        border: '1px solid var(--campaign-band-border)'
-      }}
+      sx={journeyCardFrameSx(display)}
     >
       {card.journeyImage != null && (
         <Box
@@ -76,13 +168,7 @@ function JourneyCard({
           alt={card.journeyImage.alt ?? ''}
           loading="lazy"
           data-testid="CampaignJourneyCardImage"
-          sx={{
-            display: 'block',
-            width: list ? { xs: '100%', md: 240 } : '100%',
-            flexShrink: 0,
-            aspectRatio: '16 / 9',
-            objectFit: 'cover'
-          }}
+          sx={journeyCardImageSx(display)}
         />
       )}
       <Stack spacing={1} sx={{ p: 3, flexGrow: 1, alignItems: 'flex-start' }}>
@@ -106,23 +192,10 @@ function JourneyCard({
           </Typography>
         )}
         <Box sx={{ flexGrow: 1 }} />
-        <Button
+        <CampaignJourneyOpenButton
+          label={openLabel}
           href={card.journeyUrl ?? undefined}
-          variant="contained"
-          size="small"
-          data-testid="CampaignJourneyCardOpen"
-          sx={{
-            mt: 1,
-            backgroundColor: 'var(--campaign-band-button)',
-            color: 'var(--campaign-band-button-label)',
-            '&:hover': {
-              backgroundColor: 'var(--campaign-band-button)',
-              filter: 'brightness(0.92)'
-            }
-          }}
-        >
-          {openLabel}
-        </Button>
+        />
       </Stack>
     </Stack>
   )
@@ -162,22 +235,7 @@ export function CampaignJourneyList({
         </Typography>
       )}
       {cards.length > 0 && (
-        <Box
-          data-testid="CampaignJourneyCards"
-          data-display={display}
-          sx={
-            display === CampaignJourneyListDisplay.list
-              ? { display: 'flex', flexDirection: 'column', gap: 2 }
-              : {
-                  display: 'grid',
-                  gap: 2,
-                  gridTemplateColumns: {
-                    xs: '1fr',
-                    md: 'repeat(auto-fill, minmax(260px, 1fr))'
-                  }
-                }
-          }
-        >
+        <CampaignJourneyCards display={display}>
           {cards.map((card) => (
             <JourneyCard
               key={card.id}
@@ -186,7 +244,7 @@ export function CampaignJourneyList({
               openLabel={openLabel}
             />
           ))}
-        </Box>
+        </CampaignJourneyCards>
       )}
     </CampaignSectionBand>
   )

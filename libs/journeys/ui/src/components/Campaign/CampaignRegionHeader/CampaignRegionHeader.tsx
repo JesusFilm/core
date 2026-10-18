@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography'
-import { ReactElement } from 'react'
+import { ReactElement, ReactNode } from 'react'
 
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
@@ -9,6 +9,23 @@ import type { CampaignTreeOf } from '../types'
 
 interface CampaignRegionHeaderProps {
   block: CampaignTreeOf<'CampaignRegionHeaderBlock'>
+}
+
+/** The region's name as the Region Header sets it: the page's heading in the band. */
+export function CampaignRegionName({
+  children
+}: {
+  children: ReactNode
+}): ReactElement {
+  return (
+    <Typography
+      variant="h1"
+      data-testid="CampaignRegionName"
+      sx={{ color: 'var(--campaign-band-heading)' }}
+    >
+      {children}
+    </Typography>
+  )
 }
 
 /**
@@ -23,13 +40,7 @@ export function CampaignRegionHeader({
 
   return (
     <CampaignSectionBand block={block}>
-      <Typography
-        variant="h1"
-        data-testid="CampaignRegionName"
-        sx={{ color: 'var(--campaign-band-heading)' }}
-      >
-        {region.name}
-      </Typography>
+      <CampaignRegionName>{region.name}</CampaignRegionName>
       {region.lines.map((line) =>
         line.__typename === 'CampaignTypographyBlock' ? (
           <CampaignTypography key={line.id} block={line} />

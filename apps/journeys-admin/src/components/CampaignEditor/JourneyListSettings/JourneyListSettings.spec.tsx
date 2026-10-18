@@ -1,11 +1,18 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyListBlock as CampaignJourneyListBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignJourneyListDisplay } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_DISPLAY } from '../../../libs/useCampaignJourneyListBlockDisplayMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
+import {
+  CommandProbe,
+  QueriedEditor,
+  SelectionProbe,
+  StaticEditor
+} from '../testing'
 
 import { JourneyListSettings } from './JourneyListSettings'
 
@@ -29,6 +36,16 @@ function displayMock(display: CampaignJourneyListDisplay) {
       }
     }))
   }
+}
+
+/** The settings over the block as the cache holds it, so a saved value flows back in. */
+function CachedSettings(): ReactElement | null {
+  const { campaign: current } = useCampaignEditor()
+  const block = current.blocks.find(
+    (candidate) => candidate.id === 'landingJourneyListId'
+  )
+  if (block?.__typename !== 'CampaignJourneyListBlock') return null
+  return <JourneyListSettings block={block} />
 }
 
 function renderSettings(mocks: Array<Record<string, unknown>> = []): void {
@@ -83,4 +100,27 @@ describe('JourneyListSettings', () => {
 
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
+
+  it.each([[CampaignJourneyListDisplay.list]])(
+    'round-trips %s through the cache',
+    async (value) => {
+      const mock = displayMock(value)
+      render(
+        <QueriedEditor mocks={[mock]}>
+          <CachedSettings />
+        </QueriedEditor>
+      )
+      await screen.findByRole('button', { name: 'Grid' })
+
+      fireEvent.click(screen.getByRole('button', { name: 'List' }))
+
+      await waitFor(() => expect(mock.result).toHaveBeenCalled())
+      await waitFor(() =>
+        expect(screen.getByRole('button', { name: 'List' })).toHaveAttribute(
+          'aria-pressed',
+          'true'
+        )
+      )
+    }
+  )
 })
