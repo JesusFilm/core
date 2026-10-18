@@ -10,6 +10,7 @@ import { logger } from '../../logger'
 import {
   addLanguageToVideo,
   findContainerParentIds,
+  removeLanguageFromVideoIfUnused,
   sameLanguageSet,
   updateParentCollectionLanguages,
   updateVideoAvailableLanguages,
@@ -706,6 +707,53 @@ describe('serializing concurrent recomputes of the same video', () => {
     expect(prismaMock.video.update.mock.invocationCallOrder[0]).toBeGreaterThan(
       prismaMock.$executeRaw.mock.invocationCallOrder[0]
     )
+  })
+})
+
+describe('removeLanguageFromVideoIfUnused', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockInteractiveTransaction()
+  })
+
+  it('locks the video row before reading or writing it', async () => {
+    prismaMock.video.findUnique.mockResolvedValue({
+      availableLanguages: ['529', '496']
+    } as unknown as Video)
+    prismaMock.videoVariant.count.mockResolvedValue(0)
+
+    await removeLanguageFromVideoIfUnused('video-id', '496')
+
+    // Same column, same lost-update hazard as the cascade's own recompute: a
+    // concurrent cascade write to this video must not be overwritten by this
+    // function reading a pre-commit snapshot.
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      readonly string[],
+      ...unknown[]
+    ]
+    expect(sqlParts.join(' ')).toContain('FOR UPDATE')
+    expect(values).toEqual(['video-id'])
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.video.findUnique.mock.invocationCallOrder[0]
+    )
+    expect(prismaMock.video.update.mock.invocationCallOrder[0]).toBeGreaterThan(
+      prismaMock.$executeRaw.mock.invocationCallOrder[0]
+    )
+    expect(prismaMock.video.update).toHaveBeenCalledWith({
+      where: { id: 'video-id' },
+      data: { availableLanguages: { set: ['529'] } }
+    })
+  })
+
+  it('does not write when another published variant still uses the language', async () => {
+    prismaMock.video.findUnique.mockResolvedValue({
+      availableLanguages: ['529', '496']
+    } as unknown as Video)
+    prismaMock.videoVariant.count.mockResolvedValue(1)
+
+    await removeLanguageFromVideoIfUnused('video-id', '496')
+
+    expect(prismaMock.video.update).not.toHaveBeenCalled()
   })
 })
 

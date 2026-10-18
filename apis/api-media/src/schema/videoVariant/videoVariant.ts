@@ -139,8 +139,17 @@ export async function createEmptyParentVariant(
   // Not every caller of handleParentVariantCreation cascades further up the
   // container hierarchy itself (e.g. a video's own publish-status toggle in
   // video.ts does not), so cascade from here to keep grandparents in sync
-  // regardless of caller.
-  await updateParentCollectionLanguages(parentVideoId)
+  // regardless of caller. The variant and the parent's own recompute already
+  // committed above, so a cascade failure here must not make this function -
+  // and by extension variant creation - appear to have failed.
+  try {
+    await updateParentCollectionLanguages(parentVideoId)
+  } catch (error) {
+    logger.error(
+      { error, parentVideoId, languageId },
+      'availableLanguages cascade failed after parent variant create'
+    )
+  }
 
   return newVariant
 }
@@ -311,8 +320,17 @@ async function checkAndRemoveEmptyParentVariant(
     // Not every caller of handleParentVariantCleanup cascades further up the
     // container hierarchy itself (e.g. a video's own publish-status toggle in
     // video.ts does not), so cascade from here to keep grandparents in sync
-    // regardless of caller.
-    await updateParentCollectionLanguages(parentVideoId)
+    // regardless of caller. The delete and the parent's own recompute already
+    // committed above, so a cascade failure here must not make the cleanup -
+    // which already succeeded - appear to have failed.
+    try {
+      await updateParentCollectionLanguages(parentVideoId)
+    } catch (error) {
+      logger.error(
+        { error, parentVideoId, languageId },
+        'availableLanguages cascade failed after parent variant cleanup'
+      )
+    }
   }
 }
 

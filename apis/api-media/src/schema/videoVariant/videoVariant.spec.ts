@@ -19,6 +19,7 @@ import {
 } from '../../lib/videoCacheReset'
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { deleteR2File } from '../cloudflare/r2/asset'
+import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import {
   addLanguageToVideo,
@@ -80,6 +81,10 @@ vi.mock('../video/lib/updateAvailableLanguages', async () => ({
   updateParentCollectionLanguages: vi.fn()
 }))
 
+vi.mock('../logger', () => ({
+  logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), debug: vi.fn() }
+}))
+
 // Get the mocked functions for testing
 const mockedNotifyMediaSlackOfOperationFailure = vi.mocked(
   notifyMediaSlackOfOperationFailure
@@ -96,6 +101,7 @@ const mockedRemoveLanguageFromVideoIfUnused = vi.mocked(
 const mockedUpdateParentCollectionLanguages = vi.mocked(
   updateParentCollectionLanguages
 )
+const mockedLoggerError = vi.mocked(logger.error)
 const mockedRequestVideoVariantReconciliation = vi.mocked(
   requestVideoVariantReconciliation
 )
@@ -3090,6 +3096,79 @@ describe('videoVariant', () => {
             prismaMock.$executeRaw.mock.invocationCallOrder[0]
           ).toBeLessThan(
             prismaMock.videoVariant.create.mock.invocationCallOrder[0]
+          )
+        })
+      })
+
+      describe('cascade failures after commit', () => {
+        it('does not reject creation when the cascade past the parent fails, since the variant and its own recompute already committed', async () => {
+          trackDurableWrites()
+          mockParentLookup(['parent-1'])
+          mockCreationReads()
+          mockRecomputeReads(['529'])
+          mockedUpdateParentCollectionLanguages.mockRejectedValueOnce(
+            new Error('cascade failed')
+          )
+
+          const { handleParentVariantCreation } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
+          await expect(
+            handleParentVariantCreation('child-1', '529')
+          ).resolves.toBeUndefined()
+
+          // The variant and its parent's own recompute both committed - a
+          // failure in the cascade past the parent must not make this look
+          // like a failed creation.
+          expect(prismaMock.videoVariant.create).toHaveBeenCalled()
+          expect(mockedLoggerError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              parentVideoId: 'parent-1',
+              languageId: '529'
+            }),
+            'availableLanguages cascade failed after parent variant create'
+          )
+        })
+
+        it('does not reject cleanup when the cascade past the parent fails, since the delete and its own recompute already committed', async () => {
+          trackDurableWrites()
+          mockParentLookup(['parent-1'])
+          // handleParentVariantCleanup's own video lookup (label only)
+          prismaMock.video.findUnique.mockResolvedValueOnce({
+            label: 'video'
+          } as unknown as Video)
+          // checkAndRemoveEmptyParentVariant's children lookup for parent-1
+          prismaMock.video.findUnique.mockResolvedValueOnce({
+            children: [{ id: 'child-1' }]
+          } as unknown as Video)
+          // No remaining published child variants in this language
+          prismaMock.videoVariant.count.mockResolvedValueOnce(0)
+          // The empty placeholder variant that should be removed
+          prismaMock.videoVariant.findFirst.mockResolvedValueOnce({
+            id: '529_parent-1'
+          } as unknown as VideoVariant)
+          mockRecomputeReads([])
+          mockedUpdateParentCollectionLanguages.mockRejectedValueOnce(
+            new Error('cascade failed')
+          )
+
+          const { handleParentVariantCleanup } = await import(
+            /* webpackChunkName: "videoVariant" */ './videoVariant'
+          )
+          await expect(
+            handleParentVariantCleanup('child-1', '529')
+          ).resolves.toBeUndefined()
+
+          // The delete and its parent's own recompute both committed - a
+          // failure in the cascade past the parent must not make an
+          // already-successful cleanup look failed.
+          expect(prismaMock.videoVariant.delete).toHaveBeenCalled()
+          expect(mockedLoggerError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              parentVideoId: 'parent-1',
+              languageId: '529'
+            }),
+            'availableLanguages cascade failed after parent variant cleanup'
           )
         })
       })

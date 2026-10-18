@@ -221,13 +221,21 @@ export async function addLanguageToVideo(
   `
 }
 
-// Removes a language from a video's availableLanguages if no published variants use it
-// Uses transaction to ensure consistency
+// Removes a language from a video's availableLanguages if no published variants use it.
+//
+// Reads and writes the same column `recomputeAvailableLanguages` does, on a
+// video that can be an arbitrary container the cascade also recomputes - so
+// it takes the same row lock first, for the same lost-update reason: without
+// it, a concurrent cascade recompute could commit its value while this
+// function is still reading, and this function's write would then overwrite
+// that committed value with its own stale, pre-lock computation.
 export async function removeLanguageFromVideoIfUnused(
   videoId: string,
   languageId: string
 ): Promise<void> {
   await prisma.$transaction(async (tx) => {
+    await lockVideoRow(tx, videoId)
+
     const video = await tx.video.findUnique({
       where: { id: videoId },
       select: { availableLanguages: true }
