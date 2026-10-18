@@ -3,14 +3,14 @@
  *
  * Two passes:
  *
- * 1. Push every language with hasVideos: true. Languages default to
- *    hasVideos: true in the schema, so the incremental sync (which only fired
- *    on a false -> true transition) never pushed them and they are missing
- *    from search.
- * 2. Remove languages that have video content but hasVideos: false. Hiding a
- *    language is done by hand-editing hasVideos to false, and the sync is
- *    otherwise upsert-only, so a language indexed while the flag was true stays
- *    searchable after it is turned back off.
+ * 1. Push every publicly visible language (hasVideos && searchable). Languages
+ *    default to hasVideos: true in the schema, so the incremental sync (which
+ *    only fired on a false -> true transition) never pushed them and they are
+ *    missing from search.
+ * 2. Remove languages that have video content but are not publicly visible,
+ *    either hidden by an operator (searchable: false) or not yet promoted
+ *    (hasVideos: false). The sync is otherwise upsert-only, so anything indexed
+ *    while it was visible stays searchable after being turned off.
  *
  * The second pass is scoped to languages that actually have variants because
  * the api-media Algolia key cannot browse the index, so there is no way to ask
@@ -36,10 +36,11 @@ import {
 import { logger } from '../../logger'
 
 /**
- * Languages that have at least one video variant but are flagged
- * hasVideos: false, so they must not be searchable.
+ * Languages that have at least one video variant but must not be publicly
+ * visible -- either hidden by an operator (searchable: false) or not yet
+ * promoted (hasVideos: false).
  */
-async function findSuppressedLanguageIds(): Promise<string[]> {
+async function findHiddenLanguageIds(): Promise<string[]> {
   const withVariants = await mediaPrisma.videoVariant.groupBy({
     by: ['languageId']
   })
@@ -47,12 +48,15 @@ async function findSuppressedLanguageIds(): Promise<string[]> {
 
   if (candidateIds.length === 0) return []
 
-  const suppressed = await languagesPrisma.language.findMany({
-    where: { id: { in: candidateIds }, hasVideos: false },
+  const hidden = await languagesPrisma.language.findMany({
+    where: {
+      id: { in: candidateIds },
+      OR: [{ hasVideos: false }, { searchable: false }]
+    },
     select: { id: true }
   })
 
-  return suppressed.map(({ id }) => id)
+  return hidden.map(({ id }) => id)
 }
 
 async function main(): Promise<void> {
@@ -60,11 +64,11 @@ async function main(): Promise<void> {
 
   const { count } = await reindexLanguagesWithVideosInAlgolia(logger)
 
-  const suppressedIds = await findSuppressedLanguageIds()
-  const { removed } = await removeLanguagesFromAlgolia(suppressedIds, logger)
+  const hiddenIds = await findHiddenLanguageIds()
+  const { removed } = await removeLanguagesFromAlgolia(hiddenIds, logger)
 
   logger.info(
-    `reindexed ${count} languages and removed ${removed} suppressed languages in algolia`
+    `reindexed ${count} languages and removed ${removed} hidden languages in algolia`
   )
 }
 

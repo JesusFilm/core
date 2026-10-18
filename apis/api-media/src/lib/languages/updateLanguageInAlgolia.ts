@@ -122,6 +122,23 @@ export function buildAlgoliaLanguageRecord(
   }
 }
 
+/**
+ * A language is publicly visible only when it has content *and* an operator has
+ * not hidden it. `hasVideos` is derived and written automatically; `searchable`
+ * is operator-owned and nothing automated may write it.
+ */
+function isPubliclyVisible(language: {
+  hasVideos: boolean
+  searchable: boolean
+}): boolean {
+  return language.hasVideos && language.searchable
+}
+
+export const publiclyVisibleLanguageWhere = {
+  hasVideos: true,
+  searchable: true
+} satisfies Prisma.LanguageWhereInput
+
 export async function updateLanguageInAlgoliaFromMedia(
   languageId: string,
   logger?: Logger
@@ -130,17 +147,16 @@ export async function updateLanguageInAlgoliaFromMedia(
     const { client, languagesIndex } = getAlgoliaLanguagesClient()
     const language = await languagesPrisma.language.findUnique({
       where: { id: languageId },
-      select: { ...languageAlgoliaSelect, hasVideos: true }
+      select: { ...languageAlgoliaSelect, hasVideos: true, searchable: true }
     })
 
-    // A language that is gone, or that hasVideos says must not be searchable,
-    // has to be removed rather than skipped. The sync is otherwise upsert-only,
-    // so a language that was indexed while hasVideos was true stays searchable
-    // forever once the flag is turned back off — which is how a language gets
-    // hidden today, by hand-editing hasVideos to false.
-    if (language == null || !language.hasVideos) {
+    // A language that is gone, has no content, or has been hidden by an
+    // operator has to be removed rather than skipped. The sync is otherwise
+    // upsert-only, so anything indexed while it was visible would stay
+    // searchable forever after being turned off.
+    if (language == null || !isPubliclyVisible(language)) {
       logger?.info(
-        `removing language ${languageId} from algolia (${language == null ? 'not found' : 'hasVideos false'})`
+        `removing language ${languageId} from algolia (${language == null ? 'not found' : 'not publicly visible'})`
       )
       await client.deleteObject({
         indexName: languagesIndex,
@@ -166,7 +182,7 @@ interface ReindexLanguagesResult {
 }
 
 /**
- * Pushes every language that has videos into the Algolia languages index.
+ * Pushes every publicly visible language into the Algolia languages index.
  *
  * The incremental sync only fires on a hasVideos false -> true transition, so
  * languages that were already marked hasVideos: true (the schema default) never
@@ -183,7 +199,7 @@ export async function reindexLanguagesWithVideosInAlgolia(
 
   for (;;) {
     const languages = await languagesPrisma.language.findMany({
-      where: { hasVideos: true },
+      where: publiclyVisibleLanguageWhere,
       select: languageAlgoliaSelect,
       orderBy: { id: 'asc' },
       take: REINDEX_BATCH_SIZE,
