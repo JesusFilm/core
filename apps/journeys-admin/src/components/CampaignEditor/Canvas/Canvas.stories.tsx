@@ -40,7 +40,7 @@ function onlySection(
           (keepChildren && block.parentBlockId === blockId)
       )
       .map((block) =>
-        block.id === blockId ? ({ ...block, ...patch } as typeof block) : block
+        block.id === blockId ? ({ ...block, ...patch }) : block
       )
   }
 }

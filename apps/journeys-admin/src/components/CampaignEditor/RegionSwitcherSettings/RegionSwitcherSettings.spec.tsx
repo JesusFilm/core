@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { ReactElement } from 'react'
 import { GraphQLError } from 'graphql'
+import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
