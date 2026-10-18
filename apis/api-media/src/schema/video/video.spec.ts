@@ -32,11 +32,18 @@ import {
 } from './lib/updateAvailableLanguages'
 import { getLanguageIdFromInfo } from './video'
 
-vi.mock('./lib/updateAvailableLanguages', () => ({
-  updateVideoAvailableLanguages: vi.fn(),
-  updateParentCollectionLanguages: vi.fn(),
-  findContainerParentIds: vi.fn().mockResolvedValue([])
-}))
+vi.mock('./lib/updateAvailableLanguages', async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import('./lib/updateAvailableLanguages')>()
+  return {
+    ...actual,
+    updateVideoAvailableLanguages: vi
+      .fn()
+      .mockResolvedValue({ before: [], after: [] }),
+    updateParentCollectionLanguages: vi.fn(),
+    findContainerParentIds: vi.fn().mockResolvedValue([])
+  }
+})
 
 vi.mock('../../workers/videoAlgoliaSync', () => ({
   enqueueVideoAlgoliaSync: vi.fn(),
@@ -63,6 +70,9 @@ const mockedUpdateParentCollectionLanguages = vi.mocked(
 const mockedEnqueueVideoAlgoliaSync = vi.mocked(enqueueVideoAlgoliaSync)
 const mockedRequestVideoVariantReconciliation = vi.mocked(
   requestVideoVariantReconciliation
+)
+const mockedUpdateVideoAvailableLanguages = vi.mocked(
+  updateVideoAvailableLanguages
 )
 
 describe('video', () => {
@@ -2843,6 +2853,11 @@ describe('video', () => {
         }
       `)
 
+      beforeEach(() => {
+        mockedUpdateVideoAvailableLanguages.mockClear()
+        mockedUpdateParentCollectionLanguages.mockClear()
+      })
+
       it('should update video', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -3214,6 +3229,127 @@ describe('video', () => {
             reason: 'video-relationship-change'
           })
         )
+      })
+
+      it('recomputes and cascades availableLanguages when childIds changes and the value actually changes', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series,
+          childIds: ['child1'],
+          children: [{ id: 'child1' }]
+        } as unknown as Video)
+        // The removed child ('child2') uniquely provided 'lang-1' — the
+        // recomputed value no longer includes it.
+        mockedUpdateVideoAvailableLanguages.mockResolvedValueOnce({
+          before: ['lang-1'],
+          after: []
+        })
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['child1']
+            }
+          }
+        })
+
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'parent-id'
+        })
+        expect(mockedUpdateVideoAvailableLanguages).toHaveBeenCalledWith(
+          'parent-id',
+          { skipCache: true, skipAlgolia: true }
+        )
+        // The recompute changed this container's value, so the cascade
+        // continues upward to this container's own parents/root.
+        expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+          'parent-id'
+        )
+      })
+
+      it('does not cascade when childIds changes but the recomputed value is unchanged', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findMany.mockResolvedValue([
+          { id: 'child1' },
+          { id: 'parent-id' }
+        ] as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series,
+          childIds: ['child1'],
+          children: [{ id: 'child1' }]
+        } as unknown as Video)
+        // The removed child was redundant — the remaining child still
+        // provides the same language, so the recompute doesn't change
+        // anything.
+        mockedUpdateVideoAvailableLanguages.mockResolvedValueOnce({
+          before: ['lang-1'],
+          after: ['lang-1']
+        })
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              childIds: ['child1']
+            }
+          }
+        })
+
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'parent-id'
+        })
+        expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
+      })
+
+      it('does not recompute availableLanguages when childIds is not part of the update', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.update.mockResolvedValue({
+          id: 'parent-id',
+          label: VideoLabel.series
+        } as unknown as Video)
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'parent-id',
+              label: VideoLabel.series
+            }
+          }
+        })
+
+        expect(result).toHaveProperty('data.videoUpdate', {
+          id: 'parent-id'
+        })
+        expect(mockedUpdateVideoAvailableLanguages).not.toHaveBeenCalled()
+        expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
       })
 
       it('should set publishedAt when updating from unpublished to published', async () => {
