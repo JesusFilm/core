@@ -75,11 +75,6 @@ const UPDATE_ADMIN_VIDEO_VARIANT = graphql(`
     videoVariantUpdate(input: $input) {
       id
       published
-      reconciliation {
-        id
-        status
-        published
-      }
     }
   }
 `)
