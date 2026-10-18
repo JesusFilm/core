@@ -8,13 +8,13 @@ import {
 
 import { prismaMock } from '../../test/prismaMock'
 
+// eslint-disable-next-line import/order -- must follow the mocks above
+import { main } from './backfill-language-searchable'
+
 vi.mock('@core/prisma/languages/client', () => ({
   __esModule: true,
   prisma: mockDeep<LanguagesPrismaClient>()
 }))
-
-// eslint-disable-next-line import/order -- must follow the mocks above
-import { main } from './backfill-language-searchable'
 
 const languagesPrismaMock =
   languagesPrisma as unknown as DeepMockProxy<LanguagesPrismaClient>

@@ -12,6 +12,9 @@ import {
   removeLanguagesFromAlgolia
 } from '../../lib/languages/updateLanguageInAlgolia'
 
+// eslint-disable-next-line import/order -- must follow the mocks above
+import { findHiddenLanguageIds, main } from './reindex-languages-with-videos'
+
 vi.mock('@core/prisma/languages/client', () => ({
   __esModule: true,
   prisma: mockDeep<LanguagesPrismaClient>()
@@ -22,15 +25,11 @@ vi.mock('../../lib/languages/updateLanguageInAlgolia', () => ({
   removeLanguagesFromAlgolia: vi.fn()
 }))
 
-// eslint-disable-next-line import/order -- must follow the mocks above
-import { findHiddenLanguageIds, main } from './reindex-languages-with-videos'
-
 const languagesPrismaMock =
   languagesPrisma as unknown as DeepMockProxy<LanguagesPrismaClient>
 
-const mockedReindex = reindexLanguagesWithVideosInAlgolia as unknown as ReturnType<
-  typeof vi.fn
->
+const mockedReindex =
+  reindexLanguagesWithVideosInAlgolia as unknown as ReturnType<typeof vi.fn>
 const mockedRemove = removeLanguagesFromAlgolia as unknown as ReturnType<
   typeof vi.fn
 >
