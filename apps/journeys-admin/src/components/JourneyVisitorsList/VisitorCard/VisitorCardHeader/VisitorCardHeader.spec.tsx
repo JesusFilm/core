@@ -25,6 +25,24 @@ describe('VisitorCardHeader', () => {
     expect(getAllByText('1 min')).toHaveLength(2)
   })
 
+  it('should show a dash when the visitor never left the first card', () => {
+    const props = {
+      icon: null,
+      name: 'test name',
+      location: null,
+      source: null,
+      createdAt: '2021-11-19T12:34:56.647Z',
+      duration: null,
+      loading: false
+    }
+
+    const { getAllByText, queryByText } = render(
+      <VisitorCardHeader {...props} />
+    )
+    expect(getAllByText('–')).toHaveLength(2)
+    expect(queryByText('0 sec')).not.toBeInTheDocument()
+  })
+
   it('should show person icon', () => {
     const props = {
       icon: null,
