@@ -13,8 +13,9 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
+import { CAMPAIGN_REGION_ORDER_UPDATE } from '../../../libs/useCampaignRegionOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import { campaign, campaignWithColumns } from '../data'
+import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { newSectionBlock } from '../sectionTypes'
 import {
   CommandProbe,
@@ -23,7 +24,7 @@ import {
   frameBody
 } from '../testing'
 
-import { Canvas, dropEdgeFor, dropParentOrder } from './Canvas'
+import { Canvas, dropEdgeFor, dropParentOrder, regionDropOrder } from './Canvas'
 import type { CanvasView } from './Canvas'
 
 const mockWebFontLoader = { load: vi.fn() }
@@ -101,13 +102,32 @@ function ViewHarness(): ReactElement {
   )
 }
 
+/** Europe dragged onto Africa takes its place: Africa first, Europe second. */
+const regionOrderMock = {
+  request: {
+    query: CAMPAIGN_REGION_ORDER_UPDATE,
+    variables: { id: 'eurRegionId', order: 1 }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionOrderUpdate: [
+        { __typename: 'CampaignRegion', id: 'afrRegionId', order: 0 },
+        { __typename: 'CampaignRegion', id: 'eurRegionId', order: 1 }
+      ]
+    }
+  }))
+}
+
 function renderCanvas(
   pageKind = CampaignPageKind.landing,
   view: CanvasView = 'desktop',
   canvasCampaign: Campaign = campaign
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor mocks={[orderMock]} campaignProp={canvasCampaign}>
+    <StaticEditor
+      mocks={[orderMock, regionOrderMock]}
+      campaignProp={canvasCampaign}
+    >
       <SelectionProbe />
       <CommandProbe />
       <Canvas campaign={canvasCampaign} pageKind={pageKind} view={view} />
@@ -181,6 +201,65 @@ describe('Canvas', () => {
         dropParentOrder(ids, 'x', { overId: 'c', edge: 'before' })
       ).toBeUndefined()
     })
+  })
+
+  describe('regionDropOrder', () => {
+    const ids = ['eur', 'afr', 'nao']
+
+    it('takes the place of the card the drop lands on, in either direction', () => {
+      expect(regionDropOrder(ids, 'eur', 'nao')).toBe(2)
+      expect(regionDropOrder(ids, 'nao', 'eur')).toBe(0)
+    })
+
+    it('is a no-op on itself, on nothing, or on an unknown card', () => {
+      expect(regionDropOrder(ids, 'eur', 'eur')).toBeUndefined()
+      expect(regionDropOrder(ids, 'eur', undefined)).toBeUndefined()
+      expect(regionDropOrder(ids, 'eur', 'x')).toBeUndefined()
+      expect(regionDropOrder(ids, 'x', 'eur')).toBeUndefined()
+    })
+  })
+
+  it('reorders a region card dragged by its handle onto another card, as one Command', async () => {
+    const { baseElement } = renderCanvas(
+      CampaignPageKind.landing,
+      'desktop',
+      campaignWithRegions
+    )
+    const body = await frameBody(baseElement, 'RegionCardEdit-afrRegionId')
+    const frameDocument = body.ownerDocument
+    // Side by side, 100 px wide each, since jsdom lays nothing out.
+    ;[
+      ['eurRegionId', 0],
+      ['afrRegionId', 200]
+    ].forEach(([id, left]) => {
+      const card = body.querySelector(
+        `[data-testid="RegionCardEdit-${id}"]`
+      ) as HTMLElement
+      card.getBoundingClientRect = () => ({
+        top: 0,
+        bottom: 100,
+        left: Number(left),
+        right: Number(left) + 100,
+        width: 100,
+        height: 100,
+        x: Number(left),
+        y: 0,
+        toJSON: () => ({})
+      })
+    })
+    const handle = body.querySelector(
+      '[data-testid="RegionCardDragHandle-eurRegionId"]'
+    )!
+    expect(handle).toHaveAttribute('aria-label', 'Drag region')
+
+    fireEvent.mouseDown(handle, { clientX: 90, clientY: 10, button: 0 })
+    fireEvent.mouseMove(frameDocument, { clientX: 100, clientY: 10 })
+    fireEvent.mouseMove(frameDocument, { clientX: 250, clientY: 50 })
+    fireEvent.mouseUp(frameDocument, { clientX: 250, clientY: 50 })
+
+    await waitFor(() => expect(regionOrderMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(orderMock.result).not.toHaveBeenCalled()
   })
 
   it('renders the page inside a FramePortal iframe with the editor components', async () => {

@@ -1,3 +1,4 @@
+import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
@@ -5,7 +6,7 @@ import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement } from 'react'
+import { MouseEvent, ReactElement, useCallback } from 'react'
 
 import {
   CampaignRegionCountries,
@@ -14,6 +15,7 @@ import {
   regionNameVariant,
   switcherLayoutSx
 } from '@core/journeys/ui/Campaign'
+import DragIcon from '@core/shared/ui/icons/Drag'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -65,6 +67,9 @@ interface RegionCardEditProps {
  * while any of its Share Languages is unlinked), its Region Lines as inline
  * text and its country chips. Clicking the card selects the region; clicking
  * a line selects that line, which then edits in place as any typography.
+ * The handle in its top-right corner drags the card onto another card to
+ * take that card's place in the region order, one Command through the
+ * canvas's drag context.
  */
 function RegionCardEdit({
   region,
@@ -84,6 +89,26 @@ function RegionCardEdit({
   const lines = regionLines(campaign.blocks, region.id)
   const lineSelected = lines.some((line) => line.id === selection.block?.id)
   const muted = !region.listed && !selected && !lineSelected
+  const dragId = `region:${region.id}`
+  const dragData = { regionId: region.id }
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: dragId,
+    data: dragData
+  })
+  const {
+    setNodeRef: setDraggableRef,
+    setActivatorNodeRef,
+    listeners,
+    attributes,
+    isDragging
+  } = useDraggable({ id: dragId, data: dragData })
+  const setCardRef = useCallback(
+    (node: HTMLElement | null) => {
+      setDroppableRef(node)
+      setDraggableRef(node)
+    },
+    [setDroppableRef, setDraggableRef]
+  )
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
@@ -92,10 +117,12 @@ function RegionCardEdit({
 
   return (
     <Box
+      ref={setCardRef}
       id={`${hostBlockId}__${region.id}`}
       data-testid={`RegionCardEdit-${region.id}`}
       data-selected={selected}
       data-unlisted={!region.listed}
+      data-drop-target={isOver || undefined}
       data-hoverable
       onClick={handleClick}
       sx={[
@@ -105,7 +132,11 @@ function RegionCardEdit({
           cursor: 'pointer',
           ...HOVER_OUTLINE_SX,
           ...(muted ? { opacity: 0.5 } : {}),
-          ...(selected ? SELECTED_OUTLINE : {})
+          ...(selected ? SELECTED_OUTLINE : {}),
+          ...(isDragging ? { opacity: 0.6 } : {}),
+          ...(isOver && !isDragging
+            ? { outline: `2px dashed ${adminPrimary.main}`, outlineOffset: -2 }
+            : {})
         }
       ]}
     >
@@ -115,6 +146,31 @@ function RegionCardEdit({
         selected={selected}
         borderWidth={1}
       />
+      <Box
+        ref={setActivatorNodeRef}
+        {...listeners}
+        {...attributes}
+        aria-label={t('Drag region')}
+        data-testid={`RegionCardDragHandle-${region.id}`}
+        onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
+        sx={{
+          position: 'absolute',
+          top: 4,
+          right: 4,
+          display: 'flex',
+          p: 0.5,
+          borderRadius: 1,
+          bgcolor: 'background.paper',
+          color: adminPrimary.main,
+          boxShadow: 1,
+          cursor: isDragging ? 'grabbing' : 'grab',
+          touchAction: 'none',
+          opacity: selected ? 1 : 0,
+          '[data-hoverable]:hover > &, &:focus-visible': { opacity: 1 }
+        }}
+      >
+        <DragIcon fontSize="small" />
+      </Box>
       <Stack
         direction="row"
         spacing={1}

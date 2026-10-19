@@ -98,6 +98,17 @@ describe('RegionSwitcherEdit', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
+  it('gives every region card a drag handle', async () => {
+    renderSwitcher(campaignWithRegions)
+
+    expect(
+      await screen.findByTestId('RegionCardDragHandle-eurRegionId')
+    ).toHaveAttribute('aria-label', 'Drag region')
+    expect(
+      screen.getByTestId('RegionCardDragHandle-afrRegionId')
+    ).toBeInTheDocument()
+  })
+
   it('reads "Add your first region" with + Add when no region is listed', async () => {
     renderSwitcher()
 
