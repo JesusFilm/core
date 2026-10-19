@@ -792,6 +792,43 @@ describe('ShareSectionEdit', () => {
     ).toBeInTheDocument()
   })
 
+  it('opens the linked journey’s public page in a new tab', async () => {
+    renderShare()
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    const open = within(english).getByRole('link', { name: 'Open journey' })
+    expect(open).toHaveAttribute(
+      'href',
+      `https://your.nextstep.is/${eurEnglish.journey!.slug}`
+    )
+    expect(open).toHaveAttribute('target', '_blank')
+    expect(
+      within(english).queryByRole('button', { name: 'Create QR code' })
+    ).toBeNull()
+  })
+
+  it('offers Create QR code to a linked row without one, and re-links the same journey to mint it', async () => {
+    renderShare(withEnglish({ ...eurEnglish, qrCodeId: null, qrCode: null }))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    expect(
+      within(english).queryByTestId('ShareLanguageShortLink')
+    ).toBeNull()
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Create QR code' })
+    )
+
+    // Re-linking the same journey is the swap-back request; the API mints the missing QR code.
+    await waitFor(() => expect(swapBackMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-529')).getByTestId(
+          'ShareLanguageShortLink'
+        )
+      ).toBeInTheDocument()
+    )
+  })
+
   it('unlinks a journey', async () => {
     renderShare()
 

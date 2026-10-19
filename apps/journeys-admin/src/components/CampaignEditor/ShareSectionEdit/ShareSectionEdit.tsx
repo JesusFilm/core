@@ -28,6 +28,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import Download2Icon from '@core/shared/ui/icons/Download2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
+import QrCode2Icon from '@core/shared/ui/icons/QrCode2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import {
   Language as AutocompleteLanguage,
@@ -50,7 +51,11 @@ import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampai
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { shareLanguageLabel } from '../blockLabel'
-import { campaignShareLink, journeyPreviewAddress } from '../campaignAddress'
+import {
+  campaignShareLink,
+  journeyPreviewAddress,
+  journeyPublicAddress
+} from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
@@ -208,14 +213,17 @@ interface ShareLanguageRowProps {
   onLink: (url: string) => Promise<void>
   onUnlink: () => Promise<void>
   onRefresh: () => void
+  /** Mint the Campaign QR Code and short link for the linked journey when the row has none. */
+  onCreateQrCode: () => Promise<void>
   onCopied: (shortLink: string) => void
 }
 
 /**
  * One Share Language on the canvas, as the visitor will see it: the phone
  * frame, the Share Link, Copy link and Download QR code. A live-published
- * journey previews in the frame with Refresh from journey, Swap and Unlink
- * beside it. An Unlinked Language shows the frame with the "Pick a journey"
+ * journey previews in the frame with Open journey (the public page in a new
+ * tab), Refresh from journey, Swap and Unlink beside it, and Create QR code
+ * when the row has no Campaign QR Code yet. An Unlinked Language shows the frame with the "Pick a journey"
  * call to action that opens the journey picker, copy and download disabled. A
  * journey that is no longer published shows the "Journey unpublished"
  * warning in the frame instead of that call to action.
@@ -229,6 +237,7 @@ function ShareLanguageRow({
   onLink,
   onUnlink,
   onRefresh,
+  onCreateQrCode,
   onCopied
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -498,6 +507,36 @@ function ShareLanguageRow({
               spacing={1}
               sx={{ alignItems: 'center', flexWrap: 'wrap' }}
             >
+              {slug != null && (
+                <Button
+                  size="small"
+                  color="inherit"
+                  component="a"
+                  href={journeyPublicAddress(slug)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  startIcon={<LinkExternalIcon fontSize="small" />}
+                  data-testid="ShareLanguageOpenJourney"
+                  onClick={stop}
+                >
+                  {t('Open journey')}
+                </Button>
+              )}
+              {regionLanguage.journeyId != null &&
+                regionLanguage.qrCode == null && (
+                  <Button
+                    size="small"
+                    color="inherit"
+                    startIcon={<QrCode2Icon fontSize="small" />}
+                    data-testid="ShareLanguageCreateQrCode"
+                    onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                      stop(event)
+                      void onCreateQrCode()
+                    }}
+                  >
+                    {t('Create QR code')}
+                  </Button>
+                )}
               {state === 'live' && (
                 <Button
                   size="small"
@@ -657,6 +696,23 @@ export function ShareSectionEdit({
     }
   }
 
+  /** Re-link the same journey: the API mints the missing Campaign QR Code and short link, and leaves an existing one alone. */
+  async function handleCreateQrCode(
+    regionLanguage: CampaignRegionLanguage
+  ): Promise<void> {
+    if (regionLanguage.journeyId == null) return
+    try {
+      await languageUpdate({
+        variables: {
+          id: regionLanguage.id,
+          input: { journeyId: regionLanguage.journeyId }
+        }
+      })
+    } catch (error) {
+      notify(error, t('Could not create QR code'))
+    }
+  }
+
   function handleCopied(): void {
     enqueueSnackbar(
       campaignStringText(
@@ -723,6 +779,7 @@ export function ShareSectionEdit({
             onLink={(url) => link(regionLanguage, url)}
             onUnlink={() => handleUnlink(regionLanguage)}
             onRefresh={() => requestRefresh(regionLanguage)}
+            onCreateQrCode={() => handleCreateQrCode(regionLanguage)}
             onCopied={handleCopied}
           />
         ))}
