@@ -56,7 +56,7 @@ function heroDescription(
 ): string | undefined {
   const hero = heroOf(campaign, pageKind)
   if (hero == null) return undefined
-  if (hasText(hero.lede)) return hero.lede
+  if (hasText(hero.description)) return hero.description
   if (hasText(hero.title)) return hero.title
   return undefined
 }
@@ -152,7 +152,7 @@ function campaignLanguageAlternates(
 /**
  * The `NextSeo` props for a public campaign page (PRD §11): title from the
  * translated campaign title ("<region> · <title>" on a Region Page);
- * description from the page's hero lede, else its title, else none;
+ * description from the page's hero description, else its title, else none;
  * canonical in the preferred form, with `?lang=<bcp47>` when the page is
  * served in a language other than the campaign default; never `noindex`.
  * Open Graph and Twitter as a `website` with the social image chain and `site_name` = the campaign

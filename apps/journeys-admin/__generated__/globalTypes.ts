@@ -200,7 +200,7 @@ export enum CampaignSwitcherVariant {
 }
 
 /**
- * Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+ * Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
  */
 export enum CampaignTextField {
   alt = "alt",
@@ -210,7 +210,6 @@ export enum CampaignTextField {
   eyebrow = "eyebrow",
   intro = "intro",
   label = "label",
-  lede = "lede",
   name = "name",
   title = "title",
   value = "value",
@@ -740,7 +739,7 @@ export interface CampaignFeaturedMediaBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   bullets?: string | null;
   mediaSide?: CampaignMediaSide | null;
 }
@@ -748,7 +747,7 @@ export interface CampaignFeaturedMediaBlockCreateInput {
 export interface CampaignFeaturedMediaBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   bullets?: string | null;
   mediaSide?: CampaignMediaSide | null;
   layout?: CampaignFeaturedMediaLayout | null;
@@ -803,14 +802,14 @@ export interface CampaignHeroBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   align?: TypographyAlign | null;
 }
 
 export interface CampaignHeroBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   align?: TypographyAlign | null;
   mediaBlockId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
@@ -866,14 +865,14 @@ export interface CampaignJourneyListBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   display?: CampaignJourneyListDisplay | null;
 }
 
 export interface CampaignJourneyListBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   display?: CampaignJourneyListDisplay | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;

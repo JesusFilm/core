@@ -143,7 +143,7 @@ export interface CampaignPublicBlockFields_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -370,7 +370,7 @@ export interface CampaignPublicBlockFields_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -664,7 +664,7 @@ export interface CampaignPublicBlockFields_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -674,7 +674,7 @@ export interface CampaignPublicBlockFields_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**

@@ -13,7 +13,6 @@ import { TEXT_CAPS } from '../validation'
 export const CAMPAIGN_TEXT_FIELD_VALUES = [
   'eyebrow',
   'title',
-  'lede',
   'bullets',
   'content',
   'intro',
@@ -33,7 +32,7 @@ export type CampaignTextFieldCaps = Partial<
 export const CampaignTextField = builder.enumType('CampaignTextField', {
   values: CAMPAIGN_TEXT_FIELD_VALUES,
   description:
-    'Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.'
+    'Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.'
 })
 
 const SECTION_HEADING: CampaignTextFieldCaps = {
@@ -44,10 +43,10 @@ const SECTION_HEADING: CampaignTextFieldCaps = {
 /** The translatable columns of every Campaign Block typename, with the cap each takes (PRD §1, §15). */
 export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
   {
-    CampaignHeroBlock: { ...SECTION_HEADING, lede: TEXT_CAPS.lede },
+    CampaignHeroBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
     CampaignFeaturedMediaBlock: {
       ...SECTION_HEADING,
-      lede: TEXT_CAPS.lede,
+      description: TEXT_CAPS.description,
       bullets: TEXT_CAPS.bullets
     },
     CampaignRichTextBlock: {
@@ -60,7 +59,7 @@ export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
       title: TEXT_CAPS.title,
       intro: TEXT_CAPS.intro
     },
-    CampaignJourneyListBlock: { ...SECTION_HEADING, lede: TEXT_CAPS.lede },
+    CampaignJourneyListBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
     CampaignVideoCarouselBlock: SECTION_HEADING,
     CampaignAnalyticsBlock: SECTION_HEADING,
     CampaignTypographyBlock: { content: TEXT_CAPS.typographyContent },

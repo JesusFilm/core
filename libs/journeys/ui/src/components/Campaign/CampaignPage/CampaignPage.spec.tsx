@@ -194,15 +194,15 @@ describe('CampaignPage', () => {
     it('an empty text field renders nothing and editor hints never render', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: '', lede: null }),
+          pick('heroId', { eyebrow: '', description: null }),
           pick('heroButtonId'),
-          pick('landingJourneyListId', { eyebrow: null, lede: '' }),
+          pick('landingJourneyListId', { eyebrow: null, description: '' }),
           pick('journeyListNoteId', { content: '' })
         ])
       )
       const main = within(screen.getByRole('main'))
       expect(main.queryByTestId('CampaignEyebrow')).not.toBeInTheDocument()
-      expect(main.queryByTestId('CampaignLede')).not.toBeInTheDocument()
+      expect(main.queryByTestId('CampaignDescription')).not.toBeInTheDocument()
       expect(main.queryByTestId('CampaignTypography')).not.toBeInTheDocument()
       expect(screen.queryByText(/your text/i)).not.toBeInTheDocument()
       expect(
@@ -213,11 +213,11 @@ describe('CampaignPage', () => {
     it('skips a section with no body content and no extras, band and all', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, lede: null }),
+          pick('heroId', { eyebrow: null, title: null, description: null }),
           pick('landingJourneyListId', {
             eyebrow: null,
             title: null,
-            lede: null
+            description: null
           })
         ])
       )
@@ -227,7 +227,7 @@ describe('CampaignPage', () => {
     it('Hero renders with any text, media or extra', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, lede: 'Only a lede' })
+          pick('heroId', { eyebrow: null, title: null, description: 'Only a description' })
         ])
       )
       expect(bandIds()).toEqual(['heroId'])
@@ -239,7 +239,7 @@ describe('CampaignPage', () => {
           pick('heroId', {
             eyebrow: null,
             title: null,
-            lede: null,
+            description: null,
             mediaBlockId: heroVideoBlock.id
           }),
           heroVideoBlock
@@ -270,7 +270,7 @@ describe('CampaignPage', () => {
             ...featuredMediaSectionBlock,
             eyebrow: null,
             title: '',
-            lede: null,
+            description: null,
             bullets: '',
             mediaBlockId: null
           }
@@ -282,7 +282,7 @@ describe('CampaignPage', () => {
     it('Hero renders with an extra alone', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, lede: null }),
+          pick('heroId', { eyebrow: null, title: null, description: null }),
           pick('heroButtonId')
         ])
       )
@@ -331,7 +331,7 @@ describe('CampaignPage', () => {
     it('Journey list with no live-published journeys renders text if any, else is skipped', () => {
       const { unmount } = renderPage(
         withLanding([
-          pick('landingJourneyListId', { eyebrow: null, lede: null })
+          pick('landingJourneyListId', { eyebrow: null, description: null })
         ])
       )
       expect(bandIds()).toEqual(['landingJourneyListId'])
@@ -342,7 +342,7 @@ describe('CampaignPage', () => {
           pick('landingJourneyListId', {
             eyebrow: null,
             title: null,
-            lede: null
+            description: null
           })
         ])
       )

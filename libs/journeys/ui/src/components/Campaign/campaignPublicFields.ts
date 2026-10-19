@@ -34,7 +34,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignHeroBlock {
       eyebrow
       title
-      lede
+      description
       align
       mediaBlockId
     }
@@ -93,7 +93,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignJourneyListBlock {
       eyebrow
       title
-      lede
+      description
       display
     }
     ... on CampaignJourneyBlock {
@@ -131,7 +131,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignFeaturedMediaBlock {
       eyebrow
       title
-      lede
+      description
       bullets
       mediaSide
       layout

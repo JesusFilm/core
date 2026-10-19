@@ -34,14 +34,14 @@ export interface CampaignFeaturedMediaBlockUpdateStyle_campaignFeaturedMediaBloc
 
 export interface CampaignFeaturedMediaBlockUpdateStyle {
   /**
-   * Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+   * Update a Featured Media section’s default-language eyebrow, title, description or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve to a live CampaignFeaturedMediaBlock.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
    * - BAD_USER_INPUT (field: `mediaSide`): not left or right.
    * - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
    * - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.

@@ -26,7 +26,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
-      ledeTranslations {
+      descriptionTranslations {
         ...TranslatedValueFields
       }
     }
@@ -50,7 +50,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
-      ledeTranslations {
+      descriptionTranslations {
         ...TranslatedValueFields
       }
     }
@@ -110,7 +110,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
-      ledeTranslations {
+      descriptionTranslations {
         ...TranslatedValueFields
       }
       bulletsTranslations {

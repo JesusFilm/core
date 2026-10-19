@@ -92,8 +92,6 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   eyebrowTranslations: null,
   title: null,
   titleTranslations: null,
-  lede: null,
-  ledeTranslations: null,
   bullets: null,
   bulletsTranslations: null,
   content: null,
@@ -177,7 +175,7 @@ export function seededBlocks(
       parentOrder: 0,
       eyebrow: 'Christmas 2026',
       title: 'Share the story of Christmas',
-      lede: 'Pick your region to find a journey in your language, ready to share.',
+      description: 'Pick your region to find a journey in your language, ready to share.',
       align: 'center',
       backgroundKind: 'none'
     }),
@@ -206,7 +204,7 @@ export function seededBlocks(
       parentOrder: 3,
       eyebrow: 'Journeys',
       title: 'Ready-made journeys',
-      lede: 'Interactive stories your friends can walk through on their phone.',
+      description: 'Interactive stories your friends can walk through on their phone.',
       display: 'grid',
       backgroundKind: 'none'
     }),

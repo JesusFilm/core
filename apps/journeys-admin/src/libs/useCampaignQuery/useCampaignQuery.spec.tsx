@@ -45,7 +45,7 @@ const translatedBlocks = [
     ...withEmptyTranslations(featuredMediaSectionBlock),
     eyebrowTranslations: translated('Pourquoi'),
     titleTranslations: translated('Une histoire'),
-    ledeTranslations: translated('Des films'),
+    descriptionTranslations: translated('Des films'),
     bulletsTranslations: translated('Gratuit')
   },
   {
@@ -114,7 +114,7 @@ describe('useCampaignQuery', () => {
     expect(block('featuredMediaId')).toMatchObject({
       eyebrowTranslations: translated('Pourquoi'),
       titleTranslations: translated('Une histoire'),
-      ledeTranslations: translated('Des films'),
+      descriptionTranslations: translated('Des films'),
       bulletsTranslations: translated('Gratuit')
     })
     expect(block('journeyCardId')).toMatchObject({

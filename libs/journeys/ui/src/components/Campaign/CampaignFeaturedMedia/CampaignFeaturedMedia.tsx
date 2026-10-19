@@ -24,7 +24,7 @@ export function featuredMediaBullets(bullets: string | null): string[] {
 }
 
 /**
- * The Featured Media section: eyebrow, title, lede and one-per-line bullets
+ * The Featured Media section: eyebrow, title, description and one-per-line bullets
  * beside its Media Slot, the media on `mediaSide` from `md` up and a single
  * column below it; a `stacked` layout is that single column at every width,
  * the media full width under the text. Empty media leaves the text full width; empty text leaves
@@ -36,7 +36,7 @@ export function CampaignFeaturedMedia({
 }: CampaignFeaturedMediaProps): ReactElement {
   const bullets = featuredMediaBullets(block.bullets)
   const hasHeading =
-    hasText(block.eyebrow) || hasText(block.title) || hasText(block.lede)
+    hasText(block.eyebrow) || hasText(block.title) || hasText(block.description)
 
   return (
     <CampaignSectionBand block={block}>
@@ -50,7 +50,7 @@ export function CampaignFeaturedMedia({
               <CampaignSectionHeading
                 eyebrow={block.eyebrow}
                 title={block.title}
-                lede={block.lede}
+                description={block.description}
               />
               {bullets.length > 0 && (
                 <Box

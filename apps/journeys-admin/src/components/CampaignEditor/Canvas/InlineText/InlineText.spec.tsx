@@ -32,7 +32,7 @@ function heroMock(title: string, errors?: GraphQLError[]) {
                 id: 'heroId',
                 eyebrow: 'Christmas 2026',
                 title,
-                lede: 'Pick your region to find a journey in your language, ready to share.'
+                description: 'Pick your region to find a journey in your language, ready to share.'
               }
             }
           }

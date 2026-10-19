@@ -110,7 +110,7 @@ function heroMock(title: string): Mock {
           id: 'heroId',
           eyebrow: 'Christmas 2026',
           title,
-          lede: 'Pick your region to find a journey in your language, ready to share.'
+          description: 'Pick your region to find a journey in your language, ready to share.'
         }
       }
     }))
@@ -618,7 +618,7 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
       field: 'richTextContent',
       apiField: 'content'
     },
-    ...(['eyebrow', 'title', 'lede', 'bullets'] as const).map((field) => ({
+    ...(['eyebrow', 'title', 'description', 'bullets'] as const).map((field) => ({
       blockId: 'featuredMediaId',
       typename: 'CampaignFeaturedMediaBlock',
       field,

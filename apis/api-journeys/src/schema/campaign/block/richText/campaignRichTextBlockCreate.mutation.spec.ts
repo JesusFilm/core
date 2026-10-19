@@ -48,7 +48,7 @@ describe('campaignRichTextBlockCreate', () => {
       ...hero,
       eyebrow: null,
       title: null,
-      lede: null,
+      description: null,
       intro: null,
       content: null,
       align: null,

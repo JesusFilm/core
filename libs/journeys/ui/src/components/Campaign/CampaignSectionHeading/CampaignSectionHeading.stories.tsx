@@ -17,7 +17,7 @@ type Story = StoryObj<ComponentProps<typeof CampaignSectionHeading>>
 const text = {
   eyebrow: 'Why it matters',
   title: 'A story for every home',
-  lede: 'Short films in the languages your neighbours speak.'
+  description: 'Short films in the languages your neighbours speak.'
 }
 
 export const Default: Story = { args: text }

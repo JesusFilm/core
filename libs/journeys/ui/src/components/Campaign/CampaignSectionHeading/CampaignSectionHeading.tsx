@@ -9,23 +9,23 @@ import { hasText } from '../types'
 interface CampaignSectionHeadingProps {
   eyebrow?: string | null
   title?: string | null
-  lede?: string | null
+  description?: string | null
   titleVariant?: 'h1' | 'h2'
   align?: TypographyAlign | null
 }
 
 /**
- * The eyebrow / title / lede trio most Section Bodies open with. An empty
+ * The eyebrow / title / description trio most Section Bodies open with. An empty
  * field renders nothing; all three empty renders nothing at all.
  */
 export function CampaignSectionHeading({
   eyebrow,
   title,
-  lede,
+  description,
   titleVariant = 'h2',
   align = null
 }: CampaignSectionHeadingProps): ReactElement | null {
-  if (!hasText(eyebrow) && !hasText(title) && !hasText(lede)) return null
+  if (!hasText(eyebrow) && !hasText(title) && !hasText(description)) return null
 
   return (
     <Stack
@@ -54,17 +54,17 @@ export function CampaignSectionHeading({
           {title}
         </Typography>
       )}
-      {hasText(lede) && (
+      {hasText(description) && (
         <Typography
           variant="body1"
-          data-testid="CampaignLede"
+          data-testid="CampaignDescription"
           sx={{
             color: 'var(--campaign-band-muted)',
             fontSize: { md: '1.25rem' },
             maxWidth: 720
           }}
         >
-          {lede}
+          {description}
         </Typography>
       )}
     </Stack>

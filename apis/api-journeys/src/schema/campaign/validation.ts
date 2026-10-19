@@ -84,7 +84,7 @@ export const TEXT_CAPS = {
   regionName: 60,
   eyebrow: 80,
   title: 150,
-  lede: 500,
+  description: 500,
   intro: 500,
   bullets: 1000,
   richTextContent: 5000,

@@ -97,7 +97,7 @@ describe('campaignTranslations', () => {
                 [FRENCH]: { value: "Partagez l'histoire", source: 'machine' },
                 [SPANISH]: { value: 'Comparte la historia', source: 'human' }
               },
-              ledeTranslations: {
+              descriptionTranslations: {
                 [FRENCH]: { value: 'Choisissez', source: 'human' }
               }
             }
@@ -112,7 +112,7 @@ describe('campaignTranslations', () => {
           parentOrder: 0,
           eyebrow: null,
           title: null,
-          lede: null,
+          description: null,
           content: 'EUR'
         }
       ],
@@ -190,14 +190,14 @@ describe('campaignTranslations', () => {
       'interface:CampaignButtonBlock:label:null',
       'landing:CampaignHeroBlock:eyebrow:null',
       'landing:CampaignHeroBlock:title:machine',
-      'landing:CampaignHeroBlock:lede:human',
+      'landing:CampaignHeroBlock:description:human',
       'landing:CampaignButtonBlock:label:null',
       'landing:CampaignRegionSwitcherBlock:title:null',
       'landing:CampaignVideoCarouselBlock:eyebrow:null',
       'landing:CampaignVideoCarouselBlock:title:null',
       'landing:CampaignJourneyListBlock:eyebrow:null',
       'landing:CampaignJourneyListBlock:title:null',
-      'landing:CampaignJourneyListBlock:lede:null',
+      'landing:CampaignJourneyListBlock:description:null',
       'landing:CampaignAnalyticsBlock:eyebrow:null',
       'landing:CampaignAnalyticsBlock:title:null',
       'region:CampaignRegionHeaderBlock:intro:null',

@@ -173,7 +173,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -184,7 +184,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock {
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock_titleTranslations[];
-  ledeTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignHeroBlock_ledeTranslations[];
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignRegionSwitcherBlock_titleTranslations {
@@ -466,11 +466,11 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBl
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
   eyebrowTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock_titleTranslations[];
-  ledeTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignJourneyListBlock_ledeTranslations[];
 }
 
 export interface CampaignBlockRestore_campaignBlockRestore_CampaignAnalyticsBlock_eyebrowTranslations {
@@ -891,7 +891,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -901,7 +901,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -910,7 +910,7 @@ export interface CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMedia
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_titleTranslations[];
-  ledeTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_ledeTranslations[];
   bulletsTranslations: CampaignBlockRestore_campaignBlockRestore_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 

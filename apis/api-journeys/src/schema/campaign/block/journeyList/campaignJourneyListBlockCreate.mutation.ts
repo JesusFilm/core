@@ -37,7 +37,7 @@ export const CampaignJourneyListBlockCreateInput = builder.inputType(
         required: false,
         description: 'At most 150 characters.'
       }),
-      lede: t.string({
+      description: t.string({
         required: false,
         description: 'At most 500 characters.'
       }),
@@ -54,7 +54,7 @@ builder.mutationField('campaignJourneyListBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: CampaignJourneyListBlock,
     nullable: false,
-    description: `Add a journey list section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It starts with no items.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\` / \`lede\` / \`display\`): the value fails its rule.`,
+    description: `Add a journey list section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. It starts with no items.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\` / \`description\` / \`display\`): the value fails its rule.`,
     args: {
       input: t.arg({
         type: CampaignJourneyListBlockCreateInput,
@@ -67,7 +67,7 @@ builder.mutationField('campaignJourneyListBlockCreate', (t) =>
         'CampaignJourneyListBlock',
         context.user,
         () => ({
-          ...validateSectionText(input, ['eyebrow', 'title', 'lede']),
+          ...validateSectionText(input, ['eyebrow', 'title', 'description']),
           ...(input.display != null && {
             display: assertEnum(input.display, 'display', DISPLAYS)
           })

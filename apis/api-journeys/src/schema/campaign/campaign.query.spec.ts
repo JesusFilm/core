@@ -371,7 +371,7 @@ describe('translation lists', () => {
       expect.arrayContaining([
         'eyebrowTranslations',
         'titleTranslations',
-        'ledeTranslations'
+        'descriptionTranslations'
       ])
     )
     expect(await fieldNames('CampaignTypographyBlock')).toContain(

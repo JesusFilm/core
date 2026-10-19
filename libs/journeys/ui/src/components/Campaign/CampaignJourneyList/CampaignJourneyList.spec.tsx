@@ -248,7 +248,7 @@ describe('CampaignJourneyList', () => {
       region: null,
       regions: campaignPublic.regions
     }
-    const noText = { eyebrow: null, title: null, lede: null }
+    const noText = { eyebrow: null, title: null, description: null }
 
     it('renders the text when there are no live journeys, else the section is skipped', () => {
       const draftOnly = item('draft', 0, {

@@ -323,7 +323,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 0,
     eyebrow: 'Christmas 2026',
     title: 'Share the story of Christmas',
-    lede: 'Pick your region to find a journey in your language, ready to share.',
+    description: 'Pick your region to find a journey in your language, ready to share.',
     align: TypographyAlign.center,
     mediaBlockId: null
   }),
@@ -376,7 +376,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 3,
     eyebrow: 'Journeys',
     title: 'Ready-made journeys',
-    lede: 'Interactive stories your friends can walk through on their phone.',
+    description: 'Interactive stories your friends can walk through on their phone.',
     display: CampaignJourneyListDisplay.grid
   }),
   typography({
@@ -438,7 +438,7 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 2,
     eyebrow: 'More journeys',
     title: 'Other journeys for this region',
-    lede: null,
+    description: null,
     display: CampaignJourneyListDisplay.grid
   }),
   section('CampaignAnalyticsBlock', {
@@ -614,7 +614,7 @@ export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
   parentOrder: 6,
   eyebrow: 'Why it matters',
   title: 'A story for every home',
-  lede: 'Short films in the languages your neighbours speak.',
+  description: 'Short films in the languages your neighbours speak.',
   bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
   mediaSide: CampaignMediaSide.left,
   layout: CampaignFeaturedMediaLayout.sideBySide,

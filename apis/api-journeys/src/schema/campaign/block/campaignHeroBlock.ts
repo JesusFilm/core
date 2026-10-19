@@ -10,7 +10,7 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
   interfaces: [CampaignBlock, CampaignSectionBlock],
   isTypeOf: (block: any) => block.typename === 'CampaignHeroBlock',
   description:
-    'The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.',
+    'The opening section of a page: eyebrow, title and description over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.',
   fields: (t) => ({
     eyebrow: t.exposeString('eyebrow', { nullable: true }),
     eyebrowTranslations: t.field({
@@ -24,11 +24,11 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
       nullable: false,
       resolve: (block) => toTranslatedValues(block.titleTranslations)
     }),
-    lede: t.exposeString('lede', { nullable: true }),
-    ledeTranslations: t.field({
+    description: t.exposeString('description', { nullable: true }),
+    descriptionTranslations: t.field({
       type: [TranslatedValueRef],
       nullable: false,
-      resolve: (block) => toTranslatedValues(block.ledeTranslations)
+      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
     }),
     align: t.field({
       type: TypographyAlign,

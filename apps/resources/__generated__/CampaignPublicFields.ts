@@ -278,7 +278,7 @@ export interface CampaignPublicFields_regions_lines_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -505,7 +505,7 @@ export interface CampaignPublicFields_regions_lines_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -799,7 +799,7 @@ export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -809,7 +809,7 @@ export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -1331,7 +1331,7 @@ export interface CampaignPublicFields_chrome_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -1558,7 +1558,7 @@ export interface CampaignPublicFields_chrome_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -1852,7 +1852,7 @@ export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -1862,7 +1862,7 @@ export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -2285,7 +2285,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -2512,7 +2512,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -2806,7 +2806,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -2816,7 +2816,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**

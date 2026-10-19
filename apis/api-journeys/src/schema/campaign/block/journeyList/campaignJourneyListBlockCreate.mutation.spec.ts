@@ -26,7 +26,7 @@ describe('campaignJourneyListBlockCreate', () => {
         parentOrder
         eyebrow
         title
-        lede
+        description
         display
       }
     }
@@ -50,7 +50,7 @@ describe('campaignJourneyListBlockCreate', () => {
       ...hero,
       eyebrow: null,
       title: null,
-      lede: null,
+      description: null,
       intro: null,
       align: null,
       action: null,
@@ -80,7 +80,7 @@ describe('campaignJourneyListBlockCreate', () => {
           parentOrder: 5,
           eyebrow: null,
           title: null,
-          lede: null,
+          description: null,
           display: 'grid'
         }
       }
@@ -108,12 +108,12 @@ describe('campaignJourneyListBlockCreate', () => {
     expect(result.data.campaignJourneyListBlockCreate.display).toBe('list')
   })
 
-  it('caps lede at 500 characters (BAD_USER_INPUT, lede)', async () => {
-    const result = await create({ lede: 'x'.repeat(501) })
+  it('caps description at 500 characters (BAD_USER_INPUT, description)', async () => {
+    const result = await create({ description: 'x'.repeat(501) })
 
     expect(result.errors[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
-      field: 'lede'
+      field: 'description'
     })
   })
 

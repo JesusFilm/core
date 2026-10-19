@@ -121,7 +121,7 @@ describe('campaignAiTranslate', () => {
             [FRENCH]: { value: 'Titre de la personne', source: 'human' },
             [SPANISH]: { value: 'Título', source: 'machine' }
           },
-          ledeTranslations: {
+          descriptionTranslations: {
             [FRENCH]: { value: 'Ancienne version', source: 'machine' }
           }
         }
@@ -198,7 +198,7 @@ describe('campaignAiTranslate', () => {
         [FRENCH]: { value: 'FR heroId eyebrow', source: 'machine' }
       })
       expect(hero$.titleTranslations).toBeUndefined()
-      expect(hero$.ledeTranslations).toBeUndefined()
+      expect(hero$.descriptionTranslations).toBeUndefined()
       expect(prismaMock.campaignString.update).toHaveBeenCalledWith({
         where: { id: 'string-copy' },
         data: {
@@ -233,7 +233,7 @@ describe('campaignAiTranslate', () => {
       )
       expect(asked).toContain('heroId:eyebrow')
       expect(asked).not.toContain('heroId:title')
-      expect(asked).not.toContain('heroId:lede')
+      expect(asked).not.toContain('heroId:description')
     })
 
     it('keeps other languages’ entries in the same column', async () => {
@@ -254,8 +254,8 @@ describe('campaignAiTranslate', () => {
       await run({ mode: 'all' })
 
       const written = blockWrites().heroId
-      expect(written.ledeTranslations).toEqual({
-        [FRENCH]: { value: 'FR heroId lede', source: 'machine' }
+      expect(written.descriptionTranslations).toEqual({
+        [FRENCH]: { value: 'FR heroId description', source: 'machine' }
       })
       expect(written.titleTranslations).toBeUndefined()
       const asked = mockStreamText.mock.calls.flatMap(([options]) =>
@@ -272,7 +272,7 @@ describe('campaignAiTranslate', () => {
         return where.id === 'heroId'
           ? {
               ...block,
-              ledeTranslations: {
+              descriptionTranslations: {
                 [FRENCH]: { value: 'Écrit à la main', source: 'human' }
               }
             }
@@ -281,7 +281,7 @@ describe('campaignAiTranslate', () => {
 
       await run({ mode: 'all' })
 
-      expect(blockWrites().heroId?.ledeTranslations).toBeUndefined()
+      expect(blockWrites().heroId?.descriptionTranslations).toBeUndefined()
     })
   })
 

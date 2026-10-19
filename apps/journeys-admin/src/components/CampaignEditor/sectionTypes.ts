@@ -85,12 +85,12 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         align: null,
         mediaBlockId: null,
         eyebrowTranslations: [],
         titleTranslations: [],
-        ledeTranslations: []
+        descriptionTranslations: []
       }
     case 'CampaignRegionSwitcherBlock':
       return {
@@ -118,11 +118,11 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         display: CampaignJourneyListDisplay.grid,
         eyebrowTranslations: [],
         titleTranslations: [],
-        ledeTranslations: []
+        descriptionTranslations: []
       }
     case 'CampaignAnalyticsBlock':
       return {
@@ -181,14 +181,14 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         bullets: null,
         mediaSide: CampaignMediaSide.right,
         layout: CampaignFeaturedMediaLayout.sideBySide,
         mediaBlockId: null,
         eyebrowTranslations: [],
         titleTranslations: [],
-        ledeTranslations: [],
+        descriptionTranslations: [],
         bulletsTranslations: []
       }
   }

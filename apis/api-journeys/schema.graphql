@@ -719,7 +719,7 @@ input CampaignCreateInput {
 }
 
 """
-A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+A section placing one Media Slot beside eyebrow, title, description and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -759,8 +759,8 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
 
   """One bullet per line; the viewer splits on line breaks."""
   bullets: String
@@ -770,7 +770,7 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   mediaSide: CampaignMediaSide!
 
   """
-  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
   """
   layout: CampaignFeaturedMediaLayout!
 
@@ -802,7 +802,7 @@ input CampaignFeaturedMediaBlockCreateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
 
   """One bullet per line; at most 1000 characters."""
   bullets: String
@@ -819,7 +819,7 @@ input CampaignFeaturedMediaBlockUpdateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
 
   """One bullet per line; at most 1000 characters."""
   bullets: String
@@ -1036,7 +1036,7 @@ input CampaignHeaderBlockUpdateInput {
 }
 
 """
-The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
+The opening section of a page: eyebrow, title and description over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
 """
 type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -1076,8 +1076,8 @@ type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock {
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
 
   """Alignment of the Section Body; the editor offers left and center."""
   align: TypographyAlign
@@ -1110,7 +1110,7 @@ input CampaignHeroBlockCreateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
   align: TypographyAlign
 }
 
@@ -1122,7 +1122,7 @@ input CampaignHeroBlockUpdateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
   align: TypographyAlign
 
   """
@@ -1165,7 +1165,7 @@ input CampaignHeroBlockUpdateInput {
 }
 
 """
-The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is always an https imagedelivery.net address; width and height are measured by the server.
+The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is an https imagedelivery.net address (the seeded default header logo is the one exception, served by the admin app); width and height are measured by the server.
 """
 type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -1203,7 +1203,7 @@ type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
   accentColor: String
 
   """
-  The Cloudflare image address (`https://imagedelivery.net/…`); null until an image is chosen.
+  The Cloudflare image address (`https://imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
   """
   src: String
 
@@ -1419,8 +1419,8 @@ type CampaignJourneyListBlock implements CampaignBlock & CampaignSectionBlock {
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
   display: CampaignJourneyListDisplay!
 }
 
@@ -1448,7 +1448,7 @@ input CampaignJourneyListBlockCreateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
 
   """Defaults to grid."""
   display: CampaignJourneyListDisplay
@@ -1462,7 +1462,7 @@ input CampaignJourneyListBlockUpdateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
   display: CampaignJourneyListDisplay
 
   """
@@ -2400,12 +2400,11 @@ enum CampaignSwitcherVariant {
 }
 
 """
-Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
 """
 enum CampaignTextField {
   eyebrow
   title
-  lede
   bullets
   content
   intro
@@ -4409,19 +4408,19 @@ type Mutation {
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `align`): the value fails its rule.
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!): CampaignHeroBlock!
 
   """
-  Update the hero’s default-language eyebrow, title, lede or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update the hero’s default-language eyebrow, title, description or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignHeroBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
@@ -4525,19 +4524,19 @@ type Mutation {
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `display`): the value fails its rule.
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!): CampaignJourneyListBlock!
 
   """
-  Update the journey list’s default-language eyebrow, title or lede, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
+  Update the journey list’s default-language eyebrow, title or description, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignJourneyListBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `display`): not grid or list.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -4827,20 +4826,20 @@ type Mutation {
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   """
   campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!): CampaignFeaturedMediaBlock!
 
   """
-  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update a Featured Media section’s default-language eyebrow, title, description or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignFeaturedMediaBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.

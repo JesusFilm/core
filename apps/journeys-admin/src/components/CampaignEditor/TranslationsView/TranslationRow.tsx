@@ -29,7 +29,7 @@ import {
 } from './translationRows'
 
 const MULTILINE_FIELDS: CampaignTextField[] = [
-  CampaignTextField.lede,
+  CampaignTextField.description,
   CampaignTextField.bullets,
   CampaignTextField.content,
   CampaignTextField.intro,
@@ -61,8 +61,6 @@ export function useRowLabel(): (row: TranslationRow) => string {
         return t('Eyebrow')
       case CampaignTextField.title:
         return t('Title')
-      case CampaignTextField.lede:
-        return t('Lede')
       case CampaignTextField.bullets:
         return t('Bullets')
       case CampaignTextField.content:

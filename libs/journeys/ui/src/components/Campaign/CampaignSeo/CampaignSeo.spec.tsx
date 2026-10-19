@@ -47,7 +47,7 @@ const regionHero = {
   id: 'regionHeroId',
   pageId: REGION_PAGE_ID,
   parentOrder: -1,
-  lede: 'Region lede',
+  description: 'Region description',
   mediaBlockId: 'regionMediaId'
 } as CampaignBlock
 
@@ -118,7 +118,7 @@ function landingHero(overrides: Partial<CampaignBlock>): CampaignBlock[] {
 
 describe('campaignSeoProps', () => {
   describe('title, description and canonical', () => {
-    it('uses the translated campaign title and the hero lede on the landing page', () => {
+    it('uses the translated campaign title and the hero description on the landing page', () => {
       const props = campaignSeoProps(
         campaignPublic,
         CampaignPageKind.landing,
@@ -150,10 +150,10 @@ describe('campaignSeoProps', () => {
       expect(props.noindex).toBeUndefined()
     })
 
-    it("describes with the page's hero lede, else its title, else nothing", () => {
+    it("describes with the page's hero description, else its title, else nothing", () => {
       expect(
         campaignSeoProps(
-          withPages(landingHero({ lede: '' })),
+          withPages(landingHero({ description: '' })),
           CampaignPageKind.landing,
           null,
           ROOT
@@ -161,7 +161,7 @@ describe('campaignSeoProps', () => {
       ).toBe('Share the story of Christmas')
       expect(
         campaignSeoProps(
-          withPages(landingHero({ lede: null, title: null })),
+          withPages(landingHero({ description: null, title: null })),
           CampaignPageKind.landing,
           null,
           ROOT
@@ -395,7 +395,7 @@ describe('campaignSeoProps', () => {
           alt: 'Region image'
         }
       ])
-      expect(props.description).toBe('Region lede')
+      expect(props.description).toBe('Region description')
     })
 
     it('inherits the landing hero image on a region page whose hero has none', () => {

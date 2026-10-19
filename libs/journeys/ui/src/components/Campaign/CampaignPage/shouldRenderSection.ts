@@ -69,7 +69,7 @@ export function shouldRenderSection(
       return (
         hasText(section.eyebrow) ||
         hasText(section.title) ||
-        hasText(section.lede) ||
+        hasText(section.description) ||
         hasCampaignMedia(section.media) ||
         extras
       )
@@ -77,7 +77,7 @@ export function shouldRenderSection(
       return (
         hasText(section.eyebrow) ||
         hasText(section.title) ||
-        hasText(section.lede) ||
+        hasText(section.description) ||
         featuredMediaBullets(section.bullets).length > 0 ||
         hasCampaignMedia(section.media) ||
         extras
@@ -96,7 +96,7 @@ export function shouldRenderSection(
         liveJourneyCards(section).length > 0 ||
         hasText(section.eyebrow) ||
         hasText(section.title) ||
-        hasText(section.lede) ||
+        hasText(section.description) ||
         extras
       )
     case 'CampaignAnalyticsBlock':

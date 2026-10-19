@@ -76,7 +76,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -87,7 +87,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations[];
-  ledeTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations[];
 }
 
 export interface CampaignHeroBlockCreate {
@@ -102,7 +102,7 @@ export interface CampaignHeroBlockCreate {
    * - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `align`): the value fails its rule.
    */
   campaignHeroBlockCreate: CampaignHeroBlockCreate_campaignHeroBlockCreate;
 }

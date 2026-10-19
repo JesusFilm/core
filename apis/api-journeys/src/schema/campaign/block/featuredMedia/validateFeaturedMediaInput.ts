@@ -15,21 +15,21 @@ export const CAMPAIGN_FEATURED_MEDIA_LAYOUTS = Object.values(
 export const FEATURED_MEDIA_TEXT_FIELDS = [
   'eyebrow',
   'title',
-  'lede',
+  'description',
   'bullets'
 ] as const
 
 export interface FeaturedMediaInput {
   eyebrow?: string | null
   title?: string | null
-  lede?: string | null
+  description?: string | null
   bullets?: string | null
   mediaSide?: string | null
   layout?: string | null
 }
 
 /**
- * The Featured Media body: eyebrow ≤ 80, title ≤ 150, lede ≤ 500 and
+ * The Featured Media body: eyebrow ≤ 80, title ≤ 150, description ≤ 500 and
  * bullets ≤ 1000 (one per line) trimmed and capped; `mediaSide` left or
  * right and `layout` sideBySide or stacked, neither ever null. Omitted
  * fields are left untouched. `BAD_USER_INPUT` names the field.
@@ -37,7 +37,7 @@ export interface FeaturedMediaInput {
 export function validateFeaturedMediaInput(input: FeaturedMediaInput): {
   eyebrow?: string | null
   title?: string | null
-  lede?: string | null
+  description?: string | null
   bullets?: string | null
   mediaSide?: CampaignMediaSide
   layout?: CampaignFeaturedMediaLayout

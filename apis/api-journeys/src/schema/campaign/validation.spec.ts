@@ -110,7 +110,7 @@ describe('campaign validation', () => {
       ['CampaignRegion.name', 'name', TEXT_CAPS.regionName, 60, true],
       ['section eyebrow', 'eyebrow', TEXT_CAPS.eyebrow, 80, false],
       ['section title', 'title', TEXT_CAPS.title, 150, false],
-      ['section lede', 'lede', TEXT_CAPS.lede, 500, false],
+      ['section description', 'description', TEXT_CAPS.description, 500, false],
       ['section intro', 'intro', TEXT_CAPS.intro, 500, false],
       ['bullets', 'bullets', TEXT_CAPS.bullets, 1000, false],
       ['rich text content', 'content', TEXT_CAPS.richTextContent, 5000, false],
@@ -274,7 +274,7 @@ describe('campaign validation', () => {
       ['source', Object.values(VideoBlockSource)],
       ['backgroundOverlay', Object.values(CampaignBackgroundOverlay)],
       ['key', Object.values(CampaignStringKey)],
-      ['field', ['eyebrow', 'title', 'lede', 'bullets', 'content', 'intro']]
+      ['field', ['eyebrow', 'title', 'description', 'bullets', 'content', 'intro']]
     ])(
       "%s takes its enum's values only, else BAD_USER_INPUT with the column as field",
       (column, values) => {

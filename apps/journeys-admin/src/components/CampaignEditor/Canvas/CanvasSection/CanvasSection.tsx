@@ -245,8 +245,8 @@ function sectionFieldPlaceholder(
       return t('Eyebrow')
     case 'title':
       return t('Title')
-    case 'lede':
-      return t('Lede')
+    case 'description':
+      return t('Description')
     case 'intro':
       return t('Intro')
     case 'richTextContent':
@@ -281,7 +281,7 @@ function SectionText({
       variant: titleVariant,
       sx: { color: 'var(--campaign-band-heading)' }
     },
-    lede: {
+    description: {
       variant: 'body1' as const,
       sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
     },
@@ -301,7 +301,7 @@ function SectionText({
     field as
       | 'eyebrow'
       | 'title'
-      | 'lede'
+      | 'description'
       | 'intro'
       | 'richTextContent'
       | 'bullets'

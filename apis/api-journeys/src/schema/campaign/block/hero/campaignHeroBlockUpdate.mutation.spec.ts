@@ -24,7 +24,7 @@ describe('campaignHeroBlockUpdate', () => {
         id
         eyebrow
         title
-        lede
+        description
         align
         mediaBlockId
         backgroundKind
@@ -59,16 +59,16 @@ describe('campaignHeroBlockUpdate', () => {
   }
 
   it('writes the given trimmed text fields and leaves the rest alone', async () => {
-    const result = await update({ title: ' Christmas, shared ', lede: '' })
+    const result = await update({ title: ' Christmas, shared ', description: '' })
 
     expect(result.data.campaignHeroBlockUpdate).toMatchObject({
       eyebrow: 'Christmas 2026',
       title: 'Christmas, shared',
-      lede: ''
+      description: ''
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'heroId' },
-      data: { title: 'Christmas, shared', lede: '' },
+      data: { title: 'Christmas, shared', description: '' },
       include: { action: true }
     })
   })
@@ -76,7 +76,7 @@ describe('campaignHeroBlockUpdate', () => {
   it.each([
     ['eyebrow', 80],
     ['title', 150],
-    ['lede', 500]
+    ['description', 500]
   ])(
     'caps %s at %i characters (BAD_USER_INPUT, the field)',
     async (field, max) => {

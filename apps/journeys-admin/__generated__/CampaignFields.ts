@@ -283,7 +283,7 @@ export interface CampaignFields_blocks_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
@@ -294,7 +294,7 @@ export interface CampaignFields_blocks_CampaignHeroBlock {
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignFields_blocks_CampaignHeroBlock_eyebrowTranslations[];
   titleTranslations: CampaignFields_blocks_CampaignHeroBlock_titleTranslations[];
-  ledeTranslations: CampaignFields_blocks_CampaignHeroBlock_ledeTranslations[];
+  descriptionTranslations: CampaignFields_blocks_CampaignHeroBlock_ledeTranslations[];
 }
 
 export interface CampaignFields_blocks_CampaignRegionSwitcherBlock_titleTranslations {
@@ -576,11 +576,11 @@ export interface CampaignFields_blocks_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
   eyebrowTranslations: CampaignFields_blocks_CampaignJourneyListBlock_eyebrowTranslations[];
   titleTranslations: CampaignFields_blocks_CampaignJourneyListBlock_titleTranslations[];
-  ledeTranslations: CampaignFields_blocks_CampaignJourneyListBlock_ledeTranslations[];
+  descriptionTranslations: CampaignFields_blocks_CampaignJourneyListBlock_ledeTranslations[];
 }
 
 export interface CampaignFields_blocks_CampaignAnalyticsBlock_eyebrowTranslations {
@@ -1001,7 +1001,7 @@ export interface CampaignFields_blocks_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -1011,7 +1011,7 @@ export interface CampaignFields_blocks_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -1020,7 +1020,7 @@ export interface CampaignFields_blocks_CampaignFeaturedMediaBlock {
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignFields_blocks_CampaignFeaturedMediaBlock_eyebrowTranslations[];
   titleTranslations: CampaignFields_blocks_CampaignFeaturedMediaBlock_titleTranslations[];
-  ledeTranslations: CampaignFields_blocks_CampaignFeaturedMediaBlock_ledeTranslations[];
+  descriptionTranslations: CampaignFields_blocks_CampaignFeaturedMediaBlock_ledeTranslations[];
   bulletsTranslations: CampaignFields_blocks_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 

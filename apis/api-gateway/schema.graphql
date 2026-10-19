@@ -326,18 +326,18 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `align`): the value fails its rule.
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the hero’s default-language eyebrow, title, lede or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update the hero’s default-language eyebrow, title, description or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignHeroBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
@@ -433,18 +433,18 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `display`): the value fails its rule.
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the journey list’s default-language eyebrow, title or lede, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
+  Update the journey list’s default-language eyebrow, title or description, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignJourneyListBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `display`): not grid or list.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -720,19 +720,19 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   """
   campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!) : CampaignFeaturedMediaBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update a Featured Media section’s default-language eyebrow, title, description or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignFeaturedMediaBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
@@ -1858,7 +1858,7 @@ type CampaignCountryStat @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+A section placing one Media Slot beside eyebrow, title, description and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
   id: ID!
@@ -1898,8 +1898,8 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
   """
   One bullet per line; the viewer splits on line breaks.
   """
@@ -1910,7 +1910,7 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   """
   mediaSide: CampaignMediaSide!
   """
-  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
   """
   layout: CampaignFeaturedMediaLayout!
   """
@@ -2002,7 +2002,7 @@ type CampaignHeaderBlock implements CampaignBlock & CampaignSectionBlock @join__
 }
 
 """
-The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
+The opening section of a page: eyebrow, title and description over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
 """
 type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock @join__type(graph: API_JOURNEYS_MODERN)  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignBlock")  @join__implements(graph: API_JOURNEYS_MODERN, interface: "CampaignSectionBlock")  {
   id: ID!
@@ -2042,8 +2042,8 @@ type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock @join__ty
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
   """
   Alignment of the Section Body; the editor offers left and center.
   """
@@ -2210,8 +2210,8 @@ type CampaignJourneyListBlock implements CampaignBlock & CampaignSectionBlock @j
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
   display: CampaignJourneyListDisplay!
 }
 
@@ -6286,12 +6286,12 @@ enum CampaignStringKey @join__type(graph: API_JOURNEYS_MODERN)  {
 }
 
 """
-Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
 """
 enum CampaignTextField @join__type(graph: API_JOURNEYS_MODERN)  {
   eyebrow @join__enumValue(graph: API_JOURNEYS_MODERN) 
   title @join__enumValue(graph: API_JOURNEYS_MODERN) 
-  lede @join__enumValue(graph: API_JOURNEYS_MODERN) 
+  description @join__enumValue(graph: API_JOURNEYS_MODERN) 
   bullets @join__enumValue(graph: API_JOURNEYS_MODERN) 
   content @join__enumValue(graph: API_JOURNEYS_MODERN) 
   intro @join__enumValue(graph: API_JOURNEYS_MODERN) 
@@ -7257,7 +7257,7 @@ input CampaignFeaturedMediaBlockCreateInput @join__type(graph: API_JOURNEYS_MODE
   """
   At most 500 characters.
   """
-  lede: String
+  description: String
   """
   One bullet per line; at most 1000 characters.
   """
@@ -7280,7 +7280,7 @@ input CampaignFeaturedMediaBlockUpdateInput @join__type(graph: API_JOURNEYS_MODE
   """
   At most 500 characters.
   """
-  lede: String
+  description: String
   """
   One bullet per line; at most 1000 characters.
   """
@@ -7443,7 +7443,7 @@ input CampaignHeroBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   At most 500 characters.
   """
-  lede: String
+  description: String
   align: TypographyAlign
 }
 
@@ -7459,7 +7459,7 @@ input CampaignHeroBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   """
   At most 500 characters.
   """
-  lede: String
+  description: String
   align: TypographyAlign
   """
   The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
@@ -7623,7 +7623,7 @@ input CampaignJourneyListBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN
   """
   At most 500 characters.
   """
-  lede: String
+  description: String
   """
   Defaults to grid.
   """
@@ -7642,7 +7642,7 @@ input CampaignJourneyListBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN
   """
   At most 500 characters.
   """
-  lede: String
+  description: String
   display: CampaignJourneyListDisplay
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.

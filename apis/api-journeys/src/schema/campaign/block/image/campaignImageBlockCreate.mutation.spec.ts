@@ -66,7 +66,7 @@ describe('campaignImageBlockCreate', () => {
         ...hero,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         align: null,
         action: null,
         ...data,

@@ -60,7 +60,7 @@ export const CAMPAIGN_HERO_BLOCK_UPDATE_TEXT = gql`
       id
       eyebrow
       title
-      lede
+      description
     }
   }
 `
@@ -99,7 +99,7 @@ export const CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_TEXT = gql`
       id
       eyebrow
       title
-      lede
+      description
     }
   }
 `
@@ -178,7 +178,7 @@ export const CAMPAIGN_FEATURED_MEDIA_BLOCK_UPDATE_TEXT = gql`
       id
       eyebrow
       title
-      lede
+      description
       bullets
     }
   }

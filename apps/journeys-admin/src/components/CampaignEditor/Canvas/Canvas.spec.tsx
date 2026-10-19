@@ -464,7 +464,7 @@ describe('Canvas', () => {
     expect(body.querySelector('textarea[name="eyebrow"]')).toHaveValue(
       'Christmas 2026'
     )
-    expect(body.querySelector('textarea[name="lede"]')).toHaveValue(
+    expect(body.querySelector('textarea[name="description"]')).toHaveValue(
       'Pick your region to find a journey in your language, ready to share.'
     )
   })

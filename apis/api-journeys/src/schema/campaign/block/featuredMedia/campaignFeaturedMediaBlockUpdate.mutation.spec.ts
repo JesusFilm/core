@@ -21,7 +21,7 @@ const FEATURED_MEDIA: Partial<CampaignBlockRow> = {
   parentOrder: 5,
   eyebrow: 'Watch',
   title: 'The story of Jesus',
-  lede: null,
+  description: null,
   bullets: 'Two hours long\nFree to share',
   bulletsTranslations: {
     '496': { value: 'Deux heures\nGratuit', source: 'human' }
@@ -40,7 +40,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
         id
         eyebrow
         title
-        lede
+        description
         bullets
         bulletsTranslations {
           languageId
@@ -80,13 +80,13 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     const result = await update({
       title: ' Watch the film ',
       bullets: 'One\nTwo\n\nThree',
-      lede: ''
+      description: ''
     })
 
     expect(result.data.campaignFeaturedMediaBlockUpdate).toMatchObject({
       eyebrow: 'Watch',
       title: 'Watch the film',
-      lede: '',
+      description: '',
       bullets: 'One\nTwo\n\nThree',
       bulletsTranslations: [
         { languageId: '496', value: 'Deux heures\nGratuit' }
@@ -94,7 +94,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'featuredId' },
-      data: { title: 'Watch the film', bullets: 'One\nTwo\n\nThree', lede: '' },
+      data: { title: 'Watch the film', bullets: 'One\nTwo\n\nThree', description: '' },
       include: { action: true }
     })
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
@@ -106,7 +106,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
   it.each([
     ['eyebrow', 80],
     ['title', 150],
-    ['lede', 500],
+    ['description', 500],
     ['bullets', 1000]
   ])(
     'caps %s at %i characters (BAD_USER_INPUT, the field)',

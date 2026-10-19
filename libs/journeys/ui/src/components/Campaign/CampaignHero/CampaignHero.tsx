@@ -11,13 +11,13 @@ interface CampaignHeroProps {
 }
 
 /**
- * The opening section: eyebrow, title and lede aligned by `align`, with its
+ * The opening section: eyebrow, title and description aligned by `align`, with its
  * Media Slot (a video or an image) beside the text from `md` up and below it
  * on a phone. A hero with only media renders the media alone.
  */
 export function CampaignHero({ block }: CampaignHeroProps): ReactElement {
   const hasHeading =
-    hasText(block.eyebrow) || hasText(block.title) || hasText(block.lede)
+    hasText(block.eyebrow) || hasText(block.title) || hasText(block.description)
 
   return (
     <CampaignSectionBand block={block} align={block.align}>
@@ -28,7 +28,7 @@ export function CampaignHero({ block }: CampaignHeroProps): ReactElement {
             <CampaignSectionHeading
               eyebrow={block.eyebrow}
               title={block.title}
-              lede={block.lede}
+              description={block.description}
               titleVariant="h1"
               align={block.align}
             />

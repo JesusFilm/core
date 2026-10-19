@@ -141,7 +141,7 @@ describe('campaignCreate', () => {
           ... on CampaignHeroBlock {
             eyebrow
             title
-            lede
+            description
             align
             mediaBlockId
           }
@@ -157,7 +157,7 @@ describe('campaignCreate', () => {
           ... on CampaignJourneyListBlock {
             eyebrow
             title
-            lede
+            description
             display
           }
           ... on CampaignAnalyticsBlock {
@@ -362,7 +362,7 @@ describe('campaignCreate', () => {
   })
 
   describe('landing page seed', () => {
-    it('seeds the Hero with eyebrow, title, lede, align center, no media and one button extra below scrolling to section 2', async () => {
+    it('seeds the Hero with eyebrow, title, description, align center, no media and one button extra below scrolling to section 2', async () => {
       await create()
       const hero = createdBlock('CampaignHeroBlock')
       expect(hero).toEqual({
@@ -375,7 +375,7 @@ describe('campaignCreate', () => {
         parentOrder: 0,
         eyebrow: 'Christmas 2026',
         title: 'Share the story of Christmas',
-        lede: 'Pick your region to find a journey in your language, ready to share.',
+        description: 'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         backgroundKind: 'none'
       })
@@ -428,7 +428,7 @@ describe('campaignCreate', () => {
       expect(carousel.videoId).toBeUndefined()
     })
 
-    it('seeds the Journey list with eyebrow "Journeys", title, lede, display grid and no items', async () => {
+    it('seeds the Journey list with eyebrow "Journeys", title, description, display grid and no items', async () => {
       await create()
       const list = createdBlock(
         'CampaignJourneyListBlock',
@@ -439,7 +439,7 @@ describe('campaignCreate', () => {
         parentOrder: 3,
         eyebrow: 'Journeys',
         title: 'Ready-made journeys',
-        lede: 'Interactive stories your friends can walk through on their phone.',
+        description: 'Interactive stories your friends can walk through on their phone.',
         display: 'grid',
         backgroundKind: 'none'
       })
@@ -503,7 +503,7 @@ describe('campaignCreate', () => {
         title: 'Other journeys for this region',
         display: 'grid'
       })
-      expect(list.lede).toBeUndefined()
+      expect(list.description).toBeUndefined()
       expect(
         createdBlocks().filter((block) => block.parentBlockId === list.id)
       ).toHaveLength(0)
@@ -899,7 +899,7 @@ describe('campaignCreate', () => {
         backgroundKind: 'none',
         eyebrow: 'Christmas 2026',
         title: 'Share the story of Christmas',
-        lede: 'Pick your region to find a journey in your language, ready to share.',
+        description: 'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         mediaBlockId: null
       })

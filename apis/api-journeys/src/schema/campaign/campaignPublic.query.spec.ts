@@ -98,7 +98,7 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
         eyebrow: null,
         title: null,
         titleTranslations: null,
-        lede: null,
+        description: null,
         align: null,
         content: 'Europe',
         contentTranslations: {
@@ -286,7 +286,7 @@ describe('campaignPublic', () => {
             ... on CampaignHeroBlock {
               eyebrow
               title
-              lede
+              description
               titleTranslations {
                 languageId
               }
@@ -378,7 +378,7 @@ describe('campaignPublic', () => {
       backgroundKind: 'none',
       eyebrow: 'Christmas 2026',
       title: "Partagez l'histoire de Noël",
-      lede: 'Pick your region to find a journey in your language, ready to share.',
+      description: 'Pick your region to find a journey in your language, ready to share.',
       titleTranslations: []
     })
     expect(landing.blocks[5]).toEqual({
@@ -719,7 +719,7 @@ describe('campaignPublic', () => {
         eyebrow: null,
         title: null,
         titleTranslations: null,
-        lede: null,
+        description: null,
         align: null,
         action: null,
         ...row
@@ -994,7 +994,6 @@ describe('campaignPublic', () => {
         titleTranslations: {
           [FRENCH]: { value: `${id} titre`, source: 'human' }
         },
-        lede: null,
         align: null,
         description: `${id} description`,
         journeyId,
