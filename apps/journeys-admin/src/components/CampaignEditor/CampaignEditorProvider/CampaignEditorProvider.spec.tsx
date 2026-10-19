@@ -202,6 +202,23 @@ describe('CampaignEditorProvider', () => {
       ).toBe('pages')
     })
 
+    it('selects a region card on its Settings tab, since a card has no styles of its own', () => {
+      expect(
+        reducer(
+          { ...state, inspectorTab: 'style' },
+          {
+            type: 'SelectRegionAction',
+            hostBlockId: 'landingSwitcherId',
+            regionId: 'eurRegionId'
+          }
+        )
+      ).toMatchObject({
+        selectedBlockId: 'landingSwitcherId',
+        selectedRegionId: 'eurRegionId',
+        inspectorTab: 'settings'
+      })
+    })
+
     it('sets the Inspector tab without touching the selection', () => {
       expect(
         reducer(state, {

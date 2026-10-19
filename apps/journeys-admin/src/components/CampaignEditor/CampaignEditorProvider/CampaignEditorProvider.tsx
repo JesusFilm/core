@@ -147,10 +147,12 @@ export function reducer(
         addPreset: undefined
       }
     case 'SelectRegionAction':
+      // A region card has settings but no styles of its own, so the Inspector opens on Settings.
       return {
         ...state,
         selectedBlockId: action.hostBlockId,
         selectedRegionId: action.regionId,
+        inspectorTab: 'settings',
         addPreset: undefined
       }
     case 'SetEditorFocusAction':
