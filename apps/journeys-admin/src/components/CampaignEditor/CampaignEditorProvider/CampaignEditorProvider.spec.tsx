@@ -132,7 +132,7 @@ describe('CampaignEditorProvider', () => {
       pageKind: CampaignPageKind.landing,
       previewLanguageId: '529',
       selectedBlockId: 'heroId',
-      panel: 'none',
+      panel: 'add',
       inspectorTab: 'style',
       navigatorExpandRequest: 0
     }
@@ -156,7 +156,7 @@ describe('CampaignEditorProvider', () => {
         pageKind: CampaignPageKind.regionTemplate,
         previewLanguageId: '529',
         selectedBlockId: undefined,
-        panel: 'none',
+        panel: 'add',
         inspectorTab: 'style',
         navigatorExpandRequest: 0
       })
@@ -191,15 +191,15 @@ describe('CampaignEditorProvider', () => {
       })
     })
 
-    it('opens a rail panel and closes it when the same one is named again', () => {
-      const opened = reducer(state, { type: 'SetPanelAction', panel: 'add' })
-      expect(opened.panel).toBe('add')
+    it('shows a rail panel and keeps it when the same one is named again', () => {
+      const opened = reducer(state, { type: 'SetPanelAction', panel: 'pages' })
+      expect(opened.panel).toBe('pages')
       expect(
         reducer(opened, { type: 'SetPanelAction', panel: 'navigator' }).panel
       ).toBe('navigator')
       expect(
-        reducer(opened, { type: 'SetPanelAction', panel: 'add' }).panel
-      ).toBe('none')
+        reducer(opened, { type: 'SetPanelAction', panel: 'pages' }).panel
+      ).toBe('pages')
     })
 
     it('sets the Inspector tab without touching the selection', () => {

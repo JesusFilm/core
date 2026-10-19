@@ -22,7 +22,8 @@ import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { isInColumnSlot } from '../sectionTypes'
 
 /** The left rail panel that is open; `none` while all are closed. */
-export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize' | 'none'
+/** The rail panel docked beside the Left Rail; one is always open. */
+export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize'
 
 /**
  * An insert point the canvas chose for the Add Panel: a page and a position
@@ -95,7 +96,7 @@ interface SetPreviewLanguageAction {
   type: 'SetPreviewLanguageAction'
   previewLanguageId: string
 }
-/** Open a rail panel, or close it when it is the one already open. */
+/** Show a rail panel; showing the open one again changes nothing. */
 interface SetPanelAction {
   type: 'SetPanelAction'
   panel: CampaignPanel
@@ -163,14 +164,12 @@ export function reducer(
       }
     case 'SetPreviewLanguageAction':
       return { ...state, previewLanguageId: action.previewLanguageId }
-    case 'SetPanelAction': {
-      const panel = state.panel === action.panel ? 'none' : action.panel
+    case 'SetPanelAction':
       return {
         ...state,
-        panel,
-        addPreset: panel === 'add' ? state.addPreset : undefined
+        panel: action.panel,
+        addPreset: action.panel === 'add' ? state.addPreset : undefined
       }
-    }
     case 'OpenAddPanelAction':
       return { ...state, panel: 'add', addPreset: action.preset }
     case 'SetInspectorTabAction':
@@ -403,7 +402,7 @@ export function CampaignEditorProvider({
   const defaultState: CampaignEditorState = {
     pageKind: CampaignPageKind.landing,
     previewLanguageId: campaign.defaultLanguageId,
-    panel: 'none',
+    panel: 'add',
     inspectorTab: 'style',
     navigatorExpandRequest: 0
   }

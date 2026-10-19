@@ -36,7 +36,7 @@ interface LeftRailProps {
 }
 
 interface PanelToggleProps {
-  panel: Exclude<CampaignPanel, 'none'>
+  panel: CampaignPanel
   label: string
   shortcut?: string
   icon: ReactNode
@@ -145,6 +145,12 @@ export function LeftRail({
           </IconButton>
         </Tooltip>
         <PanelToggle
+          panel="add"
+          label={t('Add')}
+          shortcut="A"
+          icon={<Plus2Icon />}
+        />
+        <PanelToggle
           panel="pages"
           label={t('Pages')}
           shortcut="P"
@@ -155,12 +161,6 @@ export function LeftRail({
           label={t('Navigator')}
           shortcut="Z"
           icon={<Layers4Icon />}
-        />
-        <PanelToggle
-          panel="add"
-          label={t('Add')}
-          shortcut="A"
-          icon={<Plus2Icon />}
         />
         <PanelToggle
           panel="localize"

@@ -23,7 +23,7 @@ import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
 import { Hotkeys } from './Hotkeys'
 import { Inspector } from './Inspector'
-import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
+import { LeftPanel } from './LeftPanel'
 import { LeftRail } from './LeftRail'
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
@@ -43,7 +43,7 @@ interface CampaignEditorShellProps {
   isManager: boolean
 }
 
-/** Everything inside the providers: the rail, the open panel (floating over the canvas, ahead of it in Tab order), the canvas with its banner, and the Inspector. */
+/** Everything inside the providers: the rail, the docked panel (always one open, ahead of the canvas in Tab order), the canvas with its banner, and the Inspector. */
 function CampaignEditorShell({
   campaign,
   isManager
@@ -78,7 +78,7 @@ function CampaignEditorShell({
       <LeftPanel label={t('Navigator')}>
         <Navigator />
       </LeftPanel>
-    ) : panel === 'localize' ? (
+    ) : (
       <LeftPanel label={t('Localize')}>
         <LocalizePanel
           tab={localizeTab}
@@ -87,7 +87,7 @@ function CampaignEditorShell({
           onPromotionNoticeClose={() => setPromotionNotice(false)}
         />
       </LeftPanel>
-    ) : null
+    )
 
   return (
     <Stack
@@ -97,6 +97,7 @@ function CampaignEditorShell({
     >
       <Hotkeys />
       <LeftRail view={view} onViewChange={setView} isManager={isManager} />
+      {leftPanel}
       <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
         <Box
           sx={{
@@ -106,8 +107,7 @@ function CampaignEditorShell({
             display: 'flex'
           }}
         >
-          {leftPanel}
-          <CanvasBanner inset={leftPanel != null ? LEFT_PANEL_WIDTH : 0} />
+          <CanvasBanner />
           <Canvas campaign={campaign} pageKind={pageKind} view={view} />
         </Box>
       </Stack>

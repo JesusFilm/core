@@ -136,7 +136,7 @@ describe('Hotkeys', () => {
       expect(frame.activeElement).toBe(dialog)
     })
 
-    it('blurs the focused frame element, then closes the panel on Escape', () => {
+    it('blurs the focused frame element on Escape and leaves the panel open', () => {
       const frame = frameDocument()
       render(<FrameHotkeys frame={frame} />)
       const input = frame.createElement('input')
@@ -146,7 +146,7 @@ describe('Hotkeys', () => {
       pressInFrame(frame, input, 'Escape')
 
       expect(frame.activeElement).not.toBe(input)
-      expect(screen.getByTestId('Panel')).toHaveTextContent('none')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('pages')
     })
 
     it('ignores the letters from inside an open select', () => {
@@ -215,7 +215,7 @@ describe('Hotkeys', () => {
       screen.getByRole('listbox', { name: 'Languages' }).focus()
       await userEvent.keyboard('dp')
       expect(screen.getByTestId('InspectorTab')).toHaveTextContent('style')
-      expect(screen.getByTestId('Panel')).toHaveTextContent('none')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('add')
     })
 
     it('keeps the letters working from a closed, focused select', async () => {
@@ -254,7 +254,7 @@ describe('Hotkeys', () => {
       await userEvent.keyboard('dp')
 
       expect(screen.getByTestId('InspectorTab')).toHaveTextContent('style')
-      expect(screen.getByTestId('Panel')).toHaveTextContent('none')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('add')
     })
   })
 })

@@ -383,14 +383,14 @@ describe('Navigator', () => {
   })
 
   describe('hotkeys', () => {
-    it('toggles the Navigator panel on Z', () => {
+    it('shows the Navigator panel on Z and keeps it on a second Z', () => {
       renderNavigator()
 
       fireEvent.keyDown(document, { key: 'z', code: 'KeyZ' })
       expect(screen.getByTestId('Panel')).toHaveTextContent('navigator')
 
       fireEvent.keyDown(document, { key: 'z', code: 'KeyZ' })
-      expect(screen.getByTestId('Panel')).toHaveTextContent('none')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('navigator')
     })
 
     it('ignores Z and Option+Z inside an input', () => {
@@ -403,7 +403,7 @@ describe('Navigator', () => {
       fireEvent.keyDown(input, { key: 'z', code: 'KeyZ' })
       fireEvent.keyDown(input, { key: 'Ω', code: 'KeyZ', altKey: true })
 
-      expect(screen.getByTestId('Panel')).toHaveTextContent('none')
+      expect(screen.getByTestId('Panel')).toHaveTextContent('add')
       expect(queryRow('slotRichTextId')).toBeNull()
     })
   })

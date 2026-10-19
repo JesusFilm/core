@@ -14,31 +14,27 @@ interface LeftPanelProps {
 }
 
 /**
- * The shell of the open left panel. At every width it overlays the canvas
- * from the rail's edge and casts a shadow, without dimming or blocking the
- * canvas beside it, so the frame and its scale never move when a panel opens
- * or closes.
+ * The shell of the open left panel, docked beside the Left Rail on the same
+ * flat surface: a hairline from the rail, a divider to the canvas, no shadow.
+ * One panel is always open, so its width is always taken from the canvas and
+ * the frame and its scale never move when the rail switches panels.
  */
 export function LeftPanel({ label, children }: LeftPanelProps): ReactElement {
   return (
     <Paper
       component="aside"
       square
-      elevation={8}
+      elevation={0}
       aria-label={label}
       data-testid="CampaignLeftPanel"
       sx={{
         width: LEFT_PANEL_WIDTH,
+        flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
         minHeight: 0,
         borderRight: 1,
-        borderColor: 'divider',
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        zIndex: 2
+        borderColor: 'divider'
       }}
     >
       {children}

@@ -25,9 +25,9 @@ interface HotkeysProps {
 }
 
 /**
- * The editor's shortcuts: ⌘Z / ⇧⌘Z for undo and redo, Escape to close the open
- * left panel and otherwise step the selection up one level (blurring an
- * inline input first), P, A and Z to toggle the Pages, Add and Navigator panels,
+ * The editor's shortcuts: ⌘Z / ⇧⌘Z for undo and redo, Escape to step the
+ * selection up one level (blurring an inline input first), P, A and Z to show
+ * the Pages, Add and Navigator panels,
  * Option+Z to expand or collapse the whole Navigator tree, S and D to switch
  * the Inspector's Style and Settings tab. Rendered once for the shell and
  * once inside the canvas frame, whose key events never reach the parent
@@ -39,11 +39,7 @@ interface HotkeysProps {
  */
 export function Hotkeys({ document }: HotkeysProps): ReactElement {
   const { undo, redo } = useCommand()
-  const {
-    escape,
-    dispatch,
-    state: { panel }
-  } = useCampaignEditor()
+  const { escape, dispatch } = useCampaignEditor()
   const options = {
     document,
     enableOnFormTags: document != null,
@@ -69,10 +65,6 @@ export function Hotkeys({ document }: HotkeysProps): ReactElement {
       const active = (document ?? window.document)
         .activeElement as Partial<HTMLElement> | null
       active?.blur?.()
-      if (panel !== 'none') {
-        dispatch({ type: 'SetPanelAction', panel })
-        return
-      }
       escape()
     },
     options
