@@ -13,9 +13,10 @@ import {
 } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
-import { ThemeProvider } from '@mui/material/styles'
+import { ThemeProvider, useTheme } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
 import {
+  CSSProperties,
   Fragment,
   ReactElement,
   useCallback,
@@ -48,6 +49,9 @@ import { CanvasSection } from './CanvasSection'
 import { FrameTheme } from './FrameTheme'
 
 export { PHONE_FRAME_WIDTH } from './canvasScale'
+
+/** The frame's corner radius in theme radius units (`borderRadius: 3`). */
+const FRAME_RADIUS = 3
 export type { CanvasView } from './canvasScale'
 
 export type DropEdge = 'before' | 'after'
@@ -270,6 +274,12 @@ export function Canvas({
   const [stageRef, stageSize] = useStageSize()
   const frameWidth = frameWidthOf(view)
   const scale = stageSize == null ? 1 : canvasScale(stageSize.width, frameWidth)
+  const adminShape = useTheme().shape
+  /** The frame's rounded corners in frame pixels, so the header and footer can round their outer corners to match. */
+  const frameRadius =
+    typeof adminShape.borderRadius === 'number'
+      ? (adminShape.borderRadius * FRAME_RADIUS) / scale
+      : 0
   const frameHeight = stageSize == null ? '100%' : stageSize.height / scale
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
@@ -348,7 +358,7 @@ export function Canvas({
             height: '100%',
             flexShrink: 0,
             bgcolor: 'background.paper',
-            borderRadius: 3,
+            borderRadius: FRAME_RADIUS,
             overflow: 'hidden',
             boxShadow: 2
           }}
@@ -379,9 +389,16 @@ export function Canvas({
                     <Box
                       data-testid="CampaignCanvasPage"
                       onClick={() => selectBlock(undefined)}
+                      style={
+                        { '--canvas-frame-radius': `${frameRadius}px` } as CSSProperties
+                      }
                       sx={{
                         height: '100%',
                         overflowY: 'auto',
+                        // A column so a short page's footer sits at the frame's bottom edge, as on the public page.
+                        display: 'flex',
+                        flexDirection: 'column',
+                        '& > *': { flexShrink: 0 },
                         bgcolor: 'background.default',
                         color: 'text.primary'
                       }}

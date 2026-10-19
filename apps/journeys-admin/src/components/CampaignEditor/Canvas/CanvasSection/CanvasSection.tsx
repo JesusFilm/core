@@ -920,13 +920,20 @@ export function CanvasSection({
           top: 0,
           zIndex: 2,
           overflowX: 'clip' as const,
-          borderBottom: '1px solid var(--campaign-band-border)'
+          borderBottom: '1px solid var(--campaign-band-border)',
+          // Follows the frame's rounded top corners so the selection outline is not cut off there.
+          borderRadius:
+            'var(--canvas-frame-radius, 0px) var(--canvas-frame-radius, 0px) 0 0'
         }
       : chrome === 'footer'
         ? {
             minHeight: footerEmpty ? 24 : undefined,
             py: footerEmpty ? 0 : { xs: 4, md: 5 },
-            borderTop: '1px solid var(--campaign-band-border)'
+            borderTop: '1px solid var(--campaign-band-border)',
+            // Pinned to the frame's bottom edge on a short page and rounded with its corners, so the outline is not cut off.
+            mt: 'auto',
+            borderRadius:
+              '0 0 var(--canvas-frame-radius, 0px) var(--canvas-frame-radius, 0px)'
           }
         : inSlot
           ? 'backgroundKind' in block &&
