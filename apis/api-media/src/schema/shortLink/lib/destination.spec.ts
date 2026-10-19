@@ -35,6 +35,25 @@ describe('isPublicHttpsUrl', () => {
   })
 })
 
+describe('SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS', () => {
+  afterEach(() => {
+    delete process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS
+  })
+
+  it('lets a local-dev process point links at localhost, and nothing else changes', () => {
+    process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS = 'true'
+    expect(isPublicWebUrl('http://localhost:4100/journey')).toBe(true)
+    expect(isPublicWebUrl('https://10.1.2.3/')).toBe(true)
+    expect(isPublicWebUrl('not a url')).toBe(false)
+    expect(isPublicHttpsUrl('http://localhost:4100/')).toBe(false) // still https only
+  })
+
+  it('is off unless set to exactly "true"', () => {
+    process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS = 'false'
+    expect(isPublicWebUrl('http://localhost:4100/journey')).toBe(false)
+  })
+})
+
 describe('isPublicHostname', () => {
   it('treats public addresses and names as public', () => {
     expect(isPublicHostname('8.8.8.8')).toBe(true)

@@ -67,9 +67,21 @@ function bareHostname(url: URL): string {
   return hostname.startsWith('[') ? hostname.slice(1, -1) : hostname
 }
 
+/**
+ * Local development runs the journeys app on localhost, which the rule below
+ * would refuse as a destination, so a QR code could never be created there.
+ * The opt-in is read on each call so a test can flip it; it must never be
+ * set in a deployed environment, where the health check reaches the VPC.
+ */
+function allowsLocalDestinations(): boolean {
+  return process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS === 'true'
+}
+
 export function isPublicHostname(hostname: string): boolean {
   const lowered = hostname.toLowerCase()
-  if (lowered === '' || LOCAL_HOSTNAMES.has(lowered)) return false
+  if (lowered === '') return false
+  if (allowsLocalDestinations()) return true
+  if (LOCAL_HOSTNAMES.has(lowered)) return false
   if (LOCAL_SUFFIXES.some((suffix) => lowered.endsWith(suffix))) return false
   const version = isIP(lowered)
   if (version === 4) return !isPrivateIpv4(lowered)
