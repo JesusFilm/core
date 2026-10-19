@@ -160,13 +160,15 @@ describe('InlineText', () => {
       expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent('Short')
     })
 
-    it('renders a full-width multiline field without it', () => {
+    it('renders a full-width multiline field, sized by the hidden copy, without it', () => {
       renderText()
 
       expect(screen.getByRole('textbox', { name: 'Title' }).tagName).toBe(
         'TEXTAREA'
       )
-      expect(screen.queryByTestId('InlineTextSizer')).not.toBeInTheDocument()
+      expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent(
+        'Share the story of Outreach'
+      )
     })
   })
 
