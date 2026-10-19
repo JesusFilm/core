@@ -816,6 +816,7 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
@@ -1881,6 +1882,7 @@ export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
@@ -2847,6 +2849,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */

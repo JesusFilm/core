@@ -15,6 +15,9 @@ export const GET_CAMPAIGN_WATCH_VIDEO = gql`
       title(primary: true) {
         value
       }
+      description(primary: true) {
+        value
+      }
       images(aspectRatio: banner) {
         mobileCinematicHigh
       }

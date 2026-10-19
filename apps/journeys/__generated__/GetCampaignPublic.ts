@@ -816,6 +816,7 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoCar
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
@@ -1881,6 +1882,7 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoCarouselBl
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
@@ -2847,6 +2849,7 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoCaro
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */

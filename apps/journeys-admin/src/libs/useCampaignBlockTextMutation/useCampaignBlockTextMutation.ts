@@ -86,6 +86,7 @@ export const CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_TEXT = gql`
       id
       eyebrow
       title
+      description
     }
   }
 `

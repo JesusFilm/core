@@ -60,6 +60,7 @@ function watchVideoMock(childrenCount: number) {
             childrenCount > 0 ? VideoLabel.collection : VideoLabel.shortFilm,
           childrenCount,
           title: [{ __typename: 'VideoTitle', value: 'The Resurrection' }],
+          description: [],
           images: [
             {
               __typename: 'CloudflareImage',
@@ -194,7 +195,7 @@ describe('MediaPasteField', () => {
     expect(watchMock.result).toHaveBeenCalled()
     expect(onPick).not.toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Use collection' }))
 
     expect(onPick).toHaveBeenCalledWith(
       { source: VideoBlockSource.internal, url: WATCH_URL },

@@ -366,6 +366,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 2,
     eyebrow: 'Watch',
     title: 'Films for the season',
+    description: null,
     videoId: null,
     videoVariantLanguageId: null,
     video: null,

@@ -46,7 +46,7 @@ describe('CampaignTextField', () => {
       CampaignRegionHeaderBlock: { intro: 500 },
       CampaignRegionShareBlock: { title: 150, intro: 500 },
       CampaignJourneyListBlock: { eyebrow: 80, title: 150, description: 500 },
-      CampaignVideoCarouselBlock: { eyebrow: 80, title: 150 },
+      CampaignVideoCarouselBlock: { eyebrow: 80, title: 150, description: 500 },
       CampaignAnalyticsBlock: { eyebrow: 80, title: 150 },
       CampaignTypographyBlock: { content: 2000 },
       CampaignButtonBlock: { label: 60 },

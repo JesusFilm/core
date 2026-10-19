@@ -54,7 +54,7 @@ export const CAMPAIGN_TEXT_FIELDS = {
   CampaignButtonBlock: ['label'],
   CampaignHeroBlock: ['eyebrow', 'title', 'description'],
   CampaignRegionSwitcherBlock: ['title'],
-  CampaignVideoCarouselBlock: ['eyebrow', 'title'],
+  CampaignVideoCarouselBlock: ['eyebrow', 'title', 'description'],
   CampaignJourneyListBlock: ['eyebrow', 'title', 'description'],
   CampaignJourneyBlock: ['title', 'description'],
   CampaignAnalyticsBlock: ['eyebrow', 'title'],

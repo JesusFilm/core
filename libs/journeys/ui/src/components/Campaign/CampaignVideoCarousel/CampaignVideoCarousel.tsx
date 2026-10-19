@@ -241,7 +241,11 @@ export function CampaignVideoCarousel({
 
   return (
     <CampaignSectionBand block={block}>
-      <CampaignSectionHeading eyebrow={block.eyebrow} title={block.title} />
+      <CampaignSectionHeading
+        eyebrow={block.eyebrow}
+        title={block.title}
+        description={block.description}
+      />
       {cards.length > 0 && (
         <Stack spacing={2}>
           <CampaignCarouselArrows

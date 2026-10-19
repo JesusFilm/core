@@ -14,18 +14,19 @@ export interface CampaignVideoCarouselBlockUpdateText_campaignVideoCarouselBlock
   id: string;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
 }
 
 export interface CampaignVideoCarouselBlockUpdateText {
   /**
-   * Update the video carousel’s default-language eyebrow or title, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
+   * Update the video carousel’s default-language eyebrow, title or description, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
    * - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
    * - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
    * - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.

@@ -42,6 +42,9 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
+      descriptionTranslations {
+        ...TranslatedValueFields
+      }
     }
     ... on CampaignJourneyListBlock {
       eyebrowTranslations {

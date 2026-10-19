@@ -77,6 +77,15 @@ export interface ResolvedVideo {
   details: string[]
   /** A Watch container's published children; 0 for a playable video, a YouTube video or a playlist. */
   childrenCount: number
+  /** The Watch label; null for a YouTube video or playlist. */
+  label: VideoLabel | null
+  /** The Watch video's own description, for a carousel to open with. */
+  description?: string | null
+}
+
+/** A Watch series or collection: in a carousel it expands into its children rather than becoming one card. */
+export function isWatchContainer(label: VideoLabel | null | undefined): boolean {
+  return label === VideoLabel.series || label === VideoLabel.collection
 }
 
 interface Resolution {
@@ -133,7 +142,8 @@ function useResolution(
               })
             : t('{{count}} videos', { count: data.itemCount })
         ],
-        childrenCount: 0
+        childrenCount: 0,
+        label: null
       },
       loading: false
     }
@@ -162,7 +172,9 @@ function useResolution(
         title: video.title[0]?.value ?? '',
         image: video.images[0]?.mobileCinematicHigh,
         details,
-        childrenCount: video.childrenCount
+        childrenCount: video.childrenCount,
+        label: video.label,
+        description: video.description[0]?.value ?? null
       },
       loading: false
     }
@@ -190,7 +202,8 @@ function useResolution(
           }
         )
       ],
-      childrenCount: 0
+      childrenCount: 0,
+      label: null
     },
     loading: false
   }
@@ -400,7 +413,11 @@ export function MediaPasteField({
                 >
                   {candidate.source === 'youTubePlaylist'
                     ? t('Add videos')
-                    : t('Use video')}
+                    : resolution.video?.label === VideoLabel.collection
+                      ? t('Use collection')
+                      : resolution.video?.label === VideoLabel.series
+                        ? t('Use series')
+                        : t('Use video')}
                 </Button>
                 <Button
                   variant="text"

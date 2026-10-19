@@ -118,6 +118,16 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   source: CampaignTextSource;
 }
 
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -155,6 +165,7 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
@@ -169,6 +180,7 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   video: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_video | null;
   eyebrowTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations[];
+  descriptionTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignVideoCarouselBlockCreate {

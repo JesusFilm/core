@@ -85,10 +85,21 @@ export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_title
   source: CampaignTextSource;
 }
 
+export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_eyebrowTranslations {

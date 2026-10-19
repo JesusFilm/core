@@ -392,14 +392,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Update the video carousel’s default-language eyebrow or title, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
+  Update the video carousel’s default-language eyebrow, title or description, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
   - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
   - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.
@@ -1056,7 +1056,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
   
-  Auth: campaign Manage — a manager of the campaign’s team.
+  Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
   
   Errors:
   - NOT_FOUND: id does not resolve.
@@ -1066,7 +1066,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
   
-  Auth: campaign Manage — a manager of the campaign’s team.
+  Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
   
   Errors:
   - NOT_FOUND: id does not resolve.
@@ -2678,11 +2678,11 @@ type CampaignScrollToBlockAction implements CampaignAction @join__type(graph: AP
 }
 
 """
-The visitor numbers a Campaign shows: each linked journey's unique visitors by country from the campaign's first publish to now, summed by the campaign's region and language structure.
+The visitor numbers a Campaign shows: each linked journey's unique visitors by country over all time, summed by the campaign's region and language structure.
 """
 type CampaignStats @join__type(graph: API_JOURNEYS_MODERN)  {
   """
-  The start of the stats window: the first publish (creation for a draft).
+  The start of the stats window. The window is all time, so this is a fixed early date; the viewer shows the numbers as all-time rather than since it.
   """
   from: DateTimeISO!
   """
@@ -2928,6 +2928,8 @@ type CampaignVideoCarouselBlock implements CampaignBlock & CampaignSectionBlock 
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
   """
   The Watch Video to expand; null for explicit children.
   """
@@ -8286,6 +8288,10 @@ input CampaignVideoCarouselBlockUpdateInput @join__type(graph: API_JOURNEYS_MODE
   At most 150 characters.
   """
   title: String
+  """
+  At most 500 characters.
+  """
+  description: String
   """
   A pasted Watch address: resolved by the server through its variant slug to a Video of any label, which becomes `videoId` (Watch expansion). Not together with `videoId`.
   """

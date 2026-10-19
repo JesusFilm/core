@@ -107,11 +107,13 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
+        description: null,
         videoId: null,
         videoVariantLanguageId: null,
         video: null,
         eyebrowTranslations: [],
-        titleTranslations: []
+        titleTranslations: [],
+        descriptionTranslations: []
       }
     case 'CampaignJourneyListBlock':
       return {

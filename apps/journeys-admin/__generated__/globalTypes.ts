@@ -1116,6 +1116,7 @@ export interface CampaignVideoCarouselBlockCreateInput {
 export interface CampaignVideoCarouselBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
+  description?: string | null;
   url?: string | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;

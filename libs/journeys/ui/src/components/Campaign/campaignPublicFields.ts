@@ -46,6 +46,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
     ... on CampaignVideoCarouselBlock {
       eyebrow
       title
+      description
       videoId
       videoVariantLanguageId
       video {

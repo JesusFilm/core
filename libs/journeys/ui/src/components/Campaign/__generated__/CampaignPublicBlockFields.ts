@@ -681,6 +681,7 @@ export interface CampaignPublicBlockFields_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */

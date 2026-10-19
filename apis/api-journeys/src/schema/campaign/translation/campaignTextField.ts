@@ -60,7 +60,7 @@ export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
       intro: TEXT_CAPS.intro
     },
     CampaignJourneyListBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
-    CampaignVideoCarouselBlock: SECTION_HEADING,
+    CampaignVideoCarouselBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
     CampaignAnalyticsBlock: SECTION_HEADING,
     CampaignTypographyBlock: { content: TEXT_CAPS.typographyContent },
     CampaignButtonBlock: { label: TEXT_CAPS.buttonLabel },

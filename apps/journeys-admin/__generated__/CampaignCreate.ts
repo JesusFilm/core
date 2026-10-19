@@ -983,6 +983,16 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock
   source: CampaignTextSource;
 }
 
+export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -1020,6 +1030,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
@@ -1034,6 +1045,7 @@ export interface CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock
   video: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_video | null;
   eyebrowTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_eyebrowTranslations[];
   titleTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_titleTranslations[];
+  descriptionTranslations: CampaignCreate_campaignCreate_blocks_CampaignVideoCarouselBlock_descriptionTranslations[];
 }
 
 export interface CampaignCreate_campaignCreate_blocks_CampaignJourneyBlock_journeyImage {
