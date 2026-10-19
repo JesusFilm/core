@@ -103,7 +103,10 @@ const watchMock = {
 const setWatchMock = {
   request: {
     query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO,
-    variables: { id: 'carouselId', input: { url: WATCH_URL } }
+    variables: {
+      id: 'carouselId',
+      input: { url: WATCH_URL, eyebrow: 'Collection', title: 'Outreach films' }
+    }
   },
   result: vi.fn(() => ({
     data: { campaignVideoCarouselBlockUpdate: expandedCarousel }
@@ -222,6 +225,7 @@ const setWatchWithTextMock = {
       id: 'carouselId',
       input: {
         url: WATCH_SERIES_URL,
+        eyebrow: 'Series',
         title: 'Outreach films',
         description: 'Four short films about outreach.'
       }
@@ -384,8 +388,8 @@ describe('CarouselEdit', () => {
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
   })
 
-  it('fills an empty title and description from the expanded series', async () => {
-    renderEdit({ ...carousel, title: null, description: null })
+  it('writes the expanded series’ label, title and description over the carousel’s text', async () => {
+    renderEdit({ ...carousel, title: 'Films for the season', description: 'Old' })
 
     paste(WATCH_SERIES_URL)
     const resolved = await screen.findByTestId(

@@ -46,9 +46,12 @@ const PLAYLIST_IMPORT_LIMIT = 12
 
 type Candidate = ParsedMediaUrl | ParsedPlaylistUrl
 
-type Translate = (key: string, options?: Record<string, unknown>) => string
+export type Translate = (
+  key: string,
+  options?: Record<string, unknown>
+) => string
 
-function videoLabelName(t: Translate, label: VideoLabel): string {
+export function videoLabelName(t: Translate, label: VideoLabel): string {
   switch (label) {
     case VideoLabel.behindTheScenes:
       return t('Behind the scenes')

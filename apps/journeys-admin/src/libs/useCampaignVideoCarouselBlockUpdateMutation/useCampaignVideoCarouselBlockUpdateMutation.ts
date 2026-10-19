@@ -35,7 +35,8 @@ export interface CampaignCarouselVideoInput {
   url?: string
   videoId?: string | null
   videoVariantLanguageId?: string | null
-  /** The carousel's own text, filled from the expanded Watch video when it was empty. */
+  /** The carousel's own text, taken from the expanded Watch video. */
+  eyebrow?: string | null
   title?: string | null
   description?: string | null
 }

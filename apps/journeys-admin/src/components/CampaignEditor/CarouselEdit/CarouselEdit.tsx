@@ -13,7 +13,8 @@ import {
   CampaignMediaPick,
   MediaPasteField,
   ResolvedVideo,
-  isWatchContainer
+  isWatchContainer,
+  videoLabelName
 } from '../Pickers/MediaPasteField'
 import { useCampaignCarouselCommand } from '../utils/useCampaignCarouselCommand'
 
@@ -45,16 +46,18 @@ export function CarouselEdit({ block }: CarouselEditProps): ReactElement {
     block.video?.title.find((title) => title.primary)?.value ??
     block.video?.title[0]?.value
 
-  /** A Watch series or collection expands live into its children, lending its title and description to the carousel's empty ones; a single video of any source is one explicit item. */
+  /** A Watch series or collection expands live into its children and writes its label, title and description over the carousel's text; a single video of any source is one explicit item. */
   function handlePick(pick: CampaignMediaPick, resolved?: ResolvedVideo): void {
     if ('src' in pick) return
     if (
       pick.source === VideoBlockSource.internal &&
-      isWatchContainer(resolved?.label)
+      resolved?.label != null &&
+      isWatchContainer(resolved.label)
     ) {
       setWatchVideo(block, pick.url, {
-        title: resolved?.title,
-        description: resolved?.description
+        eyebrow: videoLabelName(t, resolved.label),
+        title: resolved.title,
+        description: resolved.description
       })
       return
     }

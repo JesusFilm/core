@@ -25,7 +25,8 @@ export interface CampaignCarouselCommand {
   /** Watch expansion of a pasted Watch link, as one Command. */
   /**
    * Expand a Watch video (a series or collection) into the carousel; its
-   * title and description fill the carousel's own while those are empty.
+   * label, title and description replace the carousel's eyebrow, title and
+   * description (undo restores them).
    */
   setWatchVideo: (
     carousel: CampaignVideoCarouselBlock,
@@ -42,8 +43,9 @@ export interface CampaignCarouselCommand {
   error?: string
 }
 
-/** The expanded Watch video's own text, offered to the carousel's empty fields. */
+/** The expanded Watch video's text, written over the carousel's own: its label as the eyebrow, its title and description. */
 export interface WatchVideoText {
+  eyebrow?: string | null
   title?: string | null
   description?: string | null
 }
@@ -128,10 +130,9 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
       videoId: carousel.videoId,
       videoVariantLanguageId: carousel.videoVariantLanguageId
     }
-    for (const field of ['title', 'description'] as const) {
+    for (const field of ['eyebrow', 'title', 'description'] as const) {
       const value = text?.[field]
       if (value == null || value.trim() === '') continue
-      if (carousel[field] != null && carousel[field].trim() !== '') continue
       input[field] = fitCampaignText(
         value,
         campaignTextCap('CampaignVideoCarouselBlock', field)
