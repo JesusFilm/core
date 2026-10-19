@@ -10,6 +10,7 @@ import { ChangeEvent, ReactElement, useState } from 'react'
 
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
+import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
 import { useCloudflareUploadByUrlMutation } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import { messageOf } from '../../utils/useCampaignStyleCommand'
@@ -41,12 +42,14 @@ interface ImagePickerProps {
 }
 
 /**
- * The only two ways an image enters a campaign (PRD §5): upload a file, or
- * paste an image URL — no library browsing. A paste is checked for the https
- * shape here and shown resolved before it is kept; keeping it fetches the
- * picture into Cloudflare under the team, so what `onPick` receives is always
- * an imagedelivery.net address. An upload goes through `useImageUpload` with
- * the team and is shown the same way before it is kept.
+ * How an image enters a campaign (PRD §5): upload a file, paste an image
+ * URL, or pick one of the team's earlier uploads. A paste is checked for the
+ * https shape here and shown resolved before it is kept; keeping it fetches
+ * the picture into Cloudflare under the team, so what `onPick` receives is
+ * always an imagedelivery.net address. An upload goes through
+ * `useImageUpload` with the team and is shown the same way before it is
+ * kept. The uploads grid is the journey editor's media library, scoped to
+ * the team, and picks at once.
  */
 export function ImagePicker({
   teamId,
@@ -173,6 +176,15 @@ export function ImagePicker({
           {error}
         </Alert>
       )}
+      <MediaLibrary
+        title={t('Your uploads')}
+        isAi={false}
+        teamId={teamId}
+        dense
+        onSelect={(input) => {
+          if (input.src != null) onPick(input.src)
+        }}
+      />
       {candidate != null && (
         <Stack spacing={2} data-testid={`${testId}Preview`}>
           <Box

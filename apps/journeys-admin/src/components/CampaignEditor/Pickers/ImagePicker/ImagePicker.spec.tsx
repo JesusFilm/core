@@ -6,6 +6,7 @@ import { useImageUpload } from '../../../../libs/useImageUpload'
 import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
 
 import { ImagePicker, isHttpsUrl } from './ImagePicker'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary/MediaLibrary'
 
 vi.mock('../../../../libs/useImageUpload', () => ({
   useImageUpload: vi.fn()
@@ -44,6 +45,26 @@ function renderPicker(
     </MockedProvider>
   )
   return { onPick }
+}
+
+const uploadsMock = {
+  request: {
+    query: GET_MY_CLOUDFLARE_IMAGES,
+    variables: { offset: 0, limit: 11, isAi: false, teamId: 'teamId' }
+  },
+  result: {
+    data: {
+      getMyCloudflareImages: [
+        {
+          __typename: 'CloudflareImage',
+          id: 'earlierId',
+          url: 'https://imagedelivery.net/accountHash/earlierId',
+          blurhash: null,
+          userId: 'userId'
+        }
+      ]
+    }
+  }
 }
 
 describe('ImagePicker', () => {
@@ -174,5 +195,15 @@ describe('ImagePicker', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(screen.queryByTestId('CampaignImagePickerPreview')).toBeNull()
     expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it("lists the team's earlier uploads and picks one at once", async () => {
+    const { onPick } = renderPicker(undefined, [uploadByUrlMock, uploadsMock])
+
+    fireEvent.click(await screen.findByTestId('media-library-image-earlierId'))
+
+    expect(onPick).toHaveBeenCalledWith(
+      'https://imagedelivery.net/accountHash/earlierId/public'
+    )
   })
 })

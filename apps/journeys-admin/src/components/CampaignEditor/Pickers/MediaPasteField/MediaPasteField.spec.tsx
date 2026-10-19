@@ -16,6 +16,7 @@ import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
 import { getVideosWithOffsetAndUrl } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube/VideoFromYouTube.handlers'
 
 import { MediaPasteField } from './MediaPasteField'
+import { GET_MY_MUX_VIDEOS } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos'
 
 vi.mock('../../../../libs/useImageUpload', () => ({
   useImageUpload: vi.fn()
@@ -79,6 +80,35 @@ function watchVideoMock(childrenCount: number) {
 const watchErrorMock = {
   request: { query: GET_CAMPAIGN_WATCH_VIDEO, variables: { id: WATCH_SLUG } },
   error: new Error('video not found')
+}
+
+const muxUploadsMock = {
+  request: {
+    query: GET_MY_MUX_VIDEOS,
+    variables: { offset: 0, limit: 11, teamId: 'teamId' }
+  },
+  result: {
+    data: {
+      getMyMuxVideos: [
+        {
+          __typename: 'MuxVideo',
+          id: 'earlierMuxId',
+          playbackId: 'playbackId',
+          readyToStream: true,
+          duration: 42,
+          userId: 'userId'
+        },
+        {
+          __typename: 'MuxVideo',
+          id: 'processingMuxId',
+          playbackId: null,
+          readyToStream: false,
+          duration: null,
+          userId: 'userId'
+        }
+      ]
+    }
+  }
 }
 
 let uploadOptions: UseImageUploadOptions | undefined
@@ -246,5 +276,22 @@ describe('MediaPasteField', () => {
         src: 'https://imagedelivery.net/hash/cfId/public'
       })
     )
+  })
+
+  it("lists the team's earlier Mux uploads under Upload, ready ones only, and picks one at once", async () => {
+    const onPick = renderField([muxUploadsMock])
+    fireEvent.click(screen.getByRole('tab', { name: 'Upload' }))
+
+    fireEvent.click(
+      await screen.findByTestId('CampaignMuxUploads-earlierMuxId')
+    )
+
+    expect(
+      screen.queryByTestId('CampaignMuxUploads-processingMuxId')
+    ).toBeNull()
+    expect(onPick).toHaveBeenCalledWith({
+      source: VideoBlockSource.mux,
+      videoId: 'earlierMuxId'
+    })
   })
 })

@@ -27,6 +27,7 @@ import { useCampaignWatchVideoQuery } from '../../../../libs/useCampaignWatchVid
 import { AddByFile } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile'
 import { messageOf } from '../../utils/useCampaignStyleCommand'
 import { ImagePicker } from '../ImagePicker'
+import { MuxUploads } from '../MuxUploads'
 
 import {
   ParsedMediaUrl,
@@ -397,9 +398,12 @@ export function MediaPasteField({
         </Stack>
       )}
       {tab === 'upload' && (
-        <EditorProvider initialState={{ selectedBlock: uploadTarget }}>
-          <AddByFile onChange={handleUploadComplete} />
-        </EditorProvider>
+        <>
+          <EditorProvider initialState={{ selectedBlock: uploadTarget }}>
+            <AddByFile onChange={handleUploadComplete} />
+          </EditorProvider>
+          <MuxUploads teamId={teamId} onPick={handleUploadComplete} />
+        </>
       )}
       {allowImage && tab === 'image' && (
         <ImagePicker
