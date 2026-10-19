@@ -64,7 +64,7 @@ export function CampaignList(): ReactElement | null {
       {!loading && activeTeam != null && campaigns.length === 0 && (
         <Typography color="text.secondary">
           {t(
-            'No campaigns yet. Create one to build a seasonal landing page with a page for every region.'
+            'No campaigns yet. Create one to build a landing page with a page for every region.'
           )}
         </Typography>
       )}

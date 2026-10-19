@@ -376,7 +376,7 @@ describe('campaignPublic', () => {
       parentBlockId: null,
       parentOrder: 0,
       backgroundKind: 'none',
-      eyebrow: 'Christmas 2026',
+      eyebrow: 'Your campaign',
       title: "Partagez l'histoire de Noël",
       description: 'Pick your region to find a journey in your language, ready to share.',
       titleTranslations: []
@@ -526,7 +526,7 @@ describe('campaignPublic', () => {
       title: 'Christmas 2026'
     })
     expect(omitted.data.campaignPublic.pages[0].blocks[0].title).toBe(
-      'Share the story of Christmas'
+      'Share the story'
     )
 
     const foreign = (await publicClient({

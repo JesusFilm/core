@@ -176,8 +176,8 @@ export function seededBlocks(
       typename: 'CampaignHeroBlock',
       pageId: 'landingPageId',
       parentOrder: 0,
-      eyebrow: 'Christmas 2026',
-      title: 'Share the story of Christmas',
+      eyebrow: 'Your campaign',
+      title: 'Share the story',
       description: 'Pick your region to find a journey in your language, ready to share.',
       align: 'center',
       backgroundKind: 'none'
@@ -197,7 +197,7 @@ export function seededBlocks(
       pageId: 'landingPageId',
       parentOrder: 2,
       eyebrow: 'Watch',
-      title: 'Films for the season',
+      title: 'Films to watch',
       backgroundKind: 'surface'
     }),
     block(campaignId, {
@@ -240,7 +240,7 @@ export function seededBlocks(
       pageId: 'regionPageId',
       parentOrder: 0,
       intro:
-        'A Christmas journey chosen and contextualised by your regional team.',
+        'A journey chosen and contextualised by your regional team.',
       backgroundKind: 'none'
     }),
     block(campaignId, {

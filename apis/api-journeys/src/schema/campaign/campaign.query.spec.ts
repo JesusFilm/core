@@ -260,7 +260,7 @@ describe('campaign', () => {
       parentBlockId: null,
       parentOrder: 0,
       backgroundKind: 'none',
-      title: 'Share the story of Christmas',
+      title: 'Share the story',
       align: 'center'
     })
     expect(

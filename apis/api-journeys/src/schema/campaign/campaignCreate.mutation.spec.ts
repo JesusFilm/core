@@ -375,8 +375,8 @@ describe('campaignCreate', () => {
         regionId: null,
         parentBlockId: null,
         parentOrder: 0,
-        eyebrow: 'Christmas 2026',
-        title: 'Share the story of Christmas',
+        eyebrow: 'Your campaign',
+        title: 'Share the story',
         description: 'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         backgroundKind: 'none'
@@ -416,7 +416,7 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('seeds the Video carousel with eyebrow "Watch", title "Films for the season", no video and backgroundKind surface', async () => {
+    it('seeds the Video carousel with eyebrow "Watch", title "Films to watch", no video and backgroundKind surface', async () => {
       await create()
       const carousel = createdBlock('CampaignVideoCarouselBlock')
       expect(carousel).toMatchObject({
@@ -424,7 +424,7 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 2,
         eyebrow: 'Watch',
-        title: 'Films for the season',
+        title: 'Films to watch',
         backgroundKind: 'surface'
       })
       expect(carousel.videoId).toBeUndefined()
@@ -476,7 +476,7 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 0,
         intro:
-          'A Christmas journey chosen and contextualised by your regional team.'
+          'A journey chosen and contextualised by your regional team.'
       })
     })
 
@@ -899,8 +899,8 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 0,
         backgroundKind: 'none',
-        eyebrow: 'Christmas 2026',
-        title: 'Share the story of Christmas',
+        eyebrow: 'Your campaign',
+        title: 'Share the story',
         description: 'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         mediaBlockId: null

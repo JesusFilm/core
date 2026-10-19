@@ -230,7 +230,7 @@ describe('campaignTranslations', () => {
       group: 'landing',
       field: 'eyebrow',
       maxLength: 80,
-      defaultValue: 'Christmas 2026',
+      defaultValue: 'Your campaign',
       value: null,
       source: null,
       target: {
@@ -246,7 +246,7 @@ describe('campaignTranslations', () => {
         (row: any) => row.target.blockId === 'heroId' && row.field === 'title'
       )
     ).toMatchObject({
-      defaultValue: 'Share the story of Christmas',
+      defaultValue: 'Share the story',
       value: "Partagez l'histoire",
       source: 'machine'
     })

@@ -16,8 +16,8 @@ export const LANDING_VIDEO_CAROUSEL = 2
 export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignHeroBlock',
-    eyebrow: 'Christmas 2026',
-    title: 'Share the story of Christmas',
+    eyebrow: 'Your campaign',
+    title: 'Share the story',
     description: 'Pick your region to find a journey in your language, ready to share.',
     align: 'center',
     backgroundKind: 'none'
@@ -31,7 +31,7 @@ export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignVideoCarouselBlock',
     eyebrow: 'Watch',
-    title: 'Films for the season',
+    title: 'Films to watch',
     backgroundKind: 'surface'
   },
   {
@@ -62,7 +62,7 @@ export const REGION_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignRegionHeaderBlock',
     intro:
-      'A Christmas journey chosen and contextualised by your regional team.',
+      'A journey chosen and contextualised by your regional team.',
     backgroundKind: 'none'
   },
   {

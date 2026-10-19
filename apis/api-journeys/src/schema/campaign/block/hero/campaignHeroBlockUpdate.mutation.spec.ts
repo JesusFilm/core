@@ -63,7 +63,7 @@ describe('campaignHeroBlockUpdate', () => {
     const result = await update({ title: ' Christmas, shared ', description: '' })
 
     expect(result.data.campaignHeroBlockUpdate).toMatchObject({
-      eyebrow: 'Christmas 2026',
+      eyebrow: 'Your campaign',
       title: 'Christmas, shared',
       description: ''
     })
