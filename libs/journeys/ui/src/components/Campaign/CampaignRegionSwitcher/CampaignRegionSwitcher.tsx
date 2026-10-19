@@ -90,7 +90,8 @@ export function regionFrameSx(variant: CampaignSwitcherVariant): StyleObject {
     flexDirection: list ? { xs: 'column', md: 'row' } : 'column',
     alignItems: list ? { xs: 'flex-start', md: 'center' } : 'flex-start',
     gap: pill ? 1 : list ? 2 : 0.5,
-    px: pill ? 2 : 3,
+    // A pill's rounded ends eat into its sides, so the name and flags sit as far from the edge as from the top.
+    px: 3,
     py: pill ? 1 : 3,
     borderRadius: pill ? 999 : 1,
     textAlign: 'left',
