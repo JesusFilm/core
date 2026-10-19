@@ -6,10 +6,10 @@ production.
 **Current state (2026-10-18): the committed default is `prod-1.35`.** Staging
 has completed `prepare`, `stage-addons` and every minor through 1.36: control
 plane, workers and add-ons are on 1.36, with Aurora still 13.23 on I/O-Optimized
-storage. Production completed `prod-prepare`, `prod-addons`, `prod-1.33` and
-`prod-1.34` on 2026-10-18: control plane and workers are on 1.34, kube-proxy, VPC
-CNI and CoreDNS are EKS add-ons on their 1.34 pins, and its EBS CSI driver is the
-Argo-managed 1.53.0. Aurora is still 13.23. `prod-1.35` is the next phase.
+storage. Production completed `prod-prepare`, `prod-addons` and every minor
+through 1.35 on 2026-10-18: control plane and workers are on 1.35, kube-proxy, VPC
+CNI and CoreDNS are EKS add-ons on their 1.35 pins, and its EBS CSI driver is the
+Argo-managed 1.53.0. Aurora is still 13.23. `prod-1.36` is the next phase.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
