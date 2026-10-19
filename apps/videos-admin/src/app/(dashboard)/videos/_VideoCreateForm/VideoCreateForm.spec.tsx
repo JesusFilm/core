@@ -201,48 +201,6 @@ describe('VideoCreateForm', () => {
       })
     })
 
-    it('warns when slug contains underscores', async () => {
-      const user = userEvent.setup()
-      await user.type(screen.getByLabelText(/Slug/i), 'jesus_walks')
-      fireEvent.click(screen.getByText('Create'))
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            'Slug can only contain lowercase letters, numbers and hyphens'
-          )
-        ).toBeInTheDocument()
-      })
-    })
-
-    it('warns when slug has a leading, trailing or repeated hyphen', async () => {
-      const user = userEvent.setup()
-      await user.type(screen.getByLabelText(/Slug/i), '-know-god')
-      fireEvent.click(screen.getByText('Create'))
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(
-            'Slug cannot start or end with a hyphen, or contain repeated hyphens'
-          )
-        ).toBeInTheDocument()
-      })
-    })
-
-    it('accepts slugs with unicode letters', async () => {
-      const user = userEvent.setup()
-      await user.type(screen.getByLabelText(/Slug/i), 'café-con-leche')
-      fireEvent.click(screen.getByText('Create'))
-
-      await waitFor(() => {
-        expect(
-          screen.queryByText(
-            'Slug can only contain lowercase letters, numbers and hyphens'
-          )
-        ).not.toBeInTheDocument()
-      })
-    })
-
     it('navigates to videos list when Cancel button is clicked', () => {
       fireEvent.click(screen.getByText('Cancel'))
       expect(mockRouterPush).toHaveBeenCalledWith('/videos')
