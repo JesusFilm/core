@@ -67,7 +67,7 @@ interface RegionCardEditProps {
  * while any of its Share Languages is unlinked), its Region Lines as inline
  * text and its country chips. Clicking the card selects the region; clicking
  * a line selects that line, which then edits in place as any typography.
- * The handle in its top-right corner drags the card onto another card to
+ * The handle on its right edge drags the card onto another card to
  * take that card's place in the region order, one Command through the
  * canvas's drag context.
  */
@@ -155,8 +155,9 @@ function RegionCardEdit({
         onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
         sx={{
           position: 'absolute',
-          top: 4,
+          top: '50%',
           right: 4,
+          transform: 'translateY(-50%)',
           display: 'flex',
           p: 0.5,
           borderRadius: 1,
