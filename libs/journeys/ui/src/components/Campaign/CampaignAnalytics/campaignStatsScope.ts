@@ -60,19 +60,3 @@ export function countryName(code: string, locale: string): string {
 }
 
 /** "Nov 1" (the locale's order), with the year once it is not the current one. */
-export function formatSince(from: string, locale: string, now: Date): string {
-  const date = new Date(from)
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'short',
-    timeZone: 'UTC',
-    ...(date.getUTCFullYear() === now.getUTCFullYear()
-      ? {}
-      : { year: 'numeric' })
-  }
-  try {
-    return new Intl.DateTimeFormat(locale, options).format(date)
-  } catch {
-    return new Intl.DateTimeFormat('en', options).format(date)
-  }
-}

@@ -31,7 +31,6 @@ import {
   CampaignStatsView,
   countriesForTab,
   countryName,
-  formatSince,
   statsForTab
 } from './campaignStatsScope'
 import { GET_CAMPAIGN_STATS } from './getCampaignStats'
@@ -563,9 +562,7 @@ export function CampaignAnalyticsPanel({
             ? t('0 visitors')
             : numberFormat.format(view.totalVisitors)
         }
-        caption={t('since {{date}}', {
-          date: formatSince(stats.from, locale, new Date())
-        })}
+        caption={t('all time')}
       />
     </Box>
   )

@@ -228,22 +228,11 @@ describe('CampaignAnalytics', () => {
       ).toHaveTextContent('—')
     })
 
-    it('prints "since" from the first publish date', async () => {
+    it('captions the total as all time', async () => {
       await renderAnalytics()
-      expect(await screen.findByText('since Oct 5')).toBeInTheDocument()
+      expect(await screen.findByText('all time')).toBeInTheDocument()
     })
 
-    it('adds the year to "since" when it is not the current one', async () => {
-      await renderAnalytics({
-        mocks: [
-          statsMock({
-            ...campaignStatsFixture,
-            from: '2020-11-01T00:00:00.000Z'
-          })
-        ]
-      })
-      expect(await screen.findByText('since Nov 1, 2020')).toBeInTheDocument()
-    })
   })
 
   describe('tiles', () => {
