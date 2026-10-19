@@ -8,9 +8,10 @@ environments have finished the EKS rollout. Staging completed `prepare`,
 `stage-addons` and every minor through 1.36. Production completed `prod-prepare`,
 `prod-addons` and every minor through 1.36 on 2026-10-18. In both, the control
 plane, workers, kube-proxy, VPC CNI and CoreDNS are on their 1.36 versions, and
-production's EBS CSI driver is the Argo-managed 1.53.0. Aurora is still 13.23 in
-both, with staging on I/O-Optimized storage. The staging preflight passed on
-2026-10-19; `stage-aurora` upgrades staging Aurora to 17.11.
+production's EBS CSI driver is the Argo-managed 1.53.0. Staging completed
+`stage-aurora` on 2026-10-19: its Aurora cluster is on 17.11, still on
+I/O-Optimized storage. Production Aurora is still 13.23. `complete` is the next
+phase, after the production preflight and a rehearsal on a production clone.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
@@ -197,6 +198,13 @@ databases or `reg*` columns. Extensions are `plpgsql` everywhere, plus `pg_trgm`
 1.5 in `languages` and `citext` 1.6 in `plausible`, both supported on 17.
 Staging's Plausible database lives on this cluster, so staging analytics also
 pauses during the upgrade. The production preflight is still to run.
+
+`stage-aurora` was applied on 2026-10-19. AWS reported 503 seconds offline and
+kept the pre-upgrade snapshot
+`preupgrade-jfp-core-stage-13-23-to-17-11-2026-10-19-22-17`. The staging ECS
+APIs failed health checks during the outage, were replaced automatically and
+were serving queries through the gateway within five minutes of the database
+returning. Keep that snapshot until production is verified.
 
 Rehearse the major upgrade and application queries on an approved test copy.
 Staging, which can be restored from its five-day point-in-time window, serves
