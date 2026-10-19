@@ -286,19 +286,19 @@ function SectionText({
     },
     description: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+      sx: { color: 'var(--campaign-band-muted)' }
     },
     intro: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+      sx: { color: 'var(--campaign-band-muted)' }
     },
     richTextContent: {
       variant: 'body1' as const,
-      sx: { maxWidth: 720 }
+      sx: {}
     },
     bullets: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-text)', maxWidth: 720 }
+      sx: { color: 'var(--campaign-band-text)' }
     }
   }[
     field as
@@ -429,7 +429,7 @@ function CanvasStrings({
     <Stack
       spacing={1}
       data-testid="CanvasStrings"
-      sx={{ width: '100%', maxWidth: 720, alignItems: 'inherit' }}
+      sx={{ width: '100%', alignItems: 'inherit' }}
     >
       <Typography
         variant="overline"
@@ -921,20 +921,15 @@ export function CanvasSection({
           top: 0,
           zIndex: 2,
           overflowX: 'clip' as const,
-          borderBottom: '1px solid var(--campaign-band-border)',
-          // Follows the frame's rounded top corners so the selection outline is not cut off there.
-          borderRadius:
-            'var(--canvas-frame-radius, 0px) var(--canvas-frame-radius, 0px) 0 0'
+          borderBottom: '1px solid var(--campaign-band-border)'
         }
       : chrome === 'footer'
         ? {
             minHeight: footerEmpty ? 24 : undefined,
             py: footerEmpty ? 0 : { xs: 4, md: 5 },
             borderTop: '1px solid var(--campaign-band-border)',
-            // Pinned to the frame's bottom edge on a short page and rounded with its corners, so the outline is not cut off.
-            mt: 'auto',
-            borderRadius:
-              '0 0 var(--canvas-frame-radius, 0px) var(--canvas-frame-radius, 0px)'
+            // Pinned to the frame's bottom edge on a short page, as on the public page.
+            mt: 'auto'
           }
         : inSlot
           ? 'backgroundKind' in block &&
