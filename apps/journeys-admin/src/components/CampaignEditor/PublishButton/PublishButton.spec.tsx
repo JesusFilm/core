@@ -55,13 +55,11 @@ const unpublishMock = {
 
 interface HarnessProps {
   campaignProp?: Campaign
-  isManager?: boolean
   initialState?: Partial<CampaignEditorState>
 }
 
 function Harness({
   campaignProp = campaign,
-  isManager = true,
   initialState
 }: HarnessProps): ReactElement {
   return (
@@ -72,7 +70,7 @@ function Harness({
         mocks={[publishMock, unpublishMock]}
       >
         <CommandProbe />
-        <PublishButton isManager={isManager} />
+        <PublishButton />
       </StaticEditor>
     </SnackbarProvider>
   )
@@ -168,22 +166,22 @@ describe('PublishButton', () => {
     expect(unpublishResult).not.toHaveBeenCalled()
   })
 
-  it('disables Publish for a non-manager', () => {
-    render(<Harness isManager={false} />)
+  it('lets any member publish', () => {
+    render(<Harness />)
     openPopover()
 
-    expect(screen.getByRole('button', { name: 'Publish' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Publish' })).toBeEnabled()
   })
 
-  it('disables Unpublish for a non-manager', () => {
-    render(<Harness campaignProp={publishedCampaign} isManager={false} />)
+  it('lets any member unpublish', () => {
+    render(<Harness campaignProp={publishedCampaign} />)
     openPopover()
 
-    expect(screen.getByRole('button', { name: 'Unpublish' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Unpublish' })).toBeEnabled()
   })
 
-  it('opens the root-domain campaign address in a new tab, for a non-manager too', () => {
-    render(<Harness isManager={false} />)
+  it('opens the root-domain campaign address in a new tab', () => {
+    render(<Harness />)
     openPopover()
 
     const link = screen.getByRole('link', { name: 'Open page' })

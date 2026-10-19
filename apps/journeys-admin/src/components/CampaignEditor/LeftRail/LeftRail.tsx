@@ -187,7 +187,7 @@ export function LeftRail({
             <Iphone1Icon />
           </ToggleButton>
         </ToggleButtonGroup>
-        <PublishButton isManager={isManager} />
+        <PublishButton />
       </Stack>
     </Stack>
   )

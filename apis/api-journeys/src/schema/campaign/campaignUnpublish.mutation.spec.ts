@@ -179,27 +179,22 @@ describe('campaignUnpublish', () => {
     ])
   })
 
-  it('throws FORBIDDEN for a member', async () => {
+  it('unpublishes for a member too: publishing is editing', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(
       campaignFactory({ role: 'member' }).published().build()
     )
+    prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(
+      campaignFactory({ role: 'member' }).build()
+    )
 
-    const result = await authClient({
+    const result = (await authClient({
       document: CAMPAIGN_UNPUBLISH,
       variables: { id: 'campaignId' }
-    })
+    })) as any
 
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'user is not allowed to unpublish campaign',
-          extensions: expect.objectContaining({ code: 'FORBIDDEN' })
-        })
-      ]
-    })
-    expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
-    expect(mockQueueAdd).not.toHaveBeenCalled()
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignUnpublish.status).toBe('draft')
   })
 
   it('throws NOT_FOUND for an unknown id', async () => {
