@@ -3,13 +3,13 @@
 The rollout targets EKS **1.36** and Aurora PostgreSQL **17.11** in staging and
 production.
 
-**Current state (2026-10-18): the committed default is `prod-1.33`.** Staging
-has completed `prepare`, `stage-addons` and every minor through 1.36: control
-plane, workers and add-ons are on 1.36, with Aurora still 13.23 on I/O-Optimized
-storage. Production completed `prod-prepare`, `prod-addons` and `prod-1.33` on
-2026-10-18: control plane and workers are on 1.33, kube-proxy, VPC CNI and CoreDNS
-are EKS add-ons on their 1.33 pins, and its EBS CSI driver is the Argo-managed
-1.53.0. Aurora is still 13.23. `prod-1.34` is the next phase.
+**Current state (2026-10-18): the committed default is `prod-1.36`.** Both
+environments have finished the EKS rollout. Staging completed `prepare`,
+`stage-addons` and every minor through 1.36. Production completed `prod-prepare`,
+`prod-addons` and every minor through 1.36 on 2026-10-18. In both, the control
+plane, workers, kube-proxy, VPC CNI and CoreDNS are on their 1.36 versions, and
+production's EBS CSI driver is the Argo-managed 1.53.0. Aurora is still 13.23 in
+both, with staging on I/O-Optimized storage. `stage-aurora` is the next phase.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
@@ -155,11 +155,12 @@ After staging workload verification, target `module.prod.module.eks`:
 | `prod-1.36`    | 1.36                     | 1.36                            |
 
 Before each production phase, confirm the production `aws-ebs-csi-driver` Argo
-application is Healthy and its volume attachments are healthy. On 1.33 it shows
-OutOfSync on the `CSIDriver` alone: the chart sets
-`nodeAllocatableUpdatePeriodSeconds`, which 1.33 drops because its feature gate
-is still alpha. Sync the application by hand after `prod-1.34`, where the field
-is stored, and expect Synced from then on.
+application is Synced/Healthy and its volume attachments are healthy. During
+`prod-1.33` it showed OutOfSync on the `CSIDriver` alone, because the chart sets
+`nodeAllocatableUpdatePeriodSeconds` and 1.33 drops that alpha-gated field; a
+manual sync after `prod-1.34` stored it and cleared the drift. Each production
+worker roll takes `analytics.jesusfilm.org` offline for a minute or two at a
+time: ingress-nginx, Plausible and both ClickHouse servers each run a single pod.
 Production worker alignment is required before advancing its control plane.
 Use the same health checks and saved-plan review at each minor. Do not lower the
 phase for a live cluster that has already advanced; the precondition rejects it.
