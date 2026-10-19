@@ -271,7 +271,7 @@ describe('LinkSettings', () => {
         'true'
       )
       expect(listItems()).toEqual([
-        'Share the story of Christmas',
+        'Share the story of Outreach',
         'Choose your region',
         'Films for the season',
         'Ready-made journeys',

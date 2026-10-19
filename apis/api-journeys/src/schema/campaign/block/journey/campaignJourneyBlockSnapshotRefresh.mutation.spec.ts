@@ -59,9 +59,9 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
     }: any) => ({ ...item, ...data })) as never)
     prismaMock.journey.findFirst.mockResolvedValue({
       id: 'journeyId',
-      slug: 'christmas-story',
-      title: 'The Christmas story',
-      description: 'A short journey through the nativity.',
+      slug: 'outreach-story',
+      title: 'The outreach story',
+      description: 'A short journey through the story.',
       status: 'published',
       deletedAt: null,
       team: { id: 'otherTeamId', customDomains: [] },
@@ -79,8 +79,8 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
     expect(result.data.campaignJourneyBlockSnapshotRefresh).toEqual({
       id: 'journeyItemId',
       journeyId: 'journeyId',
-      title: 'The Christmas story',
-      description: 'A short journey through the nativity.',
+      title: 'The outreach story',
+      description: 'A short journey through the story.',
       snapshotEdited: false,
       titleTranslations: [{ languageId: '496', value: 'Titre' }],
       descriptionTranslations: [{ languageId: '496', value: 'Description' }]
@@ -88,8 +88,8 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'journeyItemId' },
       data: {
-        title: 'The Christmas story',
-        description: 'A short journey through the nativity.',
+        title: 'The outreach story',
+        description: 'A short journey through the story.',
         snapshotEdited: false
       },
       include: { action: true }
@@ -107,8 +107,8 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
   it('clears the description when the journey no longer has one', async () => {
     prismaMock.journey.findFirst.mockResolvedValue({
       id: 'journeyId',
-      slug: 'christmas-story',
-      title: 'The Christmas story',
+      slug: 'outreach-story',
+      title: 'The outreach story',
       description: null,
       status: 'published',
       deletedAt: null,

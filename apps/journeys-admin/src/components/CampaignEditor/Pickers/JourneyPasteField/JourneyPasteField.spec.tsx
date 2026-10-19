@@ -11,9 +11,9 @@ import { JourneyPasteField, parseJourneyLink } from './JourneyPasteField'
 const journey = {
   __typename: 'Journey',
   id: 'journeyId',
-  title: 'Christmas in Europe',
+  title: 'Outreach in Europe',
   description: 'A short journey.',
-  slug: 'christmas-europe',
+  slug: 'outreach-europe',
   status: JourneyStatus.published
 }
 
@@ -28,7 +28,7 @@ const byIdMock = {
 const bySlugMock = {
   request: {
     query: GET_CAMPAIGN_JOURNEY_BY_LINK,
-    variables: { id: 'christmas-europe', idType: IdType.slug }
+    variables: { id: 'outreach-europe', idType: IdType.slug }
   },
   result: vi.fn(() => ({ data: { journey } }))
 }
@@ -71,18 +71,18 @@ describe('parseJourneyLink', () => {
       parseJourneyLink('https://admin.nextstep.is/journeys/journeyId/reports')
     ).toEqual({ id: 'journeyId' })
     expect(
-      parseJourneyLink('https://your.nextstep.is/embed/christmas-europe')
-    ).toEqual({ slug: 'christmas-europe' })
+      parseJourneyLink('https://your.nextstep.is/embed/outreach-europe')
+    ).toEqual({ slug: 'outreach-europe' })
     expect(
-      parseJourneyLink('  https://journeys.example.org/christmas-europe?x=1 ')
-    ).toEqual({ slug: 'christmas-europe' })
+      parseJourneyLink('  https://journeys.example.org/outreach-europe?x=1 ')
+    ).toEqual({ slug: 'outreach-europe' })
   })
 
   it('rejects anything that is not an http(s) URL with a path', () => {
-    expect(parseJourneyLink('christmas-europe')).toBeNull()
+    expect(parseJourneyLink('outreach-europe')).toBeNull()
     expect(parseJourneyLink('https://your.nextstep.is/')).toBeNull()
     expect(
-      parseJourneyLink('ftp://your.nextstep.is/christmas-europe')
+      parseJourneyLink('ftp://your.nextstep.is/outreach-europe')
     ).toBeNull()
     expect(parseJourneyLink('')).toBeNull()
   })
@@ -111,8 +111,8 @@ describe('JourneyPasteField', () => {
     paste('https://admin.nextstep.is/journeys/journeyId')
 
     const resolved = await screen.findByTestId('JourneyPasteResolved')
-    expect(resolved).toHaveTextContent('Christmas in Europe')
-    expect(resolved).toHaveTextContent('/christmas-europe')
+    expect(resolved).toHaveTextContent('Outreach in Europe')
+    expect(resolved).toHaveTextContent('/outreach-europe')
     expect(byIdMock.result).toHaveBeenCalled()
     expect(onLink).not.toHaveBeenCalled()
 
@@ -137,10 +137,10 @@ describe('JourneyPasteField', () => {
   it('resolves a public URL on any domain by slug', async () => {
     renderField()
 
-    paste('https://journeys.example.org/christmas-europe')
+    paste('https://journeys.example.org/outreach-europe')
 
     expect(await screen.findByTestId('JourneyPasteResolved')).toHaveTextContent(
-      'Christmas in Europe'
+      'Outreach in Europe'
     )
     expect(bySlugMock.result).toHaveBeenCalled()
   })

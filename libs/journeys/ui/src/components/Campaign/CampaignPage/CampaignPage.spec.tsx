@@ -164,7 +164,7 @@ describe('CampaignPage', () => {
         links: ['Terms of Use', 'Your Privacy']
       })
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
       expect(
         screen.queryByTestId('CampaignAllRegionsChip')
@@ -174,11 +174,11 @@ describe('CampaignPage', () => {
       renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
       expect(chromeRows()).toEqual(landing)
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
       expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
         'href',
-        '/campaign/christmas-2026?lang=en'
+        '/campaign/outreach-2026?lang=en'
       )
     })
 
@@ -454,18 +454,18 @@ describe('CampaignPage page language', () => {
     renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
     expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
       'href',
-      '/campaign/christmas-2026?lang=en'
+      '/campaign/outreach-2026?lang=en'
     )
     expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
       'href',
-      '/campaign/christmas-2026?lang=en'
+      '/campaign/outreach-2026?lang=en'
     )
     expect(
       screen.queryByTestId('CampaignRegionCard-eurRegionId')
     ).not.toBeInTheDocument()
     expect(
       screen.getByTestId('CampaignRegionCard-afrRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/afr?lang=en')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/afr?lang=en')
   })
 
   it('keeps the chosen language, not the default, across a region switch', () => {
@@ -476,13 +476,13 @@ describe('CampaignPage page language', () => {
     })
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=fr')
     expect(
       screen.getByRole('link', { name: 'Start with Europe' })
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=fr')
     expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
       'href',
-      '/campaign/christmas-2026?lang=fr'
+      '/campaign/outreach-2026?lang=fr'
     )
   })
 
@@ -493,7 +493,7 @@ describe('CampaignPage page language', () => {
     })
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur')
   })
 
   it('sets html lang to the resolved bcp47 and dir to ltr when the language is not right-to-left', () => {
@@ -513,6 +513,6 @@ describe('CampaignPage page language', () => {
     expect(document.documentElement).toHaveAttribute('dir', 'rtl')
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=ar')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=ar')
   })
 })

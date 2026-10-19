@@ -30,7 +30,7 @@ function heroMock(title: string, errors?: GraphQLError[]) {
               campaignHeroBlockUpdate: {
                 __typename: 'CampaignHeroBlock',
                 id: 'heroId',
-                eyebrow: 'Christmas 2026',
+                eyebrow: 'Outreach 2026',
                 title,
                 description: 'Pick your region to find a journey in your language, ready to share.'
               }
@@ -70,7 +70,7 @@ describe('InlineText', () => {
     renderText({ editing: false, onSelect })
 
     const text = screen.getByTestId('InlineText-title')
-    expect(text).toHaveTextContent('Share the story of Christmas')
+    expect(text).toHaveTextContent('Share the story of Outreach')
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
 
     fireEvent.click(text)
@@ -134,7 +134,7 @@ describe('InlineText', () => {
       expect(input.tagName).toBe('INPUT')
       expect(input).toHaveAttribute('size', '1')
       expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent(
-        'Share the story of Christmas'
+        'Share the story of Outreach'
       )
     })
 
@@ -192,7 +192,7 @@ describe('InlineText', () => {
         {
           __typename: 'TranslatedValue' as const,
           languageId: '496',
-          value: "Partagez l'histoire de Noël",
+          value: "Partagez l'histoire de Campagne",
           source: 'human' as const
         }
       ]
@@ -205,14 +205,14 @@ describe('InlineText', () => {
         { previewLanguageId: '496' }
       )
       const text = screen.getByTestId('InlineText-title')
-      expect(text).toHaveTextContent("Partagez l'histoire de Noël")
+      expect(text).toHaveTextContent("Partagez l'histoire de Campagne")
       expect(text).not.toHaveAttribute('data-fallback')
     })
 
     it('shows the default-language text as a marked fallback when the translation is missing, and as the input placeholder', () => {
       renderText({ editing: false }, [], { previewLanguageId: '496' })
       const text = screen.getByTestId('InlineText-title')
-      expect(text).toHaveTextContent('Share the story of Christmas')
+      expect(text).toHaveTextContent('Share the story of Outreach')
       expect(text).toHaveAttribute('data-fallback', 'true')
 
       renderText({}, [], { previewLanguageId: '496' })
@@ -220,7 +220,7 @@ describe('InlineText', () => {
       expect(input).toHaveValue('')
       expect(input).toHaveAttribute(
         'placeholder',
-        'Share the story of Christmas'
+        'Share the story of Outreach'
       )
     })
   })

@@ -20,9 +20,9 @@ function journeyRow(
 ): Record<string, unknown> {
   return {
     id: 'journeyId',
-    slug: 'christmas-story',
-    title: 'The Christmas story',
-    description: 'A short journey through the nativity.',
+    slug: 'outreach-story',
+    title: 'The outreach story',
+    description: 'A short journey through the story.',
     status: 'published',
     deletedAt: null,
     teamId: 'otherTeamId',
@@ -95,8 +95,8 @@ describe('campaignJourneyBlockCreate', () => {
           parentOrder: 0,
           pageId: 'landingPageId',
           journeyId: 'journeyId',
-          title: 'The Christmas story',
-          description: 'A short journey through the nativity.'
+          title: 'The outreach story',
+          description: 'A short journey through the story.'
         }
       }
     })
@@ -113,8 +113,8 @@ describe('campaignJourneyBlockCreate', () => {
         id: undefined,
         typename: 'CampaignJourneyBlock',
         journeyId: 'journeyId',
-        title: 'The Christmas story',
-        description: 'A short journey through the nativity.',
+        title: 'The outreach story',
+        description: 'A short journey through the story.',
         campaignId: 'campaignId',
         pageId: 'landingPageId',
         regionId: null,
@@ -131,13 +131,13 @@ describe('campaignJourneyBlockCreate', () => {
 
   it('resolves a public URL on any domain by slug of any team', async () => {
     const result = await create(
-      'https://stories.example.org/christmas-story?lang=es'
+      'https://stories.example.org/outreach-story?lang=es'
     )
 
     expect(result.errors).toBeUndefined()
     expect(prismaMock.journey.findFirst).toHaveBeenCalledWith({
       where: {
-        slug: 'christmas-story',
+        slug: 'outreach-story',
         status: { in: ['published', 'archived'] },
         deletedAt: null
       },

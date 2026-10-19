@@ -172,14 +172,14 @@ describe('CampaignRegionShare', () => {
 
     it('names the PNG <campaign slug>-<region slug>-<language bcp47>.png, falling back to the language id', () => {
       expect(qrCodeFileName(campaignPublic, region, languages[0])).toBe(
-        'christmas-2026-eur-en.png'
+        'outreach-2026-eur-en.png'
       )
       expect(
         qrCodeFileName(campaignPublic, region, {
           ...languages[0],
           language: { ...languages[0].language, bcp47: null }
         })
-      ).toBe('christmas-2026-eur-529.png')
+      ).toBe('outreach-2026-eur-529.png')
     })
 
     it('shows the Share Link without its scheme', () => {
@@ -309,7 +309,7 @@ describe('CampaignRegionShare', () => {
 
     expect(toDataURL).toHaveBeenCalledWith('image/png')
     const clicked = click.mock.contexts[0] as HTMLAnchorElement
-    expect(clicked.download).toBe('christmas-2026-eur-en.png')
+    expect(clicked.download).toBe('outreach-2026-eur-en.png')
     expect(clicked.href).toBe('data:image/png;base64,QR')
     toDataURL.mockRestore()
     click.mockRestore()

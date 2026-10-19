@@ -102,7 +102,7 @@ describe('campaignTranslationSet', () => {
     const result = await set({
       target: { blockId: 'heroId' },
       field: 'title',
-      value: "  Partagez l'histoire de Noël  "
+      value: "  Partagez l'histoire de Campagne  "
     })
 
     expect(result).toEqual({
@@ -110,7 +110,7 @@ describe('campaignTranslationSet', () => {
         campaignTranslationSet: [
           {
             languageId: FRENCH,
-            value: "Partagez l'histoire de Noël",
+            value: "Partagez l'histoire de Campagne",
             source: 'human'
           },
           {
@@ -129,7 +129,7 @@ describe('campaignTranslationSet', () => {
       data: {
         titleTranslations: {
           '21028': { value: 'Comparte la historia', source: 'machine' },
-          [FRENCH]: { value: "Partagez l'histoire de Noël", source: 'human' }
+          [FRENCH]: { value: "Partagez l'histoire de Campagne", source: 'human' }
         }
       }
     })
@@ -210,15 +210,15 @@ describe('campaignTranslationSet', () => {
     const title = await set({
       target: { campaignId: 'campaignId' },
       field: 'title',
-      value: 'Noël 2026'
+      value: 'Campagne 2026'
     })
     expect(title.data.campaignTranslationSet).toEqual([
-      { languageId: FRENCH, value: 'Noël 2026', source: 'human' }
+      { languageId: FRENCH, value: 'Campagne 2026', source: 'human' }
     ])
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
       data: {
-        titleTranslations: { [FRENCH]: { value: 'Noël 2026', source: 'human' } }
+        titleTranslations: { [FRENCH]: { value: 'Campagne 2026', source: 'human' } }
       }
     })
   })

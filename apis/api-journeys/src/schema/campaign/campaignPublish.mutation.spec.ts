@@ -132,9 +132,9 @@ describe('campaignPublish', () => {
     })
 
     expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/afr'] }]
+      ['revalidate', { paths: ['/home/campaign/outreach-2026'] }],
+      ['revalidate', { paths: ['/home/campaign/outreach-2026/eur'] }],
+      ['revalidate', { paths: ['/home/campaign/outreach-2026/afr'] }]
     ])
   })
 
@@ -142,7 +142,7 @@ describe('campaignPublish', () => {
     const draft = campaignFactory({ role: 'manager' }).withRegion('EUR').build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...draft,
-      customDomains: [{ name: 'christmas.example.org' }]
+      customDomains: [{ name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
@@ -156,10 +156,10 @@ describe('campaignPublish', () => {
     })
 
     expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-      ['revalidate', { paths: ['/christmas.example.org'] }],
-      ['revalidate', { paths: ['/christmas.example.org/eur'] }]
+      ['revalidate', { paths: ['/home/campaign/outreach-2026'] }],
+      ['revalidate', { paths: ['/home/campaign/outreach-2026/eur'] }],
+      ['revalidate', { paths: ['/outreach.example.org'] }],
+      ['revalidate', { paths: ['/outreach.example.org/eur'] }]
     ])
   })
 

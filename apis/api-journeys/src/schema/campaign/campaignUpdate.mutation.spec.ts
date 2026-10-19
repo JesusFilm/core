@@ -76,17 +76,17 @@ describe('campaignUpdate', () => {
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
     prismaMock.campaign.update.mockResolvedValue({
       ...campaign,
-      title: 'Easter 2027'
+      title: 'Outreach 2027'
     })
 
-    const result = await update({ title: '  Easter 2027  ' })
+    const result = await update({ title: '  Outreach 2027  ' })
 
     expect(result).toEqual({
       data: {
         campaignUpdate: {
           id: 'campaignId',
-          title: 'Easter 2027',
-          slug: 'christmas-2026',
+          title: 'Outreach 2027',
+          slug: 'outreach-2026',
           palette: campaign.palette
         }
       }
@@ -94,7 +94,7 @@ describe('campaignUpdate', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { id: 'campaignId' },
-        data: { title: 'Easter 2027' }
+        data: { title: 'Outreach 2027' }
       })
     )
   })
@@ -214,7 +214,7 @@ describe('campaignUpdate', () => {
 
     const result = await update({ title: 'Completely different' })
 
-    expect(result.data.campaignUpdate.slug).toBe('christmas-2026')
+    expect(result.data.campaignUpdate.slug).toBe('outreach-2026')
     expect(prismaMock.campaign.findMany).not.toHaveBeenCalled()
     const { data } = prismaMock.campaign.update.mock.calls[0][0]
     expect(data).not.toHaveProperty('slug')
@@ -488,7 +488,7 @@ describe('campaignUpdate', () => {
       const complete = translatedInto(
         {
           ...campaign,
-          title: 'Christmas',
+          title: 'Outreach',
           titleTranslations: {
             [SPANISH]: { value: 'Navidad', source: 'human' }
           }
@@ -507,7 +507,7 @@ describe('campaignUpdate', () => {
             titleTranslations: {
               [SPANISH]: { value: 'Navidad', source: 'human' },
               [campaign.defaultLanguageId]: {
-                value: 'Christmas',
+                value: 'Outreach',
                 source: 'human'
               }
             }
@@ -608,7 +608,7 @@ describe('campaignUpdate', () => {
         document: CAMPAIGN_SET_DEFAULT,
         variables: {
           id: 'campaignId',
-          input: { defaultLanguageId: FRENCH, title: 'Noël' }
+          input: { defaultLanguageId: FRENCH, title: 'Campagne' }
         }
       })
 

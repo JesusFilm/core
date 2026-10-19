@@ -87,7 +87,7 @@ describe('campaignDelete', () => {
     })
 
     expect(result).toEqual({
-      data: { campaignDelete: { id: 'campaignId', slug: 'christmas-2026' } }
+      data: { campaignDelete: { id: 'campaignId', slug: 'outreach-2026' } }
     })
     expect(prismaMock.campaign.delete).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'campaignId' } })
@@ -136,7 +136,7 @@ describe('campaignDelete', () => {
     const campaign = campaignFactory({ role: 'manager' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...campaign,
-      customDomains: [{ id: 'customDomainId', name: 'christmas.example.org' }]
+      customDomains: [{ id: 'customDomainId', name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.delete.mockResolvedValue(campaign)
 
@@ -158,7 +158,7 @@ describe('campaignDelete', () => {
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...published,
-      customDomains: [{ id: 'customDomainId', name: 'christmas.example.org' }]
+      customDomains: [{ id: 'customDomainId', name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.delete.mockResolvedValue(published)
     prismaMock.campaignLanguage.findMany.mockResolvedValue([
@@ -176,18 +176,18 @@ describe('campaignDelete', () => {
 
     expect(result.errors).toBeUndefined()
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/home/campaign/christmas-2026/_lang/en',
-      '/home/campaign/christmas-2026/_lang/en/eur',
-      '/home/campaign/christmas-2026/_lang/es',
-      '/home/campaign/christmas-2026/_lang/es/eur',
-      '/christmas.example.org',
-      '/christmas.example.org/eur',
-      '/christmas.example.org/_lang/en',
-      '/christmas.example.org/_lang/en/eur',
-      '/christmas.example.org/_lang/es',
-      '/christmas.example.org/_lang/es/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/_lang/en',
+      '/home/campaign/outreach-2026/_lang/en/eur',
+      '/home/campaign/outreach-2026/_lang/es',
+      '/home/campaign/outreach-2026/_lang/es/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur',
+      '/outreach.example.org/_lang/en',
+      '/outreach.example.org/_lang/en/eur',
+      '/outreach.example.org/_lang/es',
+      '/outreach.example.org/_lang/es/eur'
     ])
   })
 

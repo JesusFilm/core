@@ -66,10 +66,10 @@ describe('CampaignVideo', () => {
     renderVideo(videoTree(heroVideoBlock))
     expect(playerSource('heroVideoId')).toHaveAttribute(
       'src',
-      'https://arc.gt/hls/nativityVideoId/529'
+      'https://arc.gt/hls/storyVideoId/529'
     )
     expect(screen.getByTestId('CampaignVideoTitle')).toHaveTextContent(
-      'The Nativity'
+      'The Story'
     )
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
   })
@@ -82,19 +82,19 @@ describe('CampaignVideo', () => {
     unmount()
     renderVideo(videoTree(heroVideoBlock), '21028')
     expect(screen.getByTestId('CampaignVideoTitle')).toHaveTextContent(
-      'The Nativity'
+      'The Story'
     )
   })
 
   it('reads a Watch video description in the Page Language, falling back to the primary', () => {
     const { unmount } = renderVideo(videoTree(heroVideoBlock), '496')
     expect(screen.getByTestId('CampaignVideoDescription')).toHaveTextContent(
-      'L histoire du premier Noël.'
+      'L histoire du premier Campagne.'
     )
     unmount()
     renderVideo(videoTree(heroVideoBlock), '21028')
     expect(screen.getByTestId('CampaignVideoDescription')).toHaveTextContent(
-      'The story of the first Christmas.'
+      'The story of the first Outreach.'
     )
   })
 
@@ -140,7 +140,7 @@ describe('CampaignVideo', () => {
       'https://www.youtube.com/embed/jQaeIJOA6J0?start=0&end=10000'
     )
     expect(screen.getByTestId('CampaignVideoTitle')).toHaveTextContent(
-      'Christmas around the world'
+      'Outreach around the world'
     )
     expect(screen.getByTestId('CampaignVideoDescription')).toHaveTextContent(
       'How the story is told in twelve countries.'
@@ -153,7 +153,7 @@ describe('CampaignVideo', () => {
       /^https:\/\/stream\.mux\.com\/muxPlaybackId\.m3u8/
     )
     expect(screen.getByTestId('CampaignVideoTitle')).toHaveTextContent(
-      'Our Christmas outreach'
+      'Our Outreach outreach'
     )
     expect(
       screen.queryByTestId('CampaignVideoDescription')

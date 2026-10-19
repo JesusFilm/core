@@ -482,7 +482,7 @@ describe('campaignVideoBlockCreate', () => {
     it('strips a container Watch url to the variant slug', async () => {
       await create({
         source: 'internal',
-        url: 'https://www.jesusfilm.org/watch/easter.html/jesus/english.html'
+        url: 'https://www.jesusfilm.org/watch/hope.html/jesus/english.html'
       })
 
       expect(fetchWatchVideoBySlug).toHaveBeenCalledWith('jesus/english')

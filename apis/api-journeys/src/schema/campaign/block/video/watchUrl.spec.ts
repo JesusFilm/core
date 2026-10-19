@@ -15,7 +15,7 @@ describe('parseWatchUrl', () => {
       'jesus/english'
     ],
     [
-      'https://www.jesusfilm.org/watch/easter.html/jesus/english.html',
+      'https://www.jesusfilm.org/watch/hope.html/jesus/english.html',
       'jesus/english'
     ],
     [

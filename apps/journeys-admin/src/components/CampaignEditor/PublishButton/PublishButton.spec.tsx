@@ -189,7 +189,7 @@ describe('PublishButton', () => {
     const link = screen.getByRole('link', { name: 'Open page' })
     expect(link).toHaveAttribute(
       'href',
-      'https://your.nextstep.is/campaign/christmas-2026'
+      'https://your.nextstep.is/campaign/outreach-2026'
     )
     expect(link).toHaveAttribute('target', '_blank')
   })
@@ -208,7 +208,7 @@ describe('PublishButton', () => {
 
     expect(screen.getByRole('link', { name: 'Open page' })).toHaveAttribute(
       'href',
-      'https://your.nextstep.is/campaign/christmas-2026/afr'
+      'https://your.nextstep.is/campaign/outreach-2026/afr'
     )
   })
 

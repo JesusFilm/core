@@ -502,9 +502,9 @@ export function campaignFactory(
   const fixture: CampaignFixture = {
     id,
     teamId,
-    title: options.title ?? 'Christmas 2026',
+    title: options.title ?? 'Outreach 2026',
     titleTranslations: {},
-    slug: options.slug ?? 'christmas-2026',
+    slug: options.slug ?? 'outreach-2026',
     status: 'draft',
     defaultLanguageId,
     palette: LIGHT_PALETTE,

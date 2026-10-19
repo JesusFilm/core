@@ -9,7 +9,7 @@ function journey(
 ): JourneyWithPublicUrl {
   return {
     id: 'journeyId',
-    slug: 'christmas-europe',
+    slug: 'outreach-europe',
     teamId: 'journeyTeamId',
     team: { id: 'journeyTeamId', customDomains: [] },
     journeyCollectionJourneys: [],
@@ -30,7 +30,7 @@ describe('getJourneyPublicUrl', () => {
           }
         } as never)
       )
-    ).toBe('https://journeys.example.org/christmas-europe')
+    ).toBe('https://journeys.example.org/outreach-europe')
   })
 
   it('serves a journey on a collection domain containing it when no domain routes all', () => {
@@ -52,7 +52,7 @@ describe('getJourneyPublicUrl', () => {
           ]
         } as never)
       )
-    ).toBe('https://collection.example.org/christmas-europe')
+    ).toBe('https://collection.example.org/outreach-europe')
   })
 
   it('prefers the route-all domain over a collection domain', () => {
@@ -75,12 +75,12 @@ describe('getJourneyPublicUrl', () => {
           ]
         } as never)
       )
-    ).toBe('https://journeys.example.org/christmas-europe')
+    ).toBe('https://journeys.example.org/outreach-europe')
   })
 
   it('falls back to the root domain for a team with no domain and for a collection without one', () => {
     expect(getJourneyPublicUrl(journey())).toBe(
-      'https://example.com/christmas-europe'
+      'https://example.com/outreach-europe'
     )
     expect(
       getJourneyPublicUrl(
@@ -90,12 +90,12 @@ describe('getJourneyPublicUrl', () => {
           ]
         } as never)
       )
-    ).toBe('https://example.com/christmas-europe')
+    ).toBe('https://example.com/outreach-europe')
   })
 
   it('builds the root-domain embed route regardless of domains', () => {
     expect(getJourneyEmbedUrl(journey())).toBe(
-      'https://example.com/embed/christmas-europe'
+      'https://example.com/embed/outreach-europe'
     )
   })
 })

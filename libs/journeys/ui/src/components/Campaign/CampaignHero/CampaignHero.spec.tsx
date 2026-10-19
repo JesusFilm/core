@@ -85,12 +85,12 @@ describe('CampaignHero', () => {
   it('renders eyebrow, title and description', () => {
     renderHero(heroTree())
     expect(screen.getByTestId('CampaignEyebrow')).toHaveTextContent(
-      'Christmas 2026'
+      'Outreach 2026'
     )
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Share the story of Christmas'
+        name: 'Share the story of Outreach'
       })
     ).toBeInTheDocument()
     expect(screen.getByTestId('CampaignDescription')).toHaveTextContent(

@@ -24,7 +24,7 @@ vi.mock('../../gatewayClient', async () => ({
 }))
 
 const WATCH_URL =
-  'https://www.jesusfilm.org/watch/christmas-collection.html/english.html'
+  'https://www.jesusfilm.org/watch/outreach-collection.html/english.html'
 
 describe('campaignVideoCarouselBlockUpdate', () => {
   const UPDATE = graphql(`
@@ -114,7 +114,7 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
         expect(result.errors).toBeUndefined()
         expect(fetchWatchVideoBySlug).toHaveBeenCalledWith(
-          'christmas-collection/english'
+          'outreach-collection/english'
         )
         expect(result.data.campaignVideoCarouselBlockUpdate).toMatchObject({
           videoId: 'watchVideoId',

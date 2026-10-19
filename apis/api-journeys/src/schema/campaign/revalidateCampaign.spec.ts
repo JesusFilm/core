@@ -19,37 +19,37 @@ describe('campaignPagePaths', () => {
   it('lists the landing page and every region', () => {
     expect(
       campaignPagePaths({
-        slug: 'christmas',
+        slug: 'outreach',
         regions: [{ slug: 'eur' }, { slug: 'afr' }]
       })
     ).toEqual([
-      '/home/campaign/christmas',
-      '/home/campaign/christmas/eur',
-      '/home/campaign/christmas/afr'
+      '/home/campaign/outreach',
+      '/home/campaign/outreach/eur',
+      '/home/campaign/outreach/afr'
     ])
   })
 
   it('adds the _lang page of every language tag to the root and domain forms', () => {
     expect(
       campaignPagePaths({
-        slug: 'christmas',
+        slug: 'outreach',
         regions: [{ slug: 'eur' }],
-        hostnames: ['christmas.example.org'],
+        hostnames: ['outreach.example.org'],
         languageTags: ['en', 'es']
       })
     ).toEqual([
-      '/home/campaign/christmas',
-      '/home/campaign/christmas/eur',
-      '/home/campaign/christmas/_lang/en',
-      '/home/campaign/christmas/_lang/en/eur',
-      '/home/campaign/christmas/_lang/es',
-      '/home/campaign/christmas/_lang/es/eur',
-      '/christmas.example.org',
-      '/christmas.example.org/eur',
-      '/christmas.example.org/_lang/en',
-      '/christmas.example.org/_lang/en/eur',
-      '/christmas.example.org/_lang/es',
-      '/christmas.example.org/_lang/es/eur'
+      '/home/campaign/outreach',
+      '/home/campaign/outreach/eur',
+      '/home/campaign/outreach/_lang/en',
+      '/home/campaign/outreach/_lang/en/eur',
+      '/home/campaign/outreach/_lang/es',
+      '/home/campaign/outreach/_lang/es/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur',
+      '/outreach.example.org/_lang/en',
+      '/outreach.example.org/_lang/en/eur',
+      '/outreach.example.org/_lang/es',
+      '/outreach.example.org/_lang/es/eur'
     ])
   })
 })

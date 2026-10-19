@@ -24,7 +24,7 @@ const withCards = {
       id: `cardId${index}`,
       parentBlockId: 'carouselId',
       parentOrder: index,
-      title: `Christmas around the world ${index + 1}`
+      title: `Outreach around the world ${index + 1}`
     }))
   ]
 }

@@ -269,7 +269,7 @@ describe('Canvas', () => {
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute('width', '1200')
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
-    expect(body.textContent).toContain('Share the story of Christmas')
+    expect(body.textContent).toContain('Share the story of Outreach')
     expect(body.textContent).toContain('Choose your region')
     expect(body.textContent).toContain('Where the story is spreading')
     // The region page's sections stay on the region page.
@@ -471,7 +471,7 @@ describe('Canvas', () => {
       heroSection.querySelector('[data-testid="CanvasMediaVideoPoster"]')
     ).toHaveAttribute('src', 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg')
     expect(heroSection.textContent).toContain('Blessing and Curse')
-    expect(heroSection.textContent).toContain('Share the story of Christmas')
+    expect(heroSection.textContent).toContain('Share the story of Outreach')
 
     const featuredSection = body.querySelector(
       '[data-testid="CanvasSection-featuredId"]'
@@ -537,11 +537,11 @@ describe('Canvas', () => {
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
     await waitFor(() =>
       expect(body.querySelector('textarea[name="title"]')).toHaveValue(
-        'Share the story of Christmas'
+        'Share the story of Outreach'
       )
     )
     expect(body.querySelector('textarea[name="eyebrow"]')).toHaveValue(
-      'Christmas 2026'
+      'Outreach 2026'
     )
     expect(body.querySelector('textarea[name="description"]')).toHaveValue(
       'Pick your region to find a journey in your language, ready to share.'
@@ -1005,7 +1005,7 @@ describe('Canvas preview language', () => {
               {
                 __typename: 'TranslatedValue',
                 languageId: '496',
-                value: "Partagez l'histoire de Noël",
+                value: "Partagez l'histoire de Campagne",
                 source: CampaignTextSource.human
               }
             ]
@@ -1030,11 +1030,11 @@ describe('Canvas preview language', () => {
 
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     const hero = body.querySelector('[data-testid="CanvasSection-heroId"]')
-    expect(hero?.textContent).toContain("Partagez l'histoire de Noël")
-    expect(hero?.textContent).not.toContain('Share the story of Christmas')
+    expect(hero?.textContent).toContain("Partagez l'histoire de Campagne")
+    expect(hero?.textContent).not.toContain('Share the story of Outreach')
     // The untranslated eyebrow shows the default-language fallback, marked.
     const eyebrow = hero?.querySelector('[data-testid="InlineText-eyebrow"]')
-    expect(eyebrow).toHaveTextContent('Christmas 2026')
+    expect(eyebrow).toHaveTextContent('Outreach 2026')
     expect(eyebrow).toHaveAttribute('data-fallback', 'true')
   })
 

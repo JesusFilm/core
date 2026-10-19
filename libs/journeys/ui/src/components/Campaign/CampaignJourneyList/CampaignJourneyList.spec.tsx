@@ -95,7 +95,7 @@ describe('CampaignJourneyList', () => {
     ).toHaveTextContent('first description')
     expect(first.getByTestId('CampaignJourneyCardImage')).toHaveAttribute(
       'src',
-      'https://imagedelivery.net/christmas-story/public'
+      'https://imagedelivery.net/outreach-story/public'
     )
     expect(
       within(cards[2]).queryByTestId('CampaignJourneyCardDescription')

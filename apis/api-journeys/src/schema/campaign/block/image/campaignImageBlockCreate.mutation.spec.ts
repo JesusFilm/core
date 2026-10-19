@@ -324,7 +324,7 @@ describe('campaignImageBlockCreate', () => {
         parentBlockId: 'headerId',
         slot: 'logo',
         src: SRC,
-        alt: 'Christmas logo'
+        alt: 'Outreach logo'
       })
 
       expect(result.data.campaignImageBlockCreate).toMatchObject({
@@ -333,7 +333,7 @@ describe('campaignImageBlockCreate', () => {
         regionId: null,
         parentBlockId: 'headerId',
         parentOrder: null,
-        alt: 'Christmas logo'
+        alt: 'Outreach logo'
       })
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
         where: { id: 'headerId' },

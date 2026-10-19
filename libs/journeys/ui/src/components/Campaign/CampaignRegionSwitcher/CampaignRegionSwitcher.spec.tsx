@@ -83,8 +83,8 @@ describe('CampaignRegionSwitcher', () => {
 
     const cards = screen.getAllByRole('link')
     expect(cards.map((card) => card.getAttribute('href'))).toEqual([
-      '/campaign/christmas-2026/eur?lang=en',
-      '/campaign/christmas-2026/afr?lang=en'
+      '/campaign/outreach-2026/eur?lang=en',
+      '/campaign/outreach-2026/afr?lang=en'
     ])
     expect(
       screen.queryByTestId('CampaignRegionCard-lacRegionId')

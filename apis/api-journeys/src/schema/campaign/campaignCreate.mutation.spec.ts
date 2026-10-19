@@ -211,7 +211,7 @@ describe('campaignCreate', () => {
 
   const input = {
     teamId: 'teamId',
-    title: 'Christmas 2026',
+    title: 'Outreach 2026',
     defaultLanguageId: '529'
   }
 
@@ -299,8 +299,8 @@ describe('campaignCreate', () => {
         data: {
           id: 'id-1',
           teamId: 'teamId',
-          title: 'Christmas 2026',
-          slug: 'christmas-2026',
+          title: 'Outreach 2026',
+          slug: 'outreach-2026',
           status: 'draft',
           defaultLanguageId: '529',
           palette: LIGHT_PALETTE,
@@ -858,8 +858,8 @@ describe('campaignCreate', () => {
       const campaign = result.data.campaignCreate
       expect(campaign).toMatchObject({
         id: 'campaignId',
-        title: 'Christmas 2026',
-        slug: 'christmas-2026',
+        title: 'Outreach 2026',
+        slug: 'outreach-2026',
         status: 'draft',
         defaultLanguageId: '529',
         palette: LIGHT_PALETTE,

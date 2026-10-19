@@ -56,7 +56,7 @@ const translatedBlocks = [
         pageId: LANDING_PAGE_ID
       })
     ),
-    titleTranslations: translated('Noël'),
+    titleTranslations: translated('Campagne'),
     descriptionTranslations: translated('Un voyage')
   },
   {
@@ -118,7 +118,7 @@ describe('useCampaignQuery', () => {
       bulletsTranslations: translated('Gratuit')
     })
     expect(block('journeyCardId')).toMatchObject({
-      titleTranslations: translated('Noël'),
+      titleTranslations: translated('Campagne'),
       descriptionTranslations: translated('Un voyage')
     })
     expect(block(youTubeVideoBlock.id)).toMatchObject({

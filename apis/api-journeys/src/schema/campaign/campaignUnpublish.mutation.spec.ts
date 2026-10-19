@@ -145,12 +145,12 @@ describe('campaignUnpublish', () => {
     })
 
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/home/campaign/christmas-2026/_lang/en',
-      '/home/campaign/christmas-2026/_lang/en/eur',
-      '/home/campaign/christmas-2026/_lang/es',
-      '/home/campaign/christmas-2026/_lang/es/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/_lang/en',
+      '/home/campaign/outreach-2026/_lang/en/eur',
+      '/home/campaign/outreach-2026/_lang/es',
+      '/home/campaign/outreach-2026/_lang/es/eur'
     ])
   })
 
@@ -173,9 +173,9 @@ describe('campaignUnpublish', () => {
     })
 
     expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/afr'] }]
+      ['revalidate', { paths: ['/home/campaign/outreach-2026'] }],
+      ['revalidate', { paths: ['/home/campaign/outreach-2026/eur'] }],
+      ['revalidate', { paths: ['/home/campaign/outreach-2026/afr'] }]
     ])
   })
 

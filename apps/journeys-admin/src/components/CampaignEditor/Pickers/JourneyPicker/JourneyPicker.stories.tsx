@@ -18,19 +18,19 @@ const accessibleJourneysMock = {
       journeys: [
         {
           __typename: 'Journey',
-          id: 'christmasId',
-          title: 'The Christmas story',
-          description: 'A short journey through the nativity.',
-          slug: 'christmas-story',
+          id: 'outreachId',
+          title: 'The outreach story',
+          description: 'A short journey through the story.',
+          slug: 'outreach-story',
           status: JourneyStatus.published,
           team: { __typename: 'Team', id: 'teamId', title: 'Ministry team' }
         },
         {
           __typename: 'Journey',
-          id: 'easterId',
-          title: 'Easter, retold',
+          id: 'hopeId',
+          title: 'Hope, retold',
           description: null,
-          slug: 'easter-retold',
+          slug: 'hope-retold',
           status: JourneyStatus.archived,
           team: { __typename: 'Team', id: 'otherTeamId', title: 'Shared team' }
         }
@@ -70,7 +70,7 @@ export const Open: Story = {
     await userEvent.click(
       screen.getByRole('combobox', { name: 'Add a journey' })
     )
-    await screen.findByText('The Christmas story')
+    await screen.findByText('The outreach story')
   }
 }
 
@@ -79,8 +79,8 @@ export const Filtered: Story = {
   play: async () => {
     const field = screen.getByRole('combobox', { name: 'Add a journey' })
     await userEvent.click(field)
-    await screen.findByText('The Christmas story')
-    await userEvent.type(field, 'easter')
+    await screen.findByText('The outreach story')
+    await userEvent.type(field, 'hope')
   }
 }
 

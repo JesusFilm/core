@@ -60,16 +60,16 @@ describe('campaignHeroBlockUpdate', () => {
   }
 
   it('writes the given trimmed text fields and leaves the rest alone', async () => {
-    const result = await update({ title: ' Christmas, shared ', description: '' })
+    const result = await update({ title: ' Outreach, shared ', description: '' })
 
     expect(result.data.campaignHeroBlockUpdate).toMatchObject({
       eyebrow: 'Your campaign',
-      title: 'Christmas, shared',
+      title: 'Outreach, shared',
       description: ''
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'heroId' },
-      data: { title: 'Christmas, shared', description: '' },
+      data: { title: 'Outreach, shared', description: '' },
       include: { action: true }
     })
   })

@@ -48,8 +48,8 @@ vi.mock(
 )
 
 const WATCH_URL =
-  'https://www.jesusfilm.org/watch/christmas.html/the-nativity/english.html'
-const WATCH_SLUG = 'the-nativity/english'
+  'https://www.jesusfilm.org/watch/outreach.html/the-story/english.html'
+const WATCH_SLUG = 'the-story/english'
 const YOUTUBE_URL = 'https://youtu.be/jQaeIJOA6J0'
 const PLAYLIST_URL =
   'https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG'
@@ -66,12 +66,12 @@ const expandedCarousel: CarouselBlock = {
     __typename: 'Video',
     id: 'collectionId',
     label: VideoLabel.collection,
-    slug: 'christmas',
+    slug: 'outreach',
     childrenCount: 8,
     title: [
       {
         __typename: 'VideoTitle',
-        value: 'Christmas films',
+        value: 'Outreach films',
         primary: true,
         language: { __typename: 'Language', id: '529' }
       }
@@ -91,7 +91,7 @@ const watchMock = {
         id: 'collectionId',
         label: VideoLabel.collection,
         childrenCount: 8,
-        title: [{ __typename: 'VideoTitle', value: 'Christmas films' }],
+        title: [{ __typename: 'VideoTitle', value: 'Outreach films' }],
         images: [],
         variant: null
       }
@@ -262,7 +262,7 @@ describe('CarouselEdit', () => {
     const resolved = await screen.findByTestId(
       'CampaignCarouselPasteFieldResolved'
     )
-    expect(resolved).toHaveTextContent('Christmas films')
+    expect(resolved).toHaveTextContent('Outreach films')
     expect(resolved).toHaveTextContent('Collection · 8 videos')
     expect(setWatchMock.result).not.toHaveBeenCalled()
 
@@ -336,7 +336,7 @@ describe('CarouselEdit', () => {
     renderEdit(expandedCarousel)
 
     expect(screen.getByTestId('CampaignCarouselEditWatch')).toHaveTextContent(
-      'Showing the videos of Christmas films from Watch'
+      'Showing the videos of Outreach films from Watch'
     )
     expect(screen.getByTestId('CampaignCarouselEditWatch')).toHaveTextContent(
       '8 videos'

@@ -108,7 +108,7 @@ function heroMock(title: string): Mock {
         campaignHeroBlockUpdate: {
           __typename: 'CampaignHeroBlock',
           id: 'heroId',
-          eyebrow: 'Christmas 2026',
+          eyebrow: 'Outreach 2026',
           title,
           description: 'Pick your region to find a journey in your language, ready to share.'
         }
@@ -202,7 +202,7 @@ describe('useCampaignTextCommand', () => {
     const cache = campaignCache()
     const mocks = [
       heroMock('New title'),
-      { ...heroMock('Share the story of Christmas'), delay: 300 }
+      { ...heroMock('Share the story of Outreach'), delay: 300 }
     ]
     renderField(mocks, { cache })
     const input = await screen.findByRole('textbox', { name: 'title' })
@@ -216,10 +216,10 @@ describe('useCampaignTextCommand', () => {
 
     // The optimistic response shows the previous value before the request returns.
     await waitFor(() =>
-      expect(readTitle(cache)).toBe('Share the story of Christmas')
+      expect(readTitle(cache)).toBe('Share the story of Outreach')
     )
     expect(mocks[1].result).not.toHaveBeenCalled()
-    expect(input).toHaveValue('Share the story of Christmas')
+    expect(input).toHaveValue('Share the story of Outreach')
     await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
 
     // After an undo the next keystroke starts a fresh Command.
@@ -278,7 +278,7 @@ describe('useCampaignTextCommand', () => {
   it('redoes the change through the same mutation', async () => {
     const mocks = [
       { ...heroMock('New title'), maxUsageCount: 2 },
-      heroMock('Share the story of Christmas')
+      heroMock('Share the story of Outreach')
     ]
     renderField(mocks)
     const input = await screen.findByRole('textbox', { name: 'title' })
@@ -359,7 +359,7 @@ describe('useCampaignTextCommand', () => {
       await screen.findByText('title must be at most 150 characters')
     ).toBeInTheDocument()
     await waitFor(() =>
-      expect(input).toHaveValue('Share the story of Christmas')
+      expect(input).toHaveValue('Share the story of Outreach')
     )
   })
 })
@@ -492,8 +492,8 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
 
   it('edits any text while previewing a non-default language as one Command through campaignTranslationSet with source human', async () => {
     const mocks = [
-      translationMock({ blockId: 'heroId' }, 'title', 'Noël', [
-        { languageId: '496', value: 'Noël' }
+      translationMock({ blockId: 'heroId' }, 'title', 'Campagne', [
+        { languageId: '496', value: 'Campagne' }
       ]),
       translationMock({ blockId: 'heroId' }, 'title', '', [])
     ]
@@ -510,10 +510,10 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     expect(input).toHaveValue('')
 
     fireEvent.focus(input)
-    fireEvent.change(input, { target: { value: 'Noël' } })
+    fireEvent.change(input, { target: { value: 'Campagne' } })
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
-    expect(readTitle(cache)).toBe('Share the story of Christmas')
+    expect(readTitle(cache)).toBe('Share the story of Outreach')
     const heroTranslations = cache.readFragment<{
       titleTranslations: Array<{
         languageId: string
@@ -536,7 +536,7 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
       {
         __typename: 'TranslatedValue',
         languageId: '496',
-        value: 'Noël',
+        value: 'Campagne',
         source: 'human'
       }
     ])
@@ -643,7 +643,7 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
               target: { blockId },
               field: apiField,
               languageId: '496',
-              value: 'Noël'
+              value: 'Campagne'
             }
           }
         },
@@ -653,7 +653,7 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
               {
                 __typename: 'TranslatedValue',
                 languageId: '496',
-                value: 'Noël',
+                value: 'Campagne',
                 source: 'human'
               }
             ]
@@ -682,7 +682,7 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
       expect(input).toHaveValue('')
 
       fireEvent.focus(input)
-      fireEvent.change(input, { target: { value: 'Noël' } })
+      fireEvent.change(input, { target: { value: 'Campagne' } })
       await waitFor(() => expect(translation.result).toHaveBeenCalled())
 
       const stored = cache.readFragment<{
@@ -699,11 +699,11 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
         `)
       })
       expect(stored?.translations).toEqual([
-        { __typename: 'TranslatedValue', languageId: '496', value: 'Noël' }
+        { __typename: 'TranslatedValue', languageId: '496', value: 'Campagne' }
       ])
       await waitFor(() =>
         expect(screen.getByTestId('StoredTranslation')).toHaveTextContent(
-          'Noël'
+          'Campagne'
         )
       )
     }

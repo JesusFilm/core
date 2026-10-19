@@ -16,11 +16,11 @@ describe('parseMediaUrl', () => {
   it('reads a Watch address inside a container to the last two segments', () => {
     expect(
       parseMediaUrl(
-        ' https://jesusfilm.org/watch/easter.html/the-resurrection/french.html '
+        ' https://jesusfilm.org/watch/hope.html/the-resurrection/french.html '
       )
     ).toEqual({
       source: VideoBlockSource.internal,
-      url: 'https://jesusfilm.org/watch/easter.html/the-resurrection/french.html',
+      url: 'https://jesusfilm.org/watch/hope.html/the-resurrection/french.html',
       slug: 'the-resurrection/french'
     })
   })

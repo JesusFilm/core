@@ -23,7 +23,7 @@ const card = {
     {
       __typename: 'TranslatedValue' as const,
       languageId: '496',
-      value: 'Noël autour du monde',
+      value: 'Campagne autour du monde',
       source: CampaignTextSource.human
     }
   ]
@@ -94,20 +94,20 @@ describe('CarouselCardEdit', () => {
     const update = {
       request: {
         query: CAMPAIGN_VIDEO_BLOCK_UPDATE,
-        variables: { id: 'cardId', input: { title: 'Christmas' } }
+        variables: { id: 'cardId', input: { title: 'Outreach' } }
       },
       result: vi.fn(() => ({
         data: {
-          campaignVideoBlockUpdate: { ...card, title: 'Christmas' }
+          campaignVideoBlockUpdate: { ...card, title: 'Outreach' }
         }
       }))
     }
-    const translation = translationMock('title', 'Christmas')
+    const translation = translationMock('title', 'Outreach')
     renderEdit([update as never, translation])
 
     const title = await screen.findByRole('textbox', { name: 'Title' })
-    expect(title).toHaveValue('Christmas around the world')
-    fireEvent.change(title, { target: { value: 'Christmas' } })
+    expect(title).toHaveValue('Outreach around the world')
+    fireEvent.change(title, { target: { value: 'Outreach' } })
     fireEvent.blur(title)
 
     await waitFor(() => expect(update.result).toHaveBeenCalled())
@@ -118,8 +118,8 @@ describe('CarouselCardEdit', () => {
     renderEdit([], '496')
 
     const title = await screen.findByRole('textbox', { name: 'Title' })
-    expect(title).toHaveValue('Noël autour du monde')
-    expect(title).toHaveAttribute('placeholder', 'Christmas around the world')
+    expect(title).toHaveValue('Campagne autour du monde')
+    expect(title).toHaveAttribute('placeholder', 'Outreach around the world')
     const description = screen.getByRole('textbox', { name: 'Description' })
     expect(description).toHaveValue('')
     expect(description).toHaveAttribute(
@@ -151,20 +151,20 @@ describe('CarouselCardEdit', () => {
   })
 
   it('undoes a translation by writing the previous one back', async () => {
-    const write = translationMock('title', 'Noël dans le monde')
-    const restore = translationMock('title', 'Noël autour du monde')
+    const write = translationMock('title', 'Campagne dans le monde')
+    const restore = translationMock('title', 'Campagne autour du monde')
     renderEdit([write, restore], '496')
 
     const title = await screen.findByRole('textbox', { name: 'Title' })
-    fireEvent.change(title, { target: { value: 'Noël dans le monde' } })
+    fireEvent.change(title, { target: { value: 'Campagne dans le monde' } })
     fireEvent.blur(title)
     await waitFor(() => expect(write.result).toHaveBeenCalled())
-    await waitFor(() => expect(title).toHaveValue('Noël dans le monde'))
+    await waitFor(() => expect(title).toHaveValue('Campagne dans le monde'))
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     await waitFor(() => expect(restore.result).toHaveBeenCalled())
-    await waitFor(() => expect(title).toHaveValue('Noël autour du monde'))
+    await waitFor(() => expect(title).toHaveValue('Campagne autour du monde'))
   })
 
   it('clears the translation when the field is emptied', async () => {

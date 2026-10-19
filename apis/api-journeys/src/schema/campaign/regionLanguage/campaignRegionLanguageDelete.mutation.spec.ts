@@ -40,7 +40,7 @@ describe('campaignRegionLanguageDelete', () => {
       .withRegion('EUR')
       .withLinkedJourney('eurRegionId', FRENCH, {
         id: 'journeyId',
-        title: 'Noël',
+        title: 'Campagne',
         description: null
       })
       .build()

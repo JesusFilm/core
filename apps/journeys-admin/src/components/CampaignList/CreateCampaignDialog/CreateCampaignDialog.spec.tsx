@@ -47,7 +47,7 @@ const languagesMock = {
 }
 
 const createVariables = {
-  input: { teamId: 'teamId', title: 'Christmas 2026', defaultLanguageId: '529' }
+  input: { teamId: 'teamId', title: 'Outreach 2026', defaultLanguageId: '529' }
 }
 
 function renderDialog(mocks: Array<Record<string, unknown>>): {
@@ -66,7 +66,7 @@ function renderDialog(mocks: Array<Record<string, unknown>>): {
 
 async function fillForm(): Promise<void> {
   fireEvent.change(screen.getByLabelText('Title'), {
-    target: { value: ' Christmas 2026 ' }
+    target: { value: ' Outreach 2026 ' }
   })
   const combobox = screen.getByRole('combobox')
   await waitFor(() => expect(combobox).not.toBeDisabled())
@@ -175,7 +175,7 @@ describe('CreateCampaignDialog', () => {
 
     expect(screen.getByRole('combobox')).toHaveValue('English')
     fireEvent.change(screen.getByLabelText('Title'), {
-      target: { value: 'Christmas 2026' }
+      target: { value: 'Outreach 2026' }
     })
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 
@@ -186,7 +186,7 @@ describe('CreateCampaignDialog', () => {
     const { onClose } = renderDialog([])
 
     fireEvent.change(screen.getByLabelText('Title'), {
-      target: { value: 'Christmas 2026' }
+      target: { value: 'Outreach 2026' }
     })
     const combobox = screen.getByRole('combobox')
     await waitFor(() => expect(combobox).not.toBeDisabled())

@@ -158,7 +158,7 @@ describe('campaign', () => {
       >
       language.journey = {
         id: 'journeyId',
-        slug: 'christmas-europe',
+        slug: 'outreach-europe',
         teamId: 'journeyTeamId',
         team: { id: 'journeyTeamId', customDomains },
         journeyCollectionJourneys: []
@@ -167,10 +167,10 @@ describe('campaign', () => {
     }
 
     it.each([
-      [[], 'https://example.com/christmas-europe'],
+      [[], 'https://example.com/outreach-europe'],
       [
         [{ name: 'journeys.example.org', routeAllTeamJourneys: true }],
-        'https://journeys.example.org/christmas-europe'
+        'https://journeys.example.org/outreach-europe'
       ]
     ])(
       'is where the linked journey is served, custom domain %j',
@@ -227,8 +227,8 @@ describe('campaign', () => {
     expect(campaign).toMatchObject({
       id: 'campaignId',
       teamId: 'teamId',
-      title: 'Christmas 2026',
-      slug: 'christmas-2026',
+      title: 'Outreach 2026',
+      slug: 'outreach-2026',
       status: 'draft',
       defaultLanguageId: '529',
       palette: fixture.palette,

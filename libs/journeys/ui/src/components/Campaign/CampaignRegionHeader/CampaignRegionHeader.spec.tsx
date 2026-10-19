@@ -54,7 +54,7 @@ describe('CampaignRegionHeader', () => {
     ).toBeInTheDocument()
     expect(screen.getByTestId('CampaignTypography')).toHaveTextContent('EUR')
     expect(screen.getByTestId('CampaignRegionIntro')).toHaveTextContent(
-      'A Christmas journey chosen and contextualised by your regional team.'
+      'A Outreach journey chosen and contextualised by your regional team.'
     )
     expect(screen.queryByRole('link')).not.toBeInTheDocument()
     expect(screen.queryByText('All regions')).not.toBeInTheDocument()

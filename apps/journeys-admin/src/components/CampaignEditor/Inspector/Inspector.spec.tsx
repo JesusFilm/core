@@ -968,7 +968,7 @@ describe('Inspector', () => {
 
       expect(screen.getByTestId('JourneyCardSettings')).toBeInTheDocument()
       expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(
-        'The Christmas story'
+        'The outreach story'
       )
       expect(
         screen.getByRole('textbox', { name: 'Description' })

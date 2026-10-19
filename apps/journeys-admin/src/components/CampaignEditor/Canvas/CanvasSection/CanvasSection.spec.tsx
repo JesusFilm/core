@@ -100,7 +100,7 @@ describe('CanvasSection header', () => {
       renderChrome('CampaignHeaderBlock')
 
       expect(screen.getByTestId('CanvasBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
       expect(
         screen.queryByTestId('CanvasBrandMarkLogo')
@@ -112,7 +112,7 @@ describe('CanvasSection header', () => {
 
       const logo = screen.getByTestId('CanvasBrandMarkLogo')
       expect(logo).toHaveAttribute('src', headerLogoBlock.src)
-      expect(logo).toHaveAttribute('alt', 'Christmas logo')
+      expect(logo).toHaveAttribute('alt', 'Outreach logo')
       expect(
         screen.queryByTestId('CanvasBrandMarkTitle')
       ).not.toBeInTheDocument()

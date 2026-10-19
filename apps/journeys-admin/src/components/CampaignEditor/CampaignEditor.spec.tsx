@@ -345,8 +345,8 @@ describe('CampaignEditor', () => {
         campaignUpdate: {
           __typename: 'Campaign',
           id: 'campaignId',
-          title: 'Christmas 2026',
-          slug: 'christmas-2026'
+          title: 'Outreach 2026',
+          slug: 'outreach-2026'
         }
       }
     }))
@@ -417,7 +417,7 @@ describe('CampaignEditor', () => {
       {
         request: {
           query: CAMPAIGN_UPDATE,
-          variables: { id: 'campaignId', input: { title: 'Easter 2027' } }
+          variables: { id: 'campaignId', input: { title: 'Outreach 2027' } }
         },
         result: {
           errors: [
@@ -431,8 +431,8 @@ describe('CampaignEditor', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     const title = screen.getByLabelText('Title')
-    fireEvent.change(title, { target: { value: 'Easter 2027' } })
-    expect(title).toHaveValue('Easter 2027')
+    fireEvent.change(title, { target: { value: 'Outreach 2027' } })
+    expect(title).toHaveValue('Outreach 2027')
     fireEvent.blur(title)
 
     expect(await screen.findByText('campaign not found')).toBeInTheDocument()

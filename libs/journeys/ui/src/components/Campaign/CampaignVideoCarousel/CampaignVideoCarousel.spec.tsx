@@ -110,12 +110,12 @@ function expanded(
       ...watchChild(0),
       id: 'collectionId',
       label: VideoLabel.collection,
-      slug: 'christmas-collection',
+      slug: 'outreach-collection',
       childrenCount: children.length,
       title: [
         {
           __typename: 'VideoTitle',
-          value: 'Christmas collection',
+          value: 'Outreach collection',
           primary: true,
           language: { __typename: 'Language', id: '529' }
         }
@@ -124,7 +124,7 @@ function expanded(
         __typename: 'VideoVariant',
         id: 'collectionId-529',
         duration: 0,
-        slug: 'christmas-collection/english'
+        slug: 'outreach-collection/english'
       },
       children,
       ...overrides
@@ -177,7 +177,7 @@ describe('CampaignVideoCarousel', () => {
       expect(seeAll).toHaveTextContent('See all on Watch')
       expect(seeAll).toHaveAttribute(
         'href',
-        'https://www.jesusfilm.org/watch/christmas-collection.html/english.html'
+        'https://www.jesusfilm.org/watch/outreach-collection.html/english.html'
       )
       expect(seeAll).toHaveAttribute('target', '_blank')
     })
@@ -273,7 +273,7 @@ describe('CampaignVideoCarousel', () => {
         'href',
         'https://www.jesusfilm.org/watch/jesus.html/english.html'
       )
-      expect(card).toHaveTextContent('Christmas collection')
+      expect(card).toHaveTextContent('Outreach collection')
       expect(
         within(card).getByTestId('CampaignVideoCarouselCardDuration')
       ).toHaveTextContent('2:03:00')
@@ -333,7 +333,7 @@ describe('CampaignVideoCarousel', () => {
         'href',
         'https://www.youtube.com/watch?v=jQaeIJOA6J0'
       )
-      expect(card).toHaveTextContent('Christmas around the world')
+      expect(card).toHaveTextContent('Outreach around the world')
       expect(card).toHaveTextContent('Watch on YouTube')
       expect(
         within(card).getByTestId('CampaignVideoCarouselCardDuration')
@@ -352,7 +352,7 @@ describe('CampaignVideoCarousel', () => {
         screen.getByTestId('CampaignVideoCarouselCard-watchItemId')
       ).toHaveAttribute(
         'href',
-        'https://www.jesusfilm.org/watch/the-nativity.html/english.html'
+        'https://www.jesusfilm.org/watch/the-story.html/english.html'
       )
       expect(
         screen.getByTestId('CampaignVideoCarouselCard-parentItemId')

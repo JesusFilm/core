@@ -123,14 +123,14 @@ describe('Settings', () => {
   it('counts the title and the slug against their caps', () => {
     renderSettings()
 
-    expect(screen.getByText('14 / 100')).toBeInTheDocument()
-    expect(screen.getByText('14 / 200')).toBeInTheDocument()
+    expect(screen.getByText('13 / 100')).toBeInTheDocument()
+    expect(screen.getByText('13 / 200')).toBeInTheDocument()
 
     fireEvent.change(screen.getByRole('textbox', { name: 'Title' }), {
-      target: { value: 'Christmas' }
+      target: { value: 'Outreach' }
     })
 
-    expect(screen.getByText('9 / 100')).toBeInTheDocument()
+    expect(screen.getByText('8 / 100')).toBeInTheDocument()
   })
 
   it('shows the permanent root-domain address and the current public address', () => {
@@ -138,12 +138,12 @@ describe('Settings', () => {
 
     expect(
       screen.getByText(
-        'Permanent address: https://your.nextstep.is/campaign/christmas-2026'
+        'Permanent address: https://your.nextstep.is/campaign/outreach-2026'
       )
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Current public address: https://your.nextstep.is/campaign/christmas-2026'
+        'Current public address: https://your.nextstep.is/campaign/outreach-2026'
       )
     ).toBeInTheDocument()
   })
@@ -156,7 +156,7 @@ describe('Settings', () => {
           {
             __typename: 'CustomDomain',
             id: 'customDomainId',
-            name: 'christmas.example.org'
+            name: 'outreach.example.org'
           }
         ]
       }
@@ -164,11 +164,11 @@ describe('Settings', () => {
 
     expect(
       screen.getByText(
-        'Permanent address: https://your.nextstep.is/campaign/christmas-2026'
+        'Permanent address: https://your.nextstep.is/campaign/outreach-2026'
       )
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Current public address: https://christmas.example.org')
+      screen.getByText('Current public address: https://outreach.example.org')
     ).toBeInTheDocument()
   })
 
@@ -180,7 +180,7 @@ describe('Settings', () => {
           {
             __typename: 'CustomDomain',
             id: 'customDomainId',
-            name: 'christmas.example.org'
+            name: 'outreach.example.org'
           },
           {
             __typename: 'CustomDomain',
@@ -192,7 +192,7 @@ describe('Settings', () => {
     })
 
     expect(
-      screen.getByText('Current public address: https://christmas.example.org')
+      screen.getByText('Current public address: https://outreach.example.org')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Current public address: https://gifts.example.org')
@@ -205,8 +205,8 @@ describe('Settings', () => {
         campaignUpdate: {
           __typename: 'Campaign',
           id: 'campaignId',
-          title: 'Easter 2027',
-          slug: 'christmas-2026'
+          title: 'Outreach 2027',
+          slug: 'outreach-2026'
         }
       }
     }))
@@ -215,7 +215,7 @@ describe('Settings', () => {
         {
           request: {
             query: CAMPAIGN_UPDATE,
-            variables: { id: 'campaignId', input: { title: 'Easter 2027' } }
+            variables: { id: 'campaignId', input: { title: 'Outreach 2027' } }
           },
           result
         }
@@ -223,7 +223,7 @@ describe('Settings', () => {
     })
 
     const title = screen.getByLabelText('Title')
-    fireEvent.change(title, { target: { value: ' Easter 2027 ' } })
+    fireEvent.change(title, { target: { value: ' Outreach 2027 ' } })
     fireEvent.blur(title)
 
     await waitFor(() => expect(result).toHaveBeenCalled())
@@ -236,7 +236,7 @@ describe('Settings', () => {
         campaignUpdate: {
           __typename: 'Campaign',
           id: 'campaignId',
-          title: 'Christmas 2026',
+          title: 'Outreach 2026',
           slug: 'xmas-2026'
         }
       }
@@ -328,7 +328,7 @@ describe('Settings', () => {
         {
           request: {
             query: CAMPAIGN_UPDATE,
-            variables: { id: 'campaignId', input: { title: 'Easter 2027' } }
+            variables: { id: 'campaignId', input: { title: 'Outreach 2027' } }
           },
           error: new Error('Network down')
         }
@@ -336,11 +336,11 @@ describe('Settings', () => {
     })
 
     const title = screen.getByLabelText('Title')
-    fireEvent.change(title, { target: { value: 'Easter 2027' } })
+    fireEvent.change(title, { target: { value: 'Outreach 2027' } })
     fireEvent.blur(title)
 
     expect(await screen.findByText('Network down')).toBeInTheDocument()
-    await waitFor(() => expect(title).toHaveValue('Christmas 2026'))
+    await waitFor(() => expect(title).toHaveValue('Outreach 2026'))
   })
 
   it('rejects an empty title before calling the API', () => {
@@ -455,8 +455,8 @@ describe('Settings', () => {
         campaignUpdate: {
           __typename: 'Campaign',
           id: 'campaignId',
-          title: 'Christmas 2026',
-          slug: 'christmas-2026'
+          title: 'Outreach 2026',
+          slug: 'outreach-2026'
         }
       }
     }))
@@ -648,7 +648,7 @@ describe('Settings', () => {
   describe('shapeSlug', () => {
     it('lowercases, swaps invalid runs for one dash and clips leading dashes', () => {
       expect(shapeSlug('  Xmas 2026!! ')).toBe('xmas-2026-')
-      expect(shapeSlug('--Easter')).toBe('easter')
+      expect(shapeSlug('--Hope')).toBe('hope')
     })
   })
 })

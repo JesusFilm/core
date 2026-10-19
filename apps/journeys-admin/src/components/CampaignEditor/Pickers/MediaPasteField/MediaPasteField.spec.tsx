@@ -44,7 +44,7 @@ vi.mock(
 )
 
 const WATCH_URL =
-  'https://www.jesusfilm.org/watch/easter.html/the-resurrection/english.html'
+  'https://www.jesusfilm.org/watch/hope.html/the-resurrection/english.html'
 const WATCH_SLUG = 'the-resurrection/english'
 const YOUTUBE_URL = 'https://youtu.be/jQaeIJOA6J0'
 

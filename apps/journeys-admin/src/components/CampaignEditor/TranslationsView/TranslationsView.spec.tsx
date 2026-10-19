@@ -67,8 +67,8 @@ const copyLink = row({
 const heroTitle = row({
   group: CampaignTranslationGroup.landing,
   field: CampaignTextField.title,
-  defaultValue: 'Share the story of Christmas',
-  value: "Partagez l'histoire de Noël",
+  defaultValue: 'Share the story of Outreach',
+  value: "Partagez l'histoire de Campagne",
   source: CampaignTextSource.machine,
   target: {
     ...copyLink.target,
@@ -81,15 +81,15 @@ const heroEyebrow = row({
   group: CampaignTranslationGroup.landing,
   field: CampaignTextField.eyebrow,
   maxLength: 80,
-  defaultValue: 'Christmas 2026',
+  defaultValue: 'Outreach 2026',
   target: { ...heroTitle.target }
 })
 const regionIntro = row({
   group: CampaignTranslationGroup.region,
   field: CampaignTextField.intro,
   maxLength: 500,
-  defaultValue: 'A Christmas journey chosen by your regional team.',
-  value: 'Un voyage de Noël.',
+  defaultValue: 'A Outreach journey chosen by your regional team.',
+  value: 'Un voyage de Campagne.',
   source: CampaignTextSource.human,
   target: {
     ...heroTitle.target,
@@ -231,9 +231,9 @@ describe('TranslationsView', () => {
         /^TranslationRow-/
       )
     ).toHaveLength(2)
-    expect(screen.getByText('Share the story of Christmas')).toBeInTheDocument()
+    expect(screen.getByText('Share the story of Outreach')).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Hero · Title' })).toHaveValue(
-      "Partagez l'histoire de Noël"
+      "Partagez l'histoire de Campagne"
     )
     expect(
       screen.getByRole('textbox', { name: 'Interface phrase · Wording' })
@@ -273,8 +273,8 @@ describe('TranslationsView', () => {
   })
 
   it('writes a human translation on leaving the field and flips the line to Edited live', async () => {
-    const write = setMock(heroTitle, FRENCH, 'Partagez Noël', [
-      { languageId: FRENCH, value: 'Partagez Noël' }
+    const write = setMock(heroTitle, FRENCH, 'Partagez Campagne', [
+      { languageId: FRENCH, value: 'Partagez Campagne' }
     ])
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
@@ -282,7 +282,7 @@ describe('TranslationsView', () => {
     expect(visibleRows()).toHaveLength(2)
 
     const field = screen.getByRole('textbox', { name: 'Hero · Title' })
-    fireEvent.change(field, { target: { value: '  Partagez Noël ' } })
+    fireEvent.change(field, { target: { value: '  Partagez Campagne ' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(write.result).toHaveBeenCalled())
@@ -292,19 +292,19 @@ describe('TranslationsView', () => {
       'TranslationRow-CampaignHeroBlock:heroId:title'
     )
     expect(within(edited).getByText('Edited')).toBeInTheDocument()
-    expect(within(edited).getByRole('textbox')).toHaveValue('Partagez Noël')
+    expect(within(edited).getByRole('textbox')).toHaveValue('Partagez Campagne')
   })
 
   it('moves a missing line to Edited once it is written', async () => {
-    const write = setMock(heroEyebrow, FRENCH, 'Noël 2026', [
-      { languageId: FRENCH, value: 'Noël 2026' }
+    const write = setMock(heroEyebrow, FRENCH, 'Campagne 2026', [
+      { languageId: FRENCH, value: 'Campagne 2026' }
     ])
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
     fireEvent.click(screen.getByRole('button', { name: 'Missing' }))
 
     const field = screen.getByRole('textbox', { name: 'Hero · Eyebrow' })
-    fireEvent.change(field, { target: { value: 'Noël 2026' } })
+    fireEvent.change(field, { target: { value: 'Campagne 2026' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(write.result).toHaveBeenCalled())
@@ -327,7 +327,7 @@ describe('TranslationsView', () => {
   })
 
   it('does not write when the text is unchanged', async () => {
-    const write = setMock(heroTitle, FRENCH, "Partagez l'histoire de Noël", [])
+    const write = setMock(heroTitle, FRENCH, "Partagez l'histoire de Campagne", [])
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
 
@@ -353,7 +353,7 @@ describe('TranslationsView', () => {
     expect(
       await screen.findByText('title must be at most 150 characters')
     ).toBeInTheDocument()
-    expect(field).toHaveValue("Partagez l'histoire de Noël")
+    expect(field).toHaveValue("Partagez l'histoire de Campagne")
   })
 
   it('reads another language when it is picked', async () => {
@@ -467,7 +467,7 @@ describe('TranslationsView', () => {
       const sweep = sweepMock(FRENCH)
       const translated = {
         ...heroEyebrow,
-        value: 'Noël 2026',
+        value: 'Campagne 2026',
         source: CampaignTextSource.machine
       }
       renderView([listMock(FRENCH), sweep, listMock(FRENCH, [translated])])
@@ -491,7 +491,7 @@ describe('TranslationsView', () => {
       await waitFor(() =>
         expect(
           screen.getByRole('textbox', { name: 'Hero · Eyebrow' })
-        ).toHaveValue('Noël 2026')
+        ).toHaveValue('Campagne 2026')
       )
       expect(
         screen.getByRole('button', { name: 'Machine-translate missing' })
@@ -500,8 +500,8 @@ describe('TranslationsView', () => {
 
     it('does not run again after an edit', async () => {
       const sweep = sweepMock(FRENCH)
-      const write = setMock(heroTitle, FRENCH, 'Partagez Noël', [
-        { languageId: FRENCH, value: 'Partagez Noël' }
+      const write = setMock(heroTitle, FRENCH, 'Partagez Campagne', [
+        { languageId: FRENCH, value: 'Partagez Campagne' }
       ])
       renderView([listMock(FRENCH), sweep, listMock(FRENCH), write])
       await screen.findByTestId('TranslationGroup-interface')
@@ -514,7 +514,7 @@ describe('TranslationsView', () => {
       )
 
       const field = await screen.findByRole('textbox', { name: 'Hero · Title' })
-      fireEvent.change(field, { target: { value: 'Partagez Noël' } })
+      fireEvent.change(field, { target: { value: 'Partagez Campagne' } })
       fireEvent.blur(field)
 
       await waitFor(() => expect(write.result).toHaveBeenCalled())

@@ -86,7 +86,7 @@ describe('campaignTranslations', () => {
     return {
       ...fixture,
       titleTranslations: {
-        [FRENCH]: { value: 'Noël 2026', source: 'human' }
+        [FRENCH]: { value: 'Campagne 2026', source: 'human' }
       },
       blocks: [
         ...fixture.blocks.map((block) => {
@@ -215,8 +215,8 @@ describe('campaignTranslations', () => {
       group: 'interface',
       field: 'title',
       maxLength: 100,
-      defaultValue: 'Christmas 2026',
-      value: 'Noël 2026',
+      defaultValue: 'Outreach 2026',
+      value: 'Campagne 2026',
       source: 'human',
       target: {
         typename: 'Campaign',
