@@ -123,6 +123,22 @@ function mediaRule(element: Element, minWidth: number): string {
 
 describe('CampaignHeader', () => {
   describe('brand mark', () => {
+    it('keeps square corners whatever the theme radius, since an AppBar is a rounded Paper', () => {
+      renderHeader()
+      const header = screen.getByTestId('CampaignHeader')
+      const rule = Array.from(document.querySelectorAll('style'))
+        .map((node) => node.textContent ?? '')
+        .join('')
+        .match(
+          new RegExp(
+            `\\.${Array.from(header.classList)
+              .find((name) => name.startsWith('css-'))
+              ?.replace(/-/g, '\\-')}\\{([^}]*)\\}`
+          )
+        )?.[1]
+      expect(rule).toContain('border-radius:0')
+    })
+
     it('renders the campaign title as text when no logo is set, linking to the landing page in the page language', () => {
       renderHeader()
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(

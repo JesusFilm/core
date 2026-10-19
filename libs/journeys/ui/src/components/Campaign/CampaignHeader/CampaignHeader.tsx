@@ -109,6 +109,8 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
         sx={{
           top: 0,
           overflow: 'hidden',
+          // An AppBar is a Paper, which the campaign theme rounds; a header band runs straight across.
+          borderRadius: 0,
           backgroundColor: 'var(--campaign-band-background)',
           backgroundImage: 'none',
           color: 'var(--campaign-band-text)',
