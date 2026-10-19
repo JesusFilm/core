@@ -34,7 +34,7 @@ export function CampaignRichText({
           key={index}
           variant="body1"
           data-testid="CampaignRichTextParagraph"
-          sx={{ maxWidth: 720, whiteSpace: 'pre-line' }}
+          sx={{ whiteSpace: 'pre-line' }}
         >
           {paragraph}
         </Typography>

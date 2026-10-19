@@ -50,7 +50,7 @@ export function CampaignRegionHeader({
         <Typography
           variant="body1"
           data-testid="CampaignRegionIntro"
-          sx={{ color: 'var(--campaign-band-muted)', maxWidth: 720 }}
+          sx={{ color: 'var(--campaign-band-muted)' }}
         >
           {block.intro}
         </Typography>

@@ -60,8 +60,7 @@ export function CampaignSectionHeading({
           data-testid="CampaignDescription"
           sx={{
             color: 'var(--campaign-band-muted)',
-            fontSize: { md: '1.25rem' },
-            maxWidth: 720
+            fontSize: { md: '1.25rem' }
           }}
         >
           {description}

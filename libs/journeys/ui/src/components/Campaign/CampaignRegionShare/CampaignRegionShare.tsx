@@ -200,7 +200,7 @@ export function CampaignRegionShare({
         <Typography
           variant="body1"
           data-testid="CampaignRegionShareIntro"
-          sx={{ color: 'var(--campaign-band-muted)', maxWidth: 720 }}
+          sx={{ color: 'var(--campaign-band-muted)' }}
         >
           {block.intro}
         </Typography>
