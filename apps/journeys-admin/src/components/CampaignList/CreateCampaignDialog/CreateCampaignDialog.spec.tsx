@@ -148,7 +148,7 @@ describe('CreateCampaignDialog', () => {
     ).toBeInTheDocument()
   })
 
-  it('requires a title and a language before calling the API', async () => {
+  it('requires a title before calling the API', async () => {
     const result = vi.fn(() => ({ data: { campaignCreate: campaign } }))
     renderDialog([
       {
@@ -160,7 +160,45 @@ describe('CreateCampaignDialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
 
     expect(await screen.findByText('Title is required')).toBeInTheDocument()
-    expect(screen.getByText('Language is required')).toBeInTheDocument()
+    expect(screen.queryByText('Language is required')).not.toBeInTheDocument()
     expect(result).not.toHaveBeenCalled()
+  })
+
+  it('defaults the language to English so a title alone creates the campaign', async () => {
+    const result = vi.fn(() => ({ data: { campaignCreate: campaign } }))
+    renderDialog([
+      {
+        request: { query: CAMPAIGN_CREATE, variables: createVariables },
+        result
+      }
+    ])
+
+    expect(screen.getByRole('combobox')).toHaveValue('English')
+    fireEvent.change(screen.getByLabelText('Title'), {
+      target: { value: 'Christmas 2026' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }))
+
+    await waitFor(() => expect(result).toHaveBeenCalled())
+  })
+
+  it('clears the title and resets the language to English when closed without creating', async () => {
+    const { onClose } = renderDialog([])
+
+    fireEvent.change(screen.getByLabelText('Title'), {
+      target: { value: 'Christmas 2026' }
+    })
+    const combobox = screen.getByRole('combobox')
+    await waitFor(() => expect(combobox).not.toBeDisabled())
+    fireEvent.focus(combobox)
+    fireEvent.keyDown(combobox, { key: 'ArrowDown' })
+    fireEvent.click(await screen.findByRole('option', { name: /French/ }))
+    expect(combobox).toHaveValue('French')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(onClose).toHaveBeenCalled()
+    expect(screen.getByLabelText('Title')).toHaveValue('')
+    expect(screen.getByRole('combobox')).toHaveValue('English')
   })
 })
