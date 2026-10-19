@@ -8,7 +8,7 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
 
-import { audioPreview, language, languageName } from './language.mock'
+import { audioPreview, language, languageName, languageSlug } from './language.mock'
 
 const LANGUAGE_QUERY = graphql(`
   query Language($languageId: ID, $primary: Boolean) {
@@ -18,6 +18,11 @@ const LANGUAGE_QUERY = graphql(`
       bcp47
       iso3
       slug
+      slugs {
+        id
+        value
+        canonical
+      }
       name(languageId: $languageId, primary: $primary) {
         value
         primary
@@ -110,7 +115,8 @@ describe('language', () => {
         ...audioPreview,
         language
       },
-      name: languageName
+      name: languageName,
+      slugs: languageSlug
     } as unknown as Language)
 
     const data = await client({
@@ -132,6 +138,9 @@ describe('language', () => {
             OR: [{ languageId: '529' }, { primary: true }]
           },
           orderBy: { primary: 'desc' }
+        },
+        slugs: {
+          orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
         }
       }
     })
@@ -140,6 +149,9 @@ describe('language', () => {
       updatedAt: language.updatedAt.toISOString(),
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
+      ),
+      slugs: languageSlug.map((slug) =>
+        omit(slug, ['languageId', 'createdAt', 'updatedAt'])
       ),
       audioPreview: {
         ...omit(audioPreview, 'languageId', 'updatedAt'),
@@ -155,7 +167,8 @@ describe('language', () => {
         ...audioPreview,
         language: { id: audioPreview.languageId }
       },
-      name: languageName
+      name: languageName,
+      slugs: languageSlug
     } as unknown as Language)
 
     const data = await client({
@@ -181,6 +194,9 @@ describe('language', () => {
             OR: [{ languageId: '529' }, { primary: true }]
           },
           orderBy: { primary: 'desc' }
+        },
+        slugs: {
+          orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
         }
       }
     })
@@ -190,11 +206,33 @@ describe('language', () => {
       name: languageName.map((languageName) =>
         omit(languageName, ['id', 'languageId', 'parentLanguageId'])
       ),
+      slugs: languageSlug.map((slug) =>
+        omit(slug, ['languageId', 'createdAt', 'updatedAt'])
+      ),
       audioPreview: {
         ...omit(audioPreview, 'languageId', 'updatedAt'),
         language: { id: audioPreview.languageId }
       }
     })
+  })
+
+  it('should fall back to null slug when a language has no canonical slug', async () => {
+    prismaMock.language.findUnique.mockResolvedValue({
+      ...language,
+      audioPreview: {
+        ...audioPreview,
+        language
+      },
+      name: languageName,
+      slugs: []
+    } as unknown as Language)
+
+    const data = await client({
+      document: LANGUAGE_QUERY
+    })
+
+    expect(data).toHaveProperty('data.language.slug', null)
+    expect(data).toHaveProperty('data.language.slugs', [])
   })
 
   it('should return null when no country found', async () => {
@@ -388,12 +426,264 @@ describe('languageNameUpdate', () => {
   })
 })
 
+const LANGUAGE_SLUG_CREATE_MUTATION = parse(`
+  mutation LanguageSlugCreate($input: LanguageSlugCreateInput!) {
+    languageSlugCreate(input: $input) {
+      id
+    }
+  }
+`)
+
+const LANGUAGE_SLUG_DELETE_MUTATION = parse(`
+  mutation LanguageSlugDelete($input: LanguageSlugDeleteInput!) {
+    languageSlugDelete(input: $input) {
+      id
+    }
+  }
+`)
+
+const LANGUAGE_SLUG_SET_CANONICAL_MUTATION = parse(`
+  mutation LanguageSlugSetCanonical($input: LanguageSlugSetCanonicalInput!) {
+    languageSlugSetCanonical(input: $input) {
+      id
+    }
+  }
+`)
+
+describe('languageSlugCreate', () => {
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    }
+  })
+
+  beforeEach(() => {
+    prismaMock.userLanguageRole.findUnique.mockResolvedValue({
+      id: 'roleId',
+      userId: 'id',
+      roles: [LanguageRole.publisher]
+    })
+    prismaMock.language.findUniqueOrThrow.mockResolvedValue(language)
+  })
+
+  it('should create a non-canonical slug when a canonical slug already exists', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(null)
+    prismaMock.languageSlug.count.mockResolvedValue(1)
+
+    await authClient({
+      document: LANGUAGE_SLUG_CREATE_MUTATION,
+      variables: {
+        input: { languageId: language.id, value: ' chinese-mandarin ' }
+      }
+    })
+
+    expect(prismaMock.languageSlug.findUnique).toHaveBeenCalledWith({
+      where: { value: 'chinese-mandarin' }
+    })
+    expect(prismaMock.languageSlug.count).toHaveBeenCalledWith({
+      where: { languageId: language.id, canonical: true }
+    })
+    expect(prismaMock.languageSlug.create).toHaveBeenCalledWith({
+      data: {
+        value: 'chinese-mandarin',
+        languageId: language.id,
+        canonical: false
+      }
+    })
+  })
+
+  it('should create the first slug for a language as canonical', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(null)
+    prismaMock.languageSlug.count.mockResolvedValue(0)
+
+    await authClient({
+      document: LANGUAGE_SLUG_CREATE_MUTATION,
+      variables: {
+        input: { languageId: language.id, value: 'mandarin-china' }
+      }
+    })
+
+    expect(prismaMock.languageSlug.create).toHaveBeenCalledWith({
+      data: {
+        value: 'mandarin-china',
+        languageId: language.id,
+        canonical: true
+      }
+    })
+  })
+
+  it('should reject a slug value already in use', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(languageSlug[0])
+
+    const data = (await authClient({
+      document: LANGUAGE_SLUG_CREATE_MUTATION,
+      variables: {
+        input: { languageId: language.id, value: 'mandarin-china' }
+      }
+    })) as { errors?: Array<{ message: string }> }
+
+    expect(data.errors?.[0].message).toBe(
+      'Language slug "mandarin-china" is already in use'
+    )
+    expect(prismaMock.languageSlug.create).not.toHaveBeenCalled()
+  })
+
+  it('should reject a slug value containing a slash', async () => {
+    const data = (await authClient({
+      document: LANGUAGE_SLUG_CREATE_MUTATION,
+      variables: {
+        input: { languageId: language.id, value: 'mandarin/china' }
+      }
+    })) as { errors?: Array<{ message: string }> }
+
+    expect(data.errors?.[0].message).toBe(
+      'Language slug must not contain a slash'
+    )
+    expect(prismaMock.languageSlug.create).not.toHaveBeenCalled()
+  })
+})
+
+describe('languageSlugDelete', () => {
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    }
+  })
+
+  beforeEach(() => {
+    prismaMock.userLanguageRole.findUnique.mockResolvedValue({
+      id: 'roleId',
+      userId: 'id',
+      roles: [LanguageRole.publisher]
+    })
+    prismaMock.language.findUniqueOrThrow.mockResolvedValue(language)
+  })
+
+  it('should delete a non-canonical slug', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(languageSlug[1])
+
+    await authClient({
+      document: LANGUAGE_SLUG_DELETE_MUTATION,
+      variables: { input: { id: languageSlug[1].id } }
+    })
+
+    expect(prismaMock.languageSlug.delete).toHaveBeenCalledWith({
+      where: { id: languageSlug[1].id }
+    })
+  })
+
+  it('should reject removing the canonical slug while other slugs exist', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(languageSlug[0])
+    prismaMock.languageSlug.count.mockResolvedValue(1)
+
+    const data = (await authClient({
+      document: LANGUAGE_SLUG_DELETE_MUTATION,
+      variables: { input: { id: languageSlug[0].id } }
+    })) as { errors?: Array<{ message: string }> }
+
+    expect(prismaMock.languageSlug.count).toHaveBeenCalledWith({
+      where: {
+        languageId: languageSlug[0].languageId,
+        id: { not: languageSlug[0].id }
+      }
+    })
+    expect(data.errors?.[0].message).toBe(
+      'Cannot remove the canonical language slug while other slugs exist'
+    )
+    expect(prismaMock.languageSlug.delete).not.toHaveBeenCalled()
+  })
+
+  it('should allow removing the canonical slug when it is the only slug', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(languageSlug[0])
+    prismaMock.languageSlug.count.mockResolvedValue(0)
+
+    await authClient({
+      document: LANGUAGE_SLUG_DELETE_MUTATION,
+      variables: { input: { id: languageSlug[0].id } }
+    })
+
+    expect(prismaMock.languageSlug.delete).toHaveBeenCalledWith({
+      where: { id: languageSlug[0].id }
+    })
+  })
+
+  it('should reject an unknown slug id', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(null)
+
+    const data = (await authClient({
+      document: LANGUAGE_SLUG_DELETE_MUTATION,
+      variables: { input: { id: 'missing' } }
+    })) as { errors?: Array<{ message: string }> }
+
+    expect(data.errors?.[0].message).toBe(
+      'Language slug not found with id missing'
+    )
+    expect(prismaMock.languageSlug.delete).not.toHaveBeenCalled()
+  })
+})
+
+describe('languageSlugSetCanonical', () => {
+  const authClient = getClient({
+    headers: {
+      authorization: 'token'
+    }
+  })
+
+  beforeEach(() => {
+    prismaMock.userLanguageRole.findUnique.mockResolvedValue({
+      id: 'roleId',
+      userId: 'id',
+      roles: [LanguageRole.publisher]
+    })
+    prismaMock.language.findUniqueOrThrow.mockResolvedValue(language)
+  })
+
+  it('should clear the previous canonical slug and set the new one', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(languageSlug[1])
+
+    await authClient({
+      document: LANGUAGE_SLUG_SET_CANONICAL_MUTATION,
+      variables: { input: { id: languageSlug[1].id } }
+    })
+
+    expect(prismaMock.languageSlug.updateMany).toHaveBeenCalledWith({
+      where: { languageId: languageSlug[1].languageId, canonical: true },
+      data: { canonical: false }
+    })
+    expect(prismaMock.languageSlug.update).toHaveBeenCalledWith({
+      where: { id: languageSlug[1].id },
+      data: { canonical: true }
+    })
+    expect(prismaMock.$transaction).toHaveBeenCalled()
+  })
+
+  it('should reject an unknown slug id', async () => {
+    prismaMock.languageSlug.findUnique.mockResolvedValue(null)
+
+    const data = (await authClient({
+      document: LANGUAGE_SLUG_SET_CANONICAL_MUTATION,
+      variables: { input: { id: 'missing' } }
+    })) as { errors?: Array<{ message: string }> }
+
+    expect(data.errors?.[0].message).toBe(
+      'Language slug not found with id missing'
+    )
+    expect(prismaMock.$transaction).not.toHaveBeenCalled()
+  })
+})
+
 describe('languages', () => {
   const client = getClient()
 
   afterEach(async () => {
     await cache.invalidate([{ typename: 'Language' }])
   })
+
+  const slugsInclude = {
+    slugs: {
+      orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
+    }
+  }
 
   it('should query languages with default hasVideos filter', async () => {
     prismaMock.language.findMany.mockResolvedValue([language])
@@ -403,6 +693,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       where: {
         hasVideos: true,
         updatedAt: undefined
@@ -411,7 +702,9 @@ describe('languages', () => {
   })
 
   it('should query languages with updatedAt filter', async () => {
-    prismaMock.language.findMany.mockResolvedValue([language])
+    prismaMock.language.findMany.mockResolvedValue([
+      { ...language, slugs: languageSlug }
+    ])
 
     const updatedSince = '2021-01-01T00:00:00.000Z'
     const data = await client({
@@ -422,6 +715,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       where: {
         hasVideos: true,
         updatedAt: { gte: new Date(updatedSince) }
@@ -450,6 +744,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       where: {
         id: { in: ['529'] },
         bcp47: { in: ['en'] },
@@ -469,6 +764,7 @@ describe('languages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       where: {
         hasVideos: true,
         updatedAt: undefined,
@@ -550,6 +846,12 @@ describe('adminLanguages', () => {
     await cache.invalidate([{ typename: 'Language' }])
   })
 
+  const slugsInclude = {
+    slugs: {
+      orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
+    }
+  }
+
   it('should query admin languages without default hasVideos filter', async () => {
     prismaMock.language.findMany.mockResolvedValue([language])
 
@@ -558,6 +860,7 @@ describe('adminLanguages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       orderBy: { id: 'asc' },
       where: {
         updatedAt: undefined
@@ -574,6 +877,7 @@ describe('adminLanguages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       orderBy: { id: 'asc' },
       where: {
         hasVideos: false,
@@ -591,6 +895,7 @@ describe('adminLanguages', () => {
     })
 
     expect(prismaMock.language.findMany).toHaveBeenCalledWith({
+      include: slugsInclude,
       orderBy: { id: 'asc' },
       where: {
         updatedAt: undefined,

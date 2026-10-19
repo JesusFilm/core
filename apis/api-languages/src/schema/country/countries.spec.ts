@@ -10,7 +10,7 @@ import { graphql } from '@core/shared/gql'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { cache } from '../../yoga'
-import { language } from '../language/language.mock'
+import { language, languageSlug } from '../language/language.mock'
 
 import {
   continent,
@@ -97,7 +97,9 @@ const COUNTRIES_WITH_FILTER_QUERY = graphql(`
 const result = {
   ...country,
   languages: [language],
-  countryLanguages: [{ ...countryLanguage, language }],
+  countryLanguages: [
+    { ...countryLanguage, language: { ...language, slugs: languageSlug } }
+  ],
   name: [countryName],
   continentNames: [continentName],
   continent: {
@@ -146,7 +148,13 @@ describe('countries', () => {
         },
         countryLanguages: {
           include: {
-            language: true
+            language: {
+              include: {
+                slugs: {
+                  orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
+                }
+              }
+            }
           },
           where: { language: { hasVideos: true } }
         },
@@ -282,7 +290,13 @@ describe('countries', () => {
         },
         countryLanguages: {
           include: {
-            language: true
+            language: {
+              include: {
+                slugs: {
+                  orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
+                }
+              }
+            }
           },
           where: { language: { hasVideos: true } }
         },

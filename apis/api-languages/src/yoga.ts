@@ -29,6 +29,7 @@ export const yoga = createYoga<
 >({
   schema,
   logging: logger,
+  maskedErrors: process.env.NODE_ENV === 'test' ? false : undefined,
   context: async ({ request, params }) => {
     const payload = get(params, 'extensions.jwt.payload')
     const authHeader = request.headers.get('authorization')

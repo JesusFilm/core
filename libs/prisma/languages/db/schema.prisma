@@ -24,6 +24,7 @@ model Language {
   iso3             String?
   hasVideos        Boolean           @default(true)
   slug             String?
+  slugs            LanguageSlug[]
   name             LanguageName[]    @relation(name: "name")
   nameLanguage     LanguageName[]    @relation(name: "nameLanguage")
   countries        Country[]
@@ -36,6 +37,22 @@ model Language {
   @@index(hasVideos)
   @@index(iso3(type: Hash))
   @@index([updatedAt])
+}
+
+/// A Language slug alias. Many per Language, globally unique, exactly one
+/// marked canonical. The at-most-one-canonical-per-language rule is enforced
+/// by a partial unique index on (languageId) where canonical = true, written
+/// by hand in the migration because Prisma cannot express partial indexes.
+model LanguageSlug {
+  id         String   @id @default(uuid())
+  value      String   @unique
+  canonical  Boolean  @default(false)
+  languageId String
+  language   Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index(languageId(type: Hash))
 }
 
 model LanguageName {

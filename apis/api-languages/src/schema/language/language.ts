@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { Prisma, prisma } from '@core/prisma/languages/client'
 
 import { parseFullTextSearch } from '../../lib/parseFullTextSearch'
@@ -67,6 +69,47 @@ const LanguageUpdateInput = builder.inputType('LanguageUpdateInput', {
   })
 })
 
+builder.prismaObject('LanguageSlug', {
+  fields: (t) => ({
+    id: t.exposeID('id', { nullable: false }),
+    value: t.exposeString('value', { nullable: false }),
+    canonical: t.exposeBoolean('canonical', { nullable: false })
+  })
+})
+
+const LanguageSlugCreateInput = builder.inputType('LanguageSlugCreateInput', {
+  fields: (t) => ({
+    languageId: t.id({ required: true }),
+    value: t.string({ required: true })
+  })
+})
+
+const LanguageSlugDeleteInput = builder.inputType('LanguageSlugDeleteInput', {
+  fields: (t) => ({
+    id: t.id({ required: true })
+  })
+})
+
+const LanguageSlugSetCanonicalInput = builder.inputType(
+  'LanguageSlugSetCanonicalInput',
+  {
+    fields: (t) => ({
+      id: t.id({ required: true })
+    })
+  }
+)
+
+function normalizedSlugValue(value: string): string {
+  const trimmed = value.trim()
+  if (trimmed.length === 0) {
+    throw new GraphQLError('Language slug must not be empty')
+  }
+  if (trimmed.includes('/')) {
+    throw new GraphQLError('Language slug must not contain a slash')
+  }
+  return trimmed
+}
+
 function optionalString(
   value: string | null | undefined
 ): string | null | undefined {
@@ -112,7 +155,21 @@ export const Language = builder.prismaObject('Language', {
     updatedAt: t.expose('updatedAt', { type: 'DateTime', nullable: false }),
     bcp47: t.exposeString('bcp47'),
     iso3: t.exposeString('iso3'),
-    slug: t.exposeString('slug'),
+    slug: t.field({
+      type: 'String',
+      nullable: true,
+      select: () => ({
+        slugs: { orderBy: [{ canonical: 'desc' }, { value: 'asc' }] }
+      }),
+      resolve: (language) =>
+        language.slugs.find(({ canonical }) => canonical)?.value ?? null
+    }),
+    slugs: t.relation('slugs', {
+      nullable: false,
+      query: () => ({
+        orderBy: [{ canonical: 'desc' }, { value: 'asc' }]
+      })
+    }),
     hasVideos: t.exposeBoolean('hasVideos', { nullable: false }),
     name: t.relation('name', {
       nullable: false,
@@ -324,6 +381,104 @@ builder.mutationFields((t) => ({
       return await prisma.language.findUniqueOrThrow({
         ...query,
         where: { id: input.languageId }
+      })
+    }
+  }),
+  languageSlugCreate: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Language',
+    nullable: false,
+    args: {
+      input: t.arg({ type: LanguageSlugCreateInput, required: true })
+    },
+    resolve: async (query, _parent, { input }) => {
+      const value = normalizedSlugValue(input.value)
+
+      const existing = await prisma.languageSlug.findUnique({
+        where: { value }
+      })
+      if (existing != null) {
+        throw new GraphQLError(`Language slug "${value}" is already in use`)
+      }
+
+      const canonicalCount = await prisma.languageSlug.count({
+        where: { languageId: input.languageId, canonical: true }
+      })
+
+      await prisma.languageSlug.create({
+        data: {
+          value,
+          languageId: input.languageId,
+          canonical: canonicalCount === 0
+        }
+      })
+
+      return await prisma.language.findUniqueOrThrow({
+        ...query,
+        where: { id: input.languageId }
+      })
+    }
+  }),
+  languageSlugDelete: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Language',
+    nullable: false,
+    args: {
+      input: t.arg({ type: LanguageSlugDeleteInput, required: true })
+    },
+    resolve: async (query, _parent, { input }) => {
+      const slug = await prisma.languageSlug.findUnique({
+        where: { id: input.id }
+      })
+      if (slug == null) {
+        throw new GraphQLError(`Language slug not found with id ${input.id}`)
+      }
+
+      if (slug.canonical) {
+        const otherSlugCount = await prisma.languageSlug.count({
+          where: { languageId: slug.languageId, id: { not: slug.id } }
+        })
+        if (otherSlugCount > 0) {
+          throw new GraphQLError(
+            'Cannot remove the canonical language slug while other slugs exist'
+          )
+        }
+      }
+
+      await prisma.languageSlug.delete({ where: { id: input.id } })
+
+      return await prisma.language.findUniqueOrThrow({
+        ...query,
+        where: { id: slug.languageId }
+      })
+    }
+  }),
+  languageSlugSetCanonical: t.withAuth({ isPublisher: true }).prismaField({
+    type: 'Language',
+    nullable: false,
+    args: {
+      input: t.arg({ type: LanguageSlugSetCanonicalInput, required: true })
+    },
+    resolve: async (query, _parent, { input }) => {
+      const slug = await prisma.languageSlug.findUnique({
+        where: { id: input.id }
+      })
+      if (slug == null) {
+        throw new GraphQLError(`Language slug not found with id ${input.id}`)
+      }
+
+      await prisma.$transaction([
+        prisma.languageSlug.updateMany({
+          where: { languageId: slug.languageId, canonical: true },
+          data: { canonical: false }
+        }),
+        prisma.languageSlug.update({
+          where: { id: slug.id },
+          data: { canonical: true }
+        })
+      ])
+
+      return await prisma.language.findUniqueOrThrow({
+        ...query,
+        where: { id: slug.languageId }
       })
     }
   })

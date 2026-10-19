@@ -119,6 +119,7 @@ type Language
   bcp47: String
   iso3: String
   slug: String
+  slugs: [LanguageSlug!]!
   hasVideos: Boolean!
   name(languageId: ID, primary: Boolean): [LanguageName!]!
   countryLanguages: [CountryLanguage!]!
@@ -148,6 +149,25 @@ enum LanguageRole {
   publisher
 }
 
+type LanguageSlug {
+  id: ID!
+  value: String!
+  canonical: Boolean!
+}
+
+input LanguageSlugCreateInput {
+  languageId: ID!
+  value: String!
+}
+
+input LanguageSlugDeleteInput {
+  id: ID!
+}
+
+input LanguageSlugSetCanonicalInput {
+  id: ID!
+}
+
 input LanguageUpdateInput {
   id: ID!
   bcp47: String
@@ -164,6 +184,9 @@ input LanguagesFilter {
 type Mutation {
   languageUpdate(input: LanguageUpdateInput!): Language!
   languageNameUpdate(input: LanguageNameUpdateInput!): Language!
+  languageSlugCreate(input: LanguageSlugCreateInput!): Language!
+  languageSlugDelete(input: LanguageSlugDeleteInput!): Language!
+  languageSlugSetCanonical(input: LanguageSlugSetCanonicalInput!): Language!
   audioPreviewCreate(input: MutationAudioPreviewCreateInput!): AudioPreview!
   audioPreviewUpdate(input: MutationAudioPreviewUpdateInput!): AudioPreview!
   audioPreviewDelete(languageId: ID!): AudioPreview!
