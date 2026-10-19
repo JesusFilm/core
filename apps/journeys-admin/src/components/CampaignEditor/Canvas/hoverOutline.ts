@@ -10,11 +10,17 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
  * `data-hoverable`). CSS hover inside the frame, only on the innermost
  * element under the pointer; the Navigator hovers a row by setting
  * `data-hovered` on the element. The selected element keeps its 2 px outline.
+ * While a badge shows above the element, its top-left corner is squared so
+ * the badge sits flush on a rounded card.
  */
 export const HOVER_OUTLINE_SX = {
   '&:not([data-selected="true"]):hover:not(:has([data-hoverable]:hover)), &:not([data-selected="true"])[data-hovered]':
     {
       outline: `1px solid ${adminPrimary.main}`,
       outlineOffset: -1
-    }
+    },
+  // A badge sitting on the top edge meets a square corner, not a gap under a rounded one.
+  '&:has(> [data-testid="SelectionBadge"][data-placement="above"])': {
+    borderTopLeftRadius: 0
+  }
 } as const
