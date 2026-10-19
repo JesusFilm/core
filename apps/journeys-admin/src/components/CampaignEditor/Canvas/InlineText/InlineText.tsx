@@ -171,7 +171,11 @@ export function InlineText({
               width: '100%',
               '& .MuiInputBase-input': { minWidth: 0, width: '100%' }
             }
-          : {})
+          : // The input root is inline-flex by default, which sits on the
+            // line's baseline and adds descender space under it, so the block
+            // grew a few pixels while editing. Block-level, it measures like
+            // the static text it replaces.
+            { display: 'flex' })
       }}
     />
   )
