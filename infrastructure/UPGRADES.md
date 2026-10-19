@@ -3,13 +3,14 @@
 The rollout targets EKS **1.36** and Aurora PostgreSQL **17.11** in staging and
 production.
 
-**Current state (2026-10-18): the committed default is `prod-1.36`.** Both
+**Current state (2026-10-19): the committed default is `stage-aurora`.** Both
 environments have finished the EKS rollout. Staging completed `prepare`,
 `stage-addons` and every minor through 1.36. Production completed `prod-prepare`,
 `prod-addons` and every minor through 1.36 on 2026-10-18. In both, the control
 plane, workers, kube-proxy, VPC CNI and CoreDNS are on their 1.36 versions, and
 production's EBS CSI driver is the Argo-managed 1.53.0. Aurora is still 13.23 in
-both, with staging on I/O-Optimized storage. `stage-aurora` is the next phase.
+both, with staging on I/O-Optimized storage. The staging preflight passed on
+2026-10-19; `stage-aurora` upgrades staging Aurora to 17.11.
 
 Live EKS preconditions reject skipped minors,
 downgrades and control-plane upgrades before worker alignment. A separate live
@@ -186,9 +187,20 @@ replication slots, publications and subscriptions. A nonempty logical-slot
 result blocks the in-place upgrade until its consumers have a reviewed migration
 plan. Do not drop slots, publications, subscriptions, databases or extensions
 as an automatic fix. Enabling logical replication is not evidence of unused
-slots. The live SQL checks have not yet been completed by this PR.
+slots.
+
+The staging preflight ran on 2026-10-19 against all ten databases (`cms`,
+`journeys`, `languages`, `media`, `nexus`, `plausible`, `postgres`, `stage`,
+`users` and a leftover Prisma shadow database) and found nothing blocking: no
+replication slots, publications, subscriptions, prepared transactions, invalid
+databases or `reg*` columns. Extensions are `plpgsql` everywhere, plus `pg_trgm`
+1.5 in `languages` and `citext` 1.6 in `plausible`, both supported on 17.
+Staging's Plausible database lives on this cluster, so staging analytics also
+pauses during the upgrade. The production preflight is still to run.
 
 Rehearse the major upgrade and application queries on an approved test copy.
+Staging, which can be restored from its five-day point-in-time window, serves
+as the rehearsal for production; rehearse production on a clone of production.
 Creating a clone, restoring a copy, or adding manual backups is a separate
 provisioning action that needs its own approval. Confirm an existing recovery
 point and a tested restore/cutover procedure. Major upgrades interrupt database
