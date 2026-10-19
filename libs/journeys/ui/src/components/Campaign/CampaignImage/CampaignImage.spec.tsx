@@ -52,8 +52,8 @@ const context = {
 }
 
 describe('CampaignImage', () => {
-  it('renders the picture inside its band with alt text and its space reserved from width and height', () => {
-    renderImage(imageTree())
+  it('renders the picture inside its band with alt text, cropped to the wide frame around its focal point', () => {
+    renderImage(imageTree({ focalLeft: 20, focalTop: 80 }))
     const image = screen.getByRole('img', { name: 'A family reading together' })
     expect(image).toHaveAttribute(
       'src',
@@ -61,7 +61,9 @@ describe('CampaignImage', () => {
     )
     expect(image).toHaveAttribute('width', '1600')
     expect(image).toHaveAttribute('height', '900')
-    expect(styleText()).toContain('aspect-ratio:1600/900')
+    expect(image).toHaveAttribute('data-ratio', 'wide')
+    expect(styleText()).toContain('aspect-ratio:16/9')
+    expect(styleText()).toContain('object-position:20% 80%')
     expect(
       screen.getByTestId('CampaignSectionBand-imageSectionId')
     ).toBeInTheDocument()

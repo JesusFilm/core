@@ -325,7 +325,8 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     title: 'Share the story of Christmas',
     description: 'Pick your region to find a journey in your language, ready to share.',
     align: TypographyAlign.center,
-    mediaBlockId: null
+    mediaBlockId: null,
+    minHeight: null
   }),
   button({
     id: 'heroButtonId',
@@ -467,7 +468,9 @@ export const imageSectionBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/imageSection/public',
   alt: 'A family reading together',
   width: 1600,
-  height: 900
+  height: 900,
+  focalLeft: 50,
+  focalTop: 50
 })
 
 type VideoBlock = Extract<
@@ -630,7 +633,9 @@ export const featuredMediaImageBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/featuredMedia/public',
   alt: 'Children watching a film',
   width: 1200,
-  height: 800
+  height: 800,
+  focalLeft: 50,
+  focalTop: 50
 })
 
 /** The hero’s owned background cover (`parentOrder: null`, named by `coverBlockId`). */
@@ -642,7 +647,9 @@ export const heroCoverBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/heroCover/public',
   alt: null,
   width: 1600,
-  height: 400
+  height: 400,
+  focalLeft: 50,
+  focalTop: 50
 })
 
 /** The header’s owned logo (`parentOrder: null`, named by `logoBlockId`). */
@@ -653,7 +660,9 @@ export const headerLogoBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/headerLogo/public',
   alt: 'Christmas logo',
   width: 320,
-  height: 80
+  height: 80,
+  focalLeft: 50,
+  focalTop: 50
 })
 
 export const headerBlock = section('CampaignHeaderBlock', {

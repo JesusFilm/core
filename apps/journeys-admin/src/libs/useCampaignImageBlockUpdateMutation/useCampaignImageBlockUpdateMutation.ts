@@ -20,14 +20,18 @@ export const CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA = gql`
       alt
       width
       height
+      focalLeft
+      focalTop
     }
   }
 `
 
-/** The image body as the update input takes it; `src: null` clears the picture. */
+/** The image body as the update input takes it; `src: null` clears the picture, the focal point is a percentage from the left and the top. */
 export interface CampaignImageMediaInput {
   src?: string | null
   alt?: string | null
+  focalLeft?: number | null
+  focalTop?: number | null
 }
 
 /** The row the media update returns: the picture with `input` applied; a new src has no size until the server measures it. */
@@ -42,7 +46,9 @@ export function campaignImageMediaRow(
     src,
     alt: 'alt' in input ? (input.alt ?? null) : block.alt,
     width: src === block.src ? block.width : null,
-    height: src === block.src ? block.height : null
+    height: src === block.src ? block.height : null,
+    focalLeft: 'focalLeft' in input ? (input.focalLeft ?? null) : block.focalLeft,
+    focalTop: 'focalTop' in input ? (input.focalTop ?? null) : block.focalTop
   }
 }
 
@@ -52,7 +58,7 @@ export type CampaignImageMediaMutate = (
 ) => Promise<ApolloLink.Result<CampaignImageBlockUpdateMedia>>
 
 /**
- * Write an Image section's picture or alt text through
+ * Write an image's picture, alt text or focal point through
  * `campaignImageBlockUpdate`, shown optimistically as the block with the
  * input applied; the server re-measures a new src and the response brings
  * the size.

@@ -18,12 +18,15 @@ import {
 
 import {
   CAMPAIGN_HEADER_HEIGHT,
+  CAMPAIGN_PICTURE_RATIOS,
   CampaignRegionName,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
+  focalObjectPosition,
   isCampaignSection,
   isExtra,
+  minHeightSx,
   overlayAlpha,
   resolveBand
 } from '@core/journeys/ui/Campaign'
@@ -606,11 +609,9 @@ export function CanvasSection({
                 display: 'block',
                 width: '100%',
                 height: 'auto',
-                aspectRatio:
-                  picture.width != null && picture.height != null
-                    ? `${picture.width} / ${picture.height}`
-                    : undefined,
+                aspectRatio: CAMPAIGN_PICTURE_RATIOS.wide,
                 objectFit: 'cover',
+                objectPosition: focalObjectPosition(picture),
                 borderRadius: 1
               }}
             />
@@ -716,7 +717,7 @@ export function CanvasSection({
           data-testid="CanvasSectionMedia"
           sx={{ flex: 1, minWidth: 0, width: '100%' }}
         >
-          <CanvasMedia media={block.media} />
+          <CanvasMedia media={block.media} stacked={stacked} />
         </Box>
       )}
     </Stack>
@@ -964,6 +965,9 @@ export function CanvasSection({
         scrollMarginTop:
           chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
+        ...(block.__typename === 'CampaignHeroBlock'
+          ? minHeightSx(block.minHeight, inSlot)
+          : {}),
         // Keeps the badges inside this section from competing with the sticky header.
         ...(chrome !== 'header' && !inSlot
           ? { isolation: 'isolate' as const }
@@ -1021,6 +1025,7 @@ export function CanvasSection({
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              objectPosition: focalObjectPosition(cover),
               pointerEvents: 'none'
             }}
           />

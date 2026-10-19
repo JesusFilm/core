@@ -29,7 +29,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslatio
   source: CampaignTextSource;
 }
 
-export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations {
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -82,12 +82,16 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
    */
   align: TypographyAlign | null;
   /**
+   * Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+   */
+  minHeight: number | null;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations[];
-  descriptionTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignHeroBlockCreate {

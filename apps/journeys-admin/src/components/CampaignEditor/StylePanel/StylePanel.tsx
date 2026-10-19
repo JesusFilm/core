@@ -10,7 +10,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { campaignImageSource, resolveBand } from '@core/journeys/ui/Campaign'
+import {
+  campaignImageSource,
+  focalObjectPosition,
+  resolveBand
+} from '@core/journeys/ui/Campaign'
 
 import {
   CampaignBackgroundKind,
@@ -27,6 +31,7 @@ import {
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
 import { PaletteColorPicker } from '../PaletteColorPicker'
+import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
 import { previousOf } from '../utils/useCampaignStyleCommand'
@@ -236,9 +241,13 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
                       width: '100%',
                       maxHeight: 140,
                       objectFit: 'cover',
+                      objectPosition: focalObjectPosition(cover),
                       borderRadius: 1
                     }}
                   />
+                  {coverBlock?.__typename === 'CampaignImageBlock' && (
+                    <FocalPointControl image={coverBlock} />
+                  )}
                   <ToggleButtonGroup
                     exclusive
                     fullWidth

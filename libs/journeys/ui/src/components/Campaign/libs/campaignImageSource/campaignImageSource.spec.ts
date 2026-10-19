@@ -19,7 +19,9 @@ describe('campaignImageSource', () => {
       src: 'https://images.example.org/logo.png',
       alt: 'Logo',
       width: 320,
-      height: 80
+      height: 80,
+      focalLeft: 50,
+      focalTop: 50
     })
   })
 
@@ -33,7 +35,9 @@ describe('campaignImageSource', () => {
       src: 'https://images.example.org/poster.jpg',
       alt: null,
       width: null,
-      height: null
+      height: null,
+      focalLeft: 50,
+      focalTop: 50
     })
   })
 
@@ -53,7 +57,9 @@ describe('campaignImageSource', () => {
       src: 'https://images.example.org/banner.jpg',
       alt: null,
       width: null,
-      height: null
+      height: null,
+      focalLeft: 50,
+      focalTop: 50
     })
   })
 

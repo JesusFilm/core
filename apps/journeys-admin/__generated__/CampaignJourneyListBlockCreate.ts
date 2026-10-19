@@ -29,7 +29,7 @@ export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_t
   source: CampaignTextSource;
 }
 
-export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_ledeTranslations {
+export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -80,7 +80,7 @@ export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate {
   display: CampaignJourneyListDisplay;
   eyebrowTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_titleTranslations[];
-  descriptionTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignJourneyListBlockCreate {

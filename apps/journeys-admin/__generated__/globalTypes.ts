@@ -811,6 +811,7 @@ export interface CampaignHeroBlockUpdateInput {
   title?: string | null;
   description?: string | null;
   align?: TypographyAlign | null;
+  minHeight?: number | null;
   mediaBlockId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
@@ -835,11 +836,15 @@ export interface CampaignImageBlockCreateInput {
   slot?: CampaignImageSlot | null;
   src?: string | null;
   alt?: string | null;
+  focalLeft?: number | null;
+  focalTop?: number | null;
 }
 
 export interface CampaignImageBlockUpdateInput {
   src?: string | null;
   alt?: string | null;
+  focalLeft?: number | null;
+  focalTop?: number | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;

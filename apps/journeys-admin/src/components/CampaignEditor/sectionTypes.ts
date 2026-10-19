@@ -88,6 +88,7 @@ export function newSectionBlock(
         description: null,
         align: null,
         mediaBlockId: null,
+        minHeight: null,
         eyebrowTranslations: [],
         titleTranslations: [],
         descriptionTranslations: []
@@ -173,7 +174,9 @@ export function newSectionBlock(
         alt: null,
         altTranslations: [],
         width: null,
-        height: null
+        height: null,
+        focalLeft: 50,
+        focalTop: 50
       }
     case 'CampaignFeaturedMediaBlock':
       return {

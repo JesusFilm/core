@@ -40,6 +40,8 @@ describe('campaignImageBlockUpdate', () => {
         }
         width
         height
+        focalLeft
+        focalTop
         backgroundKind
         textColor
       }
@@ -94,6 +96,31 @@ describe('campaignImageBlockUpdate', () => {
     })
     expect(transformInput).not.toHaveBeenCalled()
   })
+
+  it('takes the focal point as whole percentages, null falling back to the centre', async () => {
+    const result = await update({ focalLeft: 20, focalTop: 80 })
+
+    expect(result.data.campaignImageBlockUpdate).toMatchObject({
+      focalLeft: 20,
+      focalTop: 80
+    })
+    expect(prismaMock.campaignBlock.update).toHaveBeenLastCalledWith(
+      expect.objectContaining({ data: { focalLeft: 20, focalTop: 80 } })
+    )
+  })
+
+  it.each(['focalLeft', 'focalTop'])(
+    'rejects %s outside 0 to 100 (BAD_USER_INPUT, the field)',
+    async (field) => {
+      const result = await update({ [field]: 101 })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    }
+  )
 
   it('rejects alt over 500 characters (BAD_USER_INPUT, alt)', async () => {
     const result = await update({ alt: 'x'.repeat(501) })

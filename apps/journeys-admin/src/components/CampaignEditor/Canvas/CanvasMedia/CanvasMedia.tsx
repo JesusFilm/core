@@ -4,7 +4,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { campaignImageSource } from '@core/journeys/ui/Campaign'
+import {
+  CAMPAIGN_PICTURE_RATIOS,
+  campaignImageSource,
+  focalObjectPosition
+} from '@core/journeys/ui/Campaign'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
@@ -21,6 +25,8 @@ export function campaignVideoTitle(
 interface CanvasMediaProps {
   /** The block in the Media Slot; null shows the empty-slot placeholder. */
   media: CampaignBlock | null
+  /** The slot sits under the text, so a picture takes the wide frame rather than 4:3. */
+  stacked?: boolean
 }
 
 /**
@@ -28,7 +34,10 @@ interface CanvasMediaProps {
  * its title (and "<n> videos" for a Watch video with children), or a dashed
  * placeholder pointing at Edit when the slot is empty.
  */
-export function CanvasMedia({ media }: CanvasMediaProps): ReactElement {
+export function CanvasMedia({
+  media,
+  stacked = false
+}: CanvasMediaProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   if (media?.__typename === 'CampaignImageBlock') {
@@ -44,7 +53,9 @@ export function CanvasMedia({ media }: CanvasMediaProps): ReactElement {
             display: 'block',
             width: '100%',
             height: 'auto',
+            aspectRatio: CAMPAIGN_PICTURE_RATIOS[stacked ? 'wide' : 'standard'],
             objectFit: 'cover',
+            objectPosition: focalObjectPosition(picture),
             borderRadius: 1
           }}
         />

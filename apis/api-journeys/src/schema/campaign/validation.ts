@@ -38,6 +38,20 @@ const HEX_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
  * uppercase. Named colours, `rgb()` and 8-digit alpha are rejected. An empty
  * string is never a colour — nullable columns take `null`, never `""`.
  */
+/**
+ * A whole-number percentage (0 to 100) or null; undefined passes through so
+ * an omitted field is left untouched. `BAD_USER_INPUT` / `field` otherwise.
+ */
+export function assertPercentOrNull<T extends number | null | undefined>(
+  value: T,
+  field: string
+): T {
+  if (value == null) return value
+  if (!Number.isInteger(value) || value < 0 || value > 100)
+    throw badUserInput(`${field} must be a whole number from 0 to 100`, field)
+  return value
+}
+
 export function assertHex(value: string, field: string): string {
   const trimmed = value.trim()
   if (!HEX_PATTERN.test(trimmed))

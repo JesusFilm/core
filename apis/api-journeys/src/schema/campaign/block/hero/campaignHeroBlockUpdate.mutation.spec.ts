@@ -26,6 +26,7 @@ describe('campaignHeroBlockUpdate', () => {
         title
         description
         align
+        minHeight
         mediaBlockId
         backgroundKind
         backgroundColor
@@ -97,6 +98,29 @@ describe('campaignHeroBlockUpdate', () => {
 
     expect(result.data.campaignHeroBlockUpdate.align).toBe('left')
   })
+
+  it('takes minHeight as a whole percentage of the viewport, or null for content height', async () => {
+    expect(
+      (await update({ minHeight: 60 })).data.campaignHeroBlockUpdate.minHeight
+    ).toBe(60)
+    expect(
+      (await update({ minHeight: null })).data.campaignHeroBlockUpdate
+        .minHeight
+    ).toBeNull()
+  })
+
+  it.each([101, -1])(
+    'rejects minHeight %i (BAD_USER_INPUT, minHeight)',
+    async (minHeight) => {
+      const result = await update({ minHeight })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'minHeight'
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    }
+  )
 
   it.each([
     'backgroundColor',

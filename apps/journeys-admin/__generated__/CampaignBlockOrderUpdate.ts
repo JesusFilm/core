@@ -9,8 +9,8 @@ import { CampaignChildPlacement } from "./globalTypes";
 // GraphQL mutation operation: CampaignBlockOrderUpdate
 // ====================================================
 
-export interface CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignHeaderBlock {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignHeroBlock" | "CampaignRegionSwitcherBlock" | "CampaignVideoCarouselBlock" | "CampaignVideoBlock" | "CampaignJourneyListBlock" | "CampaignJourneyBlock" | "CampaignAnalyticsBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock" | "CampaignColumnBlock";
+export interface CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignAnalyticsBlock {
+  __typename: "CampaignAnalyticsBlock" | "CampaignColumnBlock" | "CampaignColumnsBlock" | "CampaignFeaturedMediaBlock" | "CampaignFooterBlock" | "CampaignHeaderBlock" | "CampaignHeroBlock" | "CampaignImageBlock" | "CampaignJourneyBlock" | "CampaignJourneyListBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRegionSwitcherBlock" | "CampaignRichTextBlock" | "CampaignVideoBlock" | "CampaignVideoCarouselBlock";
   id: string;
   /**
    * Order among siblings. Null on an owned block (a cover, logo or media slot).
@@ -41,7 +41,7 @@ export interface CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignButto
   placement: CampaignChildPlacement | null;
 }
 
-export type CampaignBlockOrderUpdate_campaignBlockOrderUpdate = CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignHeaderBlock | CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignTypographyBlock | CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignButtonBlock;
+export type CampaignBlockOrderUpdate_campaignBlockOrderUpdate = CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignAnalyticsBlock | CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignTypographyBlock | CampaignBlockOrderUpdate_campaignBlockOrderUpdate_CampaignButtonBlock;
 
 export interface CampaignBlockOrderUpdate {
   /**

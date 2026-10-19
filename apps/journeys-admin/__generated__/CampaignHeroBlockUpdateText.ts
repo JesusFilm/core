@@ -28,6 +28,7 @@ export interface CampaignHeroBlockUpdateText {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
    * - BAD_USER_INPUT (field: `align`): not left, center or right.
+   * - BAD_USER_INPUT (field: `minHeight`): not a whole number from 0 to 100.
    * - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.

@@ -3,6 +3,16 @@ export interface CampaignImageSource {
   alt: string | null
   width: number | null
   height: number | null
+  /** The focal point as percentages from the left and the top; the centre when unset. */
+  focalLeft: number
+  focalTop: number
+}
+
+/** The CSS `object-position` that keeps a picture's focal point in view when it is scaled to fill. */
+export function focalObjectPosition(
+  image: Pick<CampaignImageSource, 'focalLeft' | 'focalTop'>
+): string {
+  return `${image.focalLeft}% ${image.focalTop}%`
 }
 
 /**
@@ -16,6 +26,8 @@ interface CampaignMediaColumns {
   width?: number | null
   height?: number | null
   image?: string | null
+  focalLeft?: number | null
+  focalTop?: number | null
   mediaVideo?: {
     __typename: string
     images?: Array<{ mobileCinematicHigh: string | null }>
@@ -45,6 +57,8 @@ export function campaignImageSource(
     src,
     alt: block.alt ?? null,
     width: block.width ?? null,
-    height: block.height ?? null
+    height: block.height ?? null,
+    focalLeft: block.focalLeft ?? 50,
+    focalTop: block.focalTop ?? 50
   }
 }

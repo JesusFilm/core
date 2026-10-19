@@ -85,7 +85,8 @@ function blocksFor({
             title: 'Right title',
             description: null,
             align: null,
-            mediaBlockId: null
+            mediaBlockId: null,
+            minHeight: null
           })
         ]
       : [])

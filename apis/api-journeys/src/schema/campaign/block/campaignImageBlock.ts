@@ -34,6 +34,16 @@ export const CampaignImageBlock = builder.prismaObject('CampaignBlock', {
       nullable: true,
       description:
         'Measured by the server from the image; never client-supplied.'
+    }),
+    focalLeft: t.exposeInt('focalLeft', {
+      nullable: true,
+      description:
+        'The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.'
+    }),
+    focalTop: t.exposeInt('focalTop', {
+      nullable: true,
+      description:
+        'The focal point as a percentage from the top edge (0 to 100, 50 by default).'
     })
   })
 })

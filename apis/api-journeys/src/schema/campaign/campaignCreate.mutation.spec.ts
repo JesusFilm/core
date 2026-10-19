@@ -44,7 +44,9 @@ const TIMESTAMP_FIELDS = new Set(['createdAt', 'updatedAt', 'deletedAt'])
 // Column defaults the seed leaves to Prisma but a stored row always carries.
 const COLUMN_DEFAULTS: Record<string, unknown> = {
   backgroundKind: 'none',
-  snapshotEdited: false
+  snapshotEdited: false,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 /**

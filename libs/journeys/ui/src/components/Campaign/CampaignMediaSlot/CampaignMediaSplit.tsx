@@ -32,7 +32,7 @@ export function CampaignMediaSplit({
 
   const mediaColumn = (
     <Box data-testid="CampaignMediaSlot" sx={{ minWidth: 0 }}>
-      <CampaignMediaSlot media={media} />
+      <CampaignMediaSlot media={media} stacked={stacked} />
     </Box>
   )
   if (text == null) return mediaColumn

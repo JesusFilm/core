@@ -19,6 +19,7 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CarouselCardEdit } from '../CarouselCardEdit'
 import { CarouselEdit } from '../CarouselEdit'
 import { ChromeEdit } from '../ChromeEdit'
+import { HeroSettings } from '../HeroSettings'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { JourneyCardSettings } from '../JourneyCardSettings'
 import { JourneyListSettings } from '../JourneyListSettings'
@@ -42,7 +43,7 @@ interface SectionEditorProps {
   block: CampaignBlock
 }
 
-/** The header, an Image section, a Video Carousel, the sections with a Media Slot, the Analytics section, the Region Switcher and the Journey List have an editor; every other section edits its text in place. */
+/** The header, an Image section, a Video Carousel, the sections with a Media Slot (the hero also its height), the Analytics section, the Region Switcher and the Journey List have an editor; every other section edits its text in place. */
 function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   if (block.__typename === 'CampaignHeaderBlock')
@@ -51,6 +52,13 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
     return <ImageSectionEdit block={block} />
   if (block.__typename === 'CampaignVideoCarouselBlock')
     return <CarouselEdit block={block} />
+  if (block.__typename === 'CampaignHeroBlock')
+    return (
+      <Stack spacing={4}>
+        <MediaSectionEdit block={block} />
+        <HeroSettings block={block} />
+      </Stack>
+    )
   if (isCampaignMediaOwner(block)) return <MediaSectionEdit block={block} />
   if (block.__typename === 'CampaignAnalyticsBlock')
     return <AnalyticsSettings block={block} />

@@ -9,8 +9,8 @@ import { CampaignTextSource } from "./globalTypes";
 // GraphQL fragment: CampaignBlockTranslationFields
 // ====================================================
 
-export interface CampaignBlockTranslationFields_CampaignHeaderBlock {
-  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignColumnsBlock" | "CampaignColumnBlock";
+export interface CampaignBlockTranslationFields_CampaignColumnBlock {
+  __typename: "CampaignColumnBlock" | "CampaignColumnsBlock" | "CampaignFooterBlock" | "CampaignHeaderBlock";
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations {
@@ -33,7 +33,7 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslati
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslations {
+export interface CampaignBlockTranslationFields_CampaignHeroBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -47,7 +47,7 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock {
   __typename: "CampaignHeroBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslations[];
-  descriptionTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockTranslationFields_CampaignRegionSwitcherBlock_titleTranslations {
@@ -111,7 +111,7 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTr
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTranslations {
+export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -125,7 +125,7 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock {
   __typename: "CampaignJourneyListBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTranslations[];
-  descriptionTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockTranslationFields_CampaignAnalyticsBlock_eyebrowTranslations {
@@ -305,7 +305,7 @@ export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_title
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_ledeTranslations {
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -329,7 +329,7 @@ export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock {
   __typename: "CampaignFeaturedMediaBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_titleTranslations[];
-  descriptionTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_descriptionTranslations[];
   bulletsTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 
@@ -374,4 +374,4 @@ export interface CampaignBlockTranslationFields_CampaignVideoBlock {
   descriptionTranslations: CampaignBlockTranslationFields_CampaignVideoBlock_descriptionTranslations[];
 }
 
-export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignHeaderBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock | CampaignBlockTranslationFields_CampaignRichTextBlock | CampaignBlockTranslationFields_CampaignFeaturedMediaBlock | CampaignBlockTranslationFields_CampaignImageBlock | CampaignBlockTranslationFields_CampaignVideoBlock;
+export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignColumnBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock | CampaignBlockTranslationFields_CampaignRichTextBlock | CampaignBlockTranslationFields_CampaignFeaturedMediaBlock | CampaignBlockTranslationFields_CampaignImageBlock | CampaignBlockTranslationFields_CampaignVideoBlock;

@@ -29,7 +29,7 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
   source: CampaignTextSource;
 }
 
-export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_ledeTranslations {
+export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -105,7 +105,7 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_titleTranslations[];
-  descriptionTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_descriptionTranslations[];
   bulletsTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_bulletsTranslations[];
 }
 

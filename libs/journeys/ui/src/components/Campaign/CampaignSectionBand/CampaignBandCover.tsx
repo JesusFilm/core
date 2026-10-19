@@ -2,7 +2,10 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { CampaignBackgroundKind } from '../../../../__generated__/globalTypes'
-import { campaignImageSource } from '../libs/campaignImageSource'
+import {
+  campaignImageSource,
+  focalObjectPosition
+} from '../libs/campaignImageSource'
 import { overlayAlpha } from '../libs/resolveBand'
 import type { CampaignSectionTree } from '../types'
 
@@ -36,6 +39,7 @@ export function CampaignBandCover({
           width: '100%',
           height: '100%',
           objectFit: 'cover',
+          objectPosition: focalObjectPosition(cover),
           pointerEvents: 'none'
         }}
       />

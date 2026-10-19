@@ -41,6 +41,11 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
       nullable: true,
       description:
         'The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.'
+    }),
+    minHeight: t.exposeInt('minHeight', {
+      nullable: true,
+      description:
+        'Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.'
     })
   })
 })

@@ -24,8 +24,24 @@ interface CampaignSectionBandProps {
   block: CampaignSectionTree
   /** The section body alignment; Extras with a null align follow it. */
   align?: TypographyAlign | null
+  /** A minimum height as a percentage of the viewport height (the hero's `minHeight`); the body is centred in it. */
+  minHeight?: number | null
   /** The section's typed body; rendered between the above and below Extras. */
   children?: ReactNode
+}
+
+/** The band's minimum height from a viewport percentage, with its body centred vertically; nothing for null or a Column Slot. */
+export function minHeightSx(
+  minHeight: number | null | undefined,
+  inSlot: boolean
+): CSSObject {
+  if (minHeight == null || inSlot) return {}
+  return {
+    minHeight: `${minHeight}vh`,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  }
 }
 
 function isAbove(child: CampaignTree): boolean {
@@ -52,6 +68,7 @@ function spacingFor(block: CampaignSectionTree, inSlot: boolean): CSSObject {
 export function CampaignSectionBand({
   block,
   align = null,
+  minHeight = null,
   children
 }: CampaignSectionBandProps): ReactElement {
   const { campaign } = useCampaign()
@@ -93,7 +110,8 @@ export function CampaignSectionBand({
           color: 'var(--campaign-band-text)',
           textAlign: align ?? undefined,
           scrollMarginTop: `${CAMPAIGN_HEADER_HEIGHT}px`,
-          ...spacingFor(block, inSlot)
+          ...spacingFor(block, inSlot),
+          ...minHeightSx(minHeight, inSlot)
         }}
       >
         <CampaignBandCover block={block} />

@@ -36,6 +36,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       title
       description
       align
+      minHeight
       mediaBlockId
     }
     ... on CampaignRegionSwitcherBlock {
@@ -190,6 +191,8 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       alt
       width
       height
+      focalLeft
+      focalTop
     }
     ... on CampaignTypographyBlock {
       content

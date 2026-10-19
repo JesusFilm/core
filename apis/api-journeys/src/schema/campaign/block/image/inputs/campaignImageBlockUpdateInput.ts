@@ -15,6 +15,16 @@ export const CampaignImageBlockUpdateInput = builder.inputType(
         description:
           'Default-language alternative text. At most 500 characters.'
       }),
+      focalLeft: t.int({
+        required: false,
+        description:
+          'The focal point as a percentage from the left edge, 0 to 100.'
+      }),
+      focalTop: t.int({
+        required: false,
+        description:
+          'The focal point as a percentage from the top edge, 0 to 100.'
+      }),
       ...sectionStyleInputFields(t)
     })
   }

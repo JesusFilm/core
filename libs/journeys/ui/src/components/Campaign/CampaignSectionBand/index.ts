@@ -1,5 +1,5 @@
 export { CampaignBandCover } from './CampaignBandCover'
-export { CampaignSectionBand } from './CampaignSectionBand'
+export { CampaignSectionBand, minHeightSx } from './CampaignSectionBand'
 export { CampaignSlotContext, useCampaignSlot } from './CampaignSlotContext'
 export {
   CampaignSectionContext,

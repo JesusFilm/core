@@ -28,6 +28,246 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnBlo
   parentOrder: number | null;
 }
 
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock {
+  __typename: "CampaignAnalyticsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  showMap: boolean;
+  eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_eyebrowTranslations[];
+  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_titleTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnsBlock {
+  __typename: "CampaignColumnsBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * Width of the two slots at `md` and up; defaults to equal.
+   */
+  ratio: CampaignColumnsRatio;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_bulletsTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock {
+  __typename: "CampaignFeaturedMediaBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  description: string | null;
+  /**
+   * One bullet per line; the viewer splits on line breaks.
+   */
+  bullets: string | null;
+  /**
+   * Which side the media sits on at `md` and up.
+   */
+  mediaSide: CampaignMediaSide;
+  /**
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
+   */
+  layout: CampaignFeaturedMediaLayout;
+  /**
+   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
+   */
+  mediaBlockId: string | null;
+  eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_eyebrowTranslations[];
+  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_descriptionTranslations[];
+  bulletsTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_bulletsTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFooterBlock {
+  __typename: "CampaignFooterBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+}
+
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeaderBlock {
   __typename: "CampaignHeaderBlock";
   id: string;
@@ -69,43 +309,6 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeaderBlo
   logoBlockId: string | null;
 }
 
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFooterBlock {
-  __typename: "CampaignFooterBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-}
-
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_eyebrowTranslations {
   __typename: "TranslatedValue";
   /**
@@ -126,7 +329,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_ledeTranslations {
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -179,12 +382,272 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock
    */
   align: TypographyAlign | null;
   /**
+   * Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+   */
+  minHeight: number | null;
+  /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_titleTranslations[];
-  descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock_descriptionTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock_altTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock {
+  __typename: "CampaignImageBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  /**
+   * The Cloudflare image address (`https: // imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
+   */
+  src: string | null;
+  /**
+   * Visitor-facing alternative text; at most 500 characters.
+   */
+  alt: string | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  width: number | null;
+  /**
+   * Measured by the server from the image; never client-supplied.
+   */
+  height: number | null;
+  /**
+   * The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.
+   */
+  focalLeft: number | null;
+  /**
+   * The focal point as a percentage from the top edge (0 to 100, 50 by default).
+   */
+  focalTop: number | null;
+  altTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock_altTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_eyebrowTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock {
+  __typename: "CampaignJourneyListBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  description: string | null;
+  display: CampaignJourneyListDisplay;
+  eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_eyebrowTranslations[];
+  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_descriptionTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock {
+  __typename: "CampaignRegionHeaderBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  intro: string | null;
+  introTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock_introTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock {
+  __typename: "CampaignRegionShareBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  intro: string | null;
+  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_titleTranslations[];
+  introTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_introTranslations[];
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock_titleTranslations {
@@ -235,6 +698,70 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwi
   title: string | null;
   switcherVariant: CampaignSwitcherVariant;
   titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock_titleTranslations[];
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_richTextContentTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock {
+  __typename: "CampaignRichTextBlock";
+  id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
+  backgroundKind: CampaignBackgroundKind;
+  /**
+   * Read only when backgroundKind is `custom`. `#RRGGBB`.
+   */
+  backgroundColor: string | null;
+  /**
+   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
+   */
+  coverBlockId: string | null;
+  /**
+   * Read only when backgroundKind is `image`; null means medium.
+   */
+  backgroundOverlay: CampaignBackgroundOverlay | null;
+  headingColor: string | null;
+  textColor: string | null;
+  buttonColor: string | null;
+  buttonTextColor: string | null;
+  accentColor: string | null;
+  title: string | null;
+  /**
+   * Paragraphs separated by blank lines.
+   */
+  richTextContent: string | null;
+  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_titleTranslations[];
+  richTextContentTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_richTextContentTranslations[];
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock_video_title_language {
@@ -397,521 +924,6 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCaro
   video: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock_video | null;
   eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock_titleTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_eyebrowTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_titleTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_ledeTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock {
-  __typename: "CampaignJourneyListBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  eyebrow: string | null;
-  title: string | null;
-  description: string | null;
-  display: CampaignJourneyListDisplay;
-  eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_eyebrowTranslations[];
-  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_titleTranslations[];
-  descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock_ledeTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_eyebrowTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_titleTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock {
-  __typename: "CampaignAnalyticsBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  eyebrow: string | null;
-  title: string | null;
-  showMap: boolean;
-  eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_eyebrowTranslations[];
-  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock_titleTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock_introTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock {
-  __typename: "CampaignRegionHeaderBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  intro: string | null;
-  introTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock_introTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_titleTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_introTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock {
-  __typename: "CampaignRegionShareBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  title: string | null;
-  intro: string | null;
-  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_titleTranslations[];
-  introTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock_introTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_titleTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_richTextContentTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock {
-  __typename: "CampaignRichTextBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  title: string | null;
-  /**
-   * Paragraphs separated by blank lines.
-   */
-  richTextContent: string | null;
-  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_titleTranslations[];
-  richTextContentTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock_richTextContentTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnsBlock {
-  __typename: "CampaignColumnsBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  /**
-   * Width of the two slots at `md` and up; defaults to equal.
-   */
-  ratio: CampaignColumnsRatio;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock_altTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock {
-  __typename: "CampaignImageBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  /**
-   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
-   */
-  src: string | null;
-  /**
-   * Visitor-facing alternative text; at most 500 characters.
-   */
-  alt: string | null;
-  /**
-   * Measured by the server from the image; never client-supplied.
-   */
-  width: number | null;
-  /**
-   * Measured by the server from the image; never client-supplied.
-   */
-  height: number | null;
-  altTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock_altTranslations[];
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_eyebrowTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_titleTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_ledeTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_bulletsTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock {
-  __typename: "CampaignFeaturedMediaBlock";
-  id: string;
-  campaignId: string;
-  /**
-   * The Campaign Page this block sits on, if page-scoped.
-   */
-  pageId: string | null;
-  /**
-   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
-   */
-  regionId: string | null;
-  parentBlockId: string | null;
-  /**
-   * Order among siblings. Null on an owned block (a cover, logo or media slot).
-   */
-  parentOrder: number | null;
-  backgroundKind: CampaignBackgroundKind;
-  /**
-   * Read only when backgroundKind is `custom`. `#RRGGBB`.
-   */
-  backgroundColor: string | null;
-  /**
-   * The owned CampaignImageBlock; read only when backgroundKind is `image`.
-   */
-  coverBlockId: string | null;
-  /**
-   * Read only when backgroundKind is `image`; null means medium.
-   */
-  backgroundOverlay: CampaignBackgroundOverlay | null;
-  headingColor: string | null;
-  textColor: string | null;
-  buttonColor: string | null;
-  buttonTextColor: string | null;
-  accentColor: string | null;
-  eyebrow: string | null;
-  title: string | null;
-  description: string | null;
-  /**
-   * One bullet per line; the viewer splits on line breaks.
-   */
-  bullets: string | null;
-  /**
-   * Which side the media sits on at `md` and up.
-   */
-  mediaSide: CampaignMediaSide;
-  /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
-   */
-  layout: CampaignFeaturedMediaLayout;
-  /**
-   * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
-   */
-  mediaBlockId: string | null;
-  eyebrowTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_eyebrowTranslations[];
-  titleTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_titleTranslations[];
-  descriptionTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_ledeTranslations[];
-  bulletsTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 
 export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBlock_journeyImage {
@@ -1266,7 +1278,7 @@ export interface CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlo
   labelTranslations: CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock_labelTranslations[];
 }
 
-export type CampaignBlockDuplicate_campaignBlockDuplicate = CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFooterBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnsBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypographyBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock;
+export type CampaignBlockDuplicate_campaignBlockDuplicate = CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignAnalyticsBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignColumnsBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFeaturedMediaBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignFooterBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignHeroBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignImageBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyListBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionHeaderBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionShareBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRegionSwitcherBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignRichTextBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoCarouselBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignJourneyBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignVideoBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignTypographyBlock | CampaignBlockDuplicate_campaignBlockDuplicate_CampaignButtonBlock;
 
 export interface CampaignBlockDuplicate {
   /**

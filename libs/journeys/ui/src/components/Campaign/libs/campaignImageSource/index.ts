@@ -1,2 +1,5 @@
-export { campaignImageSource } from './campaignImageSource'
+export {
+  campaignImageSource,
+  focalObjectPosition
+} from './campaignImageSource'
 export type { CampaignImageSource } from './campaignImageSource'
