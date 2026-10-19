@@ -87,6 +87,34 @@ describe('JourneyPicker', () => {
     expect(archived).toHaveTextContent('Archived')
   })
 
+  it('lists two journeys with the same title as separate options, keyed by id', async () => {
+    const twin = { ...easter, id: 'twinId', title: 'Untitled journey' }
+    const other = { ...christmas, id: 'otherId', title: 'Untitled journey' }
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { onLink } = renderPicker(undefined, {
+      request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
+      result: vi.fn(() => ({ data: { journeys: [twin, other] } }))
+    })
+    await userEvent.click(
+      screen.getByRole('combobox', { name: 'Search your journeys' })
+    )
+
+    expect(
+      await screen.findByTestId('JourneyPickerOption-twinId')
+    ).toBeInTheDocument()
+    expect(screen.getByTestId('JourneyPickerOption-otherId')).toBeInTheDocument()
+    expect(errors).not.toHaveBeenCalledWith(
+      expect.stringContaining('two children with the same key'),
+      expect.anything(),
+      expect.anything()
+    )
+
+    await userEvent.click(screen.getByTestId('JourneyPickerOption-otherId'))
+    await waitFor(() => expect(onLink).toHaveBeenCalled())
+    expect(onLink.mock.calls[0][0]).toContain('otherId')
+    errors.mockRestore()
+  })
+
   it('offers only the journeys in the given statuses', async () => {
     render(
       <MockedProvider mocks={[accessibleMock()] as never}>

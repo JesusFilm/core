@@ -118,11 +118,12 @@ export function JourneyPicker({
         size="small"
         fullWidth
         renderOption={(props, option) => {
-          const { key, ...optionProps } = props
+          // MUI keys options by their label, which two "Untitled journey" rows share.
+          const { key: _label, ...optionProps } = props
           return (
             <Stack
               component="li"
-              key={key}
+              key={option.id}
               direction="row"
               spacing={2}
               data-testid={`JourneyPickerOption-${option.id}`}
