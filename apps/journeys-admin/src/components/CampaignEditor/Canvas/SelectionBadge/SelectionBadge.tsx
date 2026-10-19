@@ -23,19 +23,23 @@ interface SelectionBadgeProps {
   label: string
   selected: boolean
   placement?: SelectionBadgePlacement
+  /** The block's own border width in px: the badge is pulled out by it so its edge meets the block's outer edge, not the inside of the border. */
+  borderWidth?: number
 }
 
 /**
  * The label of a canvas block, on its top-left corner: solid in the admin
  * primary colour while the block is selected, muted while the pointer is
- * over it. The block must be `position: relative`. It takes no pointer
+ * over it. The block must be `position: relative`; a block with a border
+ * passes its width so the badge sits on the outer edge. It takes no pointer
  * events, so it never gets between the pointer and the block under it.
  */
 export function SelectionBadge({
   id,
   label,
   selected,
-  placement = 'above'
+  placement = 'above',
+  borderWidth = 0
 }: SelectionBadgeProps): ReactElement | null {
   const hovered = useCanvasHovered(id ?? '')
   if (!selected && !hovered) return null
@@ -49,8 +53,8 @@ export function SelectionBadge({
       data-placement={placement}
       sx={{
         position: 'absolute',
-        top: 0,
-        left: 0,
+        top: -borderWidth,
+        left: -borderWidth,
         transform: placement === 'above' ? 'translateY(-100%)' : undefined,
         zIndex: selected ? 4 : 3,
         maxWidth: '100%',

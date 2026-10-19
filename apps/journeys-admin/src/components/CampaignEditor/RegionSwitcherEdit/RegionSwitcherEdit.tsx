@@ -113,6 +113,7 @@ function RegionCardEdit({
         id={`${hostBlockId}__${region.id}`}
         label={regionCardLabel(t)}
         selected={selected}
+        borderWidth={1}
       />
       <Stack
         direction="row"
