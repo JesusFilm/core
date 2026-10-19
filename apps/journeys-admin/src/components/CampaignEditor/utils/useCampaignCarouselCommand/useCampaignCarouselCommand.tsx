@@ -26,10 +26,7 @@ export interface CampaignCarouselCommand {
   /** Explicit mode (`videoId: null`), as one Command; the items stay. */
   clearWatchVideo: (carousel: CampaignVideoCarouselBlock) => void
   /** One explicit item from a YouTube link or a Mux upload, as one Command. */
-  addItem: (
-    carousel: CampaignVideoCarouselBlock,
-    pick: Exclude<CampaignVideoPick, { url: string }>
-  ) => void
+  addItem: (carousel: CampaignVideoCarouselBlock, pick: CampaignVideoPick) => void
   /** The first 12 videos of a YouTube playlist as explicit items, as one Command. */
   importPlaylist: (carousel: CampaignVideoCarouselBlock, url: string) => void
   /** The API's message, verbatim, when the last change failed. */
@@ -202,7 +199,7 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
 
   function addItem(
     carousel: CampaignVideoCarouselBlock,
-    pick: Exclude<CampaignVideoPick, { url: string }>
+    pick: CampaignVideoPick
   ): void {
     const id = uuidv4()
     addItems(carousel, async (target) => {

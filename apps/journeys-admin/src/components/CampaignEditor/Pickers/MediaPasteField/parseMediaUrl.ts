@@ -6,8 +6,11 @@ export type ParsedMediaUrl =
       source: VideoBlockSource.internal
       /** The address as pasted (trimmed): what the server re-resolves. */
       url: string
-      /** The variant slug `<video>/<language>` the gateway resolves. */
-      slug: string
+      /**
+       * The variant slugs `<video>/<language>` the address may name, in the
+       * order to try them through the gateway (see `watchSlugs`).
+       */
+      slugs: string[]
     }
   | { source: VideoBlockSource.youTube; videoId: string }
 
@@ -37,27 +40,33 @@ function pathSegments(url: URL): string[] {
     .map(decodeSegment)
 }
 
+/** Watch's default language: an address without a language part names this variant. */
+const WATCH_DEFAULT_LANGUAGE_SLUG = 'english'
+
 /**
- * A Watch address is `https://(www.)jesusfilm.org/watch/<video>.html/<language>.html`
- * or, with its container in front,
- * `/watch/<container>.html/<video>/<language>.html`. The variant slug is the
- * last two segments with `.html` stripped, as the server reads it.
+ * The variant slugs a Watch address may name, as the server reads them. After
+ * `https://(www.)jesusfilm.org/watch/`, with `.html` on its outer parts, Watch
+ * serves `<video>` (a video or container in the default language),
+ * `<video>/<language>`, `<container>/<child>` (default language) and
+ * `<container>/<child>/<language>`. The two-part shapes read the same, so
+ * both readings are returned, video/language first. Null for anything else.
  */
-function watchSlug(url: URL): string | null {
+function watchSlugs(url: URL): string[] | null {
   if (url.protocol !== 'https:' || !WATCH_HOSTS.includes(url.hostname))
     return null
   const [watch, ...rest] = pathSegments(url)
-  if (watch !== 'watch') return null
-  const shaped =
-    (rest.length === 2 && rest.every((segment) => HTML.test(segment))) ||
-    (rest.length === 3 &&
-      HTML.test(rest[0]) &&
-      !HTML.test(rest[1]) &&
-      HTML.test(rest[2]))
-  if (!shaped) return null
-  const slug = rest.slice(-2).map((segment) => segment.replace(HTML, ''))
-  if (slug.some((segment) => segment === '')) return null
-  return slug.join('/')
+  if (watch !== 'watch' || rest.length < 1 || rest.length > 3) return null
+  const outer = rest.length === 3 ? [rest[0], rest[2]] : rest
+  if (!outer.every((segment) => HTML.test(segment))) return null
+  if (rest.length === 3 && HTML.test(rest[1])) return null
+  const parts = rest.map((segment) => segment.replace(HTML, ''))
+  if (parts.some((segment) => segment === '')) return null
+  if (parts.length === 1) return [`${parts[0]}/${WATCH_DEFAULT_LANGUAGE_SLUG}`]
+  if (parts.length === 3) return [`${parts[1]}/${parts[2]}`]
+  return [
+    `${parts[0]}/${parts[1]}`,
+    `${parts[1]}/${WATCH_DEFAULT_LANGUAGE_SLUG}`
+  ]
 }
 
 /** The 11-character id of a `watch?v=`, `youtu.be/`, `shorts/` or `embed/` link. */
@@ -80,7 +89,7 @@ function youTubeId(url: URL): string | null {
 
 /**
  * The editor's pure shape check for a pasted video link: a Watch address
- * (to its variant slug) or a YouTube link (to its video id). Null for
+ * (to its candidate variant slugs) or a YouTube link (to its video id). Null for
  * anything else; the server re-checks a Watch address when it is kept.
  */
 export function parseMediaUrl(value: string): ParsedMediaUrl | null {
@@ -91,9 +100,9 @@ export function parseMediaUrl(value: string): ParsedMediaUrl | null {
   } catch {
     return null
   }
-  const slug = watchSlug(url)
-  if (slug != null)
-    return { source: VideoBlockSource.internal, url: trimmed, slug }
+  const slugs = watchSlugs(url)
+  if (slugs != null)
+    return { source: VideoBlockSource.internal, url: trimmed, slugs }
   const videoId = youTubeId(url)
   if (videoId != null) return { source: VideoBlockSource.youTube, videoId }
   return null

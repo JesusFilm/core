@@ -196,10 +196,39 @@ describe('MediaPasteField', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
 
-    expect(onPick).toHaveBeenCalledWith({
-      source: VideoBlockSource.internal,
-      url: WATCH_URL
-    })
+    expect(onPick).toHaveBeenCalledWith(
+      { source: VideoBlockSource.internal, url: WATCH_URL },
+      expect.objectContaining({ childrenCount: 12 })
+    )
+  })
+
+  it('falls back to the container/child reading of a two-part Watch address', async () => {
+    const url = 'https://www.jesusfilm.org/watch/hope.html/the-resurrection.html'
+    const firstReadingMock = {
+      request: {
+        query: GET_CAMPAIGN_WATCH_VIDEO,
+        variables: { id: 'hope/the-resurrection' }
+      },
+      error: new Error('Video not found with id slug:hope/the-resurrection')
+    }
+    const watchMock = watchVideoMock(0)
+    const onPick = renderField([firstReadingMock, watchMock])
+
+    paste(url)
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
+
+    const resolved = await screen.findByTestId(
+      'CampaignMediaPasteFieldResolved'
+    )
+    expect(resolved).toHaveTextContent('The Resurrection')
+    expect(watchMock.result).toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
+
+    expect(onPick).toHaveBeenCalledWith(
+      { source: VideoBlockSource.internal, url },
+      expect.objectContaining({ childrenCount: 0 })
+    )
   })
 
   it('shows the duration of a Watch video without children', async () => {
@@ -241,10 +270,10 @@ describe('MediaPasteField', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
 
-    expect(onPick).toHaveBeenCalledWith({
-      source: VideoBlockSource.youTube,
-      videoId: 'jQaeIJOA6J0'
-    })
+    expect(onPick).toHaveBeenCalledWith(
+      { source: VideoBlockSource.youTube, videoId: 'jQaeIJOA6J0' },
+      expect.objectContaining({ childrenCount: 0 })
+    )
   })
 
   it('uploads through the video library’s Mux upload under the slot’s section and picks the Mux video when it is ready', () => {

@@ -9,7 +9,11 @@ import { ReactElement } from 'react'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { CampaignVideoCarouselBlock } from '../../../libs/useCampaignVideoCarouselBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
+import {
+  CampaignMediaPick,
+  MediaPasteField,
+  ResolvedVideo
+} from '../Pickers/MediaPasteField'
 import { useCampaignCarouselCommand } from '../utils/useCampaignCarouselCommand'
 
 interface CarouselEditProps {
@@ -40,9 +44,13 @@ export function CarouselEdit({ block }: CarouselEditProps): ReactElement {
     block.video?.title.find((title) => title.primary)?.value ??
     block.video?.title[0]?.value
 
-  function handlePick(pick: CampaignMediaPick): void {
+  /** A Watch container (a series or collection) expands live into its children; a single video of any source is one explicit item. */
+  function handlePick(pick: CampaignMediaPick, resolved?: ResolvedVideo): void {
     if ('src' in pick) return
-    if (pick.source === VideoBlockSource.internal) {
+    if (
+      pick.source === VideoBlockSource.internal &&
+      (resolved?.childrenCount ?? 0) > 0
+    ) {
       setWatchVideo(block, pick.url)
       return
     }

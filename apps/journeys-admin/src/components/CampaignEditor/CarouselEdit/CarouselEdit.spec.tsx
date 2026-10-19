@@ -131,6 +131,60 @@ function item(
   } as GetCampaign_campaign_blocks
 }
 
+const WATCH_EPISODE_URL =
+  'https://www.jesusfilm.org/watch/outreach.html/the-episode.html'
+
+const watchEpisodeMock = {
+  request: {
+    query: GET_CAMPAIGN_WATCH_VIDEO,
+    variables: { id: 'outreach/the-episode' }
+  },
+  error: new Error('Video not found with id slug:outreach/the-episode')
+}
+
+const watchEpisodeFallbackMock = {
+  request: {
+    query: GET_CAMPAIGN_WATCH_VIDEO,
+    variables: { id: 'the-episode/english' }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: 'episodeId',
+        label: VideoLabel.episode,
+        childrenCount: 0,
+        title: [{ __typename: 'VideoTitle', value: 'The episode' }],
+        images: [],
+        variant: { __typename: 'VideoVariant', id: 'variantId', duration: 363 }
+      }
+    }
+  }
+}
+
+const watchItemMock = {
+  request: {
+    query: CAMPAIGN_VIDEO_BLOCK_CREATE,
+    variables: {
+      input: {
+        id: 'newItemId',
+        campaignId: 'campaignId',
+        parentBlockId: 'carouselId',
+        source: VideoBlockSource.internal,
+        url: WATCH_EPISODE_URL
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignVideoBlockCreate: item({
+        source: VideoBlockSource.internal,
+        videoId: 'episodeId'
+      })
+    }
+  }))
+}
+
 const youTubeItemMock = {
   request: {
     query: CAMPAIGN_VIDEO_BLOCK_CREATE,
@@ -217,6 +271,9 @@ function renderEdit(block: CarouselBlock = carousel): void {
         }}
         mocks={[
           watchMock,
+          watchEpisodeMock,
+          watchEpisodeFallbackMock,
+          watchItemMock,
           setWatchMock,
           clearWatchMock,
           youTubeItemMock,
@@ -269,6 +326,23 @@ describe('CarouselEdit', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
 
     await waitFor(() => expect(setWatchMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('adds a pasted Watch video without children as one explicit item', async () => {
+    renderEdit()
+
+    paste(WATCH_EPISODE_URL)
+    const resolved = await screen.findByTestId(
+      'CampaignCarouselPasteFieldResolved'
+    )
+    expect(resolved).toHaveTextContent('The episode')
+    expect(resolved).toHaveTextContent('Episode · 6:03')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
+
+    await waitFor(() => expect(watchItemMock.result).toHaveBeenCalled())
+    expect(setWatchMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
   })
 
