@@ -78,6 +78,44 @@ The worker handles routing for various website sections including:
 
 ## Development
 
+### Watch proxy diagnostics
+
+For Watch GET documents (`Accept: text/html`) and RSC requests (`RSC: 1` or
+`Accept: text/x-component`), the worker emits JSON console records with
+`event: "watch_proxy.fetch"`. RSC requests with `Next-Router-Prefetch: 1` are
+classified as `prefetch`; other RSC requests are classified as `rsc`.
+`/watch/api`, `/watch/_next`, other paths, and other methods are excluded.
+
+Each fetch emits `outcome: "started"` **before** calling fetch, followed by
+`response` or `error` if it settles. `stage` distinguishes the primary `upstream`
+from the legacy `fallback`. `elapsed_ms` measures that stage's fetch-to-response
+headers time; `status_code` is present only on a response. Response bodies remain
+streamed and are not timed or read by the diagnostics. A completed request emits
+two records, or four if it uses the fallback. There are no timers, retries, new
+headers, or changes to deadlines, routing, caching, or fallback behavior.
+
+The only request-specific values in these records are validated correlation IDs:
+`ray_id` (16 hex characters from the incoming `CF-Ray`, without its datacenter
+suffix) and, when available on a response, `railway_request_id` (up to 64
+alphanumeric, underscore, or hyphen characters). The existing proxy continues
+forwarding the incoming headers, including `CF-Ray`. These IDs are for log joins,
+not metric dimensions. URLs, paths, queries, cookies, authorization, bodies, and
+exception messages are not included in these new records.
+
+For a slow or canceled invocation, correlate its Cloudflare Ray ID and
+`EventTimestampMs` with these records. A last `upstream/started` record without a
+completion identifies the outstanding primary fetch; an `upstream/response` with
+500 followed by `fallback/started` identifies a fallback wait. Check invocation
+outcome and log delivery before inferring a cancellation from missing records.
+Neither a start record nor low Worker CPU proves that Railway accepted the
+request, and a response record does not measure body delivery. Use the returned
+Railway ID to seek origin/ingress evidence when available.
+
+This is diagnostic instrumentation, not a loading-time fix. It becomes active
+only after the change is reviewed and deployed through the normal process.
+Assess document/RSC log volume and delivery in the target environment after
+activation; asset and media traffic do not produce these records.
+
 ### Prerequisites
 
 - Node.js
@@ -141,7 +179,8 @@ The test suite covers:
 Run the tests with:
 
 ```bash
-pnpm exec vitest run --config workers/jf-proxy/vitest.config.ts workers/jf-proxy/src --coverage=false
+cd workers/jf-proxy
+pnpm exec vitest run --config vitest.config.mts
 ```
 
 ### Test Cases
