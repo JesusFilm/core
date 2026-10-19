@@ -56,7 +56,10 @@ const DEFAULT_ACCEPT: Accept = {
   'image/jpeg': [],
   'image/gif': [],
   'image/svg+xml': [],
-  'image/heic': []
+  // Extensions keep .heic/.heif visible in the file picker where the OS doesn't know these types
+  'image/heic': ['.heic'],
+  'image/heif': ['.heif'],
+  'image/webp': []
 }
 
 export function useImageUpload(
@@ -101,7 +104,7 @@ export function useImageUpload(
       }
       case ErrorCode.FileInvalidType: {
         return t(
-          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
         )
       }
       default: {
