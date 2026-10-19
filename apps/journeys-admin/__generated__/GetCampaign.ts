@@ -1456,6 +1456,10 @@ export interface GetCampaign_campaign_regions_languages {
   languageId: string;
   journeyId: string | null;
   /**
+   * Where the linked journey is served, as the viewer receives it: the journey team's route-all custom domain, else a collection domain holding it, else the root domain. Null for an Unlinked Language.
+   */
+  journeyUrl: string | null;
+  /**
    * Snapshot of the linked journey's title; the journey's own language, not translated.
    */
   title: string | null;

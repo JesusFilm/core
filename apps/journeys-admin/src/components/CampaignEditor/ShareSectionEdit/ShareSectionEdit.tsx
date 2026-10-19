@@ -51,11 +51,7 @@ import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampai
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { shareLanguageLabel } from '../blockLabel'
-import {
-  campaignShareLink,
-  journeyPreviewAddress,
-  journeyPublicAddress
-} from '../campaignAddress'
+import { campaignShareLink, journeyPreviewAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
@@ -507,12 +503,12 @@ function ShareLanguageRow({
               spacing={1}
               sx={{ alignItems: 'center', flexWrap: 'wrap' }}
             >
-              {slug != null && (
+              {regionLanguage.journeyUrl != null && (
                 <Button
                   size="small"
                   color="inherit"
                   component="a"
-                  href={journeyPublicAddress(slug)}
+                  href={regionLanguage.journeyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   startIcon={<LinkExternalIcon fontSize="small" />}

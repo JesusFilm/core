@@ -145,6 +145,7 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
     regionId
     languageId
     journeyId
+    journeyUrl
     title
     description
     snapshotEdited

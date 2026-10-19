@@ -36,11 +36,6 @@ export function campaignPublicAddresses(
   return addresses.length > 0 ? addresses : [campaignPermanentAddress(slug)]
 }
 
-/** A linked journey's public page on the root domain (`/<slug>`), to open it as a visitor would. */
-export function journeyPublicAddress(slug: string): string {
-  return `${JOURNEYS_URL}/${slug}`
-}
-
 /** The preview frame's address for a linked journey: the root-domain embed route, kept a preview. */
 export function journeyPreviewAddress(slug: string): string {
   return previewEmbedUrl(`${JOURNEYS_URL}/embed/${slug}`)

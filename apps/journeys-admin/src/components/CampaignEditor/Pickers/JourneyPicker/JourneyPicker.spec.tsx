@@ -38,7 +38,7 @@ function accessibleMock() {
 }
 
 function renderPicker(
-  onLink = vi.fn(async () => undefined),
+  onLink = vi.fn<(url: string) => Promise<void>>(async () => undefined),
   mock = accessibleMock()
 ) {
   render(
@@ -91,7 +91,8 @@ describe('JourneyPicker', () => {
     const twin = { ...easter, id: 'twinId', title: 'Untitled journey' }
     const other = { ...christmas, id: 'otherId', title: 'Untitled journey' }
     const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const { onLink } = renderPicker(undefined, {
+    const onLink = vi.fn<(url: string) => Promise<void>>(async () => undefined)
+    renderPicker(onLink, {
       request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
       result: vi.fn(() => ({ data: { journeys: [twin, other] } }))
     })

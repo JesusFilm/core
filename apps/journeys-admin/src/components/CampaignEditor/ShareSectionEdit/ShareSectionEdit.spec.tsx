@@ -797,10 +797,7 @@ describe('ShareSectionEdit', () => {
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
     const open = within(english).getByRole('link', { name: 'Open journey' })
-    expect(open).toHaveAttribute(
-      'href',
-      `https://your.nextstep.is/${eurEnglish.journey!.slug}`
-    )
+    expect(open).toHaveAttribute('href', eurEnglish.journeyUrl)
     expect(open).toHaveAttribute('target', '_blank')
     expect(
       within(english).queryByRole('button', { name: 'Create QR code' })

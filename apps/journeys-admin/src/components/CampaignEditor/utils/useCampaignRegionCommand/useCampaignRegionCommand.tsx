@@ -57,6 +57,7 @@ export function newRegion(campaign: Campaign, id: string): CampaignRegion {
         regionId: id,
         languageId: campaign.defaultLanguageId,
         journeyId: null,
+        journeyUrl: null,
         title: null,
         description: null,
         snapshotEdited: false,
