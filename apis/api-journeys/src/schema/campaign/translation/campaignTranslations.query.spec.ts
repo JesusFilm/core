@@ -182,6 +182,7 @@ describe('campaignTranslations', () => {
         (key) =>
           `interface:CampaignString:value:${key === 'copy' ? 'machine' : 'null'}`
       ),
+      'interface:CampaignImageBlock:alt:null',
       'interface:CampaignButtonBlock:label:null',
       'interface:CampaignButtonBlock:label:null',
       'interface:CampaignTypographyBlock:content:null',

@@ -340,7 +340,11 @@ describe('campaignPublic', () => {
         radius: 'rounded',
         buttonRadius: 'veryRounded'
       },
-      header: { id: 'headerId', logoBlockId: null, backgroundKind: 'none' },
+      header: {
+        id: 'headerId',
+        logoBlockId: 'headerLogoId',
+        backgroundKind: 'none'
+      },
       footer: { id: 'footerId', backgroundKind: 'surface' }
     })
 
@@ -396,6 +400,7 @@ describe('campaignPublic', () => {
 
     expect(campaign.chrome.map((block: any) => block.id)).toEqual([
       'headerId',
+      'headerLogoId',
       'navHomeId',
       'navResourcesId',
       'footerId',

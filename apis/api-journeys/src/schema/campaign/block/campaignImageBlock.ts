@@ -9,12 +9,12 @@ export const CampaignImageBlock = builder.prismaObject('CampaignBlock', {
   interfaces: [CampaignBlock, CampaignSectionBlock],
   isTypeOf: (block: any) => block.typename === 'CampaignImageBlock',
   description:
-    'The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is always an https imagedelivery.net address; width and height are measured by the server.',
+    'The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is an https imagedelivery.net address (the seeded default header logo is the one exception, served by the admin app); width and height are measured by the server.',
   fields: (t) => ({
     src: t.exposeString('src', {
       nullable: true,
       description:
-        'The Cloudflare image address (`https://imagedelivery.net/…`); null until an image is chosen.'
+        'The Cloudflare image address (`https://imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.'
     }),
     alt: t.exposeString('alt', {
       nullable: true,

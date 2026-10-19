@@ -541,9 +541,13 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('does not seed Featured media, Rich text, Columns or Image', async () => {
+    it('does not seed Featured media, Rich text, Columns or an Image section', async () => {
       await create()
-      const typenames = new Set(createdBlocks().map((block) => block.typename))
+      const typenames = new Set(
+        createdBlocks()
+          .filter((block) => block.parentOrder != null)
+          .map((block) => block.typename)
+      )
       for (const absent of [
         'CampaignFeaturedMediaBlock',
         'CampaignRichTextBlock',
@@ -557,7 +561,7 @@ describe('campaignCreate', () => {
   })
 
   describe('chrome seed', () => {
-    it('seeds the header with backgroundKind none, no logo, null pageId and regionId, and nav buttons Home → hero and Resources → video carousel', async () => {
+    it('seeds the header with backgroundKind none, null pageId and regionId, and nav buttons Home → hero and Resources → video carousel', async () => {
       await create()
       const header = createdBlock('CampaignHeaderBlock')
       expect(header).toEqual({
@@ -571,7 +575,9 @@ describe('campaignCreate', () => {
         backgroundKind: 'none'
       })
       const nav = createdBlocks().filter(
-        (block) => block.parentBlockId === header.id
+        (block) =>
+          block.parentBlockId === header.id &&
+          block.typename === 'CampaignButtonBlock'
       )
       expect(nav.map((block) => block.label)).toEqual(['Home', 'Resources'])
       expect(nav.map((block) => block.parentOrder)).toEqual([0, 1])
@@ -590,6 +596,29 @@ describe('campaignCreate', () => {
       expect(actionOf(nav[1])).toEqual({
         campaignBlockId: nav[1].id,
         blockId: createdBlock('CampaignVideoCarouselBlock').id
+      })
+    })
+
+    it('seeds the NextSteps wordmark as the header logo, owned by the header and named by its logoBlockId', async () => {
+      await create()
+      const header = createdBlock('CampaignHeaderBlock')
+      const logo = createdBlock('CampaignImageBlock')
+      expect(logo).toEqual({
+        id: expect.any(String),
+        typename: 'CampaignImageBlock',
+        campaignId: 'id-1',
+        pageId: null,
+        regionId: null,
+        parentBlockId: header.id,
+        parentOrder: null,
+        src: 'https://admin.nextstep.is/logo.svg',
+        alt: 'NextSteps',
+        width: 221,
+        height: 41
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: header.id },
+        data: { logoBlockId: logo.id }
       })
     })
 
@@ -854,7 +883,7 @@ describe('campaignCreate', () => {
         regions: []
       })
       expect(campaign.strings).toHaveLength(18)
-      expect(campaign.blocks).toHaveLength(18)
+      expect(campaign.blocks).toHaveLength(19)
       expect(campaign.blocks.map((block: any) => block.__typename)).toEqual(
         fixture.blocks.map((block) => block.typename)
       )
@@ -902,7 +931,7 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 0,
         backgroundKind: 'none',
-        logoBlockId: null
+        logoBlockId: 'headerLogoId'
       })
       expect(
         campaign.blocks.find((block: any) => block.id === 'footerCopyrightId')
@@ -955,9 +984,20 @@ describe('campaignCreate', () => {
         ])
       ])
 
-      expect(
-        createdBlocks().map((block) => normalize(block, mutationLabels))
-      ).toEqual(
+      // The header's logoBlockId is set by an update once the logo row exists.
+      const updates = prismaMock.campaignBlock.update.mock.calls.map(
+        ([args]) => args as { where: { id: string }; data: Record<string, unknown> }
+      )
+      const createdRows = createdBlocks().map((block) => ({
+        ...block,
+        ...Object.assign(
+          {},
+          ...updates
+            .filter((update) => update.where.id === block.id)
+            .map((update) => update.data)
+        )
+      }))
+      expect(createdRows.map((block) => normalize(block, mutationLabels))).toEqual(
         fixture.blocks.map(({ action: _action, ...block }) =>
           normalize(block, factoryLabels)
         )

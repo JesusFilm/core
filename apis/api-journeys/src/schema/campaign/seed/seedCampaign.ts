@@ -9,6 +9,7 @@ import { LIGHT_PRESET, presetColors } from './presets'
 import {
   FOOTER_LINK_SEED,
   FOOTER_SEED,
+  HEADER_LOGO_SEED,
   HEADER_NAV_SEED,
   HEADER_SEED,
   LANDING_HERO,
@@ -93,7 +94,8 @@ export async function seedCampaign(
     scope: {
       pageId: string | null
       parentBlockId: string | null
-      parentOrder: number
+      /** Null for an owned block (the header logo), as `createOwnedBlock` sets it. */
+      parentOrder: number | null
     }
   ): Promise<string> {
     const id = generateId()
@@ -146,6 +148,15 @@ export async function seedCampaign(
     pageId: null,
     parentBlockId: null,
     parentOrder: 0
+  })
+  const logoId = await createBlock(HEADER_LOGO_SEED, {
+    pageId: null,
+    parentBlockId: headerId,
+    parentOrder: null
+  })
+  await tx.campaignBlock.update({
+    where: { id: headerId },
+    data: { logoBlockId: logoId }
   })
   for (const [parentOrder, nav] of HEADER_NAV_SEED.entries()) {
     const { scrollToLandingSection, ...seed } = nav

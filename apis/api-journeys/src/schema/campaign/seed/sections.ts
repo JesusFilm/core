@@ -98,6 +98,20 @@ export const HEADER_SEED: SectionSeed = {
   backgroundKind: 'none'
 }
 
+/**
+ * The header's default logo: the NextSteps wordmark served by the admin app,
+ * owned by the header (`parentOrder` null) and named by its `logoBlockId`.
+ * The one `src` that is not an imagedelivery.net address; the author replaces
+ * it through the Logo picker like any other logo.
+ */
+export const HEADER_LOGO_SEED: SectionSeed = {
+  typename: 'CampaignImageBlock',
+  src: 'https://admin.nextstep.is/logo.svg',
+  alt: 'NextSteps',
+  width: 221,
+  height: 41
+}
+
 /** Header nav buttons, each a ScrollToBlockAction to a landing section index. */
 export const HEADER_NAV_SEED: ReadonlyArray<
   SectionSeed & { scrollToLandingSection: number }

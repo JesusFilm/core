@@ -284,7 +284,18 @@ export function seededBlocks(
       id: 'headerId',
       typename: 'CampaignHeaderBlock',
       parentOrder: 0,
-      backgroundKind: 'none'
+      backgroundKind: 'none',
+      logoBlockId: 'headerLogoId'
+    }),
+    block(campaignId, {
+      id: 'headerLogoId',
+      typename: 'CampaignImageBlock',
+      parentBlockId: 'headerId',
+      parentOrder: null,
+      src: 'https://admin.nextstep.is/logo.svg',
+      alt: 'NextSteps',
+      width: 221,
+      height: 41
     }),
     block(
       campaignId,
