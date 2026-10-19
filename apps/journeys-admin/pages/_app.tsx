@@ -32,6 +32,9 @@ import './globals.css'
 
 getFirebaseAuth()
 
+// Created once so client re-renders reuse it; the server passes its own cache from _document.
+const clientSideEmotionCache = createEmotionCache({})
+
 const SnackbarAction = (snackbarKey: SnackbarKey): ReactElement => (
   <IconButton
     size="small"
@@ -55,7 +58,7 @@ type JourneysAdminAppProps = NextJsAppProps<{
 function JourneysAdminApp({
   Component,
   pageProps,
-  emotionCache = createEmotionCache({})
+  emotionCache = clientSideEmotionCache
 }: JourneysAdminAppProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
