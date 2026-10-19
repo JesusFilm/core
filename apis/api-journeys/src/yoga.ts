@@ -132,6 +132,16 @@ export const yoga = createYoga<
             'Query.adminJourneysReport': 0,
             'Query.block': 0,
             'Query.blocks': 0,
+            // Campaign reads. `campaigns` and `campaign` are team-ACL'd and
+            // would otherwise cache a fresh team's first empty list forever
+            // (hazard 1 above: no entity IDs to invalidate on). `campaignPublic`
+            // caches a null for an unknown or unpublished slug that a later
+            // publish cannot invalidate; the journeys app's ISR layer already
+            // caches the rendered page. `campaignTranslations` is per-team.
+            'Query.campaign': 0,
+            'Query.campaignPublic': 0,
+            'Query.campaignTranslations': 0,
+            'Query.campaigns': 0,
             'Query.hosts': 0,
             'Query.integrations': 0,
             'Query.journey': 0,

@@ -20,7 +20,7 @@ import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 
 import { CampaignEditor, EDITOR_MIN_WIDTH } from './CampaignEditor'
-import { CURRENT_USER_ID, campaign } from './data'
+import { CURRENT_USER_ID, campaign, memberCampaign } from './data'
 import { frameBody } from './testing'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
@@ -79,6 +79,35 @@ function renderEditor(
       </SnackbarProvider>
     </MockedProvider>
   )
+}
+
+/**
+ * Renders the editor signed in as `me`, and resolves `currentUserLoaded` once
+ * the GetCurrentUser query has answered, so a test can assert what a signed-in
+ * user does not get.
+ */
+function renderEditorAs(
+  me: { id: string; email: string },
+  campaignProp = campaign
+): { currentUserLoaded: () => Promise<void> } {
+  let loaded = false
+  const meMock = {
+    request: { query: GET_CURRENT_USER },
+    result: () => {
+      loaded = true
+      return { data: { me: { __typename: 'AuthenticatedUser', ...me } } }
+    }
+  }
+  render(
+    <MockedProvider mocks={[meMock] as never}>
+      <SnackbarProvider>
+        <CampaignEditor campaign={campaignProp} />
+      </SnackbarProvider>
+    </MockedProvider>
+  )
+  return {
+    currentUserLoaded: () => waitFor(() => expect(loaded).toBe(true))
+  }
 }
 
 describe('CampaignEditor', () => {
@@ -447,6 +476,41 @@ describe('CampaignEditor', () => {
     expect(
       await screen.findByRole('button', { name: 'Delete campaign' })
     ).toBeInTheDocument()
+  })
+
+  it('recognises the manager by email, as me.id is the users-table uuid and the team user id the Firebase uid', async () => {
+    renderEditorAs({ id: 'users-table-uuid', email: 'test@example.com' })
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    expect(
+      await screen.findByRole('button', { name: 'Delete campaign' })
+    ).toBeInTheDocument()
+  })
+
+  it('withholds Delete campaign from a user whose email no manager row carries, even when the ids match', async () => {
+    const { currentUserLoaded } = renderEditorAs({
+      id: CURRENT_USER_ID,
+      email: 'other@example.com'
+    })
+    await currentUserLoaded()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    expect(
+      screen.queryByRole('button', { name: 'Delete campaign' })
+    ).not.toBeInTheDocument()
+  })
+
+  it('withholds Delete campaign from a member', async () => {
+    const { currentUserLoaded } = renderEditorAs(
+      { id: CURRENT_USER_ID, email: 'test@example.com' },
+      memberCampaign
+    )
+    await currentUserLoaded()
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+    expect(
+      screen.queryByRole('button', { name: 'Delete campaign' })
+    ).not.toBeInTheDocument()
   })
 
   it('swaps the Inspector’s content on selection without a drawer or a dimmed canvas', async () => {
