@@ -1070,7 +1070,7 @@ describe('Inspector', () => {
       expect(screen.getByRole('button', { name: 'Move down' })).toBeEnabled()
     })
 
-    it('shows the region settings with list / unlist and Open page on Settings', () => {
+    it('shows the region settings with list / unlist on Settings, and Edit page switches the editor to that region page', () => {
       renderInspector(
         { ...regionState, inspectorTab: 'settings' },
         campaignWithRegions,
@@ -1078,11 +1078,14 @@ describe('Inspector', () => {
       )
 
       expect(screen.getByTestId('RegionSettings')).toBeInTheDocument()
-      expect(screen.getByRole('link', { name: 'Open page' })).toHaveAttribute(
-        'href',
-        'https://your.nextstep.is/campaign/christmas-2026/eur'
-      )
+      expect(screen.queryByRole('link', { name: 'Open page' })).toBeNull()
       expect(screen.getByRole('button', { name: 'Unlist' })).toBeEnabled()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Edit page' }))
+
+      expect(screen.getByTestId('PageKind')).toHaveTextContent(
+        'regionTemplate'
+      )
     })
   })
 

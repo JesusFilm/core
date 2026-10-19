@@ -4,17 +4,17 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
+import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
 import { isCampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
 import { AnalyticsSettings } from '../AnalyticsSettings'
-import { campaignPermanentAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CarouselCardEdit } from '../CarouselCardEdit'
 import { CarouselEdit } from '../CarouselEdit'
@@ -79,8 +79,9 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
  * section with the per-type toggles (analytics map, switcher variant,
  * journey-list display, media side), the link settings for a button Extra,
  * title and description for a carousel card, the snapshot text and Refresh
- * from journey for a journey card, the region's
- * settings with list / unlist and Open page for a region card, and the type
+ * from journey for a journey card, the region's settings with list / unlist
+ * and Edit page (the editor switches to that region's page, where its
+ * journeys are linked and previewed) for a region card, and the type
  * controls for a column slot.
  */
 export function InspectorSettings({
@@ -91,6 +92,7 @@ export function InspectorSettings({
   const { t } = useTranslation('apps-journeys-admin')
   const {
     selection,
+    dispatch,
     state: { previewLanguageId }
   } = useCampaignEditor()
   const { setListed } = useCampaignRegionCommand()
@@ -152,12 +154,16 @@ export function InspectorSettings({
             <Button
               variant="outlined"
               color="secondary"
-              startIcon={<LinkExternalIcon />}
-              href={`${campaignPermanentAddress(campaign.slug)}/${region.slug}`}
-              target="_blank"
-              rel="noopener"
+              startIcon={<Edit2Icon />}
+              onClick={() =>
+                dispatch({
+                  type: 'SetPageKindAction',
+                  pageKind: CampaignPageKind.regionTemplate,
+                  regionId: region.id
+                })
+              }
             >
-              {t('Open page')}
+              {t('Edit page')}
             </Button>
             <Button
               variant="outlined"
