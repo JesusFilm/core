@@ -393,9 +393,8 @@ function renderShare(
 }
 
 describe('addLanguageOptions', () => {
-  it('offers the page languages first, then the full catalogue, minus the languages already on the region', () => {
+  it('offers the full catalogue minus the languages already on the region, leaving the order to the autocomplete', () => {
     const options = addLanguageOptions(
-      campaignWithRegions,
       languagesMock.result.data.languages,
       new Set(['496'])
     )
@@ -547,7 +546,7 @@ describe('ShareSectionEdit', () => {
     })
   })
 
-  it('offers the page languages first, then the full catalogue, and adds the chosen one', async () => {
+  it('offers every language in name order, like the other pickers, and adds the chosen one', async () => {
     renderShare()
 
     const picker = within(
@@ -561,8 +560,8 @@ describe('ShareSectionEdit', () => {
     // English (page language, already a share language) and Français
     // (already a share language) are left out; the catalogue follows.
     expect(options.map((option) => option.textContent)).toEqual([
-      'Español',
-      'Deutsch'
+      'Deutsch',
+      'Español'
     ])
 
     fireEvent.click(screen.getByRole('option', { name: 'Español' }))

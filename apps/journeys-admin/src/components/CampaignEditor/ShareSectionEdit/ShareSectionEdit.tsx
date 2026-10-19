@@ -97,27 +97,15 @@ export function regionLanguageLabel(
 }
 
 /**
- * The languages "Add language" offers: the campaign's Page Languages first,
- * in their order, then the full api-languages catalogue, with the region's
- * existing Share Languages left out.
+ * The languages "Add language" offers: the full api-languages catalogue with
+ * the region's existing Share Languages left out; the language autocomplete
+ * sorts them by name as it does everywhere else.
  */
 export function addLanguageOptions(
-  campaign: Pick<Campaign, 'languages'>,
   catalogue: AutocompleteLanguage[],
   taken: ReadonlySet<string>
 ): AutocompleteLanguage[] {
-  const pageLanguages: AutocompleteLanguage[] = [...campaign.languages]
-    .sort((a, b) => a.order - b.order)
-    .map((campaignLanguage) => ({
-      id: campaignLanguage.languageId,
-      name: campaignLanguage.language.name,
-      slug: null
-    }))
-  const pageIds = new Set(pageLanguages.map((language) => language.id))
-  return [
-    ...pageLanguages,
-    ...catalogue.filter((language) => !pageIds.has(language.id))
-  ].filter((language) => !taken.has(language.id))
+  return catalogue.filter((language) => !taken.has(language.id))
 }
 
 /** The three states a Share Language can be in on the canvas. */
@@ -574,8 +562,8 @@ function ShareLanguageRow({
  * The Share section on the editor canvas: a preview of the public selector
  * (every Share Language, the unlinked ones marked hidden until a journey is
  * linked), then every language of the region being rendered as the visitor
- * will see it, and "Add language" offering the Page Languages first, then
- * the full catalogue through the language autocomplete. Add, remove and
+ * will see it, and "Add language" offering the full catalogue through the
+ * same language autocomplete as everywhere else. Add, remove and
  * unlink are plain saves; linking and swapping a journey are Commands
  * (a swap retargets the same short link, so undo is safe), and so is "Refresh
  * from journey", confirmed only when the author edited the snapshot.
@@ -612,8 +600,8 @@ export function ShareSectionEdit({
     [regionLanguages]
   )
   const options = useMemo(
-    () => addLanguageOptions(campaign, languagesData?.languages ?? [], taken),
-    [campaign, languagesData, taken]
+    () => addLanguageOptions(languagesData?.languages ?? [], taken),
+    [languagesData, taken]
   )
 
   if (currentRegion == null) return null
@@ -742,13 +730,10 @@ export function ShareSectionEdit({
           <LanguageAutocomplete
             languages={options}
             loading={languagesLoading}
-            disableSort
             onChange={(option) => {
               void handleAdd(option)
             }}
-            helperText={t(
-              'Add language: your page languages come first, then every language.'
-            )}
+            helperText={t('Add a language')}
             popper={{
               container: () => containerRef.current?.ownerDocument.body ?? null
             }}
