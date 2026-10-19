@@ -257,6 +257,8 @@ export function CampaignVideoCarousel({
             data-testid={`CampaignVideoCarouselCards-${block.id}`}
             sx={{
               overflowX: 'auto',
+              // Reserve the scrollbar's row up front, so the carousel does not grow and shrink as the bar comes and goes.
+              scrollbarGutter: 'stable',
               scrollSnapType: 'x mandatory',
               pb: 1,
               mx: { xs: -2, sm: 0 },

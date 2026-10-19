@@ -195,7 +195,13 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
         direction="row"
         spacing={2}
         data-testid={`CanvasCarousel-${block.id}`}
-        sx={{ width: '100%', overflowX: 'auto', pb: 1 }}
+        sx={{
+          width: '100%',
+          overflowX: 'auto',
+          // Reserve the scrollbar's row up front, so the carousel does not grow and shrink as the bar comes and goes.
+          scrollbarGutter: 'stable',
+          pb: 1
+        }}
       >
         {cards.map(renderCard)}
       </Stack>
