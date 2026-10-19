@@ -94,6 +94,12 @@ streamed and are not timed or read by the diagnostics. A completed request emits
 two records, or four if it uses the fallback. There are no timers, retries, new
 headers, or changes to deadlines, routing, caching, or fallback behavior.
 
+`createWatchProxyFetch` returns a named fetch function; creating it does not
+start a request. The proxy invokes that function for each upstream/fallback
+fetch. Completion logging records timing, status, and a validated request ID;
+returning the original response separately lets the proxy stream its body.
+The logging helper receives only response metadata, never the response itself.
+
 The only request-specific values in these records are validated correlation IDs:
 `ray_id` (16 hex characters from the incoming `CF-Ray`, without its datacenter
 suffix) and, when available on a response, `railway_request_id` (up to 64

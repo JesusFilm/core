@@ -1,3 +1,5 @@
+import { createWatchProxyFetch } from './proxyDiagnostics'
+
 import app from '.'
 
 const env = { WATCH_PROXY_DEST: 'watch.example.com' }
@@ -34,6 +36,51 @@ describe('Watch proxy diagnostics', () => {
   afterEach(() => {
     vi.useRealTimers()
     vi.restoreAllMocks()
+  })
+
+  it('defers fetching until invoked and returns the original response after logging metadata', async () => {
+    const { log, records } = captureLogs()
+    const originalResponse = new Response('private response body', {
+      headers: { 'x-railway-request-id': 'railway-request-123' }
+    })
+    const fetch = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(originalResponse)
+    const proxyFetch = createWatchProxyFetch(
+      new Request('https://www.jesusfilm.org/watch', {
+        headers: documentHeaders
+      })
+    )
+
+    expect(fetch).not.toHaveBeenCalled()
+    expect(log).not.toHaveBeenCalled()
+
+    const result = await proxyFetch(
+      'upstream',
+      'https://watch.example.com/watch'
+    )
+
+    expect(fetch).toHaveBeenCalledExactlyOnceWith(
+      'https://watch.example.com/watch',
+      undefined
+    )
+    expect(records().map((record) => record.outcome)).toEqual([
+      'started',
+      'response'
+    ])
+    expect(records()[1]).toEqual({
+      event: 'watch_proxy.fetch',
+      request_kind: 'document',
+      ray_id: ray,
+      stage: 'upstream',
+      outcome: 'response',
+      elapsed_ms: 0,
+      status_code: 200,
+      railway_request_id: 'railway-request-123'
+    })
+    expect(result).toBe(originalResponse)
+    expect(result.bodyUsed).toBe(false)
+    expect(await result.text()).toBe('private response body')
   })
 
   it('identifies a pending upstream before any response and preserves its later response', async () => {
