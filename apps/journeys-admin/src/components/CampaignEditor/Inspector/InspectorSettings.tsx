@@ -8,11 +8,11 @@ import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
+import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { isCampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
 import { AnalyticsSettings } from '../AnalyticsSettings'
 import { useCampaignEditor } from '../CampaignEditorProvider'
@@ -27,6 +27,7 @@ import { LinkSettings } from '../LinkSettings'
 import { MediaSectionEdit } from '../MediaSectionEdit'
 import { RegionSettings } from '../RegionSettings'
 import { RegionSwitcherSettings } from '../RegionSwitcherSettings'
+import { SectionWordingSettings } from '../SectionWordingSettings'
 import { Settings } from '../Settings'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
@@ -110,7 +111,10 @@ export function InspectorSettings({
     case 'section':
     case 'chrome':
       return block != null ? (
-        <SectionEditor key={block.id} block={block} />
+        <Stack spacing={4}>
+          <SectionEditor key={block.id} block={block} />
+          <SectionWordingSettings block={block} />
+        </Stack>
       ) : (
         <></>
       )
@@ -119,6 +123,7 @@ export function InspectorSettings({
         <Stack spacing={4}>
           <ColumnControls />
           {block != null && <SectionEditor key={block.id} block={block} />}
+          {block != null && <SectionWordingSettings block={block} />}
         </Stack>
       )
     case 'slot':

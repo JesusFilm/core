@@ -37,7 +37,6 @@ import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_strings as CampaignString
 } from '../../../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
@@ -412,48 +411,11 @@ function CanvasRegionHeading({
   )
 }
 
-interface CanvasStringsProps {
-  strings: CampaignString[]
-  editing: boolean
-  onSelect: () => void
-}
-
-/** A section's Campaign Strings, each inline-editable like any other text, under an editor-only note saying where the page shows them. */
-function CanvasStrings({
-  strings,
-  editing,
-  onSelect
-}: CanvasStringsProps): ReactElement | null {
-  const { t } = useTranslation('apps-journeys-admin')
-  if (strings.length === 0) return null
-  return (
-    <Stack
-      spacing={1}
-      data-testid="CanvasStrings"
-      sx={{ width: '100%', alignItems: 'inherit' }}
-    >
-      <EditorNote testId="CanvasStringsNote">
-        {t('Button and label wording this section shows on the page')}
-      </EditorNote>
-      {strings.map((string) => (
-        <InlineText
-          key={string.id}
-          target={{ string }}
-          placeholder={string.key}
-          editing={editing}
-          onSelect={onSelect}
-          variant="body2"
-          sx={{ color: 'var(--campaign-band-text)' }}
-        />
-      ))}
-    </Stack>
-  )
-}
-
 /**
  * One section on the editor canvas: the band from the shared resolution
- * table, the Extras placed above, the section's typed text, the Campaign
- * Strings its public rendering reads, then the Extras placed below. A hero
+ * table, the Extras placed above, the section's typed text, then the
+ * Extras placed below. The button and label wording a section reads
+ * (its Campaign Strings) shows only in place and is edited in Settings. A hero
  * with media and a Featured Media section put their Media Slot beside that
  * text (Featured Media on its `mediaSide`, with a placeholder while empty),
  * stacked below `md` (Featured Media stacked at every width when its layout
@@ -540,10 +502,6 @@ export function CanvasSection({
   const textFields: readonly CampaignTextField[] = isCampaignTextBlock(block)
     ? CAMPAIGN_TEXT_FIELDS[block.__typename]
     : []
-  const stringKeys = CAMPAIGN_SECTION_STRING_KEYS[block.__typename] ?? []
-  const strings = stringKeys.flatMap((key) =>
-    campaign.strings.filter((string) => string.key === key)
-  )
   /** A Featured Media section always shows its slot (or the placeholder); a hero only once it has media. */
   const showMedia =
     block.__typename === 'CampaignFeaturedMediaBlock' ||
@@ -679,14 +637,6 @@ export function CanvasSection({
             onSelectCard={selectChild}
           />
         )}
-        <CanvasStrings
-          strings={strings}
-          editing={sectionSelected}
-          onSelect={() => {
-            setFocusField(undefined)
-            selectBlock(block.id)
-          }}
-        />
         {block.__typename === 'CampaignColumnsBlock' && (
           <Box
             data-testid={`CanvasColumns-${block.id}`}

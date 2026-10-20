@@ -193,6 +193,9 @@ export function TranslationsView({
       selectedBlockId: block?.id,
       selectedRegionId: undefined
     })
+    // Interface wording shows on the canvas only in place; its field is in Settings.
+    if (row.target.stringId != null)
+      dispatch({ type: 'SetInspectorTabAction', inspectorTab: 'settings' })
     setRevealId(block?.id)
   }
 
