@@ -52,7 +52,7 @@ jobs:
       ECR_REPOSITORY: jfp-${{ inputs.name }}-${{ inputs.env }}
       IMAGE_TAG: ${{ github.sha }}
       DOPPLER_CONFIG: ${{ inputs.env == 'prod' && 'prd' || 'stg' }}
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     steps:
       - name: Checkout current branch
         uses: actions/checkout@v4

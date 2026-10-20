@@ -5,7 +5,7 @@ on:
     - cron: '0 0 * * *'
 jobs:
   remove-stale-branches:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     permissions:
       contents: write
       pull-requests: read
@@ -23,7 +23,7 @@ jobs:
           days-before-branch-stale: 90
           days-before-branch-delete: 7
   remove-stale-prs:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     permissions:
       pull-requests: write
     steps:

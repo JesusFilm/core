@@ -13,7 +13,7 @@ env:
   PUPPETEER_SKIP_DOWNLOAD: 'true'
 jobs:
   build:
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     steps:
@@ -27,7 +27,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'pnpm'
@@ -70,7 +70,7 @@ jobs:
     # diff — the committed schema files are generated artifacts, and drift
     # between them and the code that generates them otherwise fails silently
     # (subgraph-check only validates composition against the registry).
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     permissions:
       contents: read
     # No NX_CLOUD_ACCESS_TOKEN here on purpose: generate-graphql and
@@ -82,7 +82,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'pnpm'
@@ -131,7 +131,7 @@ jobs:
     # Only meaningful on PRs (needs a base branch to diff against). The
     # 'skip-migration-check' label is the escape hatch for schema edits that
     # genuinely need no migration (comments, formatting).
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     permissions:
       contents: read
       issues: read
@@ -166,7 +166,7 @@ jobs:
           fi
           ./tools/scripts/check-prisma-migrations.sh "origin/$GITHUB_BASE_REF"
   test:
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
     strategy:
       fail-fast: false
       matrix:
@@ -185,7 +185,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           run_install: false
-      - uses: useblacksmith/setup-node@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: 'pnpm'
@@ -221,8 +221,8 @@ jobs:
           parallel: 1
       - name: download codecov
         run: |
-          curl -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov
-          chmod +x /usr/local/bin/codecov
+          sudo curl --fail --location -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov
+          sudo chmod +x /usr/local/bin/codecov
       - name: upload coverage to codecov
         uses: mansagroup/nrwl-nx-action@v3
         env:
