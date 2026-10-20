@@ -14,17 +14,17 @@ vi.mock('../../gatewayClient', () => ({
 
 describe('watchSlugCandidates', () => {
   it.each([
-    [
-      'https://www.jesusfilm.org/watch/jesus.html',
-      ['jesus/english']
-    ],
+    ['https://www.jesusfilm.org/watch/jesus.html', ['jesus/english']],
     [
       'https://www.jesusfilm.org/watch/jesus.html/english.html',
       ['jesus/english', 'english/english']
     ],
     [
       'https://www.jesusfilm.org/watch/lumo-acts-of-the-apostles.html/lumo-acts-1-1-8-3.html',
-      ['lumo-acts-of-the-apostles/lumo-acts-1-1-8-3', 'lumo-acts-1-1-8-3/english']
+      [
+        'lumo-acts-of-the-apostles/lumo-acts-1-1-8-3',
+        'lumo-acts-1-1-8-3/english'
+      ]
     ],
     [
       'https://www.jesusfilm.org/watch/hope.html/jesus/english.html',
@@ -68,18 +68,23 @@ describe('resolveWatchUrl', () => {
     vi.mocked(fetchWatchVideoBySlug).mockReset()
   })
 
-  it('resolves the variant slug to the Video id through the gateway', async () => {
+  it('resolves the variant slug to the Video id and its language through the gateway', async () => {
     vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
       id: '1_jf-0-0',
       label: 'featureFilm',
-      childrenCount: 61
+      childrenCount: 61,
+      variant: { language: { id: '21028' } }
     })
 
     await expect(
-      resolveWatchUrl('https://www.jesusfilm.org/watch/jesus.html/english.html')
-    ).resolves.toBe('1_jf-0-0')
+      resolveWatchUrl(
+        'https://www.jesusfilm.org/watch/jesus.html/spanish-latin-american.html'
+      )
+    ).resolves.toEqual({ videoId: '1_jf-0-0', languageId: '21028' })
     expect(fetchWatchVideoBySlug).toHaveBeenCalledTimes(1)
-    expect(fetchWatchVideoBySlug).toHaveBeenCalledWith('jesus/english')
+    expect(fetchWatchVideoBySlug).toHaveBeenCalledWith(
+      'jesus/spanish-latin-american'
+    )
   })
 
   it('falls back to the container/child reading of a two-part address', async () => {
@@ -88,14 +93,15 @@ describe('resolveWatchUrl', () => {
       .mockResolvedValueOnce({
         id: '6_Acts0401',
         label: 'episode',
-        childrenCount: 0
+        childrenCount: 0,
+        variant: { language: { id: '529' } }
       })
 
     await expect(
       resolveWatchUrl(
         'https://www.jesusfilm.org/watch/lumo-acts-of-the-apostles.html/lumo-acts-1-1-8-3.html'
       )
-    ).resolves.toBe('6_Acts0401')
+    ).resolves.toEqual({ videoId: '6_Acts0401', languageId: '529' })
     expect(fetchWatchVideoBySlug).toHaveBeenNthCalledWith(
       1,
       'lumo-acts-of-the-apostles/lumo-acts-1-1-8-3'
@@ -117,7 +123,7 @@ describe('resolveWatchUrl', () => {
       resolveWatchUrl(
         'https://www.jesusfilm.org/watch/lumo-acts-of-the-apostles.html'
       )
-    ).resolves.toBe('6_Acts')
+    ).resolves.toEqual({ videoId: '6_Acts', languageId: null })
     expect(fetchWatchVideoBySlug).toHaveBeenCalledWith(
       'lumo-acts-of-the-apostles/english'
     )

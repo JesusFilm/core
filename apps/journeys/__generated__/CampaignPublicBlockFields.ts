@@ -774,6 +774,25 @@ export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_i
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -783,6 +802,7 @@ export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_v
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicBlockFields_CampaignVideoBlock_mediaVideo_Video {

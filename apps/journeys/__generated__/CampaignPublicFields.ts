@@ -909,6 +909,25 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVide
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -918,6 +937,7 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVide
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video {
@@ -1979,6 +1999,25 @@ export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1988,6 +2027,7 @@ export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video {
@@ -2950,6 +2990,25 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2959,6 +3018,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video {

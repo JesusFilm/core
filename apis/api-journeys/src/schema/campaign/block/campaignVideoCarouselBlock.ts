@@ -41,7 +41,7 @@ export const CampaignVideoCarouselBlock = builder.prismaObject(
       videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
         nullable: true,
         description:
-          'The campaign language when the Watch Video was linked; the language the expansion resolves in.'
+          'The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.'
       }),
       video: t.field({
         type: Video,

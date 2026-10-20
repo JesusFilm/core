@@ -24,9 +24,20 @@ import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeC
 import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
 import { reapplyUnhandledSource } from '../utils/reapplyUnhandledSource'
+import { removeAllRemoteTextTracks } from '../utils/removeAllRemoteTextTracks'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import 'videojs-mux'
+
+/** A subtitle file to offer in the player's subtitle menu. */
+export interface SubtitleTrack {
+  id: string
+  /** The VTT file. */
+  src: string
+  /** BCP 47 tag, what the track reports as its language. */
+  language: string
+  label: string
+}
 
 interface InitAndPlayProps {
   videoRef: RefObject<HTMLVideoElement | null>
@@ -51,6 +62,8 @@ interface InitAndPlayProps {
   videoVariantLanguageId: string | null
   subtitleLanguage: VideoFields_subtitleLanguage | null
   showGeneratedSubtitles?: boolean | null
+  /** Subtitle files added as hidden text tracks beside the stream's own. */
+  subtitleTracks?: SubtitleTrack[]
 }
 
 export function InitAndPlay({
@@ -75,7 +88,8 @@ export function InitAndPlay({
   mediaVideo,
   videoVariantLanguageId,
   subtitleLanguage,
-  showGeneratedSubtitles
+  showGeneratedSubtitles,
+  subtitleTracks
 }: InitAndPlayProps): ReactElement {
   const { journey, renderMode } = useJourney()
   const { blockHistory } = useBlocks()
@@ -268,6 +282,26 @@ export function InitAndPlay({
       player.pause()
     }
   }, [activeStep, player, selectedBlock])
+
+  // Offer the given subtitle files as text tracks, hidden until chosen.
+  useEffect(() => {
+    if (player == null || subtitleTracks == null || subtitleTracks.length === 0)
+      return
+    removeAllRemoteTextTracks(player)
+    subtitleTracks.forEach((track) => {
+      player.addRemoteTextTrack(
+        {
+          id: track.id,
+          kind: 'subtitles',
+          src: track.src,
+          srclang: track.language,
+          label: track.label,
+          mode: 'hidden'
+        },
+        true
+      )
+    })
+  }, [player, subtitleTracks])
 
   // Set subtitles and closed captions when loaded
   useEffect(() => {

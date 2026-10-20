@@ -125,6 +125,37 @@ describe('InitAndPlay', () => {
     })
   })
 
+  it('offers the given subtitle files as hidden text tracks', () => {
+    blockHistoryVar([defaultStepBlock])
+    const addRemoteTextTrack = vi.spyOn(player, 'addRemoteTextTrack')
+
+    render(
+      <InitAndPlay
+        {...defaultProps}
+        subtitleTracks={[
+          {
+            id: 'subtitleId',
+            src: 'https://files.example.org/jesus-es.vtt',
+            language: 'es',
+            label: 'Spanish'
+          }
+        ]}
+      />
+    )
+
+    expect(addRemoteTextTrack).toHaveBeenCalledWith(
+      {
+        id: 'subtitleId',
+        kind: 'subtitles',
+        src: 'https://files.example.org/jesus-es.vtt',
+        srclang: 'es',
+        label: 'Spanish',
+        mode: 'hidden'
+      },
+      true
+    )
+  })
+
   it('should listen for player ready', () => {
     blockHistoryVar([defaultStepBlock])
     render(<InitAndPlay {...defaultProps} />)

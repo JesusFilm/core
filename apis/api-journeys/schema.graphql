@@ -2767,7 +2767,7 @@ type CampaignVideoBlock implements CampaignBlock {
   videoId: ID
 
   """
-  For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+  For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
   """
   videoVariantLanguageId: ID
 
@@ -2892,7 +2892,7 @@ type CampaignVideoCarouselBlock implements CampaignBlock & CampaignSectionBlock 
   videoId: ID
 
   """
-  The campaign language when the Watch Video was linked; the language the expansion resolves in.
+  The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
   """
   videoVariantLanguageId: ID
 
@@ -2947,7 +2947,7 @@ input CampaignVideoCarouselBlockUpdateInput {
   videoId: ID
 
   """
-  With `url` or `videoId`: the language the expansion resolves in; defaults to the campaign language.
+  With `url` or `videoId`: the language the expansion resolves in; defaults to the language the pasted address named, else the campaign language.
   """
   videoVariantLanguageId: ID
 
@@ -4845,7 +4845,7 @@ type Mutation {
   campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!): CampaignImageBlock!
 
   """
-  Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once; a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, and only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
+  Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once; a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, and only its ids are stored (the variant language is the one the address named, else the campaign language). Title and description overrides win over the source text.
   
   Auth: campaign Update — any member or manager of the campaign's team.
   

@@ -34,6 +34,7 @@ import { VideoTriggerFields } from '../VideoTrigger/__generated__/VideoTriggerFi
 
 import { VideoFields } from './__generated__/VideoFields'
 import { InitAndPlay } from './InitAndPlay'
+import type { SubtitleTrack } from './InitAndPlay'
 import VideoJsPlayer from './utils/videoJsTypes'
 import { VideoControls } from './VideoControls'
 
@@ -44,6 +45,11 @@ const VIDEO_BACKGROUND_COLOR = '#000'
 const VIDEO_FOREGROUND_COLOR = '#FFF'
 
 const StyledVideo = styled('video')(() => ({}))
+
+export type VideoProps = TreeBlock<VideoFields> & {
+  /** Subtitle files to offer as text tracks beside the stream's own; none by default. */
+  subtitleTracks?: SubtitleTrack[]
+}
 
 export function Video({
   id: blockId,
@@ -64,8 +70,9 @@ export function Video({
   subtitleLanguage,
   showGeneratedSubtitles,
   eventLabel,
-  endEventLabel
-}: TreeBlock<VideoFields>): ReactElement {
+  endEventLabel,
+  subtitleTracks
+}: VideoProps): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
 
@@ -202,6 +209,7 @@ export function Video({
         videoVariantLanguageId={videoVariantLanguageId}
         subtitleLanguage={subtitleLanguage}
         showGeneratedSubtitles={showGeneratedSubtitles}
+        subtitleTracks={subtitleTracks}
       />
       {activeStep &&
         player != null &&

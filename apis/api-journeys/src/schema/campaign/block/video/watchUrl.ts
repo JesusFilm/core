@@ -50,17 +50,29 @@ export function watchSlugCandidates(url: string): string[] {
   }
 }
 
+/** What a Watch address names: the Video, and the language of the variant its slug picked. */
+export interface WatchVideoRef {
+  videoId: string
+  /** The language of the variant the address named; null when the gateway gave none. */
+  languageId: string | null
+}
+
 /**
- * Resolve a pasted Watch URL to a Video id: the shape first, then each
- * candidate variant slug through the gateway `video(id, idType: slug)` until
- * one resolves. None resolving is `BAD_USER_INPUT` / `url`.
+ * Resolve a pasted Watch URL to its Video and variant language: the shape
+ * first, then each candidate variant slug through the gateway
+ * `video(id, idType: slug)` until one resolves. None resolving is
+ * `BAD_USER_INPUT` / `url`.
  */
-export async function resolveWatchUrl(url: string): Promise<string> {
+export async function resolveWatchUrl(url: string): Promise<WatchVideoRef> {
   const candidates = watchSlugCandidates(url)
   if (candidates.length === 0) throw badUserInput(WATCH_URL_ERROR, 'url')
   for (const slug of candidates) {
     const video = await fetchWatchVideoBySlug(slug)
-    if (video != null) return video.id
+    if (video != null)
+      return {
+        videoId: video.id,
+        languageId: video.variant?.language.id ?? null
+      }
   }
   throw badUserInput(WATCH_URL_ERROR, 'url')
 }

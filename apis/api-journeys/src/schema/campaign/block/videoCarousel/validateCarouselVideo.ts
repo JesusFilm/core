@@ -13,7 +13,7 @@ export interface CarouselVideoColumns {
   videoVariantLanguageId?: string | null
 }
 
-/** The variant language: the one given, which must exist, else the campaign's. */
+/** The variant language: the one given, which must exist, else the fallback. */
 async function resolveVariantLanguageId(
   input: CarouselVideoInput,
   campaignLanguageId: string
@@ -31,11 +31,11 @@ async function resolveVariantLanguageId(
 /**
  * The carousel's mode is its nullable `videoId`. A pasted Watch `url` is
  * resolved through its variant slug to a Video of any label; a `videoId`
- * (what undo writes back) must be a published Watch Video; either way the
- * variant language is the one given (it must exist in api-languages), else the
- * campaign language. `videoId:
- * null` switches to explicit mode and clears both columns. Omitted leaves
- * the mode alone.
+ * (what undo writes back) must be a published Watch Video. The variant
+ * language is the one given (it must exist in api-languages), else the one
+ * the pasted address named, else the campaign language. `videoId: null`
+ * switches to explicit mode and clears both columns. Omitted leaves the mode
+ * alone.
  */
 export async function validateCarouselVideo(
   input: CarouselVideoInput,
@@ -44,12 +44,12 @@ export async function validateCarouselVideo(
   if (input.url != null) {
     if (input.videoId !== undefined)
       throw badUserInput('give either url or videoId', 'url')
-    const videoId = await resolveWatchUrl(input.url)
+    const watch = await resolveWatchUrl(input.url)
     return {
-      videoId,
+      videoId: watch.videoId,
       videoVariantLanguageId: await resolveVariantLanguageId(
         input,
-        campaignLanguageId
+        watch.languageId ?? campaignLanguageId
       )
     }
   }

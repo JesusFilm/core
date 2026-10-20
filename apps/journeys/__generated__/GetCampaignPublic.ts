@@ -909,6 +909,25 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlo
   mobileCinematicHigh: string | null;
 }
 
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -918,6 +937,7 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlo
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignVideoBlock_mediaVideo_Video {
@@ -1979,6 +1999,25 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_medi
   mobileCinematicHigh: string | null;
 }
 
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1988,6 +2027,7 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_medi
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignVideoBlock_mediaVideo_Video {
@@ -2950,6 +2990,25 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBloc
   mobileCinematicHigh: string | null;
 }
 
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2959,6 +3018,7 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBloc
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignVideoBlock_mediaVideo_Video {

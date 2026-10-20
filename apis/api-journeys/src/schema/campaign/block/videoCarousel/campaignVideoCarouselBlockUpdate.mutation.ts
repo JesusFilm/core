@@ -42,7 +42,7 @@ export const CampaignVideoCarouselBlockUpdateInput = builder.inputType(
       videoVariantLanguageId: t.id({
         required: false,
         description:
-          'With `url` or `videoId`: the language the expansion resolves in; defaults to the campaign language.'
+          'With `url` or `videoId`: the language the expansion resolves in; defaults to the language the pasted address named, else the campaign language.'
       }),
       ...sectionStyleInputFields(t)
     })

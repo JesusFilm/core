@@ -176,6 +176,17 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
             hls
             duration
             slug
+            subtitle {
+              id
+              vttSrc
+              language {
+                id
+                bcp47
+                name(languageId: $languageId, primary: true) {
+                  value
+                }
+              }
+            }
           }
         }
         ... on MuxVideo {

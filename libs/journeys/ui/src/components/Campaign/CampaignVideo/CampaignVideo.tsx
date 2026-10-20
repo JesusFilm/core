@@ -18,6 +18,7 @@ import type { CampaignTreeOf } from '../types'
 
 import {
   CampaignVideoDetails,
+  campaignSubtitleTracks,
   campaignVideoDetails,
   campaignVideoPlayerBlock
 } from './campaignVideoDetails'
@@ -68,7 +69,8 @@ function CampaignVideoCaption({
  * A Campaign Video in a Media Slot. A Watch video with children is a poster
  * card — its title in the Page Language and "<n> videos" — linking out to
  * Watch; any other video plays inline in the journeys `Video` player, framed
- * at 16:9 and captioned with its title and description. The player sits in
+ * at 16:9 and captioned with its title and description, with the variant's
+ * subtitle files offered in the player's subtitle menu. The player sits in
  * the dark theme whatever the band's, so its controls read white over the
  * picture as they do on a journey card.
  */
@@ -83,6 +85,7 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
     () => campaignVideoPlayerBlock(block, details),
     [block, details]
   )
+  const subtitleTracks = useMemo(() => campaignSubtitleTracks(block), [block])
 
   if (details.childrenCount > 0) {
     return (
@@ -173,7 +176,7 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
           themeMode={ThemeMode.dark}
           nested
         >
-          <Video {...playerBlock} />
+          <Video {...playerBlock} subtitleTracks={subtitleTracks} />
         </ThemeProvider>
       </Box>
       <CampaignVideoCaption details={details} />

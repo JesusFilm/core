@@ -77,7 +77,8 @@ async function muxColumns(videoId: string): Promise<VideoColumns> {
  * first issue path) and their title, description, poster and duration
  * fetched once by the existing fetchers. A Watch video is a pasted `url`
  * resolved through the gateway (or a known `videoId`) and stores only its
- * ids, the variant language being the campaign language at link time.
+ * ids, the variant language being the one the pasted address named, else
+ * the campaign language at link time.
  */
 export async function pickVideo(
   input: VideoPickInput,
@@ -107,20 +108,23 @@ export async function pickVideo(
       return await muxColumns(videoId)
     }
     case 'internal': {
-      const videoId =
+      const watch =
         input.url != null
           ? await resolveWatchUrl(input.url)
-          : parseWithZod(
-              videoBlockInternalSchema,
-              { videoId: optionalId(input.videoId) },
-              'videoId'
-            ).videoId
-      if (videoId == null)
+          : {
+              videoId: parseWithZod(
+                videoBlockInternalSchema,
+                { videoId: optionalId(input.videoId) },
+                'videoId'
+              ).videoId,
+              languageId: null
+            }
+      if (watch.videoId == null)
         throw badUserInput('a Watch video needs its url', 'url')
       return {
         source,
-        videoId,
-        videoVariantLanguageId: campaignLanguageId,
+        videoId: watch.videoId,
+        videoVariantLanguageId: watch.languageId ?? campaignLanguageId,
         title: null,
         description: null,
         image: null,

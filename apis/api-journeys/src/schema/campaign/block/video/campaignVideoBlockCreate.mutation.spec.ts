@@ -93,7 +93,8 @@ describe('campaignVideoBlockCreate', () => {
     vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
       id: '1_jf-0-0',
       label: 'featureFilm',
-      childrenCount: 61
+      childrenCount: 61,
+      variant: { language: { id: '529' } }
     })
     prismaMock.campaignBlock.create.mockImplementation((async ({
       data
@@ -437,7 +438,7 @@ describe('campaignVideoBlockCreate', () => {
   })
 
   describe('a Watch video (internal)', () => {
-    it('resolves a pasted Watch url through its variant slug and stores only the ids, in the campaign language', async () => {
+    it('resolves a pasted Watch url through its variant slug and stores only the ids, in the language the address named', async () => {
       const result = await create({ source: 'internal', url: WATCH_URL })
 
       expect(fetchWatchVideoBySlug).toHaveBeenCalledWith('jesus/english')
@@ -469,10 +470,38 @@ describe('campaignVideoBlockCreate', () => {
       expect(fetchFieldsFromMux).not.toHaveBeenCalled()
     })
 
-    it('takes the variant language from the campaign’s default language', async () => {
+    it('remembers the language of the address over the campaign’s default language', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(
         campaignFactory({ defaultLanguageId: '496' }).build()
       )
+      vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
+        id: '1_jf-0-0',
+        label: 'featureFilm',
+        childrenCount: 61,
+        variant: { language: { id: '21028' } }
+      })
+
+      await create({
+        source: 'internal',
+        url: 'https://www.jesusfilm.org/watch/jesus.html/spanish-latin-american.html'
+      })
+
+      expect(fetchWatchVideoBySlug).toHaveBeenCalledWith(
+        'jesus/spanish-latin-american'
+      )
+      expect(createdData()).toMatchObject({ videoVariantLanguageId: '21028' })
+    })
+
+    it('takes the variant language from the campaign’s default language when the address names none', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(
+        campaignFactory({ defaultLanguageId: '496' }).build()
+      )
+      vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
+        id: '1_jf-0-0',
+        label: 'featureFilm',
+        childrenCount: 61,
+        variant: null
+      })
 
       await create({ source: 'internal', url: WATCH_URL })
 
@@ -516,7 +545,7 @@ describe('campaignVideoBlockCreate', () => {
 
     it.each([
       'https://www.jesusfilm.org/about',
-      'https://www.jesusfilm.org/watch/jesus.html',
+      'https://www.jesusfilm.org/watch/',
       'https://www.youtube.com/watch?v=jQaN9DvFTbw',
       'not a url'
     ])(

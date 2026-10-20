@@ -551,7 +551,8 @@ function watchVideo(
       id: `${id}-529`,
       hls: `https://arc.gt/hls/${id}/529`,
       duration: 180,
-      slug: `${slug}/english`
+      slug: `${slug}/english`,
+      subtitle: []
     }
   }
 }

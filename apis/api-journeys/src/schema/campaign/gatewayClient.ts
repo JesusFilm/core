@@ -64,12 +64,15 @@ export interface GatewayWatchVideo {
   id: string
   label: string
   childrenCount: number
+  /** The variant the slug named, by its language; only a slug lookup carries it. */
+  variant?: { language: { id: string } } | null
 }
 
 /**
  * Resolve a Watch variant slug (`<videoSlug>/<languageSlug>`) to its Video
  * through api-media's `video(id, idType: slug)`, which serves published
- * videos only; `null` when the slug resolves to nothing.
+ * videos only, with the language of the variant the slug named; `null` when
+ * the slug resolves to nothing.
  */
 export async function fetchWatchVideoBySlug(
   slug: string
@@ -80,6 +83,11 @@ export async function fetchWatchVideoBySlug(
         id
         label
         childrenCount
+        variant {
+          language {
+            id
+          }
+        }
       }
     }
   `
