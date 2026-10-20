@@ -59,7 +59,7 @@ export function DownloadDialog({
   const language = variant?.language ?? {
     __typename: 'Language',
     id: '529',
-    name: [{ __typename: 'LanguageName', value: 'English' }]
+    name: [{ __typename: 'LanguageName', value: 'English', primary: true }]
   }
   const time = secondsToTimeFormat(variant?.duration ?? 0)
 
@@ -192,7 +192,10 @@ export function DownloadDialog({
               }}
             >
               <LanguageIcon fontSize="small" sx={{ mr: 1 }} />
-              <Typography variant="body1">{language.name[0].value}</Typography>
+              <Typography variant="body1">
+                {language.name.find(({ primary }) => !primary)?.value ??
+                  language.name[0]?.value}
+              </Typography>
             </Stack>
           </Stack>
         </Stack>
