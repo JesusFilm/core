@@ -54,6 +54,7 @@ interface ScriptedItem {
   targetId: string
   field: string
   value: string
+  uncertain?: boolean
 }
 
 function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
@@ -79,14 +80,18 @@ function requestedLines(options: unknown): Array<[string, string]> {
   )
 }
 
-/** The model fake: answers every requested line with `FR <id> <field>`, unless overridden. */
-function scriptModel(overrides: Record<string, string> = {}): void {
+/** The model fake: answers every requested line with `FR <id> <field>`, unless overridden; sure of every line unless listed as uncertain. */
+function scriptModel(
+  overrides: Record<string, string> = {},
+  uncertain: string[] = []
+): void {
   mockStreamText.mockImplementation(((options: unknown) => ({
     elementStream: createMockAsyncIterator<ScriptedItem>(
       requestedLines(options).map(([targetId, field]) => ({
         targetId,
         field,
-        value: overrides[`${targetId}:${field}`] ?? `FR ${targetId} ${field}`
+        value: overrides[`${targetId}:${field}`] ?? `FR ${targetId} ${field}`,
+        uncertain: uncertain.includes(`${targetId}:${field}`)
       }))
     )
   })) as unknown as typeof streamText)
@@ -190,6 +195,28 @@ describe('campaignAiTranslate', () => {
   })
 
   describe('mode missing', () => {
+    it('keeps the model’s doubt on a line it was unsure of, and nothing on the rest', async () => {
+      scriptModel({}, ['heroId:eyebrow'])
+
+      await run({ mode: 'missing' })
+
+      expect(blockWrites().heroId.eyebrowTranslations).toEqual({
+        [FRENCH]: {
+          value: 'FR heroId eyebrow',
+          source: 'machine',
+          uncertain: true
+        }
+      })
+      expect(prismaMock.campaignString.update).toHaveBeenCalledWith({
+        where: { id: 'string-copy' },
+        data: {
+          valueTranslations: {
+            [FRENCH]: { value: 'FR string-copy value', source: 'machine' }
+          }
+        }
+      })
+    })
+
     it('writes machine entries only where the language has no entry', async () => {
       await run({ mode: 'missing' })
 

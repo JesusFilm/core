@@ -51,7 +51,8 @@ interface TranslationsViewProps {
 /**
  * The review surface for translated text: one campaign language at a time,
  * every Translated Field grouped Interface, Landing page, Region page and
- * Regions, filtered All, Needs review, Machine-translated, Missing or Edited.
+ * Regions, filtered All, Needs review (machine lines the model itself was
+ * unsure of), Machine-translated, Missing or Edited.
  * The list is read once with every row and filtered here, so a row an author
  * edits turns Edited and leaves a Needs review or Missing filter as soon as
  * the write lands. Only languages other than the default are listed: the

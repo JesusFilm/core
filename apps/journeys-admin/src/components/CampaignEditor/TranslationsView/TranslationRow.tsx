@@ -209,8 +209,9 @@ export function TranslationRowItem({
     }
   }
 
-  const statusLabel =
-    row.source === CampaignTextSource.machine
+  const statusLabel = row.needsReview
+    ? t('Needs review')
+    : row.source === CampaignTextSource.machine
       ? t('Machine-translated')
       : row.source === CampaignTextSource.human
         ? t('Edited')
@@ -259,9 +260,7 @@ export function TranslationRowItem({
       <Chip
         size="small"
         label={statusLabel}
-        color={
-          row.source === CampaignTextSource.machine ? 'warning' : 'default'
-        }
+        color={row.needsReview ? 'warning' : 'default'}
         variant={row.source == null ? 'outlined' : 'filled'}
         sx={{ alignSelf: 'flex-start' }}
       />

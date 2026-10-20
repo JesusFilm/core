@@ -10,11 +10,13 @@ export interface TranslatedValueShape {
 
 /**
  * The stored shape of every `<field>Translations` JSON column:
- * `{ "<languageId>": { "value": string, "source": "human" | "machine" } }`.
+ * `{ "<languageId>": { "value": string, "source": "human" | "machine", "uncertain"?: true } }`.
+ * `uncertain` is set only on a machine entry the model flagged as a guess;
+ * a person's rewrite drops it.
  */
 export type TranslationsJson = Record<
   string,
-  { value: string; source: CampaignTextSourceValue }
+  { value: string; source: CampaignTextSourceValue; uncertain?: boolean }
 >
 
 export const TranslatedValueRef =

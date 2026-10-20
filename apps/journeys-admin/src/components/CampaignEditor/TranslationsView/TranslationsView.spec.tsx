@@ -40,6 +40,7 @@ function row(overrides: Partial<Row> & Pick<Row, 'group' | 'field'>): Row {
     defaultValue: '',
     value: null,
     source: null,
+    needsReview: false,
     target: {
       __typename: 'CampaignTranslationTarget',
       typename: 'CampaignHeroBlock',
@@ -74,6 +75,7 @@ const heroTitle = row({
   defaultValue: 'Share the story of Outreach',
   value: "Partagez l'histoire de Campagne",
   source: CampaignTextSource.machine,
+  needsReview: true,
   target: {
     ...copyLink.target,
     typename: 'CampaignHeroBlock',
@@ -430,7 +432,7 @@ describe('TranslationsView', () => {
 
   it.each([
     ['All', 5],
-    ['Needs review', 2],
+    ['Needs review', 1],
     ['Machine-translated', 2],
     ['Missing', 2],
     ['Edited', 1]
@@ -464,14 +466,14 @@ describe('TranslationsView', () => {
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
     fireEvent.click(screen.getByRole('button', { name: 'Needs review' }))
-    expect(visibleRows()).toHaveLength(2)
+    expect(visibleRows()).toHaveLength(1)
 
     const field = screen.getByRole('textbox', { name: 'Hero · Title' })
     fireEvent.change(field, { target: { value: '  Partagez Campagne ' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(write.result).toHaveBeenCalled())
-    await waitFor(() => expect(visibleRows()).toHaveLength(1))
+    await waitFor(() => expect(visibleRows()).toHaveLength(0))
     fireEvent.click(screen.getByRole('button', { name: 'Edited' }))
     const edited = screen.getByTestId(
       'TranslationRow-CampaignHeroBlock:heroId:title'

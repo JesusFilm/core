@@ -38,18 +38,19 @@ export const TRANSLATION_FILTERS: TranslationFilter[] = [
 ]
 
 /**
- * Whether a row belongs under a filter. Needs review and Machine-translated
- * are the same set today: a machine entry stays "needs review" until a person
- * writes over it, which turns it into an edited one.
+ * Whether a row belongs under a filter. Needs review is the machine lines
+ * the model itself flagged as guesses; Machine-translated is every machine
+ * line. A person writing over a line turns it into an edited one.
  */
 export function matchesFilter(
-  row: Pick<TranslationRow, 'source'>,
+  row: Pick<TranslationRow, 'source' | 'needsReview'>,
   filter: TranslationFilter
 ): boolean {
   switch (filter) {
     case 'all':
       return true
     case 'needsReview':
+      return row.needsReview
     case 'machine':
       return row.source === CampaignTextSource.machine
     case 'edited':
@@ -200,7 +201,12 @@ export function withWrittenTranslation(
   )
   return rows.map((row) =>
     rowKey(row) === rowKey(written)
-      ? { ...row, value: entry?.value ?? null, source: entry?.source ?? null }
+      ? {
+          ...row,
+          value: entry?.value ?? null,
+          source: entry?.source ?? null,
+          needsReview: false
+        }
       : row
   )
 }

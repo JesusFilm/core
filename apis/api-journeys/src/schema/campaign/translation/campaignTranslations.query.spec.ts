@@ -50,6 +50,7 @@ describe('campaignTranslations', () => {
         defaultValue
         value
         source
+        needsReview
         target {
           typename
           blockId
@@ -94,7 +95,11 @@ describe('campaignTranslations', () => {
             return {
               ...block,
               titleTranslations: {
-                [FRENCH]: { value: "Partagez l'histoire", source: 'machine' },
+                [FRENCH]: {
+                  value: "Partagez l'histoire",
+                  source: 'machine',
+                  uncertain: true
+                },
                 [SPANISH]: { value: 'Comparte la historia', source: 'human' }
               },
               descriptionTranslations: {
@@ -218,6 +223,7 @@ describe('campaignTranslations', () => {
       defaultValue: 'Outreach 2026',
       value: 'Campagne 2026',
       source: 'human',
+      needsReview: false,
       target: {
         typename: 'Campaign',
         blockId: null,
@@ -233,6 +239,7 @@ describe('campaignTranslations', () => {
       defaultValue: 'Your campaign',
       value: null,
       source: null,
+      needsReview: false,
       target: {
         typename: 'CampaignHeroBlock',
         blockId: 'heroId',
@@ -273,8 +280,35 @@ describe('campaignTranslations', () => {
     })
   })
 
+  it('flags only the machine lines the model was unsure of as needing review', async () => {
+    const result = await translations()
+    const rows = result.data.campaignTranslations
+    const byKey = Object.fromEntries(
+      rows.map((row: any) => [`${row.target.typename}:${row.field}`, row])
+    )
+    const copyId = fixture.strings.find((string) => string.key === 'copy')?.id
+    const copyRow = rows.find((row: any) => row.target.stringId === copyId)
+
+    expect(byKey['CampaignHeroBlock:title']).toMatchObject({
+      source: 'machine',
+      needsReview: true
+    })
+    expect(copyRow).toMatchObject({
+      source: 'machine',
+      needsReview: false
+    })
+    expect(byKey['Campaign:title']).toMatchObject({
+      source: 'human',
+      needsReview: false
+    })
+    expect(byKey['CampaignHeroBlock:eyebrow']).toMatchObject({
+      source: null,
+      needsReview: false
+    })
+  })
+
   it.each([
-    ['needsReview', 'machine', 3],
+    ['needsReview', 'machine', 1],
     ['edited', 'human', 2],
     ['missing', null, null]
   ])('filters %s to rows whose source is %s', async (filter, source, count) => {
