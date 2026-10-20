@@ -23,7 +23,7 @@ import {
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
-  focalObjectPosition,
+  focalImageSx,
   isCampaignSection,
   isExtra,
   minHeightSx,
@@ -600,21 +600,22 @@ export function CanvasSection({
         {above.map(renderExtra)}
         {block.__typename === 'CampaignImageBlock' &&
           (picture != null ? (
-            <Box
-              component="img"
-              src={picture.src}
-              alt={picture.alt ?? ''}
-              data-testid="CanvasSectionImage"
-              sx={{
-                display: 'block',
-                width: '100%',
-                height: 'auto',
-                aspectRatio: CAMPAIGN_PICTURE_RATIOS.wide,
-                objectFit: 'cover',
-                objectPosition: focalObjectPosition(picture),
-                borderRadius: 1
-              }}
-            />
+            <Box sx={{ width: '100%', overflow: 'hidden', borderRadius: 1 }}>
+              <Box
+                component="img"
+                src={picture.src}
+                alt={picture.alt ?? ''}
+                data-testid="CanvasSectionImage"
+                sx={{
+                  display: 'block',
+                  width: '100%',
+                  height: 'auto',
+                  aspectRatio: CAMPAIGN_PICTURE_RATIOS.wide,
+                  objectFit: 'cover',
+                  ...focalImageSx(picture)
+                }}
+              />
+            </Box>
           ) : (
             <Box
               data-testid="CanvasSectionImagePlaceholder"
@@ -1009,21 +1010,30 @@ export function CanvasSection({
       {cover != null && (
         <>
           <Box
-            component="img"
-            src={cover.src}
-            alt=""
-            aria-hidden
-            data-testid="CanvasSectionCover"
             sx={{
               position: 'absolute',
               inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: focalObjectPosition(cover),
+              overflow: 'hidden',
+              borderRadius: 'inherit',
               pointerEvents: 'none'
             }}
-          />
+          >
+            <Box
+              component="img"
+              src={cover.src}
+              alt=""
+              aria-hidden
+              data-testid="CanvasSectionCover"
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                ...focalImageSx(cover)
+              }}
+            />
+          </Box>
           <Box
             data-testid="CanvasSectionOverlay"
             sx={{

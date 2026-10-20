@@ -42,6 +42,7 @@ describe('campaignImageBlockUpdate', () => {
         height
         focalLeft
         focalTop
+        scale
         backgroundKind
         textColor
       }
@@ -117,6 +118,34 @@ describe('campaignImageBlockUpdate', () => {
       expect(result.errors[0].extensions).toMatchObject({
         code: 'BAD_USER_INPUT',
         field
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    }
+  )
+
+  it('takes the zoom as a whole percentage, null meaning none', async () => {
+    const result = await update({ scale: 150 })
+
+    expect(result.data.campaignImageBlockUpdate).toMatchObject({ scale: 150 })
+    expect(prismaMock.campaignBlock.update).toHaveBeenLastCalledWith(
+      expect.objectContaining({ data: { scale: 150 } })
+    )
+
+    await update({ scale: null })
+
+    expect(prismaMock.campaignBlock.update).toHaveBeenLastCalledWith(
+      expect.objectContaining({ data: { scale: null } })
+    )
+  })
+
+  it.each([99, 201])(
+    'rejects a zoom of %s, outside 100 to 200 (BAD_USER_INPUT, scale)',
+    async (scale) => {
+      const result = await update({ scale })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'scale'
       })
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     }

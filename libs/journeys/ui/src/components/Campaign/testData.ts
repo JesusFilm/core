@@ -323,7 +323,8 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 0,
     eyebrow: 'Outreach 2026',
     title: 'Share the story of Outreach',
-    description: 'Pick your region to find a journey in your language, ready to share.',
+    description:
+      'Pick your region to find a journey in your language, ready to share.',
     align: TypographyAlign.center,
     mediaBlockId: null,
     minHeight: null
@@ -378,7 +379,8 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 3,
     eyebrow: 'Journeys',
     title: 'Ready-made journeys',
-    description: 'Interactive stories your friends can walk through on their phone.',
+    description:
+      'Interactive stories your friends can walk through on their phone.',
     display: CampaignJourneyListDisplay.grid
   }),
   typography({
@@ -423,8 +425,7 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     id: 'regionHeaderId',
     pageId: REGION_PAGE_ID,
     parentOrder: 0,
-    intro:
-      'A Outreach journey chosen and contextualised by your regional team.'
+    intro: 'A Outreach journey chosen and contextualised by your regional team.'
   }),
   section('CampaignRegionShareBlock', {
     id: 'regionShareId',
@@ -471,7 +472,8 @@ export const imageSectionBlock = section('CampaignImageBlock', {
   width: 1600,
   height: 900,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  scale: null
 })
 
 type VideoBlock = Extract<
@@ -636,7 +638,8 @@ export const featuredMediaImageBlock = section('CampaignImageBlock', {
   width: 1200,
   height: 800,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  scale: null
 })
 
 /** The hero’s owned background cover (`parentOrder: null`, named by `coverBlockId`). */
@@ -650,7 +653,8 @@ export const heroCoverBlock = section('CampaignImageBlock', {
   width: 1600,
   height: 400,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  scale: null
 })
 
 /** The header’s owned logo (`parentOrder: null`, named by `logoBlockId`). */
@@ -663,7 +667,8 @@ export const headerLogoBlock = section('CampaignImageBlock', {
   width: 320,
   height: 80,
   focalLeft: 50,
-  focalTop: 50
+  focalTop: 50,
+  scale: null
 })
 
 export const headerBlock = section('CampaignHeaderBlock', {

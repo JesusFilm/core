@@ -76,7 +76,8 @@ export function newOwnedImageBlock(
     width: null,
     height: null,
     focalLeft: 50,
-    focalTop: 50
+    focalTop: 50,
+    scale: null
   }
 }
 

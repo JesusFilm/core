@@ -52,6 +52,32 @@ export function assertPercentOrNull<T extends number | null | undefined>(
   return value
 }
 
+/** An image zoom is a whole percentage from no zoom to double. */
+export const IMAGE_SCALE_MIN = 100
+export const IMAGE_SCALE_MAX = 200
+
+/**
+ * A whole-number zoom percentage (100 to 200) or null (none); undefined
+ * passes through so an omitted field is left untouched. `BAD_USER_INPUT` /
+ * `field` otherwise.
+ */
+export function assertScaleOrNull<T extends number | null | undefined>(
+  value: T,
+  field: string
+): T {
+  if (value == null) return value
+  if (
+    !Number.isInteger(value) ||
+    value < IMAGE_SCALE_MIN ||
+    value > IMAGE_SCALE_MAX
+  )
+    throw badUserInput(
+      `${field} must be a whole number from ${IMAGE_SCALE_MIN} to ${IMAGE_SCALE_MAX}`,
+      field
+    )
+  return value
+}
+
 export function assertHex(value: string, field: string): string {
   const trimmed = value.trim()
   if (!HEX_PATTERN.test(trimmed))

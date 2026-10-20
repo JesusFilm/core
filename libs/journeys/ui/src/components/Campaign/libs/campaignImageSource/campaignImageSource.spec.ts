@@ -1,4 +1,4 @@
-import { campaignImageSource } from './campaignImageSource'
+import { campaignImageSource, focalImageSx } from './campaignImageSource'
 
 describe('campaignImageSource', () => {
   it('returns null for an empty slot', () => {
@@ -21,7 +21,8 @@ describe('campaignImageSource', () => {
       width: 320,
       height: 80,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      scale: 100
     })
   })
 
@@ -37,7 +38,8 @@ describe('campaignImageSource', () => {
       width: null,
       height: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      scale: 100
     })
   })
 
@@ -59,8 +61,21 @@ describe('campaignImageSource', () => {
       width: null,
       height: null,
       focalLeft: 50,
-      focalTop: 50
+      focalTop: 50,
+      scale: 100
     })
+  })
+
+  it('reads the focal point and zoom when stored', () => {
+    expect(
+      campaignImageSource({
+        __typename: 'CampaignImageBlock',
+        src: 'https://images.example.org/cover.jpg',
+        focalLeft: 20,
+        focalTop: 80,
+        scale: 150
+      })
+    ).toMatchObject({ focalLeft: 20, focalTop: 80, scale: 150 })
   })
 
   it('returns null for a block with no image', () => {
@@ -71,5 +86,22 @@ describe('campaignImageSource', () => {
       campaignImageSource({ __typename: 'CampaignVideoBlock', image: null })
     ).toBeNull()
     expect(campaignImageSource({ __typename: 'CampaignHeroBlock' })).toBeNull()
+  })
+
+  describe('focalImageSx', () => {
+    it('positions on the focal point, and zooms from it only above 100', () => {
+      expect(focalImageSx({ focalLeft: 20, focalTop: 80, scale: 100 })).toEqual(
+        {
+          objectPosition: '20% 80%'
+        }
+      )
+      expect(focalImageSx({ focalLeft: 20, focalTop: 80, scale: 150 })).toEqual(
+        {
+          objectPosition: '20% 80%',
+          transform: 'scale(1.5)',
+          transformOrigin: '20% 80%'
+        }
+      )
+    })
   })
 })

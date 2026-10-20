@@ -111,6 +111,7 @@ export {
 } from './libs/campaignFontsHref'
 export {
   campaignImageSource,
+  focalImageSx,
   focalObjectPosition
 } from './libs/campaignImageSource'
 export {

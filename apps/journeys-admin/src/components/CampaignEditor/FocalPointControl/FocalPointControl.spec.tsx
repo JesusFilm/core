@@ -15,7 +15,10 @@ const image = {
   id: 'imageId'
 } as CampaignImageBlock
 
-function focalMock(focalLeft: number, focalTop: number): Record<string, unknown> {
+function focalMock(
+  focalLeft: number,
+  focalTop: number
+): Record<string, unknown> {
   return {
     request: {
       query: CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA,
@@ -31,7 +34,32 @@ function focalMock(focalLeft: number, focalTop: number): Record<string, unknown>
           width: image.width,
           height: image.height,
           focalLeft,
-          focalTop
+          focalTop,
+          scale: null
+        }
+      }
+    }))
+  }
+}
+
+function zoomMock(scale: number | null): Record<string, unknown> {
+  return {
+    request: {
+      query: CAMPAIGN_IMAGE_BLOCK_UPDATE_MEDIA,
+      variables: { id: 'imageId', input: { scale } }
+    },
+    result: vi.fn(() => ({
+      data: {
+        campaignImageBlockUpdate: {
+          __typename: 'CampaignImageBlock',
+          id: 'imageId',
+          src: image.src,
+          alt: image.alt,
+          width: image.width,
+          height: image.height,
+          focalLeft: 50,
+          focalTop: 50,
+          scale
         }
       }
     }))
@@ -76,6 +104,35 @@ describe('FocalPointControl', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
     await waitFor(() => expect(revert.result).toHaveBeenCalled())
+  })
+
+  it('writes the zoom as one Command when the slider is released, and undoes it', async () => {
+    const write = zoomMock(150)
+    const revert = zoomMock(null)
+    renderControl([write, revert])
+    const slider = screen.getByRole('slider', { name: 'Zoom' })
+    expect(slider).toHaveValue('100')
+    expect(screen.getByTestId('FocalPointZoomValue')).toHaveTextContent('1.0×')
+
+    fireEvent.change(slider, { target: { value: 150 } })
+
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(screen.getByTestId('FocalPointZoomValue')).toHaveTextContent('1.5×')
+    await waitFor(() => expect(write.result).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(revert.result).toHaveBeenCalled())
+  })
+
+  it('ignores a zoom released on the value already stored', () => {
+    renderControl([])
+
+    fireEvent.change(screen.getByRole('slider', { name: 'Zoom' }), {
+      target: { value: 100 }
+    })
+
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
   it('ignores a click on the point already stored', () => {

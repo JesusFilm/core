@@ -194,6 +194,7 @@ export const CAMPAIGN_PUBLIC_BLOCK_FIELDS = gql`
       height
       focalLeft
       focalTop
+      scale
     }
     ... on CampaignTypographyBlock {
       content

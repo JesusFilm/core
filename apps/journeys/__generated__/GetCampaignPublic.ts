@@ -489,6 +489,10 @@ export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignImageBlo
    * The focal point as a percentage from the top edge (0 to 100, 50 by default).
    */
   focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
 }
 
 export interface GetCampaignPublic_campaignPublic_regions_lines_CampaignJourneyListBlock {
@@ -1555,6 +1559,10 @@ export interface GetCampaignPublic_campaignPublic_chrome_CampaignImageBlock {
    * The focal point as a percentage from the top edge (0 to 100, 50 by default).
    */
   focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
 }
 
 export interface GetCampaignPublic_campaignPublic_chrome_CampaignJourneyListBlock {
@@ -2522,6 +2530,10 @@ export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignImageBloc
    * The focal point as a percentage from the top edge (0 to 100, 50 by default).
    */
   focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
 }
 
 export interface GetCampaignPublic_campaignPublic_pages_blocks_CampaignJourneyListBlock {

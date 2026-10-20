@@ -130,6 +130,7 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   minHeight: null,
   focalLeft: 50,
   focalTop: 50,
+  scale: null,
   journeyId: null,
   snapshotEdited: false
 }

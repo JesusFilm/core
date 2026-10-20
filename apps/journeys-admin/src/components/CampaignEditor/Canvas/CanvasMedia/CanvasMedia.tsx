@@ -7,7 +7,7 @@ import { ReactElement } from 'react'
 import {
   CAMPAIGN_PICTURE_RATIOS,
   campaignImageSource,
-  focalObjectPosition
+  focalImageSx
 } from '@core/journeys/ui/Campaign'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
@@ -44,21 +44,23 @@ export function CanvasMedia({
     const picture = campaignImageSource(media)
     if (picture != null)
       return (
-        <Box
-          component="img"
-          src={picture.src}
-          alt={picture.alt ?? ''}
-          data-testid="CanvasMediaImage"
-          sx={{
-            display: 'block',
-            width: '100%',
-            height: 'auto',
-            aspectRatio: CAMPAIGN_PICTURE_RATIOS[stacked ? 'wide' : 'standard'],
-            objectFit: 'cover',
-            objectPosition: focalObjectPosition(picture),
-            borderRadius: 1
-          }}
-        />
+        <Box sx={{ overflow: 'hidden', borderRadius: 1 }}>
+          <Box
+            component="img"
+            src={picture.src}
+            alt={picture.alt ?? ''}
+            data-testid="CanvasMediaImage"
+            sx={{
+              display: 'block',
+              width: '100%',
+              height: 'auto',
+              aspectRatio:
+                CAMPAIGN_PICTURE_RATIOS[stacked ? 'wide' : 'standard'],
+              objectFit: 'cover',
+              ...focalImageSx(picture)
+            }}
+          />
+        </Box>
       )
   }
 

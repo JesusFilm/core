@@ -69,6 +69,12 @@ describe('CampaignImage', () => {
     ).toBeInTheDocument()
   })
 
+  it('zooms the picture from its focal point when a scale is stored', () => {
+    renderImage(imageTree({ focalLeft: 20, focalTop: 80, scale: 150 }))
+    expect(styleText()).toContain('transform:scale(1.5)')
+    expect(styleText()).toContain('transform-origin:20% 80%')
+  })
+
   it('uses empty alt and no size attributes when none are stored', () => {
     renderImage(imageTree({ alt: null, width: null, height: null }))
     const image = screen.getByTestId('CampaignImage')

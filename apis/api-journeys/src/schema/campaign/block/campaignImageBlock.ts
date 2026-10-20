@@ -44,6 +44,11 @@ export const CampaignImageBlock = builder.prismaObject('CampaignBlock', {
       nullable: true,
       description:
         'The focal point as a percentage from the top edge (0 to 100, 50 by default).'
+    }),
+    scale: t.exposeInt('scale', {
+      nullable: true,
+      description:
+        'Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.'
     })
   })
 })

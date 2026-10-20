@@ -838,6 +838,7 @@ export interface CampaignImageBlockCreateInput {
   alt?: string | null;
   focalLeft?: number | null;
   focalTop?: number | null;
+  scale?: number | null;
 }
 
 export interface CampaignImageBlockUpdateInput {
@@ -845,6 +846,7 @@ export interface CampaignImageBlockUpdateInput {
   alt?: string | null;
   focalLeft?: number | null;
   focalTop?: number | null;
+  scale?: number | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;

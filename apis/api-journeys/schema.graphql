@@ -1236,6 +1236,11 @@ type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
   The focal point as a percentage from the top edge (0 to 100, 50 by default).
   """
   focalTop: Int
+
+  """
+  Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+  """
+  scale: Int
 }
 
 """
@@ -1274,6 +1279,11 @@ input CampaignImageBlockCreateInput {
 
   """The focal point as a percentage from the top edge, 0 to 100."""
   focalTop: Int
+
+  """
+  Zoom around the focal point as a percentage, 100 to 200; null means none.
+  """
+  scale: Int
 }
 
 input CampaignImageBlockUpdateInput {
@@ -1290,6 +1300,11 @@ input CampaignImageBlockUpdateInput {
 
   """The focal point as a percentage from the top edge, 0 to 100."""
   focalTop: Int
+
+  """
+  Zoom around the focal point as a percentage, 100 to 200; null means none.
+  """
+  scale: Int
 
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.

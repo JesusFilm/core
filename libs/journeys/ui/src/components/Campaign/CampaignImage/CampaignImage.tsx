@@ -3,10 +3,7 @@ import { ReactElement } from 'react'
 
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { campaignImageSource } from '../libs/campaignImageSource'
-import {
-  CampaignImageSource,
-  focalObjectPosition
-} from '../libs/campaignImageSource'
+import { CampaignImageSource, focalImageSx } from '../libs/campaignImageSource'
 import type { CampaignTreeOf } from '../types'
 
 /** The frames a campaign picture is cropped to: a wide banner for an Image section or a stacked slot, 4:3 beside text. */
@@ -25,9 +22,9 @@ interface CampaignPictureProps {
 
 /**
  * One full-width picture cropped to a fixed frame (16:9, or 4:3 beside
- * text) with its focal point kept in view, so the page never shifts as it
- * loads, and its translated alt text. The Image section's body, and an image
- * in a Media Slot.
+ * text) with its focal point kept in view and any zoom applied around it, so
+ * the page never shifts as it loads, and its translated alt text. The Image
+ * section's body, and an image in a Media Slot. The frame clips the zoom.
  */
 export function CampaignPicture({
   image,
@@ -36,25 +33,26 @@ export function CampaignPicture({
   const aspectRatio = CAMPAIGN_PICTURE_RATIOS[ratio]
 
   return (
-    <Box
-      component="img"
-      src={image.src}
-      alt={image.alt ?? ''}
-      width={image.width ?? undefined}
-      height={image.height ?? undefined}
-      loading="lazy"
-      data-testid="CampaignImage"
-      data-ratio={ratio}
-      sx={{
-        display: 'block',
-        width: '100%',
-        height: 'auto',
-        aspectRatio,
-        objectFit: 'cover',
-        objectPosition: focalObjectPosition(image),
-        borderRadius: 1
-      }}
-    />
+    <Box sx={{ overflow: 'hidden', borderRadius: 1 }}>
+      <Box
+        component="img"
+        src={image.src}
+        alt={image.alt ?? ''}
+        width={image.width ?? undefined}
+        height={image.height ?? undefined}
+        loading="lazy"
+        data-testid="CampaignImage"
+        data-ratio={ratio}
+        sx={{
+          display: 'block',
+          width: '100%',
+          height: 'auto',
+          aspectRatio,
+          objectFit: 'cover',
+          ...focalImageSx(image)
+        }}
+      />
+    </Box>
   )
 }
 

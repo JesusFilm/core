@@ -2121,6 +2121,10 @@ type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock @join__t
   The focal point as a percentage from the top edge (0 to 100, 50 by default).
   """
   focalTop: Int
+  """
+  Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+  """
+  scale: Int
 }
 
 """
@@ -7563,6 +7567,10 @@ input CampaignImageBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   The focal point as a percentage from the top edge, 0 to 100.
   """
   focalTop: Int
+  """
+  Zoom around the focal point as a percentage, 100 to 200; null means none.
+  """
+  scale: Int
 }
 
 input CampaignImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
@@ -7582,6 +7590,10 @@ input CampaignImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   The focal point as a percentage from the top edge, 0 to 100.
   """
   focalTop: Int
+  """
+  Zoom around the focal point as a percentage, 100 to 200; null means none.
+  """
+  scale: Int
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
   """

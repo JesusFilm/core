@@ -2,10 +2,7 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { CampaignBackgroundKind } from '../../../../__generated__/globalTypes'
-import {
-  campaignImageSource,
-  focalObjectPosition
-} from '../libs/campaignImageSource'
+import { campaignImageSource, focalImageSx } from '../libs/campaignImageSource'
 import { overlayAlpha } from '../libs/resolveBand'
 import type { CampaignSectionTree } from '../types'
 
@@ -28,21 +25,30 @@ export function CampaignBandCover({
   return (
     <>
       <Box
-        component="img"
-        src={cover.src}
-        alt=""
-        aria-hidden
-        data-testid="CampaignBandCover"
         sx={{
           position: 'absolute',
           inset: 0,
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition: focalObjectPosition(cover),
+          overflow: 'hidden',
+          borderRadius: 'inherit',
           pointerEvents: 'none'
         }}
-      />
+      >
+        <Box
+          component="img"
+          src={cover.src}
+          alt=""
+          aria-hidden
+          data-testid="CampaignBandCover"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            ...focalImageSx(cover)
+          }}
+        />
+      </Box>
       <Box
         data-testid="CampaignBandOverlay"
         sx={{

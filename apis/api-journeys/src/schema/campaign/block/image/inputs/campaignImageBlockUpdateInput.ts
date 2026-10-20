@@ -25,6 +25,11 @@ export const CampaignImageBlockUpdateInput = builder.inputType(
         description:
           'The focal point as a percentage from the top edge, 0 to 100.'
       }),
+      scale: t.int({
+        required: false,
+        description:
+          'Zoom around the focal point as a percentage, 100 to 200; null means none.'
+      }),
       ...sectionStyleInputFields(t)
     })
   }
