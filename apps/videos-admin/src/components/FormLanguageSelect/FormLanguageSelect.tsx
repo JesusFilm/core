@@ -60,6 +60,7 @@ export function FormLanguageSelect({
       onChange={handleChange}
       loading={loading}
       languages={filteredLanguages}
+      showLanguageId
       renderInput={(params) => (
         <TextField
           {...params}
