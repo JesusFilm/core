@@ -25,10 +25,18 @@ export interface CampaignCreate_campaignCreate_customDomains {
   name: string;
 }
 
-export interface CampaignCreate_campaignCreate_team_userTeams_user {
-  __typename: "AuthenticatedUser" | "AnonymousUser";
+export interface CampaignCreate_campaignCreate_team_userTeams_user_AnonymousUser {
+  __typename: "AnonymousUser";
   id: string;
 }
+
+export interface CampaignCreate_campaignCreate_team_userTeams_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
+  id: string;
+  email: string;
+}
+
+export type CampaignCreate_campaignCreate_team_userTeams_user = CampaignCreate_campaignCreate_team_userTeams_user_AnonymousUser | CampaignCreate_campaignCreate_team_userTeams_user_AuthenticatedUser;
 
 export interface CampaignCreate_campaignCreate_team_userTeams {
   __typename: "UserTeam";

@@ -109,7 +109,11 @@ export const campaign: Campaign = {
         __typename: 'UserTeam',
         id: 'userTeamId',
         role: UserTeamRole.manager,
-        user: { __typename: 'AuthenticatedUser', id: CURRENT_USER_ID }
+        user: {
+          __typename: 'AuthenticatedUser',
+          id: CURRENT_USER_ID,
+          email: 'test@example.com'
+        }
       }
     ]
   },
@@ -311,7 +315,11 @@ export const memberCampaign: Campaign = {
         __typename: 'UserTeam',
         id: 'userTeamId',
         role: UserTeamRole.member,
-        user: { __typename: 'AuthenticatedUser', id: CURRENT_USER_ID }
+        user: {
+          __typename: 'AuthenticatedUser',
+          id: CURRENT_USER_ID,
+          email: 'test@example.com'
+        }
       }
     ]
   }

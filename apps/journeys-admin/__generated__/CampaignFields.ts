@@ -25,10 +25,18 @@ export interface CampaignFields_customDomains {
   name: string;
 }
 
-export interface CampaignFields_team_userTeams_user {
-  __typename: "AuthenticatedUser" | "AnonymousUser";
+export interface CampaignFields_team_userTeams_user_AnonymousUser {
+  __typename: "AnonymousUser";
   id: string;
 }
+
+export interface CampaignFields_team_userTeams_user_AuthenticatedUser {
+  __typename: "AuthenticatedUser";
+  id: string;
+  email: string;
+}
+
+export type CampaignFields_team_userTeams_user = CampaignFields_team_userTeams_user_AnonymousUser | CampaignFields_team_userTeams_user_AuthenticatedUser;
 
 export interface CampaignFields_team_userTeams {
   __typename: "UserTeam";
