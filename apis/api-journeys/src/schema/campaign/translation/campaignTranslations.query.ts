@@ -208,17 +208,23 @@ function byParentOrder(
 }
 
 /**
- * Sections in order, each followed by its children in order. A block whose
- * parent is not live (deleting a section only stamps the section) sits on no
- * visible page, so it is dropped rather than promoted to a section.
+ * Sections in order, each followed by everything under it in order, all the
+ * way down: a section's extras, and through a Columns section its columns,
+ * the sections in them and their extras. A block whose parent is not live
+ * (deleting a section only stamps the section) sits on no visible page, so
+ * it is dropped rather than promoted to a section.
  */
 function inReadingOrder(blocks: CampaignBlock[]): CampaignBlock[] {
   const childrenOf = (id: string): CampaignBlock[] =>
     blocks.filter((block) => block.parentBlockId === id).sort(byParentOrder)
+  const withDescendants = (block: CampaignBlock): CampaignBlock[] => [
+    block,
+    ...childrenOf(block.id).flatMap(withDescendants)
+  ]
   return blocks
     .filter((block) => block.parentBlockId == null)
     .sort(byParentOrder)
-    .flatMap((section) => [section, ...childrenOf(section.id)])
+    .flatMap(withDescendants)
 }
 
 function blockSource(

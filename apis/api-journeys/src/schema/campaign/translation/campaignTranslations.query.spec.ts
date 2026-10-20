@@ -304,6 +304,71 @@ describe('campaignTranslations', () => {
     })
   })
 
+  it('reads the sections inside a Columns section, and their extras, in place', async () => {
+    const current = build()
+    const landingPageId = hero.pageId
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...current,
+      blocks: [
+        ...current.blocks,
+        {
+          ...hero,
+          id: 'columnsId',
+          typename: 'CampaignColumnsBlock',
+          pageId: landingPageId,
+          parentOrder: 99,
+          eyebrow: null,
+          title: null,
+          description: null
+        },
+        {
+          ...hero,
+          id: 'columnId',
+          typename: 'CampaignColumnBlock',
+          pageId: landingPageId,
+          parentBlockId: 'columnsId',
+          parentOrder: 0,
+          eyebrow: null,
+          title: null,
+          description: null
+        },
+        {
+          ...hero,
+          id: 'nestedMediaId',
+          typename: 'CampaignFeaturedMediaBlock',
+          pageId: landingPageId,
+          parentBlockId: 'columnId',
+          parentOrder: 0,
+          eyebrow: null,
+          title: 'Inside a column',
+          description: null
+        },
+        {
+          ...hero,
+          id: 'nestedExtraId',
+          typename: 'CampaignTypographyBlock',
+          pageId: landingPageId,
+          parentBlockId: 'nestedMediaId',
+          parentOrder: 0,
+          eyebrow: null,
+          title: null,
+          description: null,
+          content: 'An extra inside the column'
+        }
+      ]
+    } as never)
+
+    const result = await translations()
+
+    const landing = result.data.campaignTranslations
+      .filter((row: any) => row.group === 'landing')
+      .map((row: any) => `${row.target.blockId}:${row.field}`)
+    expect(landing.slice(-2)).toEqual([
+      'nestedMediaId:title',
+      'nestedExtraId:content'
+    ])
+  })
+
   it('leaves out live blocks whose parent section was deleted', async () => {
     const current = build()
     prismaMock.campaign.findUnique.mockResolvedValue({
