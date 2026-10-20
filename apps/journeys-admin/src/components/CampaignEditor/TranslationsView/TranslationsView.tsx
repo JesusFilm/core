@@ -29,14 +29,15 @@ import {
   TRANSLATION_FILTERS,
   TRANSLATION_GROUPS,
   TranslationFilter,
+  campaignTextSignature,
   matchesFilter,
   rowKey,
   rowMatchesSelection,
   rowPlace
 } from './translationRows'
 
-/** How long after the campaign changes the list is read again, so a burst of edits reads once. */
-export const TRANSLATIONS_REFRESH_DELAY = 500
+/** How long after the campaign's text changes the list is read again: past the canvas's own debounced save, so a burst of edits reads once, after the write. */
+export const TRANSLATIONS_REFRESH_DELAY = 1500
 
 interface TranslationsViewProps {
   campaign: Campaign
@@ -114,19 +115,26 @@ export function TranslationsView({
   const { data, loading, error, refetch } =
     useCampaignTranslationsQuery(queryVariables)
 
-  // New or changed text while the view is open: the list is read again, a
-  // breath after the editor's copy of the campaign changes, so a new line
-  // lands in its place without a reload. The first read is the mount's own.
-  const campaignRef = useRef(campaign)
+  // New or changed default-language text while the view is open: the list
+  // is read again once the canvas's save has had time to land, so a new line
+  // lands in its place without a reload. A translation edit changes no line
+  // and is written into the list by the row itself, so it never re-reads:
+  // a re-read could race the write and show the old value. The first read
+  // is the mount's own.
+  const textSignature = useMemo(
+    () => campaignTextSignature(campaign),
+    [campaign]
+  )
+  const textSignatureRef = useRef(textSignature)
   useEffect(() => {
-    if (campaignRef.current === campaign) return
-    campaignRef.current = campaign
+    if (textSignatureRef.current === textSignature) return
+    textSignatureRef.current = textSignature
     if (queryVariables == null) return
     const timer = setTimeout(() => {
       refetch().catch(() => undefined)
     }, TRANSLATIONS_REFRESH_DELAY)
     return () => clearTimeout(timer)
-  }, [campaign, queryVariables, refetch])
+  }, [textSignature, queryVariables, refetch])
 
   const selectionKey =
     selection.kind === 'campaign'

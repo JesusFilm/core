@@ -7,6 +7,10 @@ import {
   CampaignTextSource,
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
+import {
+  CAMPAIGN_TEXT_FIELDS,
+  isCampaignTextBlock
+} from '../../../libs/useCampaignBlockTextMutation'
 import type { CampaignSelection } from '../CampaignEditorProvider'
 import { CAMPAIGN_SECTION_STRING_KEYS } from '../Canvas/CanvasSection'
 
@@ -130,6 +134,36 @@ export function rowMatchesSelection(
         stringHostTypename(campaign, target.stringId)
     )
   return selection.kind === 'campaign'
+}
+
+/**
+ * Everything that decides which lines the Translations list has and what
+ * they translate: each block's place and default-language text, the
+ * strings, the regions' names and the campaign title. Translations are left
+ * out on purpose, so a translation edit (already written into the list by
+ * its own hand) never triggers a re-read that could race the write.
+ */
+export function campaignTextSignature(
+  campaign: Pick<Campaign, 'title' | 'blocks' | 'strings' | 'regions'>
+): string {
+  return JSON.stringify([
+    campaign.title,
+    campaign.blocks.map((block) => [
+      block.id,
+      block.__typename,
+      block.parentBlockId,
+      block.parentOrder,
+      block.pageId,
+      block.regionId,
+      isCampaignTextBlock(block)
+        ? CAMPAIGN_TEXT_FIELDS[block.__typename].map(
+            (field) => (block as unknown as Record<string, unknown>)[field]
+          )
+        : []
+    ]),
+    campaign.strings.map((string) => [string.id, string.key, string.value]),
+    campaign.regions.map((region) => [region.id, region.name])
+  ])
 }
 
 /** The `campaignTranslationSet` target input for a row. */

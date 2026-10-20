@@ -1,4 +1,5 @@
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -297,7 +298,7 @@ describe('TranslationsView', () => {
     })
   })
 
-  it('reads the list again shortly after the campaign changes, so new text lands in its place', async () => {
+  it('reads the list again once default-language text changes, so new text lands in its place', async () => {
     const newExtra = row({
       group: CampaignTranslationGroup.landing,
       field: CampaignTextField.content,
@@ -309,26 +310,24 @@ describe('TranslationsView', () => {
         blockId: 'newTextId'
       }
     })
-    const { rerender } = renderView([
-      listMock(FRENCH),
-      listMock(FRENCH, [...rows, newExtra])
-    ])
+    const mocks = [listMock(FRENCH), listMock(FRENCH, [...rows, newExtra])]
+    const { rerender } = renderView(mocks)
     await screen.findByTestId('TranslationGroup-landing')
     expect(
       screen.queryByTestId(`TranslationRow-${rowKey(newExtra)}`)
     ).toBeNull()
 
+    const changed = {
+      ...campaign,
+      blocks: campaign.blocks.map((block) =>
+        block.id === 'heroId' ? { ...block, title: 'A new hero title' } : block
+      )
+    }
     rerender(
-      <StaticEditor
-        mocks={[listMock(FRENCH), listMock(FRENCH, [...rows, newExtra])]}
-        campaignProp={{ ...campaign }}
-      >
+      <StaticEditor mocks={mocks} campaignProp={changed}>
         <SelectionProbe />
         <SelectBlockButton id="regionHeaderId" />
-        <TranslationsView
-          campaign={{ ...campaign }}
-          initialLanguageId={FRENCH}
-        />
+        <TranslationsView campaign={changed} initialLanguageId={FRENCH} />
       </StaticEditor>
     )
 
@@ -337,9 +336,48 @@ describe('TranslationsView', () => {
         `TranslationRow-${rowKey(newExtra)}`,
         {},
         {
-          timeout: 3000
+          timeout: 4000
         }
       )
+    ).toBeInTheDocument()
+  })
+
+  it('does not read the list again for a translation edit, which the row writes itself', async () => {
+    const mocks = [listMock(FRENCH)]
+    const { rerender } = renderView(mocks)
+    await screen.findByTestId('TranslationGroup-landing')
+
+    const translated = {
+      ...campaign,
+      blocks: campaign.blocks.map((block) =>
+        block.id === 'heroId'
+          ? {
+              ...block,
+              titleTranslations: [
+                {
+                  __typename: 'TranslatedValue' as const,
+                  languageId: FRENCH,
+                  value: 'Un titre écrit',
+                  source: CampaignTextSource.human
+                }
+              ]
+            }
+          : block
+      )
+    }
+    rerender(
+      <StaticEditor mocks={mocks} campaignProp={translated}>
+        <SelectionProbe />
+        <SelectBlockButton id="regionHeaderId" />
+        <TranslationsView campaign={translated} initialLanguageId={FRENCH} />
+      </StaticEditor>
+    )
+    await act(() => new Promise((resolve) => setTimeout(resolve, 2000)))
+
+    // A second read would have no mock and would surface as an error.
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(
+      screen.getByTestId(`TranslationRow-${rowKey(heroTitle)}`)
     ).toBeInTheDocument()
   })
 
