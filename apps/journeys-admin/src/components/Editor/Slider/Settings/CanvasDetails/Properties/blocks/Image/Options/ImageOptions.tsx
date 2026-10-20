@@ -47,9 +47,12 @@ export function ImageOptions(): ReactElement {
     await updateImageBlock({ src: null, alt: '' })
   }
 
+  // undoBlock defaults to the current block; pass the pre-preview block when
+  // the cache already holds previewed values.
   function updateImageBlock(
     input: ImageBlockUpdateInput,
-    shouldFocus = true
+    shouldFocus = true,
+    undoBlock?: ImageBlock
   ): void {
     const block: ImageBlock = {
       ...imageBlock,
@@ -84,7 +87,7 @@ export function ImageOptions(): ReactElement {
     add({
       parameters: {
         execute: block,
-        undo: imageBlock
+        undo: undoBlock ?? imageBlock
       },
       execute: (block) => update(block, shouldFocus),
       undo: (block) => update(block, true),
