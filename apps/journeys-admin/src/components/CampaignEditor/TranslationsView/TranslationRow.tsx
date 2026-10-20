@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import TargetIcon from '@core/shared/ui/icons/Target'
+import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import {
@@ -237,7 +237,7 @@ export function TranslationRowItem({
             aria-label={t('Show on the canvas')}
             onClick={onReveal}
           >
-            <TargetIcon fontSize="small" />
+            <LinkExternalIcon fontSize="small" />
           </IconButton>
         )}
         <Chip

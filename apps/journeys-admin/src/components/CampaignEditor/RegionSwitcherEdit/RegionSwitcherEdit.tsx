@@ -35,6 +35,7 @@ import {
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { EditorNote } from '../Canvas/EditorNote'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
@@ -300,9 +301,7 @@ export function RegionSwitcherEdit({
         data-testid="RegionSwitcherEmpty"
         sx={{ alignItems: 'flex-start' }}
       >
-        <Typography sx={{ color: 'var(--campaign-band-muted)' }}>
-          {t('Add your first region')}
-        </Typography>
+        <EditorNote>{t('Add your first region')}</EditorNote>
         {addButton}
       </Stack>
     )

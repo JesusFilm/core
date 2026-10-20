@@ -2,7 +2,6 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -27,6 +26,7 @@ import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { EditorNote } from '../Canvas/EditorNote'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
@@ -285,13 +285,9 @@ export function JourneyListEdit({
         </Stack>
       ) : (
         cards.length === 0 && (
-          <Typography
-            variant="body2"
-            data-testid="JourneyListEmpty"
-            sx={{ color: 'var(--campaign-band-muted)' }}
-          >
+          <EditorNote testId="JourneyListEmpty">
             {t('Select this section to add a journey.')}
-          </Typography>
+          </EditorNote>
         )
       )}
     </Stack>

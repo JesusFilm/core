@@ -2,7 +2,6 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import { SimplePaletteColorOptions } from '@mui/material/styles'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useCallback } from 'react'
 
@@ -12,6 +11,7 @@ import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { CanvasBlock, CanvasSection } from '../CanvasSection'
+import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { SelectionBadge } from '../SelectionBadge'
 
@@ -153,9 +153,7 @@ export function CanvasColumnSlot({
             borderRadius: 1
           }}
         >
-          <Typography variant="body2" sx={{ opacity: 0.6 }}>
-            {t('Empty column')}
-          </Typography>
+          <EditorNote>{t('Empty column')}</EditorNote>
         </ButtonBase>
       )}
     </Box>

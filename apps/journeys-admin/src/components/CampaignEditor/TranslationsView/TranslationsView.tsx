@@ -12,12 +12,12 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
+import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import {
   CampaignTranslationFilter,
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
-import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { useCampaignTranslationsQuery } from '../../../libs/useCampaignTranslationsQuery'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
@@ -34,6 +34,9 @@ import {
   rowMatchesSelection,
   rowPlace
 } from './translationRows'
+
+/** How long after the campaign changes the list is read again, so a burst of edits reads once. */
+export const TRANSLATIONS_REFRESH_DELAY = 500
 
 interface TranslationsViewProps {
   campaign: Campaign
@@ -60,7 +63,9 @@ interface TranslationsViewProps {
  * line's target button selects the text's place on the canvas (switching
  * page when it is on another) and scrolls the canvas to it; selecting
  * something on the canvas marks its lines here and scrolls to the first,
- * widening the filter to All when it hid them.
+ * widening the filter to All when it hid them. Text added or changed while
+ * the view is open is read again shortly after, so a new line appears in
+ * its place in the list.
  */
 export function TranslationsView({
   campaign,
@@ -106,7 +111,22 @@ export function TranslationsView({
           languageId,
           filter: CampaignTranslationFilter.all
         }
-  const { data, loading, error } = useCampaignTranslationsQuery(queryVariables)
+  const { data, loading, error, refetch } =
+    useCampaignTranslationsQuery(queryVariables)
+
+  // New or changed text while the view is open: the list is read again, a
+  // breath after the editor's copy of the campaign changes, so a new line
+  // lands in its place without a reload. The first read is the mount's own.
+  const campaignRef = useRef(campaign)
+  useEffect(() => {
+    if (campaignRef.current === campaign) return
+    campaignRef.current = campaign
+    if (queryVariables == null) return
+    const timer = setTimeout(() => {
+      refetch().catch(() => undefined)
+    }, TRANSLATIONS_REFRESH_DELAY)
+    return () => clearTimeout(timer)
+  }, [campaign, queryVariables, refetch])
 
   const selectionKey =
     selection.kind === 'campaign'

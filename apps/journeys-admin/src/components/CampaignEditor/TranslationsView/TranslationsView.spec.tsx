@@ -26,8 +26,8 @@ import {
 import { campaign } from '../data'
 import { SelectionProbe, StaticEditor } from '../testing'
 
-import { TranslationsView } from './TranslationsView'
 import { rowKey } from './translationRows'
+import { TranslationsView } from './TranslationsView'
 
 const FRENCH = '496'
 const SPANISH = '21028'
@@ -295,6 +295,52 @@ describe('TranslationsView', () => {
         'true'
       )
     })
+  })
+
+  it('reads the list again shortly after the campaign changes, so new text lands in its place', async () => {
+    const newExtra = row({
+      group: CampaignTranslationGroup.landing,
+      field: CampaignTextField.content,
+      maxLength: 500,
+      defaultValue: 'A new line of text',
+      target: {
+        ...heroTitle.target,
+        typename: 'CampaignTypographyBlock',
+        blockId: 'newTextId'
+      }
+    })
+    const { rerender } = renderView([
+      listMock(FRENCH),
+      listMock(FRENCH, [...rows, newExtra])
+    ])
+    await screen.findByTestId('TranslationGroup-landing')
+    expect(
+      screen.queryByTestId(`TranslationRow-${rowKey(newExtra)}`)
+    ).toBeNull()
+
+    rerender(
+      <StaticEditor
+        mocks={[listMock(FRENCH), listMock(FRENCH, [...rows, newExtra])]}
+        campaignProp={{ ...campaign }}
+      >
+        <SelectionProbe />
+        <SelectBlockButton id="regionHeaderId" />
+        <TranslationsView
+          campaign={{ ...campaign }}
+          initialLanguageId={FRENCH}
+        />
+      </StaticEditor>
+    )
+
+    expect(
+      await screen.findByTestId(
+        `TranslationRow-${rowKey(newExtra)}`,
+        {},
+        {
+          timeout: 3000
+        }
+      )
+    ).toBeInTheDocument()
   })
 
   it('shows the one-time notice that promoted machine values lost their flag, and closes it', async () => {

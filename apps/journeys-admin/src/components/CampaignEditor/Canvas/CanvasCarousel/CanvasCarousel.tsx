@@ -17,6 +17,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import type { CanvasBlock } from '../CanvasSection'
+import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { SelectionBadge } from '../SelectionBadge'
 
@@ -57,7 +58,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           color: 'var(--campaign-band-muted)'
         }}
       >
-        <Typography variant="body2">{t('Add videos from Edit')}</Typography>
+        <EditorNote>{t('Add videos from Edit')}</EditorNote>
       </Box>
     )
 

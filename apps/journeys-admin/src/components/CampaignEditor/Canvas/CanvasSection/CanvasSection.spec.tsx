@@ -372,7 +372,9 @@ describe('CanvasSection journey list strings', () => {
       </StaticEditor>
     )
 
-    expect(screen.getByText('Campaign strings')).toBeInTheDocument()
+    expect(screen.getByTestId('CanvasStringsNote')).toHaveTextContent(
+      'Button and label wording this section shows on the page'
+    )
     expect(screen.getByRole('textbox', { name: 'noJourneys' })).toHaveValue(
       'Journeys for this region are coming soon'
     )
@@ -405,14 +407,16 @@ describe('CanvasSection campaign strings', () => {
     (block) => block.id === 'landingJourneyListId'
   ) as CanvasBlock
 
-  it('keeps the Campaign strings label on a section that is not selected', () => {
+  it('keeps the strings note on a section that is not selected', () => {
     render(
       <StaticEditor initialState={{ previewLanguageId: '529' }}>
         <CanvasSection block={journeyList} />
       </StaticEditor>
     )
 
-    expect(screen.getByText('Campaign strings')).toBeInTheDocument()
+    expect(screen.getByTestId('CanvasStringsNote')).toHaveTextContent(
+      'Button and label wording this section shows on the page'
+    )
     expect(
       screen.getByTestId('InlineText-string-noJourneys')
     ).toBeInTheDocument()

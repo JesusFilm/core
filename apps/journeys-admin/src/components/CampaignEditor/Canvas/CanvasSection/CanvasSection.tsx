@@ -66,6 +66,7 @@ import { regionLineColor } from '../../utils/regionLineColor'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
+import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
 import { SelectionBadge } from '../SelectionBadge'
@@ -417,7 +418,7 @@ interface CanvasStringsProps {
   onSelect: () => void
 }
 
-/** A section's Campaign Strings, each inline-editable like any other text. */
+/** A section's Campaign Strings, each inline-editable like any other text, under an editor-only note saying where the page shows them. */
 function CanvasStrings({
   strings,
   editing,
@@ -431,13 +432,9 @@ function CanvasStrings({
       data-testid="CanvasStrings"
       sx={{ width: '100%', alignItems: 'inherit' }}
     >
-      <Typography
-        variant="overline"
-        component="p"
-        sx={{ color: 'var(--campaign-band-muted)' }}
-      >
-        {t('Campaign strings')}
-      </Typography>
+      <EditorNote testId="CanvasStringsNote">
+        {t('Button and label wording this section shows on the page')}
+      </EditorNote>
       {strings.map((string) => (
         <InlineText
           key={string.id}
@@ -630,9 +627,7 @@ export function CanvasSection({
                 color: 'var(--campaign-band-muted)'
               }}
             >
-              <Typography variant="body2">
-                {t('Add a picture from Edit')}
-              </Typography>
+              <EditorNote>{t('Add a picture from Edit')}</EditorNote>
             </Box>
           ))}
         {block.__typename === 'CampaignRegionHeaderBlock' &&

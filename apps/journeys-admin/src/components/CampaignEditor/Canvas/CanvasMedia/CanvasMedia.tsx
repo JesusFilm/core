@@ -12,6 +12,7 @@ import {
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
+import { EditorNote } from '../EditorNote'
 
 /** The title a Media Slot video shows: the override (or text captured at pick), else the Watch video's own. */
 export function campaignVideoTitle(
@@ -140,7 +141,7 @@ export function CanvasMedia({
         color: 'var(--campaign-band-muted)'
       }}
     >
-      <Typography variant="body2">{t('Add media from Edit')}</Typography>
+      <EditorNote>{t('Add media from Edit')}</EditorNote>
     </Box>
   )
 }
