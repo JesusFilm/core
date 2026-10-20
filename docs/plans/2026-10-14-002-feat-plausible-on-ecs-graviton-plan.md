@@ -11,6 +11,33 @@ date: 2026-10-14
 
 Plausible Analytics is the only product-facing workload on the EKS Platform Cluster; everything else there (ingress-nginx, cert-manager, external-dns, the Doppler operator, the EBS CSI driver, snapshot tooling) exists to serve it. Once its ClickHouse has moved to the shared ClickHouse Cloud service (plan `2026-10-14-001`), Plausible itself is a stateless Elixir container with two external databases, which is exactly what the ECS Fargate substrate already runs for every other Service. This plan runs the upstream `ghcr.io/plausible/community-edition` image as an ECS Service on arm64 Fargate (Graviton), behind the public ALB, with its configuration pulled from the existing `plausible` Doppler project, cuts the two hostnames over, and removes Plausible from EKS. Decommissioning the EKS cluster itself is the follow-up this makes possible.
 
+
+### Revision (2026-10-20): app first, events second
+
+Where this section and the rest of the plan disagree, this section wins. The
+module README (`infrastructure/modules/plausible/README.md`) is the runbook.
+
+- **Plausible moves to ECS before its events move to ClickHouse Cloud**, the
+  reverse of the Assumptions below. ECS and EKS share a VPC, so the task reaches
+  the in-cluster ClickHouse through a temporary internal NLB (a hand-applied
+  `LoadBalancer` Service, plus a Terraform security group that admits port 8123
+  from the public ECS tasks only). Each step then changes one thing: first the
+  platform, then the data store.
+- **The ECS task reads a Doppler branch config** (`stg_ecs` / `prd_ecs`) that
+  overrides only `CLICKHOUSE_DATABASE_URL`, so the EKS Deployment keeps its own
+  value and is untouched until it is scaled to 0.
+- **The events move in one pass with Plausible stopped.** Measured on
+  2026-10-20: prod about 1.3 GiB compressed (24M events), stage about 45 MiB.
+  The two-phase copy in plan `001` is unnecessary at this size.
+- **Task memory is 4 GiB.** Stage's EKS pod leaked memory (5.8 GB before it had
+  a limit, then repeated OOM kills at 2 GiB) while prod sits near 0.8 GiB. The
+  leak's cause is open and is checked on the stage task before prod moves.
+- **Argo CD is already live on the correct chart path** in both environments,
+  with automated sync (stage from `stage`, prod from `main`). Chart changes
+  therefore reach the clusters without the separate path fix.
+- **No cleanup of EKS objects beyond scaling to 0** (U7 shrinks): the whole
+  Platform Cluster is torn down once Plausible and its events have left it.
+
 ---
 
 ## Problem Frame
