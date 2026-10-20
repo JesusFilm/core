@@ -72,7 +72,9 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
 
   return {
     ...fixture,
-    titleTranslations: { [FRENCH]: { value: 'Campagne 2026', source: 'human' } },
+    titleTranslations: {
+      [FRENCH]: { value: 'Campagne 2026', source: 'human' }
+    },
     blocks: [
       ...fixture.blocks.map((block) =>
         block.id === 'heroId'
@@ -378,7 +380,8 @@ describe('campaignPublic', () => {
       backgroundKind: 'none',
       eyebrow: 'Your campaign',
       title: "Partagez l'histoire de Campagne",
-      description: 'Pick your region to find a journey in your language, ready to share.',
+      description:
+        'Pick your region to find a journey in your language, ready to share.',
       titleTranslations: []
     })
     expect(landing.blocks[5]).toEqual({

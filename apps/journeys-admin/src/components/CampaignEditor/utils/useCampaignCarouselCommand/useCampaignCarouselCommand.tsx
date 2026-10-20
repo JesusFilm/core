@@ -36,7 +36,10 @@ export interface CampaignCarouselCommand {
   /** Explicit mode (`videoId: null`), as one Command; the items stay. */
   clearWatchVideo: (carousel: CampaignVideoCarouselBlock) => void
   /** One explicit item from a YouTube link or a Mux upload, as one Command. */
-  addItem: (carousel: CampaignVideoCarouselBlock, pick: CampaignVideoPick) => void
+  addItem: (
+    carousel: CampaignVideoCarouselBlock,
+    pick: CampaignVideoPick
+  ) => void
   /** The first 12 videos of a YouTube playlist as explicit items, as one Command. */
   importPlaylist: (carousel: CampaignVideoCarouselBlock, url: string) => void
   /** The API's message, verbatim, when the last change failed. */
@@ -54,7 +57,10 @@ export interface WatchVideoText {
 export function fitCampaignText(value: string, cap: number): string {
   const points = [...value.trim()]
   if (points.length <= cap) return points.join('')
-  return `${points.slice(0, cap - 1).join('').trimEnd()}…`
+  return `${points
+    .slice(0, cap - 1)
+    .join('')
+    .trimEnd()}…`
 }
 
 type OrderRow = Pick<CampaignBlock, '__typename' | 'id'> & {

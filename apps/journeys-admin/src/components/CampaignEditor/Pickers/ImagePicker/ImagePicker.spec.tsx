@@ -4,9 +4,9 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary/MediaLibrary'
 
 import { ImagePicker, isHttpsUrl } from './ImagePicker'
-import { GET_MY_CLOUDFLARE_IMAGES } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary/MediaLibrary'
 
 vi.mock('../../../../libs/useImageUpload', () => ({
   useImageUpload: vi.fn()
@@ -212,7 +212,8 @@ describe('ImagePicker', () => {
       button.compareDocumentPosition(preview) & Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
     expect(
-      preview.compareDocumentPosition(earlier) & Node.DOCUMENT_POSITION_FOLLOWING
+      preview.compareDocumentPosition(earlier) &
+        Node.DOCUMENT_POSITION_FOLLOWING
     ).toBeTruthy()
   })
 

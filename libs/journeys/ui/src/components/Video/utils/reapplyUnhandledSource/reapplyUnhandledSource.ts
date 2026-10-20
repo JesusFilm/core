@@ -23,5 +23,5 @@ export function reapplyUnhandledSource(player: VideoJsPlayer): void {
   const el = player.tech({ IWillNotUseThisInPlugins: true })?.el()
   if (!(el instanceof HTMLMediaElement) || el.getAttribute('src') != null)
     return
-  player.src(sources as never)
+  player.src(sources)
 }

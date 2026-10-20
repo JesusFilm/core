@@ -43,7 +43,10 @@ const SECTION_HEADING: CampaignTextFieldCaps = {
 /** The translatable columns of every Campaign Block typename, with the cap each takes (PRD §1, §15). */
 export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
   {
-    CampaignHeroBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
+    CampaignHeroBlock: {
+      ...SECTION_HEADING,
+      description: TEXT_CAPS.description
+    },
     CampaignFeaturedMediaBlock: {
       ...SECTION_HEADING,
       description: TEXT_CAPS.description,
@@ -59,8 +62,14 @@ export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
       title: TEXT_CAPS.title,
       intro: TEXT_CAPS.intro
     },
-    CampaignJourneyListBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
-    CampaignVideoCarouselBlock: { ...SECTION_HEADING, description: TEXT_CAPS.description },
+    CampaignJourneyListBlock: {
+      ...SECTION_HEADING,
+      description: TEXT_CAPS.description
+    },
+    CampaignVideoCarouselBlock: {
+      ...SECTION_HEADING,
+      description: TEXT_CAPS.description
+    },
     CampaignAnalyticsBlock: SECTION_HEADING,
     CampaignTypographyBlock: { content: TEXT_CAPS.typographyContent },
     CampaignButtonBlock: { label: TEXT_CAPS.buttonLabel },

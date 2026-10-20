@@ -32,7 +32,8 @@ function heroMock(title: string, errors?: GraphQLError[]) {
                 id: 'heroId',
                 eyebrow: 'Outreach 2026',
                 title,
-                description: 'Pick your region to find a journey in your language, ready to share.'
+                description:
+                  'Pick your region to find a journey in your language, ready to share.'
               }
             }
           }

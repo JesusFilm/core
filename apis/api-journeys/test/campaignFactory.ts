@@ -179,7 +179,8 @@ export function seededBlocks(
       parentOrder: 0,
       eyebrow: 'Your campaign',
       title: 'Share the story',
-      description: 'Pick your region to find a journey in your language, ready to share.',
+      description:
+        'Pick your region to find a journey in your language, ready to share.',
       align: 'center',
       backgroundKind: 'none'
     }),
@@ -208,7 +209,8 @@ export function seededBlocks(
       parentOrder: 3,
       eyebrow: 'Journeys',
       title: 'Ready-made journeys',
-      description: 'Interactive stories your friends can walk through on their phone.',
+      description:
+        'Interactive stories your friends can walk through on their phone.',
       display: 'grid',
       backgroundKind: 'none'
     }),
@@ -240,8 +242,7 @@ export function seededBlocks(
       typename: 'CampaignRegionHeaderBlock',
       pageId: 'regionPageId',
       parentOrder: 0,
-      intro:
-        'A journey chosen and contextualised by your regional team.',
+      intro: 'A journey chosen and contextualised by your regional team.',
       backgroundKind: 'none'
     }),
     block(campaignId, {

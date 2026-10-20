@@ -209,7 +209,9 @@ describe('CampaignFeaturedMedia', () => {
 
     it('omits the description when it is empty', () => {
       renderFeatured(featuredTree({ ...stacked, description: null }))
-      expect(screen.queryByTestId('CampaignDescription')).not.toBeInTheDocument()
+      expect(
+        screen.queryByTestId('CampaignDescription')
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignMediaSlot')).toBeInTheDocument()
     })
   })

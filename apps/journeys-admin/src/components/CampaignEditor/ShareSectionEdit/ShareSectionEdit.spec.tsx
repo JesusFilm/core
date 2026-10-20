@@ -808,9 +808,7 @@ describe('ShareSectionEdit', () => {
     renderShare(withEnglish({ ...eurEnglish, qrCodeId: null, qrCode: null }))
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
-    expect(
-      within(english).queryByTestId('ShareLanguageShortLink')
-    ).toBeNull()
+    expect(within(english).queryByTestId('ShareLanguageShortLink')).toBeNull()
     fireEvent.click(
       within(english).getByRole('button', { name: 'Create QR code' })
     )

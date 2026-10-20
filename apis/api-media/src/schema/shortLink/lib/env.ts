@@ -33,7 +33,9 @@ export function readShortLinksEnv() {
       /** Local dev only: a `wrangler dev` Worker standing in for api.cloudflare.com. */
       CLOUDFLARE_SHORT_LINKS_API_BASE_URL: z.url().optional(),
       /** Local dev only: let a link point at localhost or a private host, where the journeys app runs; never set in a deployed environment. */
-      SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS: z.enum(['true', 'false']).optional(),
+      SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS: z
+        .enum(['true', 'false'])
+        .optional(),
       // scan statistics (ClickHouse, read side)
       SHORT_LINKS_CLICKHOUSE_URL: z.url().optional(),
       SHORT_LINKS_CLICKHOUSE_DATABASE: z

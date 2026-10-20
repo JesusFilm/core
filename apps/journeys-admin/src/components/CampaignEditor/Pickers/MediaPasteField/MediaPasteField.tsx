@@ -87,7 +87,9 @@ export interface ResolvedVideo {
 }
 
 /** A Watch series or collection: in a carousel it expands into its children rather than becoming one card. */
-export function isWatchContainer(label: VideoLabel | null | undefined): boolean {
+export function isWatchContainer(
+  label: VideoLabel | null | undefined
+): boolean {
   return label === VideoLabel.series || label === VideoLabel.collection
 }
 
@@ -108,7 +110,9 @@ function useResolution(
   t: Translate
 ): Resolution {
   const watch = useCampaignWatchVideoQuery(
-    candidate?.source === VideoBlockSource.internal ? candidate.slugs : undefined
+    candidate?.source === VideoBlockSource.internal
+      ? candidate.slugs
+      : undefined
   )
   const youTube = useSWR(
     candidate?.source === VideoBlockSource.youTube ? candidate.videoId : null,

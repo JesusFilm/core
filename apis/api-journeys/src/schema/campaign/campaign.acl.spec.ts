@@ -37,17 +37,14 @@ describe('campaignAcl', () => {
     )
   })
 
-  it.each([Action.Delete])(
-    '%s passes for a manager only',
-    (action) => {
-      expect(campaignAcl(action, campaignFor(UserTeamRole.manager), user)).toBe(
-        true
-      )
-      expect(campaignAcl(action, campaignFor(UserTeamRole.member), user)).toBe(
-        false
-      )
-    }
-  )
+  it.each([Action.Delete])('%s passes for a manager only', (action) => {
+    expect(campaignAcl(action, campaignFor(UserTeamRole.manager), user)).toBe(
+      true
+    )
+    expect(campaignAcl(action, campaignFor(UserTeamRole.member), user)).toBe(
+      false
+    )
+  })
 
   it.each(everyAction)('denies %s to a user outside the team', (action) => {
     expect(

@@ -129,7 +129,10 @@ describe('campaignTranslationSet', () => {
       data: {
         titleTranslations: {
           '21028': { value: 'Comparte la historia', source: 'machine' },
-          [FRENCH]: { value: "Partagez l'histoire de Campagne", source: 'human' }
+          [FRENCH]: {
+            value: "Partagez l'histoire de Campagne",
+            source: 'human'
+          }
         }
       }
     })
@@ -218,7 +221,9 @@ describe('campaignTranslationSet', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
       data: {
-        titleTranslations: { [FRENCH]: { value: 'Campagne 2026', source: 'human' } }
+        titleTranslations: {
+          [FRENCH]: { value: 'Campagne 2026', source: 'human' }
+        }
       }
     })
   })

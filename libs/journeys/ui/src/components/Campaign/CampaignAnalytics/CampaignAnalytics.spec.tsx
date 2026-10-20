@@ -232,7 +232,6 @@ describe('CampaignAnalytics', () => {
       await renderAnalytics()
       expect(await screen.findByText('all time')).toBeInTheDocument()
     })
-
   })
 
   describe('tiles', () => {

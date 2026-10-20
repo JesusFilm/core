@@ -11,9 +11,9 @@ import { ChangeEvent, ReactElement, useState } from 'react'
 
 import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
-import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
 import { useCloudflareUploadByUrlMutation } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
+import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
 import { messageOf } from '../../utils/useCampaignStyleCommand'
 
 /** The editor's pure URL rule for a pasted image: an absolute https address. The server checks the rest. */

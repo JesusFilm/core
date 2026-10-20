@@ -377,7 +377,8 @@ describe('campaignCreate', () => {
         parentOrder: 0,
         eyebrow: 'Your campaign',
         title: 'Share the story',
-        description: 'Pick your region to find a journey in your language, ready to share.',
+        description:
+          'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         backgroundKind: 'none'
       })
@@ -441,7 +442,8 @@ describe('campaignCreate', () => {
         parentOrder: 3,
         eyebrow: 'Journeys',
         title: 'Ready-made journeys',
-        description: 'Interactive stories your friends can walk through on their phone.',
+        description:
+          'Interactive stories your friends can walk through on their phone.',
         display: 'grid',
         backgroundKind: 'none'
       })
@@ -475,8 +477,7 @@ describe('campaignCreate', () => {
         pageId: regionPageId(),
         parentBlockId: null,
         parentOrder: 0,
-        intro:
-          'A journey chosen and contextualised by your regional team.'
+        intro: 'A journey chosen and contextualised by your regional team.'
       })
     })
 
@@ -901,7 +902,8 @@ describe('campaignCreate', () => {
         backgroundKind: 'none',
         eyebrow: 'Your campaign',
         title: 'Share the story',
-        description: 'Pick your region to find a journey in your language, ready to share.',
+        description:
+          'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         mediaBlockId: null
       })
@@ -988,7 +990,8 @@ describe('campaignCreate', () => {
 
       // The header's logoBlockId is set by an update once the logo row exists.
       const updates = prismaMock.campaignBlock.update.mock.calls.map(
-        ([args]) => args as { where: { id: string }; data: Record<string, unknown> }
+        ([args]) =>
+          args as { where: { id: string }; data: Record<string, unknown> }
       )
       const createdRows = createdBlocks().map((block) => ({
         ...block,
@@ -999,7 +1002,9 @@ describe('campaignCreate', () => {
             .map((update) => update.data)
         )
       }))
-      expect(createdRows.map((block) => normalize(block, mutationLabels))).toEqual(
+      expect(
+        createdRows.map((block) => normalize(block, mutationLabels))
+      ).toEqual(
         fixture.blocks.map(({ action: _action, ...block }) =>
           normalize(block, factoryLabels)
         )

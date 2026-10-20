@@ -39,7 +39,5 @@ export function CampaignMediaSlot({
     return <CampaignVideo block={media} />
   const image = campaignImageSource(media)
   if (image == null) return null
-  return (
-    <CampaignPicture image={image} ratio={stacked ? 'wide' : 'standard'} />
-  )
+  return <CampaignPicture image={image} ratio={stacked ? 'wide' : 'standard'} />
 }

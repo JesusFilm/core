@@ -35,9 +35,7 @@ import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import {
-  GetCampaign_campaign_blocks as CampaignBlock,
-} from '../../../../../__generated__/GetCampaign'
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
   CampaignChildPlacement,

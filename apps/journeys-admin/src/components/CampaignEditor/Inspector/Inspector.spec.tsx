@@ -1083,9 +1083,7 @@ describe('Inspector', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'Edit page' }))
 
-      expect(screen.getByTestId('PageKind')).toHaveTextContent(
-        'regionTemplate'
-      )
+      expect(screen.getByTestId('PageKind')).toHaveTextContent('regionTemplate')
     })
   })
 

@@ -90,7 +90,9 @@ describe('JourneyPicker', () => {
   it('lists two journeys with the same title as separate options, keyed by id', async () => {
     const twin = { ...hope, id: 'twinId', title: 'Untitled journey' }
     const other = { ...outreach, id: 'otherId', title: 'Untitled journey' }
-    const errors = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const errors = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
     const onLink = vi.fn<(url: string) => Promise<void>>(async () => undefined)
     renderPicker(onLink, {
       request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
@@ -103,7 +105,9 @@ describe('JourneyPicker', () => {
     expect(
       await screen.findByTestId('JourneyPickerOption-twinId')
     ).toBeInTheDocument()
-    expect(screen.getByTestId('JourneyPickerOption-otherId')).toBeInTheDocument()
+    expect(
+      screen.getByTestId('JourneyPickerOption-otherId')
+    ).toBeInTheDocument()
     expect(errors).not.toHaveBeenCalledWith(
       expect.stringContaining('two children with the same key'),
       expect.anything(),
@@ -142,18 +146,14 @@ describe('JourneyPicker', () => {
     await userEvent.type(field, 'hope')
 
     expect(screen.queryByTestId('JourneyPickerOption-outreachId')).toBeNull()
-    expect(
-      screen.getByTestId('JourneyPickerOption-hopeId')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('JourneyPickerOption-hopeId')).toBeInTheDocument()
   })
 
   it('links the picked journey by the admin link built from its id, then clears the search', async () => {
     const { onLink } = renderPicker()
     const field = screen.getByRole('combobox', { name: 'Search your journeys' })
     await userEvent.click(field)
-    fireEvent.click(
-      await screen.findByTestId('JourneyPickerOption-outreachId')
-    )
+    fireEvent.click(await screen.findByTestId('JourneyPickerOption-outreachId'))
 
     await waitFor(() =>
       expect(onLink).toHaveBeenCalledWith(
@@ -172,9 +172,7 @@ describe('JourneyPicker', () => {
     await userEvent.click(
       screen.getByRole('combobox', { name: 'Search your journeys' })
     )
-    fireEvent.click(
-      await screen.findByTestId('JourneyPickerOption-outreachId')
-    )
+    fireEvent.click(await screen.findByTestId('JourneyPickerOption-outreachId'))
 
     expect(
       await screen.findByText('Journey not found or not published')

@@ -389,7 +389,11 @@ describe('CarouselEdit', () => {
   })
 
   it('writes the expanded series’ label, title and description over the carousel’s text', async () => {
-    renderEdit({ ...carousel, title: 'Films for the season', description: 'Old' })
+    renderEdit({
+      ...carousel,
+      title: 'Films for the season',
+      description: 'Old'
+    })
 
     paste(WATCH_SERIES_URL)
     const resolved = await screen.findByTestId(

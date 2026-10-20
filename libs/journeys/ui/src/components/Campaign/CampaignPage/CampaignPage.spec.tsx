@@ -227,7 +227,11 @@ describe('CampaignPage', () => {
     it('Hero renders with any text, media or extra', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, description: 'Only a description' })
+          pick('heroId', {
+            eyebrow: null,
+            title: null,
+            description: 'Only a description'
+          })
         ])
       )
       expect(bandIds()).toEqual(['heroId'])

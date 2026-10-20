@@ -11,7 +11,10 @@ import {
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CAMPAIGN_SECTION_STRING_KEYS } from '../Canvas/CanvasSection'
-import { CAMPAIGN_STRING_CAP, textLength } from '../Canvas/InlineText/InlineText'
+import {
+  CAMPAIGN_STRING_CAP,
+  textLength
+} from '../Canvas/InlineText/InlineText'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 
 type Translate = (key: string) => string

@@ -3,8 +3,8 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import {
-  MouseEvent as ReactMouseEvent,
   ReactElement,
+  MouseEvent as ReactMouseEvent,
   useEffect,
   useRef,
   useState
@@ -35,7 +35,8 @@ export function focalPointOf(
   event: { clientX: number; clientY: number },
   rect: Pick<DOMRect, 'left' | 'top' | 'width' | 'height'>
 ): FocalPoint {
-  if (rect.width === 0 || rect.height === 0) return { focalLeft: 50, focalTop: 50 }
+  if (rect.width === 0 || rect.height === 0)
+    return { focalLeft: 50, focalTop: 50 }
   return {
     focalLeft: clamp(((event.clientX - rect.left) / rect.width) * 100),
     focalTop: clamp(((event.clientY - rect.top) / rect.height) * 100)

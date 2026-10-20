@@ -18,7 +18,8 @@ export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
     typename: 'CampaignHeroBlock',
     eyebrow: 'Your campaign',
     title: 'Share the story',
-    description: 'Pick your region to find a journey in your language, ready to share.',
+    description:
+      'Pick your region to find a journey in your language, ready to share.',
     align: 'center',
     backgroundKind: 'none'
   },
@@ -38,7 +39,8 @@ export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
     typename: 'CampaignJourneyListBlock',
     eyebrow: 'Journeys',
     title: 'Ready-made journeys',
-    description: 'Interactive stories your friends can walk through on their phone.',
+    description:
+      'Interactive stories your friends can walk through on their phone.',
     display: 'grid',
     backgroundKind: 'none'
   },
@@ -61,8 +63,7 @@ export const LANDING_HERO_BUTTON_SEED: SectionSeed = {
 export const REGION_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignRegionHeaderBlock',
-    intro:
-      'A journey chosen and contextualised by your regional team.',
+    intro: 'A journey chosen and contextualised by your regional team.',
     backgroundKind: 'none'
   },
   {

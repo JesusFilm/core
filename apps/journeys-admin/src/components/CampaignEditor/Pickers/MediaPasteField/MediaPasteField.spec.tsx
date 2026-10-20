@@ -13,10 +13,10 @@ import { mswServer } from '../../../../../test/mswServer'
 import { GET_CAMPAIGN_WATCH_VIDEO } from '../../../../libs/useCampaignWatchVideoQuery'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
+import { GET_MY_MUX_VIDEOS } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos'
 import { getVideosWithOffsetAndUrl } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromYouTube/VideoFromYouTube.handlers'
 
 import { MediaPasteField } from './MediaPasteField'
-import { GET_MY_MUX_VIDEOS } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos'
 
 vi.mock('../../../../libs/useImageUpload', () => ({
   useImageUpload: vi.fn()
@@ -204,7 +204,8 @@ describe('MediaPasteField', () => {
   })
 
   it('falls back to the container/child reading of a two-part Watch address', async () => {
-    const url = 'https://www.jesusfilm.org/watch/hope.html/the-resurrection.html'
+    const url =
+      'https://www.jesusfilm.org/watch/hope.html/the-resurrection.html'
     const firstReadingMock = {
       request: {
         query: GET_CAMPAIGN_WATCH_VIDEO,

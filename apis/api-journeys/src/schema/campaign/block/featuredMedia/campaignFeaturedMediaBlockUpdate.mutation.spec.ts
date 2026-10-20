@@ -94,7 +94,11 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'featuredId' },
-      data: { title: 'Watch the film', bullets: 'One\nTwo\n\nThree', description: '' },
+      data: {
+        title: 'Watch the film',
+        bullets: 'One\nTwo\n\nThree',
+        description: ''
+      },
       include: { action: true }
     })
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({

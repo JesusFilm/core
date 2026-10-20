@@ -60,9 +60,7 @@ export function CreateCampaignDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const [language, setLanguage] = useState<LanguageOption | undefined>(
-    ENGLISH
-  )
+  const [language, setLanguage] = useState<LanguageOption | undefined>(ENGLISH)
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529'
   })

@@ -5,7 +5,10 @@ import { CAMPAIGN_STRING_UPDATE } from '../../../libs/useCampaignStringUpdateMut
 import { campaign } from '../data'
 import { StaticEditor } from '../testing'
 
-import { SectionWordingSettings, stringKeyLabel } from './SectionWordingSettings'
+import {
+  SectionWordingSettings,
+  stringKeyLabel
+} from './SectionWordingSettings'
 
 const journeyList = campaign.blocks.find(
   (block) => block.id === 'landingJourneyListId'
@@ -52,10 +55,7 @@ describe('SectionWordingSettings', () => {
   it('saves an edit through campaignStringUpdate', async () => {
     const mock = stringMock('Coming soon')
     render(
-      <StaticEditor
-        mocks={[mock]}
-        initialState={{ previewLanguageId: '529' }}
-      >
+      <StaticEditor mocks={[mock]} initialState={{ previewLanguageId: '529' }}>
         <SectionWordingSettings block={journeyList} />
       </StaticEditor>
     )

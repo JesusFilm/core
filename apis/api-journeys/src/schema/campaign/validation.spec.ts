@@ -274,7 +274,10 @@ describe('campaign validation', () => {
       ['source', Object.values(VideoBlockSource)],
       ['backgroundOverlay', Object.values(CampaignBackgroundOverlay)],
       ['key', Object.values(CampaignStringKey)],
-      ['field', ['eyebrow', 'title', 'description', 'bullets', 'content', 'intro']]
+      [
+        'field',
+        ['eyebrow', 'title', 'description', 'bullets', 'content', 'intro']
+      ]
     ])(
       "%s takes its enum's values only, else BAD_USER_INPUT with the column as field",
       (column, values) => {

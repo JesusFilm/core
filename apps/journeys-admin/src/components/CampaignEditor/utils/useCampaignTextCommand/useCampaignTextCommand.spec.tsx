@@ -110,7 +110,8 @@ function heroMock(title: string): Mock {
           id: 'heroId',
           eyebrow: 'Outreach 2026',
           title,
-          description: 'Pick your region to find a journey in your language, ready to share.'
+          description:
+            'Pick your region to find a journey in your language, ready to share.'
         }
       }
     }))
@@ -618,12 +619,14 @@ describe('useCampaignTextCommand translation round-trip of every translatable bl
       field: 'richTextContent',
       apiField: 'content'
     },
-    ...(['eyebrow', 'title', 'description', 'bullets'] as const).map((field) => ({
-      blockId: 'featuredMediaId',
-      typename: 'CampaignFeaturedMediaBlock',
-      field,
-      apiField: field
-    })),
+    ...(['eyebrow', 'title', 'description', 'bullets'] as const).map(
+      (field) => ({
+        blockId: 'featuredMediaId',
+        typename: 'CampaignFeaturedMediaBlock',
+        field,
+        apiField: field
+      })
+    ),
     ...(['title', 'description'] as const).map((field) => ({
       blockId: 'journeyCardId',
       typename: 'CampaignJourneyBlock',

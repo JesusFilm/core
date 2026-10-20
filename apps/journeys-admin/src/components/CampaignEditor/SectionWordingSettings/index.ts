@@ -1,1 +1,4 @@
-export { SectionWordingSettings, stringKeyLabel } from './SectionWordingSettings'
+export {
+  SectionWordingSettings,
+  stringKeyLabel
+} from './SectionWordingSettings'

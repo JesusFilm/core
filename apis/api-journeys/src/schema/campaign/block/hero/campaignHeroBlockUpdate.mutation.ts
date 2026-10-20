@@ -62,7 +62,11 @@ builder.mutationField('campaignHeroBlockUpdate', (t) =>
         context.user,
         'CampaignHeroBlock'
       )
-      const text = validateSectionText(input, ['eyebrow', 'title', 'description'])
+      const text = validateSectionText(input, [
+        'eyebrow',
+        'title',
+        'description'
+      ])
       const align =
         input.align !== undefined
           ? { align: assertEnumOrNull(input.align, 'align', CAMPAIGN_ALIGNS) }

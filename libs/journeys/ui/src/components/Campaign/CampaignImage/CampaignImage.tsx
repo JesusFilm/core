@@ -2,8 +2,11 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { CampaignSectionBand } from '../CampaignSectionBand'
-import { campaignImageSource } from '../libs/campaignImageSource'
-import { CampaignImageSource, focalImageSx } from '../libs/campaignImageSource'
+import {
+  CampaignImageSource,
+  campaignImageSource,
+  focalImageSx
+} from '../libs/campaignImageSource'
 import type { CampaignTreeOf } from '../types'
 
 /** The frames a campaign picture is cropped to: a wide banner for an Image section or a stacked slot, 4:3 beside text. */

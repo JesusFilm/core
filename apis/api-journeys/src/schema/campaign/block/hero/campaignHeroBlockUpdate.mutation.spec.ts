@@ -60,7 +60,10 @@ describe('campaignHeroBlockUpdate', () => {
   }
 
   it('writes the given trimmed text fields and leaves the rest alone', async () => {
-    const result = await update({ title: ' Outreach, shared ', description: '' })
+    const result = await update({
+      title: ' Outreach, shared ',
+      description: ''
+    })
 
     expect(result.data.campaignHeroBlockUpdate).toMatchObject({
       eyebrow: 'Your campaign',
@@ -104,8 +107,7 @@ describe('campaignHeroBlockUpdate', () => {
       (await update({ minHeight: 60 })).data.campaignHeroBlockUpdate.minHeight
     ).toBe(60)
     expect(
-      (await update({ minHeight: null })).data.campaignHeroBlockUpdate
-        .minHeight
+      (await update({ minHeight: null })).data.campaignHeroBlockUpdate.minHeight
     ).toBeNull()
   })
 
