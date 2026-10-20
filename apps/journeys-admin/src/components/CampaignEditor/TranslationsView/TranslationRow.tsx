@@ -119,8 +119,11 @@ export function useRowLabel(): (row: TranslationRow) => string {
  * Leaving the field writes a human translation through
  * `campaignTranslationSet` (an emptied field clears it), shown at once, and
  * updates this list and the editor's own copy of the text so the row flips to
- * Edited without a refetch. Its target button selects the text's place on
- * the canvas, and the line is marked while that place is selected.
+ * Edited without a refetch. Laid out as a small "where it is from" line with
+ * the target button always at the right edge, the default-language text
+ * large, the status on its own line, then the field. The target button
+ * selects the text's place on the canvas, and the line is marked while that
+ * place is selected.
  */
 export function TranslationRowItem({
   row,
@@ -227,8 +230,16 @@ export function TranslationRowItem({
         bgcolor: selected ? 'action.selected' : undefined
       }}
     >
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+      >
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ minWidth: 0 }}
+        >
           {rowLabel(row)}
         </Typography>
         {onReveal != null && (
@@ -236,26 +247,24 @@ export function TranslationRowItem({
             size="small"
             aria-label={t('Show on the canvas')}
             onClick={onReveal}
+            sx={{ ml: 'auto', flexShrink: 0 }}
           >
             <LinkExternalIcon fontSize="small" />
           </IconButton>
         )}
-        <Chip
-          size="small"
-          label={statusLabel}
-          color={
-            row.source === CampaignTextSource.machine ? 'warning' : 'default'
-          }
-          variant={row.source == null ? 'outlined' : 'filled'}
-        />
       </Stack>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ whiteSpace: 'pre-wrap' }}
-      >
+      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
         {row.defaultValue}
       </Typography>
+      <Chip
+        size="small"
+        label={statusLabel}
+        color={
+          row.source === CampaignTextSource.machine ? 'warning' : 'default'
+        }
+        variant={row.source == null ? 'outlined' : 'filled'}
+        sx={{ alignSelf: 'flex-start' }}
+      />
       <TextField
         size="small"
         fullWidth
