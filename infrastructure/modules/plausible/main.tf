@@ -4,9 +4,10 @@
 # environment and the rollback are in README.md. Plan:
 # docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md.
 #
-# Its two databases are elsewhere: PostgreSQL in the Core Database (Aurora,
-# DATABASE_URL) and the event store in the Core ClickHouse (ClickHouse Cloud,
-# CLICKHOUSE_DATABASE_URL), both read from Doppler.
+# Its two databases are elsewhere, both read from Doppler: PostgreSQL in the
+# Core Database (Aurora, DATABASE_URL) and the event store (CLICKHOUSE_DATABASE_URL).
+# The event store stays in the EKS ClickHouse, reached through a temporary
+# internal NLB (eks-clickhouse.tf), until it moves to ClickHouse Cloud.
 
 module "ecs-task" {
   source                = "../aws/ecs-task"
@@ -25,8 +26,8 @@ module "ecs-task" {
   image = "ghcr.io/plausible/community-edition:${var.plausible_version}"
 
   # What the Helm chart's init container did: create the ClickHouse database
-  # if missing, run both repos' migrations, then serve. Against ClickHouse
-  # Cloud the first two are no-ops once the tenant has been prepared.
+  # if missing, run both repos' migrations, then serve. Against the existing
+  # EKS database, and later the prepared Cloud tenant, the first two are no-ops.
   command = ["sh", "-c", "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"]
 
   cpu_architecture = "ARM64"

@@ -180,8 +180,9 @@ module "short_links_clickhouse" {
 # Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
 # EKS Platform Cluster. Serves plausible.central.jesusfilm.org (the module's
 # own record) for smoke tests; analytics.jesusfilm.org moves here in the
-# cutover step (modules/plausible/README.md). Apply only once prod's Plausible
-# already uses ClickHouse Cloud.
+# cutover step (modules/plausible/README.md). Apply only once its Doppler
+# token for the prd_ecs branch config is in SSM; the task then needs the EKS
+# ClickHouse NLB (README.md, "Prerequisites").
 module "plausible" {
   source = "../../modules/plausible"
   ecs_config = merge(local.public_ecs_config, {

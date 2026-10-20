@@ -3,9 +3,18 @@
 [Plausible Community Edition](https://github.com/plausible/community-edition)
 as an ECS Fargate Service on ARM64, from the published image, behind the
 public ALB. Plan: `docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md`.
-Its PostgreSQL is in the Core Database; its ClickHouse is the shared
-ClickHouse Cloud service (moved there by plan `2026-10-14-001`, runbook in
-`infrastructure/kube/plausible-analytics/README.md` until that chart is gone).
+Its PostgreSQL is in the Core Database.
+
+The move off the EKS Platform Cluster happens in two steps per environment,
+stage first:
+
+1. **The app moves to ECS; the events stay put.** The task reads and writes
+   the existing ClickHouse StatefulSet on EKS through a temporary internal NLB
+   (`eks-clickhouse.tf`, `infrastructure/kube/plausible-analytics/clickhouse-ecs-bridge.yaml`).
+   Traffic moves by DNS; rollback is DNS.
+2. **The events move to ClickHouse Cloud.** Stop the task, copy, point
+   `CLICKHOUSE_DATABASE_URL` at Cloud, start it. Rollback is the URL. Then the
+   bridge goes, and EKS has nothing left to run.
 
 |                                             | stage                                                                         | prod                                                   |
 | ------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -13,13 +22,17 @@ ClickHouse Cloud service (moved there by plan `2026-10-14-001`, runbook in
 | Smoke-test hostname (module-created record) | `plausible.stage.central.jesusfilm.org`                                       | `plausible.central.jesusfilm.org`                      |
 | Certificate                                 | the `*.stage.central.jesusfilm.org` wildcard                                  | ACM `analytics.jesusfilm.org`, validated in Cloudflare |
 | DNS for the hostname                        | Route53 zone `stage.central.jesusfilm.org` (external-dns owned until cutover) | Cloudflare DNS, DNS-only CNAME, by hand                |
-| Doppler                                     | `plausible` / `stg`                                                           | `plausible` / `prd`                                    |
+| Doppler                                     | `plausible` / `stg_ecs` (branch of `stg`)                                     | `plausible` / `prd_ecs` (branch of `prd`)              |
+| Argo CD (EKS Deployment)                    | auto-sync from the `stage` branch                                             | auto-sync from `main`                                  |
 
-Configuration is the six keys of the `plausible` Doppler project (`BASE_URL`,
+Configuration is six keys of the `plausible` Doppler project (`BASE_URL`,
 `CLICKHOUSE_DATABASE_URL`, `DATABASE_URL`, `DISABLE_REGISTRATION`,
 `SECRET_KEY_BASE`, `TOTP_VAULT_KEY`); `ecs-task` copies them to SSM and injects
-them. Changing one in Doppler needs a Terraform apply (it rewrites the SSM
-parameter) and a new deployment of the service to be picked up.
+them. The ECS task reads a branch config that inherits everything from the
+root config and overrides only `CLICKHOUSE_DATABASE_URL`, so the EKS
+Deployment, which reads the root config, is untouched. Changing a value in
+Doppler needs a Terraform apply (it rewrites the SSM parameter) and a new
+deployment of the service to be picked up.
 
 Plausible CE is single-node, so the Service runs one task and deploys with
 `0% / 100%`: the old task stops, then the new one starts and runs migrations.
@@ -27,25 +40,52 @@ Expect a short gap on every deploy.
 
 ## Prerequisites (once per environment)
 
-1. **Doppler token in SSM**, like every other Service. Create a read-only
-   service token on the `plausible` project for the config, then:
+Each step needs the one before it.
+
+1. **Doppler branch config and token.** In the `plausible` project create a
+   branch config of `stg` named `stg_ecs` (prod: `prd_ecs` of `prd`). Leave
+   it inheriting everything for now. Create a read-only service token for the
+   branch config and store it:
 
    ```bash
    aws ssm put-parameter --type SecureString --overwrite \
      --name /terraform/prd/DOPPLER_PLAUSIBLE_STAGE_TOKEN --value 'dp.st....'
-   aws ssm put-parameter --type SecureString --overwrite \
-     --name /terraform/prd/DOPPLER_PLAUSIBLE_PROD_TOKEN --value 'dp.st....'
    ```
 
-   Without it the environment's plan fails on the `data.aws_ssm_parameter`.
+   (prod: `DOPPLER_PLAUSIBLE_PROD_TOKEN`). Without it the environment's plan
+   fails on the `data.aws_ssm_parameter`.
 
-2. **ClickHouse on Cloud first.** An ECS task cannot reach the in-cluster
-   ClickHouse Service. Apply this module for an environment only after that
-   environment's `CLICKHOUSE_DATABASE_URL` points at ClickHouse Cloud, or the
-   task crash-loops until it does.
+2. **The NLB's security group**, on its own so the manifest can name it:
 
-3. **Prod certificate.** The Terraform apply requests an ACM certificate for
-   `analytics.jesusfilm.org`. Read its validation record and add it in
+   ```bash
+   tofu apply \
+     -target=module.stage.module.plausible.aws_security_group.eks_clickhouse_nlb \
+     -target=module.stage.module.plausible.aws_vpc_security_group_ingress_rule.eks_clickhouse_from_ecs \
+     -target=module.stage.module.plausible.aws_vpc_security_group_egress_rule.eks_clickhouse_to_pods
+   ```
+
+3. **The internal NLB**, applied by hand (Argo CD does not track it and leaves
+   it alone):
+
+   ```bash
+   sg=$(aws ec2 describe-security-groups \
+     --filters Name=group-name,Values=jfp-plausible-eks-clickhouse-stage \
+     --query 'SecurityGroups[0].GroupId' --output text)
+   sed "s/NLB_SECURITY_GROUP_ID/$sg/" \
+     infrastructure/kube/plausible-analytics/clickhouse-ecs-bridge.yaml |
+     kubectl --context stage apply -f -
+   kubectl --context stage get svc plausible-clickhouse-ecs -w   # until EXTERNAL-IP shows the NLB name
+   ```
+
+   The target turns healthy a minute or two after the NLB is active.
+
+4. **Point the branch config at the NLB.** In `stg_ecs`, override
+   `CLICKHOUSE_DATABASE_URL` with the root config's value, changing only the
+   host to the NLB name from step 3 (keep the scheme, port 8123, credentials
+   and database).
+
+5. **Prod only: certificate.** The Terraform apply requests an ACM certificate
+   for `analytics.jesusfilm.org`. Read its validation record and add it in
    Cloudflare (DNS-only):
 
    ```bash
@@ -58,6 +98,8 @@ Expect a short gap on every deploy.
    `ISSUED` a few minutes after the CNAME exists. The attach-to-listener step
    is in the prod cutover below.
 
+Then apply the rest: `tofu apply -target=module.stage.module.plausible`.
+
 ## After the first apply: smoke test
 
 On the module's own hostname, which the wildcard certificate covers and which
@@ -65,7 +107,7 @@ nothing else uses:
 
 ```bash
 curl -s https://plausible.stage.central.jesusfilm.org/api/health
-# a test pageview for a stage site; then look for it in ClickHouse Cloud events_v2
+# a test pageview for a stage site; it lands in the EKS ClickHouse's events_v2
 curl -s -X POST https://plausible.stage.central.jesusfilm.org/api/event \
   -H 'Content-Type: application/json' -H 'User-Agent: smoke' \
   -d '{"name":"pageview","url":"https://example.test/smoke","domain":"<a stage site domain>"}'
@@ -76,34 +118,38 @@ The task log (Datadog, `service:plausible`) should show `createdb` and
 hostname may be refused by Phoenix's origin check because `BASE_URL` names the
 real hostname; check the dashboard after the DNS cutover instead.
 
+Both Plausibles now share the same PostgreSQL and ClickHouse, which is fine
+for the cutover: they write the same tables, and the background jobs are
+coordinated through PostgreSQL.
+
 ## Stage cutover
 
 `analytics.stage.central.jesusfilm.org` is a CNAME to the EKS ingress,
 created and owned by external-dns (TXT registry, `upsert-only`). external-dns
-rewrites any record it still desires, so the ingress has to go first.
+rewrites any record it still desires, so the Ingress has to go first. Argo CD
+self-heals the stage app, so remove it through the chart, not with kubectl.
 
 1. In `infrastructure/kube/plausible-analytics/values-stage.yaml` set
-   `ingress.enabled: false`; merge; let Argo sync (stage tracks the `stage`
-   branch). Watch external-dns for one reconcile: it must log nothing about
-   the record (under `upsert-only` it does not delete it).
+   `ingress.enabled: false` and get it onto the `stage` branch, which Argo
+   syncs. Watch external-dns for one reconcile: it must log nothing about the
+   record (under `upsert-only` it does not delete it).
 2. Terraform: the `aws_route53_record` for `analytics` in the stage zone,
-   CNAME to the stage public ALB, `allow_overwrite = true` (plan U5). Apply.
+   CNAME to the stage public ALB, `allow_overwrite = true`. Apply.
 3. Delete the orphaned registry records `external-dns-analytics.stage.central.jesusfilm.org`
    (TXT, and the `cname-` prefixed one if present) from the zone.
 4. Verify: dashboard login, a stats query through the stage gateway, realtime
    ingest from a stage journey.
-5. Leave the EKS Deployment running but idle for the soak; it is the rollback.
+5. Scale the EKS Deployment to 0 after the soak. Its ClickHouse keeps running;
+   the ECS task needs it.
 
 **Rollback:** set the record back to the ingress NLB name
-(`k8s-ingressn-ingressn-...elb.us-east-2.amazonaws.com`, the current value, note
-it before step 2), either by reverting the Terraform record or in the console.
-Rehearse once.
+(`k8s-ingressn-ingressn-...elb.us-east-2.amazonaws.com`, the current value;
+note it before step 2) and revert step 1. Rehearse once.
 
 ## Prod cutover
 
-1. Confirm the certificate is `ISSUED` (prerequisite 3). Terraform: the
-   `aws_lb_listener_certificate` attaching it to the public listener (plan U6).
-   Apply.
+1. Confirm the certificate is `ISSUED` (prerequisite 5). Terraform: the
+   `aws_lb_listener_certificate` attaching it to the public listener. Apply.
 2. Pre-check without touching DNS:
 
    ```bash
@@ -119,9 +165,9 @@ Rehearse once.
    from the ingress NLB name to `$alb`. Keep it DNS-only and TTL 300. Note the
    old value.
 4. After TTL: dashboard, `api-journeys` stats, realtime ingest.
-5. In `infrastructure/kube/plausible-analytics/values.yaml` set
-   `ingress.enabled: false`; merge; `argocd app sync plausible-analytics` on
-   prod. Leave the Deployment for the rollback window.
+5. Scale the EKS Deployment to 0 after the rollback window. Prod's Argo app
+   self-heals from `main`, so do it with `replicaCount: 0` in `values.yaml`,
+   not kubectl.
 
 **Rollback:** the CNAME back to the NLB name. Nothing else changes.
 
@@ -129,19 +175,35 @@ Rehearse once.
 
 - ECS: one task, `ARM64`, no restarts; the ALB target healthy on `/api/health`.
 - Datadog logs for the task: ClickHouse or Postgres errors, slow queries.
-- Task memory against the 2 GiB; adjust `locals.tf` if it sits above 70%.
+- Task memory against 4 GiB. Stage's EKS pod leaked memory until killed
+  (5.8 GB before it had a limit); find out whether the task does the same
+  before prod moves.
 - `api-journeys` stats queries and the journeys dashboard.
 - Plausible's own jobs (email reports, salt rotation) in the log.
 
-## Removing Plausible from EKS
+## Moving the events to ClickHouse Cloud
 
-After the prod rollback window (plan U7): delete the two Argo CD
-`plausible-analytics` Applications (prune removes the Deployment, Service,
-Ingress and TLS secret), the `infrastructure/kube/plausible-analytics` chart
-(move the ClickHouse runbook here first), the `plausible` DopplerSecret in
-`infrastructure/kube/doppler/`, and the api-analytics deploy copies. With
-Plausible gone the Platform Cluster runs only its own support tooling; its
-teardown is a separate plan.
+After the environment's cutover. The tenant setup on Cloud (database, users,
+settings profile) and the copy are in plan `2026-10-14-001` and its runbook in
+`infrastructure/kube/plausible-analytics/README.md`. Prod's event store is
+about 1.3 GiB compressed, so the copy is one pass with Plausible stopped:
+
+1. Prepare the tenant on Cloud.
+2. Stop Plausible: set the service's desired count to 0
+   (`aws ecs update-service --desired-count 0`), and confirm the EKS Deployment
+   is already at 0.
+3. Copy every table from the EKS ClickHouse to Cloud; compare counts.
+4. In the branch config, set `CLICKHOUSE_DATABASE_URL` to the Cloud URL; apply
+   Terraform; set the desired count back to 1.
+5. Verify as in the cutover.
+
+**Rollback:** the branch config URL back to the NLB, apply, restart. Events
+written to Cloud in between are lost.
+
+Once it has run on Cloud for the rollback window: delete
+`plausible-clickhouse-ecs` from the cluster, remove `eks-clickhouse.tf` and
+the manifest, and take a final EBS snapshot of the ClickHouse volume. EKS then
+runs nothing of its own, and its teardown is a separate plan.
 
 ## Upgrading Plausible
 
