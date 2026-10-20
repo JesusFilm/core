@@ -13,10 +13,10 @@ import { ReactElement, ReactNode } from 'react'
 import ArrowLeftIcon from '@core/shared/ui/icons/ArrowLeft'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import File5Icon from '@core/shared/ui/icons/File5'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import Iphone1Icon from '@core/shared/ui/icons/Iphone1'
 import Layers4Icon from '@core/shared/ui/icons/Layers4'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
+import TranslateIcon from '@core/shared/ui/icons/Translate'
 
 import { CommandRedoItem } from '../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
@@ -165,7 +165,7 @@ export function LeftRail({
         <PanelToggle
           panel="localize"
           label={t('Localize')}
-          icon={<Globe1Icon />}
+          icon={<TranslateIcon />}
           progress={run?.progress}
         />
       </Stack>
