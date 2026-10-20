@@ -84,6 +84,10 @@ export function InlineText({
     useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  // The click on the static text that selects its block also asks for the
+  // caret, whatever the host's `autoFocus` says, so every inline text shows
+  // where typing goes as soon as it opens.
+  const focusOnEdit = useRef(false)
   const length = textLength(value)
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
@@ -92,7 +96,9 @@ export function InlineText({
   // scrolls every ancestor to centre the input, including the editor page that
   // holds the scaled frame.
   useEffect(() => {
-    if (!editing || !autoFocus) return
+    const wanted = autoFocus || focusOnEdit.current
+    focusOnEdit.current = false
+    if (!editing || !wanted) return
     inputRef.current?.focus({ preventScroll: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing])
@@ -109,6 +115,7 @@ export function InlineText({
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
+    focusOnEdit.current = true
     onSelect?.()
   }
 

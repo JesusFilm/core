@@ -126,6 +126,43 @@ describe('InlineText', () => {
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveFocus()
   })
 
+  it('takes focus when the click on its text is what opened it, without autoFocus', () => {
+    const onSelect = vi.fn()
+    const { rerender } = renderText({ editing: false, onSelect })
+
+    fireEvent.click(screen.getByTestId('InlineText-title'))
+    rerender(
+      <StaticEditor>
+        <InlineText
+          target={{ block: hero, field: 'title' }}
+          placeholder="Title"
+          editing
+          variant="h1"
+          onSelect={onSelect}
+        />
+      </StaticEditor>
+    )
+
+    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveFocus()
+  })
+
+  it('does not take focus when something else opened it', () => {
+    const { rerender } = renderText({ editing: false })
+
+    rerender(
+      <StaticEditor>
+        <InlineText
+          target={{ block: hero, field: 'title' }}
+          placeholder="Title"
+          editing
+          variant="h1"
+        />
+      </StaticEditor>
+    )
+
+    expect(screen.getByRole('textbox', { name: 'Title' })).not.toHaveFocus()
+  })
+
   describe('autoWidth', () => {
     it('sizes the input from a hidden copy of the text and keeps it single line', () => {
       renderText({ autoWidth: true })
