@@ -27,6 +27,9 @@ Before you can use the Video Importer executable, make sure you have the followi
 ### 3. Operating System
 
 - The binary is available for Linux, macOS, and Windows. Make sure you have the correct version for your OS.
+- The macOS and Windows binaries are **unsigned**. Your OS will warn you before the first run — this is expected, not a sign of a corrupted download:
+  - **macOS:** Gatekeeper will block the first launch ("cannot be opened because the developer cannot be verified"). Right-click (or Control-click) the executable, choose **Open**, then confirm **Open** in the dialog. You only need to do this once.
+  - **Windows:** SmartScreen will show "Windows protected your PC". Click **More info**, then **Run anyway**.
 
 ### 4. Network Access
 
