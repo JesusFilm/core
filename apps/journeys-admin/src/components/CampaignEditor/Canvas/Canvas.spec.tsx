@@ -417,19 +417,6 @@ describe('Canvas', () => {
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
-  it.each<CanvasView>(['desktop', 'phone'])(
-    'shows the Preview Language chip over the canvas, outside the frame, in %s view',
-    (view) => {
-      const { baseElement } = renderCanvas(CampaignPageKind.landing, view)
-
-      const chip = screen.getByTestId('PreviewLanguageChip')
-      expect(screen.getByTestId('CampaignCanvas')).toContainElement(chip)
-      expect(baseElement.getElementsByTagName('iframe')[0].contains(chip)).toBe(
-        false
-      )
-    }
-  )
-
   it('shows the hero’s media slot beside its text, and a Featured Media section’s placeholder and bullets', async () => {
     const hero = campaign.blocks.find((block) => block.id === 'heroId')
     if (hero?.__typename !== 'CampaignHeroBlock') throw new Error('no hero')

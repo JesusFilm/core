@@ -37,7 +37,6 @@ import { FontLoader } from '../../Editor/FontLoader'
 import { sortedRegions, useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
 import { CanvasHoverReporter } from '../Navigator/NavigatorHover'
-import { PreviewLanguageChip } from '../PreviewLanguageChip'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
@@ -478,7 +477,6 @@ export function Canvas({
           </Box>
         </Box>
       </Box>
-      <PreviewLanguageChip />
     </Box>
   )
 }

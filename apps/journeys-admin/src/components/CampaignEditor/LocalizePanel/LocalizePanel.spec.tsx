@@ -6,13 +6,30 @@ import { ReactElement, useState } from 'react'
 import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
 import { LeftRail } from '../LeftRail'
-import { PreviewLanguageChip } from '../PreviewLanguageChip'
 import { StaticEditor } from '../testing'
 
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
+
+/** Sets the Preview Language to Spanish, as the Pages panel's select would. */
+function PreviewSpanishButton(): ReactElement {
+  const { dispatch } = useCampaignEditor()
+  return (
+    <button
+      onClick={() =>
+        dispatch({
+          type: 'SetPreviewLanguageAction',
+          previewLanguageId: '21028'
+        })
+      }
+    >
+      Preview Spanish
+    </button>
+  )
+}
 
 const languagesMock = {
   request: { query: GET_LANGUAGES, variables: { languageId: '529' } },
@@ -132,15 +149,14 @@ describe('LocalizePanel', () => {
           promotionNotice={false}
           onPromotionNoticeClose={() => undefined}
         />
-        <PreviewLanguageChip />
+        <PreviewSpanishButton />
       </StaticEditor>
     )
     expect(
       await screen.findByRole('combobox', { name: 'Language' })
     ).toHaveTextContent('Français')
 
-    fireEvent.click(screen.getByTestId('PreviewLanguageChip'))
-    fireEvent.click(screen.getByRole('menuitem', { name: 'Español' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Preview Spanish' }))
 
     expect(
       await screen.findByRole('combobox', { name: 'Language' })
