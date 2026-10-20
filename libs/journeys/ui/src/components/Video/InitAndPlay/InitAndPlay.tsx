@@ -23,6 +23,7 @@ import {
 import { extractYouTubeCaptionsAndAddTextTracks } from '../utils/extractYouTubeCaptionsAndAddTextTracks'
 import { getCaptionsAndSubtitleTracks } from '../utils/getCaptionsAndSubtitleTracks'
 import { getMuxMetadata } from '../utils/getMuxMetadata'
+import { reapplyUnhandledSource } from '../utils/reapplyUnhandledSource'
 import VideoJsPlayer from '../utils/videoJsTypes'
 
 import 'videojs-mux'
@@ -105,30 +106,32 @@ export function InitAndPlay({
   // Initiate video player
   useEffect(() => {
     if (videoRef.current != null && !playerInitializedRef.current) {
-      setPlayer(
-        videojs(videoRef.current, {
-          ...defaultVideoJsOptions,
-          controls: false,
-          controlBar: false,
-          bigPlayButton: false,
-          loadingSpinner: false,
-          // Make video fill container instead of set aspect ratio
-          fill: true,
-          userActions: {
-            hotkeys: true,
-            doubleClick: true
-          },
-          responsive: true,
-          muted: muted === true,
-          autoplay: autoplay === true && source === VideoBlockSource.youTube,
-          plugins: {
-            mux: {
-              debug: false,
-              data: muxMetadata
-            }
+      const created = videojs(videoRef.current, {
+        ...defaultVideoJsOptions,
+        controls: false,
+        controlBar: false,
+        bigPlayButton: false,
+        loadingSpinner: false,
+        // Make video fill container instead of set aspect ratio
+        fill: true,
+        userActions: {
+          hotkeys: true,
+          doubleClick: true
+        },
+        responsive: true,
+        muted: muted === true,
+        autoplay: autoplay === true && source === VideoBlockSource.youTube,
+        plugins: {
+          mux: {
+            debug: false,
+            data: muxMetadata
           }
-        }) as VideoJsPlayer
-      )
+        }
+      }) as VideoJsPlayer
+      // A server-rendered <video> is already on its <source> natively, which
+      // makes video.js skip its source handlers; feed them once ready.
+      created.ready(() => reapplyUnhandledSource(created))
+      setPlayer(created)
       playerInitializedRef.current = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- should only run once unless videoRef.current is null

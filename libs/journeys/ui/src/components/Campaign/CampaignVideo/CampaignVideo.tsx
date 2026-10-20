@@ -5,7 +5,13 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo } from 'react'
 
-import { CampaignStringKey } from '../../../../__generated__/globalTypes'
+import { ThemeProvider } from '@core/shared/ui/ThemeProvider'
+import { ThemeName } from '@core/shared/ui/themes'
+
+import {
+  CampaignStringKey,
+  ThemeMode
+} from '../../../../__generated__/globalTypes'
 import { Video } from '../../Video'
 import { useCampaign } from '../CampaignProvider'
 import type { CampaignTreeOf } from '../types'
@@ -62,7 +68,9 @@ function CampaignVideoCaption({
  * A Campaign Video in a Media Slot. A Watch video with children is a poster
  * card — its title in the Page Language and "<n> videos" — linking out to
  * Watch; any other video plays inline in the journeys `Video` player, framed
- * at 16:9 and captioned with its title and description.
+ * at 16:9 and captioned with its title and description. The player sits in
+ * the dark theme whatever the band's, so its controls read white over the
+ * picture as they do on a journey card.
  */
 export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
@@ -160,7 +168,13 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
           backgroundColor: '#000'
         }}
       >
-        <Video {...playerBlock} />
+        <ThemeProvider
+          themeName={ThemeName.base}
+          themeMode={ThemeMode.dark}
+          nested
+        >
+          <Video {...playerBlock} />
+        </ThemeProvider>
       </Box>
       <CampaignVideoCaption details={details} />
     </Stack>
