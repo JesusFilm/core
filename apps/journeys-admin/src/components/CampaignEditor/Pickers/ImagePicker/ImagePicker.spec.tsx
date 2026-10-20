@@ -197,6 +197,25 @@ describe('ImagePicker', () => {
     expect(screen.queryByRole('alert')).toBeNull()
   })
 
+  it('shows the preview under the Preview button, above the earlier uploads', async () => {
+    renderPicker(undefined, [uploadByUrlMock, uploadsMock])
+    const earlier = await screen.findByTestId('media-library-image-earlierId')
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Image URL' }), {
+      target: { value: PASTED }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
+
+    const preview = screen.getByTestId('CampaignImagePickerPreview')
+    const button = screen.getByRole('button', { name: 'Preview' })
+    expect(
+      button.compareDocumentPosition(preview) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      preview.compareDocumentPosition(earlier) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
   it("lists the team's earlier uploads and picks one at once", async () => {
     const { onPick } = renderPicker(undefined, [uploadByUrlMock, uploadsMock])
 

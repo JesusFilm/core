@@ -2,6 +2,7 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -48,8 +49,9 @@ interface ImagePickerProps {
  * the picture into Cloudflare under the team, so what `onPick` receives is
  * always an imagedelivery.net address. An upload goes through
  * `useImageUpload` with the team and is shown the same way before it is
- * kept. The uploads grid is the journey editor's media library, scoped to
- * the team, and picks at once.
+ * kept. The preview sits right under the Preview button, apart from the
+ * uploads grid below it: the journey editor's media library, scoped to the
+ * team, which picks at once.
  */
 export function ImagePicker({
   teamId,
@@ -171,20 +173,6 @@ export function ImagePicker({
           {t('Preview')}
         </Button>
       </Stack>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
-      <MediaLibrary
-        title={t('Your uploads')}
-        isAi={false}
-        teamId={teamId}
-        dense
-        onSelect={(input) => {
-          if (input.src != null) onPick(input.src)
-        }}
-      />
       {candidate != null && (
         <Stack spacing={2} data-testid={`${testId}Preview`}>
           <Box
@@ -224,6 +212,21 @@ export function ImagePicker({
           </Stack>
         </Stack>
       )}
+      {error != null && (
+        <Alert severity="error" role="alert">
+          {error}
+        </Alert>
+      )}
+      <Divider />
+      <MediaLibrary
+        title={t('Your uploads')}
+        isAi={false}
+        teamId={teamId}
+        dense
+        onSelect={(input) => {
+          if (input.src != null) onPick(input.src)
+        }}
+      />
     </Stack>
   )
 }
