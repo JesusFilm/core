@@ -16,6 +16,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          filter: blob:none
       - name: Check branch up to date with base
         run: ./tools/scripts/check-git-diff.sh
       - name: Setup pnpm
@@ -25,7 +26,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ runner.environment == 'github-hosted' && 'pnpm' || '' }}
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4

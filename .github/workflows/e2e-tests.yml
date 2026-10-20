@@ -62,6 +62,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          filter: blob:none
           ref: ${{ github.event_name == 'schedule' && 'main' || github.ref }}
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -70,7 +71,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ runner.environment == 'github-hosted' && 'pnpm' || '' }}
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Cache Playwright browsers
@@ -196,7 +197,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ runner.environment == 'github-hosted' && 'pnpm' || '' }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

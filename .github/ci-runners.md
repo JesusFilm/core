@@ -28,8 +28,12 @@ Admission checks reserve memory and storage for the existing workloads.
 
 Use `actions/setup-node`, rather than the Blacksmith-specific setup action.
 Guest package installation can use passwordless `sudo`; credentials and the
-host filesystem are not mounted in the guest. Caches use GitHub Actions storage,
-so jobs must not depend on a workspace or local cache surviving between runs.
+host filesystem are not mounted in the guest. Local guests install packages directly from the registry: restoring the large
+pnpm cache from GitHub was slower over this connection than a fresh install.
+Hosted fallback jobs retain the pnpm cache. Full-history checkouts use partial
+clones (`filter: blob:none`) to preserve ancestry without downloading historical
+file contents. Jobs must not depend on a workspace or local cache surviving
+between runs.
 
 To roll back routing, replace the `ci-run-…` expressions with `ubuntu-22.04`.
 Existing jobs can finish normally. Do not stop the shared controller to roll
