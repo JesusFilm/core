@@ -11,7 +11,6 @@ date: 2026-10-14
 
 Plausible Analytics is the only product-facing workload on the EKS Platform Cluster; everything else there (ingress-nginx, cert-manager, external-dns, the Doppler operator, the EBS CSI driver, snapshot tooling) exists to serve it. Once its ClickHouse has moved to the shared ClickHouse Cloud service (plan `2026-10-14-001`), Plausible itself is a stateless Elixir container with two external databases, which is exactly what the ECS Fargate substrate already runs for every other Service. This plan runs the upstream `ghcr.io/plausible/community-edition` image as an ECS Service on arm64 Fargate (Graviton), behind the public ALB, with its configuration pulled from the existing `plausible` Doppler project, cuts the two hostnames over, and removes Plausible from EKS. Decommissioning the EKS cluster itself is the follow-up this makes possible.
 
-
 ### Revision (2026-10-20): app first, events second
 
 Where this section and the rest of the plan disagree, this section wins. The
