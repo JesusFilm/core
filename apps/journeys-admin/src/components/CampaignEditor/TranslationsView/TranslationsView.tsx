@@ -8,7 +8,7 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
@@ -17,7 +17,9 @@ import {
   CampaignTranslationFilter,
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
+import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { useCampaignTranslationsQuery } from '../../../libs/useCampaignTranslationsQuery'
+import { useCampaignEditor } from '../CampaignEditorProvider'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
@@ -28,7 +30,9 @@ import {
   TRANSLATION_GROUPS,
   TranslationFilter,
   matchesFilter,
-  rowKey
+  rowKey,
+  rowMatchesSelection,
+  rowPlace
 } from './translationRows'
 
 interface TranslationsViewProps {
@@ -52,7 +56,11 @@ interface TranslationsViewProps {
  * pressed, not after edits. The run is the editor's background one: its
  * progress and Cancel show here whichever language is open, and it goes on
  * when this view closes. A language the model does not support is manual only
- * and has no such button.
+ * and has no such button. The view and the canvas point at each other: a
+ * line's target button selects the text's place on the canvas (switching
+ * page when it is on another) and scrolls the canvas to it; selecting
+ * something on the canvas marks its lines here and scrolls to the first,
+ * widening the filter to All when it hid them.
  */
 export function TranslationsView({
   campaign,
@@ -73,6 +81,18 @@ export function TranslationsView({
   const [chosenLanguageId, setChosenLanguageId] = useState(initialLanguageId)
   const [filter, setFilter] = useState<TranslationFilter>('all')
   const { run, error: translateError, start } = useTranslationRun()
+  const {
+    selection,
+    state: { pageKind },
+    dispatch,
+    pageKindOf,
+    frameDocumentRef
+  } = useCampaignEditor()
+  const listRef = useRef<HTMLDivElement>(null)
+  /** The canvas element id to scroll to once the frame shows it. */
+  const [revealId, setRevealId] = useState<string>()
+  /** The selection the list last scrolled to, so a filter change alone does not scroll again. */
+  const scrolledToRef = useRef<string | undefined>(undefined)
   const languageId = languages.some(
     (language) => language.languageId === chosenLanguageId
   )
@@ -87,6 +107,74 @@ export function TranslationsView({
           filter: CampaignTranslationFilter.all
         }
   const { data, loading, error } = useCampaignTranslationsQuery(queryVariables)
+
+  const selectionKey =
+    selection.kind === 'campaign'
+      ? 'campaign'
+      : `${selection.region?.id ?? ''}:${selection.block?.id ?? ''}`
+
+  // Canvas to list: the lines of what is selected are marked, and the list
+  // scrolls to the first one, showing All first when the filter hid them.
+  useEffect(() => {
+    if (data == null || selection.kind === 'campaign') return
+    if (scrolledToRef.current === selectionKey) return
+    const matching = data.campaignTranslations.filter((row) =>
+      rowMatchesSelection(row, selection, campaign)
+    )
+    if (matching.length === 0) {
+      scrolledToRef.current = selectionKey
+      return
+    }
+    const shown = matching.find((row) => matchesFilter(row, filter))
+    if (shown == null) {
+      setFilter('all')
+      return
+    }
+    const key = rowKey(shown)
+    const element = Array.from(
+      listRef.current?.querySelectorAll<HTMLElement>('[data-row-key]') ?? []
+    ).find((candidate) => candidate.dataset.rowKey === key)
+    element?.scrollIntoView?.({ block: 'center' })
+    scrolledToRef.current = selectionKey
+  }, [data, selection, selectionKey, filter, campaign])
+
+  // List to canvas: once the frame shows the revealed element, scroll to it.
+  // The frame renders a page switch on a later pass, so this retries each
+  // render until the element is there.
+  useEffect(() => {
+    if (revealId == null) return
+    const element = frameDocumentRef.current?.getElementById(revealId)
+    if (element == null) return
+    element.scrollIntoView?.({ block: 'center' })
+    setRevealId(undefined)
+  })
+
+  function handleReveal(row: TranslationRow): void {
+    const place = rowPlace(row, campaign)
+    if (place.regionId != null) {
+      const host = campaign.blocks.find(
+        (block) => block.__typename === 'CampaignRegionSwitcherBlock'
+      )
+      dispatch({
+        type: 'SetEditorFocusAction',
+        pageKind: (host == null ? undefined : pageKindOf(host)) ?? pageKind,
+        selectedBlockId: host?.id,
+        selectedRegionId: place.regionId
+      })
+      setRevealId(host == null ? undefined : `${host.id}__${place.regionId}`)
+      return
+    }
+    const block = campaign.blocks.find(
+      (candidate) => candidate.id === place.blockId
+    )
+    dispatch({
+      type: 'SetEditorFocusAction',
+      pageKind: (block == null ? undefined : pageKindOf(block)) ?? pageKind,
+      selectedBlockId: block?.id,
+      selectedRegionId: undefined
+    })
+    setRevealId(block?.id)
+  }
 
   const groupLabels: Record<CampaignTranslationGroup, string> = {
     [CampaignTranslationGroup.interface]: t('Interface'),
@@ -228,27 +316,31 @@ export function TranslationsView({
           {t('Nothing to show here.')}
         </Typography>
       )}
-      {TRANSLATION_GROUPS.map((group) => {
-        const groupRows = rows.filter((row) => row.group === group)
-        if (groupRows.length === 0) return null
-        return (
-          <Stack key={group} data-testid={`TranslationGroup-${group}`}>
-            <Typography variant="subtitle1" component="h3">
-              {groupLabels[group]}
-            </Typography>
-            <Divider />
-            {groupRows.map((row) => (
-              <TranslationRowItem
-                key={rowKey(row)}
-                row={row}
-                languageId={languageId}
-                bcp47={bcp47}
-                queryVariables={queryVariables}
-              />
-            ))}
-          </Stack>
-        )
-      })}
+      <Stack ref={listRef} spacing={3}>
+        {TRANSLATION_GROUPS.map((group) => {
+          const groupRows = rows.filter((row) => row.group === group)
+          if (groupRows.length === 0) return null
+          return (
+            <Stack key={group} data-testid={`TranslationGroup-${group}`}>
+              <Typography variant="subtitle1" component="h3">
+                {groupLabels[group]}
+              </Typography>
+              <Divider />
+              {groupRows.map((row) => (
+                <TranslationRowItem
+                  key={rowKey(row)}
+                  row={row}
+                  languageId={languageId}
+                  bcp47={bcp47}
+                  queryVariables={queryVariables}
+                  selected={rowMatchesSelection(row, selection, campaign)}
+                  onReveal={() => handleReveal(row)}
+                />
+              ))}
+            </Stack>
+          )
+        })}
+      </Stack>
     </Stack>
   )
 }

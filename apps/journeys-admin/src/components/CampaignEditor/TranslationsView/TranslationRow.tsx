@@ -1,11 +1,13 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
+import TargetIcon from '@core/shared/ui/icons/Target'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import {
@@ -43,6 +45,10 @@ interface TranslationRowProps {
   bcp47: string
   /** The variables of the query that lists the rows, so a write can update it in place. */
   queryVariables: CampaignTranslationsVariables
+  /** The editor's selection is where this text lives: the line is marked. */
+  selected?: boolean
+  /** Show the text's place on the canvas. */
+  onReveal?: () => void
 }
 
 function messageOf(error: unknown): string {
@@ -113,13 +119,16 @@ export function useRowLabel(): (row: TranslationRow) => string {
  * Leaving the field writes a human translation through
  * `campaignTranslationSet` (an emptied field clears it), shown at once, and
  * updates this list and the editor's own copy of the text so the row flips to
- * Edited without a refetch.
+ * Edited without a refetch. Its target button selects the text's place on
+ * the canvas, and the line is marked while that place is selected.
  */
 export function TranslationRowItem({
   row,
   languageId,
   bcp47,
-  queryVariables
+  queryVariables,
+  selected = false,
+  onReveal
 }: TranslationRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const rowLabel = useRowLabel()
@@ -205,11 +214,32 @@ export function TranslationRowItem({
         : t('Missing')
 
   return (
-    <Stack spacing={1} data-testid={`TranslationRow-${key}`} sx={{ py: 2 }}>
+    <Stack
+      spacing={1}
+      data-testid={`TranslationRow-${key}`}
+      data-row-key={key}
+      data-selected={selected ? 'true' : undefined}
+      sx={{
+        py: 2,
+        px: 1,
+        mx: -1,
+        borderRadius: 1,
+        bgcolor: selected ? 'action.selected' : undefined
+      }}
+    >
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
         <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
           {rowLabel(row)}
         </Typography>
+        {onReveal != null && (
+          <IconButton
+            size="small"
+            aria-label={t('Show on the canvas')}
+            onClick={onReveal}
+          >
+            <TargetIcon fontSize="small" />
+          </IconButton>
+        )}
         <Chip
           size="small"
           label={statusLabel}

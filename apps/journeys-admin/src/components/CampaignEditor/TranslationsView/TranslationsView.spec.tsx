@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
   render,
@@ -7,8 +6,7 @@ import {
   within
 } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
-import { SnackbarProvider } from 'notistack'
-import { ComponentProps } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
@@ -21,10 +19,15 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
 import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
+import {
+  CampaignEditorState,
+  useCampaignEditor
+} from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { TranslationRunProvider } from '../TranslationRunProvider'
+import { SelectionProbe, StaticEditor } from '../testing'
 
 import { TranslationsView } from './TranslationsView'
+import { rowKey } from './translationRows'
 
 const FRENCH = '496'
 const SPANISH = '21028'
@@ -169,23 +172,32 @@ function setMock(
   }
 }
 
+/** A control that selects a block, as a click on the canvas would. */
+function SelectBlockButton({ id }: { id: string }): ReactElement {
+  const { selectBlock } = useCampaignEditor()
+  return <button onClick={() => selectBlock(id)}>select {id}</button>
+}
+
 function renderView(
   mocks: Array<Record<string, unknown>>,
   campaignProp = campaign,
-  viewProps: Partial<ComponentProps<typeof TranslationsView>> = {}
+  viewProps: Partial<ComponentProps<typeof TranslationsView>> = {},
+  initialState?: Partial<CampaignEditorState>
 ): ReturnType<typeof render> {
   return render(
-    <MockedProvider mocks={mocks as never}>
-      <SnackbarProvider>
-        <TranslationRunProvider>
-          <TranslationsView
-            campaign={campaignProp}
-            initialLanguageId={FRENCH}
-            {...viewProps}
-          />
-        </TranslationRunProvider>
-      </SnackbarProvider>
-    </MockedProvider>
+    <StaticEditor
+      mocks={mocks}
+      campaignProp={campaignProp}
+      initialState={initialState}
+    >
+      <SelectionProbe />
+      <SelectBlockButton id="regionHeaderId" />
+      <TranslationsView
+        campaign={campaignProp}
+        initialLanguageId={FRENCH}
+        {...viewProps}
+      />
+    </StaticEditor>
   )
 }
 
@@ -196,6 +208,95 @@ function visibleRows(): string[] {
 }
 
 describe('TranslationsView', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn()
+  })
+
+  describe('the canvas and the list point at each other', () => {
+    it('selects the line’s block on the canvas from its target button', async () => {
+      renderView([listMock(FRENCH)])
+      await screen.findByTestId('TranslationGroup-landing')
+
+      fireEvent.click(
+        within(
+          screen.getByTestId(`TranslationRow-${rowKey(heroTitle)}`)
+        ).getByRole('button', { name: 'Show on the canvas' })
+      )
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+      expect(screen.getByTestId('PageKind')).toHaveTextContent('landing')
+    })
+
+    it('selects the section that shows an interface phrase, and a region card', async () => {
+      renderView([listMock(FRENCH)])
+      await screen.findByTestId('TranslationGroup-interface')
+
+      fireEvent.click(
+        within(
+          screen.getByTestId(`TranslationRow-${rowKey(copyLink)}`)
+        ).getByRole('button', { name: 'Show on the canvas' })
+      )
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'regionShareId'
+      )
+
+      fireEvent.click(
+        within(
+          screen.getByTestId(`TranslationRow-${rowKey(europe)}`)
+        ).getByRole('button', { name: 'Show on the canvas' })
+      )
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'europeRegionId'
+      )
+    })
+
+    it('marks the lines of the selected block and scrolls to the first', async () => {
+      renderView(
+        [listMock(FRENCH)],
+        campaign,
+        {},
+        {
+          selectedBlockId: 'heroId'
+        }
+      )
+      await screen.findByTestId('TranslationGroup-landing')
+
+      expect(
+        screen.getByTestId(`TranslationRow-${rowKey(heroEyebrow)}`)
+      ).toHaveAttribute('data-selected', 'true')
+      expect(
+        screen.getByTestId(`TranslationRow-${rowKey(heroTitle)}`)
+      ).toHaveAttribute('data-selected', 'true')
+      expect(
+        screen.getByTestId(`TranslationRow-${rowKey(copyLink)}`)
+      ).not.toHaveAttribute('data-selected')
+      await waitFor(() =>
+        expect(Element.prototype.scrollIntoView).toHaveBeenCalled()
+      )
+    })
+
+    it('widens the filter to All when it hid the lines of what was just selected', async () => {
+      renderView([listMock(FRENCH)])
+      await screen.findByTestId('TranslationGroup-region')
+      fireEvent.click(screen.getByRole('button', { name: 'Missing' }))
+      expect(
+        screen.queryByTestId(`TranslationRow-${rowKey(regionIntro)}`)
+      ).toBeNull()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'select regionHeaderId' })
+      )
+
+      expect(
+        await screen.findByTestId(`TranslationRow-${rowKey(regionIntro)}`)
+      ).toHaveAttribute('data-selected', 'true')
+      expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    })
+  })
+
   it('shows the one-time notice that promoted machine values lost their flag, and closes it', async () => {
     const onPromotionNoticeClose = vi.fn()
     renderView([listMock(FRENCH)], campaign, {
@@ -327,7 +428,12 @@ describe('TranslationsView', () => {
   })
 
   it('does not write when the text is unchanged', async () => {
-    const write = setMock(heroTitle, FRENCH, "Partagez l'histoire de Campagne", [])
+    const write = setMock(
+      heroTitle,
+      FRENCH,
+      "Partagez l'histoire de Campagne",
+      []
+    )
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
 
