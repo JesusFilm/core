@@ -65,7 +65,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: ${{ runner.environment == 'github-hosted' && 'pnpm' || '' }}
+          cache: ${{ !startsWith(runner.name, 'ci-jfp00-') && 'pnpm' || '' }}
+          package-manager-cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Prisma Generate
