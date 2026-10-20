@@ -348,27 +348,34 @@ export function TranslationsView({
           {t('Nothing to show here.')}
         </Typography>
       )}
-      <Stack ref={listRef} spacing={3}>
+      {/* Each group under a quiet heading, its lines parted by hairlines. */}
+      <Stack ref={listRef} spacing={5}>
         {TRANSLATION_GROUPS.map((group) => {
           const groupRows = rows.filter((row) => row.group === group)
           if (groupRows.length === 0) return null
           return (
             <Stack key={group} data-testid={`TranslationGroup-${group}`}>
-              <Typography variant="subtitle1" component="h3">
+              <Typography
+                variant="overline"
+                component="h3"
+                sx={{ color: 'text.secondary', pb: 0.5 }}
+              >
                 {groupLabels[group]}
               </Typography>
-              <Divider />
-              {groupRows.map((row) => (
-                <TranslationRowItem
-                  key={rowKey(row)}
-                  row={row}
-                  languageId={languageId}
-                  bcp47={bcp47}
-                  queryVariables={queryVariables}
-                  selected={rowMatchesSelection(row, selection, campaign)}
-                  onReveal={() => handleReveal(row)}
-                />
-              ))}
+              <Divider sx={{ borderBottomWidth: 2 }} />
+              <Stack divider={<Divider flexItem />}>
+                {groupRows.map((row) => (
+                  <TranslationRowItem
+                    key={rowKey(row)}
+                    row={row}
+                    languageId={languageId}
+                    bcp47={bcp47}
+                    queryVariables={queryVariables}
+                    selected={rowMatchesSelection(row, selection, campaign)}
+                    onReveal={() => handleReveal(row)}
+                  />
+                ))}
+              </Stack>
             </Stack>
           )
         })}

@@ -224,10 +224,9 @@ export function TranslationRowItem({
       data-row-key={key}
       data-selected={selected ? 'true' : undefined}
       sx={{
-        py: 2,
+        py: 2.5,
         px: 1,
         mx: -1,
-        borderRadius: 1,
         bgcolor: selected ? 'action.selected' : undefined
       }}
     >
