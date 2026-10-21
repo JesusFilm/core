@@ -89,7 +89,10 @@ export async function lockRegionLanguage(
  * Create the Campaign QR Code for a freshly linked journey: a `QrCode` row in
  * the campaign's team targeting the journey (no block, default colours),
  * written in `tx`, and the short link through the existing short-link create
- * as the returned step. Returns the QR row id and that step.
+ * as the returned step, which then saves the link's address on the row in
+ * `tx` so the public page reads it without a gateway call. Should that save
+ * fail, the step deletes the link it made before the transaction rolls back.
+ * Returns the QR row id and that step.
  */
 export async function createRegionLanguageQrCode(
   tx: Prisma.TransactionClient,
@@ -101,18 +104,30 @@ export async function createRegionLanguageQrCode(
   const qrCode = await tx.qrCode.create({
     data: { teamId, journeyId, toJourneyId: journeyId, shortLinkId }
   })
+  const revert = async (): Promise<void> => await deleteShortLink(shortLinkId)
   return {
     qrCodeId: qrCode.id,
     step: {
       apply: async () => {
-        await createShortLink({
+        const { shortUrl } = await createShortLink({
           id: shortLinkId,
           hostname: getShortLinkDomain(),
           to,
           service: 'apiJourneys'
         })
+        try {
+          await tx.qrCode.update({
+            where: { id: qrCode.id },
+            data: { shortLinkUrl: shortUrl }
+          })
+        } catch (error) {
+          await revert().catch((revertError) => {
+            logger.error({ error: revertError }, 'short link revert failed')
+          })
+          throw error
+        }
       },
-      revert: async () => await deleteShortLink(shortLinkId)
+      revert
     }
   }
 }

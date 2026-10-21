@@ -12,16 +12,8 @@ import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-import { fetchShortLink } from './gatewayClient'
-
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
-}))
-
-vi.mock('./gatewayClient', () => ({
-  fetchShortLink: vi.fn(),
-  shortLinkUrl: (shortLink: { hostname: string; pathname: string }) =>
-    `https://${shortLink.hostname}/${shortLink.pathname}`
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -58,9 +50,10 @@ interface PublicCampaignResponse {
   errors?: Array<{ message: string; extensions: { code: string } }>
 }
 
-/** A region language as the `campaignPublic` read returns it: with the linked journey row attached. */
+/** A region language as the `campaignPublic` read returns it: with the linked journey and Campaign QR Code rows attached. */
 type LinkedRegionLanguage = CampaignRegionRow['languages'][number] & {
   journey: Record<string, unknown>
+  qrCode: Record<string, unknown> | null
 }
 
 interface IntrospectionResponse {
@@ -181,6 +174,7 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
                 toJourneyId: language.journeyId,
                 toBlockId: null,
                 shortLinkId: `${language.qrCodeId}-shortLinkId`,
+                shortLinkUrl: `https://short.example.org/${language.id}`,
                 color: '#000000',
                 backgroundColor: '#FFFFFF'
               },
@@ -348,11 +342,12 @@ describe('campaignPublic', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(null)
-    vi.mocked(fetchShortLink).mockImplementation(async (id) => ({
-      id,
-      pathname: id.replace('-qrCodeId-shortLinkId', ''),
-      hostname: 'short.example.org'
-    }))
+    // Any gateway request would go through fetch; the public read makes none.
+    vi.spyOn(globalThis, 'fetch')
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('returns a published campaign with every text field resolved to the requested language and translation lists omitted', async () => {
@@ -513,15 +508,21 @@ describe('campaignPublic', () => {
         where: { slug: 'christmas-2026', status: 'published' }
       })
     )
-    expect(fetchShortLink).toHaveBeenCalledTimes(2)
-    expect(fetchShortLink).toHaveBeenCalledWith(
-      'eurRegionId-529-qrCodeId-shortLinkId'
-    )
+    // Each Share Link is the address saved on its Campaign QR Code.
+    expect(fetch).not.toHaveBeenCalled()
   })
 
-  it('leaves the Share Link null when the gateway no longer knows the short link', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
-    vi.mocked(fetchShortLink).mockResolvedValue(null)
+  it('leaves the Share Link null for a Campaign QR Code with no saved address', async () => {
+    const fixture = publishedFixture()
+    fixture.regions = fixture.regions.map((region) => ({
+      ...region,
+      languages: (region.languages as LinkedRegionLanguage[]).map((language) =>
+        region.id === 'eurRegionId'
+          ? { ...language, qrCode: { ...language.qrCode, shortLinkUrl: null } }
+          : language
+      )
+    }))
+    prismaMock.campaign.findFirst.mockResolvedValue(fixture)
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
@@ -534,22 +535,26 @@ describe('campaignPublic', () => {
       shortLinkUrl: null,
       journeyUrl: 'https://journeys.example.org/eur-journey'
     })
+    expect(result.data.campaignPublic.regions[1].languages[0]).toMatchObject({
+      shortLinkUrl: 'https://short.example.org/afrRegionId-529'
+    })
+    expect(fetch).not.toHaveBeenCalled()
   })
 
-  it('renders the page without Share Links when the gateway lookup fails', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
-    vi.mocked(fetchShortLink).mockRejectedValue(new Error('gateway down'))
+  it('is NOT_FOUND for a campaign with no theme', async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue({
+      ...publishedFixture(),
+      theme: null
+    } as any)
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'christmas-2026' }
     })) as PublicCampaignResponse
 
-    expect(result.errors).toBeUndefined()
-    expect(result.data.campaignPublic.regions[0].languages[0]).toMatchObject({
-      journeyStatus: 'published',
-      shortLinkUrl: null,
-      journeyUrl: 'https://journeys.example.org/eur-journey'
+    expect(result.errors?.[0]).toMatchObject({
+      message: 'campaign not found',
+      extensions: { code: 'NOT_FOUND' }
     })
   })
 
@@ -940,47 +945,46 @@ describe('campaignPublic', () => {
     })
   })
 
-  it('treats an unpublished or deleted linked journey as unlinked', async () => {
-    const fixture = publishedFixture()
-    fixture.regions = fixture.regions.map((region) => ({
-      ...region,
-      languages: (region.languages as LinkedRegionLanguage[]).map(
-        (language) => ({
-          ...language,
-          journey:
-            region.id === 'eurRegionId'
-              ? { ...language.journey, status: 'draft' }
-              : { ...language.journey, deletedAt: new Date() }
-        })
+  it.each(['draft', 'archived', 'trashed'])(
+    'treats a %s or deleted linked journey as unlinked, never revealing its status',
+    async (status) => {
+      const fixture = publishedFixture()
+      fixture.regions = fixture.regions.map((region) => ({
+        ...region,
+        languages: (region.languages as LinkedRegionLanguage[]).map(
+          (language) => ({
+            ...language,
+            journey:
+              region.id === 'eurRegionId'
+                ? { ...language.journey, status }
+                : { ...language.journey, deletedAt: new Date() }
+          })
+        )
+      }))
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC,
+        variables: { slug: 'christmas-2026' }
+      })) as PublicCampaignResponse
+
+      const unlinked = {
+        languageId: '529',
+        order: 0,
+        journeyStatus: null,
+        title: null,
+        shortLinkUrl: null,
+        journeyUrl: null,
+        embedUrl: null
+      }
+      expect(result.data.campaignPublic.regions[0].languages[0]).toEqual(
+        unlinked
       )
-    }))
-    prismaMock.campaign.findFirst.mockResolvedValue(fixture)
-
-    const result = (await publicClient({
-      document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026' }
-    })) as PublicCampaignResponse
-
-    expect(result.data.campaignPublic.regions[0].languages[0]).toEqual({
-      languageId: '529',
-      order: 0,
-      journeyStatus: 'draft',
-      title: null,
-      shortLinkUrl: null,
-      journeyUrl: null,
-      embedUrl: null
-    })
-    expect(result.data.campaignPublic.regions[1].languages[0]).toEqual({
-      languageId: '529',
-      order: 0,
-      journeyStatus: null,
-      title: null,
-      shortLinkUrl: null,
-      journeyUrl: null,
-      embedUrl: null
-    })
-    expect(fetchShortLink).not.toHaveBeenCalled()
-  })
+      expect(result.data.campaignPublic.regions[1].languages[0]).toEqual(
+        unlinked
+      )
+    }
+  )
 
   describe('journey list items', () => {
     const CAMPAIGN_PUBLIC_JOURNEYS = graphql(`

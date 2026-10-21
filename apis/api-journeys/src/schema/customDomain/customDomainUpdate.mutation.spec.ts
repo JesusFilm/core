@@ -445,6 +445,15 @@ describe('customDomainUpdate', () => {
         ...mockCustomDomain,
         campaignId: 'campaignId'
       })
+      // The draft root reads back to the manager through their team role.
+      prismaMock.userTeam.findUnique.mockResolvedValue({
+        id: 'userTeamId',
+        teamId: 'teamId',
+        userId: 'userId',
+        role: 'manager',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      } as never)
 
       const result = await authClient({
         document: CAMPAIGN_ROOT_MUTATION,

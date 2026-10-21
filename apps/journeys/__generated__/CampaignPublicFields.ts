@@ -122,7 +122,7 @@ export interface CampaignPublicFields_regions_languages {
   languageId: string;
   order: number;
   /**
-   * The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.
+   * `published` when the linked journey is live-published; null otherwise, whether no journey is linked or it is draft, archived, trashed or deleted. The viewer omits a language whose status is not `published`.
    */
   journeyStatus: JourneyStatus | null;
   /**
@@ -130,7 +130,7 @@ export interface CampaignPublicFields_regions_languages {
    */
   title: string | null;
   /**
-   * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.
+   * The Share Link: the short link the Campaign QR Code encodes, `https: // <short-link domain>/<pathname>` (with the domain path prefix when it has one), saved when the journey was linked; null unless the journey is live-published, or when the code has no saved address.
    */
   shortLinkUrl: string | null;
   /**

@@ -1,6 +1,6 @@
 import { prismaMock } from '../../../test/prismaMock'
 
-import { getTo, parseAndVerifyTo } from './qrCode.service'
+import { createShortLink, getTo, parseAndVerifyTo } from './qrCode.service'
 
 function journeyRow(
   slug: string,
@@ -249,6 +249,64 @@ describe('qrCode.service', () => {
       ).rejects.toMatchObject({
         extensions: { code: 'BAD_USER_INPUT', field: 'to' }
       })
+    })
+  })
+
+  describe('createShortLink', () => {
+    function gatewayResponse(body: unknown): Response {
+      return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { 'content-type': 'application/json' }
+      })
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it("returns the link's id and api-media's shortUrl", async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        gatewayResponse({
+          data: {
+            shortLinkCreate: {
+              __typename: 'MutationShortLinkCreateSuccess',
+              data: {
+                id: 'shortLinkId',
+                shortUrl: 'https://short.example.org/q/abc123'
+              }
+            }
+          }
+        })
+      )
+
+      await expect(
+        createShortLink({
+          id: 'shortLinkId',
+          hostname: 'short.example.org',
+          to: 'https://example.com/christmas-europe',
+          service: 'apiJourneys'
+        })
+      ).resolves.toEqual({
+        id: 'shortLinkId',
+        shortUrl: 'https://short.example.org/q/abc123'
+      })
+      const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string)
+      expect(body.query).toContain('data { id shortUrl }')
+    })
+
+    it('returns a null shortUrl when api-media returns no link', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        gatewayResponse({ data: { shortLinkCreate: {} } })
+      )
+
+      await expect(
+        createShortLink({
+          id: 'shortLinkId',
+          hostname: 'short.example.org',
+          to: 'https://example.com/christmas-europe',
+          service: 'apiJourneys'
+        })
+      ).resolves.toEqual({ id: 'shortLinkId', shortUrl: null })
     })
   })
 })
