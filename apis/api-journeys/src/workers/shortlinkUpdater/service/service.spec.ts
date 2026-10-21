@@ -1,9 +1,14 @@
+import { ApolloClient } from '@apollo/client'
 import { Logger } from 'pino'
 import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { updateAllShortlinks, updateJourneyShortlink } from './service'
+import {
+  REWRITE_BATCH_SIZE,
+  updateAllShortlinks,
+  updateJourneyShortlink
+} from './service'
 
 const mockQuery = vi.fn()
 const mockMutate = vi.fn()
@@ -247,6 +252,35 @@ describe('shortlinkUpdater service', () => {
       const to = mockMutate.mock.calls[0][0].variables.input.to as string
       expect(to).toContain('utm_campaign=shortLinkId')
       expect(to).not.toContain('qrCodeId')
+    })
+
+    it('rewrites at most one batch of rows at a time over a single Apollo client', async () => {
+      const rowCount = REWRITE_BATCH_SIZE * 2 + 3
+      prismaMock.qrCode.findMany.mockResolvedValue(
+        Array.from({ length: rowCount }, (_, index) =>
+          qrCodeRow({
+            id: `qrCodeId${index}`,
+            shortLinkId: `shortLinkId${index}`
+          })
+        )
+      )
+      prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
+      let inFlight = 0
+      let maxInFlight = 0
+      mockMutate.mockImplementation(async () => {
+        inFlight++
+        maxInFlight = Math.max(maxInFlight, inFlight)
+        await new Promise((resolve) => setTimeout(resolve, 1))
+        inFlight--
+        return updateSuccess
+      })
+
+      const count = await updateAllShortlinks(logger)
+
+      expect(count).toBe(rowCount)
+      expect(mockMutate).toHaveBeenCalledTimes(rowCount)
+      expect(maxInFlight).toBe(REWRITE_BATCH_SIZE)
+      expect(ApolloClient).toHaveBeenCalledTimes(1)
     })
 
     it('logs and skips a row whose getTo rejects while rewriting the rest', async () => {

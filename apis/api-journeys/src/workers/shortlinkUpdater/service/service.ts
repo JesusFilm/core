@@ -1,5 +1,6 @@
 import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
+import chunk from 'lodash/chunk'
 import { Logger } from 'pino'
 
 import { QrCode, prisma } from '@core/prisma/journeys/client'
@@ -66,12 +67,19 @@ const createApolloClient = () => {
   })
 }
 
+// Rows rewritten at once, so a sweep over every QR code cannot flood the
+// Prisma pool shared with user requests or the gateway.
+export const REWRITE_BATCH_SIZE = 10
+
 /**
  * Updates a shortlink with a new destination URL
  */
-export async function updateShortLink(id: string, to: string, logger?: Logger) {
-  const apollo = createApolloClient()
-
+export async function updateShortLink(
+  id: string,
+  to: string,
+  logger?: Logger,
+  apollo: ApolloClient = createApolloClient()
+) {
   try {
     const { data: shortLinkData } = await apollo.query({
       query: GET_SHORT_LINK,
@@ -114,39 +122,44 @@ export async function updateShortLink(id: string, to: string, logger?: Logger) {
 /**
  * Rewrites the short link of every given QR code to the target `getTo`
  * resolves. A row that fails is logged and skipped so the others still
- * rewrite; the next sweep repairs it. Never throws. Returns the number of
- * rows whose short link was rewritten.
+ * rewrite; the next sweep repairs it. Rows are rewritten
+ * `REWRITE_BATCH_SIZE` at a time over one shared Apollo client. Never throws.
+ * Returns the number of rows whose short link was rewritten.
  */
 export async function rewriteQrCodeShortLinks(
   qrCodes: QrCode[],
   logger: Logger = defaultLogger
 ): Promise<number> {
-  const results = await Promise.allSettled(
-    qrCodes.map(async (qrCode) => {
-      const to = await getTo({
-        shortLinkId: qrCode.shortLinkId,
-        toJourneyId: qrCode.toJourneyId,
-        toBlockId: qrCode.toBlockId
-      })
-      return await updateShortLink(qrCode.shortLinkId, to, logger)
-    })
-  )
-
+  const apollo = createApolloClient()
   let rewrittenCount = 0
-  results.forEach((result, index) => {
-    if (result.status === 'fulfilled') {
-      if (result.value != null) rewrittenCount++
-      return
-    }
-    logger.error(
-      {
-        qrCodeId: qrCodes[index].id,
-        shortLinkId: qrCodes[index].shortLinkId,
-        error: result.reason
-      },
-      'Failed to rewrite QR code short link'
+
+  for (const batch of chunk(qrCodes, REWRITE_BATCH_SIZE)) {
+    const results = await Promise.allSettled(
+      batch.map(async (qrCode) => {
+        const to = await getTo({
+          shortLinkId: qrCode.shortLinkId,
+          toJourneyId: qrCode.toJourneyId,
+          toBlockId: qrCode.toBlockId
+        })
+        return await updateShortLink(qrCode.shortLinkId, to, logger, apollo)
+      })
     )
-  })
+
+    for (const [index, result] of results.entries()) {
+      if (result.status === 'fulfilled') {
+        if (result.value != null) rewrittenCount++
+        continue
+      }
+      logger.error(
+        {
+          qrCodeId: batch[index].id,
+          shortLinkId: batch[index].shortLinkId,
+          error: result.reason
+        },
+        'Failed to rewrite QR code short link'
+      )
+    }
+  }
   return rewrittenCount
 }
 
