@@ -465,6 +465,7 @@ model Journey {
   socialNodeX                     Int?                          @default(-240)
   socialNodeY                     Int?                          @default(-46)
   qrCode                          QrCode[]
+  qrCodeTargets                   QrCode[]                      @relation("QrCodeTarget")
   Event                           Event[]
   journeyEventsExportLogs         JourneyEventsExportLog[]
   fromTemplateId                  String?
@@ -814,6 +815,7 @@ model QrCode {
   backgroundColor         String?                  @default("#FFFFFF")
   team                    Team                     @relation(fields: [teamId], references: [id])
   journey                 Journey                  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  toJourney               Journey                  @relation("QrCodeTarget", fields: [toJourneyId], references: [id], onDelete: Cascade)
   campaignRegionLanguages CampaignRegionLanguage[]
 }
 

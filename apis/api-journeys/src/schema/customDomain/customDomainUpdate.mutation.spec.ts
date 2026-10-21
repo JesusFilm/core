@@ -141,6 +141,32 @@ describe('customDomainUpdate', () => {
       expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
     })
 
+    it('does not fail when the short link rewrite rejects after the update is committed', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.customDomain.update.mockResolvedValue({
+        ...mockCustomDomain,
+        routeAllTeamJourneys: false
+      })
+      vi.mocked(updateTeamShortLinks).mockRejectedValueOnce(
+        new Error('gateway down')
+      )
+
+      const result = (await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { routeAllTeamJourneys: false }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.customDomainUpdate).toMatchObject({
+        id: 'customDomainId',
+        routeAllTeamJourneys: false
+      })
+      expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
+    })
+
     it('rewrites the team short links when the journey collection changes', async () => {
       prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
       prismaMock.journeyCollection.findFirst.mockResolvedValue({

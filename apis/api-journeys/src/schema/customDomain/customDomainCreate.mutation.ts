@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
+import { logger } from '../../logger'
 import { builder } from '../builder'
 
 import { CustomDomainRef } from './customDomain'
@@ -38,8 +39,8 @@ builder.mutationField('customDomainCreate', (t) =>
             extensions: { code: 'BAD_USER_INPUT' }
           })
 
-        try {
-          const customDomain = await prisma.$transaction(async (tx) => {
+        const customDomain = await prisma
+          .$transaction(async (tx) => {
             const { apexName } = await createVercelDomain(input.name)
 
             const data: Prisma.CustomDomainCreateInput = {
@@ -61,18 +62,25 @@ builder.mutationField('customDomainCreate', (t) =>
               data
             })
           })
+          .catch((err: any) => {
+            if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+              throw new GraphQLError('custom domain already exists', {
+                extensions: { code: 'BAD_USER_INPUT' }
+              })
+            }
+            throw err
+          })
 
+        try {
           await updateTeamShortLinks(customDomain.teamId)
-
-          return customDomain
-        } catch (err: any) {
-          if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
-            throw new GraphQLError('custom domain already exists', {
-              extensions: { code: 'BAD_USER_INPUT' }
-            })
-          }
-          throw err
+        } catch (error) {
+          logger.error(
+            { teamId: customDomain.teamId, error },
+            'Failed to update team QR code short links'
+          )
         }
+
+        return customDomain
       }
     })
 )

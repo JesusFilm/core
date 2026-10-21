@@ -6,9 +6,14 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../../workers/shortlinkUpdater/service', () => ({
+  updateJourneyShortlink: vi.fn().mockResolvedValue(undefined)
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -68,5 +73,75 @@ describe('journeyUpdate', () => {
     })
     expect(prismaMock.$transaction).not.toHaveBeenCalled()
     expect(prismaMock.journey.update).not.toHaveBeenCalled()
+  })
+
+  describe('short link rewrite', () => {
+    const journey = {
+      id: 'journeyId',
+      teamId: 'teamId',
+      userJourneys: [],
+      team: {
+        id: 'teamId',
+        userTeams: [
+          { userId: mockUser.id, teamId: 'teamId', role: UserTeamRole.manager }
+        ]
+      }
+    }
+
+    beforeEach(() => {
+      prismaMock.journey.findUnique.mockResolvedValue(journey as any)
+      prismaMock.$transaction.mockImplementation(
+        async (callback: any) => await callback(prismaMock)
+      )
+      prismaMock.journey.update.mockResolvedValue({
+        id: 'journeyId',
+        slug: 'new-slug'
+      } as any)
+    })
+
+    it('rewrites the QR short links after the transaction on a slug change', async () => {
+      const order: string[] = []
+      prismaMock.$transaction.mockImplementation(async (callback: any) => {
+        const result = await callback(prismaMock)
+        order.push('transaction returned')
+        return result
+      })
+      vi.mocked(updateJourneyShortlink).mockImplementation(async () => {
+        order.push('updateJourneyShortlink')
+      })
+
+      const result = (await authClient({
+        document: JOURNEY_UPDATE,
+        variables: { id: 'journeyId', input: { slug: 'new-slug' } }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(updateJourneyShortlink).toHaveBeenCalledWith('journeyId')
+      expect(order).toEqual(['transaction returned', 'updateJourneyShortlink'])
+    })
+
+    it('does not rewrite the QR short links without a slug change', async () => {
+      const result = (await authClient({
+        document: JOURNEY_UPDATE,
+        variables: { id: 'journeyId', input: { title: 'New title' } }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(updateJourneyShortlink).not.toHaveBeenCalled()
+    })
+
+    it('does not fail the mutation when the rewrite rejects', async () => {
+      vi.mocked(updateJourneyShortlink).mockRejectedValueOnce(
+        new Error('gateway down')
+      )
+
+      const result = (await authClient({
+        document: JOURNEY_UPDATE,
+        variables: { id: 'journeyId', input: { slug: 'new-slug' } }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.journeyUpdate.id).toBe('journeyId')
+    })
   })
 })

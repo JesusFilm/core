@@ -76,6 +76,31 @@ describe('customDomainDelete', () => {
     )
   })
 
+  it('should not fail when the short link rewrite rejects after the delete is committed', async () => {
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+    prismaMock.customDomain.delete.mockResolvedValue(mockCustomDomain)
+    vi.mocked(updateTeamShortLinks).mockRejectedValueOnce(
+      new Error('gateway down')
+    )
+
+    const result = await authClient({
+      document: CUSTOM_DOMAIN_DELETE_MUTATION,
+      variables: { id: 'customDomainId' }
+    })
+
+    expect(result).toEqual({
+      data: {
+        customDomainDelete: {
+          id: 'customDomainId',
+          name: 'example.com',
+          apexName: 'example.com',
+          routeAllTeamJourneys: true
+        }
+      }
+    })
+    expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
+  })
+
   it('should delete custom domain when authorized', async () => {
     prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     prismaMock.customDomain.delete.mockResolvedValue(mockCustomDomain)
