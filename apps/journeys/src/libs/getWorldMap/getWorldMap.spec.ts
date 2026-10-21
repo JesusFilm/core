@@ -1,19 +1,6 @@
-import { resolve } from 'path'
-
 import { getWorldMap } from './getWorldMap'
 
-// Next serves the app from its own directory; nx runs the specs from the repo root.
-const appRoot = resolve(__dirname, '../../..')
-
 describe('getWorldMap', () => {
-  beforeEach(() => {
-    vi.spyOn(process, 'cwd').mockReturnValue(appRoot)
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
   it('projects the public countries-110m.json into path strings', async () => {
     const worldMap = await getWorldMap()
     expect(worldMap.width).toBe(960)
