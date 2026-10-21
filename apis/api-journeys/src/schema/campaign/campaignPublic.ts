@@ -1,12 +1,10 @@
 import {
-  CampaignBlock as CampaignBlockRow,
   CampaignLanguage,
   CampaignRegionCountry,
   CampaignString,
   CampaignTheme,
   Prisma,
-  CampaignPageKind as PrismaCampaignPageKind,
-  JourneyStatus as PrismaJourneyStatus
+  CampaignPageKind as PrismaCampaignPageKind
 } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
@@ -40,7 +38,8 @@ export interface CampaignRegionLanguagePublicPayload {
   id: string
   languageId: string
   order: number
-  journeyStatus: PrismaJourneyStatus | null
+  /** `published` when the linked journey is live-published; null for every other state. */
+  journeyStatus: 'published' | null
   title: string | null
   shortLinkUrl: string | null
   journeyUrl: string | null
@@ -77,8 +76,8 @@ export interface CampaignPublicPayload {
   strings: CampaignString[]
   regions: CampaignRegionPublicPayload[]
   customDomainNames: string[]
-  header: CampaignBlockRow
-  footer: CampaignBlockRow
+  header: CampaignPublicBlock
+  footer: CampaignPublicBlock
   chrome: CampaignPublicBlock[]
   pages: CampaignPagePublicPayload[]
 }
@@ -107,7 +106,7 @@ builder.objectType(CampaignRegionLanguagePublicRef, {
       type: JourneyStatus,
       nullable: true,
       description:
-        'The linked journey’s live status; null when no journey is linked or it was deleted. The viewer omits a language whose journey is not `published`.',
+        '`published` when the linked journey is live-published; null otherwise, whether no journey is linked or it is draft, archived, trashed or deleted. The viewer omits a language whose status is not `published`.',
       resolve: (regionLanguage) => regionLanguage.journeyStatus
     }),
     title: t.exposeString('title', {
@@ -118,7 +117,7 @@ builder.objectType(CampaignRegionLanguagePublicRef, {
     shortLinkUrl: t.exposeString('shortLinkUrl', {
       nullable: true,
       description:
-        'The Share Link: the short link the Campaign QR Code encodes, `https://<short-link domain>/<pathname>`, resolved server-side; null unless the journey is live-published.'
+        'The Share Link: the short link the Campaign QR Code encodes, `https://<short-link domain>/<pathname>` (with the domain path prefix when it has one), saved when the journey was linked; null unless the journey is live-published, or when the code has no saved address.'
     }),
     journeyUrl: t.exposeString('journeyUrl', {
       nullable: true,

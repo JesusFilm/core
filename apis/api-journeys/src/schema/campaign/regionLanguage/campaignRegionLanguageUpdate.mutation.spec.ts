@@ -57,6 +57,7 @@ const QR_CODE = {
   toJourneyId: 'journeyId',
   toBlockId: null,
   shortLinkId: 'shortLinkId',
+  shortLinkUrl: 'https://short.example.org/shortLinkId',
   color: '#000000',
   backgroundColor: '#FFFFFF'
 }
@@ -115,7 +116,10 @@ describe('campaignRegionLanguageUpdate', () => {
       ...QR_CODE,
       ...data
     })) as never)
-    vi.mocked(createShortLink).mockImplementation(async ({ id }) => ({ id }))
+    vi.mocked(createShortLink).mockImplementation(async ({ id }) => ({
+      id,
+      shortUrl: `https://short.example.org/${id}`
+    }))
   })
 
   function linked(toJourneyId = 'journeyId') {

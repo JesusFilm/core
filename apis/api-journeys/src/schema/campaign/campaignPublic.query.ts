@@ -3,7 +3,6 @@ import { GraphQLError } from 'graphql'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
-import { logger } from '../logger'
 
 import {
   CampaignJourneyLive,
@@ -17,7 +16,6 @@ import {
   CampaignRegionLanguagePublicPayload,
   CampaignRegionPublicPayload
 } from './campaignPublic'
-import { fetchShortLink, shortLinkUrl } from './gatewayClient'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyEmbedUrl,
@@ -59,53 +57,6 @@ type CampaignPublicRow = Prisma.CampaignGetPayload<{
 
 type CampaignPublicRegionLanguageRow =
   CampaignPublicRow['regions'][number]['languages'][number]
-
-/** The Share Link of every region language with a live-published journey, by short link id. */
-export type ShortLinkUrls = ReadonlyMap<string, string>
-
-function isLivePublished(
-  regionLanguage: CampaignPublicRegionLanguageRow
-): boolean {
-  const journey = regionLanguage.journey
-  return (
-    journey != null &&
-    journey.deletedAt == null &&
-    journey.status === 'published'
-  )
-}
-
-/**
- * Resolve the Share Link of every live-published region language through the
- * gateway's short-link lookup, in parallel; a link the gateway no longer
- * knows, or cannot be reached for, is left out, so the language renders
- * without a Share Link rather than failing the page.
- */
-export async function resolveShortLinkUrls(
-  campaign: CampaignPublicRow
-): Promise<ShortLinkUrls> {
-  const shortLinkIds = new Set<string>()
-  for (const region of campaign.regions)
-    for (const regionLanguage of region.languages)
-      if (isLivePublished(regionLanguage) && regionLanguage.qrCode != null)
-        shortLinkIds.add(regionLanguage.qrCode.shortLinkId)
-
-  const resolved = await Promise.all(
-    [...shortLinkIds].map(
-      async (id) =>
-        [
-          id,
-          await fetchShortLink(id).catch((error) => {
-            logger.error({ error, shortLinkId: id }, 'short link lookup failed')
-            return null
-          })
-        ] as const
-    )
-  )
-  const urls = new Map<string, string>()
-  for (const [id, shortLink] of resolved)
-    if (shortLink != null) urls.set(id, shortLinkUrl(shortLink))
-  return urls
-}
 
 /** The live journey read of every journey-list item, by journey id. */
 export type JourneyLives = ReadonlyMap<string, CampaignJourneyLive>
@@ -155,25 +106,29 @@ function resolveBlockText(
   return resolved
 }
 
+/**
+ * A Share Language as the public reads it. Only whether the linked journey is
+ * live-published leaves the server: any other state (draft, archived,
+ * trashed, deleted, none linked) reads as null. The Share Link is the address
+ * saved on the Campaign QR Code when the journey was linked.
+ */
 function toRegionLanguage(
-  regionLanguage: CampaignPublicRegionLanguageRow,
-  shortLinkUrls: ShortLinkUrls
+  regionLanguage: CampaignPublicRegionLanguageRow
 ): CampaignRegionLanguagePublicPayload {
   const journey = regionLanguage.journey
-  const live =
-    journey != null && journey.deletedAt == null ? journey.status : null
-  const published = live === 'published' && journey != null
-  const shortLinkId = regionLanguage.qrCode?.shortLinkId
+  const published =
+    journey != null &&
+    journey.deletedAt == null &&
+    journey.status === 'published'
   return {
     id: regionLanguage.id,
     languageId: regionLanguage.languageId,
     order: regionLanguage.order,
-    journeyStatus: live,
+    journeyStatus: published ? 'published' : null,
     title: published ? regionLanguage.title : null,
-    shortLinkUrl:
-      published && shortLinkId != null
-        ? (shortLinkUrls.get(shortLinkId) ?? null)
-        : null,
+    shortLinkUrl: published
+      ? (regionLanguage.qrCode?.shortLinkUrl ?? null)
+      : null,
     journeyUrl: published ? getJourneyPublicUrl(journey) : null,
     embedUrl: published ? getJourneyEmbedUrl(journey) : null
   }
@@ -182,14 +137,16 @@ function toRegionLanguage(
 /**
  * Project one published campaign row into the public payload: text resolved
  * to `languageId`, blocks partitioned by page / chrome / region, each
- * region language carrying its resolved Share Link.
+ * region language carrying its saved Share Link.
  */
 export function toCampaignPublic(
   campaign: CampaignPublicRow,
   requestedLanguageId: string | null | undefined,
-  shortLinkUrls: ShortLinkUrls = new Map(),
   journeyLives: JourneyLives = new Map()
 ): CampaignPublicPayload {
+  const theme = campaign.theme
+  if (theme == null) throw notFound()
+
   const languageId =
     requestedLanguageId != null &&
     campaign.languages.some(
@@ -244,7 +201,7 @@ export function toCampaignPublic(
       order: region.order,
       countries: region.countries,
       languages: region.languages.map((regionLanguage) =>
-        toRegionLanguage(regionLanguage, shortLinkUrls)
+        toRegionLanguage(regionLanguage)
       ),
       lines: blocks.filter((block) => block.regionId === region.id)
     })
@@ -264,11 +221,7 @@ export function toCampaignPublic(
     languageId,
     publishedAt: campaign.publishedAt,
     languages: campaign.languages,
-    theme:
-      campaign.theme ??
-      (() => {
-        throw notFound()
-      })(),
+    theme,
     strings: campaign.strings.map((string) => ({
       ...string,
       value: resolveText(
@@ -346,14 +299,10 @@ builder.queryField('campaignPublic', (t) =>
         include: INCLUDE_CAMPAIGN_PUBLIC
       })
       if (campaign == null) throw notFound()
-      const [shortLinkUrls, journeyLives] = await Promise.all([
-        resolveShortLinkUrls(campaign),
-        resolveJourneyLives(campaign)
-      ])
+      const journeyLives = await resolveJourneyLives(campaign)
       return toCampaignPublic(
         campaign,
         args.languageId == null ? null : String(args.languageId),
-        shortLinkUrls,
         journeyLives
       )
     }

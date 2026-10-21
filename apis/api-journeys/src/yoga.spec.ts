@@ -9,7 +9,10 @@ vi.mock('@graphql-yoga/plugin-response-cache', () => ({
 
 // The response cache is only installed outside NODE_ENV=test, so load the
 // server as production would to see the plugin's configuration. Hoisted so it
-// runs before the `./yoga` import above.
+// runs before the `./yoga` import above. This is the one spec whose module
+// graph loads with production env, so any production-only side effect added
+// to `yoga.ts` runs here first; it stays contained to this file only because
+// the vitest `forks` pool runs every spec file in its own process.
 vi.hoisted(() => vi.stubEnv('NODE_ENV', 'production'))
 
 describe('yoga response cache', () => {
@@ -35,7 +38,7 @@ describe('yoga response cache', () => {
     })
   })
 
-  it('leaves campaignStats to its own cache', () => {
-    expect(ttlPerSchemaCoordinate).not.toHaveProperty('Query.campaignStats')
+  it('never caches campaignStats, whose draft gate must run on every read', () => {
+    expect(ttlPerSchemaCoordinate).toHaveProperty('Query.campaignStats', 0)
   })
 })

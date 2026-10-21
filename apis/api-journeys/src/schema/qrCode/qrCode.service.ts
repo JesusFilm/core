@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
 
+import { graphqlRequest } from '../../lib/gateway/graphqlRequest'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyPublicUrl
@@ -20,53 +21,24 @@ interface ShortLinkUpdateInput {
   to: string
 }
 
-const GATEWAY_URL = process.env.GATEWAY_URL
-const INTEROP_TOKEN = process.env.INTEROP_TOKEN ?? ''
 const JOURNEYS_SHORTLINK_DOMAIN = process.env.JOURNEYS_SHORTLINK_DOMAIN
 
-async function graphqlRequest(
-  query: string,
-  variables: Record<string, unknown>
-): Promise<Record<string, unknown>> {
-  if (GATEWAY_URL == null)
-    throw new GraphQLError('Gateway URL not configured', {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
-  const response = await fetch(GATEWAY_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'interop-token': INTEROP_TOKEN,
-      'x-graphql-client-name': 'api-journeys-modern',
-      'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-    },
-    body: JSON.stringify({ query, variables })
-  })
-
-  const result = (await response.json()) as {
-    data?: Record<string, unknown>
-    errors?: Array<{ message: string }>
-  }
-
-  if (result.errors != null && result.errors.length > 0)
-    throw new GraphQLError(result.errors[0].message, {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
-  return result.data ?? {}
-}
-
+/**
+ * Create a short link through the gateway. Returns its id and its public
+ * address as api-media builds it (`https://<hostname>/<pathname>`, with the
+ * domain's path prefix when it has one); `shortUrl` is null when api-media
+ * returns no link.
+ */
 export async function createShortLink(
   input: ShortLinkCreateInput
-): Promise<{ id: string }> {
+): Promise<{ id: string; shortUrl: string | null }> {
   const query = `
     mutation shortLinkCreate($input: MutationShortLinkCreateInput!) {
       shortLinkCreate(input: $input) {
         ... on ZodError { message }
         ... on NotUniqueError { message }
         ... on MutationShortLinkCreateSuccess {
-          data { id pathname to domain { hostname } }
+          data { id shortUrl }
         }
       }
     }
@@ -76,7 +48,7 @@ export async function createShortLink(
   const result = data.shortLinkCreate as {
     __typename?: string
     message?: string
-    data?: { id: string }
+    data?: { id: string; shortUrl: string }
   }
 
   if (
@@ -87,7 +59,10 @@ export async function createShortLink(
       extensions: { code: 'BAD_USER_INPUT' }
     })
 
-  return { id: result.data?.id ?? input.id }
+  return {
+    id: result.data?.id ?? input.id,
+    shortUrl: result.data?.shortUrl ?? null
+  }
 }
 
 export async function updateShortLink(

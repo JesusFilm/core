@@ -83,7 +83,10 @@ describe('qrCodeCreate', () => {
     )
     prismaMock.journey.findUnique.mockResolvedValue(journey as never)
     prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journey as never)
-    mockCreateShortLink.mockImplementation(async ({ id }) => ({ id }))
+    mockCreateShortLink.mockImplementation(async ({ id }) => ({
+      id,
+      shortUrl: `https://short.example.org/${id}`
+    }))
     prismaMock.qrCode.create.mockResolvedValue({
       id: 'qrCodeId',
       toJourneyId: 'journeyId'

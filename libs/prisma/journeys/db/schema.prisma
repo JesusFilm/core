@@ -811,6 +811,8 @@ model QrCode {
   toJourneyId             String
   toBlockId               String?
   shortLinkId             String
+  /// The Share Link address (`https://<hostname>/<pathname>`, with the domain's path prefix) saved when a Campaign QR Code is created; null for journey QR codes.
+  shortLinkUrl            String?
   color                   String?                  @default("#000000")
   backgroundColor         String?                  @default("#FFFFFF")
   team                    Team                     @relation(fields: [teamId], references: [id])
