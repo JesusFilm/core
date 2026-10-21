@@ -1705,5 +1705,7 @@
   "Preview {{language}}": "Preview {{language}}",
   "Previewing": "Previewing",
   "Preview language: {{language}}": "Preview language: {{language}}",
-  "Open journey": "Open journey"
+  "Open journey": "Open journey",
+  "There was an error loading campaigns.": "There was an error loading campaigns.",
+  "There was an error refreshing the campaign.": "There was an error refreshing the campaign."
 }

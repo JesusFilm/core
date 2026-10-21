@@ -6,6 +6,7 @@ export interface YouTubePlaylist {
 }
 
 interface YouTubePlaylistsData {
+  error?: { message?: string }
   items?: Array<{
     snippet: {
       title: string
@@ -18,7 +19,9 @@ interface YouTubePlaylistsData {
 /**
  * Read one YouTube playlist (title, thumbnail and size) from the YouTube
  * Data API, as `fetchYouTubeVideo` reads a video. An unknown id answers
- * with no items, so the result can be undefined.
+ * with no items, so the result can be undefined; a refused request (a bad
+ * key, an exhausted quota) answers with an error payload, which throws the
+ * API's message.
  */
 export async function fetchYouTubePlaylist(
   id: string
@@ -28,9 +31,14 @@ export async function fetchYouTubePlaylist(
     key: process.env.NEXT_PUBLIC_FIREBASE_API_KEY ?? '',
     id
   }).toString()
-  const data: YouTubePlaylistsData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/playlists?${query}`)
-  ).json()
+  const response = await fetch(
+    `https://www.googleapis.com/youtube/v3/playlists?${query}`
+  )
+  const data: YouTubePlaylistsData = await response.json()
+  if (!response.ok)
+    throw new Error(
+      data.error?.message ?? `YouTube request failed (${response.status})`
+    )
   const playlist = data.items?.[0]
   if (playlist == null) return undefined
   return {

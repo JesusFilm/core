@@ -1,54 +1,24 @@
 import { NormalizedCacheObject } from '@apollo/client'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next/pages'
-import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { CampaignEditor } from '../../src/components/CampaignEditor'
+import { CampaignEditorPage } from '../../src/components/CampaignEditorPage'
 import {
   getAuthTokens,
   redirectToLogin,
   toUser
 } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { useCampaignQuery } from '../../src/libs/useCampaignQuery'
 
 function CampaignEditPage(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const campaignId = router.query.campaignId
-  const { data, error } = useCampaignQuery(
-    typeof campaignId === 'string' ? { id: campaignId } : undefined
-  )
 
   return (
-    <>
-      <NextSeo
-        title={
-          data?.campaign.title != null
-            ? t('Edit {{title}}', { title: data.campaign.title })
-            : t('Edit campaign')
-        }
-      />
-      {error != null ? (
-        <Stack
-          sx={{
-            minHeight: '100vh',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 6
-          }}
-        >
-          <Typography variant="h5">{t('Campaign not found')}</Typography>
-          <Typography color="text.secondary">{error.message}</Typography>
-        </Stack>
-      ) : (
-        <CampaignEditor campaign={data?.campaign} />
-      )}
-    </>
+    <CampaignEditorPage
+      campaignId={typeof campaignId === 'string' ? campaignId : undefined}
+    />
   )
 }
 
