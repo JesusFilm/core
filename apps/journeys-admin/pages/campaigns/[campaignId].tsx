@@ -1,8 +1,16 @@
-import { NormalizedCacheObject } from '@apollo/client'
+import {
+  CombinedGraphQLErrors,
+  NormalizedCacheObject,
+  gql
+} from '@apollo/client'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
 import { ReactElement } from 'react'
 
+import {
+  GetSSRAdminCampaign,
+  GetSSRAdminCampaignVariables
+} from '../../__generated__/GetSSRAdminCampaign'
 import { CampaignEditorPage } from '../../src/components/CampaignEditorPage'
 import {
   getAuthTokens,
@@ -10,6 +18,14 @@ import {
   toUser
 } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
+
+export const GET_SSR_ADMIN_CAMPAIGN = gql`
+  query GetSSRAdminCampaign($id: ID!) {
+    campaign(id: $id) {
+      id
+    }
+  }
+`
 
 function CampaignEditPage(): ReactElement {
   const router = useRouter()
@@ -37,6 +53,28 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   if (flags.campaignBuilder !== true)
     return { redirect: { destination: '/', permanent: false } }
+
+  // Same rule as the API's campaign Read: a manager or member of the
+  // campaign's team gets in; anyone else is sent back to the campaigns list.
+  try {
+    await apolloClient.query<GetSSRAdminCampaign, GetSSRAdminCampaignVariables>(
+      {
+        query: GET_SSR_ADMIN_CAMPAIGN,
+        variables: { id: ctx.query?.campaignId as string }
+      }
+    )
+  } catch (error) {
+    if (
+      CombinedGraphQLErrors.is(error) &&
+      error.errors.some(
+        (graphQLError) =>
+          graphQLError.extensions?.code === 'NOT_FOUND' ||
+          graphQLError.extensions?.code === 'FORBIDDEN'
+      )
+    )
+      return { redirect: { destination: '/campaigns', permanent: false } }
+    throw error
+  }
 
   return {
     props: {
