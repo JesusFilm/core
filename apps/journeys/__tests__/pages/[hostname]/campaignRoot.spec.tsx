@@ -313,7 +313,7 @@ describe('Campaign Root on a custom domain', () => {
       )
       expect(logger.error).toHaveBeenCalledTimes(1)
       expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({ hostname: HOSTNAME }),
+        expect.objectContaining({ hostname: HOSTNAME, err: expect.any(Error) }),
         'campaign root read failed'
       )
     })
@@ -336,7 +336,7 @@ describe('Campaign Root on a custom domain', () => {
       )
       expect(logger.error).toHaveBeenCalledTimes(1)
       expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({ hostname: HOSTNAME }),
+        expect.objectContaining({ hostname: HOSTNAME, err: expect.any(Error) }),
         'campaign root read failed'
       )
     })
@@ -352,7 +352,7 @@ describe('Campaign Root on a custom domain', () => {
       })
       expect(logger.error).toHaveBeenCalledTimes(1)
       expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({ hostname: HOSTNAME }),
+        expect.objectContaining({ hostname: HOSTNAME, err: expect.any(Error) }),
         'campaign root read failed'
       )
     })
@@ -370,7 +370,7 @@ describe('Campaign Root on a custom domain', () => {
       })
       expect(logger.error).toHaveBeenCalledTimes(1)
       expect(logger.error).toHaveBeenCalledWith(
-        expect.objectContaining({ hostname: HOSTNAME }),
+        expect.objectContaining({ hostname: HOSTNAME, err: expect.any(Error) }),
         'campaign root read failed'
       )
     })

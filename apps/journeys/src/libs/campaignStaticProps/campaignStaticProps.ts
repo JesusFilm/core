@@ -181,7 +181,7 @@ export async function getHostCampaignStaticProps({
         : (inDefault) => matchRegionSlug(segment, inDefault.regions) != null
     )
   } catch (error) {
-    logger.error({ error, hostname, segment }, 'campaign root read failed')
+    logger.error({ err: error, hostname, segment }, 'campaign root read failed')
     return null
   }
   if (result == null) return null
