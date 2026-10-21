@@ -10,6 +10,7 @@ import { ReactElement, useEffect, useMemo } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
 import { Dialog } from '@core/shared/ui/Dialog/Dialog'
+import { useFlags } from '@core/shared/ui/FlagsProvider'
 import ComputerIcon from '@core/shared/ui/icons/Computer'
 import Globe2Icon from '@core/shared/ui/icons/Globe2'
 import InformationCircleContainedIcon from '@core/shared/ui/icons/InformationCircleContained'
@@ -38,6 +39,7 @@ export function CustomDomainDialog({
 }: CustomDomainDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { activeTeam } = useTeam()
+  const { campaignBuilder } = useFlags()
   const smUp = useMediaQuery((theme: Theme) => theme.breakpoints.up('sm'))
   const { data, refetch, loading } = useCustomDomainsQuery({
     variables: { teamId: activeTeam?.id ?? '' },
@@ -123,12 +125,13 @@ export function CustomDomainDialog({
                 currentUserTeamRole={currentUserTeamRole}
               />
             </Stack>
-            {currentUserTeamRole === UserTeamRole.manager && (
-              <Stack spacing={4} direction="row">
-                <Layout1Icon sx={{ color: 'secondary.light' }} />
-                <CampaignRootForm customDomain={customDomain} />
-              </Stack>
-            )}
+            {campaignBuilder === true &&
+              currentUserTeamRole === UserTeamRole.manager && (
+                <Stack spacing={4} direction="row">
+                  <Layout1Icon sx={{ color: 'secondary.light' }} />
+                  <CampaignRootForm customDomain={customDomain} />
+                </Stack>
+              )}
             {currentUserTeamRole === UserTeamRole.manager &&
               currentUserTeamRole != null && (
                 <>

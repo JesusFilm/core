@@ -14,6 +14,7 @@ import {
   getLastActiveTeamIdAndTeamsMock,
   getLastActiveTeamIdAndTeamsMockTeamMember
 } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import { CheckCustomDomain } from '../../../../__generated__/CheckCustomDomain'
 import { GetCampaigns } from '../../../../__generated__/GetCampaigns'
@@ -218,11 +219,13 @@ describe('CustomDomainDialog', () => {
             }
           ]}
         >
-          <SnackbarProvider>
-            <TeamProvider>
-              <CustomDomainDialog open />
-            </TeamProvider>
-          </SnackbarProvider>
+          <FlagsProvider flags={{ campaignBuilder: true }}>
+            <SnackbarProvider>
+              <TeamProvider>
+                <CustomDomainDialog open />
+              </TeamProvider>
+            </SnackbarProvider>
+          </FlagsProvider>
         </MockedProvider>
       )
 
@@ -267,11 +270,13 @@ describe('CustomDomainDialog', () => {
             }
           ]}
         >
-          <SnackbarProvider>
-            <TeamProvider>
-              <CustomDomainDialog open />
-            </TeamProvider>
-          </SnackbarProvider>
+          <FlagsProvider flags={{ campaignBuilder: true }}>
+            <SnackbarProvider>
+              <TeamProvider>
+                <CustomDomainDialog open />
+              </TeamProvider>
+            </SnackbarProvider>
+          </FlagsProvider>
         </MockedProvider>
       )
 
@@ -282,6 +287,34 @@ describe('CustomDomainDialog', () => {
       fireEvent.click(screen.getByLabelText('Clear campaign root'))
 
       await waitFor(() => expect(clearResult).toHaveBeenCalled())
+    })
+
+    it('is not offered to a manager without the campaignBuilder flag', async () => {
+      const campaignsResult = vi.fn().mockReturnValue(campaignsMock.result)
+      render(
+        <MockedProvider
+          mocks={[
+            getLastActiveTeamIdAndTeamsMock,
+            getCustomDomainMock,
+            getCampaignRootMock(null),
+            { ...campaignsMock, result: campaignsResult },
+            mockUseCurrentUserLazyQuery,
+            checkCustomDomainMockConfiguredAndVerified
+          ]}
+        >
+          <FlagsProvider flags={{ campaignBuilder: false }}>
+            <SnackbarProvider>
+              <TeamProvider>
+                <CustomDomainDialog open />
+              </TeamProvider>
+            </SnackbarProvider>
+          </FlagsProvider>
+        </MockedProvider>
+      )
+
+      await screen.findByText('DNS Config')
+      expect(screen.queryByText('Campaign Root')).not.toBeInTheDocument()
+      expect(campaignsResult).not.toHaveBeenCalled()
     })
 
     it('is not offered to a team member', async () => {
