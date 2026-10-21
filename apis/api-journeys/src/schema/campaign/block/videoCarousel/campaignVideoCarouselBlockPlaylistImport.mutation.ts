@@ -11,6 +11,7 @@ import {
   CAMPAIGN_VIDEO_TYPENAME,
   authorizeTypedBlockUpdate,
   getSiblings,
+  lockCampaignStructure,
   touchCampaign
 } from '../service'
 
@@ -46,6 +47,7 @@ builder.mutationField('campaignVideoCarouselBlockPlaylistImport', (t) =>
       if (videos.length === 0)
         throw badUserInput('That playlist has no public videos', 'url')
       return await prisma.$transaction(async (tx) => {
+        await lockCampaignStructure(tx, carousel.campaignId)
         const siblings = await getSiblings(
           { ...carousel, parentBlockId: carousel.id },
           tx

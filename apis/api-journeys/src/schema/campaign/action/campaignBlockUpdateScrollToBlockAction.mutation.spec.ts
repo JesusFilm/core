@@ -64,7 +64,14 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
       }
     })
     expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
-      where: { id: 'carouselId', campaignId: 'campaignId', deletedAt: null },
+      where: {
+        id: 'carouselId',
+        campaignId: 'campaignId',
+        deletedAt: null,
+        parentBlockId: null,
+        parentOrder: { not: null },
+        pageId: { not: null }
+      },
       select: { id: true }
     })
     expect(prismaMock.campaignAction.upsert).toHaveBeenCalledWith({
@@ -80,6 +87,73 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
       data: { updatedAt: expect.any(Date) }
+    })
+  })
+
+  describe('the target is a top-level section on the button’s page', () => {
+    it('limits a page button to sections of its own page', async () => {
+      mockButton('heroButtonId', { id: 'landingJourneyListId' })
+
+      const result = await update('landingJourneyListId', 'heroButtonId')
+
+      expect(result.errors).toBeUndefined()
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+        where: {
+          id: 'landingJourneyListId',
+          campaignId: 'campaignId',
+          deletedAt: null,
+          parentBlockId: null,
+          parentOrder: { not: null },
+          pageId: 'landingPageId'
+        },
+        select: { id: true }
+      })
+    })
+
+    it.each([
+      ['an Extra', 'heroButtonId'],
+      ['an owned block', 'heroCoverId'],
+      ['the header', 'headerId'],
+      ['a section of the other page', 'regionHeaderId']
+    ])(
+      'refuses %s for a page button (BAD_USER_INPUT, blockId)',
+      async (_label, targetId) => {
+        mockButton('heroButtonId', null)
+
+        const result = await update(targetId, 'heroButtonId')
+
+        expect(result.errors[0].extensions).toMatchObject({
+          code: 'BAD_USER_INPUT',
+          field: 'blockId'
+        })
+        expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+          where: expect.objectContaining({
+            id: targetId,
+            parentBlockId: null,
+            parentOrder: { not: null },
+            pageId: 'landingPageId'
+          }),
+          select: { id: true }
+        })
+        expect(prismaMock.campaignAction.upsert).not.toHaveBeenCalled()
+      }
+    )
+
+    it('lets a header or footer button target a section of either page', async () => {
+      mockButton('footerTermsId', { id: 'regionHeaderId' })
+
+      const result = await update('regionHeaderId')
+
+      expect(result.errors).toBeUndefined()
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+        where: expect.objectContaining({
+          id: 'regionHeaderId',
+          parentBlockId: null,
+          parentOrder: { not: null },
+          pageId: { not: null }
+        }),
+        select: { id: true }
+      })
     })
   })
 

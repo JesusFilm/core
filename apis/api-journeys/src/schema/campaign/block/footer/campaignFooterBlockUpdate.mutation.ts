@@ -6,8 +6,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 
 export const CampaignFooterBlockUpdateInput = builder.inputType(
@@ -36,7 +36,7 @@ builder.mutationField('campaignFooterBlockUpdate', (t) =>
         context.user,
         'CampaignFooterBlock'
       )
-      return await updateBlock(block, await validateSectionStyle(input, block))
+      return await updateBlock(block, sectionStyleColumns(input))
     }
   })
 )

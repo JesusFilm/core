@@ -3,8 +3,8 @@ import { CampaignFeaturedMediaLayout, CampaignMediaSide } from '../../enums'
 import { CampaignFeaturedMediaBlock } from '../campaignFeaturedMediaBlock'
 import {
   MEDIA_SLOT_ERRORS,
-  mediaSlotInputField,
-  mediaSlotUpdate
+  mediaSlotColumns,
+  mediaSlotInputField
 } from '../mediaSlotInput'
 import {
   SECTION_STYLE_ERRORS,
@@ -12,8 +12,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 
 import { validateFeaturedMediaInput } from './validateFeaturedMediaInput'
@@ -65,13 +65,12 @@ builder.mutationField('campaignFeaturedMediaBlockUpdate', (t) =>
         'CampaignFeaturedMediaBlock'
       )
       const body = validateFeaturedMediaInput(input)
-      const style = await validateSectionStyle(input, block)
-      const media = await mediaSlotUpdate(input.mediaBlockId, block)
-      return await updateBlock(
-        block,
-        { ...body, ...style, ...media.data },
-        media.before
-      )
+      const style = sectionStyleColumns(input)
+      return await updateBlock(block, {
+        ...body,
+        ...style,
+        ...mediaSlotColumns(input.mediaBlockId)
+      })
     }
   })
 )
