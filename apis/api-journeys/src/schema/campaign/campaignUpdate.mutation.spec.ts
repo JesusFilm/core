@@ -403,6 +403,27 @@ describe('campaignUpdate', () => {
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
 
+    it('counts untranslated text of a section in a Column Slot (CONFLICT)', async () => {
+      const campaign = campaignFactory({ role: 'member' })
+        .withLanguage(FRENCH)
+        .withColumnsSection()
+        .build()
+      prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+      prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(
+        translatedInto(campaign, FRENCH, { blockId: 'columnHeroId' })
+      )
+
+      const result = await setDefault(FRENCH)
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'defaultLanguageId',
+        count: 1
+      })
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
     it('swaps every field in one transaction: column text to Translations[oldDefault] as human, the new language to the column, its entry dropped', async () => {
       const campaign = campaignFactory({ role: 'member' })
         .withLanguage(FRENCH)

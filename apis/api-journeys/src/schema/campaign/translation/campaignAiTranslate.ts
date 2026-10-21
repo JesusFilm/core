@@ -13,7 +13,7 @@ import { User } from '@core/yoga/firebaseClient'
 import { env } from '../../../env'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { conflict, lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
 import { Action, campaignAcl } from '../campaign.acl'
 import { fetchLanguageName } from '../gatewayClient'
@@ -30,6 +30,10 @@ import {
   campaignTranslationRows
 } from './campaignTranslations.query'
 import { CampaignAiTranslateInput } from './inputs'
+import {
+  TranslationRunLock,
+  acquireTranslationRunLock
+} from './translationRunLock'
 
 type CampaignAiTranslateMode = 'all' | 'missing'
 
@@ -181,6 +185,31 @@ function kindOf(row: CampaignTranslationRowShape): TargetKind {
   return 'campaign'
 }
 
+/**
+ * Lock the batch's target rows in the default-language swap's order: blocks,
+ * regions, then strings, each by id, then the campaign row. Block edits and
+ * `campaignTranslationSet` lock their one row and then the campaign, so no
+ * order of these writers can deadlock.
+ */
+async function lockBatchTargets(
+  tx: Prisma.TransactionClient,
+  campaignId: string,
+  targetIds: Map<string, TargetKind>
+): Promise<void> {
+  const idsOf = (kind: TargetKind): string[] =>
+    [...targetIds].filter(([, k]) => k === kind).map(([id]) => id)
+  const blockIds = idsOf('block')
+  const regionIds = idsOf('region')
+  const stringIds = idsOf('string')
+  if (blockIds.length > 0)
+    await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE id = ANY(${blockIds}::text[]) ORDER BY id FOR UPDATE`
+  if (regionIds.length > 0)
+    await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ANY(${regionIds}::text[]) ORDER BY id FOR UPDATE`
+  if (stringIds.length > 0)
+    await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE id = ANY(${stringIds}::text[]) ORDER BY id FOR UPDATE`
+  await lockCampaign(tx, campaignId)
+}
+
 async function readTarget(
   tx: Prisma.TransactionClient,
   kind: TargetKind,
@@ -230,10 +259,12 @@ function currentTranslations(value: unknown): TranslationsJson {
 
 /**
  * Write the batch's machine translations as `{ value, source: machine }` into
- * `<field>Translations[languageId]`. Each target is re-read inside the
- * transaction so nothing a person wrote, or another language's entry, since
- * the run began is lost: `missing` only fills an absent entry, `all` replaces
- * `machine` entries, and neither touches a `human` one.
+ * `<field>Translations[languageId]`. The targets and the campaign are locked
+ * and each target re-read under the lock, so nothing a person wrote, or
+ * another language's entry, since the run began is lost: `missing` only
+ * fills an absent entry, `all` replaces `machine` entries, and neither
+ * touches a `human` one. When the language has since become the default or
+ * left the campaign, the batch writes nothing.
  */
 async function writeBatch({
   campaignId,
@@ -257,10 +288,30 @@ async function writeBatch({
   }
   if (rowsByTarget.size === 0) return 0
 
+  const kinds = new Map(
+    [...rowsByTarget].map(([targetId, rows]) => [targetId, kindOf(rows[0])])
+  )
   return await prisma.$transaction(async (tx) => {
+    await lockBatchTargets(tx, campaignId, kinds)
+    const campaign = await tx.campaign.findUnique({
+      where: { id: campaignId },
+      select: { defaultLanguageId: true, languages: true }
+    })
+    if (
+      campaign == null ||
+      campaign.defaultLanguageId === languageId ||
+      !campaign.languages.some((language) => language.languageId === languageId)
+    ) {
+      logger.warn(
+        { campaignId, languageId, batch: batch.label },
+        'Language is no longer a non-default campaign language; batch skipped'
+      )
+      return 0
+    }
+
     let written = 0
     for (const [targetId, rows] of rowsByTarget) {
-      const kind = kindOf(rows[0])
+      const kind = kinds.get(targetId) as TargetKind
       const record = await readTarget(tx, kind, targetId)
       if (record == null) continue
 
@@ -371,6 +422,7 @@ export async function* campaignAiTranslate(
   user: User,
   cancelSignal?: AbortSignal
 ): AsyncGenerator<CampaignAiTranslateProgress> {
+  let runLock: TranslationRunLock | null = null
   try {
     if (user == null)
       throw new GraphQLError('Not authenticated', {
@@ -415,6 +467,23 @@ export async function* campaignAiTranslate(
     if (sourceLanguageName == null || targetLanguageName == null)
       throw badUserInput(
         'languageId must be an existing language',
+        'languageId'
+      )
+
+    try {
+      runLock = await acquireTranslationRunLock(campaignId, languageId)
+    } catch (error) {
+      logger.error(
+        { error, campaignId, languageId },
+        'Translation run lock unavailable'
+      )
+      throw new GraphQLError(
+        'Translation is temporarily unavailable. Please try again.'
+      )
+    }
+    if (runLock == null)
+      throw conflict(
+        'a translation into this language is already running',
         'languageId'
       )
 
@@ -464,6 +533,7 @@ export async function* campaignAiTranslate(
           'Campaign translation batch failed'
         )
       }
+      await runLock.extend()
       yield {
         progress: 10 + ((index + 1) / batches.length) * 85,
         message: `Translated ${index + 1} of ${batches.length} parts`,
@@ -494,13 +564,15 @@ export async function* campaignAiTranslate(
         'Translation timed out while contacting the AI service. Please try again.'
       )
     throw new GraphQLError('Translation failed')
+  } finally {
+    await runLock?.release()
   }
 }
 
 builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     description:
-      'Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.',
+      'Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.\n- CONFLICT (field: `languageId`): another run into the same campaign language is in flight.\n- `Translation is temporarily unavailable. Please try again.` (no code): the one-run check could not reach Redis; nothing is translated.',
     type: CampaignAiTranslateProgressRef,
     nullable: false,
     args: {
