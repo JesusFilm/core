@@ -235,6 +235,11 @@ export function Settings({
           errors.slug ?? (
             <>
               <Box component="span" sx={{ display: 'block' }}>
+                {t(
+                  'Changing this breaks links to this page you have already shared.'
+                )}
+              </Box>
+              <Box component="span" sx={{ display: 'block' }}>
                 {t('Permanent address: {{address}}', {
                   address: permanentAddress
                 })}

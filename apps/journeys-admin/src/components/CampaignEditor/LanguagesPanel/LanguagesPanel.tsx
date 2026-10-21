@@ -12,6 +12,7 @@ import { ReactElement, useMemo, useState } from 'react'
 
 import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import { Dialog } from '@core/shared/ui/Dialog'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
@@ -57,8 +58,9 @@ function messageOf(error: unknown): string {
 
 /**
  * Preview (sets the Preview Language, a view choice, and the previewed row is
- * marked) and Remove on each (the default language cannot be removed; the API's
- * `CONFLICT` message is shown verbatim when a removal is refused), and the
+ * marked) and Remove on each (confirmed first, since every translation into
+ * the language goes with it; the default language cannot be removed; the
+ * API's `CONFLICT` message is shown verbatim when a removal is refused), and the
  * shared language autocomplete (autonym plus English name) to add one
  * through `campaignLanguageAdd`. Neither is a Command. Adding a language
  * starts the editor's background machine-translation run into it, shown here
@@ -74,6 +76,8 @@ export function LanguagesPanel({
     dispatch
   } = useCampaignEditor()
   const [error, setError] = useState<string>()
+  const [removeTarget, setRemoveTarget] = useState<CampaignLanguage>()
+  const [removeOpen, setRemoveOpen] = useState(false)
   const { run, error: runError, start } = useTranslationRun()
   const [languageAdd, { loading: adding }] = useCampaignLanguageAddMutation()
   const [languageRemove, { loading: removing }] =
@@ -115,7 +119,11 @@ export function LanguagesPanel({
     } catch (removeError) {
       setError(messageOf(removeError))
     }
+    setRemoveOpen(false)
   }
+
+  const removeTargetName =
+    removeTarget != null ? languageNames(removeTarget).autonym : ''
 
   function handlePreview(language: CampaignLanguage): void {
     dispatch({
@@ -149,7 +157,10 @@ export function LanguagesPanel({
               edge="end"
               aria-label={t('Remove {{language}}', { language: autonym })}
               disabled={isDefault || removing}
-              onClick={async () => await handleRemove(language)}
+              onClick={() => {
+                setRemoveTarget(language)
+                setRemoveOpen(true)
+              }}
             >
               <Trash2Icon />
             </IconButton>
@@ -215,6 +226,30 @@ export function LanguagesPanel({
           {error ?? runError}
         </Alert>
       )}
+      <Dialog
+        open={removeOpen}
+        onClose={() => setRemoveOpen(false)}
+        dialogTitle={{
+          title: t('Remove {{language}}?', { language: removeTargetName }),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: () => {
+            if (removeTarget != null) void handleRemove(removeTarget)
+          },
+          submitLabel: t('Remove'),
+          closeLabel: t('Cancel')
+        }}
+        loading={removing}
+        testId="LanguageRemoveDialog"
+      >
+        <Typography gutterBottom>
+          {t('Every translation into {{language}} is deleted.', {
+            language: removeTargetName
+          })}
+        </Typography>
+        <Typography>{t('This cannot be undone.')}</Typography>
+      </Dialog>
     </Stack>
   )
 }

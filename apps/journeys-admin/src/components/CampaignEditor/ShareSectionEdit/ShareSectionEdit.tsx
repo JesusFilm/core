@@ -292,6 +292,22 @@ function ShareLanguageRow({
     )
   }
 
+  // A row holding a QR code is never deleted from the editor: the API
+  // refuses it, so the bin is disabled and points at Unlink instead.
+  const removeButton = (
+    <IconButton
+      size="small"
+      aria-label={t('Remove language')}
+      disabled={regionLanguage.qrCode != null}
+      onClick={(event: MouseEvent<HTMLButtonElement>) => {
+        stop(event)
+        onRemove()
+      }}
+    >
+      <Trash2Icon fontSize="small" />
+    </IconButton>
+  )
+
   return (
     <Stack
       spacing={2}
@@ -342,16 +358,13 @@ function ShareLanguageRow({
             data-testid="ShareLanguageUnpublished"
           />
         )}
-        <IconButton
-          size="small"
-          aria-label={t('Remove language')}
-          onClick={(event: MouseEvent<HTMLButtonElement>) => {
-            stop(event)
-            onRemove()
-          }}
-        >
-          <Trash2Icon fontSize="small" />
-        </IconButton>
+        {regionLanguage.qrCode != null ? (
+          <Tooltip title={t('This language has a QR code. Unlink it instead.')}>
+            <span>{removeButton}</span>
+          </Tooltip>
+        ) : (
+          removeButton
+        )}
       </Stack>
       <Stack
         direction={{ xs: 'column', md: 'row' }}
