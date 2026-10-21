@@ -91,7 +91,11 @@ async function orphanedDomains(sites: Site[]): Promise<string[]> {
     return owner == null ? [] : [{ domain, owner }]
   })
   const idsOf = (model: SiteOwner['model']): string[] =>
-    uniq(owned.filter(({ owner }) => owner.model === model).map(({ owner }) => owner.id))
+    uniq(
+      owned
+        .filter(({ owner }) => owner.model === model)
+        .map(({ owner }) => owner.id)
+    )
   const journeyIds = idsOf('journey')
   const teamIds = idsOf('team')
 

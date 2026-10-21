@@ -108,7 +108,11 @@ describe('plausibleSiteCleanup service', () => {
 
     expect(querySpy).toHaveBeenCalledWith({
       query: SITES,
-      variables: { domainStartsWith: 'api-journeys-', after: undefined, first: 1000 },
+      variables: {
+        domainStartsWith: 'api-journeys-',
+        after: undefined,
+        first: 1000
+      },
       fetchPolicy: 'no-cache'
     })
     expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
