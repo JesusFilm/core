@@ -3155,6 +3155,7 @@ type VideoVariant @join__type(graph: API_MEDIA)  {
   """
   version: Int!
   video: Video
+  reconciliation: VideoVariantReconciliation
 }
 
 type VideoVariantDownload @join__type(graph: API_MEDIA)  {

@@ -2,7 +2,22 @@ import { beforeEach, vi } from 'vitest'
 
 import { prismaMock } from '../../../test/prismaMock'
 
-import { requestVideoVariantReconciliation } from './requestVideoVariantReconciliation'
+import {
+  FRESH_UPLOAD_REASONS,
+  requestVideoVariantReconciliation
+} from './requestVideoVariantReconciliation'
+
+const notPendingExplicitPublication = {
+  NOT: {
+    reason: {
+      in: [
+        'video-variant-publication-change',
+        'fresh-upload-publication-change'
+      ]
+    },
+    status: { in: ['processing', 'degraded'] }
+  }
+}
 
 describe('requestVideoVariantReconciliation', () => {
   const intent = {
@@ -31,7 +46,6 @@ describe('requestVideoVariantReconciliation', () => {
         retryAt: expect.any(Date)
       })
     })
-    expect(prismaMock.videoVariantReconciliation.update).not.toHaveBeenCalled()
   })
 
   it('restarts the clock when re-requesting an existing record', async () => {
@@ -43,19 +57,20 @@ describe('requestVideoVariantReconciliation', () => {
     await requestVideoVariantReconciliation(intent)
 
     expect(prismaMock.videoVariantReconciliation.create).not.toHaveBeenCalled()
-    const { data } =
-      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
-    expect(data).toMatchObject({
-      reason: 'video-relationship-change',
-      status: 'processing',
-      errorMessage: null
-    })
-    // The reconciler's time windows count from createdAt, so a re-request
-    // must not inherit the original request's age.
-    expect((data.createdAt as Date).getTime()).toBeGreaterThanOrEqual(before)
+    // Both conditional writes (pending toggle / no pending toggle) restart it.
+    for (const [{ data }] of prismaMock.videoVariantReconciliation.updateMany
+      .mock.calls) {
+      expect(data).toMatchObject({ status: 'processing', errorMessage: null })
+      // The reconciler's time windows count from createdAt, so a re-request
+      // must not inherit the original request's age.
+      expect((data.createdAt as Date).getTime()).toBeGreaterThanOrEqual(before)
+    }
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany.mock.calls[1][0].data
+    ).toMatchObject({ reason: 'video-relationship-change' })
   })
 
-  it('keeps the original reason when a fresh upload is re-requested before Mux resolves', async () => {
+  it('records an explicit toggle on a fresh upload before Mux resolves as a fresh-upload toggle', async () => {
     prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
       id: 'status-1',
       reason: 'video-variant-create',
@@ -69,10 +84,19 @@ describe('requestVideoVariantReconciliation', () => {
 
     const { data } =
       prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
-    expect(data).toMatchObject({ reason: 'video-variant-create' })
+    // Still a fresh upload (kept out of the generated-parent shape
+    // heuristic), and still an explicit toggle (protected from a stale
+    // upload callback).
+    expect(data).toMatchObject({
+      reason: 'fresh-upload-publication-change',
+      published: true
+    })
+    expect(FRESH_UPLOAD_REASONS.has('fresh-upload-publication-change')).toBe(
+      true
+    )
   })
 
-  it('keeps the original reason when a fresh upload is re-requested after Mux times out', async () => {
+  it('keeps treating a fresh upload as fresh when toggled after Mux times out', async () => {
     prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
       id: 'status-1',
       reason: 'video-variant-create',
@@ -89,7 +113,27 @@ describe('requestVideoVariantReconciliation', () => {
     // A timed-out Mux upload never produced media, so it must still be
     // excluded from the generated-parent shape heuristic rather than being
     // force-published as a media-less container parent.
-    expect(data).toMatchObject({ reason: 'video-variant-create' })
+    expect(data).toMatchObject({ reason: 'fresh-upload-publication-change' })
+  })
+
+  it('keeps the original reason when a fresh upload gets a non-toggle re-request before Mux resolves', async () => {
+    prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+      id: 'status-1',
+      reason: 'video-variant-create',
+      processingStages: { mux: { state: 'processing', attempts: 1 } }
+    } as never)
+
+    await requestVideoVariantReconciliation({
+      ...intent,
+      reason: 'video-variant-language-change'
+    })
+
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenLastCalledWith({
+      where: { id: 'status-1', ...notPendingExplicitPublication },
+      data: expect.objectContaining({ reason: 'video-variant-create' })
+    })
   })
 
   it('overwrites the reason normally once Mux has resolved', async () => {
@@ -118,8 +162,255 @@ describe('requestVideoVariantReconciliation', () => {
 
     await requestVideoVariantReconciliation(intent)
 
-    const { data } =
-      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
-    expect(data).toMatchObject({ reason: 'video-relationship-change' })
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenLastCalledWith({
+      where: { id: 'status_53424_Rescue', ...notPendingExplicitPublication },
+      data: expect.objectContaining({ reason: 'video-relationship-change' })
+    })
+  })
+
+  describe('publish intent', () => {
+    beforeEach(() => {
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'reconciliation-1'
+      } as never)
+    })
+
+    it('does not overwrite an explicit Draft request with a stale upload-ready publish', async () => {
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 0
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: true,
+        reason: 'process-video-upload'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', ...notPendingExplicitPublication },
+        data: expect.objectContaining({
+          reason: 'process-video-upload',
+          published: true
+        })
+      })
+      expect(
+        prismaMock.videoVariantReconciliation.update
+      ).not.toHaveBeenCalled()
+    })
+
+    it('does not overwrite an explicit republish with a stale upload-ready draft', async () => {
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 0
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'process-video-upload'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', ...notPendingExplicitPublication },
+        data: expect.objectContaining({
+          reason: 'process-video-upload',
+          published: false
+        })
+      })
+      expect(
+        prismaMock.videoVariantReconciliation.update
+      ).not.toHaveBeenCalled()
+    })
+
+    it('still applies an upload-ready publish when no explicit Draft request is pending', async () => {
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 1
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: true,
+        reason: 'process-video-upload'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalled()
+    })
+
+    it('always applies an explicit unpublish request, overwriting any pending intent', async () => {
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'video-variant-publication-change'
+      })
+
+      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
+        {
+          where: { id: 'reconciliation-1' },
+          data: expect.objectContaining({
+            reason: 'video-variant-publication-change',
+            published: false
+          })
+        }
+      )
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).not.toHaveBeenCalled()
+    })
+
+    it('still applies an upload-ready draft when no explicit publish request is pending', async () => {
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 1
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'process-video-upload'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalled()
+      expect(
+        prismaMock.videoVariantReconciliation.update
+      ).not.toHaveBeenCalled()
+    })
+
+    it('does not overwrite a pending publish intent with a language change', async () => {
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'video-variant-language-change'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', ...notPendingExplicitPublication },
+        data: expect.not.objectContaining({ published: expect.anything() })
+      })
+      expect(
+        prismaMock.videoVariantReconciliation.update
+      ).not.toHaveBeenCalled()
+    })
+
+    it('keeps a pending explicit Draft request protected when a language change lands first', async () => {
+      // Without this, a language change landing while an explicit Draft is
+      // still pending would overwrite `reason` to video-variant-language-change,
+      // which drops the guard that stops a later stale upload callback from
+      // reinstating `published: true` over the pending Draft. The guard is
+      // evaluated against the row's live state at write time (via `where`),
+      // not this stale `findUnique` read, so a concurrent explicit toggle that
+      // lands between the read and the write is still protected. The write
+      // leaves `reason` out entirely, so either explicit reason
+      // (video-variant-publication-change or fresh-upload-publication-change)
+      // survives as-is.
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'reconciliation-1',
+        reason: 'video-variant-publication-change',
+        status: 'processing'
+      } as never)
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'video-variant-language-change'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: {
+          id: 'reconciliation-1',
+          reason: {
+            in: [
+              'video-variant-publication-change',
+              'fresh-upload-publication-change'
+            ]
+          },
+          status: { in: ['processing', 'degraded'] }
+        },
+        data: expect.not.objectContaining({
+          reason: expect.anything(),
+          published: expect.anything()
+        })
+      })
+    })
+
+    it('adopts the new reason once the pending Draft request has settled', async () => {
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'reconciliation-1',
+        reason: 'video-variant-publication-change',
+        status: 'complete'
+      } as never)
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: false,
+        reason: 'video-variant-language-change'
+      })
+
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', ...notPendingExplicitPublication },
+        data: expect.objectContaining({
+          reason: 'video-variant-language-change'
+        })
+      })
+    })
+
+    it('creates a new reconciliation row when none exists yet', async () => {
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue(null)
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: true,
+        reason: 'process-video-upload'
+      })
+
+      expect(prismaMock.videoVariantReconciliation.create).toHaveBeenCalledWith(
+        {
+          data: expect.objectContaining({
+            videoVariantId: 'variant-1',
+            published: true
+          })
+        }
+      )
+    })
   })
 })
