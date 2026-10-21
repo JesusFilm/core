@@ -10,14 +10,13 @@ concurrency:
 
 jobs:
   affected:
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          filter: blob:none
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -25,8 +24,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: ${{ !startsWith(runner.name, 'ci-jfp00-') && 'pnpm' || '' }}
-          package-manager-cache: false
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
@@ -49,12 +47,11 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          filter: blob:none
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -62,8 +59,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: ${{ !startsWith(runner.name, 'ci-jfp00-') && 'pnpm' || '' }}
-          package-manager-cache: false
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4
@@ -85,12 +81,11 @@ jobs:
       matrix:
         app: ${{fromJson(needs.affected.outputs.matrix)}}
         github-ref-name: ['${{ github.ref_name }}']
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: blacksmith-2vcpu-ubuntu-2204
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          filter: blob:none
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -98,8 +93,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: ${{ !startsWith(runner.name, 'ci-jfp00-') && 'pnpm' || '' }}
-          package-manager-cache: false
+          cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - uses: nrwl/nx-set-shas@v4

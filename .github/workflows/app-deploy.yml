@@ -11,7 +11,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   affected:
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON('["dependabot[bot]","renovate[bot]","siyang-bot"]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -63,7 +64,8 @@ jobs:
           - app: short-links
             github-ref-name: stage
             github-event-name: push
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON('["dependabot[bot]","renovate[bot]","siyang-bot"]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
@@ -169,7 +171,8 @@ jobs:
           overwrite: true
           retention-days: 2
   deploy-status:
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON('["dependabot[bot]","renovate[bot]","siyang-bot"]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
     permissions:
@@ -231,7 +234,8 @@ jobs:
     if: ${{ needs.deploy-status.result == 'success' && needs.deploy-status.outputs.apps != '[]' && needs.deploy-status.outputs.apps != '' }}
     permissions:
       contents: read
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON('["dependabot[bot]","renovate[bot]","siyang-bot"]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-4vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     strategy:
@@ -332,7 +336,8 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-    runs-on: ${{ (github.repository == 'JesusFilm/core' && ((github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || ((github.event_name == 'push' || github.event_name == 'workflow_dispatch') && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/stage')) || (github.event_name == 'schedule' && github.ref == 'refs/heads/main') || (github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/main'))) && format('ci-run-{0}', github.run_id) || 'ubuntu-22.04' }}
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON('["dependabot[bot]","renovate[bot]","siyang-bot"]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     permissions:
       deployments: write
       contents: write
