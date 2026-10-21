@@ -64,6 +64,13 @@ describe('CampaignLanguageRedirect', () => {
     expect(replace).not.toHaveBeenCalled()
   })
 
+  it('stays when the URL carries an empty lang', () => {
+    document.cookie = `${CAMPAIGN_LANGUAGE_COOKIE}=fr`
+    visit('https://example.org/campaign/christmas-2026?lang=', ['fr'])
+    render(<CampaignLanguageRedirect campaign={campaignPublic} />)
+    expect(replace).not.toHaveBeenCalled()
+  })
+
   it('stays on a single-language campaign', () => {
     visit('https://example.org/campaign/christmas-2026', ['fr'])
     render(

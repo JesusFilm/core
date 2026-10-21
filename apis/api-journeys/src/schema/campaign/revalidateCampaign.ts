@@ -1,3 +1,5 @@
+import type { JobsOptions } from 'bullmq'
+
 import { prisma } from '@core/prisma/journeys/client'
 
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
@@ -6,10 +8,31 @@ import { logger } from '../logger'
 import { fetchLanguage } from './gatewayClient'
 
 /**
+ * The tag the proxy routes `?lang=` to for one language: its bcp47 tag,
+ * lowercased as the proxy does. A language that cannot be resolved is logged
+ * and `null`, so a gateway failure costs that language's on-demand purge, not
+ * the mutation.
+ */
+async function resolveLanguageTag(
+  campaignId: string,
+  languageId: string
+): Promise<string | null> {
+  try {
+    const language = await fetchLanguage(languageId)
+    return language?.bcp47?.toLowerCase() ?? null
+  } catch (error) {
+    logger.error(
+      { error, campaignId, languageId },
+      'Failed to resolve campaign language for revalidation'
+    )
+    return null
+  }
+}
+
+/**
  * The tags the proxy routes `?lang=` to (`_lang/<tag>`) for a campaign: the
  * bcp47 tag of each of its Page Languages, lowercased as the proxy does. A
- * language that cannot be resolved is logged and left out, so a gateway
- * failure costs that language's on-demand purge, not the mutation.
+ * language that cannot be resolved is left out.
  */
 export async function campaignLanguageTags(
   campaignId: string
@@ -18,23 +41,13 @@ export async function campaignLanguageTags(
     const campaignLanguages = await prisma.campaignLanguage.findMany({
       where: { campaignId }
     })
-    const languages = await Promise.all(
-      campaignLanguages.map(async ({ languageId }) => {
-        try {
-          return await fetchLanguage(languageId)
-        } catch (error) {
-          logger.error(
-            { error, campaignId, languageId },
-            'Failed to resolve campaign language for revalidation'
-          )
-          return null
-        }
-      })
+    const tags = await Promise.all(
+      campaignLanguages.map(
+        async ({ languageId }) =>
+          await resolveLanguageTag(campaignId, languageId)
+      )
     )
-    const tags = languages.flatMap((language) =>
-      language?.bcp47 == null ? [] : [language.bcp47.toLowerCase()]
-    )
-    return [...new Set(tags)]
+    return [...new Set(tags.filter((tag) => tag != null))]
   } catch (error) {
     logger.error(
       { error, campaignId },
@@ -76,11 +89,21 @@ export function campaignPagePaths(campaign: {
 }
 
 /**
+ * Each campaign job is one path, so a retry repeats only the page that
+ * failed: the worker throws on a non-2xx or a fetch error.
+ */
+export const CAMPAIGN_REVALIDATE_JOB_OPTIONS: JobsOptions = {
+  attempts: 3,
+  backoff: { type: 'exponential', delay: 5000 }
+}
+
+/**
  * Queue on-demand revalidation of a campaign's pages: exactly one job per
- * affected path through the revalidate worker's `paths[]` job variant. Only
- * `campaignPublish`, `campaignUnpublish`, `campaignDelete` of a published
- * campaign, a Campaign Root change and a region slug, listing or delete change
- * of a published campaign call this; other
+ * affected path through the revalidate worker's `paths[]` job variant, retried
+ * with backoff. Only `campaignPublish`, `campaignUnpublish`, `campaignDelete`
+ * of a published campaign, a Campaign Root change or a Custom Domain delete,
+ * and — on a published campaign — a campaign slug change, a Page Language add
+ * or remove, and a region slug, listing or delete change call this; other
  * content mutations rely on the 60 s ISR window and queue nothing. A queue
  * failure is logged, not thrown: the page still refreshes at the next ISR
  * regeneration.
@@ -92,13 +115,69 @@ export async function enqueueCampaignRevalidation(
     paths.map(
       async (path) =>
         await revalidateQueue
-          .add('revalidate', { paths: [path] })
+          .add('revalidate', { paths: [path] }, CAMPAIGN_REVALIDATE_JOB_OPTIONS)
           .catch((error: unknown) => {
             logger.error(
               { error, path },
               'Failed to queue campaign revalidation'
             )
           })
+    )
+  )
+}
+
+interface PublishedCampaignPages {
+  id: string
+  slug: string
+  status: string
+  regions: Array<{ slug: string }>
+  customDomains: Array<{ name: string }>
+}
+
+/**
+ * After a Page Language is added to or removed from a published campaign,
+ * revalidate every page in both forms with the tags before and after the
+ * change: the campaign's languages now plus the changed one. A removed tag's
+ * `_lang` pages then regenerate into the language fallback, and the plain
+ * pages stop offering it. A draft campaign serves nothing, so nothing is
+ * queued.
+ */
+export async function enqueueLanguageRevalidation(
+  campaign: PublishedCampaignPages,
+  languageId: string
+): Promise<void> {
+  if (campaign.status !== 'published') return
+  const [tags, changedTag] = await Promise.all([
+    campaignLanguageTags(campaign.id),
+    resolveLanguageTag(campaign.id, languageId)
+  ])
+  await enqueueCampaignRevalidation(
+    campaignPagePaths({
+      slug: campaign.slug,
+      regions: campaign.regions,
+      hostnames: campaign.customDomains.map(({ name }) => name),
+      languageTags: [
+        ...new Set(changedTag == null ? tags : [...tags, changedTag])
+      ]
+    })
+  )
+}
+
+/**
+ * After a published campaign's slug changes, revalidate its pages under the
+ * old and the new slug, so the old address stops resolving at once rather
+ * than at its ISR window. The domain form does not carry the slug and is left
+ * alone.
+ */
+export async function enqueueCampaignSlugRevalidation(
+  campaign: Omit<PublishedCampaignPages, 'customDomains'>,
+  previousSlug: string
+): Promise<void> {
+  if (campaign.status !== 'published' || campaign.slug === previousSlug) return
+  const languageTags = await campaignLanguageTags(campaign.id)
+  await enqueueCampaignRevalidation(
+    [previousSlug, campaign.slug].flatMap((slug) =>
+      campaignPagePaths({ slug, regions: campaign.regions, languageTags })
     )
   )
 }

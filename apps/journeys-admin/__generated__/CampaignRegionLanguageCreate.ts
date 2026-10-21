@@ -92,7 +92,7 @@ export interface CampaignRegionLanguageCreate {
    * Errors:
    * - NOT_FOUND: regionId does not resolve.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already on the region.
+   * - BAD_USER_INPUT (field: `languageId`): not an api-languages language, already on the region, or the region already has 20 share languages.
    */
   campaignRegionLanguageCreate: CampaignRegionLanguageCreate_campaignRegionLanguageCreate;
 }

@@ -49,7 +49,9 @@ export interface CampaignLanguageAdd {
    * Errors:
    * - NOT_FOUND: campaign does not resolve.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already a language of this campaign.
+   * - BAD_USER_INPUT (field: `languageId`): not an api-languages language, already a language of this campaign, or the campaign already has 50 languages.
+   * 
+   * On a published campaign, queues on-demand revalidation of its pages.
    */
   campaignLanguageAdd: CampaignLanguageAdd_campaignLanguageAdd;
 }

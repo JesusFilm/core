@@ -20,6 +20,7 @@ import {
   campaignAcl
 } from '../campaign.acl'
 import {
+  CAMPAIGN_BLOCKS_MAX,
   assertEnum,
   assertEnumOrNull,
   assertHexOrNull,
@@ -416,6 +417,28 @@ export async function lockCampaignTextRows(
   await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
 }
 
+/**
+ * Refuse an add that would take the campaign past `CAMPAIGN_BLOCKS_MAX` live
+ * blocks, Region Lines and owned blocks included (`BAD_USER_INPUT` /
+ * `campaignId`). `adding` is the number of rows the add brings to life: one
+ * for a create, the subtree for a duplicate or restore. Run it in `tx` after
+ * `lockCampaignStructure`, so concurrent adds are counted one after another.
+ */
+export async function assertCampaignBlockRoom(
+  tx: Prisma.TransactionClient,
+  campaignId: string,
+  adding: number
+): Promise<void> {
+  const live = await tx.campaignBlock.count({
+    where: { campaignId, deletedAt: null }
+  })
+  if (live + adding > CAMPAIGN_BLOCKS_MAX)
+    throw badUserInput(
+      `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`,
+      'campaignId'
+    )
+}
+
 /** Lock the campaign's language rows (in id order) before `lockCampaign`. */
 export async function lockCampaignLanguageRows(
   tx: Prisma.TransactionClient,
@@ -460,6 +483,7 @@ async function insertChildBlock(
   parent: CampaignBlock,
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
+  await assertCampaignBlockRoom(tx, parent.campaignId, 1)
   const siblings = await getSiblings(
     { ...parent, parentBlockId: parent.id },
     tx
@@ -598,6 +622,14 @@ export async function restoreBlock(
     await lockCampaignStructure(tx, block.campaignId)
     await assertParentLiveForRestore(block, tx)
     await assertSlotFreeForRestore(block, tx)
+    if (block.deletedAt != null)
+      await assertCampaignBlockRoom(
+        tx,
+        block.campaignId,
+        await tx.campaignBlock.count({
+          where: { campaignId: block.campaignId, deletedAt: block.deletedAt }
+        })
+      )
     if (block.deletedAt != null)
       await tx.campaignBlock.updateMany({
         where: {
@@ -750,6 +782,7 @@ export async function createTopLevelBlock(
   await lockCampaignStructure(tx, scope.campaignId)
   if (isCampaignChromeTypename(data.typename))
     await assertChromeSingleton(tx, scope.campaignId, data.typename)
+  await assertCampaignBlockRoom(tx, scope.campaignId, 1)
   const siblings = await getSiblings({ ...scope, parentBlockId: null }, tx)
   const created = await tx.campaignBlock.create({
     data: {
@@ -977,6 +1010,7 @@ export async function duplicateBlock(
     if (parent != null && isCampaignSlotTypename(parent.typename))
       throw conflict('a column slot holds at most one section', 'id')
     const subtree = collectSubtree(block.id, live)
+    await assertCampaignBlockRoom(tx, block.campaignId, subtree.length)
     const ids = new Map<string, string>()
     for (const row of subtree)
       ids.set(
@@ -1069,6 +1103,7 @@ export async function createColumnsSection(
       'slotIds'
     )
   const section = await createSectionBlock(tx, page, data, parentOrder)
+  await assertCampaignBlockRoom(tx, page.campaignId, CAMPAIGN_COLUMN_SLOT_COUNT)
   for (let slot = 0; slot < CAMPAIGN_COLUMN_SLOT_COUNT; slot++)
     await tx.campaignBlock.create({
       data: {

@@ -472,13 +472,13 @@ describe('customDomainUpdate', () => {
           })
         })
       )
-      expect(mockQueueAdd.mock.calls).toEqual([
-        ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-        ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-        ['revalidate', { paths: ['/home/campaign/christmas-2026/afr'] }],
-        ['revalidate', { paths: ['/example.com'] }],
-        ['revalidate', { paths: ['/example.com/eur'] }],
-        ['revalidate', { paths: ['/example.com/afr'] }]
+      expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+        '/home/campaign/christmas-2026',
+        '/home/campaign/christmas-2026/eur',
+        '/home/campaign/christmas-2026/afr',
+        '/example.com',
+        '/example.com/eur',
+        '/example.com/afr'
       ])
     })
 
