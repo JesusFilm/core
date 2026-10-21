@@ -17,6 +17,7 @@ import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSubtitle } from '../video/videoSubtitle'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
+import { videoVariantHasUsableMedia } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -424,7 +425,10 @@ export const VideoVariant = builder.prismaObject('VideoVariant', {
       nullable: false,
       description: 'version control for master video file'
     }),
-    video: t.relation('video')
+    video: t.relation('video'),
+    reconciliation: t
+      .withAuth({ isPublisher: true })
+      .relation('reconciliation', { nullable: true })
   })
 })
 
@@ -596,7 +600,10 @@ builder.mutationFields((t) => ({
           published: true,
           videoId: true,
           languageId: true,
-          edition: true
+          edition: true,
+          hls: true,
+          share: true,
+          muxVideo: { select: { readyToStream: true } }
         }
       })
 
@@ -612,6 +619,32 @@ builder.mutationFields((t) => ({
             select: { id: true }
           })) != null
         : true
+
+      // Unpublishing takes effect immediately. Publishing does too, but only
+      // once viewers would get playable media (see videoVariantHasUsableMedia)
+      // -- otherwise it is left to reconciliation, which publishes the Variant
+      // as soon as Mux is ready. Usability is evaluated against this same
+      // call's own hls/share/muxVideoId, not just the pre-update row, so
+      // publishing and relinking usable media in one request publishes
+      // immediately instead of waiting on reconciliation.
+      const nextPublished =
+        input.published === true
+          ? videoVariantHasUsableMedia({
+              hls: input.hls ?? currentVariant.hls,
+              share: input.share ?? currentVariant.share,
+              muxVideo:
+                input.muxVideoId != null
+                  ? await prisma.muxVideo.findUnique({
+                      where: { id: input.muxVideoId },
+                      select: { readyToStream: true }
+                    })
+                  : currentVariant.muxVideo
+            })
+            ? true
+            : undefined
+          : input.published === false
+            ? false
+            : undefined
 
       let updated: PrismaVideoVariant
       try {
@@ -629,10 +662,7 @@ builder.mutationFields((t) => ({
             videoId: input.videoId ?? undefined,
             edition: input.edition ?? undefined,
             downloadable: input.downloadable ?? undefined,
-            published:
-              input.published === undefined
-                ? undefined
-                : currentVariant.published,
+            published: nextPublished,
             muxVideoId: input.muxVideoId ?? undefined,
             assetId: input.assetId ?? undefined,
             version: input.version ?? undefined,
@@ -658,11 +688,35 @@ builder.mutationFields((t) => ({
       // Handle parent variant changes if published status changed
       const wasPublished = currentVariant.published
       const isNowPublished = input.published ?? currentVariant.published
+      // An explicit unpublish must reach reconciliation even when the
+      // published column does not change, so it overwrites any pending
+      // deferred-publish intent left there by an earlier request -- otherwise
+      // reconciliation would still publish the Variant once Mux is ready. A
+      // deferred publish needs the same treatment: nextPublished stays
+      // undefined while Mux is still processing, so the column itself does
+      // not change either.
+      const explicitUnpublish = input.published === false
+      const deferredPublish =
+        input.published === true && nextPublished === undefined
 
-      if (wasPublished !== isNowPublished || languageChanged) {
-        const reason = languageChanged
-          ? 'video-variant-language-change'
-          : 'video-variant-publication-change'
+      if (
+        wasPublished !== isNowPublished ||
+        explicitUnpublish ||
+        deferredPublish ||
+        languageChanged
+      ) {
+        // A fresh explicit `published` value always wins over a language
+        // change: requestVideoVariantReconciliation treats
+        // video-variant-language-change as a reason that must not carry a
+        // publish intent (it exists to protect a pending toggle from being
+        // clobbered by a stale upload), so routing a real new intent through
+        // it would silently drop that intent instead.
+        const reason =
+          input.published !== undefined
+            ? 'video-variant-publication-change'
+            : languageChanged
+              ? 'video-variant-language-change'
+              : 'video-variant-publication-change'
         try {
           await requestVideoVariantReconciliation({
             videoVariantId: updated.id,

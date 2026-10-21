@@ -47,8 +47,10 @@ const CONTAINER_LABELS = new Set(['collection', 'series', 'featureFilm'])
 // produced any media -- FRESH_UPLOAD_REASONS excludes those. A re-request
 // (a publish toggle, a childIds edit on the grandparent) overwrites `reason`
 // in requestVideoVariantReconciliation, but that function keeps a fresh
-// upload's reason sticky until Mux resolves, so this exclusion still holds
-// for a Variant re-requested mid-upload.
+// upload's reason sticky until Mux resolves (recording an explicit toggle in
+// that window as fresh-upload-publication-change, itself a fresh-upload
+// reason), so this exclusion still holds for a Variant re-requested
+// mid-upload.
 export function isGeneratedParentVariant(
   variant: ReconciledVariant,
   reason: VideoVariantReconciliationReason
