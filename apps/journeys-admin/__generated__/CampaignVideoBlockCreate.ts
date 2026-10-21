@@ -155,7 +155,7 @@ export interface CampaignVideoBlockCreate_campaignVideoBlockCreate {
 
 export interface CampaignVideoBlockCreate {
   /**
-   * Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once; a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, and only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
+   * Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once, the text cut to the override caps (200 / 1000 characters); a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, a Watch `videoId` must be a published Watch Video; only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
    * 
    * Auth: campaign Update — any member or manager of the campaign's team.
    * 
@@ -165,7 +165,7 @@ export interface CampaignVideoBlockCreate {
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live section of this campaign.
    * - BAD_USER_INPUT (field: `mediaBlockId`): the section has no Media Slot (only hero and Featured Media do) and is not a video carousel.
    * - BAD_USER_INPUT (field: `source`): not internal, youTube or mux.
-   * - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id.
+   * - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id, or "videoId is not a published Watch video" for a Watch video picked by id.
    * - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or a url on a YouTube or Mux video.
    * - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
    */

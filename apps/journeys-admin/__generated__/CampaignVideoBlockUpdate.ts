@@ -133,7 +133,7 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate {
 
 export interface CampaignVideoBlockUpdate {
   /**
-   * Set or clear a Campaign Video's default-language title and description overrides. Only the given fields change; translations are untouched. Null (or empty) falls back to the source text: a Watch video's is read live, so the column is cleared; a YouTube or Mux video's is fetched again and stored.
+   * Set or clear a Campaign Video's default-language title and description overrides. Only the given fields change; translations are untouched. Null (or empty) falls back to the source text: a Watch video's is read live, so the column is cleared; a YouTube or Mux video's is fetched again, cut to the override caps, and stored.
    * 
    * Auth: campaign Update — any member or manager of the campaign's team.
    * 
@@ -141,6 +141,7 @@ export interface CampaignVideoBlockUpdate {
    * - NOT_FOUND: id does not resolve to a live CampaignVideoBlock.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+   * - INTERNAL_SERVER_ERROR: YouTube is unavailable, so a YouTube video's source text cannot be fetched again; nothing is written.
    */
   campaignVideoBlockUpdate: CampaignVideoBlockUpdate_campaignVideoBlockUpdate;
 }
