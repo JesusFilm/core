@@ -216,4 +216,43 @@ describe('CampaignRegionSwitcher', () => {
       })
     ).toBe(true)
   })
+
+  it('is skipped on the Region Page of the only listed region, which it would hide', () => {
+    const section = switcherTree() as CampaignSectionTree
+    expect(
+      shouldRenderSection(section, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion,
+        regions: [eurRegion, lacRegion]
+      })
+    ).toBe(false)
+    expect(
+      shouldRenderSection(section, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion,
+        regions: [eurRegion, afrRegion]
+      })
+    ).toBe(true)
+  })
+
+  it('renders with no region to show when it holds an Extra', () => {
+    const switcher = landingBlocks.find(
+      (block) => block.id === 'landingSwitcherId'
+    )
+    const button = landingBlocks.find(
+      (block) => block.id === 'switcherEuropeButtonId'
+    )
+    if (switcher == null || button == null) throw new Error('fixture')
+    const section = transformCampaignBlocks([
+      switcher,
+      button
+    ])[0] as CampaignSectionTree
+    expect(
+      shouldRenderSection(section, {
+        pageKind: CampaignPageKind.regionTemplate,
+        region: eurRegion,
+        regions: [eurRegion]
+      })
+    ).toBe(true)
+  })
 })

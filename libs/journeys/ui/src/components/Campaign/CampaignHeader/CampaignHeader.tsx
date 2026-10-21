@@ -78,7 +78,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
     const resolved = resolveCampaignAction(button.action, context)
     if (resolved == null)
       return (
-        <MenuItem key={button.id} disabled>
+        <MenuItem key={button.id} disabled sx={{ whiteSpace: 'pre-line' }}>
           {button.label}
         </MenuItem>
       )
@@ -90,6 +90,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
         target={resolved.target}
         rel="noopener noreferrer"
         onClick={handleMenuClose}
+        sx={{ whiteSpace: 'pre-line' }}
       >
         {button.label}
       </MenuItem>
@@ -129,6 +130,9 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
                   clickable
                   href={landingHref}
                   label={allRegions}
+                  aria-label={
+                    hasText(allRegions) ? undefined : t('All regions')
+                  }
                   size="small"
                   variant="outlined"
                   icon={<ChevronLeft />}
@@ -136,6 +140,7 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
                   sx={{
                     color: 'var(--campaign-band-text)',
                     borderColor: 'var(--campaign-band-accent)',
+                    '& .MuiChip-label': { whiteSpace: 'pre-line' },
                     '& .MuiChip-icon': { color: 'var(--campaign-band-accent)' }
                   }}
                 />

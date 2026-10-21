@@ -145,6 +145,39 @@ describe('CampaignJourneyList', () => {
     )
   })
 
+  it('leaves a blank openTemplate string blank, keeping Open as the accessible name', () => {
+    renderList(listTree([item('live', 0)]), {
+      ...campaignPublic,
+      strings: campaignPublic.strings.map((string) =>
+        string.key === CampaignStringKey.openTemplate
+          ? { ...string, value: '' }
+          : string
+      )
+    })
+
+    const open = screen.getByRole('link', { name: 'Open' })
+    expect(open).toHaveAttribute('data-testid', 'CampaignJourneyCardOpen')
+    expect(open).toHaveTextContent(/^$/)
+  })
+
+  it('keeps line breaks in the card title and the open label', () => {
+    renderList(listTree([item('live', 0, { title: 'Live\njourney' })]), {
+      ...campaignPublic,
+      strings: campaignPublic.strings.map((string) =>
+        string.key === CampaignStringKey.openTemplate
+          ? { ...string, value: 'Open\njourney' }
+          : string
+      )
+    })
+
+    const title = screen.getByTestId('CampaignJourneyCardTitle')
+    expect(title.textContent).toBe('Live\njourney')
+    expect(title).toHaveStyle({ whiteSpace: 'pre-line' })
+    const open = screen.getByTestId('CampaignJourneyCardOpen')
+    expect(open.textContent).toBe('Open\njourney')
+    expect(open).toHaveStyle({ whiteSpace: 'pre-line' })
+  })
+
   it('lays cards out as a grid or a list', () => {
     const { unmount } = renderList(listTree([item('live', 0)]))
     expect(screen.getByTestId('CampaignJourneyCards')).toHaveAttribute(

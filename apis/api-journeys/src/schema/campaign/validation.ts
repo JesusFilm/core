@@ -137,6 +137,17 @@ export function assertLength(
   return trimmed
 }
 
+/**
+ * Keep line breaks, drop every other control character: `\r\n` and `\r`
+ * become `\n`, a tab becomes a space, and any other Unicode `Cc` is removed.
+ */
+export function normaliseControlCharacters(value: string): string {
+  return value
+    .replace(/\r\n?/g, '\n')
+    .replace(/\t/g, ' ')
+    .replace(/(?!\n)\p{Cc}/gu, '')
+}
+
 /** `assertLength` for a nullable column: `null`/`undefined` pass through. */
 export function assertLengthOrNull<T extends string | null | undefined>(
   value: T,

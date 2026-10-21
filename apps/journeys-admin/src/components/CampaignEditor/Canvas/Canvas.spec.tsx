@@ -478,7 +478,7 @@ describe('Canvas', () => {
     )
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('button')
     await waitFor(() =>
-      expect(body.querySelector('input[name="label"]')).toHaveValue(
+      expect(body.querySelector('textarea[name="label"]')).toHaveValue(
         'Choose your region'
       )
     )

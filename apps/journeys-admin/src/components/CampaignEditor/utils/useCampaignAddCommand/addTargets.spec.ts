@@ -109,7 +109,15 @@ describe('addTargets', () => {
     expect(targets.section?.insert.pageId).toBe('landingPageId')
     expect(targets.extra).toMatchObject({
       host: { id: 'footerId' },
-      inheritsPlacement: false
+      inheritsPlacement: false,
+      typenames: ['CampaignTypographyBlock', 'CampaignButtonBlock']
+    })
+  })
+
+  it('offers only a button Extra for the header, which renders no text children', () => {
+    expect(targetsFor('headerId').extra).toMatchObject({
+      host: { id: 'headerId' },
+      typenames: ['CampaignButtonBlock']
     })
   })
 

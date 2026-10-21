@@ -116,7 +116,7 @@ function ShareStep({
           variant="subtitle1"
           component="p"
           id={id}
-          sx={{ color: 'var(--campaign-band-heading)' }}
+          sx={{ color: 'var(--campaign-band-heading)', whiteSpace: 'pre-line' }}
         >
           {label}
         </Typography>
@@ -124,7 +124,7 @@ function ShareStep({
       {hasText(help) && (
         <Typography
           variant="body2"
-          sx={{ color: 'var(--campaign-band-muted)' }}
+          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
         >
           {help}
         </Typography>
@@ -200,7 +200,11 @@ export function CampaignRegionShare({
         <Typography
           variant="body1"
           data-testid="CampaignRegionShareIntro"
-          sx={{ color: 'var(--campaign-band-muted)', maxWidth: 720 }}
+          sx={{
+            color: 'var(--campaign-band-muted)',
+            maxWidth: 720,
+            whiteSpace: 'pre-line'
+          }}
         >
           {block.intro}
         </Typography>
@@ -220,7 +224,7 @@ export function CampaignRegionShare({
                 inputProps={{
                   'aria-label': hasText(strings.step1)
                     ? strings.step1
-                    : undefined,
+                    : t('Language'),
                   'aria-labelledby': hasText(strings.step1)
                     ? `${block.id}-step1`
                     : undefined
@@ -377,7 +381,8 @@ export function CampaignRegionShare({
                   data-testid="CampaignRegionShareCopy"
                   sx={{
                     backgroundColor: 'var(--campaign-band-button)',
-                    color: 'var(--campaign-band-button-label)'
+                    color: 'var(--campaign-band-button-label)',
+                    whiteSpace: 'pre-line'
                   }}
                 >
                   {hasText(strings.copy) ? strings.copy : t('Copy link')}
@@ -393,7 +398,8 @@ export function CampaignRegionShare({
                   data-testid="CampaignRegionShareDownload"
                   sx={{
                     color: 'var(--campaign-band-text)',
-                    borderColor: 'var(--campaign-band-border)'
+                    borderColor: 'var(--campaign-band-border)',
+                    whiteSpace: 'pre-line'
                   }}
                 >
                   {hasText(strings.downloadQr)

@@ -8,7 +8,11 @@ import { touchCampaign } from './block/service'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import { CampaignStringRef } from './campaignString'
 import { CampaignStringKey } from './enums'
-import { TEXT_CAPS, assertLength } from './validation'
+import {
+  TEXT_CAPS,
+  assertLength,
+  normaliseControlCharacters
+} from './validation'
 
 builder.mutationField('campaignStringUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -35,7 +39,11 @@ builder.mutationField('campaignStringUpdate', (t) =>
         throw new GraphQLError('user is not allowed to update campaign', {
           extensions: { code: 'FORBIDDEN' }
         })
-      const value = assertLength(args.value, 'value', TEXT_CAPS.stringValue)
+      const value = assertLength(
+        normaliseControlCharacters(args.value),
+        'value',
+        TEXT_CAPS.stringValue
+      )
 
       return await prisma.$transaction(async (tx) => {
         const string = await tx.campaignString.update({
