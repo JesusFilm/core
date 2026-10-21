@@ -7,14 +7,6 @@ vi.mock('@graphql-yoga/plugin-response-cache', () => ({
   useResponseCache: vi.fn(() => ({}))
 }))
 
-// Several schema modules require a BullMQ queue at import outside
-// NODE_ENV=test; a real Queue would open a Redis connection here.
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return {}
-  })
-}))
-
 // The response cache is only installed outside NODE_ENV=test, so load the
 // server as production would to see the plugin's configuration. Hoisted so it
 // runs before the `./yoga` import above.

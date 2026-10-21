@@ -3,6 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 import { UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -12,16 +13,6 @@ import { updateTeamShortLinks } from './service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
-}))
-
-const { mockQueueAdd } = vi.hoisted(() => ({
-  mockQueueAdd: vi.fn()
-}))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
 }))
 
 vi.mock('./service', () => ({
@@ -76,7 +67,6 @@ describe('customDomainUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockQueueAdd.mockResolvedValue(undefined)
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,

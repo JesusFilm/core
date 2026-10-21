@@ -1,5 +1,6 @@
 import { Prisma } from '@core/prisma/journeys/client'
 
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -14,14 +15,6 @@ import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
-}))
-
-const { mockQueueAdd } = vi.hoisted(() => ({ mockQueueAdd: vi.fn() }))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
 }))
 
 describe('campaignRegionUpdate', () => {
@@ -50,7 +43,6 @@ describe('campaignRegionUpdate', () => {
     prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
     prismaMock.journey.findFirst.mockResolvedValue(null)
     prismaMock.campaignRegion.findMany.mockResolvedValue(fixture.regions)
-    mockQueueAdd.mockResolvedValue(undefined)
     prismaMock.campaignRegion.update.mockImplementation((async ({
       where,
       data

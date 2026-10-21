@@ -1,3 +1,4 @@
+import { mockActionUpsert } from '../../../../test/campaignActionMock'
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockFactory'
 import {
   authClient,
@@ -9,8 +10,6 @@ import {
 } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
-
-import { mockActionUpsert } from './campaignBlockUpdateLinkAction.mutation.spec'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()

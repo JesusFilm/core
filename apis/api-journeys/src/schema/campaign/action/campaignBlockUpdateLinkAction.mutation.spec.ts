@@ -1,10 +1,10 @@
+import { mockActionUpsert } from '../../../../test/campaignActionMock'
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockFactory'
 import {
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSpec'
 import {
-  CAMPAIGN_FIXTURE_DATE,
   CampaignFixture,
   campaignFactory
 } from '../../../../test/campaignFactory'
@@ -15,22 +15,6 @@ import { LINK_URL_MAX_LENGTH } from '../validation'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
-
-/** The upsert as Prisma answers it: the row after `update` (or `create`) was applied. */
-export function mockActionUpsert(): void {
-  prismaMock.campaignAction.upsert.mockImplementation((async ({
-    where,
-    update
-  }: any) => ({
-    campaignBlockId: where.campaignBlockId,
-    updatedAt: CAMPAIGN_FIXTURE_DATE,
-    blockId: null,
-    regionId: null,
-    url: null,
-    target: null,
-    ...update
-  })) as never)
-}
 
 describe('campaignBlockUpdateLinkAction', () => {
   const UPDATE = graphql(`
