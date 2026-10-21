@@ -1,42 +1,9 @@
 import { builder } from '../../../builder'
 import { CampaignRegionShareBlock } from '../campaignRegionShareBlock'
-import {
-  SECTION_CREATE_ERRORS,
-  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
-  createSection
-} from '../createSection'
+import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignRegionShareBlockCreateInput = builder.inputType(
-  'CampaignRegionShareBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({
-        required: true,
-        description: 'The Region Page; refused on the landing page.'
-      }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      intro: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      })
-    })
-  }
-)
+import { CampaignRegionShareBlockCreateInput } from './inputs'
 
 builder.mutationField('campaignRegionShareBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

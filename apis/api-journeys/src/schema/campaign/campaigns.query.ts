@@ -2,10 +2,11 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
+import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
-import { Action, campaignAcl } from './campaign.acl'
+import { campaignAcl } from './campaign.acl'
 
 builder.queryField('campaigns', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({

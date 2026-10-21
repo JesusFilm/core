@@ -37,15 +37,9 @@ const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
 describe('campaignJourneyBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignJourneyBlockCreate(
-      $id: ID
-      $parentBlockId: ID!
-      $url: String!
+      $input: CampaignJourneyBlockCreateInput!
     ) {
-      campaignJourneyBlockCreate(
-        id: $id
-        parentBlockId: $parentBlockId
-        url: $url
-      ) {
+      campaignJourneyBlockCreate(input: $input) {
         id
         parentBlockId
         parentOrder
@@ -82,7 +76,7 @@ describe('campaignJourneyBlockCreate', () => {
   ): Promise<any> {
     return await authClient({
       document: CREATE,
-      variables: { id, parentBlockId, url }
+      variables: { input: { id, parentBlockId, url } }
     })
   }
 

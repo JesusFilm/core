@@ -21,3 +21,7 @@ export {
   type CampaignTextSourceValue
 } from './campaignTextSource'
 export { CampaignImageSlot } from './campaignImageSlot'
+export { CampaignTextField } from './campaignTextField'
+export { CampaignTranslationFilter } from './campaignTranslationFilter'
+export { CampaignTranslationGroup } from './campaignTranslationGroup'
+export { CampaignAiTranslateMode } from './campaignAiTranslateMode'

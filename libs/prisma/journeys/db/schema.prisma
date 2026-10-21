@@ -465,7 +465,6 @@ model Journey {
   socialNodeX                     Int?                          @default(-240)
   socialNodeY                     Int?                          @default(-46)
   qrCode                          QrCode[]
-  qrCodeTargets                   QrCode[]                      @relation("QrCodeTarget")
   Event                           Event[]
   journeyEventsExportLogs         JourneyEventsExportLog[]
   fromTemplateId                  String?
@@ -817,7 +816,6 @@ model QrCode {
   backgroundColor         String?                  @default("#FFFFFF")
   team                    Team                     @relation(fields: [teamId], references: [id])
   journey                 Journey                  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-  toJourney               Journey                  @relation("QrCodeTarget", fields: [toJourneyId], references: [id], onDelete: Cascade)
   campaignRegionLanguages CampaignRegionLanguage[]
 }
 
@@ -864,7 +862,7 @@ model JourneyCustomizationField {
 }
 
 // ---------------------------------------------------------------------------
-// Campaigns — a team-owned seasonal campaign site (see apis/api-journeys/CONTEXT.md,
+// Campaigns — a team-owned seasonal campaign site (see apis/api-journeys/GLOSSARY.md,
 // "Campaigns"). The Campaign is the aggregate root: every row below carries its
 // campaignId and is authorised through campaign.acl.ts.
 // ---------------------------------------------------------------------------
@@ -1030,8 +1028,8 @@ model CampaignLanguage {
 }
 
 model CampaignTheme {
-  id                      String               @id @default(uuid())
-  campaignId              String               @unique
+  id                      String         @id @default(uuid())
+  campaignId              String         @unique
   themeMode               ThemeMode
   /// Google Fonts family names; null = the base theme's default.
   headerFont              String?
@@ -1046,12 +1044,12 @@ model CampaignTheme {
   mutedColor              String
   contrastBackgroundColor String
   contrastTextColor       String
-  radius                  CampaignRadius       @default(rounded)
+  radius                  CampaignRadius @default(rounded)
   /// Button corners: the same four values as `radius`, applied to buttons only.
-  buttonRadius            CampaignRadius       @default(veryRounded)
-  createdAt               DateTime             @default(now())
-  updatedAt               DateTime             @updatedAt
-  campaign                Campaign             @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  buttonRadius            CampaignRadius @default(veryRounded)
+  createdAt               DateTime       @default(now())
+  updatedAt               DateTime       @updatedAt
+  campaign                Campaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 }
 
 model CampaignPage {
@@ -1069,19 +1067,19 @@ model CampaignPage {
 /// columns. Top-level rows set at most one of `pageId` / `regionId`; neither set
 /// means campaign chrome (header, footer). Children copy the parent's values.
 model CampaignBlock {
-  id                      String                      @id @default(uuid())
+  id                      String                       @id @default(uuid())
   typename                String
   campaignId              String
   pageId                  String?
   regionId                String?
   parentBlockId           String?
   parentOrder             Int?
-  updatedAt               DateTime                    @default(now()) @updatedAt
+  updatedAt               DateTime                     @default(now()) @updatedAt
   deletedAt               DateTime?
   // Section background and colour overrides (every section and chrome row)
-  backgroundKind          CampaignBackgroundKind      @default(none)
+  backgroundKind          CampaignBackgroundKind       @default(none)
   backgroundColor         String?
-  coverBlockId            String?                     @unique
+  coverBlockId            String?                      @unique
   backgroundOverlay       CampaignBackgroundOverlay?
   headingColor            String?
   textColor               String?
@@ -1109,20 +1107,20 @@ model CampaignBlock {
   descriptionTranslations Json?
   // Per-type enum and scalar columns
   align                   CampaignAlign?
-  mediaSide               CampaignMediaSide?          @default(right)
+  mediaSide               CampaignMediaSide?           @default(right)
   layout                  CampaignFeaturedMediaLayout?
-  mediaBlockId            String?                     @unique
-  logoBlockId             String?                     @unique
-  switcherVariant         CampaignSwitcherVariant?    @default(cards)
-  display                 CampaignJourneyListDisplay? @default(grid)
-  showMap                 Boolean?                    @default(false)
-  ratio                   CampaignColumnsRatio?       @default(equal)
+  mediaBlockId            String?                      @unique
+  logoBlockId             String?                      @unique
+  switcherVariant         CampaignSwitcherVariant?     @default(cards)
+  display                 CampaignJourneyListDisplay?  @default(grid)
+  showMap                 Boolean?                     @default(false)
+  ratio                   CampaignColumnsRatio?        @default(equal)
   typographyVariant       CampaignTypographyVariant?
   buttonVariant           CampaignButtonVariant?
   buttonSize              CampaignButtonSize?
   color                   String?
   labelColor              String?
-  placement               CampaignChildPlacement?     @default(below)
+  placement               CampaignChildPlacement?      @default(below)
   // CampaignVideoBlock and CampaignVideoCarouselBlock
   source                  VideoBlockSource?
   videoId                 String?
@@ -1136,20 +1134,20 @@ model CampaignBlock {
   // CampaignJourneyBlock snapshot
   journeyId               String?
   /// CampaignJourneyBlock: true once an author changed the snapshot title or description by hand; cleared when the snapshot is re-read from the journey.
-  snapshotEdited          Boolean                     @default(false)
-  campaign                Campaign                    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  page                    CampaignPage?               @relation(fields: [pageId], references: [id], onDelete: Cascade)
-  region                  CampaignRegion?             @relation(fields: [regionId], references: [id], onDelete: Cascade)
-  parentBlock             CampaignBlock?              @relation("CampaignParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
-  childBlocks             CampaignBlock[]             @relation("CampaignParentBlock")
-  coverBlock              CampaignBlock?              @relation("CampaignCoverBlock", fields: [coverBlockId], references: [id])
-  coverBlockParent        CampaignBlock?              @relation("CampaignCoverBlock")
-  mediaBlock              CampaignBlock?              @relation("CampaignMediaBlock", fields: [mediaBlockId], references: [id])
-  mediaBlockParent        CampaignBlock?              @relation("CampaignMediaBlock")
-  logoBlock               CampaignBlock?              @relation("CampaignLogoBlock", fields: [logoBlockId], references: [id])
-  logoBlockParent         CampaignBlock?              @relation("CampaignLogoBlock")
+  snapshotEdited          Boolean                      @default(false)
+  campaign                Campaign                     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  page                    CampaignPage?                @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  region                  CampaignRegion?              @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  parentBlock             CampaignBlock?               @relation("CampaignParentBlock", fields: [parentBlockId], references: [id], onDelete: Cascade)
+  childBlocks             CampaignBlock[]              @relation("CampaignParentBlock")
+  coverBlock              CampaignBlock?               @relation("CampaignCoverBlock", fields: [coverBlockId], references: [id])
+  coverBlockParent        CampaignBlock?               @relation("CampaignCoverBlock")
+  mediaBlock              CampaignBlock?               @relation("CampaignMediaBlock", fields: [mediaBlockId], references: [id])
+  mediaBlockParent        CampaignBlock?               @relation("CampaignMediaBlock")
+  logoBlock               CampaignBlock?               @relation("CampaignLogoBlock", fields: [logoBlockId], references: [id])
+  logoBlockParent         CampaignBlock?               @relation("CampaignLogoBlock")
   action                  CampaignAction?
-  targetActions           CampaignAction[]            @relation("CampaignActionTargetBlock")
+  targetActions           CampaignAction[]             @relation("CampaignActionTargetBlock")
 
   @@index(campaignId)
   @@index(pageId)

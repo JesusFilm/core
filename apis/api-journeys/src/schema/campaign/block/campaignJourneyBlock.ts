@@ -12,7 +12,7 @@ import {
 } from '../getJourneyPublicUrl'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 
 export interface CampaignJourneyImagePayload {
   src: string
@@ -97,7 +97,8 @@ builder.objectType(CampaignJourneyImageRef, {
 export const CampaignJourneyBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignJourneyBlock',
   interfaces: [CampaignBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignJourneyBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignJourneyBlock'),
   description:
     'A journey-list item: one published journey of any team shown as a card. `title` and `description` are an editable snapshot taken when the journey was picked (the default-language values, translatable); the status, address and image are read live from the journey, with no snapshot of its tag.',
   fields: (t) => ({

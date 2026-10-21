@@ -1,6 +1,6 @@
 import { builder } from '../../../builder'
 import { CampaignImageBlock } from '../campaignImageBlock'
-import { SECTION_STYLE_ERRORS } from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,

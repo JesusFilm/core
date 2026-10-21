@@ -477,20 +477,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
-  campaignJourneyBlockCreate(
-    """
-    A client-chosen id for the new item.
-    """
-    id: ID
-    """
-    The journey list the card is added to.
-    """
-    parentBlockId: ID!
-    """
-    The journey’s admin link or public URL on any domain.
-    """
-    url: String!
-  ): CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
+  campaignJourneyBlockCreate(input: CampaignJourneyBlockCreateInput!) : CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
   Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).
   
@@ -7630,6 +7617,21 @@ input CampaignImageBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {
   `#RRGGBB` or null to inherit.
   """
   accentColor: String
+}
+
+input CampaignJourneyBlockCreateInput @join__type(graph: API_JOURNEYS_MODERN)  {
+  """
+  A client-chosen id for the new item.
+  """
+  id: ID
+  """
+  The journey list the card is added to.
+  """
+  parentBlockId: ID!
+  """
+  The journey’s admin link or public URL on any domain.
+  """
+  url: String!
 }
 
 input CampaignJourneyBlockUpdateInput @join__type(graph: API_JOURNEYS_MODERN)  {

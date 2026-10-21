@@ -1,5 +1,3 @@
-import enBundle from '@core/locales/en/libs-journeys-ui.json'
-
 import {
   campaignLocaleFolder,
   resolveCampaignStringValues
@@ -22,14 +20,24 @@ vi.mock(
 
 describe('campaignLocale', () => {
   describe('English defaults', () => {
+    let enBundle: Record<string, string>
+
+    beforeAll(async () => {
+      // Loaded by relative path, as campaignLocale.ts loads every bundle.
+      const folder = 'en'
+      const bundle = await import(
+        /* webpackChunkName: "campaign-locale-[request]" */
+        `../../../../../../libs/locales/${folder}/libs-journeys-ui.json`
+      )
+      enBundle = bundle.default
+    })
+
     it.each(CAMPAIGN_STRING_KEYS)(
       'has %s in the libs-journeys-ui bundle',
       (key) => {
         const defaultValue = CAMPAIGN_STRING_DEFAULTS[key]
 
-        expect((enBundle as Record<string, string>)[defaultValue]).toBe(
-          defaultValue
-        )
+        expect(enBundle[defaultValue]).toBe(defaultValue)
       }
     )
   })

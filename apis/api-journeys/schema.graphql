@@ -1357,6 +1357,17 @@ type CampaignJourneyBlock implements CampaignBlock {
   journeyImage: CampaignJourneyImage
 }
 
+input CampaignJourneyBlockCreateInput {
+  """A client-chosen id for the new item."""
+  id: ID
+
+  """The journey list the card is added to."""
+  parentBlockId: ID!
+
+  """The journey’s admin link or public URL on any domain."""
+  url: String!
+}
+
 input CampaignJourneyBlockUpdateInput {
   """Default-language title. At most 200 characters."""
   title: String
@@ -4573,16 +4584,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
-  campaignJourneyBlockCreate(
-    """A client-chosen id for the new item."""
-    id: ID
-
-    """The journey list the card is added to."""
-    parentBlockId: ID!
-
-    """The journey’s admin link or public URL on any domain."""
-    url: String!
-  ): CampaignJourneyBlock!
+  campaignJourneyBlockCreate(input: CampaignJourneyBlockCreateInput!): CampaignJourneyBlock!
 
   """
   Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).

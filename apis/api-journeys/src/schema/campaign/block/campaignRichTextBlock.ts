@@ -1,13 +1,14 @@
 import { builder } from '../../builder'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignRichTextBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignRichTextBlock',
   interfaces: [CampaignBlock, CampaignSectionBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignRichTextBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignRichTextBlock'),
   description:
     'A title and one content column. `content` is one text column; the viewer splits it on blank lines into paragraphs.',
   fields: (t) => ({

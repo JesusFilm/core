@@ -192,7 +192,7 @@ Who may do what to a Campaign, decided by the caller's **Team Role** on the owni
 _Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
 
 **Campaign Seed**:
-What every Campaign is born with, in one step: a draft Campaign with one language and a generated slug, the Light theme and a Palette drawn from it, the landing and Region pages with their starter sections and copy, the header and footer with their starter links, and the seventeen Campaign Strings. No regions, media or Journeys: those are the author's first edits.
+What every Campaign is born with, in one step: a draft Campaign with one language and a generated slug, the Light theme and a Palette drawn from it, the landing and Region pages with their starter sections and copy, the header and footer with their starter links, and the eighteen Campaign Strings. No regions, media or Journeys: those are the author's first edits.
 _Avoid_: template (that is a Journey concept), default campaign, blank campaign (it is not blank)
 
 ### Campaign content
@@ -214,7 +214,7 @@ What a Campaign Section sits on: nothing, the theme surface, the contrast band, 
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:
-One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section other than a Columns or Region Share section. Deleting the section in a slot empties the slot and never removes the slot itself; mirrors GridContainer → GridItem.
+One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section other than a Columns, Region Share or Image section. Deleting the section in a slot empties the slot and never removes the slot itself; mirrors GridContainer → GridItem.
 _Avoid_: column (ambiguous with the Columns section), cell, pane
 
 **Extra**:

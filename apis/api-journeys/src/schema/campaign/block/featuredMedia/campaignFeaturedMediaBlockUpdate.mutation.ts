@@ -1,50 +1,15 @@
 import { builder } from '../../../builder'
-import { CampaignFeaturedMediaLayout, CampaignMediaSide } from '../../enums'
 import { CampaignFeaturedMediaBlock } from '../campaignFeaturedMediaBlock'
-import {
-  MEDIA_SLOT_ERRORS,
-  mediaSlotColumns,
-  mediaSlotInputField
-} from '../mediaSlotInput'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { MEDIA_SLOT_ERRORS, mediaSlotColumns } from '../inputs/mediaSlotInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
   updateBlock
 } from '../service'
 
+import { CampaignFeaturedMediaBlockUpdateInput } from './inputs'
 import { validateFeaturedMediaInput } from './validateFeaturedMediaInput'
-
-export const CampaignFeaturedMediaBlockUpdateInput = builder.inputType(
-  'CampaignFeaturedMediaBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      lede: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      bullets: t.string({
-        required: false,
-        description: 'One bullet per line; at most 1000 characters.'
-      }),
-      mediaSide: t.field({ type: CampaignMediaSide, required: false }),
-      layout: t.field({ type: CampaignFeaturedMediaLayout, required: false }),
-      mediaBlockId: mediaSlotInputField(t),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
 
 builder.mutationField('campaignFeaturedMediaBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

@@ -236,7 +236,7 @@ export function JourneyListEdit({
       block: card,
       execute() {
         created = journeyCreate({
-          variables: { id, parentBlockId: block.id, url },
+          variables: { input: { id, parentBlockId: block.id, url } },
           optimisticResponse: { campaignJourneyBlockCreate: card }
         })
         return created

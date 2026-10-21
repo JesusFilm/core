@@ -1,7 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
+import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
-import { Action, campaignAcl } from '../campaign/campaign.acl'
+import { campaignAcl } from '../campaign/campaign.acl'
 
 export const CustomDomainRef = builder.prismaObject('CustomDomain', {
   shareable: true,

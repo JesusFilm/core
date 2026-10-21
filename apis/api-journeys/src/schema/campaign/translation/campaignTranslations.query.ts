@@ -9,9 +9,15 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
+import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
-import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
-import { CampaignTextSource } from '../enums'
+import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import {
+  CampaignTextField,
+  CampaignTextSource,
+  CampaignTranslationFilter,
+  CampaignTranslationGroup
+} from '../enums'
 import { parseTranslations } from '../translatedValue'
 import { badUserInput } from '../validation'
 
@@ -20,7 +26,6 @@ import {
   CAMPAIGN_REGION_TEXT_FIELDS,
   CAMPAIGN_STRING_TEXT_FIELDS,
   CAMPAIGN_TITLE_TEXT_FIELDS,
-  CampaignTextField,
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
@@ -37,24 +42,6 @@ export type CampaignTranslationGroupValue =
   | 'landing'
   | 'region'
   | 'regions'
-
-export const CampaignTranslationFilter = builder.enumType(
-  'CampaignTranslationFilter',
-  {
-    values: ['all', 'needsReview', 'missing', 'edited'] as const,
-    description:
-      'Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).'
-  }
-)
-
-export const CampaignTranslationGroup = builder.enumType(
-  'CampaignTranslationGroup',
-  {
-    values: ['interface', 'landing', 'region', 'regions'] as const,
-    description:
-      'The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).'
-  }
-)
 
 export interface CampaignTranslationTargetShape {
   typename: string
