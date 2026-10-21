@@ -2274,7 +2274,9 @@ type CampaignScrollToBlockAction implements CampaignAction {
 }
 
 input CampaignScrollToBlockActionInput {
-  """A live block of the same campaign."""
+  """
+  A section of the button’s page (a header or footer button may name a section of either page).
+  """
   blockId: ID!
 }
 
@@ -4423,11 +4425,11 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
-  - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
+  - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!): CampaignHeroBlock!
 
@@ -4459,7 +4461,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!): CampaignRegionSwitcherBlock!
 
@@ -4493,7 +4495,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!): CampaignVideoCarouselBlock!
 
@@ -4542,7 +4544,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!): CampaignJourneyListBlock!
 
@@ -4619,7 +4621,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!): CampaignAnalyticsBlock!
 
@@ -4651,7 +4653,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!): CampaignRegionHeaderBlock!
 
@@ -4683,7 +4685,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!): CampaignRegionShareBlock!
 
@@ -4714,7 +4716,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignRichTextBlockUpdate(id: ID!, input: CampaignRichTextBlockUpdateInput!): CampaignRichTextBlock!
 
@@ -4746,7 +4748,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignColumnsBlockUpdate(id: ID!, input: CampaignColumnsBlockUpdateInput!): CampaignColumnsBlock!
 
@@ -4783,7 +4785,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!): CampaignImageBlock!
 
@@ -4843,11 +4845,11 @@ type Mutation {
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
-  - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.
+  - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignFeaturedMediaBlockUpdate(id: ID!, input: CampaignFeaturedMediaBlockUpdateInput!): CampaignFeaturedMediaBlock!
 
@@ -4862,8 +4864,8 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
-  - BAD_USER_INPUT (field: `logoBlockId`): not a live CampaignImageBlock owned by the header.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: `logoBlockId`): not a CampaignImageBlock the header owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignHeaderBlockUpdate(id: ID!, input: CampaignHeaderBlockUpdateInput!): CampaignHeaderBlock!
 
@@ -4878,7 +4880,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
-  - BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.
+  - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignFooterBlockUpdate(id: ID!, input: CampaignFooterBlockUpdateInput!): CampaignFooterBlock!
 
@@ -4953,7 +4955,7 @@ type Mutation {
   campaignBlockUpdateLinkAction(id: ID!, input: CampaignLinkActionInput!): CampaignLinkAction!
 
   """
-  Point a button at a block of the same campaign: the public page scrolls to `#<blockId>` when the target is on the same page and renders the button static otherwise. The button’s one action becomes this scroll; any link or region target it had is cleared.
+  Point a button at a section of its own page: the public page scrolls to `#<blockId>`. A header or footer button, which belongs to no page, may target a section of either page. The button’s one action becomes this scroll; any link or region target it had is cleared.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -4961,7 +4963,7 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `id`): the block is not a CampaignButtonBlock.
-  - BAD_USER_INPUT (field: `blockId`): not a live block of this campaign.
+  - BAD_USER_INPUT (field: `blockId`): not a live top-level section of this campaign on the button’s page (an Extra, an owned block, the header, the footer and a region block are refused).
   """
   campaignBlockUpdateScrollToBlockAction(id: ID!, input: CampaignScrollToBlockActionInput!): CampaignScrollToBlockAction!
 

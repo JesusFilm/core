@@ -6,8 +6,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
@@ -46,7 +46,7 @@ builder.mutationField('campaignRichTextBlockUpdate', (t) =>
       )
       return await updateBlock(block, {
         ...validateSectionText(input, ['title', 'content']),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })

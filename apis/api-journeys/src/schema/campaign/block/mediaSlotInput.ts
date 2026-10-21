@@ -1,8 +1,4 @@
-import { CampaignBlock, Prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../builder'
-
-import { swapMediaSlot, validateMediaSlotTarget } from './service'
 
 type InputFieldBuilder = Parameters<
   Parameters<typeof builder.inputType>[1]['fields']
@@ -18,28 +14,18 @@ export function mediaSlotInputField(t: InputFieldBuilder) {
 }
 
 export const MEDIA_SLOT_ERRORS =
-  '- BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns.'
-
-export interface MediaSlotUpdate {
-  data: { mediaBlockId?: string | null }
-  before?: (tx: Prisma.TransactionClient) => Promise<void>
-}
+  '- BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.'
 
 /**
- * Validate a `mediaBlockId` update and return the column plus the swap to
- * run in the update's transaction; omitted leaves the slot alone.
+ * The `mediaBlockId` column an update writes; omitted leaves the slot alone.
+ * The target is validated and the slot swapped by `updateBlock`, under the
+ * structure lock.
  */
-export async function mediaSlotUpdate(
-  mediaBlockId: string | number | null | undefined,
-  owner: Pick<
-    CampaignBlock,
-    'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId' | 'mediaBlockId'
-  >
-): Promise<MediaSlotUpdate> {
-  const target = await validateMediaSlotTarget(mediaBlockId, owner)
-  if (target === undefined) return { data: {} }
-  return {
-    data: { mediaBlockId: target },
-    before: async (tx) => await swapMediaSlot(tx, owner, target)
-  }
+export function mediaSlotColumns(
+  mediaBlockId: string | number | null | undefined
+): {
+  mediaBlockId?: string | null
+} {
+  if (mediaBlockId === undefined) return {}
+  return { mediaBlockId: mediaBlockId == null ? null : String(mediaBlockId) }
 }

@@ -6,7 +6,8 @@ export const CampaignScrollToBlockActionInput = builder.inputType(
     fields: (t) => ({
       blockId: t.id({
         required: true,
-        description: 'A live block of the same campaign.'
+        description:
+          'A section of the button’s page (a header or footer button may name a section of either page).'
       })
     })
   }

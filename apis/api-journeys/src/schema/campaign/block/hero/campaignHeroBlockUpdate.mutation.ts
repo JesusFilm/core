@@ -4,8 +4,8 @@ import { assertEnumOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
 import {
   MEDIA_SLOT_ERRORS,
-  mediaSlotInputField,
-  mediaSlotUpdate
+  mediaSlotColumns,
+  mediaSlotInputField
 } from '../mediaSlotInput'
 import {
   SECTION_STYLE_ERRORS,
@@ -13,8 +13,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
 import { validateSectionText } from '../validateSectionText'
@@ -62,13 +62,13 @@ builder.mutationField('campaignHeroBlockUpdate', (t) =>
         input.align !== undefined
           ? { align: assertEnumOrNull(input.align, 'align', CAMPAIGN_ALIGNS) }
           : {}
-      const style = await validateSectionStyle(input, block)
-      const media = await mediaSlotUpdate(input.mediaBlockId, block)
-      return await updateBlock(
-        block,
-        { ...text, ...align, ...style, ...media.data },
-        media.before
-      )
+      const style = sectionStyleColumns(input)
+      return await updateBlock(block, {
+        ...text,
+        ...align,
+        ...style,
+        ...mediaSlotColumns(input.mediaBlockId)
+      })
     }
   })
 )

@@ -64,6 +64,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     featuredMedia = campaignBlockWithAcl(fixture, 'heroId', FEATURED_MEDIA)
     prismaMock.campaignBlock.findFirst.mockResolvedValue(featuredMedia)
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(featuredMedia)
     prismaMock.campaignBlock.update.mockImplementation((async ({
       data
     }: any) => ({ ...featuredMedia, ...data })) as never)
@@ -152,6 +153,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       mediaSide: null
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(featuredMedia)
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(featuredMedia)
 
     const result = await update({ title: 'x' })
 

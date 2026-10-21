@@ -78,6 +78,7 @@ describe('campaignVideoBlockCreate', () => {
     fixture = setupCampaignBlockSpec()
     hero = fixture.blocks.find((block) => block.id === 'heroId')!
     prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
     vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
       title: 'YouTube title',
       description: 'YouTube description',
@@ -131,6 +132,10 @@ describe('campaignVideoBlockCreate', () => {
         ...hero,
         mediaBlockId: 'oldMediaId'
       })
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
+        ...hero,
+        mediaBlockId: 'oldMediaId'
+      })
 
       const result = await create({
         id: 'videoId',
@@ -162,7 +167,12 @@ describe('campaignVideoBlockCreate', () => {
         }
       })
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
-        where: { id: 'heroId', campaignId: 'campaignId', deletedAt: null }
+        where: {
+          id: 'heroId',
+          campaignId: 'campaignId',
+          deletedAt: null,
+          parentOrder: { not: null }
+        }
       })
       expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
         data: expect.objectContaining({

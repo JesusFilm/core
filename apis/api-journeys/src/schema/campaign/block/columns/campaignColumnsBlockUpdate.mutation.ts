@@ -8,8 +8,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 
 import { CAMPAIGN_COLUMNS_RATIOS } from './validateColumnsRatio'
@@ -45,7 +45,7 @@ builder.mutationField('campaignColumnsBlockUpdate', (t) =>
               ratio: assertEnum(input.ratio, 'ratio', CAMPAIGN_COLUMNS_RATIOS)
             }
           : {}),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })

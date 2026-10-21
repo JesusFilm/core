@@ -165,6 +165,26 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalled()
   })
 
+  it('takes the structure lock before it counts the carousel’s children', async () => {
+    mockYouTube(3)
+
+    const result = await importPlaylist()
+
+    expect(result.errors).toBeUndefined()
+    const [strings, key] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
+      string[],
+      string
+    ]
+    expect(strings.join('?')).toContain('pg_advisory_xact_lock(hashtext(')
+    expect(key).toBe('campaign:campaignId')
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignBlock.findMany.mock.invocationCallOrder[0]
+    )
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignBlock.createManyAndReturn.mock.invocationCallOrder[0]
+    )
+  })
+
   it('asks the Data API for 12 playlist items, then their videos in one request', async () => {
     mockYouTube(3)
 

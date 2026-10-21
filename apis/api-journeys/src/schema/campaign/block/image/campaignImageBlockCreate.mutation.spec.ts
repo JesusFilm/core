@@ -52,6 +52,7 @@ describe('campaignImageBlockCreate', () => {
     }))
     const hero = campaignBlockWithAcl(fixture, 'heroId')
     prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[0])
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
     prismaMock.campaignBlock.findMany.mockResolvedValue(
       fixture.blocks.filter(
         (block) =>
@@ -255,6 +256,10 @@ describe('campaignImageBlockCreate', () => {
         ...hero,
         coverBlockId: 'oldCoverId'
       })
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
+        ...hero,
+        coverBlockId: 'oldCoverId'
+      })
 
       const result = await create({
         id: 'coverId',
@@ -274,7 +279,12 @@ describe('campaignImageBlockCreate', () => {
         height: 900
       })
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
-        where: { id: 'heroId', campaignId: 'campaignId', deletedAt: null }
+        where: {
+          id: 'heroId',
+          campaignId: 'campaignId',
+          deletedAt: null,
+          parentOrder: { not: null }
+        }
       })
       expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
@@ -315,9 +325,9 @@ describe('campaignImageBlockCreate', () => {
     })
 
     it('creates the header logo with chrome scoping and points logoBlockId at it', async () => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'headerId')!
-      )
+      const header = fixture.blocks.find((block) => block.id === 'headerId')!
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(header)
 
       const result = await create({
         id: 'logoId',
