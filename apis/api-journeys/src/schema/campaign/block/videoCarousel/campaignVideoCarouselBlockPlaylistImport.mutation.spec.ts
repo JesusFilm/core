@@ -3,7 +3,10 @@ import {
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSpec'
-import { CampaignFixture } from '../../../../../test/campaignFactory'
+import {
+  CampaignFixture,
+  campaignFactory
+} from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 
@@ -236,5 +239,20 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it('throws FORBIDDEN for a caller outside the team', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(
+        campaignFactory({ userId: 'someoneElse' }).build(),
+        'carouselId'
+      )
+    )
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
 })

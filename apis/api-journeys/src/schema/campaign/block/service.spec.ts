@@ -1,9 +1,13 @@
 import { GraphQLError } from 'graphql'
 
+import { CampaignAction, Prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockFactory'
-import { campaignFactory } from '../../../../test/campaignFactory'
+import {
+  CampaignBlockRow,
+  campaignFactory
+} from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 
@@ -24,6 +28,7 @@ import {
   createRegionLine,
   createSlotChild,
   createTopLevelBlock,
+  duplicateBlock,
   getSiblings,
   removeBlock,
   reorderBlock,
@@ -234,7 +239,7 @@ describe('campaign block service', () => {
 
   describe('Video Carousel items', () => {
     const carousel = fixture.blocks.find((block) => block.id === 'carouselId')!
-    function item(id: string, parentOrder: number): any {
+    function item(id: string, parentOrder: number): CampaignBlockRow {
       return {
         ...carousel,
         id,
@@ -884,7 +889,7 @@ describe('campaign block service', () => {
 
       expect(created).toMatchObject({ id: 'newId', parentOrder: 2 })
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => [
+        prismaMock.campaignBlock.update.mock.calls.map(([call]) => [
           call.where.id,
           call.data.parentOrder
         ])
@@ -1239,6 +1244,261 @@ describe('campaign block service', () => {
         'heroMediaId',
         'heroButtonId'
       ])
+    })
+  })
+
+  describe('duplicateBlock', () => {
+    function row(
+      id: string,
+      typename: string,
+      parentBlockId: string | null,
+      parentOrder: number | null,
+      overrides: Partial<CampaignBlockRow> = {}
+    ): CampaignBlockRow {
+      return {
+        ...hero,
+        id,
+        typename,
+        parentBlockId,
+        parentOrder,
+        pageId: 'landingPageId',
+        coverBlockId: null,
+        mediaBlockId: null,
+        logoBlockId: null,
+        action: null,
+        ...overrides
+      }
+    }
+
+    function actionTo(
+      campaignBlockId: string,
+      target: Partial<CampaignAction>
+    ): CampaignAction {
+      return {
+        campaignBlockId,
+        blockId: null,
+        regionId: null,
+        url: null,
+        target: null,
+        updatedAt: new Date(),
+        ...target
+      }
+    }
+
+    /** The mocked transaction: `live` for the subtree read, the roots for the siblings. */
+    function setLive(live: CampaignBlockRow[]): void {
+      prismaMock.campaignBlock.findMany
+        .mockResolvedValueOnce(live)
+        .mockResolvedValueOnce(
+          live.filter(
+            (block) => block.parentBlockId == null && block.parentOrder != null
+          )
+        )
+      prismaMock.campaignBlock.create.mockImplementation((async ({
+        data
+      }: {
+        data: Prisma.CampaignBlockUncheckedCreateInput
+      }) => ({ ...hero, ...data, action: null })) as never)
+      prismaMock.campaignBlock.update.mockImplementation((async ({
+        where,
+        data
+      }: {
+        where: { id: string }
+        data: Prisma.CampaignBlockUncheckedUpdateInput & {
+          action?: { create: Partial<CampaignAction> }
+        }
+      }) => {
+        const { action, ...columns } = data
+        return {
+          ...hero,
+          id: where.id,
+          ...columns,
+          action: action != null ? actionTo(where.id, action.create) : null
+        }
+      }) as never)
+    }
+
+    /** The copy of `oldId` as the mocked `create` wrote it. */
+    function createdData(
+      newId: string
+    ): Prisma.CampaignBlockUncheckedCreateInput {
+      const call = prismaMock.campaignBlock.create.mock.calls.find(
+        ([args]) => args.data.id === newId
+      )
+      if (call == null) throw new Error(`${newId} was never created`)
+      return call[0].data as Prisma.CampaignBlockUncheckedCreateInput
+    }
+
+    /** What `update` wrote to the copy `newId` besides the sibling renumbering. */
+    function patchedData(newId: string): Record<string, unknown> | undefined {
+      return prismaMock.campaignBlock.update.mock.calls.find(
+        ([args]) => args.where.id === newId && !('parentOrder' in args.data)
+      )?.[0].data
+    }
+
+    const idMap = [
+      { oldId: 'columnsId', newId: 'columnsCopyId' },
+      { oldId: 'slotLeftId', newId: 'slotLeftCopyId' },
+      { oldId: 'slotRightId', newId: 'slotRightCopyId' },
+      { oldId: 'slotHeroId', newId: 'slotHeroCopyId' },
+      { oldId: 'slotButtonId', newId: 'slotButtonCopyId' }
+    ]
+
+    const columnsSection = [
+      row('columnsId', 'CampaignColumnsBlock', null, 0),
+      row('slotLeftId', 'CampaignColumnBlock', 'columnsId', 0),
+      row('slotRightId', 'CampaignColumnBlock', 'columnsId', 1),
+      row('slotHeroId', 'CampaignHeroBlock', 'slotLeftId', 0),
+      row('slotButtonId', 'CampaignButtonBlock', 'slotHeroId', 0)
+    ]
+
+    it('copies parents before children', async () => {
+      // The live list is deliberately not in tree order: a child read before its parent.
+      setLive([...columnsSection].reverse())
+
+      await duplicateBlock(columnsSection[0], idMap)
+
+      const created = prismaMock.campaignBlock.create.mock.calls.map(
+        ([args]) => args.data
+      )
+      expect(created.map((data) => data.id)).toHaveLength(5)
+      expect(created[0].id).toBe('columnsCopyId')
+      const seen = new Set<string>()
+      for (const data of created) {
+        if (data.id !== 'columnsCopyId')
+          expect(seen).toContain(data.parentBlockId)
+        seen.add(data.id as string)
+      }
+    })
+
+    it('puts a copied column slot’s children in the copied slot, not the original', async () => {
+      setLive(columnsSection)
+
+      await duplicateBlock(columnsSection[0], idMap)
+
+      expect(createdData('slotLeftCopyId').parentBlockId).toBe('columnsCopyId')
+      expect(createdData('slotRightCopyId').parentBlockId).toBe('columnsCopyId')
+      expect(createdData('slotHeroCopyId').parentBlockId).toBe('slotLeftCopyId')
+      expect(createdData('slotButtonCopyId').parentBlockId).toBe(
+        'slotHeroCopyId'
+      )
+    })
+
+    it('retargets a copied action at the copied block, and leaves one aimed outside the subtree alone', async () => {
+      const withActions = columnsSection.map((block) => {
+        if (block.id === 'slotHeroId')
+          return {
+            ...block,
+            action: actionTo('slotHeroId', { blockId: 'slotRightId' })
+          }
+        if (block.id === 'slotButtonId')
+          return {
+            ...block,
+            action: actionTo('slotButtonId', {
+              blockId: 'outsideBlockId',
+              regionId: 'regionId'
+            })
+          }
+        return block
+      })
+      setLive(withActions)
+
+      await duplicateBlock(columnsSection[0], idMap)
+
+      expect(patchedData('slotHeroCopyId')).toEqual({
+        action: {
+          create: {
+            blockId: 'slotRightCopyId',
+            regionId: null,
+            url: null,
+            target: null
+          }
+        }
+      })
+      expect(patchedData('slotButtonCopyId')).toEqual({
+        action: {
+          create: {
+            blockId: 'outsideBlockId',
+            regionId: 'regionId',
+            url: null,
+            target: null
+          }
+        }
+      })
+    })
+
+    it('copies owned blocks under the copied owner and points the slot columns at them', async () => {
+      const owned = row(
+        'heroMediaId',
+        'CampaignTypographyBlock',
+        'heroId',
+        null
+      )
+      setLive([
+        row('heroId', 'CampaignHeroBlock', null, 0, {
+          mediaBlockId: 'heroMediaId'
+        }),
+        owned
+      ])
+
+      await duplicateBlock(hero, [
+        { oldId: 'heroId', newId: 'heroCopyId' },
+        { oldId: 'heroMediaId', newId: 'heroMediaCopyId' }
+      ])
+
+      expect(createdData('heroMediaCopyId')).toMatchObject({
+        parentBlockId: 'heroCopyId',
+        parentOrder: null
+      })
+      expect(createdData('heroCopyId')).not.toHaveProperty('mediaBlockId')
+      expect(patchedData('heroCopyId')).toEqual({
+        mediaBlockId: 'heroMediaCopyId'
+      })
+    })
+
+    it('returns the renumbered siblings with the copy after the original, then every copied descendant', async () => {
+      setLive([
+        ...columnsSection,
+        row('footerSectionId', 'CampaignHeroBlock', null, 1)
+      ])
+
+      const result = await duplicateBlock(columnsSection[0], idMap)
+
+      expect(result.map((block) => block.id)).toEqual([
+        'columnsId',
+        'columnsCopyId',
+        'footerSectionId',
+        'slotLeftCopyId',
+        'slotRightCopyId',
+        'slotHeroCopyId',
+        'slotButtonCopyId'
+      ])
+    })
+
+    it('gives every copied block a fresh id, the idMap ones as asked, and covers the whole subtree', async () => {
+      setLive(columnsSection)
+
+      const result = await duplicateBlock(columnsSection[0], [
+        { oldId: 'columnsId', newId: 'columnsCopyId' }
+      ])
+
+      const copiedIds = result
+        .map((block) => block.id)
+        .filter((id) => !columnsSection.some((block) => block.id === id))
+      expect(copiedIds).toHaveLength(columnsSection.length)
+      expect(copiedIds).toContain('columnsCopyId')
+      expect(new Set(copiedIds).size).toBe(columnsSection.length)
+    })
+
+    it('refuses an owned block on its own (CONFLICT, id)', async () => {
+      const error = await errorOf(
+        duplicateBlock(
+          row('ownedId', 'CampaignTypographyBlock', 'heroId', null)
+        )
+      )
+
+      expect(error.extensions).toEqual({ code: 'CONFLICT', field: 'id' })
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
     })
   })
 })
@@ -1603,7 +1863,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
       )
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        prismaMock.campaignBlock.update.mock.calls.map(([call]) => call)
       ).toEqual([
         { where: { id: 'currentId' }, data: { deletedAt: expect.any(Date) } },
         { where: { id: 'previousId' }, data: { deletedAt: null } }
@@ -1614,7 +1874,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
       await swapMediaSlot(prismaMock, { mediaBlockId: null }, 'mediaId')
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        prismaMock.campaignBlock.update.mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'mediaId' }, data: { deletedAt: null } }])
     })
 
@@ -1622,7 +1882,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
       await swapMediaSlot(prismaMock, { mediaBlockId: 'currentId' }, null)
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        prismaMock.campaignBlock.update.mock.calls.map(([call]) => call)
       ).toEqual([
         { where: { id: 'currentId' }, data: { deletedAt: expect.any(Date) } }
       ])
@@ -1632,7 +1892,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
       await swapMediaSlot(prismaMock, { mediaBlockId: 'mediaId' }, 'mediaId')
 
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
+        prismaMock.campaignBlock.update.mock.calls.map(([call]) => call)
       ).toEqual([{ where: { id: 'mediaId' }, data: { deletedAt: null } }])
     })
   })

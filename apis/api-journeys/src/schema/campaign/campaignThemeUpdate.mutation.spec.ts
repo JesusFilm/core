@@ -175,24 +175,29 @@ describe('campaignThemeUpdate', () => {
   )
 
   it.each([
-    ['themeMode', 'dark', 'midnight'],
-    ['radius', 'veryRounded', 'circle'],
-    ['buttonRadius', 'slight', 'pill']
-  ])('takes %s from its enum only', async (column, valid, invalid) => {
-    const accepted = await update({ [column]: valid })
-    expect(accepted.data.campaignThemeUpdate[column]).toBe(valid)
+    ['themeMode', 'dark', 'midnight', 'ThemeMode'],
+    ['radius', 'veryRounded', 'circle', 'CampaignRadius'],
+    ['buttonRadius', 'slight', 'pill', 'CampaignRadius']
+  ])(
+    'takes %s from its enum only',
+    async (column, valid, invalid, enumName) => {
+      const accepted = await update({ [column]: valid })
+      expect(accepted.data.campaignThemeUpdate[column]).toBe(valid)
 
-    const rejected = await update({ [column]: invalid })
-    expect(rejected.errors).toBeDefined()
-    expect(rejected.data).toBeUndefined()
+      const rejected = await update({ [column]: invalid })
+      expect(rejected.errors[0].message).toContain(
+        `Value "${invalid}" does not exist in "${enumName}" enum`
+      )
+      expect(rejected.data).toBeUndefined()
 
-    const nulled = await update({ [column]: null })
-    expect(nulled.errors[0].extensions).toMatchObject({
-      code: 'BAD_USER_INPUT',
-      field: column
-    })
-    expect(prismaMock.campaignTheme.update).toHaveBeenCalledTimes(1)
-  })
+      const nulled = await update({ [column]: null })
+      expect(nulled.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: column
+      })
+      expect(prismaMock.campaignTheme.update).toHaveBeenCalledTimes(1)
+    }
+  )
 
   it('throws NOT_FOUND when the id does not resolve', async () => {
     prismaMock.campaignTheme.findUnique.mockResolvedValue(null)

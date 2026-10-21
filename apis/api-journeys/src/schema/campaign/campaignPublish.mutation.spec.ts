@@ -1,10 +1,11 @@
-import { type MockedFunction, vi } from 'vitest'
-
-import { getUserFromPayload } from '@core/yoga/firebaseClient'
+import { vi } from 'vitest'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
+import {
+  authClient,
+  setupCampaignBlockSpec
+} from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -12,25 +13,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
-  typeof getUserFromPayload
->
-
 describe('campaignPublish', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_PUBLISH = graphql(`
     mutation CampaignPublish($id: ID!) {
       campaignPublish(id: $id) {
@@ -42,16 +25,7 @@ describe('campaignPublish', () => {
   `)
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockGetUserFromPayload.mockReturnValue(mockUser)
-    prismaMock.userRole.findUnique.mockResolvedValue({
-      id: 'userRoleId',
-      userId: mockUser.id,
-      roles: []
-    })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    setupCampaignBlockSpec()
   })
 
   it('moves draft to published and stamps publishedAt for a manager', async () => {

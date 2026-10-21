@@ -7,6 +7,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockUser } from '../../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { promptOf } from '../../../../test/promptOf'
@@ -93,16 +94,6 @@ function scriptModel(overrides: Record<string, string> = {}): void {
 }
 
 describe('campaignAiTranslate', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-
   const fixture = campaignFactory({ role: 'member' })
     .withLanguage(FRENCH)
     .withLanguage(SPANISH)

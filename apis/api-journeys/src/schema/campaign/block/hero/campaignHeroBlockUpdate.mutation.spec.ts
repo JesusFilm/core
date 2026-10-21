@@ -145,14 +145,16 @@ describe('campaignHeroBlockUpdate', () => {
   })
 
   it.each([
-    ['backgroundKind', 'gradient'],
-    ['backgroundOverlay', 'dark']
+    ['backgroundKind', 'gradient', 'CampaignBackgroundKind'],
+    ['backgroundOverlay', 'dark', 'CampaignBackgroundOverlay']
   ])(
     'rejects an unknown %s at the schema (the enum) before the resolver',
-    async (field, value) => {
+    async (field, value, enumName) => {
       const result = await update({ [field]: value })
 
-      expect(result.errors[0]).toBeDefined()
+      expect(result.errors[0].message).toContain(
+        `Value "${value}" does not exist in "${enumName}" enum`
+      )
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     }
   )

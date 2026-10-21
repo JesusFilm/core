@@ -3,7 +3,10 @@ import {
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSpec'
-import { CampaignFixture } from '../../../../../test/campaignFactory'
+import {
+  CampaignFixture,
+  campaignFactory
+} from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 
@@ -86,6 +89,20 @@ describe('campaignAnalyticsBlockUpdate', () => {
     const result = await update({ title: 'x' })
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('throws FORBIDDEN for a caller outside the team', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(
+        campaignFactory({ userId: 'someoneElse' }).build(),
+        'landingAnalyticsId'
+      )
+    )
+
+    const result = await update({ title: 'x' })
+
+    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 })

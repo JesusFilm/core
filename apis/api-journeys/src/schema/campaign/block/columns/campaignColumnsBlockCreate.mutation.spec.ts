@@ -141,7 +141,9 @@ describe('campaignColumnsBlockCreate', () => {
   it('rejects a ratio outside the enum', async () => {
     const result = await create({ ratio: 'tall' })
 
-    expect(result.errors).toBeDefined()
+    expect(result.errors[0].message).toContain(
+      'Value "tall" does not exist in "CampaignColumnsRatio" enum'
+    )
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 

@@ -3,7 +3,10 @@ import {
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSpec'
-import { CampaignFixture } from '../../../../../test/campaignFactory'
+import {
+  CampaignFixture,
+  campaignFactory
+} from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 
@@ -78,10 +81,12 @@ describe('campaignColumnsBlockUpdate', () => {
     }
   )
 
-  it('rejects a ratio outside the enum (BAD_USER_INPUT)', async () => {
+  it('rejects a ratio outside the enum at the schema', async () => {
     const result = await update({ ratio: 'tall' })
 
-    expect(result.errors).toBeDefined()
+    expect(result.errors[0].message).toContain(
+      'Value "tall" does not exist in "CampaignColumnsRatio" enum'
+    )
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
@@ -93,6 +98,24 @@ describe('campaignColumnsBlockUpdate', () => {
     const result = await update({ ratio: 'wideLeft' })
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('throws FORBIDDEN for a caller outside the team', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(
+        campaignFactory({ userId: 'someoneElse' }).build(),
+        'heroId',
+        {
+          id: 'columnsId',
+          typename: 'CampaignColumnsBlock'
+        }
+      )
+    )
+
+    const result = await update({ ratio: 'wideLeft' })
+
+    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 

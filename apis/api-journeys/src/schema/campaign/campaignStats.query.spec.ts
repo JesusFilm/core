@@ -1,8 +1,10 @@
 import axios from 'axios'
+import { GraphQLError } from 'graphql'
 import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { authClient, mockUser } from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import {
@@ -33,20 +35,34 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 
 const STATS_WINDOW_FROM = '2026-10-05'
 
-describe('campaignStats', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
+interface CountryVisitors {
+  countryCode: string
+  visitors: number
+}
+
+interface CampaignStatsResponse {
+  data: {
+    campaignStats: {
+      from: string
+      to: string
+      all: { totalVisitors: number; countries: CountryVisitors[] }
+      regions: Array<{
+        regionId: string
+        totalVisitors: number
+        countries: CountryVisitors[]
+      }>
+    }
   }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
+  errors?: undefined
+}
+
+/** What `campaignStats` answers with when it errors: no data, the GraphQL errors. */
+interface CampaignStatsFailure {
+  data: null
+  errors: readonly GraphQLError[]
+}
+
+describe('campaignStats', () => {
   const publicClient = getClient()
 
   const CAMPAIGN_STATS = graphql(`
@@ -141,7 +157,7 @@ describe('campaignStats', () => {
     const result = (await publicClient({
       document: CAMPAIGN_STATS,
       variables: { id: 'campaignId' }
-    })) as any
+    })) as CampaignStatsResponse
 
     expect(result.errors).toBeUndefined()
     // frJourneyId is linked by both regions but requested once.
@@ -175,7 +191,7 @@ describe('campaignStats', () => {
     const result = (await authClient({
       document: CAMPAIGN_STATS,
       variables: { id: 'campaignId' }
-    })) as any
+    })) as CampaignStatsResponse
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignStats.from).toBe('2026-09-01T12:00:00.000Z')
@@ -195,7 +211,7 @@ describe('campaignStats', () => {
     const result = (await publicClient({
       document: CAMPAIGN_STATS,
       variables: { id: 'campaignId' }
-    })) as any
+    })) as CampaignStatsResponse
 
     expect(result.errors).toBeUndefined()
     const stats = result.data.campaignStats
@@ -246,7 +262,7 @@ describe('campaignStats', () => {
     const result = (await publicClient({
       document: CAMPAIGN_STATS,
       variables: { id: 'campaignId' }
-    })) as any
+    })) as CampaignStatsResponse
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignStats.regions).toHaveLength(2)
@@ -261,7 +277,7 @@ describe('campaignStats', () => {
     const result = (await publicClient({
       document: CAMPAIGN_STATS,
       variables: { id: 'campaignId' }
-    })) as any
+    })) as CampaignStatsResponse
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignStats.all).toEqual({
@@ -282,7 +298,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(prismaMock.journey.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -320,18 +336,29 @@ describe('campaignStats', () => {
       prismaMock.campaign.findUnique.mockResolvedValue(campaign)
       let inFlight = 0
       let peak = 0
+      let releaseRequests: () => void = () => undefined
+      const requestsReleased = new Promise<void>((resolve) => {
+        releaseRequests = resolve
+      })
       mockAxios.get.mockImplementation(async () => {
         inFlight++
         peak = Math.max(peak, inFlight)
-        await new Promise((resolve) => setTimeout(resolve, 5))
+        await requestsReleased
         inFlight--
         return plausibleCountryRows([['GB', 1]])
       })
 
-      const result = (await publicClient({
+      const pending = publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })
+      // Every request the limiter admits parks on the promise, so the five
+      // issued are all it lets through at once and the other seven wait.
+      await vi.waitFor(() => expect(mockAxios.get).toHaveBeenCalled())
+      await new Promise((resolve) => setImmediate(resolve))
+      expect(mockAxios.get).toHaveBeenCalledTimes(5)
+      releaseRequests()
+      const result = (await pending) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(mockAxios.get).toHaveBeenCalledTimes(journeyCount)
@@ -347,7 +374,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.all.totalVisitors).toBe(48)
@@ -360,7 +387,7 @@ describe('campaignStats', () => {
       const result = (await authClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.all.totalVisitors).toBe(48)
@@ -375,7 +402,7 @@ describe('campaignStats', () => {
       const result = (await authClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.all.totalVisitors).toBe(48)
@@ -398,9 +425,9 @@ describe('campaignStats', () => {
       const result = (await client({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsFailure
 
-      expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
+      expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
       expect(mockAxios.get).not.toHaveBeenCalled()
     })
 
@@ -410,9 +437,9 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'missing' }
-      })) as any
+      })) as CampaignStatsFailure
 
-      expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
+      expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
     })
   })
 
@@ -471,7 +498,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(mockAxios.get).not.toHaveBeenCalled()
@@ -506,7 +533,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.all.totalVisitors).toBe(4)
@@ -537,7 +564,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.regions[0].totalVisitors).toBe(4)
@@ -573,7 +600,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.regions[0].totalVisitors).toBe(4)
@@ -600,7 +627,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.all.totalVisitors).toBe(4)
@@ -627,7 +654,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.from).toBe('2026-09-01T00:00:00.000Z')
@@ -647,7 +674,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsFailure
 
       expect(result.errors).toHaveLength(1)
       expect(result.data).toBeNull()
@@ -671,7 +698,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsFailure
 
       expect(result.errors).toHaveLength(1)
       expect(result.data).toBeNull()
@@ -687,7 +714,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(mockAxios.get).toHaveBeenCalledTimes(3)
@@ -705,7 +732,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsResponse
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignStats.regions[0].totalVisitors).toBe(38)
@@ -767,7 +794,7 @@ describe('campaignStats', () => {
       const result = (await publicClient({
         document: CAMPAIGN_STATS,
         variables: { id: 'campaignId' }
-      })) as any
+      })) as CampaignStatsFailure
 
       expect(result.errors).toHaveLength(1)
       expect(mockStatsCache.set).not.toHaveBeenCalled()
@@ -797,7 +824,7 @@ describe('campaignStats', () => {
           await vi.advanceTimersByTimeAsync(1000)
         expect(settled).toBe(false)
         while (!settled) await vi.advanceTimersByTimeAsync(1000)
-        const result = (await request) as any
+        const result = (await request) as CampaignStatsFailure
 
         expect(result.errors).toHaveLength(1)
         expect(mockStatsCache.set).not.toHaveBeenCalled()
