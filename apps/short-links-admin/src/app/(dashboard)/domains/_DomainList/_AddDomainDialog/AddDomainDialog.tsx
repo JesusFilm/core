@@ -69,7 +69,7 @@ interface AddDomainDialogProps {
 }
 
 /**
- * superAdmin only. Adds the domain record in core; the hostname is not
+ * shortLinkAdmin or superAdmin. Adds the domain record in core; the hostname is not
  * registered anywhere yet. Its namespace, Worker binding and route are set up
  * by hand (workers/short-links-redirect/README.md, "Setting up a domain") and
  * the namespace id and binding are then entered on the domain page.

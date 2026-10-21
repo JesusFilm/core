@@ -136,7 +136,7 @@ A user's media-specific preferences — their interest in particular Videos, lan
 _Avoid_: Account, user (the identity lives elsewhere)
 
 **Media Role**:
-A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (domain settings, protected links, republishing). Governs what a user may do within this context specifically. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed) to gate which domains exist and how a domain is wired to the edge (path prefix, KV namespace id, Worker binding).
+A media-scoped permission held by a user — `publisher`, `youtubeAdmin`, `shortLinkEditor` (links, campaigns, QR codes) or `shortLinkAdmin` (protected links, global links, republishing links, and adding, changing and republishing Short Link Domains). `publisher` has the link powers of `shortLinkAdmin` but only reads domains. The rule: `shortLinkAdmin` is the admin for everything short-link, including the KV namespace a domain publishes into; `superAdmin` is the admin for everything in core. `superAdmin` is not a Media Role: it is the flag on the user in the users database, read here (lazily, failing closed, and only when the role scope fails); it can do everything `shortLinkAdmin` can with domains and is alone in removing one (`shortLinkDomainDelete`).
 _Avoid_: Permission, access level
 
 ### External media services

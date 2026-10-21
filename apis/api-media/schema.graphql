@@ -436,12 +436,12 @@ type Mutation {
   shortLinkCampaignDelete(id: String!): MutationShortLinkCampaignDeleteResult!
 
   """
-  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
+  Create a new short link domain that can be used for short links (shortLinkAdmin or superAdmin). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!): MutationShortLinkDomainCreateResult!
 
   """
-  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
+  Update the services and edge settings of a short link domain (shortLinkAdmin or superAdmin); routing changes republish every live link on it
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!): MutationShortLinkDomainUpdateResult!
 
@@ -451,7 +451,7 @@ type Mutation {
   shortLinkDomainDelete(id: String!): MutationShortLinkDomainDeleteResult!
 
   """
-  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
+  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair); shortLinkAdmin or superAdmin
   """
   shortLinkDomainPublish(id: String!): MutationShortLinkDomainPublishResult!
 
@@ -591,7 +591,7 @@ type MutationPlaylistItemsReorderSuccess {
   data: [PlaylistItem!]!
 }
 
-union MutationPlaylistUpdateResult = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
 
 type MutationPlaylistUpdateSuccess {
   data: Playlist!
@@ -704,7 +704,7 @@ input MutationShortLinkCreateInput {
   global: Boolean
 }
 
-union MutationShortLinkCreateResult = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
 type MutationShortLinkCreateSuccess {
   data: ShortLink!
@@ -772,7 +772,7 @@ input MutationShortLinkDomainCreateInput {
   vercel: Boolean
 }
 
-union MutationShortLinkDomainCreateResult = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 type MutationShortLinkDomainCreateSuccess {
   data: ShortLinkDomain!
@@ -826,7 +826,7 @@ input MutationShortLinkDomainUpdateInput {
   autoFailover: Boolean
 }
 
-union MutationShortLinkDomainUpdateResult = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult = ZodError | NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 type MutationShortLinkDomainUpdateSuccess {
   data: ShortLinkDomain!
@@ -890,7 +890,7 @@ input MutationShortLinkUpdateInput {
   global: Boolean
 }
 
-union MutationShortLinkUpdateResult = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 type MutationShortLinkUpdateSuccess {
   data: ShortLink!

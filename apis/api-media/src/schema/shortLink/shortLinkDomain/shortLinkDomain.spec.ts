@@ -742,7 +742,24 @@ describe('shortLinkDomain', () => {
         })
       })
 
-      it.each<MediaRole>(['publisher', 'shortLinkAdmin', 'shortLinkEditor'])(
+      it('should allow a shortLinkAdmin who is not a superAdmin', async () => {
+        setRoles(['shortLinkAdmin'])
+        setSuperAdmin(false)
+        prismaMock.shortLinkDomain.create.mockResolvedValue(
+          buildShortLinkDomain({ id: 'testId' })
+        )
+        const result = await authClient({
+          document: SHORT_LINK_DOMAIN_CREATE_MUTATION,
+          variables: { input: { hostname: 'example.com' } }
+        })
+        expect(result).toMatchObject({
+          data: { shortLinkDomainCreate: { data: { id: 'testId' } } }
+        })
+        // the role scope passes first, so the users database is never asked
+        expect(usersPrismaMock.user.findUnique).not.toHaveBeenCalled()
+      })
+
+      it.each<MediaRole>(['publisher', 'shortLinkEditor'])(
         'should refuse a %s who is not a superAdmin',
         async (role) => {
           setRoles([role])
@@ -1221,48 +1238,9 @@ describe('shortLinkDomain', () => {
         expect(publishDomainWithLinksMock).toHaveBeenCalledWith('testId')
       })
 
-      it.each([
-        ['pathPrefix', { pathPrefix: 'go' }],
-        ['kvNamespaceId', { kvNamespaceId: 'ns-2' }],
-        ['kvBinding', { kvBinding: 'KV_NEW' }]
-      ])(
-        'should refuse an admin who is not a superAdmin changing %s',
-        async (_field, change) => {
-          setRoles(['shortLinkAdmin'])
-          setSuperAdmin(false)
-          prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
-            buildShortLinkDomain({
-              id: 'testId',
-              pathPrefix: 's',
-              kvNamespaceId: 'ns-1',
-              kvBinding: 'KV_X'
-            })
-          )
-          const result = await authClient({
-            document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
-            variables: { input: { id: 'testId', services: [], ...change } }
-          })
-          expect(result).toMatchObject({
-            errors: [
-              expect.objectContaining({
-                message:
-                  'only a superAdmin may change the path prefix, KV namespace or Worker binding of a domain'
-              })
-            ]
-          })
-          expect(prismaMock.shortLinkDomain.update).not.toHaveBeenCalled()
-        }
-      )
-
-      it('should let an admin who is not a superAdmin save the other settings', async () => {
-        setRoles(['shortLinkAdmin'])
-        setSuperAdmin(false)
-        const existing = buildShortLinkDomain({
-          id: 'testId',
-          pathPrefix: 's',
-          kvNamespaceId: 'ns-1',
-          kvBinding: 'KV_X'
-        })
+      it('should allow a superAdmin with no media role', async () => {
+        setRoles([])
+        const existing = buildShortLinkDomain({ id: 'testId' })
         prismaMock.shortLinkDomain.findUnique.mockResolvedValue(existing)
         prismaMock.shortLinkDomain.update.mockResolvedValue({
           ...existing,
@@ -1271,22 +1249,76 @@ describe('shortLinkDomain', () => {
         const result = await authClient({
           document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
           variables: {
-            input: {
-              id: 'testId',
-              services: [],
-              redirectStatus: 301,
-              // unchanged values are not an infrastructure change
-              pathPrefix: 's',
-              kvNamespaceId: 'ns-1',
-              kvBinding: 'KV_X'
-            }
+            input: { id: 'testId', services: [], redirectStatus: 301 }
           }
         })
         expect(result).toMatchObject({
           data: { shortLinkDomainUpdate: { data: { id: 'testId' } } }
         })
-        expect(usersPrismaMock.user.findUnique).not.toHaveBeenCalled()
+        expect(usersPrismaMock.user.findUnique).toHaveBeenCalledWith({
+          where: { userId: 'testUserId' },
+          select: { superAdmin: true }
+        })
       })
+
+      // the edge-wiring fields included: shortLinkAdmin is the admin for
+      // everything short-link
+      it.each([
+        ['redirectStatus', { redirectStatus: 301 }],
+        ['pathPrefix', { pathPrefix: 'go' }],
+        ['kvNamespaceId', { kvNamespaceId: 'ns-2' }],
+        ['kvBinding', { kvBinding: 'KV_NEW' }]
+      ])(
+        'should allow a shortLinkAdmin who is not a superAdmin to change %s',
+        async (_field, change) => {
+          setRoles(['shortLinkAdmin'])
+          setSuperAdmin(false)
+          const existing = buildShortLinkDomain({
+            id: 'testId',
+            pathPrefix: 's',
+            kvNamespaceId: 'ns-1',
+            kvBinding: 'KV_X'
+          })
+          prismaMock.shortLinkDomain.findUnique.mockResolvedValue(existing)
+          prismaMock.shortLinkDomain.update.mockResolvedValue({
+            ...existing,
+            ...change
+          })
+          const result = await authClient({
+            document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+            variables: { input: { id: 'testId', services: [], ...change } }
+          })
+          expect(result).toMatchObject({
+            data: { shortLinkDomainUpdate: { data: { id: 'testId' } } }
+          })
+          expect(prismaMock.shortLinkDomain.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining(change)
+            })
+          )
+          expect(usersPrismaMock.user.findUnique).not.toHaveBeenCalled()
+        }
+      )
+
+      it.each<MediaRole>(['publisher', 'shortLinkEditor'])(
+        'should refuse a %s who is not a superAdmin',
+        async (role) => {
+          setRoles([role])
+          setSuperAdmin(false)
+          prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
+            buildShortLinkDomain({ id: 'testId' })
+          )
+          const result = await authClient({
+            document: SHORT_LINK_DOMAIN_UPDATE_MUTATION,
+            variables: {
+              input: { id: 'testId', services: [], redirectStatus: 301 }
+            }
+          })
+          expect(result).toMatchObject({ errors: [expect.anything()] })
+          expect(prismaMock.shortLinkDomain.update).not.toHaveBeenCalled()
+          expect(publishDomainMock).not.toHaveBeenCalled()
+        }
+      )
 
       it('should refuse a binding outside the KV_ names api-media owns', async () => {
         prismaMock.shortLinkDomain.findUnique.mockResolvedValue(
@@ -1568,16 +1600,19 @@ describe('shortLinkDomain', () => {
         })
       })
 
-      it('should refuse an editor who is not a superAdmin', async () => {
-        setRoles(['shortLinkEditor'])
-        setSuperAdmin(false)
-        const result = await authClient({
-          document: SHORT_LINK_DOMAIN_PUBLISH_MUTATION,
-          variables: { id: 'testId' }
-        })
-        expect(result).toMatchObject({ errors: [expect.anything()] })
-        expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
-      })
+      it.each<MediaRole>(['publisher', 'shortLinkEditor'])(
+        'should refuse a %s who is not a superAdmin',
+        async (role) => {
+          setRoles([role])
+          setSuperAdmin(false)
+          const result = await authClient({
+            document: SHORT_LINK_DOMAIN_PUBLISH_MUTATION,
+            variables: { id: 'testId' }
+          })
+          expect(result).toMatchObject({ errors: [expect.anything()] })
+          expect(publishDomainWithLinksMock).not.toHaveBeenCalled()
+        }
+      )
 
       it('should return a NotFoundError for an unknown domain', async () => {
         prismaMock.shortLinkDomain.findUnique.mockResolvedValue(null)

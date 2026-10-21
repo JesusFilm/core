@@ -21,7 +21,8 @@ jobs:
     if: >-
       ${{ !contains(github.head_ref, '-chore-ce-sync-') &&
           !contains(github.event.merge_group.head_commit.message, 'sync compound-engineering skills and agents') }}
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-4vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       NODE_OPTIONS: '--max-old-space-size=8192'
@@ -37,7 +38,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'ci-jfp00-') && 'pnpm' || '' }}
+          package-manager-cache: false
       - name: Install dependencies
         run: pnpm install
       - name: generate prisma imports

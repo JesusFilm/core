@@ -1475,11 +1475,11 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   shortLinkCampaignDelete(id: String!) : MutationShortLinkCampaignDeleteResult! @join__field(graph: API_MEDIA) 
   """
-  Create a new short link domain that can be used for short links (superAdmin only). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
+  Create a new short link domain that can be used for short links (shortLinkAdmin or superAdmin). A domain served by the legacy Vercel app must have a CNAME record pointing to it; a domain served by the redirect Worker is created with vercel: false and routed to the Worker in its wrangler.toml
   """
   shortLinkDomainCreate(input: MutationShortLinkDomainCreateInput!) : MutationShortLinkDomainCreateResult! @join__field(graph: API_MEDIA) 
   """
-  Update the services and edge settings of a short link domain; routing changes republish every live link on it. Changing pathPrefix, kvNamespaceId or kvBinding needs superAdmin
+  Update the services and edge settings of a short link domain (shortLinkAdmin or superAdmin); routing changes republish every live link on it
   """
   shortLinkDomainUpdate(input: MutationShortLinkDomainUpdateInput!) : MutationShortLinkDomainUpdateResult! @join__field(graph: API_MEDIA) 
   """
@@ -1487,7 +1487,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   shortLinkDomainDelete(id: String!) : MutationShortLinkDomainDeleteResult! @join__field(graph: API_MEDIA) 
   """
-  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair)
+  republish the domain record and every live link on it to the edge store (backfill, cutover, publish-gap repair); shortLinkAdmin or superAdmin
   """
   shortLinkDomainPublish(id: String!) : MutationShortLinkDomainPublishResult! @join__field(graph: API_MEDIA) 
   """
@@ -6081,7 +6081,7 @@ union MutationPlaylistItemRemoveResult @join__type(graph: API_MEDIA)  @join__uni
 
 union MutationPlaylistItemsReorderResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistItemsReorderSuccess")  = NotFoundError | MutationPlaylistItemsReorderSuccess
 
-union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = NotFoundError | ZodError | MutationPlaylistUpdateSuccess
+union MutationPlaylistUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationPlaylistUpdateSuccess")  = ZodError | NotFoundError | MutationPlaylistUpdateSuccess
 
 union MutationShortLinkBulkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkBulkUpdateSuccess")  = NotFoundError | MutationShortLinkBulkUpdateSuccess
 
@@ -6089,21 +6089,21 @@ union MutationShortLinkCampaignDeleteResult @join__type(graph: API_MEDIA)  @join
 
 union MutationShortLinkCampaignUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCampaignUpdateSuccess")  = NotFoundError | MutationShortLinkCampaignUpdateSuccess
 
-union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkCreateSuccess
+union MutationShortLinkCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkCreateSuccess
 
 union MutationShortLinkDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDeleteSuccess")  = NotFoundError | MutationShortLinkDeleteSuccess
 
-union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = NotUniqueError | ZodError | MutationShortLinkDomainCreateSuccess
+union MutationShortLinkDomainCreateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotUniqueError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainCreateSuccess")  = ZodError | NotUniqueError | MutationShortLinkDomainCreateSuccess
 
 union MutationShortLinkDomainDeleteResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ForeignKeyConstraintError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainDeleteSuccess")  = NotFoundError | ForeignKeyConstraintError | MutationShortLinkDomainDeleteSuccess
 
 union MutationShortLinkDomainPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainPublishSuccess")  = NotFoundError | MutationShortLinkDomainPublishSuccess
 
-union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkDomainUpdateSuccess
+union MutationShortLinkDomainUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkDomainUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkDomainUpdateSuccess
 
 union MutationShortLinkPublishResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkPublishSuccess")  = NotFoundError | MutationShortLinkPublishSuccess
 
-union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = NotFoundError | ZodError | MutationShortLinkUpdateSuccess
+union MutationShortLinkUpdateResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "ZodError")  @join__unionMember(graph: API_MEDIA, member: "NotFoundError")  @join__unionMember(graph: API_MEDIA, member: "MutationShortLinkUpdateSuccess")  = ZodError | NotFoundError | MutationShortLinkUpdateSuccess
 
 union QueryGetMyGeneratedMuxSubtitleTrackResult @join__type(graph: API_MEDIA)  @join__unionMember(graph: API_MEDIA, member: "Error")  @join__unionMember(graph: API_MEDIA, member: "QueryGetMyGeneratedMuxSubtitleTrackSuccess")  = Error | QueryGetMyGeneratedMuxSubtitleTrackSuccess
 
