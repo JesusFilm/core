@@ -68,8 +68,12 @@ alert is configured. Investigate a core job waiting more than 10 minutes:
    the pilot after recovery.
 
 Both node names use the `ci-jfp` runner prefix. Deploy the workflow setup/cache
-checks before enabling jfp01 placement; older runs that only recognize
-`ci-jfp00-` must finish or be cancelled first. Operator source backups and
+checks before enabling jfp01 placement. The controller reads a UTC activation
+cutoff from `/etc/ci-runner/core-jfp01-since`: only runs created at or after that
+time can use jfp01. Missing/invalid activation or run timestamps keep jobs on
+jfp00, including reruns of older workflows that only recognize `ci-jfp00-`.
+The activation helper verifies this workflow PR is merged before writing the
+cutoff. This allows the host patch to be installed safely before activation. Operator source backups and
 placement/policy tests are in `/root/ci-core-migration-20261021/` on jfp00.
 
 Main's Blacksmith jobs keep `useblacksmith/setup-node` and its local pnpm
