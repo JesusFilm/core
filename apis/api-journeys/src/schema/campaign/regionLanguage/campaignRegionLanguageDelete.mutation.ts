@@ -3,12 +3,12 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
+import { badUserInput } from '../validation'
 
 import {
   authorizeRegionLanguageUpdate,
-  deleteQrCodes,
-  deleteShortLinks,
   getRegionLanguages,
+  lockRegionLanguage,
   reorderRegionLanguages
 } from './service'
 
@@ -17,7 +17,7 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
     type: CampaignRegionLanguageRef,
     nullable: false,
     description:
-      'Remove a Share Language from a Campaign Region. Its Campaign QR Code and short link are deleted with it, as `qrCodeDelete` does; the linked journey is untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.',
+      'Remove a Share Language from a Campaign Region. A language that holds a Campaign QR Code cannot be removed, so printed codes keep working: unlink it instead, or delete its region or campaign. The linked journey is untouched. The remaining languages are renumbered. Returns the deleted row; only its scalar fields are readable.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `id`): "This language has a QR code. Unlink it instead."',
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
@@ -26,10 +26,19 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
         String(id),
         context.user
       )
-      let shortLinkIds: string[] = []
-      const deleted = await prisma.$transaction(async (tx) => {
-        if (regionLanguage.qrCode != null)
-          shortLinkIds = await deleteQrCodes(tx, [regionLanguage.qrCode])
+      return await prisma.$transaction(async (tx) => {
+        // Decide from the row as locked, not as authorised: a concurrent link
+        // may have given it a QR code since.
+        await lockRegionLanguage(tx, regionLanguage.id)
+        const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
+          where: { id: regionLanguage.id },
+          select: { qrCodeId: true }
+        })
+        if (current.qrCodeId != null)
+          throw badUserInput(
+            'This language has a QR code. Unlink it instead.',
+            'id'
+          )
         const deleted = await tx.campaignRegionLanguage.delete({
           where: { id: regionLanguage.id }
         })
@@ -40,8 +49,6 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
         await touchCampaign(tx, regionLanguage.region.campaignId)
         return deleted
       })
-      await deleteShortLinks(shortLinkIds)
-      return deleted
     }
   })
 )

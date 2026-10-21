@@ -1465,7 +1465,7 @@ export interface CampaignFields_regions_languages {
   language: CampaignFields_regions_languages_language;
   journey: CampaignFields_regions_languages_journey | null;
   /**
-   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   * The Campaign QR Code, present from the moment a journey is linked and kept across an unlink; its short link is the Share Link.
    */
   qrCode: CampaignFields_regions_languages_qrCode | null;
 }

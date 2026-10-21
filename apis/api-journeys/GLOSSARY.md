@@ -314,11 +314,11 @@ A language a Campaign Region hands out a Journey in. An independent set from the
 _Avoid_: region language (fine in conversation; the term is Share Language), journey language
 
 **Share Link**:
-The one link a Campaign Region hands out per language: a **short link** that redirects to the linked Journey's own public address, carrying the QR Code attribution parameters. The same link is what the region's **QR Code** encodes, so printing and copying give the same thing, and swapping the linked Journey redirects the existing link rather than minting a new one.
+The one link a Campaign Region hands out per language: a **short link** that redirects to the linked Journey's own public address, carrying the QR Code attribution parameters. The same link is what the region's **QR Code** encodes, so printing and copying give the same thing, and swapping the linked Journey redirects the existing link rather than minting a new one. Unlinking keeps the link (it goes on redirecting to the last linked Journey), and a later link retargets it.
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language and removed with it. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed, and it is deleted only with its Campaign Region or Campaign. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:

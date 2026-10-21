@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -48,6 +49,10 @@ describe('campaignRegionLanguageDelete', () => {
     prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
       campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529')
     )
+    // The row re-read under the lock has no QR code unless a test says so.
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockResolvedValue({
+      qrCodeId: null
+    } as never)
     prismaMock.campaignRegionLanguage.delete.mockResolvedValue(english)
     prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([french])
     prismaMock.campaignRegionLanguage.update.mockImplementation((async ({
@@ -83,40 +88,73 @@ describe('campaignRegionLanguageDelete', () => {
     })
     expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
       data: { updatedAt: expect.any(Date) }
     })
   })
 
-  it("deletes a linked language's QR code and short link as qrCodeDelete does, leaving the journey untouched", async () => {
+  it('takes the row lock before any read or delete in the transaction', async () => {
+    await remove()
+
+    const order = (mock: unknown): number =>
+      vi.mocked(mock as () => void).mock.invocationCallOrder[0]
+    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+    expect(order(prismaMock.$queryRaw)).toBeLessThan(
+      order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
+    )
+    expect(
+      prismaMock.campaignRegionLanguage.findUniqueOrThrow
+    ).toHaveBeenCalledWith({
+      where: { id: 'eurRegionId-529' },
+      select: { qrCodeId: true }
+    })
+    expect(
+      order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
+    ).toBeLessThan(order(prismaMock.campaignRegionLanguage.delete))
+  })
+
+  it('refuses a language holding a QR code, deleting nothing', async () => {
     prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
       campaignRegionLanguageWithAcl(fixture, 'eurRegionId', FRENCH, {
-        qrCode: {
-          id: 'qrCodeId',
-          teamId: 'teamId',
-          journeyId: 'journeyId',
-          toJourneyId: 'journeyId',
-          toBlockId: null,
-          shortLinkId: 'shortLinkId',
-          color: '#000000',
-          backgroundColor: '#FFFFFF'
-        }
+        qrCodeId: 'qrCodeId'
       })
     )
-    prismaMock.campaignRegionLanguage.delete.mockResolvedValue(
-      fixture.regions[0].languages[1]
-    )
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockResolvedValue({
+      qrCodeId: 'qrCodeId'
+    } as never)
 
     const result = await remove(`eurRegionId-${FRENCH}`)
 
-    expect(result.errors).toBeUndefined()
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkId')
-    expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
-      where: { id: { in: ['qrCodeId'] } }
+    expect(result.errors[0].message).toBe(
+      'This language has a QR code. Unlink it instead.'
+    )
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'id'
     })
-    expect(prismaMock.journey.update).not.toHaveBeenCalled()
-    expect(prismaMock.journey.delete).not.toHaveBeenCalled()
+    expect(prismaMock.campaignRegionLanguage.delete).not.toHaveBeenCalled()
+    expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+    expect(deleteShortLink).not.toHaveBeenCalled()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('refuses a language a concurrent link gave a QR code after it was authorised', async () => {
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockResolvedValue({
+      qrCodeId: 'qrCodeId'
+    } as never)
+
+    const result = await remove()
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'id'
+    })
+    expect(prismaMock.campaignRegionLanguage.delete).not.toHaveBeenCalled()
+    expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+    expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {

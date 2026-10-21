@@ -8,6 +8,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
 import { logger } from '../../logger'
 import {
   createShortLink,
@@ -22,8 +23,9 @@ import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
 /**
  * The Share Language service: every region language mutation is campaign
  * Update on the region's campaign, authorised through the Campaign as
- * aggregate root; the Campaign QR Code is created, retargeted and deleted
- * here, inside the same mutation as the link it belongs to (PRD §6).
+ * aggregate root; the Campaign QR Code is created and retargeted here,
+ * inside the same mutation as the link it belongs to (PRD §6). Unlinking
+ * keeps it; only a region or campaign delete removes it.
  */
 
 export const INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL = {
@@ -194,21 +196,13 @@ export async function deleteQrCodes(
 }
 
 /**
- * Delete the short links of Campaign QR Codes whose rows are already gone,
- * after the transaction has committed and in parallel: a gateway failure then
- * leaves an unreachable short link, not a rolled-back delete.
+ * Delete the short links of Campaign QR Codes whose rows are already gone:
+ * call it once the transaction has committed. Each delete is a retried job on
+ * the short-link delete queue, so a gateway or api-media failure is retried
+ * rather than leaving a working, unreferenced short link behind.
  */
 export async function deleteShortLinks(shortLinkIds: string[]): Promise<void> {
-  const results = await Promise.allSettled(
-    shortLinkIds.map(async (id) => await deleteShortLink(id))
-  )
-  results.forEach((result, index) => {
-    if (result.status === 'rejected')
-      logger.error(
-        { error: result.reason, shortLinkId: shortLinkIds[index] },
-        'short link delete failed'
-      )
-  })
+  await enqueueShortLinkDeletes(shortLinkIds)
 }
 
 /** Every Campaign QR Code owned by the given regions' Share Languages. */

@@ -8,6 +8,8 @@ import {
   collectMediaFromJourneys,
   deleteUnusedMedia
 } from '../../../lib/mediaCleanup/mediaCleanup'
+import { findJourneyShortLinkIds } from '../../shortlinkDelete/findJourneyShortLinkIds'
+import { enqueueShortLinkDeletes } from '../../shortlinkDelete/queue'
 
 interface E2eCleanupJob {
   __typename: 'e2eCleanup'
@@ -103,7 +105,10 @@ export async function service(
       const deletedJourneyIds: string[] = []
       for (const journey of journeys) {
         try {
+          // Its QR rows cascade with it; their short links go once it is gone.
+          const shortLinkIds = await findJourneyShortLinkIds([journey.id])
           await prisma.journey.delete({ where: { id: journey.id } })
+          await enqueueShortLinkDeletes(shortLinkIds)
           deletedCount++
           deletedJourneyIds.push(journey.id)
           logger?.info(`Deleted journey "${journey.title}" (${journey.id})`)
