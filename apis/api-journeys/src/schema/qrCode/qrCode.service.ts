@@ -6,6 +6,7 @@ import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyPublicUrl
 } from '../campaign/getJourneyPublicUrl'
+import { badUserInput } from '../campaign/validation'
 
 interface ShortLinkCreateInput {
   id: string
@@ -180,18 +181,22 @@ export async function parseAndVerifyTo(
   to: string,
   teamId: string
 ): Promise<{ toJourneyId: string; toBlockId?: string | null }> {
-  const { origin, pathname } = new URL(to)
+  let url: URL
+  try {
+    url = new URL(to)
+  } catch {
+    throw badUserInput('to must be a URL', 'to')
+  }
+  const { origin, pathname } = url
 
   const pathArray = pathname.split('/')
   const journeySlug = pathArray[1]
   const blockId = pathArray[2]
 
   if (journeySlug == null || journeySlug === '')
-    throw new GraphQLError('Invalid to', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
+    throw badUserInput('Invalid to', 'to')
 
-  const journey = await prisma.journey.findFirstOrThrow({
+  const journey = await prisma.journey.findFirst({
     where: {
       slug: journeySlug,
       deletedAt: null,
@@ -201,17 +206,24 @@ export async function parseAndVerifyTo(
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
 
+  if (journey == null)
+    throw badUserInput(
+      'to does not name a journey this QR code can point at',
+      'to'
+    )
+
   if (new URL(getJourneyPublicUrl(journey)).origin !== origin)
-    throw new GraphQLError('Invalid hostname', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
+    throw badUserInput('Invalid hostname', 'to')
 
   const block =
     blockId != null
-      ? await prisma.block.findFirstOrThrow({
+      ? await prisma.block.findFirst({
           where: { journeyId: journey.id, id: blockId }
         })
       : undefined
+
+  if (blockId != null && block == null)
+    throw badUserInput('to names a block that is not in that journey', 'to')
 
   return {
     toJourneyId: journey.id,

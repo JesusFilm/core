@@ -4,10 +4,11 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
+import { badUserInput } from '../campaign/validation'
 
 import { QrCodeCreateInput } from './inputs'
 import { QrCodeRef } from './qrCode'
-import { INCLUDE_QR_CODE_ACL, canManageQrCode } from './qrCode.acl'
+import { canManageQrCode } from './qrCode.acl'
 import { createShortLink, getShortLinkDomain, getTo } from './qrCode.service'
 
 builder.mutationField('qrCodeCreate', (t) =>
@@ -21,11 +22,38 @@ builder.mutationField('qrCodeCreate', (t) =>
       },
       resolve: async (query, _parent, args, context) => {
         const { input } = args
+
+        const journey = await prisma.journey.findUnique({
+          where: { id: String(input.journeyId) },
+          include: {
+            team: { include: { userTeams: true } },
+            userJourneys: true
+          }
+        })
+
+        if (journey == null)
+          throw new GraphQLError('journey not found', {
+            extensions: { code: 'NOT_FOUND' }
+          })
+
+        if (
+          !canManageQrCode(
+            { journey, team: journey.team, campaignRegionLanguages: [] },
+            context.user
+          )
+        )
+          throw new GraphQLError('User is not allowed to create the QrCode', {
+            extensions: { code: 'FORBIDDEN' }
+          })
+
+        if (String(input.teamId) !== journey.teamId)
+          throw badUserInput("teamId must be the journey's team", 'teamId')
+
         const shortLinkId = uuidv4()
 
         const to = await getTo({
           shortLinkId,
-          toJourneyId: String(input.journeyId)
+          toJourneyId: journey.id
         })
 
         const hostname = getShortLinkDomain()
@@ -38,24 +66,14 @@ builder.mutationField('qrCodeCreate', (t) =>
             service: 'apiJourneys'
           })
 
-          const qrCode = await tx.qrCode.create({
-            data: {
-              teamId: String(input.teamId),
-              journeyId: String(input.journeyId),
-              toJourneyId: String(input.journeyId),
-              shortLinkId: shortLinkResult.id
-            },
-            include: INCLUDE_QR_CODE_ACL
-          })
-
-          if (!canManageQrCode(qrCode, context.user))
-            throw new GraphQLError('User is not allowed to create the QrCode', {
-              extensions: { code: 'FORBIDDEN' }
-            })
-
-          return tx.qrCode.findUniqueOrThrow({
+          return tx.qrCode.create({
             ...query,
-            where: { id: qrCode.id }
+            data: {
+              teamId: journey.teamId,
+              journeyId: journey.id,
+              toJourneyId: journey.id,
+              shortLinkId: shortLinkResult.id
+            }
           })
         })
       }
