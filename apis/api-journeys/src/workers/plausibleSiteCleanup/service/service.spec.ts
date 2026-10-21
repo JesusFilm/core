@@ -29,6 +29,10 @@ vi.mock('@apollo/client', async () => {
   return { ...actual, ApolloClient: MockApolloClient }
 })
 
+interface MutateOptions {
+  mutation: unknown
+}
+
 type CleanupJob = Job<{ __typename: 'plausibleSiteCleanup'; dryRun?: boolean }>
 
 function job(dryRun?: boolean): CleanupJob {
@@ -180,10 +184,10 @@ describe('plausibleSiteCleanup service', () => {
       .mockResolvedValueOnce(lastPage)
       .mockResolvedValueOnce(fullPage)
       .mockResolvedValueOnce(lastPage)
-    prismaMock.journey.findMany.mockImplementation(
-      async () => [{ id: 'live' }] as unknown as Journey[]
-    )
-    mutateSpy.mockImplementation(async ({ mutation }) =>
+    prismaMock.journey.findMany.mockResolvedValue([
+      { id: 'live' }
+    ] as unknown as Journey[])
+    mutateSpy.mockImplementation(async ({ mutation }: MutateOptions) =>
       mutation === SITES_DELETE_PREPARE ? prepared(15000) : deleted(20)
     )
 
@@ -196,7 +200,9 @@ describe('plausibleSiteCleanup service', () => {
         variables: expect.objectContaining({ after: '1000' })
       })
     )
-    const calls = mutateSpy.mock.calls.map(([options]) => options)
+    const calls: MutateOptions[] = mutateSpy.mock.calls.map(
+      (args: unknown[]) => args[0] as MutateOptions
+    )
     expect(
       calls.filter(({ mutation }) => mutation === SITES_DELETE_PREPARE)
     ).toHaveLength(2)
