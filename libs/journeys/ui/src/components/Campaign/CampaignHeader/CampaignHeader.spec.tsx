@@ -4,7 +4,8 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import {
   CampaignBackgroundKind,
   CampaignBackgroundOverlay,
-  CampaignPageKind
+  CampaignPageKind,
+  CampaignStringKey
 } from '../../../../__generated__/globalTypes'
 import { campaignChromeTrees } from '../CampaignPage/campaignChromeTrees'
 import { CampaignProvider } from '../CampaignProvider'
@@ -221,6 +222,23 @@ describe('CampaignHeader', () => {
         )
       ).toBeInTheDocument()
       expect(chip).toHaveAttribute('href', '/campaign/outreach-2026?lang=en')
+    })
+
+    it('leaves a blank allRegions string blank, keeping All regions as the accessible name', () => {
+      renderHeader(
+        withHeader({}, chromeBlocks, {
+          strings: campaignPublic.strings.map((string) =>
+            string.key === CampaignStringKey.allRegions
+              ? { ...string, value: '' }
+              : string
+          )
+        }),
+        { pageKind: CampaignPageKind.regionTemplate, region: eurRegion }
+      )
+
+      const chip = screen.getByRole('link', { name: 'All regions' })
+      expect(chip).toHaveAttribute('data-testid', 'CampaignAllRegionsChip')
+      expect(chip).toHaveTextContent(/^$/)
     })
 
     it('leaves the leading slot empty on the landing page', () => {

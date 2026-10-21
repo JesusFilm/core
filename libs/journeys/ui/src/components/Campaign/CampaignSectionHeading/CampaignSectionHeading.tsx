@@ -15,8 +15,9 @@ interface CampaignSectionHeadingProps {
 }
 
 /**
- * The eyebrow / title / description trio most Section Bodies open with. An empty
- * field renders nothing; all three empty renders nothing at all.
+ * The eyebrow / title / description trio most Section Bodies open with. An
+ * empty field renders nothing; all three empty renders nothing at all. Line
+ * breaks the author typed are kept.
  */
 export function CampaignSectionHeading({
   eyebrow,
@@ -40,7 +41,11 @@ export function CampaignSectionHeading({
           variant="overline"
           component="p"
           data-testid="CampaignEyebrow"
-          sx={{ color: 'var(--campaign-band-eyebrow)', mb: 0 }}
+          sx={{
+            color: 'var(--campaign-band-eyebrow)',
+            mb: 0,
+            whiteSpace: 'pre-line'
+          }}
         >
           {eyebrow}
         </Typography>
@@ -49,7 +54,7 @@ export function CampaignSectionHeading({
         <Typography
           variant={titleVariant}
           data-testid="CampaignTitle"
-          sx={{ color: 'var(--campaign-band-heading)' }}
+          sx={{ color: 'var(--campaign-band-heading)', whiteSpace: 'pre-line' }}
         >
           {title}
         </Typography>
@@ -60,7 +65,8 @@ export function CampaignSectionHeading({
           data-testid="CampaignDescription"
           sx={{
             color: 'var(--campaign-band-muted)',
-            fontSize: { md: '1.25rem' }
+            fontSize: { md: '1.25rem' },
+            whiteSpace: 'pre-line'
           }}
         >
           {description}

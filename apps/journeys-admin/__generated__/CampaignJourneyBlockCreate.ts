@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
+import { CampaignJourneyBlockCreateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
 // GraphQL mutation operation: CampaignJourneyBlockCreate
@@ -95,13 +95,12 @@ export interface CampaignJourneyBlockCreate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
    * - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
+   * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    */
   campaignJourneyBlockCreate: CampaignJourneyBlockCreate_campaignJourneyBlockCreate;
 }
 
 export interface CampaignJourneyBlockCreateVariables {
-  id?: string | null;
-  parentBlockId: string;
-  url: string;
+  input: CampaignJourneyBlockCreateInput;
   languageId?: string | null;
 }

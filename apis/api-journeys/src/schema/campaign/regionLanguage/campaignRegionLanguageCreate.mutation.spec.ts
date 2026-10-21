@@ -10,6 +10,7 @@ import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchLanguage } from '../gatewayClient'
+import { REGION_SHARE_LANGUAGES_MAX } from '../validation'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -123,6 +124,86 @@ describe('campaignRegionLanguageCreate', () => {
     })
     expect(fetchLanguage).not.toHaveBeenCalled()
     expect(prismaMock.campaignRegionLanguage.create).not.toHaveBeenCalled()
+  })
+
+  describe('inside the transaction', () => {
+    function shareRows(languageIds: string[]) {
+      return languageIds.map((languageId, order) => ({
+        ...fixture.regions[0].languages[0],
+        id: `eurLanguage-${languageId}`,
+        languageId,
+        order
+      }))
+    }
+
+    function committedRows(languageIds: string[]): void {
+      prismaMock.campaignRegionLanguage.findMany
+        .mockResolvedValueOnce(fixture.regions[0].languages)
+        .mockResolvedValueOnce(shareRows(languageIds))
+    }
+
+    it('takes the structure lock before it re-reads the share languages, and appends after them', async () => {
+      committedRows(['529', '21028'])
+
+      const result = await create()
+
+      expect(result.data.campaignRegionLanguageCreate.order).toBe(2)
+      const lock = prismaMock.$queryRaw.mock.calls[0]
+      expect((lock[0] as unknown as string[]).join('?')).toContain(
+        'pg_advisory_xact_lock(hashtext('
+      )
+      expect(lock[1]).toBe('campaign:campaignId')
+      expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+        prismaMock.campaignRegionLanguage.findMany.mock.invocationCallOrder[1]
+      )
+      expect(prismaMock.campaignRegionLanguage.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { regionId: 'eurRegionId', languageId: FRENCH, order: 2 }
+        })
+      )
+    })
+
+    it('rejects a language a concurrent add committed after the first read (BAD_USER_INPUT, not a 500)', async () => {
+      committedRows(['529', FRENCH])
+
+      const result = await create()
+
+      expect(result.errors[0]).toMatchObject({
+        message: `languageId ${FRENCH} is already a share language of this region`,
+        extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
+      })
+      expect(prismaMock.campaignRegionLanguage.create).not.toHaveBeenCalled()
+    })
+
+    it(`refuses a share language past ${REGION_SHARE_LANGUAGES_MAX} (BAD_USER_INPUT, field languageId)`, async () => {
+      committedRows(
+        Array.from({ length: REGION_SHARE_LANGUAGES_MAX }, (_, index) =>
+          String(index + 1)
+        )
+      )
+
+      const result = await create()
+
+      expect(result.errors[0]).toMatchObject({
+        message: `a region has at most ${REGION_SHARE_LANGUAGES_MAX} share languages`,
+        extensions: { code: 'BAD_USER_INPUT', field: 'languageId' }
+      })
+      expect(prismaMock.campaignRegionLanguage.create).not.toHaveBeenCalled()
+    })
+
+    it(`allows the ${REGION_SHARE_LANGUAGES_MAX}th share language`, async () => {
+      committedRows(
+        Array.from({ length: REGION_SHARE_LANGUAGES_MAX - 1 }, (_, index) =>
+          String(index + 1)
+        )
+      )
+
+      const result = await create()
+
+      expect(result.data.campaignRegionLanguageCreate.order).toBe(
+        REGION_SHARE_LANGUAGES_MAX - 1
+      )
+    })
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {

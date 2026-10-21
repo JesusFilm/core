@@ -11,7 +11,7 @@ export interface GetCustomDomainCampaignRoot_customDomains {
   __typename: "CustomDomain";
   id: string;
   /**
-   * Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none.
+   * Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none, or when the campaign is a draft and the caller cannot read the domain team's campaigns.
    */
   campaignId: string | null;
 }

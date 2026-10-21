@@ -220,8 +220,7 @@ interface CanvasProps {
  * dragged by its handle only; the drop lands before or after the section
  * under the pointer by its midpoint, as one reorder Command. A "+" between
  * sections (and above the first, below the last) opens the Add Panel at that
- * insert point. The Preview Language chip sits at the canvas's bottom-right,
- * outside the frame, in the editor theme.
+ * insert point.
  *
  * The frame has a fixed width (1200 px Desktop, 390 px Phone) and is scaled
  * down to fit the space it is given with a CSS transform on a wrapper outside

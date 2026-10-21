@@ -37,6 +37,7 @@ export interface CampaignRegionUpdate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `name`): empty or over 60 characters.
    * - BAD_USER_INPUT (field: `slug`): fails the shape, length or reserved-word checks, is taken by another region of the campaign (including the concurrent-update race on the unique constraint), or equals the slug of a journey in the campaign’s team.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    * 
    * A slug or listing change on a published campaign queues on-demand revalidation of the campaign’s pages, including the region’s previous path.
    */

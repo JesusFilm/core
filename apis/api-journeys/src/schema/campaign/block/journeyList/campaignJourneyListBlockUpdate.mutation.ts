@@ -1,43 +1,16 @@
-import { CampaignJourneyListDisplay as PrismaCampaignJourneyListDisplay } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignJourneyListDisplay } from '../../enums'
-import { assertEnum } from '../../validation'
+import { CAMPAIGN_JOURNEY_LIST_DISPLAYS } from '../../enums'
+import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignJourneyListBlock } from '../campaignJourneyListBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-const DISPLAYS = Object.values(PrismaCampaignJourneyListDisplay)
-
-export const CampaignJourneyListBlockUpdateInput = builder.inputType(
-  'CampaignJourneyListBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      description: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      display: t.field({ type: CampaignJourneyListDisplay, required: false }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignJourneyListBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignJourneyListBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -57,12 +30,19 @@ builder.mutationField('campaignJourneyListBlockUpdate', (t) =>
         context.user,
         'CampaignJourneyListBlock'
       )
+      const display = assertNotNull(input.display, 'display')
       return await updateBlock(block, {
         ...validateSectionText(input, ['eyebrow', 'title', 'description']),
-        ...(input.display != null
-          ? { display: assertEnum(input.display, 'display', DISPLAYS) }
+        ...(display !== undefined
+          ? {
+              display: assertEnum(
+                display,
+                'display',
+                CAMPAIGN_JOURNEY_LIST_DISPLAYS
+              )
+            }
           : {}),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })

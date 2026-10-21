@@ -1,47 +1,11 @@
-import { TypographyAlign } from '../../../block/typography/enums/typographyAlign'
 import { builder } from '../../../builder'
 import { assertEnumOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
-import {
-  SECTION_CREATE_ERRORS,
-  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
-  createSection
-} from '../createSection'
+import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
 import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignHeroBlockCreateInput = builder.inputType(
-  'CampaignHeroBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({ required: true, description: 'A page of the campaign.' }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      description: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      align: t.field({ type: TypographyAlign, required: false })
-    })
-  }
-)
+import { CampaignHeroBlockCreateInput } from './inputs'
 
 builder.mutationField('campaignHeroBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

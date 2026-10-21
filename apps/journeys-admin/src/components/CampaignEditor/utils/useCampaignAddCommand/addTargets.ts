@@ -21,6 +21,17 @@ import type { SectionInsert } from '../useAddSection'
 
 export type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
+const EXTRA_TYPENAMES: readonly ExtraTypename[] = [
+  'CampaignTypographyBlock',
+  'CampaignButtonBlock'
+]
+
+/** The Extra types a host renders: the header shows only its button children (its nav links). */
+function extraTypenamesFor(host: CampaignBlock): ExtraTypename[] {
+  if (host.__typename === 'CampaignHeaderBlock') return ['CampaignButtonBlock']
+  return [...EXTRA_TYPENAMES]
+}
+
 /** Where a new section goes and which types fit there. */
 export interface SectionTarget {
   insert: SectionInsert
@@ -36,6 +47,8 @@ export interface ExtraTarget {
   host: CampaignBlock
   placement: CampaignChildPlacement
   inheritsPlacement: boolean
+  /** The Extra types the host renders, in Add Panel order. */
+  typenames: ExtraTypename[]
 }
 
 /** What the Add Panel can add for a selection; a missing target means that group is unavailable. */
@@ -57,7 +70,8 @@ interface AddTargetsInput {
 /**
  * The Add Panel's insertion rule, a pure function of the selection. Nothing
  * selected (or chrome, which sits on every page) → a section at the end of the
- * page the canvas shows. A section, or an Extra / card in one → a section
+ * page the canvas shows, and an Extra into the chrome block: the header takes
+ * buttons only, the footer text and buttons. A section, or an Extra / card in one → a section
  * below the section, and an Extra added to it. An empty Column Slot → a
  * section into it, filtered to what fits in a column; a section already in a
  * slot has no section sibling to add. An Extra → another Extra on the same
@@ -125,7 +139,8 @@ export function addTargets({
         extra: selection.host && {
           host: selection.host,
           placement: CampaignChildPlacement.below,
-          inheritsPlacement: false
+          inheritsPlacement: false,
+          typenames: extraTypenamesFor(selection.host)
         }
       }
     case 'section':
@@ -134,7 +149,8 @@ export function addTargets({
         extra: selection.host && {
           host: selection.host,
           placement: CampaignChildPlacement.below,
-          inheritsPlacement: false
+          inheritsPlacement: false,
+          typenames: extraTypenamesFor(selection.host)
         }
       }
     case 'column':
@@ -142,7 +158,8 @@ export function addTargets({
         extra: selection.host && {
           host: selection.host,
           placement: CampaignChildPlacement.below,
-          inheritsPlacement: false
+          inheritsPlacement: false,
+          typenames: extraTypenamesFor(selection.host)
         }
       }
     case 'slot': {
@@ -173,7 +190,8 @@ export function addTargets({
         extra: {
           host,
           placement: placement ?? CampaignChildPlacement.below,
-          inheritsPlacement: true
+          inheritsPlacement: true,
+          typenames: extraTypenamesFor(host)
         }
       }
     }

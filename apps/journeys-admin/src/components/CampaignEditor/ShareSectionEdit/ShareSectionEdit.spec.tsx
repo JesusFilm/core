@@ -144,6 +144,22 @@ const accessibleJourneysMock = {
   }))
 }
 
+const englishDeleteMock = {
+  request: {
+    query: CAMPAIGN_REGION_LANGUAGE_DELETE,
+    variables: { id: 'eurRegionId-529' }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionLanguageDelete: {
+        __typename: 'CampaignRegionLanguage',
+        id: 'eurRegionId-529',
+        regionId: 'eurRegionId'
+      }
+    }
+  }))
+}
+
 const resolveMock = {
   request: {
     query: GET_CAMPAIGN_JOURNEY_BY_LINK,
@@ -294,14 +310,13 @@ const unlinkMock = {
   result: vi.fn(() => ({
     data: {
       campaignRegionLanguageUpdate: {
+        // Unlink keeps the QR code and its short link.
         ...eurEnglish,
         journeyId: null,
         title: null,
         description: null,
         snapshotEdited: false,
-        qrCodeId: null,
-        journey: null,
-        qrCode: null
+        journey: null
       }
     }
   }))
@@ -370,6 +385,7 @@ function renderShare(
           languagesMock,
           createMock,
           deleteMock,
+          englishDeleteMock,
           resolveMock,
           accessibleJourneysMock,
           resolveBySlugMock,
@@ -572,7 +588,27 @@ describe('ShareSectionEdit', () => {
     ).toBeInTheDocument()
   })
 
-  it('removes a Share Language', async () => {
+  it('disables the bin on a Share Language with a QR code, pointing at Unlink, and sends nothing', async () => {
+    renderShare()
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    const bin = within(english).getByRole('button', { name: 'Remove language' })
+    expect(bin).toBeDisabled()
+
+    fireEvent.mouseOver(bin.parentElement as HTMLElement)
+    expect(
+      await screen.findByRole('tooltip', {
+        name: 'This language has a QR code. Unlink it instead.'
+      })
+    ).toBeInTheDocument()
+
+    fireEvent.click(bin)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(englishDeleteMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('ShareLanguageRow-529')).toBeInTheDocument()
+  })
+
+  it('removes a Share Language with no QR code at once, with no dialog', async () => {
     renderShare()
 
     const french = await screen.findByTestId('ShareLanguageRow-496')
@@ -580,6 +616,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('button', { name: 'Remove language' })
     )
 
+    expect(screen.queryByRole('dialog')).toBeNull()
     await waitFor(() => expect(deleteMock.result).toHaveBeenCalled())
     await waitFor(() =>
       expect(
@@ -824,12 +861,13 @@ describe('ShareSectionEdit', () => {
     )
   })
 
-  it('unlinks a journey', async () => {
+  it('unlinks a journey with no dialog, keeping the QR code so the bin stays disabled', async () => {
     renderShare()
 
     const english = await screen.findByTestId('ShareLanguageRow-529')
     fireEvent.click(within(english).getByRole('button', { name: 'Unlink' }))
 
+    expect(screen.queryByRole('dialog')).toBeNull()
     await waitFor(() => expect(unlinkMock.result).toHaveBeenCalled())
     await waitFor(() =>
       expect(
@@ -838,6 +876,11 @@ describe('ShareSectionEdit', () => {
         )
       ).toBeInTheDocument()
     )
+    expect(
+      within(screen.getByTestId('ShareLanguageRow-529')).getByRole('button', {
+        name: 'Remove language'
+      })
+    ).toBeDisabled()
   })
 
   it('shows the "journey unpublished" warning in the frame instead of the pick call to action, copy and download disabled', async () => {

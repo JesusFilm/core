@@ -19,7 +19,7 @@ import type {
 } from '../types'
 
 import { campaignChromeTrees } from './campaignChromeTrees'
-import { shouldRenderSection } from './shouldRenderSection'
+import { renderedSectionIds, shouldRenderSection } from './shouldRenderSection'
 
 interface CampaignPageProps {
   campaign: CampaignPublic
@@ -36,7 +36,8 @@ interface CampaignPageProps {
  * One of the two campaign pages from the payload: the Campaign Chrome header,
  * the page's sections treed from its flat block list, filtered through the
  * empty-state matrix, each rendered through `CampaignRenderer`, then the
- * chrome footer. Header and footer always render, the same rows the same way
+ * chrome footer. Only the sections it renders are same-page scroll targets,
+ * so a button aimed at a skipped one renders inert. Header and footer always render, the same rows the same way
  * on both pages; the page kind decides only the header's back-chip slot.
  * Single column below `md`; the authored layout from `md` up. The document's
  * `lang` is the Page Language's bcp47 and `dir` follows the RTL lookup on it
@@ -56,23 +57,25 @@ export function CampaignPage({
     root.lang = bcp47 ?? ''
     root.dir = getLocaleRTL(bcp47 ?? '') ? 'rtl' : 'ltr'
   }, [bcp47])
-  const sections = useMemo<CampaignSectionTree[]>(() => {
+  const { sections, pageBlockIds } = useMemo(() => {
+    const context = { pageKind, region, regions: campaign.regions }
     const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
-    if (page == null) return []
-    return transformCampaignBlocks(page.blocks).filter(
-      (block): block is CampaignSectionTree =>
-        isCampaignSection(block) &&
-        shouldRenderSection(block, {
-          pageKind,
-          region,
-          regions: campaign.regions
-        })
-    )
+    const rendered =
+      page == null
+        ? []
+        : transformCampaignBlocks(page.blocks).filter(
+            (block): block is CampaignSectionTree =>
+              isCampaignSection(block) && shouldRenderSection(block, context)
+          )
+    return {
+      sections: rendered,
+      pageBlockIds: renderedSectionIds(rendered, context)
+    }
   }, [campaign, pageKind, region])
 
   return (
     <CampaignProvider
-      value={{ campaign, pageKind, region, basePath, worldMap }}
+      value={{ campaign, pageKind, region, basePath, worldMap, pageBlockIds }}
     >
       <GlobalStyles styles={{ html: { scrollBehavior: 'smooth' } }} />
       <Box

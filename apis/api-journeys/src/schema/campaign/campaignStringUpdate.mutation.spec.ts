@@ -1,9 +1,10 @@
-import { type MockedFunction, vi } from 'vitest'
+import { vi } from 'vitest'
 
-import { getUserFromPayload } from '@core/yoga/firebaseClient'
-
+import {
+  authClient,
+  setupCampaignBlockSpec
+} from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -11,25 +12,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
-  typeof getUserFromPayload
->
-
 describe('campaignStringUpdate', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_STRING_UPDATE = graphql(`
     mutation CampaignStringUpdate(
       $campaignId: ID!
@@ -57,16 +40,7 @@ describe('campaignStringUpdate', () => {
   }
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockGetUserFromPayload.mockReturnValue(mockUser)
-    prismaMock.userRole.findUnique.mockResolvedValue({
-      id: 'userRoleId',
-      userId: mockUser.id,
-      roles: []
-    })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    setupCampaignBlockSpec()
   })
 
   it('writes the trimmed default-language wording by key and leaves translations alone', async () => {
@@ -120,6 +94,51 @@ describe('campaignStringUpdate', () => {
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignStringUpdate.value).toBe('')
+  })
+
+  it('keeps line breaks and drops other control characters', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    const copy = campaign.strings.find((string) => string.key === 'copy')
+    prismaMock.campaignString.update.mockResolvedValue({
+      ...copy!,
+      value: 'a\nb c'
+    })
+
+    await update('copy', 'a\r\nb\tc\u0007')
+
+    expect(prismaMock.campaignString.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { value: 'a\nb c' } })
+    )
+  })
+
+  it('normalises a lone carriage return to a line break', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    const copy = campaign.strings.find((string) => string.key === 'copy')
+    prismaMock.campaignString.update.mockResolvedValue({
+      ...copy!,
+      value: 'a\nb'
+    })
+
+    await update('copy', 'a\rb')
+
+    expect(prismaMock.campaignString.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { value: 'a\nb' } })
+    )
+  })
+
+  it('stores an empty value as empty', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    const copy = campaign.strings.find((string) => string.key === 'copy')
+    prismaMock.campaignString.update.mockResolvedValue({ ...copy!, value: '' })
+
+    await update('copy', '')
+
+    expect(prismaMock.campaignString.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { value: '' } })
+    )
   })
 
   it('caps the value at 200 characters (BAD_USER_INPUT, field value)', async () => {

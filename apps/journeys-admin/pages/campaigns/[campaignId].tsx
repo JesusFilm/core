@@ -1,54 +1,40 @@
-import { NormalizedCacheObject } from '@apollo/client'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import {
+  CombinedGraphQLErrors,
+  NormalizedCacheObject,
+  gql
+} from '@apollo/client'
 import { GetServerSidePropsContext } from 'next'
 import { useRouter } from 'next/router'
-import { useTranslation } from 'next-i18next/pages'
-import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
-import { CampaignEditor } from '../../src/components/CampaignEditor'
+import {
+  GetSSRAdminCampaign,
+  GetSSRAdminCampaignVariables
+} from '../../__generated__/GetSSRAdminCampaign'
+import { CampaignEditorPage } from '../../src/components/CampaignEditorPage'
 import {
   getAuthTokens,
   redirectToLogin,
   toUser
 } from '../../src/libs/auth/getAuthTokens'
 import { initAndAuthApp } from '../../src/libs/initAndAuthApp'
-import { useCampaignQuery } from '../../src/libs/useCampaignQuery'
+
+export const GET_SSR_ADMIN_CAMPAIGN = gql`
+  query GetSSRAdminCampaign($id: ID!) {
+    campaign(id: $id) {
+      id
+    }
+  }
+`
 
 function CampaignEditPage(): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const campaignId = router.query.campaignId
-  const { data, error } = useCampaignQuery(
-    typeof campaignId === 'string' ? { id: campaignId } : undefined
-  )
 
   return (
-    <>
-      <NextSeo
-        title={
-          data?.campaign.title != null
-            ? t('Edit {{title}}', { title: data.campaign.title })
-            : t('Edit campaign')
-        }
-      />
-      {error != null ? (
-        <Stack
-          sx={{
-            minHeight: '100vh',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: 6
-          }}
-        >
-          <Typography variant="h5">{t('Campaign not found')}</Typography>
-          <Typography color="text.secondary">{error.message}</Typography>
-        </Stack>
-      ) : (
-        <CampaignEditor campaign={data?.campaign} />
-      )}
-    </>
+    <CampaignEditorPage
+      campaignId={typeof campaignId === 'string' ? campaignId : undefined}
+    />
   )
 }
 
@@ -67,6 +53,28 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   if (flags.campaignBuilder !== true)
     return { redirect: { destination: '/', permanent: false } }
+
+  // Same rule as the API's campaign Read: a manager or member of the
+  // campaign's team gets in; anyone else is sent back to the campaigns list.
+  try {
+    await apolloClient.query<GetSSRAdminCampaign, GetSSRAdminCampaignVariables>(
+      {
+        query: GET_SSR_ADMIN_CAMPAIGN,
+        variables: { id: ctx.query?.campaignId as string }
+      }
+    )
+  } catch (error) {
+    if (
+      CombinedGraphQLErrors.is(error) &&
+      error.errors.some(
+        (graphQLError) =>
+          graphQLError.extensions?.code === 'NOT_FOUND' ||
+          graphQLError.extensions?.code === 'FORBIDDEN'
+      )
+    )
+      return { redirect: { destination: '/campaigns', permanent: false } }
+    throw error
+  }
 
   return {
     props: {

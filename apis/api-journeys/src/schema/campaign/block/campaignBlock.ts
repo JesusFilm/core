@@ -29,3 +29,19 @@ export const CampaignBlock = builder.prismaInterface('CampaignBlock', {
   }),
   resolveType: (block) => block.typename
 })
+
+/**
+ * `isTypeOf` for a CampaignBlock variant. graphql-js passes any parent value,
+ * so this reads the `typename` column off an unknown rather than trusting it.
+ */
+export function isCampaignBlockOfType(
+  block: unknown,
+  typename: string
+): boolean {
+  return (
+    typeof block === 'object' &&
+    block != null &&
+    'typename' in block &&
+    block.typename === typename
+  )
+}

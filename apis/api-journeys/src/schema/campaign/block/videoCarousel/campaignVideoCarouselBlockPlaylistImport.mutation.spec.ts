@@ -3,9 +3,13 @@ import {
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSpec'
-import { CampaignFixture } from '../../../../../test/campaignFactory'
+import {
+  CampaignFixture,
+  campaignFactory
+} from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
+import { CAMPAIGN_BLOCKS_MAX } from '../../validation'
 
 import { parsePlaylistUrl } from './youTubePlaylist'
 
@@ -59,7 +63,11 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>
 
   /** The playlist's items, then the videos request answering for whichever ids it names. */
-  function mockYouTube(count: number, missing: string[] = []): void {
+  function mockYouTube(
+    count: number,
+    missing: string[] = [],
+    description = (id: string): string => `Description ${id}`
+  ): void {
     fetchSpy.mockImplementation(async (input: string) => {
       const url = new URL(input)
       if (url.pathname.endsWith('/playlistItems'))
@@ -77,7 +85,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
             id,
             snippet: {
               title: `Title ${id}`,
-              description: `Description ${id}`,
+              description: description(id),
               thumbnails: {
                 high: { url: `https://i.ytimg.com/vi/${id}/hq.jpg` }
               }
@@ -165,6 +173,26 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalled()
   })
 
+  it('takes the structure lock before it counts the carousel’s children', async () => {
+    mockYouTube(3)
+
+    const result = await importPlaylist()
+
+    expect(result.errors).toBeUndefined()
+    const [strings, key] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
+      string[],
+      string
+    ]
+    expect(strings.join('?')).toContain('pg_advisory_xact_lock(hashtext(')
+    expect(key).toBe('campaign:campaignId')
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignBlock.findMany.mock.invocationCallOrder[0]
+    )
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignBlock.createManyAndReturn.mock.invocationCallOrder[0]
+    )
+  })
+
   it('asks the Data API for 12 playlist items, then their videos in one request', async () => {
     mockYouTube(3)
 
@@ -192,6 +220,17 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     ).toEqual([youTubeId(0), youTubeId(2)])
   })
 
+  it('cuts an imported description to 1000 characters, the override cap', async () => {
+    mockYouTube(1, [], () => 'x'.repeat(1800))
+
+    await importPlaylist()
+
+    const [{ data }] = vi.mocked(prismaMock.campaignBlock.createManyAndReturn)
+      .mock.calls[0] as any
+    expect(data[0].description).toBe('x'.repeat(1000))
+    expect(data[0].title).toBe(`Title ${youTubeId(0)}`)
+  })
+
   it('refuses a link that is not a playlist (BAD_USER_INPUT, url) without calling YouTube', async () => {
     const result = await importPlaylist(
       'https://www.youtube.com/watch?v=jQaN9DvFTbw'
@@ -203,6 +242,32 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     })
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it(`refuses videos that would take the campaign past ${CAMPAIGN_BLOCKS_MAX} blocks`, async () => {
+    mockYouTube(3)
+    prismaMock.campaignBlock.count.mockResolvedValue(CAMPAIGN_BLOCKS_MAX - 2)
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`,
+      extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
+    })
+    expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+      where: { campaignId: 'campaignId', deletedAt: null }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it(`allows videos that take the campaign to ${CAMPAIGN_BLOCKS_MAX} blocks`, async () => {
+    mockYouTube(3)
+    prismaMock.campaignBlock.count.mockResolvedValue(CAMPAIGN_BLOCKS_MAX - 3)
+
+    const result = await importPlaylist()
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignBlock.createManyAndReturn).toHaveBeenCalled()
   })
 
   it('refuses an empty playlist (BAD_USER_INPUT, url)', async () => {
@@ -217,14 +282,32 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
 
-  it('throws NOT_FOUND for a playlist YouTube does not know', async () => {
+  it('rejects a playlist YouTube does not know (BAD_USER_INPUT, url)', async () => {
     fetchSpy.mockResolvedValue(
       jsonResponse({ error: { code: 404, message: 'playlistNotFound' } })
     )
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors[0]).toMatchObject({
+      message: 'playlist cannot be found on YouTube',
+      extensions: { code: 'BAD_USER_INPUT', field: 'url' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it('passes on INTERNAL_SERVER_ERROR from a YouTube quota failure', async () => {
+    fetchSpy.mockResolvedValue(
+      jsonResponse({ error: { code: 403, message: 'quotaExceeded' } })
+    )
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'YouTube API request failed: quotaExceeded',
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
 
   it('throws NOT_FOUND when the id is not a live CampaignVideoCarouselBlock', async () => {
@@ -236,5 +319,20 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it('throws FORBIDDEN for a caller outside the team', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(
+      campaignBlockWithAcl(
+        campaignFactory({ userId: 'someoneElse' }).build(),
+        'carouselId'
+      )
+    )
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
 })

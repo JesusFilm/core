@@ -1,7 +1,9 @@
 import { UserTeamRole } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { Action, campaignAcl } from './campaign.acl'
+import { Action } from '../../lib/auth/ability'
+
+import { campaignAcl } from './campaign.acl'
 
 describe('campaignAcl', () => {
   const user = { id: 'userId' } as unknown as User

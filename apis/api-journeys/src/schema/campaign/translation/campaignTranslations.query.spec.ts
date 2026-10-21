@@ -2,8 +2,8 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { authClient, mockUser } from '../../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../../test/campaignFactory'
-import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -19,20 +19,6 @@ const FRENCH = '496'
 const SPANISH = '21028'
 
 describe('campaignTranslations', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_TRANSLATIONS = graphql(`
     query CampaignTranslations(
       $campaignId: ID!
@@ -431,6 +417,37 @@ describe('campaignTranslations', () => {
         (row: any) => row.target.blockId === 'heroId'
       )
     ).toBe(true)
+  })
+
+  it('lists the text of a section in a Column Slot, with its extras, in reading order after the Columns section', async () => {
+    prismaMock.campaign.findUnique.mockResolvedValue(
+      campaignFactory({ role: 'member' })
+        .withLanguage(FRENCH)
+        .withColumnsSection()
+        .build()
+    )
+
+    const result = await translations()
+    const landing = result.data.campaignTranslations
+      .filter((row: any) => row.group === 'landing')
+      .map((row: any) => `${row.target.blockId}:${row.field}`)
+
+    expect(landing.slice(-5)).toEqual([
+      'landingAnalyticsId:eyebrow',
+      'landingAnalyticsId:title',
+      'columnHeroId:title',
+      'columnHeroExtraId:content',
+      'columnHeroCoverId:alt'
+    ])
+    expect(
+      result.data.campaignTranslations.find(
+        (row: any) => row.target.blockId === 'columnHeroId'
+      )
+    ).toMatchObject({
+      defaultValue: 'Column hero',
+      value: null,
+      source: null
+    })
   })
 
   it('skips fields that have no default-language text', async () => {

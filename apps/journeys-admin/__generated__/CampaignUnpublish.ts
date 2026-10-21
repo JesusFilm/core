@@ -23,7 +23,7 @@ export interface CampaignUnpublish {
   /**
    * Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
    * 
-   * Auth: campaign Manage — a manager of the campaign’s team.
+   * Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve.

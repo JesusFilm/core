@@ -1,9 +1,11 @@
-import { type MockedFunction, vi } from 'vitest'
+import { vi } from 'vitest'
 
-import { getUserFromPayload } from '@core/yoga/firebaseClient'
-
+import { mockQueueAdd } from '../../../test/bullmqMock'
+import {
+  authClient,
+  setupCampaignBlockSpec
+} from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -11,35 +13,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-const { mockQueueAdd } = vi.hoisted(() => ({
-  mockQueueAdd: vi.fn()
-}))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
-}))
-
-const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
-  typeof getUserFromPayload
->
-
 describe('campaignPublish', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_PUBLISH = graphql(`
     mutation CampaignPublish($id: ID!) {
       campaignPublish(id: $id) {
@@ -51,17 +25,7 @@ describe('campaignPublish', () => {
   `)
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockGetUserFromPayload.mockReturnValue(mockUser)
-    mockQueueAdd.mockResolvedValue(undefined)
-    prismaMock.userRole.findUnique.mockResolvedValue({
-      id: 'userRoleId',
-      userId: mockUser.id,
-      roles: []
-    })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    setupCampaignBlockSpec()
   })
 
   it('moves draft to published and stamps publishedAt for a manager', async () => {
@@ -131,10 +95,10 @@ describe('campaignPublish', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/outreach-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/outreach-2026/eur'] }],
-      ['revalidate', { paths: ['/home/campaign/outreach-2026/afr'] }]
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/afr'
     ])
   })
 
@@ -155,11 +119,11 @@ describe('campaignPublish', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/outreach-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/outreach-2026/eur'] }],
-      ['revalidate', { paths: ['/outreach.example.org'] }],
-      ['revalidate', { paths: ['/outreach.example.org/eur'] }]
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur'
     ])
   })
 

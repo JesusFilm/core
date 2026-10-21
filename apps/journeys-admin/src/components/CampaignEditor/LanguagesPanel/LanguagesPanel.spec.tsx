@@ -256,15 +256,61 @@ describe('LanguagesPanel', () => {
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
-  it('removes a non-default language through campaignLanguageRemove', async () => {
+  it('asks before removing a language, naming what goes with it, and sends nothing yet', async () => {
     const remove = removeMock('496')
     renderPanel([remove])
 
     fireEvent.click(screen.getByRole('button', { name: 'Remove Français' }))
 
+    const dialog = screen.getByTestId('LanguageRemoveDialog')
+    expect(dialog).toHaveTextContent('Remove Français?')
+    expect(dialog).toHaveTextContent(
+      'Every translation into Français is deleted.'
+    )
+    expect(dialog).toHaveTextContent('This cannot be undone.')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(remove.result).not.toHaveBeenCalled()
+  })
+
+  it('removes a non-default language through campaignLanguageRemove once confirmed', async () => {
+    const remove = removeMock('496')
+    renderPanel([remove])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Français' }))
+    fireEvent.click(
+      within(screen.getByTestId('LanguageRemoveDialog')).getByRole('button', {
+        name: 'Remove'
+      })
+    )
+
     await waitFor(() => expect(remove.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('LanguageRemoveDialog')
+      ).not.toBeInTheDocument()
+    )
     expect(screen.queryByTestId('CampaignLanguagesError')).toBeNull()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
+  })
+
+  it('does not remove the language when the confirmation is cancelled', async () => {
+    const remove = removeMock('496')
+    renderPanel([remove])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Français' }))
+    fireEvent.click(
+      within(screen.getByTestId('LanguageRemoveDialog')).getByRole('button', {
+        name: 'Cancel'
+      })
+    )
+
+    await waitFor(() =>
+      expect(
+        screen.queryByTestId('LanguageRemoveDialog')
+      ).not.toBeInTheDocument()
+    )
+    expect(remove.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('CampaignLanguage-496')).toBeInTheDocument()
   })
 
   it("shows the API's CONFLICT message verbatim when a removal is refused", async () => {
@@ -273,6 +319,11 @@ describe('LanguagesPanel', () => {
     renderPanel([remove])
 
     fireEvent.click(screen.getByRole('button', { name: 'Remove Français' }))
+    fireEvent.click(
+      within(screen.getByTestId('LanguageRemoveDialog')).getByRole('button', {
+        name: 'Remove'
+      })
+    )
 
     expect(
       await screen.findByTestId('CampaignLanguagesError')

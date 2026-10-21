@@ -3,7 +3,7 @@ import {
   CampaignMediaSide
 } from '@core/prisma/journeys/client'
 
-import { assertEnum, badUserInput } from '../../validation'
+import { assertEnum, assertNotNull } from '../../validation'
 import { validateSectionText } from '../validateSectionText'
 
 export const CAMPAIGN_MEDIA_SIDES = Object.values(CampaignMediaSide)
@@ -44,28 +44,11 @@ export function validateFeaturedMediaInput(input: FeaturedMediaInput): {
 } {
   const data: ReturnType<typeof validateFeaturedMediaInput> =
     validateSectionText(input, FEATURED_MEDIA_TEXT_FIELDS)
-  if (input.mediaSide !== undefined) {
-    if (input.mediaSide == null)
-      throw badUserInput(
-        `mediaSide must be one of ${CAMPAIGN_MEDIA_SIDES.join(', ')}`,
-        'mediaSide'
-      )
-    data.mediaSide = assertEnum(
-      input.mediaSide,
-      'mediaSide',
-      CAMPAIGN_MEDIA_SIDES
-    )
-  }
-  if (input.layout === undefined) return data
-  if (input.layout == null)
-    throw badUserInput(
-      `layout must be one of ${CAMPAIGN_FEATURED_MEDIA_LAYOUTS.join(', ')}`,
-      'layout'
-    )
-  data.layout = assertEnum(
-    input.layout,
-    'layout',
-    CAMPAIGN_FEATURED_MEDIA_LAYOUTS
-  )
+  const mediaSide = assertNotNull(input.mediaSide, 'mediaSide')
+  if (mediaSide !== undefined)
+    data.mediaSide = assertEnum(mediaSide, 'mediaSide', CAMPAIGN_MEDIA_SIDES)
+  const layout = assertNotNull(input.layout, 'layout')
+  if (layout !== undefined)
+    data.layout = assertEnum(layout, 'layout', CAMPAIGN_FEATURED_MEDIA_LAYOUTS)
   return data
 }

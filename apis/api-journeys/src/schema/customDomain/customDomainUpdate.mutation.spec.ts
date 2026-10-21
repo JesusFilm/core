@@ -3,6 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 import { UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
@@ -12,16 +13,6 @@ import { updateTeamShortLinks } from './service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
-}))
-
-const { mockQueueAdd } = vi.hoisted(() => ({
-  mockQueueAdd: vi.fn()
-}))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
 }))
 
 vi.mock('./service', () => ({
@@ -76,7 +67,6 @@ describe('customDomainUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mockQueueAdd.mockResolvedValue(undefined)
     mockGetUserFromPayload.mockReturnValue(mockUser as any)
     prismaMock.userRole.findUnique.mockResolvedValue({
       userId: mockUser.id,
@@ -138,6 +128,32 @@ describe('customDomainUpdate', () => {
       })
 
       expect(updateTeamShortLinks).toHaveBeenCalledTimes(1)
+      expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
+    })
+
+    it('does not fail when the short link rewrite rejects after the update is committed', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.customDomain.update.mockResolvedValue({
+        ...mockCustomDomain,
+        routeAllTeamJourneys: false
+      })
+      vi.mocked(updateTeamShortLinks).mockRejectedValueOnce(
+        new Error('gateway down')
+      )
+
+      const result = (await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: {
+          id: 'customDomainId',
+          input: { routeAllTeamJourneys: false }
+        }
+      })) as any
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.customDomainUpdate).toMatchObject({
+        id: 'customDomainId',
+        routeAllTeamJourneys: false
+      })
       expect(updateTeamShortLinks).toHaveBeenCalledWith('teamId')
     })
 
@@ -429,6 +445,15 @@ describe('customDomainUpdate', () => {
         ...mockCustomDomain,
         campaignId: 'campaignId'
       })
+      // The draft root reads back to the manager through their team role.
+      prismaMock.userTeam.findUnique.mockResolvedValue({
+        id: 'userTeamId',
+        teamId: 'teamId',
+        userId: 'userId',
+        role: 'manager',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      } as never)
 
       const result = await authClient({
         document: CAMPAIGN_ROOT_MUTATION,
@@ -456,13 +481,13 @@ describe('customDomainUpdate', () => {
           })
         })
       )
-      expect(mockQueueAdd.mock.calls).toEqual([
-        ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-        ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-        ['revalidate', { paths: ['/home/campaign/christmas-2026/afr'] }],
-        ['revalidate', { paths: ['/example.com'] }],
-        ['revalidate', { paths: ['/example.com/eur'] }],
-        ['revalidate', { paths: ['/example.com/afr'] }]
+      expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+        '/home/campaign/christmas-2026',
+        '/home/campaign/christmas-2026/eur',
+        '/home/campaign/christmas-2026/afr',
+        '/example.com',
+        '/example.com/eur',
+        '/example.com/afr'
       ])
     })
 

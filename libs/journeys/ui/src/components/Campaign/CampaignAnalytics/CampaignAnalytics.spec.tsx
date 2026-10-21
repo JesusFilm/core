@@ -260,6 +260,27 @@ describe('CampaignAnalytics', () => {
       expect(await screen.findByText('Everyone who came')).toBeInTheDocument()
     })
 
+    it('keeps the line breaks of a multi-line tile label', async () => {
+      await renderAnalytics({
+        campaign: {
+          ...campaignPublic,
+          strings: campaignPublic.strings.map((string) =>
+            string.key === 'topCountry'
+              ? { ...string, value: 'Top\ncountry' }
+              : string
+          )
+        }
+      })
+      const label = await screen.findByTestId(
+        'CampaignAnalyticsTopCountryLabel'
+      )
+      expect(label.textContent).toBe('Top\ncountry')
+      expect(label).toHaveStyle({ whiteSpace: 'pre-line' })
+      expect(screen.getByTestId('CampaignAnalyticsVisitorsLabel')).toHaveStyle({
+        whiteSpace: 'pre-line'
+      })
+    })
+
     it('shows "<Region name> visitors" for a region tab', async () => {
       await renderAnalytics()
       fireEvent.click(await screen.findByRole('tab', { name: 'EUR' }))

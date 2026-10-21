@@ -27,10 +27,16 @@ export function watchSlugCandidates(url: string): string[] {
     return []
   }
   if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return []
-  const segments = parsed.pathname
-    .split('/')
-    .filter((segment) => segment !== '')
-    .map((segment) => decodeURIComponent(segment).replace(/\.html$/, ''))
+  let segments: string[]
+  try {
+    segments = parsed.pathname
+      .split('/')
+      .filter((segment) => segment !== '')
+      .map((segment) => decodeURIComponent(segment).replace(/\.html$/, ''))
+  } catch (error) {
+    if (error instanceof URIError) return []
+    throw error
+  }
   const watch = segments.indexOf('watch')
   if (watch === -1) return []
   const rest = segments.slice(watch + 1)

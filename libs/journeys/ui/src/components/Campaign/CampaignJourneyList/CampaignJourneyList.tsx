@@ -3,6 +3,7 @@ import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, ReactNode } from 'react'
 
 import {
@@ -123,21 +124,27 @@ interface CampaignJourneyOpenButtonProps {
   href?: string
 }
 
-/** A card's "Open journey" button; the canvas shows it without an address. */
+/**
+ * A card's "Open journey" button; the canvas shows it without an address. A
+ * blank label stays blank but keeps "Open" as the accessible name.
+ */
 export function CampaignJourneyOpenButton({
   label,
   href
 }: CampaignJourneyOpenButtonProps): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   return (
     <Button
       {...(href == null
         ? { component: 'div', tabIndex: -1, disableRipple: true }
         : { href })}
+      aria-label={hasText(label) ? undefined : t('Open')}
       variant="contained"
       size="small"
       data-testid="CampaignJourneyCardOpen"
       sx={{
         mt: 1,
+        whiteSpace: 'pre-line',
         backgroundColor: 'var(--campaign-band-button)',
         color: 'var(--campaign-band-button-label)',
         '&:hover': {
@@ -183,7 +190,10 @@ function JourneyCard({
             variant="h5"
             component="h3"
             data-testid="CampaignJourneyCardTitle"
-            sx={{ color: 'var(--campaign-band-heading)' }}
+            sx={{
+              color: 'var(--campaign-band-heading)',
+              whiteSpace: 'pre-line'
+            }}
           >
             {card.title}
           </Typography>
@@ -235,7 +245,7 @@ export function CampaignJourneyList({
         <Typography
           variant="body1"
           data-testid="CampaignJourneyListEmpty"
-          sx={{ color: 'var(--campaign-band-muted)' }}
+          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
         >
           {noJourneysLabel}
         </Typography>

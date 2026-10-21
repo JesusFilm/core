@@ -2,17 +2,30 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
+import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import {
+  lockCampaign,
+  lockCampaignLanguageRows,
+  touchCampaign
+} from '../block/service'
 import { CampaignRef } from '../campaign'
-import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
 import { fetchLanguage } from '../gatewayClient'
-import { badUserInput } from '../validation'
+import { enqueueLanguageRevalidation } from '../revalidateCampaign'
+import { CAMPAIGN_LANGUAGES_MAX, badUserInput } from '../validation'
+
+function alreadyAdded(): GraphQLError {
+  return badUserInput(
+    'languageId is already a language of this campaign',
+    'languageId'
+  )
+}
 
 builder.mutationField('campaignLanguageAdd', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The machine-translation run into the new language is a separate mutation (the Translations ticket).\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already a language of this campaign.',
+      'Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The machine-translation run into the new language is a separate mutation (the Translations ticket).\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not an api-languages language, already a language of this campaign, or the campaign already has 50 languages.\n\nOn a published campaign, queues on-demand revalidation of its pages.',
     type: CampaignRef,
     nullable: false,
     args: {
@@ -24,7 +37,12 @@ builder.mutationField('campaignLanguageAdd', (t) =>
       const languageId = String(args.languageId)
       const campaign = await prisma.campaign.findUnique({
         where: { id: campaignId },
-        include: { ...INCLUDE_CAMPAIGN_ACL, languages: true }
+        include: {
+          ...INCLUDE_CAMPAIGN_ACL,
+          languages: true,
+          regions: true,
+          customDomains: true
+        }
       })
       if (campaign == null)
         throw new GraphQLError('campaign not found', {
@@ -39,10 +57,7 @@ builder.mutationField('campaignLanguageAdd', (t) =>
           (language) => language.languageId === languageId
         )
       )
-        throw badUserInput(
-          'languageId is already a language of this campaign',
-          'languageId'
-        )
+        throw alreadyAdded()
       const language = await fetchLanguage(languageId)
       if (language == null)
         throw badUserInput(
@@ -50,13 +65,24 @@ builder.mutationField('campaignLanguageAdd', (t) =>
           'languageId'
         )
 
-      return await prisma.$transaction(async (tx) => {
+      const updated = await prisma.$transaction(async (tx) => {
+        // A concurrent add appends at the same position: lock the campaign
+        // row and append after what is committed now.
+        await lockCampaignLanguageRows(tx, campaignId)
+        await lockCampaign(tx, campaignId)
+        const languages = await tx.campaignLanguage.findMany({
+          where: { campaignId },
+          orderBy: { order: 'asc' }
+        })
+        if (languages.some((row) => row.languageId === languageId))
+          throw alreadyAdded()
+        if (languages.length >= CAMPAIGN_LANGUAGES_MAX)
+          throw badUserInput(
+            `a campaign has at most ${CAMPAIGN_LANGUAGES_MAX} languages`,
+            'languageId'
+          )
         await tx.campaignLanguage.create({
-          data: {
-            campaignId,
-            languageId,
-            order: campaign.languages.length
-          }
+          data: { campaignId, languageId, order: languages.length }
         })
         await touchCampaign(tx, campaignId)
         return await tx.campaign.findUniqueOrThrow({
@@ -64,6 +90,8 @@ builder.mutationField('campaignLanguageAdd', (t) =>
           where: { id: campaignId }
         })
       })
+      await enqueueLanguageRevalidation(campaign, languageId)
+      return updated
     }
   })
 )

@@ -1,12 +1,14 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
+import { CLIENT_ID_ERROR, assertClientId } from '../../validation'
 import { CampaignButtonBlock } from '../campaignButtonBlock'
 import {
   assertPlacement,
   authorizeBlockCreate,
   createChildBlock,
-  validateParentBlock
+  validateParentBlock,
+  withClientIds
 } from '../service'
 
 import { CampaignButtonBlockCreateInput } from './inputs'
@@ -17,13 +19,16 @@ builder.mutationField('campaignButtonBlockCreate', (t) =>
     type: CampaignButtonBlock,
     nullable: false,
     description:
-      'Add a button Extra to a section or chrome block, with no action. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. An omitted label is "Button".\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.\n- BAD_USER_INPUT (field: `label`, `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.',
+      'Add a button Extra to a section or chrome block, with no action. A new Extra lands last among its siblings (`parentOrder = siblings.length`) on the side the placement names, and copies the parent’s page or region scoping down. An omitted label is "Button".\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.\n- BAD_USER_INPUT (field: `label`, `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.\n' +
+      CLIENT_ID_ERROR +
+      '',
     args: {
       input: t.arg({ type: CampaignButtonBlockCreateInput, required: true })
     },
     resolve: async (_parent, { input }, context) => {
       const campaignId = String(input.campaignId)
       await authorizeBlockCreate(campaignId, context.user)
+      const id = assertClientId(input.id)
       const parent = await validateParentBlock(
         String(input.parentBlockId),
         campaignId,
@@ -35,14 +40,18 @@ builder.mutationField('campaignButtonBlockCreate', (t) =>
       })
       const placement = assertPlacement(input.placement)
 
-      return await prisma.$transaction(
-        async (tx) =>
-          await createChildBlock(tx, parent, {
-            id: input.id != null ? String(input.id) : undefined,
-            typename: 'CampaignButtonBlock',
-            ...data,
-            placement
-          })
+      return await withClientIds(
+        { id: [id] },
+        async () =>
+          await prisma.$transaction(
+            async (tx) =>
+              await createChildBlock(tx, parent, {
+                id,
+                typename: 'CampaignButtonBlock',
+                ...data,
+                placement
+              })
+          )
       )
     }
   })

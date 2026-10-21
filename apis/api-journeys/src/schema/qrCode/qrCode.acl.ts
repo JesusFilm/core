@@ -18,10 +18,12 @@ export const INCLUDE_QR_CODE_ACL = {
 } satisfies Prisma.QrCodeInclude
 
 /**
- * A Campaign QR Code (one a campaign Share Language owns) is managed by its
- * team alone: its `journeyId` is the linked journey, which may belong to
- * another team, so that journey's owners and editors, and a publisher on a
- * template, get no rights over it.
+ * Nobody manages a Campaign QR Code (one a campaign Share Language owns)
+ * through the QR mutations: its Share Language owns the target, the colours
+ * are fixed and the Share Language delete owns removal. Its `journeyId` is
+ * the linked journey, which may belong to another team, so neither the team
+ * nor that journey's owners and editors, nor a publisher on a template, get
+ * rights over it.
  */
 export function canManageQrCode(
   qrCode: {
@@ -36,17 +38,18 @@ export function canManageQrCode(
   },
   user: User
 ): boolean {
+  if (
+    qrCode.campaignRegionLanguages != null &&
+    qrCode.campaignRegionLanguages.length > 0
+  )
+    return false
+
   const isTeamManagerOrMember = qrCode.team?.userTeams.some(
     (ut) =>
       ut.userId === user.id &&
       (ut.role === UserTeamRole.manager || ut.role === UserTeamRole.member)
   )
   if (isTeamManagerOrMember === true) return true
-  if (
-    qrCode.campaignRegionLanguages != null &&
-    qrCode.campaignRegionLanguages.length > 0
-  )
-    return false
 
   const isJourneyOwnerOrEditor = qrCode.journey?.userJourneys?.some(
     (uj) =>

@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react'
 
 import {
   CampaignPageKind,
+  CampaignStringKey,
   VideoLabel
 } from '../../../../__generated__/globalTypes'
 import type {
@@ -180,6 +181,39 @@ describe('CampaignVideoCarousel', () => {
         'https://www.jesusfilm.org/watch/outreach-collection.html/english.html'
       )
       expect(seeAll).toHaveAttribute('target', '_blank')
+    })
+
+    it('leaves a blank seeAllOnWatch string blank, keeping See all as the accessible name', () => {
+      render(
+        <ThemeProvider theme={theme}>
+          <CampaignProvider
+            value={{
+              campaign: {
+                ...campaignPublic,
+                languageId: '529',
+                strings: campaignPublic.strings.map((string) =>
+                  string.key === CampaignStringKey.seeAllOnWatch
+                    ? { ...string, value: '' }
+                    : string
+                )
+              },
+              pageKind: CampaignPageKind.landing,
+              region: null
+            }}
+          >
+            <CampaignVideoCarousel
+              block={carousel(expanded([watchChild(0)]))}
+            />
+          </CampaignProvider>
+        </ThemeProvider>
+      )
+
+      const seeAll = screen.getByRole('link', { name: 'See all' })
+      expect(seeAll).toHaveAttribute(
+        'data-testid',
+        'CampaignVideoCarouselSeeAll'
+      )
+      expect(seeAll).toHaveTextContent(/^$/)
     })
 
     it('renders only the first 12 children before "See all on Watch"', () => {

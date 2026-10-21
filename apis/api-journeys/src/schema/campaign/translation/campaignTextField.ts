@@ -1,14 +1,13 @@
-import { builder } from '../../builder'
 import { TEXT_CAPS } from '../validation'
 
 /**
- * Every translatable text column across the campaign types, as one Pothos
- * enum (PRD §2): the single source of truth for `campaignTranslationSet`,
- * the public read's text resolution, the Translations view, the
- * machine-translation sweep and the default-language swap. A field's cap
- * depends on the target that carries it (`title` is 100 on the campaign, 150
- * on a section, 200 on a video or journey card), so the maps below pair each
- * target with its fields and caps.
+ * Every translatable text column across the campaign types, the values of
+ * the `CampaignTextField` enum (PRD §2): the single source of truth for
+ * `campaignTranslationSet`, the public read's text resolution, the
+ * Translations view, the machine-translation sweep and the default-language
+ * swap. A field's cap depends on the target that carries it (`title` is 100
+ * on the campaign, 150 on a section, 200 on a video or journey card), so the
+ * maps below pair each target with its fields and caps.
  */
 export const CAMPAIGN_TEXT_FIELD_VALUES = [
   'eyebrow',
@@ -28,12 +27,6 @@ export type CampaignTextFieldName = (typeof CAMPAIGN_TEXT_FIELD_VALUES)[number]
 export type CampaignTextFieldCaps = Partial<
   Record<CampaignTextFieldName, number>
 >
-
-export const CampaignTextField = builder.enumType('CampaignTextField', {
-  values: CAMPAIGN_TEXT_FIELD_VALUES,
-  description:
-    'Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.'
-})
 
 const SECTION_HEADING: CampaignTextFieldCaps = {
   eyebrow: TEXT_CAPS.eyebrow,

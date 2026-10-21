@@ -1,6 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { snapshotOf } from '../block/journey/snapshot'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import { resolveJourneyId } from '../journeyLink'
@@ -32,8 +33,7 @@ builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
           ...query,
           where: { id },
           data: {
-            title: journey.title,
-            description: journey.description,
+            ...snapshotOf(journey),
             snapshotEdited: false
           }
         })

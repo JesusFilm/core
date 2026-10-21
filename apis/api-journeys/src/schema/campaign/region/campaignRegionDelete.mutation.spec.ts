@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -20,14 +21,6 @@ vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
   deleteShortLink: vi.fn()
 }))
 
-const { mockQueueAdd } = vi.hoisted(() => ({ mockQueueAdd: vi.fn() }))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
-}))
-
 describe('campaignRegionDelete', () => {
   const DELETE = graphql(`
     mutation CampaignRegionDelete($id: ID!) {
@@ -42,7 +35,6 @@ describe('campaignRegionDelete', () => {
 
   beforeEach(() => {
     setupCampaignBlockSpec()
-    mockQueueAdd.mockResolvedValue(undefined)
     fixture = campaignFactory().withRegion('EUR').withRegion('AFR').build()
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
@@ -87,7 +79,7 @@ describe('campaignRegionDelete', () => {
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
   })
 
-  it("deletes every owned QR row's short link and row before the region", async () => {
+  it('deletes every owned QR row before the region and queues its short link delete', async () => {
     prismaMock.campaignRegionLanguage.findMany.mockResolvedValue([
       { qrCode: { id: 'qrCodeA', shortLinkId: 'shortLinkA' } },
       { qrCode: { id: 'qrCodeB', shortLinkId: 'shortLinkB' } }
@@ -100,9 +92,13 @@ describe('campaignRegionDelete', () => {
       where: { regionId: 'eurRegionId', qrCodeId: { not: null } },
       select: { qrCode: { select: { id: true, shortLinkId: true } } }
     })
-    expect(deleteShortLink).toHaveBeenCalledTimes(2)
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkA')
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkB')
+    // The short links go on the retried delete queue, not straight to the gateway.
+    expect(
+      mockQueueAdd.mock.calls
+        .filter(([name]) => name === 'api-journeys-shortlink-delete-job')
+        .map(([, data]) => data.shortLinkId)
+    ).toEqual(['shortLinkA', 'shortLinkB'])
+    expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
       where: { id: { in: ['qrCodeA', 'qrCodeB'] } }
     })

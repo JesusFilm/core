@@ -5,7 +5,7 @@ import {
   YoutubeVideosData,
   parseISO8601Duration
 } from '../../../block/video/service'
-import { badUserInput } from '../../validation'
+import { TEXT_CAPS, badUserInput, truncate } from '../../validation'
 
 /** A playlist import brings in this many videos; the author pastes more one by one. */
 export const PLAYLIST_IMPORT_LIMIT = 12
@@ -49,9 +49,7 @@ interface YoutubePlaylistItemsData {
 
 function youTubeError(error: { code: number; message: string }): GraphQLError {
   if (error.code === 404)
-    return new GraphQLError('playlist cannot be found on YouTube', {
-      extensions: { code: 'NOT_FOUND' }
-    })
+    return badUserInput('playlist cannot be found on YouTube', 'url')
   // quota/auth failures must not read as "playlist does not exist"
   return new GraphQLError(`YouTube API request failed: ${error.message}`, {
     extensions: { code: 'INTERNAL_SERVER_ERROR' }
@@ -74,7 +72,8 @@ async function youTubeRequest<T>(
 /**
  * The first `PLAYLIST_IMPORT_LIMIT` videos of a playlist in playlist order,
  * with the fields `fetchFieldsFromYouTube` captures for one video, in two
- * Data API requests (the playlist's items, then their videos). Private or
+ * Data API requests (the playlist's items, then their videos). Title and
+ * description are cut to the Campaign Video override caps. Private or
  * deleted entries, which the videos request omits, are skipped.
  */
 export async function fetchYouTubePlaylistVideos(
@@ -107,8 +106,11 @@ export async function fetchYouTubePlaylistVideos(
     return [
       {
         videoId,
-        title: video.snippet.title,
-        description: video.snippet.description,
+        title: truncate(video.snippet.title, TEXT_CAPS.videoTitle),
+        description: truncate(
+          video.snippet.description,
+          TEXT_CAPS.videoDescription
+        ),
         image: video.snippet.thumbnails.high.url,
         duration: parseISO8601Duration(video.contentDetails.duration)
       }

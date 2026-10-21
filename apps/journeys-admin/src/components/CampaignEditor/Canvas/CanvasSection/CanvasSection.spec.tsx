@@ -1,4 +1,5 @@
 import { RenderResult, fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 
 import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
@@ -484,5 +485,31 @@ describe('CanvasSection rich text in a column slot', () => {
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'slotRichTextId'
     )
+  })
+})
+
+describe('CanvasSection button label', () => {
+  const hero = transformCampaignBlocks(campaign.blocks).find(
+    (block) => block.id === 'heroId'
+  ) as CanvasBlock
+
+  it('inserts a line break on Enter instead of committing', async () => {
+    render(
+      <StaticEditor
+        initialState={{
+          selectedBlockId: 'heroButtonId',
+          previewLanguageId: '529'
+        }}
+      >
+        <CanvasSection block={hero} />
+      </StaticEditor>
+    )
+
+    const input = screen.getByRole('textbox', { name: 'Button' })
+    expect(input.tagName).toBe('TEXTAREA')
+
+    await userEvent.type(input, '{Enter}now')
+
+    expect(input).toHaveValue('Choose your region\nnow')
   })
 })

@@ -291,4 +291,22 @@ describe('CampaignButton', () => {
     )
     expect(container).toBeEmptyDOMElement()
   })
+
+  it('keeps a line break in the label, live or static', () => {
+    const label = 'Choose\nyour region'
+    const { unmount } = renderButton(
+      <CampaignButton block={{ ...heroButton, label }} />
+    )
+    const live = screen.getByTestId('CampaignButton')
+    expect(live.textContent).toBe(label)
+    expect(live).toHaveStyle({ whiteSpace: 'pre-line' })
+    unmount()
+
+    renderButton(
+      <CampaignButton block={{ ...heroButton, label, action: null }} />
+    )
+    const inert = screen.getByTestId('CampaignButton')
+    expect(inert.textContent).toBe(label)
+    expect(inert).toHaveStyle({ whiteSpace: 'pre-line' })
+  })
 })

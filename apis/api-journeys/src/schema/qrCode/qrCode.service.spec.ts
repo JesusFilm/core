@@ -2,10 +2,6 @@ import { prismaMock } from '../../../test/prismaMock'
 
 import { createShortLink, getTo, parseAndVerifyTo } from './qrCode.service'
 
-vi.hoisted(() => {
-  process.env.GATEWAY_URL = 'http://gateway.test/'
-})
-
 function journeyRow(
   slug: string,
   customDomains: Array<{ name: string; routeAllTeamJourneys: boolean }> = []
@@ -20,51 +16,6 @@ function journeyRow(
 }
 
 describe('qrCode.service', () => {
-  describe('createShortLink', () => {
-    const input = {
-      id: 'shortLinkId',
-      hostname: 'localhost',
-      to: 'http://localhost:4100/journey',
-      service: 'apiJourneys'
-    }
-
-    function gatewayReplies(shortLinkCreate: Record<string, unknown>): void {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn(async () => ({
-          json: async () => ({ data: { shortLinkCreate } })
-        }))
-      )
-    }
-
-    afterEach(() => {
-      vi.unstubAllGlobals()
-    })
-
-    it('returns the created id', async () => {
-      gatewayReplies({
-        __typename: 'MutationShortLinkCreateSuccess',
-        data: { id: 'shortLinkId' }
-      })
-
-      await expect(createShortLink(input)).resolves.toEqual({
-        id: 'shortLinkId'
-      })
-    })
-
-    it('throws BAD_USER_INPUT when api-media refuses the link, so the caller rolls back instead of keeping a QR code without one', async () => {
-      gatewayReplies({
-        __typename: 'ZodError',
-        message: 'must be a public http(s) URL'
-      })
-
-      await expect(createShortLink(input)).rejects.toMatchObject({
-        message: 'must be a public http(s) URL',
-        extensions: { code: 'BAD_USER_INPUT' }
-      })
-    })
-  })
-
   describe('getTo', () => {
     it('keeps the existing target format exactly: journey public URL + utm_source and utm_campaign', async () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
@@ -151,7 +102,7 @@ describe('qrCode.service', () => {
 
   describe('parseAndVerifyTo', () => {
     it("accepts the target journey's own team domain, whichever team owns the QR row", async () => {
-      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+      prismaMock.journey.findFirst.mockResolvedValue(
         journeyRow('christmas-europe', [
           { name: 'journeys.example.org', routeAllTeamJourneys: true }
         ]) as never
@@ -167,7 +118,7 @@ describe('qrCode.service', () => {
     })
 
     it('accepts the root domain for a journey without a custom domain', async () => {
-      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+      prismaMock.journey.findFirst.mockResolvedValue(
         journeyRow('christmas-europe') as never
       )
 
@@ -177,10 +128,10 @@ describe('qrCode.service', () => {
     })
 
     it('resolves the block of the address', async () => {
-      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+      prismaMock.journey.findFirst.mockResolvedValue(
         journeyRow('christmas-europe') as never
       )
-      prismaMock.block.findFirstOrThrow.mockResolvedValue({
+      prismaMock.block.findFirst.mockResolvedValue({
         id: 'blockId'
       } as never)
 
@@ -190,13 +141,13 @@ describe('qrCode.service', () => {
           'teamId'
         )
       ).resolves.toEqual({ toJourneyId: 'journeyId', toBlockId: 'blockId' })
-      expect(prismaMock.block.findFirstOrThrow).toHaveBeenCalledWith({
+      expect(prismaMock.block.findFirst).toHaveBeenCalledWith({
         where: { journeyId: 'journeyId', id: 'blockId' }
       })
     })
 
     it('rejects a host that does not serve the journey', async () => {
-      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+      prismaMock.journey.findFirst.mockResolvedValue(
         journeyRow('christmas-europe', [
           { name: 'journeys.example.org', routeAllTeamJourneys: true }
         ]) as never
@@ -208,13 +159,13 @@ describe('qrCode.service', () => {
     })
 
     it("only looks up live journeys that are published or the QR code team's own", async () => {
-      prismaMock.journey.findFirstOrThrow.mockResolvedValue(
+      prismaMock.journey.findFirst.mockResolvedValue(
         journeyRow('christmas-europe') as never
       )
 
       await parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
 
-      expect(prismaMock.journey.findFirstOrThrow).toHaveBeenCalledWith(
+      expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
             slug: 'christmas-europe',
@@ -230,6 +181,157 @@ describe('qrCode.service', () => {
       await expect(
         parseAndVerifyTo('https://example.com/', 'teamId')
       ).rejects.toThrow('Invalid to')
+    })
+
+    it('answers BAD_USER_INPUT on to for a non-URL', async () => {
+      await expect(
+        parseAndVerifyTo('not a url', 'teamId')
+      ).rejects.toMatchObject({
+        message: 'to must be a URL',
+        extensions: { code: 'BAD_USER_INPUT', field: 'to' }
+      })
+    })
+
+    it('answers BAD_USER_INPUT on to for an unknown slug', async () => {
+      prismaMock.journey.findFirst.mockResolvedValue(null)
+
+      await expect(
+        parseAndVerifyTo('https://example.com/unknown', 'teamId')
+      ).rejects.toMatchObject({
+        message: 'to does not name a journey this QR code can point at',
+        extensions: { code: 'BAD_USER_INPUT', field: 'to' }
+      })
+    })
+
+    it("answers BAD_USER_INPUT on to for another team's unpublished journey", async () => {
+      prismaMock.journey.findFirst.mockResolvedValue(null)
+
+      await expect(
+        parseAndVerifyTo('https://example.com/foreign-draft', 'teamId')
+      ).rejects.toMatchObject({
+        extensions: { code: 'BAD_USER_INPUT', field: 'to' }
+      })
+      expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            OR: [{ status: 'published' }, { teamId: 'teamId' }]
+          })
+        })
+      )
+    })
+
+    it('answers BAD_USER_INPUT on to for a block outside the journey', async () => {
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyRow('christmas-europe') as never
+      )
+      prismaMock.block.findFirst.mockResolvedValue(null)
+
+      await expect(
+        parseAndVerifyTo(
+          'https://example.com/christmas-europe/otherBlockId',
+          'teamId'
+        )
+      ).rejects.toMatchObject({
+        message: 'to names a block that is not in that journey',
+        extensions: { code: 'BAD_USER_INPUT', field: 'to' }
+      })
+    })
+
+    it('gives the hostname refusal the to field', async () => {
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyRow('christmas-europe', [
+          { name: 'journeys.example.org', routeAllTeamJourneys: true }
+        ]) as never
+      )
+
+      await expect(
+        parseAndVerifyTo('https://example.com/christmas-europe', 'teamId')
+      ).rejects.toMatchObject({
+        extensions: { code: 'BAD_USER_INPUT', field: 'to' }
+      })
+    })
+  })
+
+  describe('createShortLink', () => {
+    function gatewayResponse(body: unknown): Response {
+      return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { 'content-type': 'application/json' }
+      })
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it("returns the link's id and api-media's shortUrl", async () => {
+      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        gatewayResponse({
+          data: {
+            shortLinkCreate: {
+              __typename: 'MutationShortLinkCreateSuccess',
+              data: {
+                id: 'shortLinkId',
+                shortUrl: 'https://short.example.org/q/abc123'
+              }
+            }
+          }
+        })
+      )
+
+      await expect(
+        createShortLink({
+          id: 'shortLinkId',
+          hostname: 'short.example.org',
+          to: 'https://example.com/christmas-europe',
+          service: 'apiJourneys'
+        })
+      ).resolves.toEqual({
+        id: 'shortLinkId',
+        shortUrl: 'https://short.example.org/q/abc123'
+      })
+      const body = JSON.parse(fetchSpy.mock.calls[0][1]?.body as string)
+      expect(body.query).toContain('data { id shortUrl }')
+    })
+
+    it('throws BAD_USER_INPUT when api-media refuses the link, so the caller rolls back instead of keeping a QR code without one', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        gatewayResponse({
+          data: {
+            shortLinkCreate: {
+              __typename: 'ZodError',
+              message: 'must be a public http(s) URL'
+            }
+          }
+        })
+      )
+
+      await expect(
+        createShortLink({
+          id: 'shortLinkId',
+          hostname: 'short.example.org',
+          to: 'http://localhost:4100/journey',
+          service: 'apiJourneys'
+        })
+      ).rejects.toMatchObject({
+        message: 'must be a public http(s) URL',
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+    })
+
+    it('returns a null shortUrl when api-media returns no link', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        gatewayResponse({ data: { shortLinkCreate: {} } })
+      )
+
+      await expect(
+        createShortLink({
+          id: 'shortLinkId',
+          hostname: 'short.example.org',
+          to: 'https://example.com/christmas-europe',
+          service: 'apiJourneys'
+        })
+      ).resolves.toEqual({ id: 'shortLinkId', shortUrl: null })
     })
   })
 })

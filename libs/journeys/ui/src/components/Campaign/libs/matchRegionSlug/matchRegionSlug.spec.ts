@@ -1,4 +1,6 @@
-import { VIEWER_OWNED_SEGMENTS, matchRegionSlug } from './matchRegionSlug'
+import { VIEWER_RESERVED_SEGMENTS } from '../viewerReservedSegments'
+
+import { matchRegionSlug } from './matchRegionSlug'
 
 describe('matchRegionSlug', () => {
   const regions = [
@@ -30,7 +32,7 @@ describe('matchRegionSlug', () => {
     expect(matchRegionSlug('euro', regions)).toBeNull()
   })
 
-  it.each([...VIEWER_OWNED_SEGMENTS])(
+  it.each([...VIEWER_RESERVED_SEGMENTS])(
     'never matches the viewer-owned segment %s',
     (segment) => {
       expect(matchRegionSlug(segment, [{ slug: segment }])).toBeNull()

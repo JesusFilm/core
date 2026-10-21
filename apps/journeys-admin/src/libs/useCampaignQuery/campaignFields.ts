@@ -260,6 +260,9 @@ export const CAMPAIGN_FIELDS = gql`
         role
         user {
           id
+          ... on AuthenticatedUser {
+            email
+          }
         }
       }
     }

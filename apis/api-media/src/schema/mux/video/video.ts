@@ -217,10 +217,11 @@ builder.queryFields((t) => ({
       userGenerated: t.arg({ type: 'Boolean', required: false })
     },
     resolve: async (query, _parent, { id, userGenerated }) => {
-      let video = await prisma.muxVideo.findFirstOrThrow({
+      let video = await prisma.muxVideo.findFirst({
         ...query,
         where: { id }
       })
+      if (video == null) return null
       const isUserGenerated = userGenerated ?? true
 
       if (video.assetId == null && video.uploadId != null) {

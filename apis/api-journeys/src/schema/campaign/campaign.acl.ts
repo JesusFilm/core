@@ -1,13 +1,7 @@
 import { Prisma, UserTeam, UserTeamRole } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-export enum Action {
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
-  Manage = 'manage'
-}
+import { Action } from '../../lib/auth/ability'
 
 export const INCLUDE_CAMPAIGN_ACL = {
   team: { include: { userTeams: true } }

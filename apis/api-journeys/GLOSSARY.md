@@ -192,7 +192,7 @@ Who may do what to a Campaign, decided by the caller's **Team Role** on the owni
 _Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
 
 **Campaign Seed**:
-What every Campaign is born with, in one step: a draft Campaign with one language and a generated slug, the Light theme and a Palette drawn from it, the landing and Region pages with their starter sections and copy, the header and footer with their starter links, and the seventeen Campaign Strings. No regions, media or Journeys: those are the author's first edits.
+What every Campaign is born with, in one step: a draft Campaign with one language and a generated slug, the Light theme and a Palette drawn from it, the landing and Region pages with their starter sections and copy, the header and footer with their starter links, and the eighteen Campaign Strings. No regions, media or Journeys: those are the author's first edits.
 _Avoid_: template (that is a Journey concept), default campaign, blank campaign (it is not blank)
 
 ### Campaign content
@@ -214,7 +214,7 @@ What a Campaign Section sits on: nothing, the theme surface, the contrast band, 
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:
-One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section other than a Columns or Region Share section. Deleting the section in a slot empties the slot and never removes the slot itself; mirrors GridContainer → GridItem.
+One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section other than a Columns, Region Share or Image section. Deleting the section in a slot empties the slot and never removes the slot itself; mirrors GridContainer → GridItem.
 _Avoid_: column (ambiguous with the Columns section), cell, pane
 
 **Extra**:
@@ -242,7 +242,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section and holding the same text and button children, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header holds Button Extras only (its nav links); the footer holds Text and Button Extras.
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
@@ -314,11 +314,11 @@ A language a Campaign Region hands out a Journey in. An independent set from the
 _Avoid_: region language (fine in conversation; the term is Share Language), journey language
 
 **Share Link**:
-The one link a Campaign Region hands out per language: a **short link** that redirects to the linked Journey's own public address, carrying the QR Code attribution parameters. The same link is what the region's **QR Code** encodes, so printing and copying give the same thing, and swapping the linked Journey redirects the existing link rather than minting a new one.
+The one link a Campaign Region hands out per language: a **short link** that redirects to the linked Journey's own public address, carrying the QR Code attribution parameters. The same link is what the region's **QR Code** encodes, so printing and copying give the same thing, and swapping the linked Journey redirects the existing link rather than minting a new one. Unlinking keeps the link (it goes on redirecting to the last linked Journey), and a later link retargets it.
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language and removed with it. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed, and it is deleted only with its Campaign Region or Campaign. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
@@ -344,7 +344,7 @@ One of the Campaign's fixed interface phrases (such as "Copy link" or "All regio
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:
-The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote, and "Needs review" is simply every translation still marked as machine-made.
+The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote, even one written while the run is going, and "Needs review" is simply every translation still marked as machine-made. Only one run into a given language of a Campaign is in flight at a time; a second is refused until the first ends.
 _Avoid_: auto-translate (as a feature name), AI translate, sync
 
 **Campaign Translations**:

@@ -176,11 +176,17 @@ export function CampaignEditor({
       </Box>
     )
 
-  const isManager = campaign.team.userTeams.some(
-    (userTeam) =>
-      userTeam.user.id === currentUser.id &&
-      userTeam.role === UserTeamRole.manager
-  )
+  // Matched by email, as CustomDomainDialog does: `me.id` is the users
+  // table uuid while a UserTeam's `user.id` is the Firebase uid, so the two
+  // never compare equal.
+  const isManager =
+    currentUser.__typename === 'AuthenticatedUser' &&
+    campaign.team.userTeams.some(
+      (userTeam) =>
+        userTeam.user.__typename === 'AuthenticatedUser' &&
+        userTeam.user.email === currentUser.email &&
+        userTeam.role === UserTeamRole.manager
+    )
 
   return (
     <CommandProvider>

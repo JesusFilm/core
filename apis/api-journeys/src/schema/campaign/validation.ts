@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql'
 import slugify from 'slugify'
+import { validate as isUuid } from 'uuid'
 import type { ZodType } from 'zod'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
@@ -30,6 +31,25 @@ export function badUserInput(message: string, field: string): GraphQLError {
     extensions: { code: 'BAD_USER_INPUT', field }
   })
 }
+
+/**
+ * The null rule of every campaign update mutation: an omitted field
+ * (`undefined`) is left alone, and an explicit `null` on a field that cannot
+ * be null is `BAD_USER_INPUT` on that field. Nullable fields keep taking
+ * `null` and do not go through this. Returns the value, undefined when
+ * omitted.
+ */
+export function assertNotNull<T>(
+  value: T | null | undefined,
+  field: string
+): T | undefined {
+  if (value === null) throw badUserInput(`${field} cannot be null`, field)
+  return value
+}
+
+/** The null rule, as the line each campaign update mutation's `Errors:` description carries. */
+export const NULL_FIELD_ERROR =
+  '- BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.'
 
 const HEX_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
 
@@ -142,6 +162,23 @@ export const LINK_URL_MAX_LENGTH = 2048
 export const PALETTE_MAX_LENGTH = 8
 export const REGION_COUNTRIES_MAX = 250
 
+// Every translation JSON, the public payload and the stats sweep grow with
+// these. They bound adds only: a campaign already over one keeps working, it
+// just cannot grow.
+export const CAMPAIGN_LANGUAGES_MAX = 50
+export const CAMPAIGN_REGIONS_MAX = 100
+export const REGION_SHARE_LANGUAGES_MAX = 20
+export const CAMPAIGN_BLOCKS_MAX = 500
+
+/**
+ * Cut to at most `max` Unicode code points: for text copied in from a source
+ * (YouTube, Mux, a linked journey) so a later save of it passes the cap.
+ */
+export function truncate(value: string, max: number): string {
+  const characters = [...value]
+  return characters.length <= max ? value : characters.slice(0, max).join('')
+}
+
 /**
  * Trim and count Unicode code points. Empty is allowed unless `required`;
  * over-length is `BAD_USER_INPUT` / `field`. Returns the trimmed value.
@@ -158,6 +195,17 @@ export function assertLength(
   if ([...trimmed].length > max)
     throw badUserInput(`${field} must be at most ${max} characters`, field)
   return trimmed
+}
+
+/**
+ * Keep line breaks, drop every other control character: `\r\n` and `\r`
+ * become `\n`, a tab becomes a space, and any other Unicode `Cc` is removed.
+ */
+export function normaliseControlCharacters(value: string): string {
+  return value
+    .replace(/\r\n?/g, '\n')
+    .replace(/\t/g, ' ')
+    .replace(/(?!\n)\p{Cc}/gu, '')
 }
 
 /** `assertLength` for a nullable column: `null`/`undefined` pass through. */
@@ -218,6 +266,64 @@ export function assertUniqueIds(ids: string[], field: string): string[] {
     seen.add(id)
   }
   return ids
+}
+
+/**
+ * Client-chosen ids of one call (a create's `id`, a Columns section's
+ * `slotIds`, a duplicate's `idMap`): each a UUID, and none used twice
+ * within the call, counting `chosen` (ids the same call already chose).
+ * `BAD_USER_INPUT` on `field`.
+ */
+export function assertClientIds(
+  ids: string[],
+  field: string,
+  chosen: string[] = []
+): string[] {
+  for (const id of ids)
+    if (!isUuid(id)) throw badUserInput(`${field} must be a UUID`, field)
+  assertUniqueIds([...chosen, ...ids], field)
+  return ids
+}
+
+/** A create's optional client-chosen `id` through `assertClientIds`; undefined when omitted. */
+export function assertClientId(
+  id: string | number | null | undefined,
+  field = 'id'
+): string | undefined {
+  if (id == null) return undefined
+  return assertClientIds([String(id)], field)[0]
+}
+
+/** The client-id rule, as the line each campaign block create's `Errors:` description carries. */
+export const CLIENT_ID_ERROR =
+  '- BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).'
+
+/**
+ * Whether `error` is a unique violation (P2002) on `column`: the classic
+ * engine names the columns in `meta.target`, a driver adapter in its
+ * constraint's `fields` (quoted when mixed case).
+ */
+export function isUniqueViolation(error: unknown, column: string): boolean {
+  if (
+    !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+    error.code !== 'P2002'
+  )
+    return false
+  const meta = error.meta as
+    | {
+        target?: unknown
+        driverAdapterError?: {
+          cause?: { constraint?: { fields?: unknown } }
+        }
+      }
+    | undefined
+  const fields = Array.isArray(meta?.target)
+    ? meta.target
+    : meta?.driverAdapterError?.cause?.constraint?.fields
+  return (
+    Array.isArray(fields) &&
+    fields.some((field) => String(field).replace(/"/g, '') === column)
+  )
 }
 
 /** Countries per region: no duplicates and at most 250. */
@@ -306,18 +412,34 @@ export async function validateCampaignSlug(
   return slug
 }
 
-/** Generate a region slug from the name, unique within the campaign. */
+/**
+ * Generate a region slug from the name, unique within the campaign and free
+ * of the team's live journeys: on a Custom Domain a region slug outranks a
+ * journey slug (`assertRegionSlugFreeOfJourneys`), so a journey's slug counts
+ * as taken.
+ */
 export async function generateUniqueRegionSlug(
-  campaignId: string,
+  campaign: { id: string; teamId: string },
   name: string,
   tx: Prisma.TransactionClient = prisma
 ): Promise<string> {
   const base = slugBase(name, REGION_RESERVED_SLUGS)
-  const collisions = await tx.campaignRegion.findMany({
-    where: { campaignId, slug: { startsWith: base } },
+  const regions = await tx.campaignRegion.findMany({
+    where: { campaignId: campaign.id, slug: { startsWith: base } },
     select: { slug: true }
   })
-  return firstFreeSlug(base, new Set(collisions.map((c) => c.slug)))
+  const journeys = await tx.journey.findMany({
+    where: {
+      teamId: campaign.teamId,
+      slug: { startsWith: base },
+      deletedAt: null
+    },
+    select: { slug: true }
+  })
+  return firstFreeSlug(
+    base,
+    new Set([...regions, ...journeys].map((c) => c.slug))
+  )
 }
 
 /** Validate an author-edited region slug against the campaign's other regions. */

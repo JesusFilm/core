@@ -1,54 +1,11 @@
-import { CampaignJourneyListDisplay as PrismaCampaignJourneyListDisplay } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignJourneyListDisplay } from '../../enums'
+import { CAMPAIGN_JOURNEY_LIST_DISPLAYS } from '../../enums'
 import { assertEnum } from '../../validation'
 import { CampaignJourneyListBlock } from '../campaignJourneyListBlock'
-import {
-  SECTION_CREATE_ERRORS,
-  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
-  createSection
-} from '../createSection'
+import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
 import { validateSectionText } from '../validateSectionText'
 
-const DISPLAYS = Object.values(PrismaCampaignJourneyListDisplay)
-
-export const CampaignJourneyListBlockCreateInput = builder.inputType(
-  'CampaignJourneyListBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({ required: true, description: 'A page of the campaign.' }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      description: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      display: t.field({
-        type: CampaignJourneyListDisplay,
-        required: false,
-        description: 'Defaults to grid.'
-      })
-    })
-  }
-)
+import { CampaignJourneyListBlockCreateInput } from './inputs'
 
 builder.mutationField('campaignJourneyListBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -69,7 +26,11 @@ builder.mutationField('campaignJourneyListBlockCreate', (t) =>
         () => ({
           ...validateSectionText(input, ['eyebrow', 'title', 'description']),
           ...(input.display != null && {
-            display: assertEnum(input.display, 'display', DISPLAYS)
+            display: assertEnum(
+              input.display,
+              'display',
+              CAMPAIGN_JOURNEY_LIST_DISPLAYS
+            )
           })
         })
       )

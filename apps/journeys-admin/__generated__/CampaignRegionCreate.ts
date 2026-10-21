@@ -92,7 +92,7 @@ export interface CampaignRegionCreate_campaignRegionCreate_languages {
   language: CampaignRegionCreate_campaignRegionCreate_languages_language;
   journey: CampaignRegionCreate_campaignRegionCreate_languages_journey | null;
   /**
-   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   * The Campaign QR Code, present from the moment a journey is linked and kept across an unlink; its short link is the Share Link.
    */
   qrCode: CampaignRegionCreate_campaignRegionCreate_languages_qrCode | null;
 }
@@ -154,7 +154,7 @@ export interface CampaignRegionCreate_campaignRegionCreate {
 
 export interface CampaignRegionCreate {
   /**
-   * Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
+   * Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …, skipping the slugs of the team’s live journeys), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -163,6 +163,7 @@ export interface CampaignRegionCreate {
    * Errors:
    * - NOT_FOUND: campaignId does not resolve.
    * - FORBIDDEN: caller is not in the team.
+   * - BAD_USER_INPUT (field: `campaignId`): the campaign already has 100 regions.
    * - CONFLICT: a concurrent create took the id or the derived slug; retry.
    */
   campaignRegionCreate: CampaignRegionCreate_campaignRegionCreate;

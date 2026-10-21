@@ -123,6 +123,27 @@ describe('fetchCampaignPublicInPageLanguage', () => {
   })
 })
 
+describe('a read that fails for a reason other than not found', () => {
+  it('reaches the caller of the slug read', async () => {
+    const apollo = client()
+    apollo.query.mockRejectedValueOnce(new Error('socket hang up'))
+    await expect(
+      fetchCampaignPublicInPageLanguage(apollo, 'christmas-2026')
+    ).rejects.toThrow('socket hang up')
+  })
+
+  it('reaches the caller of the hostname read', async () => {
+    const apollo = client()
+    apollo.query.mockRejectedValueOnce(new Error('socket hang up'))
+    await expect(
+      fetchCampaignPublicInPageLanguageByHostname(
+        apollo,
+        'christmas.example.org'
+      )
+    ).rejects.toThrow('socket hang up')
+  })
+})
+
 describe('fetchCampaignPublicInPageLanguageByHostname', () => {
   it('resolves the Page Language against the root campaign of the hostname', async () => {
     const apollo = client()

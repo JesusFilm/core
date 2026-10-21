@@ -5,22 +5,15 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import {
   CampaignBlockRow,
   CampaignFixture,
+  CampaignRegionRow,
   campaignFactory
 } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
-import { fetchShortLink } from './gatewayClient'
-
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
-}))
-
-vi.mock('./gatewayClient', () => ({
-  fetchShortLink: vi.fn(),
-  shortLinkUrl: (shortLink: { hostname: string; pathname: string }) =>
-    `https://${shortLink.hostname}/${shortLink.pathname}`
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -28,6 +21,50 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 >
 
 const FRENCH = '496'
+
+/** A block in a `campaignPublic` response; the fields beyond these depend on each query's selection. */
+interface PublicBlock {
+  __typename: string
+  id: string
+  parentBlockId: string | null
+  parentOrder: number | null
+  [field: string]: unknown
+}
+
+interface PublicPage {
+  kind: string
+  blocks: PublicBlock[]
+}
+
+/** A `campaignPublic` response: the selection varies per query, so only the shared parts are typed. */
+interface PublicCampaignResponse {
+  data: {
+    campaignPublic: {
+      strings: Array<{ key: string; value: string }>
+      pages: PublicPage[]
+      chrome: PublicBlock[]
+      regions: Array<{ languages: Array<Record<string, unknown>> }>
+      [field: string]: unknown
+    }
+  }
+  errors?: Array<{ message: string; extensions: { code: string } }>
+}
+
+/** A region language as the `campaignPublic` read returns it: with the linked journey and Campaign QR Code rows attached. */
+type LinkedRegionLanguage = CampaignRegionRow['languages'][number] & {
+  journey: Record<string, unknown>
+  qrCode: Record<string, unknown> | null
+}
+
+interface IntrospectionResponse {
+  data: Record<string, { fields: Array<{ name: string }> }>
+}
+
+function blockById(blocks: PublicBlock[], id: string): PublicBlock {
+  const block = blocks.find((candidate) => candidate.id === id)
+  if (block == null) throw new Error(`no block ${id} in the response`)
+  return block
+}
 
 function journeyRow(
   id: string,
@@ -139,6 +176,7 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
                 toJourneyId: language.journeyId,
                 toBlockId: null,
                 shortLinkId: `${language.qrCodeId}-shortLinkId`,
+                shortLinkUrl: `https://short.example.org/${language.id}`,
                 color: '#000000',
                 backgroundColor: '#FFFFFF'
               },
@@ -306,11 +344,12 @@ describe('campaignPublic', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(null)
-    vi.mocked(fetchShortLink).mockImplementation(async (id) => ({
-      id,
-      pathname: id.replace('-qrCodeId-shortLinkId', ''),
-      hostname: 'short.example.org'
-    }))
+    // Any gateway request would go through fetch; the public read makes none.
+    vi.spyOn(globalThis, 'fetch')
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   it('returns a published campaign with every text field resolved to the requested language and translation lists omitted', async () => {
@@ -319,7 +358,7 @@ describe('campaignPublic', () => {
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026', languageId: FRENCH }
-    })) as any
+    })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
     const campaign = result.data.campaignPublic
@@ -351,19 +390,19 @@ describe('campaignPublic', () => {
     })
 
     expect(campaign.strings).toHaveLength(18)
-    expect(campaign.strings.find((s: any) => s.key === 'copy').value).toBe(
-      'Copier le lien'
-    )
-    expect(campaign.strings.find((s: any) => s.key === 'open').value).toBe(
-      'Open'
-    )
+    expect(
+      campaign.strings.find((string) => string.key === 'copy')?.value
+    ).toBe('Copier le lien')
+    expect(
+      campaign.strings.find((string) => string.key === 'open')?.value
+    ).toBe('Open')
 
-    expect(campaign.pages.map((page: any) => page.kind)).toEqual([
+    expect(campaign.pages.map((page) => page.kind)).toEqual([
       'landing',
       'regionTemplate'
     ])
     const landing = campaign.pages[0]
-    expect(landing.blocks.map((block: any) => block.id)).toEqual([
+    expect(landing.blocks.map((block) => block.id)).toEqual([
       'heroId',
       'landingSwitcherId',
       'carouselId',
@@ -393,7 +432,7 @@ describe('campaignPublic', () => {
       label: 'Choose your region',
       placement: 'below'
     })
-    expect(campaign.pages[1].blocks.map((block: any) => block.id)).toEqual([
+    expect(campaign.pages[1].blocks.map((block) => block.id)).toEqual([
       'regionHeaderId',
       'regionShareId',
       'regionJourneyListId',
@@ -401,7 +440,7 @@ describe('campaignPublic', () => {
       'regionSwitcherId'
     ])
 
-    expect(campaign.chrome.map((block: any) => block.id)).toEqual([
+    expect(campaign.chrome.map((block) => block.id)).toEqual([
       'headerId',
       'headerLogoId',
       'navHomeId',
@@ -412,7 +451,7 @@ describe('campaignPublic', () => {
       'footerPrivacyId'
     ])
     expect(
-      campaign.chrome.find((block: any) => block.id === 'footerTermsId')
+      campaign.chrome.find((block) => block.id === 'footerTermsId')
     ).toMatchObject({
       label: 'Terms of Use',
       placement: 'below',
@@ -477,20 +516,26 @@ describe('campaignPublic', () => {
         where: { slug: 'outreach-2026', status: 'published' }
       })
     )
-    expect(fetchShortLink).toHaveBeenCalledTimes(2)
-    expect(fetchShortLink).toHaveBeenCalledWith(
-      'eurRegionId-529-qrCodeId-shortLinkId'
-    )
+    // Each Share Link is the address saved on its Campaign QR Code.
+    expect(fetch).not.toHaveBeenCalled()
   })
 
-  it('leaves the Share Link null when the gateway no longer knows the short link', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
-    vi.mocked(fetchShortLink).mockResolvedValue(null)
+  it('leaves the Share Link null for a Campaign QR Code with no saved address', async () => {
+    const fixture = publishedFixture()
+    fixture.regions = fixture.regions.map((region) => ({
+      ...region,
+      languages: (region.languages as LinkedRegionLanguage[]).map((language) =>
+        region.id === 'eurRegionId'
+          ? { ...language, qrCode: { ...language.qrCode, shortLinkUrl: null } }
+          : language
+      )
+    }))
+    prismaMock.campaign.findFirst.mockResolvedValue(fixture)
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026' }
-    })) as any
+    })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignPublic.regions[0].languages[0]).toMatchObject({
@@ -498,22 +543,26 @@ describe('campaignPublic', () => {
       shortLinkUrl: null,
       journeyUrl: 'https://journeys.example.org/eur-journey'
     })
+    expect(result.data.campaignPublic.regions[1].languages[0]).toMatchObject({
+      shortLinkUrl: 'https://short.example.org/afrRegionId-529'
+    })
+    expect(fetch).not.toHaveBeenCalled()
   })
 
-  it('renders the page without Share Links when the gateway lookup fails', async () => {
-    prismaMock.campaign.findFirst.mockResolvedValue(publishedFixture())
-    vi.mocked(fetchShortLink).mockRejectedValue(new Error('gateway down'))
+  it('is NOT_FOUND for a campaign with no theme', async () => {
+    prismaMock.campaign.findFirst.mockResolvedValue({
+      ...publishedFixture(),
+      theme: null
+    } as any)
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026' }
-    })) as any
+    })) as PublicCampaignResponse
 
-    expect(result.errors).toBeUndefined()
-    expect(result.data.campaignPublic.regions[0].languages[0]).toMatchObject({
-      journeyStatus: 'published',
-      shortLinkUrl: null,
-      journeyUrl: 'https://journeys.example.org/eur-journey'
+    expect(result.errors?.[0]).toMatchObject({
+      message: 'campaign not found',
+      extensions: { code: 'NOT_FOUND' }
     })
   })
 
@@ -523,7 +572,7 @@ describe('campaignPublic', () => {
     const omitted = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026' }
-    })) as any
+    })) as PublicCampaignResponse
     expect(omitted.data.campaignPublic).toMatchObject({
       languageId: '529',
       title: 'Outreach 2026'
@@ -535,7 +584,7 @@ describe('campaignPublic', () => {
     const foreign = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026', languageId: '21028' }
-    })) as any
+    })) as PublicCampaignResponse
     expect(foreign.data.campaignPublic).toMatchObject({
       languageId: '529',
       title: 'Outreach 2026'
@@ -611,11 +660,11 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_CAROUSEL,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const blocks = result.data.campaignPublic.pages[0].blocks
-      expect(blocks.find((block: any) => block.id === 'carouselId')).toEqual({
+      expect(blocks.find((block) => block.id === 'carouselId')).toEqual({
         __typename: 'CampaignVideoCarouselBlock',
         id: 'carouselId',
         parentBlockId: null,
@@ -639,17 +688,15 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_CAROUSEL,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const blocks = result.data.campaignPublic.pages[0].blocks
-      expect(
-        blocks.find((block: any) => block.id === 'carouselId').video
-      ).toBeNull()
+      expect(blockById(blocks, 'carouselId').video).toBeNull()
       expect(
         blocks
-          .filter((block: any) => block.parentBlockId === 'carouselId')
-          .map((block: any) => [block.id, block.parentOrder])
+          .filter((block) => block.parentBlockId === 'carouselId')
+          .map((block) => [block.id, block.parentOrder])
       ).toEqual([
         ['firstItemId', 0],
         ['secondItemId', 1]
@@ -803,12 +850,11 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_VIDEOS,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const blocks = result.data.campaignPublic.pages[0].blocks
-      const byId = (id: string): any =>
-        blocks.find((block: any) => block.id === id)
+      const byId = (id: string): PublicBlock => blockById(blocks, id)
 
       expect(byId('heroId')).toMatchObject({ mediaBlockId: 'heroVideoId' })
       expect(byId('youTubeSectionId')).toMatchObject({
@@ -867,12 +913,11 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_VIDEOS,
         variables: { slug: 'outreach-2026', languageId: FRENCH }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const blocks = result.data.campaignPublic.pages[0].blocks
-      const byId = (id: string): any =>
-        blocks.find((block: any) => block.id === id)
+      const byId = (id: string): PublicBlock => blockById(blocks, id)
       expect(byId('heroVideoId')).toMatchObject({
         title: null,
         description: 'Notre description'
@@ -890,7 +935,7 @@ describe('campaignPublic', () => {
 
     it('returns a null mediaVideo for a video row without an id', async () => {
       const fixture = videoFixture()
-      fixture.blocks = (fixture.blocks as any[]).map((block) =>
+      fixture.blocks = fixture.blocks.map((block) =>
         block.id === 'heroVideoId' ? { ...block, videoId: null } : block
       )
       prismaMock.campaign.findFirst.mockResolvedValue(fixture)
@@ -898,56 +943,56 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_VIDEOS,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       expect(
-        result.data.campaignPublic.pages[0].blocks.find(
-          (block: any) => block.id === 'heroVideoId'
-        ).mediaVideo
+        blockById(result.data.campaignPublic.pages[0].blocks, 'heroVideoId')
+          .mediaVideo
       ).toBeNull()
     })
   })
 
-  it('treats an unpublished or deleted linked journey as unlinked', async () => {
-    const fixture = publishedFixture()
-    fixture.regions = (fixture.regions as any[]).map((region) => ({
-      ...region,
-      languages: region.languages.map((language: any) => ({
-        ...language,
-        journey:
-          region.id === 'eurRegionId'
-            ? { ...language.journey, status: 'draft' }
-            : { ...language.journey, deletedAt: new Date() }
+  it.each(['draft', 'archived', 'trashed'])(
+    'treats a %s or deleted linked journey as unlinked, never revealing its status',
+    async (status) => {
+      const fixture = publishedFixture()
+      fixture.regions = fixture.regions.map((region) => ({
+        ...region,
+        languages: (region.languages as LinkedRegionLanguage[]).map(
+          (language) => ({
+            ...language,
+            journey:
+              region.id === 'eurRegionId'
+                ? { ...language.journey, status }
+                : { ...language.journey, deletedAt: new Date() }
+          })
+        )
       }))
-    }))
-    prismaMock.campaign.findFirst.mockResolvedValue(fixture)
+      prismaMock.campaign.findFirst.mockResolvedValue(fixture)
 
-    const result = (await publicClient({
-      document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'outreach-2026' }
-    })) as any
+      const result = (await publicClient({
+        document: CAMPAIGN_PUBLIC,
+        variables: { slug: 'outreach-2026' }
+      })) as PublicCampaignResponse
 
-    expect(result.data.campaignPublic.regions[0].languages[0]).toEqual({
-      languageId: '529',
-      order: 0,
-      journeyStatus: 'draft',
-      title: null,
-      shortLinkUrl: null,
-      journeyUrl: null,
-      embedUrl: null
-    })
-    expect(result.data.campaignPublic.regions[1].languages[0]).toEqual({
-      languageId: '529',
-      order: 0,
-      journeyStatus: null,
-      title: null,
-      shortLinkUrl: null,
-      journeyUrl: null,
-      embedUrl: null
-    })
-    expect(fetchShortLink).not.toHaveBeenCalled()
-  })
+      const unlinked = {
+        languageId: '529',
+        order: 0,
+        journeyStatus: null,
+        title: null,
+        shortLinkUrl: null,
+        journeyUrl: null,
+        embedUrl: null
+      }
+      expect(result.data.campaignPublic.regions[0].languages[0]).toEqual(
+        unlinked
+      )
+      expect(result.data.campaignPublic.regions[1].languages[0]).toEqual(
+        unlinked
+      )
+    }
+  )
 
   describe('journey list items', () => {
     const CAMPAIGN_PUBLIC_JOURNEYS = graphql(`
@@ -1043,12 +1088,12 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
         variables: { slug: 'outreach-2026', languageId: FRENCH }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const items = result.data.campaignPublic.pages
-        .flatMap((page: any) => page.blocks)
-        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+        .flatMap((page) => page.blocks)
+        .filter((block) => block.__typename === 'CampaignJourneyBlock')
       expect(items).toEqual([
         {
           __typename: 'CampaignJourneyBlock',
@@ -1091,12 +1136,12 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const items = result.data.campaignPublic.pages
-        .flatMap((page: any) => page.blocks)
-        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
+        .flatMap((page) => page.blocks)
+        .filter((block) => block.__typename === 'CampaignJourneyBlock')
       expect(items).toEqual([
         expect.objectContaining({
           id: 'archivedItem',
@@ -1132,13 +1177,13 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       const ids = result.data.campaignPublic.pages
-        .flatMap((page: any) => page.blocks)
-        .filter((block: any) => block.__typename === 'CampaignJourneyBlock')
-        .map((block: any) => block.id)
+        .flatMap((page) => page.blocks)
+        .filter((block) => block.__typename === 'CampaignJourneyBlock')
+        .map((block) => block.id)
       expect(ids).toEqual(['liveItem'])
       expect(JSON.stringify(result.data)).not.toMatch(
         /draftJourneyId|trashedJourneyId|deletedJourneyId|goneJourneyId|draftItem|deletedItem/
@@ -1151,7 +1196,7 @@ describe('campaignPublic', () => {
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
         variables: { slug: 'outreach-2026' }
-      })) as any
+      })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
       expect(prismaMock.journey.findMany).not.toHaveBeenCalled()
@@ -1168,10 +1213,10 @@ describe('campaignPublic', () => {
         }
       `)
 
-      const result = (await publicClient({ document: INTROSPECT })) as any
-      const names: string[] = result.data.item.fields.map(
-        (field: any) => field.name
-      )
+      const result = (await publicClient({
+        document: INTROSPECT
+      })) as unknown as IntrospectionResponse
+      const names: string[] = result.data.item.fields.map((field) => field.name)
 
       expect(names).not.toContain('tag')
       expect(names).not.toContain('journey')
@@ -1216,9 +1261,9 @@ describe('campaignPublic', () => {
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'Not A Slug!' }
-    })) as any
+    })) as PublicCampaignResponse
 
-    expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
+    expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
     expect(prismaMock.campaign.findFirst).not.toHaveBeenCalled()
   })
 
@@ -1234,7 +1279,7 @@ describe('campaignPublic', () => {
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { hostname: 'outreach.example.org' }
-    })) as any
+    })) as PublicCampaignResponse
 
     expect(result.data.campaignPublic).toMatchObject({
       id: 'campaignId',
@@ -1257,23 +1302,23 @@ describe('campaignPublic', () => {
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { hostname: 'outreach.example.org' }
-    })) as any
+    })) as PublicCampaignResponse
 
-    expect(result.errors[0].extensions.code).toBe('NOT_FOUND')
+    expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
   })
 
   it('is BAD_USER_INPUT when both or neither of slug and hostname are given', async () => {
     const both = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026', hostname: 'outreach.example.org' }
-    })) as any
-    expect(both.errors[0].extensions.code).toBe('BAD_USER_INPUT')
+    })) as PublicCampaignResponse
+    expect(both.errors?.[0].extensions.code).toBe('BAD_USER_INPUT')
 
     const neither = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: {}
-    })) as any
-    expect(neither.errors[0].extensions.code).toBe('BAD_USER_INPUT')
+    })) as PublicCampaignResponse
+    expect(neither.errors?.[0].extensions.code).toBe('BAD_USER_INPUT')
     expect(prismaMock.campaign.findFirst).not.toHaveBeenCalled()
   })
 
@@ -1283,7 +1328,7 @@ describe('campaignPublic', () => {
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026' }
-    })) as any
+    })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignPublic.id).toBe('campaignId')
@@ -1311,9 +1356,11 @@ describe('campaignPublic', () => {
       }
     `)
 
-    const result = (await publicClient({ document: INTROSPECT })) as any
-    const names = (type: any): string[] =>
-      type.fields.map((field: any) => field.name)
+    const result = (await publicClient({
+      document: INTROSPECT
+    })) as unknown as IntrospectionResponse
+    const names = (type: IntrospectionResponse['data'][string]): string[] =>
+      type.fields.map((field) => field.name)
 
     expect(names(result.data.campaignPublic)).not.toContain('team')
     expect(names(result.data.campaignPublic)).not.toContain('palette')
@@ -1357,7 +1404,7 @@ describe('campaignPublic languages', () => {
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC_LANGUAGES,
       variables: { slug: 'outreach-2026', languageId: FRENCH }
-    })) as any
+    })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignPublic).toEqual({

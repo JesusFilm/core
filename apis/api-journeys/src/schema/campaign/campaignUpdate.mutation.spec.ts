@@ -3,8 +3,9 @@ import { type MockedFunction, vi } from 'vitest'
 import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
+import { authClient, mockUser } from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -24,20 +25,6 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 >
 
 describe('campaignUpdate', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_UPDATE = graphql(`
     mutation CampaignUpdate($id: ID!, $input: CampaignUpdateInput!) {
       campaignUpdate(id: $id, input: $input) {
@@ -117,6 +104,52 @@ describe('campaignUpdate', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalledWith(
       expect.objectContaining({ data: { slug: 'xmas-2026' } })
     )
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('queues the pages under the old and the new slug when a published campaign’s slug changes', async () => {
+    const campaign = campaignFactory({ role: 'manager' })
+      .withRegion('EUR')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.update.mockResolvedValue({
+      ...campaign,
+      slug: 'xmas-2026'
+    })
+    prismaMock.campaignLanguage.findMany.mockResolvedValue([])
+
+    await update({ slug: 'xmas-2026' })
+
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/xmas-2026',
+      '/home/campaign/xmas-2026/eur'
+    ])
+  })
+
+  it('queues nothing for a title-only change on a published campaign', async () => {
+    const campaign = campaignFactory({ role: 'member' }).published().build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.update.mockResolvedValue({
+      ...campaign,
+      title: 'Easter 2027'
+    })
+
+    await update({ title: 'Easter 2027' })
+
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('queues nothing when a published campaign is given its own slug', async () => {
+    const campaign = campaignFactory({ role: 'member' }).published().build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.update.mockResolvedValue(campaign)
+
+    await update({ slug: 'christmas-2026' })
+
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
   it('requires a title (BAD_USER_INPUT, field title)', async () => {
@@ -412,6 +445,27 @@ describe('campaignUpdate', () => {
         code: 'CONFLICT',
         field: 'defaultLanguageId',
         count: missing
+      })
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('counts untranslated text of a section in a Column Slot (CONFLICT)', async () => {
+      const campaign = campaignFactory({ role: 'member' })
+        .withLanguage(FRENCH)
+        .withColumnsSection()
+        .build()
+      prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+      prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(
+        translatedInto(campaign, FRENCH, { blockId: 'columnHeroId' })
+      )
+
+      const result = await setDefault(FRENCH)
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'defaultLanguageId',
+        count: 1
       })
       expect(prismaMock.campaign.update).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()

@@ -2,8 +2,9 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
+import { authClient, mockUser } from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../qrCode/qrCode.service'
@@ -19,37 +20,13 @@ vi.mock('../qrCode/qrCode.service', async (importOriginal) => ({
   deleteShortLink: vi.fn()
 }))
 
-const { mockQueueAdd } = vi.hoisted(() => ({
-  mockQueueAdd: vi.fn()
-}))
-
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
-}))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
 describe('campaignDelete', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_DELETE = graphql(`
     mutation CampaignDelete($id: ID!) {
       campaignDelete(id: $id) {
@@ -62,7 +39,6 @@ describe('campaignDelete', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
-    mockQueueAdd.mockResolvedValue(undefined)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
@@ -101,7 +77,7 @@ describe('campaignDelete', () => {
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
   })
 
-  it("deletes every Share Language's QR row and short link before the campaign", async () => {
+  it("deletes every Share Language's QR row before the campaign and queues its short link delete", async () => {
     const campaign = campaignFactory({ role: 'manager' })
       .withRegion('EUR')
       .build()
@@ -122,8 +98,13 @@ describe('campaignDelete', () => {
       where: { region: { campaignId: 'campaignId' }, qrCodeId: { not: null } },
       select: { qrCode: { select: { id: true, shortLinkId: true } } }
     })
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkA')
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkB')
+    // The short links go on the retried delete queue, not straight to the gateway.
+    expect(
+      mockQueueAdd.mock.calls
+        .filter(([name]) => name === 'api-journeys-shortlink-delete-job')
+        .map(([, data]) => data.shortLinkId)
+    ).toEqual(['shortLinkA', 'shortLinkB'])
+    expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
       where: { id: { in: ['qrCodeA', 'qrCodeB'] } }
     })
@@ -220,7 +201,7 @@ describe('campaignDelete', () => {
       variables: { id: 'campaignId' }
     })) as any
 
-    expect(result.errors).toBeDefined()
+    expect(result.errors[0].message).toBe('delete failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 

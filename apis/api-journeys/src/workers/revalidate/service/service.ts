@@ -51,12 +51,15 @@ export async function service(
 
 /**
  * The `paths[]` job variant: one `/api/revalidate` call per Next.js page path,
- * for pages that are not addressed by a journey slug (the campaign pages).
+ * for pages that are not addressed by a journey slug (the campaign pages). A
+ * non-2xx or a fetch error is logged and the remaining paths still run; then
+ * the job throws, so BullMQ retries it as queued (`attempts`, `backoff`).
  */
 export async function revalidatePaths(
   job: Job<RevalidatePathsJob>,
   logger?: Logger
 ): Promise<void> {
+  const failedPaths: string[] = []
   for (const path of job.data.paths) {
     const params = new URLSearchParams({
       accessToken: env.JOURNEYS_REVALIDATE_ACCESS_TOKEN,
@@ -66,12 +69,17 @@ export async function revalidatePaths(
       const response = await fetch(
         `${env.JOURNEYS_URL}/api/revalidate?${params.toString()}`
       )
-      if (!response.ok)
+      if (!response.ok) {
         logger?.error(`Failed to revalidate ${path}: HTTP ${response.status}`)
+        failedPaths.push(path)
+      }
     } catch (error) {
       logger?.error(`Failed to revalidate ${path}: ${error as Error}`)
+      failedPaths.push(path)
     }
   }
+  if (failedPaths.length > 0)
+    throw new Error(`Failed to revalidate ${failedPaths.join(', ')}`)
 }
 
 export async function revalidate(job: Job<RevalidateSlugJob>, logger?: Logger) {

@@ -171,7 +171,7 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
    */
   videoId: string | null;
   /**
-   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   * The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -195,6 +195,7 @@ export interface CampaignVideoCarouselBlockCreate {
    * - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+   * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    * - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
    */
   campaignVideoCarouselBlockCreate: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate;

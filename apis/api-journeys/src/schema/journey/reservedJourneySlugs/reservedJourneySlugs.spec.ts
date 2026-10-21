@@ -34,7 +34,10 @@ describe('isReservedJourneySlug', () => {
   })
 
   it('can match every entry once slugified', () => {
+    // `_next` is reserved for the viewer's route matcher; slugify strips its
+    // underscore, so no slug can ever equal it.
     for (const segment of VIEWER_RESERVED_SEGMENTS) {
+      if (segment === '_next') continue
       expect(slugify(segment, { lower: true, strict: true })).toBe(segment)
     }
   })

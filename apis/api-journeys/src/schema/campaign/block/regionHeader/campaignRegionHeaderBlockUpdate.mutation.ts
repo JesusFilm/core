@@ -1,28 +1,14 @@
 import { builder } from '../../../builder'
 import { CampaignRegionHeaderBlock } from '../campaignRegionHeaderBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignRegionHeaderBlockUpdateInput = builder.inputType(
-  'CampaignRegionHeaderBlockUpdateInput',
-  {
-    fields: (t) => ({
-      intro: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignRegionHeaderBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignRegionHeaderBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -44,7 +30,7 @@ builder.mutationField('campaignRegionHeaderBlockUpdate', (t) =>
       )
       return await updateBlock(block, {
         ...validateSectionText(input, ['intro']),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })

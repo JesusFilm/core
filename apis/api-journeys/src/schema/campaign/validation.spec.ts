@@ -14,6 +14,7 @@ import {
   CampaignStringKey,
   CampaignSwitcherVariant,
   CampaignTypographyVariant,
+  Prisma,
   VideoBlockSource
 } from '@core/prisma/journeys/client'
 
@@ -26,6 +27,8 @@ import {
   SLUG_MAX_LENGTH,
   SLUG_PATTERN,
   TEXT_CAPS,
+  assertClientId,
+  assertClientIds,
   assertEnum,
   assertEnumOrNull,
   assertHex,
@@ -33,12 +36,15 @@ import {
   assertLength,
   assertLengthOrNull,
   assertLinkUrl,
+  assertNotNull,
   assertPalette,
   assertRegionCountries,
   assertUniqueIds,
   generateUniqueCampaignSlug,
   generateUniqueRegionSlug,
+  isUniqueViolation,
   parseWithZod,
+  truncate,
   validateCampaignSlug,
   validateRegionSlug
 } from './validation'
@@ -101,6 +107,17 @@ describe('campaign validation', () => {
       expect(assertHexOrNull(undefined, 'color')).toBeUndefined()
       expect(assertHexOrNull('#abc', 'color')).toBe('#AABBCC')
       expectBadUserInput(() => assertHexOrNull('', 'color'), 'color')
+    })
+  })
+
+  describe('truncate', () => {
+    it('cuts to the cap in code points, so an emoji counts as one', () => {
+      expect(truncate('😀'.repeat(5), 3)).toBe('😀'.repeat(3))
+    })
+
+    it('returns a value at or under the cap unchanged', () => {
+      expect(truncate('abc', 3)).toBe('abc')
+      expect(truncate('', 3)).toBe('')
     })
   })
 
@@ -255,6 +272,115 @@ describe('campaign validation', () => {
         () => assertRegionCountries([...ids, 'country-250']),
         'countryId'
       )
+    })
+  })
+
+  describe('assertNotNull', () => {
+    it('leaves an omitted field alone', () => {
+      expect(assertNotNull(undefined, 'showMap')).toBeUndefined()
+    })
+
+    it('passes a value through, falsy ones included', () => {
+      expect(assertNotNull(false, 'showMap')).toBe(false)
+      expect(assertNotNull('', 'title')).toBe('')
+      expect(assertNotNull('grid', 'display')).toBe('grid')
+    })
+
+    it('refuses an explicit null with BAD_USER_INPUT on the field', () => {
+      expect(() => assertNotNull(null, 'showMap')).toThrow(
+        'showMap cannot be null'
+      )
+      expectBadUserInput(() => assertNotNull(null, 'showMap'), 'showMap')
+    })
+  })
+
+  describe('client-chosen ids', () => {
+    const FIRST = '6f1c2d3e-4a5b-4c6d-8e7f-9a0b1c2d3e4f'
+    const SECOND = '7a2b3c4d-5e6f-4a7b-9c8d-0e1f2a3b4c5d'
+
+    it('takes distinct UUIDs', () => {
+      expect(assertClientIds([FIRST, SECOND], 'slotIds')).toEqual([
+        FIRST,
+        SECOND
+      ])
+      expect(assertClientId(FIRST)).toBe(FIRST)
+    })
+
+    it('leaves an omitted id to the server', () => {
+      expect(assertClientId(undefined)).toBeUndefined()
+      expect(assertClientId(null)).toBeUndefined()
+    })
+
+    it.each(['', 'not-a-uuid', 'heroId'])(
+      'refuses %j, which is not a UUID',
+      (id) => {
+        expectBadUserInput(() => assertClientId(id), 'id')
+        expectBadUserInput(() => assertClientIds([FIRST, id], 'idMap'), 'idMap')
+      }
+    )
+
+    it('refuses the same id twice in one call, ids the call already chose included', () => {
+      expectBadUserInput(
+        () => assertClientIds([FIRST, FIRST], 'slotIds'),
+        'slotIds'
+      )
+      expectBadUserInput(
+        () => assertClientIds([FIRST, SECOND], 'slotIds', [SECOND]),
+        'slotIds'
+      )
+    })
+  })
+
+  describe('isUniqueViolation', () => {
+    function p2002(meta: Record<string, unknown>): unknown {
+      return new Prisma.PrismaClientKnownRequestError(
+        'Unique constraint failed',
+        {
+          code: 'P2002',
+          clientVersion: 'test',
+          meta
+        }
+      )
+    }
+
+    it('reads the columns from the driver adapter constraint', () => {
+      const error = p2002({
+        driverAdapterError: {
+          cause: {
+            kind: 'UniqueConstraintViolation',
+            constraint: { fields: ['id'] }
+          }
+        }
+      })
+      expect(isUniqueViolation(error, 'id')).toBe(true)
+      expect(isUniqueViolation(error, 'slug')).toBe(false)
+    })
+
+    it('reads a quoted mixed-case column from the driver adapter', () => {
+      const error = p2002({
+        driverAdapterError: {
+          cause: { constraint: { fields: ['"coverBlockId"'] } }
+        }
+      })
+      expect(isUniqueViolation(error, 'coverBlockId')).toBe(true)
+    })
+
+    it('reads the columns from meta.target', () => {
+      expect(isUniqueViolation(p2002({ target: ['id'] }), 'id')).toBe(true)
+    })
+
+    it('is false for any other error', () => {
+      expect(isUniqueViolation(new Error('id'), 'id')).toBe(false)
+      expect(
+        isUniqueViolation(
+          new Prisma.PrismaClientKnownRequestError('Not found', {
+            code: 'P2025',
+            clientVersion: 'test',
+            meta: { target: ['id'] }
+          }),
+          'id'
+        )
+      ).toBe(false)
     })
   })
 
@@ -425,18 +551,39 @@ describe('campaign validation', () => {
   describe('region slug', () => {
     beforeEach(() => {
       prismaMock.campaignRegion.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([])
       prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
     })
+
+    const campaign = { id: 'campaignId', teamId: 'teamId' }
 
     it('generates the slug from the name, unique per campaign', async () => {
       prismaMock.campaignRegion.findMany.mockResolvedValue([
         { slug: 'eur' }
       ] as any)
-      await expect(generateUniqueRegionSlug('campaignId', 'EUR')).resolves.toBe(
+      await expect(generateUniqueRegionSlug(campaign, 'EUR')).resolves.toBe(
         'eur-2'
       )
       expect(prismaMock.campaignRegion.findMany).toHaveBeenCalledWith({
         where: { campaignId: 'campaignId', slug: { startsWith: 'eur' } },
+        select: { slug: true }
+      })
+    })
+
+    it('skips the slugs of the team’s live journeys', async () => {
+      prismaMock.campaignRegion.findMany.mockResolvedValue([
+        { slug: 'eur-2' }
+      ] as any)
+      prismaMock.journey.findMany.mockResolvedValue([{ slug: 'eur' }] as any)
+      await expect(generateUniqueRegionSlug(campaign, 'EUR')).resolves.toBe(
+        'eur-3'
+      )
+      expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          teamId: 'teamId',
+          slug: { startsWith: 'eur' },
+          deletedAt: null
+        },
         select: { slug: true }
       })
     })
@@ -456,7 +603,7 @@ describe('campaign validation', () => {
         expect(REGION_RESERVED_SLUGS.has(reserved)).toBe(true)
       }
       await expectBadUserInputAsync(
-        generateUniqueRegionSlug('campaignId', 'Embed'),
+        generateUniqueRegionSlug(campaign, 'Embed'),
         'slug'
       )
       await expectBadUserInputAsync(

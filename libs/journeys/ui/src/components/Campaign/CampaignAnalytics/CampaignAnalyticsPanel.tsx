@@ -104,7 +104,12 @@ function Tile({ testId, label, value, caption }: TileProps): ReactElement {
       <Typography
         variant="overline"
         component="p"
-        sx={{ color: 'var(--campaign-band-muted)', mb: 0 }}
+        data-testid={`${testId}Label`}
+        sx={{
+          color: 'var(--campaign-band-muted)',
+          mb: 0,
+          whiteSpace: 'pre-line'
+        }}
       >
         {label}
       </Typography>

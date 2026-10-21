@@ -8,12 +8,13 @@ import { CampaignActionInterface } from '../action/campaignAction'
 import { CampaignChildPlacement } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 
 export const CampaignButtonBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignButtonBlock',
   interfaces: [CampaignBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignButtonBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignButtonBlock'),
   description:
     'The campaign call-to-action block: a translated label, core button variant and size, optional alignment and two hex colours, and at most one CampaignAction. Corner shape belongs to the Campaign Theme.',
   fields: (t) => ({

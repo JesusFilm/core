@@ -24,6 +24,9 @@ export const env = {
   get INTEGRATION_ACCESS_KEY_ENCRYPTION_SECRET(): string {
     return 'test-secret'
   },
+  get INTEROP_TOKEN(): string {
+    return 'test-interop-token'
+  },
   get JOURNEYS_REVALIDATE_ACCESS_TOKEN(): string {
     return 'test-token'
   },
@@ -35,6 +38,9 @@ export const env = {
   },
   get PLAUSIBLE_URL(): string {
     return process.env.PLAUSIBLE_URL ?? 'https://example.com'
+  },
+  get SERVICE_VERSION(): string {
+    return 'test-version'
   },
   // The embed allowlist (single env-sourced list). Includes the built-in
   // provider hosts the normalizers expect plus `loom.com`, a host with no

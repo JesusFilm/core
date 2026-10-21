@@ -32,13 +32,12 @@ export function isValidCampaignSlug(slug: string): boolean {
 }
 
 function isNotFound(error: unknown): boolean {
-  if (CombinedGraphQLErrors.is(error))
-    return error.errors.some(
+  return (
+    CombinedGraphQLErrors.is(error) &&
+    error.errors.some(
       (graphQLError) => graphQLError.extensions?.code === 'NOT_FOUND'
     )
-  const networkError = (error as { networkError?: { statusCode?: number } })
-    .networkError
-  return networkError?.statusCode === 400
+  )
 }
 
 async function queryCampaignPublic(

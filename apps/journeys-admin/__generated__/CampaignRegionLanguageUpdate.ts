@@ -82,14 +82,14 @@ export interface CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate {
   language: CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate_language;
   journey: CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate_journey | null;
   /**
-   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   * The Campaign QR Code, present from the moment a journey is linked and kept across an unlink; its short link is the Share Link.
    */
   qrCode: CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate_qrCode | null;
 }
 
 export interface CampaignRegionLanguageUpdate {
   /**
-   * Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.
+   * Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
@@ -98,6 +98,7 @@ export interface CampaignRegionLanguageUpdate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".
    * - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignRegionLanguageUpdate: CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate;
 }

@@ -9,10 +9,16 @@ import {
   prisma
 } from '@core/prisma/journeys/client'
 
+import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
-import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
-import { CampaignTextSource } from '../enums'
-import { TranslationsJson } from '../translatedValue'
+import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import {
+  CampaignTextField,
+  CampaignTextSource,
+  CampaignTranslationFilter,
+  CampaignTranslationGroup
+} from '../enums'
+import { parseTranslations } from '../translatedValue'
 import { badUserInput } from '../validation'
 
 import {
@@ -20,7 +26,6 @@ import {
   CAMPAIGN_REGION_TEXT_FIELDS,
   CAMPAIGN_STRING_TEXT_FIELDS,
   CAMPAIGN_TITLE_TEXT_FIELDS,
-  CampaignTextField,
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
@@ -37,24 +42,6 @@ export type CampaignTranslationGroupValue =
   | 'landing'
   | 'region'
   | 'regions'
-
-export const CampaignTranslationFilter = builder.enumType(
-  'CampaignTranslationFilter',
-  {
-    values: ['all', 'needsReview', 'missing', 'edited'] as const,
-    description:
-      'Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).'
-  }
-)
-
-export const CampaignTranslationGroup = builder.enumType(
-  'CampaignTranslationGroup',
-  {
-    values: ['interface', 'landing', 'region', 'regions'] as const,
-    description:
-      'The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).'
-  }
-)
 
 export interface CampaignTranslationTargetShape {
   typename: string
@@ -161,13 +148,7 @@ function entryOf(
   translations: unknown,
   languageId: string
 ): { value: string; source: 'human' | 'machine'; uncertain: boolean } | null {
-  if (
-    translations == null ||
-    typeof translations !== 'object' ||
-    Array.isArray(translations)
-  )
-    return null
-  const entry = (translations as TranslationsJson)[languageId]
+  const entry = parseTranslations(translations)[languageId]
   if (entry == null || typeof entry.value !== 'string' || entry.value === '')
     return null
   return {
@@ -220,18 +201,25 @@ function byParentOrder(
 }
 
 /**
- * Sections in order, each followed by everything under it in order, all the
- * way down: a section's extras, and through a Columns section its columns,
- * the sections in them and their extras. A block whose parent is not live
- * (deleting a section only stamps the section) sits on no visible page, so
- * it is dropped rather than promoted to a section.
+ * Sections in order, depth first: each block followed by its children in
+ * order, each child by its own children (a Columns section → its Column Slots
+ * → the section in each slot → that section's extras). A block whose parent is
+ * not live (deleting a section only stamps the section) sits on no visible
+ * page, so it is dropped rather than promoted to a section.
  */
 function inReadingOrder(blocks: CampaignBlock[]): CampaignBlock[] {
-  const childrenOf = (id: string): CampaignBlock[] =>
-    blocks.filter((block) => block.parentBlockId === id).sort(byParentOrder)
+  const childrenOf = new Map<string, CampaignBlock[]>()
+  for (const block of blocks) {
+    if (block.parentBlockId == null) continue
+    const siblings = childrenOf.get(block.parentBlockId) ?? []
+    siblings.push(block)
+    childrenOf.set(block.parentBlockId, siblings)
+  }
   const withDescendants = (block: CampaignBlock): CampaignBlock[] => [
     block,
-    ...childrenOf(block.id).flatMap(withDescendants)
+    ...[...(childrenOf.get(block.id) ?? [])]
+      .sort(byParentOrder)
+      .flatMap(withDescendants)
   ]
   return blocks
     .filter((block) => block.parentBlockId == null)
@@ -292,7 +280,8 @@ function regionSource(region: CampaignRegion): RowSource {
  * the Translations view's order: Interface (the campaign title, Campaign
  * Strings, then header and footer text), Landing page, Region page, then each
  * Region's name followed by its Region Lines. Blocks are read in section
- * order, each section followed by its extras.
+ * order, each section followed by everything nested in it (extras, and the
+ * sections in a Columns section's slots with their own extras).
  */
 export function campaignTranslationRows(
   campaign: Pick<TranslationsCampaign, 'id' | 'pages'> & {

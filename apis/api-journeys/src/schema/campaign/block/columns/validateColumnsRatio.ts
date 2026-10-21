@@ -1,5 +1,3 @@
-export const CAMPAIGN_COLUMNS_RATIOS = [
-  'equal',
-  'wideLeft',
-  'wideRight'
-] as const
+import { CampaignColumnsRatio } from '@core/prisma/journeys/client'
+
+export const CAMPAIGN_COLUMNS_RATIOS = Object.values(CampaignColumnsRatio)

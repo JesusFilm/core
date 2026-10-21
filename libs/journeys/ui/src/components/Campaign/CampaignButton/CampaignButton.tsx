@@ -78,7 +78,12 @@ export function CampaignButton({
           tabIndex={-1}
           disableRipple
           data-testid="CampaignButton"
-          sx={{ ...colorSx, pointerEvents: 'none', cursor: 'default' }}
+          sx={{
+            ...colorSx,
+            whiteSpace: 'pre-line',
+            pointerEvents: 'none',
+            cursor: 'default'
+          }}
         >
           {block.label}
         </MuiButton>
@@ -91,7 +96,7 @@ export function CampaignButton({
           variant={variant}
           size={size}
           data-testid="CampaignButton"
-          sx={colorSx}
+          sx={{ ...colorSx, whiteSpace: 'pre-line' }}
         >
           {block.label}
         </MuiButton>

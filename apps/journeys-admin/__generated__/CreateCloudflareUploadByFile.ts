@@ -19,5 +19,4 @@ export interface CreateCloudflareUploadByFile {
 
 export interface CreateCloudflareUploadByFileVariables {
   journeyId?: string | null;
-  teamId?: string | null;
 }

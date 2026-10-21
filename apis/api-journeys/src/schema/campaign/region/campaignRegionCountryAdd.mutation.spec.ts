@@ -132,6 +132,61 @@ describe('campaignRegionCountryAdd', () => {
     expect(prismaMock.campaignRegionCountry.create).not.toHaveBeenCalled()
   })
 
+  describe('inside the transaction', () => {
+    function committedRows(countryIds: string[]): void {
+      prismaMock.campaignRegionCountry.findMany
+        .mockResolvedValueOnce([countryRow('DE', 0)])
+        .mockResolvedValueOnce(
+          countryIds.map((countryId, order) => countryRow(countryId, order))
+        )
+    }
+
+    it('takes the structure lock before it re-reads the countries, and appends after them', async () => {
+      committedRows(['DE', 'IT'])
+
+      const result = await add('FR')
+
+      expect(result.data.campaignRegionCountryAdd.order).toBe(2)
+      const lock = prismaMock.$queryRaw.mock.calls[0]
+      expect((lock[0] as unknown as string[]).join('?')).toContain(
+        'pg_advisory_xact_lock(hashtext('
+      )
+      expect(lock[1]).toBe('campaign:campaignId')
+      expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+        prismaMock.campaignRegionCountry.findMany.mock.invocationCallOrder[1]
+      )
+      expect(prismaMock.campaignRegionCountry.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { regionId: 'eurRegionId', countryId: 'FR', order: 2 }
+        })
+      )
+    })
+
+    it('rejects a country a concurrent add committed after the first read (BAD_USER_INPUT, not a 500)', async () => {
+      committedRows(['DE', 'FR'])
+
+      const result = await add('FR')
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'countryId'
+      })
+      expect(prismaMock.campaignRegionCountry.create).not.toHaveBeenCalled()
+    })
+
+    it('caps the region at 250 countries on the committed rows', async () => {
+      committedRows(Array.from({ length: 250 }, (_, index) => `C${index}`))
+
+      const result = await add('FR')
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'countryId'
+      })
+      expect(prismaMock.campaignRegionCountry.create).not.toHaveBeenCalled()
+    })
+  })
+
   it('throws FORBIDDEN for a caller outside the team', async () => {
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(

@@ -1,46 +1,11 @@
-import { CampaignSwitcherVariant as PrismaCampaignSwitcherVariant } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignSwitcherVariant } from '../../enums'
+import { CAMPAIGN_SWITCHER_VARIANTS } from '../../enums'
 import { assertEnum } from '../../validation'
 import { CampaignRegionSwitcherBlock } from '../campaignRegionSwitcherBlock'
-import {
-  SECTION_CREATE_ERRORS,
-  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
-  createSection
-} from '../createSection'
+import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
 import { validateSectionText } from '../validateSectionText'
 
-const SWITCHER_VARIANTS = Object.values(PrismaCampaignSwitcherVariant)
-
-export const CampaignRegionSwitcherBlockCreateInput = builder.inputType(
-  'CampaignRegionSwitcherBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({ required: true, description: 'A page of the campaign.' }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      variant: t.field({
-        type: CampaignSwitcherVariant,
-        required: false,
-        description: 'Defaults to cards.'
-      })
-    })
-  }
-)
+import { CampaignRegionSwitcherBlockCreateInput } from './inputs'
 
 builder.mutationField('campaignRegionSwitcherBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -64,7 +29,7 @@ builder.mutationField('campaignRegionSwitcherBlockCreate', (t) =>
             switcherVariant: assertEnum(
               input.variant,
               'variant',
-              SWITCHER_VARIANTS
+              CAMPAIGN_SWITCHER_VARIANTS
             )
           })
         })

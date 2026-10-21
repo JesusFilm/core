@@ -165,12 +165,11 @@ describe('InlineText', () => {
   })
 
   describe('autoWidth', () => {
-    it('sizes the input from a hidden copy of the text and keeps it single line', () => {
+    it('sizes the input from a hidden copy of the text and keeps it multi-line', () => {
       renderText({ autoWidth: true })
 
       const input = screen.getByRole('textbox', { name: 'Title' })
-      expect(input.tagName).toBe('INPUT')
-      expect(input).toHaveAttribute('size', '1')
+      expect(input.tagName).toBe('TEXTAREA')
       expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent(
         'Share the story of Outreach'
       )

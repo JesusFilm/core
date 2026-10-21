@@ -1,25 +1,13 @@
 import { builder } from '../../../builder'
 import { CampaignFooterBlock } from '../campaignFooterBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 
-export const CampaignFooterBlockUpdateInput = builder.inputType(
-  'CampaignFooterBlockUpdateInput',
-  {
-    description:
-      'The footer’s Section Background and colour overrides: the shared section fields and nothing else.',
-    fields: (t) => ({
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignFooterBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignFooterBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -36,7 +24,7 @@ builder.mutationField('campaignFooterBlockUpdate', (t) =>
         context.user,
         'CampaignFooterBlock'
       )
-      return await updateBlock(block, await validateSectionStyle(input, block))
+      return await updateBlock(block, sectionStyleColumns(input))
     }
   })
 )

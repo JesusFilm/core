@@ -1,32 +1,14 @@
 import { builder } from '../../../builder'
 import { CampaignRegionShareBlock } from '../campaignRegionShareBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignRegionShareBlockUpdateInput = builder.inputType(
-  'CampaignRegionShareBlockUpdateInput',
-  {
-    fields: (t) => ({
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      intro: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignRegionShareBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignRegionShareBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -48,7 +30,7 @@ builder.mutationField('campaignRegionShareBlockUpdate', (t) =>
       )
       return await updateBlock(block, {
         ...validateSectionText(input, ['title', 'intro']),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })

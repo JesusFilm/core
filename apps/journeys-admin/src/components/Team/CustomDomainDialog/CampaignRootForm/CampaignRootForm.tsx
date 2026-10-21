@@ -51,8 +51,10 @@ export const CUSTOM_DOMAIN_CAMPAIGN_UPDATE = gql`
 /**
  * The Campaign Root select of the team's custom domain. Managers only: the
  * dialog does not render it for members, because `customDomainUpdate` of a
- * Campaign Root is a Manage action. Picking a campaign serves it at the
- * domain root; the clear option puts the domain back to journey behaviour.
+ * Campaign Root is a Manage action. Also behind the `campaignBuilder` flag:
+ * with it off the dialog does not render the form, so its queries never run.
+ * Picking a campaign serves it at the domain root; the clear option puts the
+ * domain back to journey behaviour.
  */
 export function CampaignRootForm({
   customDomain

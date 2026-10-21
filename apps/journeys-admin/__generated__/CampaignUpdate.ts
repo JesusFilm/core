@@ -37,6 +37,9 @@ export interface CampaignUpdate {
    * - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
    * - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
    * - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
+   * 
+   * A slug change on a published campaign queues on-demand revalidation of its pages under the old and the new slug.
    */
   campaignUpdate: CampaignUpdate_campaignUpdate;
 }

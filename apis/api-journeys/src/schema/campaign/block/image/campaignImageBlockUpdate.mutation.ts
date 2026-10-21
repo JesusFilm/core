@@ -1,10 +1,10 @@
 import { builder } from '../../../builder'
 import { CampaignImageBlock } from '../campaignImageBlock'
-import { SECTION_STYLE_ERRORS } from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 
 import { CampaignImageBlockUpdateInput } from './inputs'
@@ -25,7 +25,7 @@ builder.mutationField('campaignImageBlockUpdate', (t) =>
         context.user,
         'CampaignImageBlock'
       )
-      const style = await validateSectionStyle(input, block)
+      const style = sectionStyleColumns(input)
       const data = await validateImageInput(input)
       return await updateBlock(block, { ...style, ...data })
     }

@@ -10,7 +10,7 @@ import { CampaignBackgroundKind, CampaignBackgroundOverlay } from "./globalTypes
 // ====================================================
 
 export interface CampaignSectionStyleFields {
-  __typename: "CampaignAnalyticsBlock" | "CampaignColumnsBlock" | "CampaignFeaturedMediaBlock" | "CampaignFooterBlock" | "CampaignHeaderBlock" | "CampaignHeroBlock" | "CampaignImageBlock" | "CampaignJourneyListBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRegionSwitcherBlock" | "CampaignRichTextBlock" | "CampaignVideoCarouselBlock";
+  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignHeroBlock" | "CampaignRegionSwitcherBlock" | "CampaignVideoCarouselBlock" | "CampaignJourneyListBlock" | "CampaignAnalyticsBlock" | "CampaignRegionHeaderBlock" | "CampaignRegionShareBlock" | "CampaignRichTextBlock" | "CampaignColumnsBlock" | "CampaignImageBlock" | "CampaignFeaturedMediaBlock";
   id: string;
   backgroundKind: CampaignBackgroundKind;
   /**

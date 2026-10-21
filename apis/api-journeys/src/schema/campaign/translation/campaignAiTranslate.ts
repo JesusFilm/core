@@ -11,13 +11,15 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 import { User } from '@core/yoga/firebaseClient'
 
 import { env } from '../../../env'
+import { Action } from '../../../lib/auth/ability'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { Action, campaignAcl } from '../campaign.acl'
+import { campaignAcl } from '../campaign.acl'
+import { conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
-import { TranslationsJson } from '../translatedValue'
+import { TranslationsJson, parseTranslations } from '../translatedValue'
 import { badUserInput } from '../validation'
 
 import {
@@ -30,6 +32,11 @@ import {
   campaignTranslationRows
 } from './campaignTranslations.query'
 import { CampaignAiTranslateInput } from './inputs'
+import {
+  TranslationRunLock,
+  acquireTranslationRunLock
+} from './translationRunLock'
+import { TRANSLATION_TARGETS, TranslationTargetKind } from './translationTarget'
 
 type CampaignAiTranslateMode = 'all' | 'missing'
 
@@ -184,69 +191,40 @@ function withinCap(
   return characters.slice(0, cap).join('').trim()
 }
 
-type TargetKind = 'block' | 'region' | 'string' | 'campaign'
-
-function kindOf(row: CampaignTranslationRowShape): TargetKind {
+function kindOf(row: CampaignTranslationRowShape): TranslationTargetKind {
   if (row.target.blockId != null) return 'block'
   if (row.target.regionId != null) return 'region'
   if (row.target.stringId != null) return 'string'
   return 'campaign'
 }
 
-async function readTarget(
+/**
+ * Lock the batch's target rows in the default-language swap's order: blocks,
+ * regions, then strings, each by id, then the campaign row. Block edits and
+ * `campaignTranslationSet` lock their one row and then the campaign, so no
+ * order of these writers can deadlock.
+ */
+async function lockBatchTargets(
   tx: Prisma.TransactionClient,
-  kind: TargetKind,
-  id: string
-): Promise<Record<string, unknown> | null> {
-  switch (kind) {
-    case 'block':
-      return await tx.campaignBlock.findFirst({
-        where: { id, deletedAt: null }
-      })
-    case 'region':
-      return await tx.campaignRegion.findUnique({ where: { id } })
-    case 'string':
-      return await tx.campaignString.findUnique({ where: { id } })
-    case 'campaign':
-      return await tx.campaign.findUnique({ where: { id } })
-  }
-}
-
-async function writeTarget(
-  tx: Prisma.TransactionClient,
-  kind: TargetKind,
-  id: string,
-  data: Record<string, TranslationsJson>
+  campaignId: string,
+  targetIds: Map<string, TranslationTargetKind>
 ): Promise<void> {
-  switch (kind) {
-    case 'block':
-      await tx.campaignBlock.update({ where: { id }, data })
-      break
-    case 'region':
-      await tx.campaignRegion.update({ where: { id }, data })
-      break
-    case 'string':
-      await tx.campaignString.update({ where: { id }, data })
-      break
-    case 'campaign':
-      await tx.campaign.update({ where: { id }, data })
-      break
+  for (const kind of ['block', 'region', 'string'] as const) {
+    const ids = [...targetIds].filter(([, k]) => k === kind).map(([id]) => id)
+    if (ids.length > 0) await TRANSLATION_TARGETS[kind].lock(tx, ids)
   }
-}
-
-function currentTranslations(value: unknown): TranslationsJson {
-  return value != null && typeof value === 'object' && !Array.isArray(value)
-    ? { ...(value as TranslationsJson) }
-    : {}
+  await lockCampaign(tx, campaignId)
 }
 
 /**
  * Write the batch's machine translations as `{ value, source: machine }`
  * (`uncertain: true` on a line the model flagged as a guess) into
- * `<field>Translations[languageId]`. Each target is re-read inside the
- * transaction so nothing a person wrote, or another language's entry, since
- * the run began is lost: `missing` only fills an absent entry, `all` replaces
- * `machine` entries, and neither touches a `human` one.
+ * `<field>Translations[languageId]`. The targets and the campaign are locked
+ * and each target re-read under the lock, so nothing a person wrote, or
+ * another language's entry, since the run began is lost: `missing` only
+ * fills an absent entry, `all` replaces `machine` entries, and neither
+ * touches a `human` one. When the language has since become the default or
+ * left the campaign, the batch writes nothing.
  */
 async function writeBatch({
   campaignId,
@@ -270,17 +248,38 @@ async function writeBatch({
   }
   if (rowsByTarget.size === 0) return 0
 
+  const kinds = new Map(
+    [...rowsByTarget].map(([targetId, rows]) => [targetId, kindOf(rows[0])])
+  )
   return await prisma.$transaction(async (tx) => {
+    await lockBatchTargets(tx, campaignId, kinds)
+    const campaign = await tx.campaign.findUnique({
+      where: { id: campaignId },
+      select: { defaultLanguageId: true, languages: true }
+    })
+    if (
+      campaign == null ||
+      campaign.defaultLanguageId === languageId ||
+      !campaign.languages.some((language) => language.languageId === languageId)
+    ) {
+      logger.warn(
+        { campaignId, languageId, batch: batch.label },
+        'Language is no longer a non-default campaign language; batch skipped'
+      )
+      return 0
+    }
+
     let written = 0
     for (const [targetId, rows] of rowsByTarget) {
-      const kind = kindOf(rows[0])
-      const record = await readTarget(tx, kind, targetId)
+      const model =
+        TRANSLATION_TARGETS[kinds.get(targetId) as TranslationTargetKind]
+      const record = await model.find(tx, targetId)
       if (record == null) continue
 
       const data: Record<string, TranslationsJson> = {}
       for (const row of rows) {
         const column = translationsColumn(row.field)
-        const json = data[column] ?? currentTranslations(record[column])
+        const json = data[column] ?? parseTranslations(record[column])
         const existing = json[languageId]
         const hasEntry = existing != null && existing.value !== ''
         if (hasEntry && (mode === 'missing' || existing.source === 'human'))
@@ -299,8 +298,7 @@ async function writeBatch({
         data[column] = json
         written++
       }
-      if (Object.keys(data).length > 0)
-        await writeTarget(tx, kind, targetId, data)
+      if (Object.keys(data).length > 0) await model.update(tx, targetId, data)
     }
     if (written > 0) await touchCampaign(tx, campaignId)
     return written
@@ -390,7 +388,13 @@ export async function* campaignAiTranslate(
   user: User,
   cancelSignal?: AbortSignal
 ): AsyncGenerator<CampaignAiTranslateProgress> {
+  let runLock: TranslationRunLock | null = null
   try {
+    // Load-bearing despite the `User` type: the builder does not set
+    // `scopeAuth.authorizeOnSubscribe`, so `withAuth({ isAuthenticated })`
+    // guards only each event's `resolve`, not `subscribe`. An anonymous
+    // subscription reaches this generator with no user, and without this
+    // check it would start a run before any event is refused.
     if (user == null)
       throw new GraphQLError('Not authenticated', {
         extensions: { code: 'UNAUTHENTICATED' }
@@ -434,6 +438,23 @@ export async function* campaignAiTranslate(
     if (sourceLanguageName == null || targetLanguageName == null)
       throw badUserInput(
         'languageId must be an existing language',
+        'languageId'
+      )
+
+    try {
+      runLock = await acquireTranslationRunLock(campaignId, languageId)
+    } catch (error) {
+      logger.error(
+        { error, campaignId, languageId },
+        'Translation run lock unavailable'
+      )
+      throw new GraphQLError(
+        'Translation is temporarily unavailable. Please try again.'
+      )
+    }
+    if (runLock == null)
+      throw conflict(
+        'a translation into this language is already running',
         'languageId'
       )
 
@@ -483,6 +504,7 @@ export async function* campaignAiTranslate(
           'Campaign translation batch failed'
         )
       }
+      await runLock.extend()
       yield {
         progress: 10 + ((index + 1) / batches.length) * 85,
         message: `Translated ${index + 1} of ${batches.length} parts`,
@@ -513,13 +535,15 @@ export async function* campaignAiTranslate(
         'Translation timed out while contacting the AI service. Please try again.'
       )
     throw new GraphQLError('Translation failed')
+  } finally {
+    await runLock?.release()
   }
 }
 
 builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     description:
-      'Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.',
+      'Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.\n- CONFLICT (field: `languageId`): another run into the same campaign language is in flight.\n- `Translation is temporarily unavailable. Please try again.` (no code): the one-run check could not reach Redis; nothing is translated.',
     type: CampaignAiTranslateProgressRef,
     nullable: false,
     args: {

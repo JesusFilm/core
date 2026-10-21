@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -13,17 +12,22 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { Action } from '../../../lib/auth/ability'
 import {
-  Action,
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
+import { conflict, forbidden, notFound } from '../errors'
 import {
+  CAMPAIGN_BLOCKS_MAX,
+  assertClientIds,
   assertEnum,
   assertEnumOrNull,
   assertHexOrNull,
-  badUserInput
+  assertNotNull,
+  badUserInput,
+  isUniqueViolation
 } from '../validation'
 
 /**
@@ -143,21 +147,6 @@ export function isCampaignSlotDisallowedTypename(typename: string): boolean {
   )
 }
 
-function notFound(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
-}
-
-function forbidden(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } })
-}
-
-/** A well-formed request refused by the current state (PRD §15). */
-export function conflict(message: string, field: string): GraphQLError {
-  return new GraphQLError(message, {
-    extensions: { code: 'CONFLICT', field }
-  })
-}
-
 /** Block create is campaign Update on the campaign the block will belong to. */
 export async function authorizeBlockCreate(
   campaignId: string,
@@ -246,7 +235,9 @@ export const CAMPAIGN_CAROUSEL_TYPENAME = 'CampaignVideoCarouselBlock'
 
 /**
  * A child block's parent is a section or chrome block of the same campaign,
- * not soft-deleted (`BAD_USER_INPUT` / `parentBlockId`). The child is a
+ * not soft-deleted and not an owned block (`parentOrder: null`: a cover, logo
+ * or Media Slot image has a host typename but never hosts) (`BAD_USER_INPUT` /
+ * `parentBlockId`). The child is a
  * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
  * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
  * else (`BAD_USER_INPUT` / `typename`). Returns the parent so create can
@@ -264,7 +255,12 @@ export async function validateParentBlock(
       'typename'
     )
   const parent = await prisma.campaignBlock.findFirst({
-    where: { id: parentBlockId, campaignId, deletedAt: null }
+    where: {
+      id: parentBlockId,
+      campaignId,
+      deletedAt: null,
+      parentOrder: { not: null }
+    }
   })
   if (parent == null || !isCampaignHostTypename(parent.typename))
     throw badUserInput(
@@ -302,9 +298,7 @@ export function placementUpdate(
       'placement applies to section children only',
       'placement'
     )
-  if (placement === null)
-    throw badUserInput('placement cannot be null', 'placement')
-  return { placement: assertPlacement(placement) }
+  return { placement: assertPlacement(assertNotNull(placement, 'placement')) }
 }
 
 /** The columns that decide which blocks are a block's siblings. */
@@ -369,12 +363,30 @@ export async function reorderSiblings(
  * Campaign lock. A transaction that locks the Campaign row up front must take
  * the rows it will write first (`lockCampaignTextRows`,
  * `lockCampaignLanguageRows`) or it can deadlock with such an edit.
+ *
+ * The rule: structure → advisory lock first (`lockCampaignStructure`); rows →
+ * Campaign row last. A transaction that counts or renumbers siblings or writes
+ * a slot column takes the advisory lock, never this one.
  */
 export async function lockCampaign(
   tx: Prisma.TransactionClient,
   campaignId: string
 ): Promise<void> {
   await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ${campaignId} FOR UPDATE`
+}
+
+/**
+ * Serialise the structural edits of one campaign (create, reorder, delete,
+ * restore, duplicate, slot writes) until `tx` ends: take it as the first
+ * statement, then read the siblings, owner or slot occupant. An advisory lock
+ * never conflicts with a row lock, so these edits queue behind one another
+ * and no other transaction changes its lock order.
+ */
+export async function lockCampaignStructure(
+  tx: Prisma.TransactionClient,
+  campaignId: string
+): Promise<void> {
+  await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${'campaign:' + campaignId}))`
 }
 
 /**
@@ -389,6 +401,28 @@ export async function lockCampaignTextRows(
   await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
   await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
   await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE "campaignId" = ${campaignId} ORDER BY id FOR UPDATE`
+}
+
+/**
+ * Refuse an add that would take the campaign past `CAMPAIGN_BLOCKS_MAX` live
+ * blocks, Region Lines and owned blocks included (`BAD_USER_INPUT` /
+ * `campaignId`). `adding` is the number of rows the add brings to life: one
+ * for a create, the subtree for a duplicate or restore. Run it in `tx` after
+ * `lockCampaignStructure`, so concurrent adds are counted one after another.
+ */
+export async function assertCampaignBlockRoom(
+  tx: Prisma.TransactionClient,
+  campaignId: string,
+  adding: number
+): Promise<void> {
+  const live = await tx.campaignBlock.count({
+    where: { campaignId, deletedAt: null }
+  })
+  if (live + adding > CAMPAIGN_BLOCKS_MAX)
+    throw badUserInput(
+      `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`,
+      'campaignId'
+    )
 }
 
 /** Lock the campaign's language rows (in id order) before `lockCampaign`. */
@@ -410,6 +444,41 @@ export async function touchCampaign(
   })
 }
 
+/**
+ * Run a block create whose ids the client chose, by input field. A unique
+ * violation on `CampaignBlock.id` (one of them is already a block's id, live
+ * or deleted) is `BAD_USER_INPUT` "<field> is already taken" on the field
+ * that holds it, not a 500.
+ */
+export async function withClientIds<T>(
+  clientIds: Record<string, Array<string | null | undefined>>,
+  create: () => Promise<T>
+): Promise<T> {
+  try {
+    return await create()
+  } catch (error) {
+    if (!isUniqueViolation(error, 'id')) throw error
+    const given = Object.entries(clientIds)
+      .map(([field, ids]) => ({
+        field,
+        ids: ids.filter((id): id is string => id != null)
+      }))
+      .filter(({ ids }) => ids.length > 0)
+    if (given.length === 0) throw error
+    let taken = given[0]
+    if (given.length > 1) {
+      const rows = await prisma.campaignBlock.findMany({
+        where: { id: { in: given.flatMap(({ ids }) => ids) } },
+        select: { id: true }
+      })
+      const takenIds = new Set(rows.map((row) => row.id))
+      taken =
+        given.find(({ ids }) => ids.some((id) => takenIds.has(id))) ?? taken
+    }
+    throw badUserInput(`${taken.field} is already taken`, taken.field)
+  }
+}
+
 export type CampaignChildCreateData = Omit<
   Prisma.CampaignBlockUncheckedCreateInput,
   'campaignId' | 'pageId' | 'regionId' | 'parentBlockId' | 'parentOrder'
@@ -425,6 +494,17 @@ export async function createChildBlock(
   parent: CampaignBlock,
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
+  await lockCampaignStructure(tx, parent.campaignId)
+  return await insertChildBlock(tx, parent, data)
+}
+
+/** `createChildBlock` for a caller that already holds the structure lock. */
+async function insertChildBlock(
+  tx: Prisma.TransactionClient,
+  parent: CampaignBlock,
+  data: CampaignChildCreateData
+): Promise<CampaignBlockWithAction> {
+  await assertCampaignBlockRoom(tx, parent.campaignId, 1)
   const siblings = await getSiblings(
     { ...parent, parentBlockId: parent.id },
     tx
@@ -445,16 +525,19 @@ export async function createChildBlock(
 }
 
 /**
- * Write validated columns to a block and bump its campaign. `before` runs
- * first in the same transaction (the Media Slot swap uses it).
+ * Write validated columns to a block and bump its campaign. A slot column in
+ * `data` (`coverBlockId`, `logoBlockId`, `mediaBlockId`) is a swap: under the
+ * structure lock the owner is re-read, the target validated against it, and
+ * the outgoing block soft-deleted and the incoming one restored, before the
+ * column itself is written.
  */
 export async function updateBlock(
   block: Pick<CampaignBlock, 'id' | 'campaignId'>,
-  data: Prisma.CampaignBlockUncheckedUpdateInput,
-  before?: (tx: Prisma.TransactionClient) => Promise<void>
+  data: Prisma.CampaignBlockUncheckedUpdateInput
 ): Promise<CampaignBlockWithAction> {
+  const slots = slotTargets(data)
   return await prisma.$transaction(async (tx) => {
-    if (before != null) await before(tx)
+    if (slots.length > 0) await swapSlots(tx, block, slots)
     const updated = await tx.campaignBlock.update({
       where: { id: block.id },
       data,
@@ -476,6 +559,7 @@ export async function removeBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    await lockCampaignStructure(tx, block.campaignId)
     const live = await tx.campaignBlock.findMany({
       where: { campaignId: block.campaignId, deletedAt: null },
       include: { action: true }
@@ -510,6 +594,22 @@ function getDescendants(
 }
 
 /**
+ * A block comes back only under a live parent: a section deleted since (the
+ * block stamped with it, or deleted on its own first) is restored first
+ * (`CONFLICT` / `id`).
+ */
+async function assertParentLiveForRestore(
+  block: CampaignBlock,
+  tx: Prisma.TransactionClient
+): Promise<void> {
+  if (block.parentBlockId == null) return
+  const deletedParents = await tx.campaignBlock.count({
+    where: { id: block.parentBlockId, deletedAt: { not: null } }
+  })
+  if (deletedParents > 0) throw conflict('restore the section first', 'id')
+}
+
+/**
  * A section binned from a column slot comes back only while the slot is still
  * empty: a slot holds one section, so restoring beside another occupant
  * (the author changed the type or added a new one since) is `CONFLICT` /
@@ -540,7 +640,17 @@ export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    await lockCampaignStructure(tx, block.campaignId)
+    await assertParentLiveForRestore(block, tx)
     await assertSlotFreeForRestore(block, tx)
+    if (block.deletedAt != null)
+      await assertCampaignBlockRoom(
+        tx,
+        block.campaignId,
+        await tx.campaignBlock.count({
+          where: { campaignId: block.campaignId, deletedAt: block.deletedAt }
+        })
+      )
     if (block.deletedAt != null)
       await tx.campaignBlock.updateMany({
         where: {
@@ -690,8 +800,10 @@ export async function createTopLevelBlock(
 ): Promise<CampaignBlockWithAction> {
   assertTopLevelScope(data.typename, scope)
   assertParentOrder(parentOrder)
+  await lockCampaignStructure(tx, scope.campaignId)
   if (isCampaignChromeTypename(data.typename))
     await assertChromeSingleton(tx, scope.campaignId, data.typename)
+  await assertCampaignBlockRoom(tx, scope.campaignId, 1)
   const siblings = await getSiblings({ ...scope, parentBlockId: null }, tx)
   const created = await tx.campaignBlock.create({
     data: {
@@ -803,6 +915,7 @@ export async function reorderBlock(
       'placement'
     )
   return await prisma.$transaction(async (tx) => {
+    await lockCampaignStructure(tx, block.campaignId)
     if (nextPlacement != null && nextPlacement !== block.placement)
       await tx.campaignBlock.update({
         where: { id: block.id },
@@ -907,7 +1020,22 @@ export async function duplicateBlock(
 ): Promise<CampaignBlockWithAction[]> {
   if (block.parentOrder == null)
     throw conflict('an owned block cannot be duplicated on its own', 'id')
+  const newIds = assertClientIds(
+    idMap.map((entry) => entry.newId),
+    'idMap'
+  )
+  return await withClientIds(
+    { idMap: newIds },
+    async () => await duplicateSubtree(block, idMap)
+  )
+}
+
+async function duplicateSubtree(
+  block: CampaignBlock,
+  idMap: CampaignBlockIdMap[]
+): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
+    await lockCampaignStructure(tx, block.campaignId)
     const live = await tx.campaignBlock.findMany({
       where: { campaignId: block.campaignId, deletedAt: null },
       orderBy: { parentOrder: 'asc' },
@@ -917,6 +1045,7 @@ export async function duplicateBlock(
     if (parent != null && isCampaignSlotTypename(parent.typename))
       throw conflict('a column slot holds at most one section', 'id')
     const subtree = collectSubtree(block.id, live)
+    await assertCampaignBlockRoom(tx, block.campaignId, subtree.length)
     const ids = new Map<string, string>()
     for (const row of subtree)
       ids.set(
@@ -992,7 +1121,8 @@ export async function duplicateBlock(
  * Create a Columns section with its two Column Slots in `tx`, so the
  * container never exists without them. The slots are rows of their own at
  * `parentOrder` 0 and 1 with the section's scoping copied down;
- * `slotIds` fixes their ids (exactly two) so the editor can show them
+ * `slotIds` fixes their ids (exactly two UUIDs, unlike each other and the
+ * section id) so the editor can show them
  * before the response arrives. Returns the section; the slots are its
  * children.
  */
@@ -1003,12 +1133,20 @@ export async function createColumnsSection(
   parentOrder?: number | null,
   slotIds?: string[] | null
 ): Promise<CampaignBlockWithAction> {
-  if (slotIds != null && slotIds.length !== CAMPAIGN_COLUMN_SLOT_COUNT)
-    throw badUserInput(
-      `slotIds must name exactly ${CAMPAIGN_COLUMN_SLOT_COUNT} slots`,
-      'slotIds'
+  if (slotIds != null) {
+    if (slotIds.length !== CAMPAIGN_COLUMN_SLOT_COUNT)
+      throw badUserInput(
+        `slotIds must name exactly ${CAMPAIGN_COLUMN_SLOT_COUNT} slots`,
+        'slotIds'
+      )
+    assertClientIds(
+      slotIds,
+      'slotIds',
+      data.id != null ? [String(data.id)] : []
     )
+  }
   const section = await createSectionBlock(tx, page, data, parentOrder)
+  await assertCampaignBlockRoom(tx, page.campaignId, CAMPAIGN_COLUMN_SLOT_COUNT)
   for (let slot = 0; slot < CAMPAIGN_COLUMN_SLOT_COUNT; slot++)
     await tx.campaignBlock.create({
       data: {
@@ -1070,13 +1208,14 @@ export async function createSlotChild(
   slot: CampaignBlock,
   data: CampaignBlockCreateData
 ): Promise<CampaignBlockWithAction> {
+  await lockCampaignStructure(tx, slot.campaignId)
   const occupant = await getSiblings({ ...slot, parentBlockId: slot.id }, tx)
   if (occupant.length > 0)
     throw badUserInput(
       'a column slot holds at most one section',
       'parentBlockId'
     )
-  return await createChildBlock(tx, slot, data)
+  return await insertChildBlock(tx, slot, data)
 }
 
 // ---------------------------------------------------------------------------
@@ -1131,18 +1270,13 @@ export function sectionStyleColumns(
   input: SectionStyleInput
 ): SectionStyleColumns {
   const data: SectionStyleColumns = {}
-  if (input.backgroundKind !== undefined) {
-    if (input.backgroundKind == null)
-      throw badUserInput(
-        `backgroundKind must be one of ${CAMPAIGN_BACKGROUND_KINDS.join(', ')}`,
-        'backgroundKind'
-      )
+  const backgroundKind = assertNotNull(input.backgroundKind, 'backgroundKind')
+  if (backgroundKind !== undefined)
     data.backgroundKind = assertEnum(
-      input.backgroundKind,
+      backgroundKind,
       'backgroundKind',
       CAMPAIGN_BACKGROUND_KINDS
     )
-  }
   if (input.backgroundOverlay !== undefined)
     data.backgroundOverlay = assertEnumOrNull(
       input.backgroundOverlay,
@@ -1157,68 +1291,6 @@ export function sectionStyleColumns(
     if (value === undefined) continue
     data[column] = assertHexOrNull(value, column)
   }
-  return data
-}
-
-/** The two slot columns only an image fills; `mediaBlockId` also takes a video (`validateMediaSlotTarget`). */
-export const CAMPAIGN_IMAGE_SLOT_COLUMNS = [
-  'coverBlockId',
-  'logoBlockId'
-] as const
-export type CampaignImageSlotColumn =
-  (typeof CAMPAIGN_IMAGE_SLOT_COLUMNS)[number]
-
-/**
- * A slot column (`coverBlockId`, `logoBlockId`) names a live
- * CampaignImageBlock of the same campaign owned by `ownerBlockId` and
- * nothing else: `BAD_USER_INPUT` with the slot column as `field`. Ownership
- * keeps the unique slot column from colliding with another block's image.
- * Null clears without a lookup.
- */
-export async function validateImageSlotTarget(
-  imageBlockId: string | number | null | undefined,
-  campaignId: string,
-  field: CampaignImageSlotColumn,
-  ownerBlockId: string
-): Promise<string | null> {
-  if (imageBlockId == null) return null
-  const image = await prisma.campaignBlock.findFirst({
-    where: {
-      id: String(imageBlockId),
-      campaignId,
-      parentBlockId: ownerBlockId,
-      typename: CAMPAIGN_IMAGE_TYPENAME,
-      deletedAt: null
-    },
-    select: { id: true }
-  })
-  if (image == null)
-    throw badUserInput(
-      `${field} must be a live image block owned by this block`,
-      field
-    )
-  return image.id
-}
-
-/**
- * The shared section style helper every section and chrome update runs:
- * the pure rules above, then a given cover resolved to a live
- * CampaignImageBlock owned by this section (`BAD_USER_INPUT` /
- * `coverBlockId`). Ownership keeps the unique `coverBlockId` slot from
- * colliding with another section's cover.
- */
-export async function validateSectionStyle(
-  input: SectionStyleInput,
-  block: Pick<CampaignBlock, 'id' | 'campaignId'>
-): Promise<SectionStyleColumns> {
-  const data = sectionStyleColumns(input)
-  if (data.coverBlockId == null) return data
-  await validateImageSlotTarget(
-    data.coverBlockId,
-    block.campaignId,
-    'coverBlockId',
-    block.id
-  )
   return data
 }
 
@@ -1263,7 +1335,7 @@ export function isCampaignMediaOwnerTypename(typename: string): boolean {
 
 /**
  * An owned block's parent is a live section or chrome block of the same
- * campaign (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the owned
+ * campaign, never itself an owned block (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the owned
  * block can copy its scoping down.
  */
 export async function validateImageOwner(
@@ -1271,7 +1343,12 @@ export async function validateImageOwner(
   campaignId: string
 ): Promise<CampaignBlock> {
   const owner = await prisma.campaignBlock.findFirst({
-    where: { id: parentBlockId, campaignId, deletedAt: null }
+    where: {
+      id: parentBlockId,
+      campaignId,
+      deletedAt: null,
+      parentOrder: { not: null }
+    }
   })
   if (owner == null || !isCampaignHostTypename(owner.typename))
     throw badUserInput(
@@ -1327,7 +1404,10 @@ export async function createOwnedBlock(
   column: CampaignOwnedSlotColumn,
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
-  const previousId = owner[column]
+  await lockCampaignStructure(tx, owner.campaignId)
+  const previousId = (
+    await tx.campaignBlock.findUniqueOrThrow({ where: { id: owner.id } })
+  )[column]
   if (previousId != null)
     await tx.campaignBlock.updateMany({
       where: { id: previousId, parentBlockId: owner.id },
@@ -1365,66 +1445,113 @@ export async function createOwnedImageBlock(
   })
 }
 
-/**
- * `mediaBlockId` on a hero or Featured Media update names a
- * CampaignVideoBlock or CampaignImageBlock that section owns — live, or
- * soft-deleted by an earlier swap so undo can bring it back. The section's
- * live background cover and logo are owned too but belong to their own slots,
- * so they are not targets. Anything else is `BAD_USER_INPUT` /
- * `mediaBlockId`. Null empties the slot without a lookup; omitted leaves it
- * alone.
- */
-export async function validateMediaSlotTarget(
-  mediaBlockId: string | number | null | undefined,
-  owner: Pick<
-    CampaignBlock,
-    'id' | 'campaignId' | 'coverBlockId' | 'logoBlockId'
-  >
-): Promise<string | null | undefined> {
-  if (mediaBlockId === undefined) return undefined
-  if (mediaBlockId == null) return null
-  const otherSlotIds = [owner.coverBlockId, owner.logoBlockId].filter(
-    (id): id is string => id != null
-  )
-  const media = await prisma.campaignBlock.findFirst({
-    where: {
-      id: String(mediaBlockId),
-      campaignId: owner.campaignId,
-      parentBlockId: owner.id,
-      ...(otherSlotIds.length > 0 && { NOT: { id: { in: otherSlotIds } } })
-    },
-    select: { id: true, typename: true }
-  })
-  if (
-    media == null ||
-    !(CAMPAIGN_MEDIA_TYPENAMES as readonly string[]).includes(media.typename)
-  )
-    throw badUserInput(
-      'mediaBlockId must be a video or image block owned by this section',
-      'mediaBlockId'
-    )
-  return media.id
+/** The typenames each slot column may point at. */
+const SLOT_TYPENAMES: Record<CampaignOwnedSlotColumn, readonly string[]> = {
+  coverBlockId: [CAMPAIGN_IMAGE_TYPENAME],
+  logoBlockId: [CAMPAIGN_IMAGE_TYPENAME],
+  mediaBlockId: CAMPAIGN_MEDIA_TYPENAMES
+}
+
+const SLOT_TARGET_ERRORS: Record<CampaignOwnedSlotColumn, string> = {
+  coverBlockId: 'coverBlockId must be an image block owned by this block',
+  logoBlockId: 'logoBlockId must be an image block owned by this block',
+  mediaBlockId:
+    'mediaBlockId must be a video or image block owned by this section'
 }
 
 /**
- * Point the Media Slot at `mediaBlockId`, or empty it, inside `tx`, keeping
- * 0 or 1 live block in the slot: the block it held is soft-deleted and the
- * new one restored if an earlier swap deleted it. The owner's column itself
- * is written by the caller's update.
+ * The one slot contract (`coverBlockId`, `logoBlockId`, `mediaBlockId`): the
+ * target is a block `owner` owns of the slot's typename — live, or
+ * soft-deleted by an earlier swap so undo can bring it back — and not the
+ * block another slot column of `owner` currently holds (`BAD_USER_INPUT` with
+ * the slot column as `field`). Null empties the slot without a lookup. Run it
+ * on the owner read under the structure lock.
  */
-export async function swapMediaSlot(
+export async function validateSlotTarget(
   tx: Prisma.TransactionClient,
-  owner: Pick<CampaignBlock, 'mediaBlockId'>,
-  mediaBlockId: string | null
+  column: CampaignOwnedSlotColumn,
+  target: string | null,
+  owner: Pick<CampaignBlock, 'id' | 'campaignId' | CampaignOwnedSlotColumn>
+): Promise<string | null> {
+  if (target == null) return null
+  const block = await tx.campaignBlock.findFirst({
+    where: {
+      id: target,
+      campaignId: owner.campaignId,
+      parentBlockId: owner.id
+    },
+    select: { id: true, typename: true }
+  })
+  if (block == null || !SLOT_TYPENAMES[column].includes(block.typename))
+    throw badUserInput(SLOT_TARGET_ERRORS[column], column)
+  const heldElsewhere = SLOT_COLUMNS.some(
+    (other) => other !== column && owner[other] === block.id
+  )
+  if (heldElsewhere)
+    throw badUserInput(
+      `${column} cannot hold the block another slot of this block holds`,
+      column
+    )
+  return block.id
+}
+
+/**
+ * Point a slot at `target`, or empty it, inside `tx`, keeping 0 or 1 live
+ * block in the slot: the block it held is soft-deleted and the new one
+ * restored if an earlier swap deleted it. The owner's column itself is
+ * written by the caller's update.
+ */
+export async function swapSlot(
+  tx: Prisma.TransactionClient,
+  owner: Pick<CampaignBlock, CampaignOwnedSlotColumn>,
+  column: CampaignOwnedSlotColumn,
+  target: string | null
 ): Promise<void> {
-  if (owner.mediaBlockId != null && owner.mediaBlockId !== mediaBlockId)
+  const outgoing = owner[column]
+  if (outgoing != null && outgoing !== target)
     await tx.campaignBlock.update({
-      where: { id: owner.mediaBlockId },
+      where: { id: outgoing },
       data: { deletedAt: new Date() }
     })
-  if (mediaBlockId != null)
+  if (target != null)
     await tx.campaignBlock.update({
-      where: { id: mediaBlockId },
+      where: { id: target },
       data: { deletedAt: null }
     })
+}
+
+type SlotTarget = [CampaignOwnedSlotColumn, string | null]
+
+/** The slot columns an update writes, with the id (or null) each is pointed at. */
+function slotTargets(
+  data: Prisma.CampaignBlockUncheckedUpdateInput
+): SlotTarget[] {
+  const targets: SlotTarget[] = []
+  for (const column of SLOT_COLUMNS) {
+    const target = data[column]
+    if (target === undefined) continue
+    targets.push([column, target as string | null])
+  }
+  return targets
+}
+
+/**
+ * Validate and swap each slot an update writes, under the structure lock and
+ * on the owner as it is now, not as the resolver read it. Later slots see the
+ * earlier ones already moved.
+ */
+async function swapSlots(
+  tx: Prisma.TransactionClient,
+  block: Pick<CampaignBlock, 'id'> & Pick<CampaignBlock, 'campaignId'>,
+  targets: SlotTarget[]
+): Promise<void> {
+  await lockCampaignStructure(tx, block.campaignId)
+  const owner = {
+    ...(await tx.campaignBlock.findUniqueOrThrow({ where: { id: block.id } }))
+  }
+  for (const [column, requested] of targets) {
+    const target = await validateSlotTarget(tx, column, requested, owner)
+    await swapSlot(tx, owner, column, target)
+    owner[column] = target
+  }
 }

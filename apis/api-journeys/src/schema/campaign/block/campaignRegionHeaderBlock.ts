@@ -1,13 +1,14 @@
 import { builder } from '../../builder'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignRegionHeaderBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignRegionHeaderBlock',
   interfaces: [CampaignBlock, CampaignSectionBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignRegionHeaderBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignRegionHeaderBlock'),
   description:
     "Region Page only. Renders the rendered region's name, its Region Lines and this intro.",
   fields: (t) => ({

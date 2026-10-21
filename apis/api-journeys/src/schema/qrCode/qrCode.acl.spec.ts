@@ -24,21 +24,47 @@ describe('canManageQrCode', () => {
   describe('Campaign QR Code', () => {
     const campaignRegionLanguages = [{ id: 'regionLanguageId' }]
 
-    it("lets the campaign's team manage it", () => {
+    it("does not let a member of the campaign's team manage it", () => {
       expect(
         canManageQrCode(
           { team: teamMember, journey: journeyOwner, campaignRegionLanguages },
           user
         )
-      ).toBe(true)
+      ).toBe(false)
     })
 
-    it("does not let the linked journey's owner or editor in another team manage it", () => {
+    it("does not let a manager of the campaign's team manage it", () => {
+      expect(
+        canManageQrCode(
+          {
+            team: {
+              userTeams: [{ userId: 'userId', role: UserTeamRole.manager }]
+            },
+            campaignRegionLanguages
+          },
+          user
+        )
+      ).toBe(false)
+    })
+
+    it("does not let the linked journey's owner or editor manage it", () => {
       expect(
         canManageQrCode(
           {
             team: { userTeams: [] },
             journey: journeyOwner,
+            campaignRegionLanguages
+          },
+          user
+        )
+      ).toBe(false)
+      expect(
+        canManageQrCode(
+          {
+            team: { userTeams: [] },
+            journey: {
+              userJourneys: [{ userId: 'userId', role: UserJourneyRole.editor }]
+            },
             campaignRegionLanguages
           },
           user

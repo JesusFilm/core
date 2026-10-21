@@ -1,18 +1,22 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { snapshotOf } from '../block/journey/snapshot'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import { JourneyWithPublicUrl } from '../getJourneyPublicUrl'
 import { resolveJourneyId, resolveJourneyLink } from '../journeyLink'
-import { TEXT_CAPS, assertLengthOrNull } from '../validation'
+import {
+  NULL_FIELD_ERROR,
+  TEXT_CAPS,
+  assertLengthOrNull,
+  assertNotNull
+} from '../validation'
 
 import { CampaignRegionLanguageUpdateInput } from './inputs'
 import {
   authorizeRegionLanguageUpdate,
   createRegionLanguageQrCode,
-  deleteQrCodes,
-  deleteShortLinks,
   lockRegionLanguage,
   retargetRegionLanguageQrCode,
   runWithShortLinkStep
@@ -21,7 +25,9 @@ import {
 builder.mutationField('campaignRegionLanguageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking deletes the row and its short link. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".\n- BAD_USER_INPUT (field: `title` / `description`): over the length cap.',
+      'Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".\n- BAD_USER_INPUT (field: `title` / `description`): over the length cap.\n' +
+      NULL_FIELD_ERROR +
+      '',
     type: CampaignRegionLanguageRef,
     nullable: false,
     args: {
@@ -35,6 +41,11 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
         context.user
       )
       const campaign = regionLanguage.region.campaign
+      const url = assertNotNull(input.url, 'url')
+      const snapshotEdited = assertNotNull(
+        input.snapshotEdited,
+        'snapshotEdited'
+      )
       const data: Prisma.CampaignRegionLanguageUncheckedUpdateInput = {}
 
       if (input.title !== undefined)
@@ -51,19 +62,17 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
         )
       if (input.title !== undefined || input.description !== undefined)
         data.snapshotEdited = true
-      if (input.snapshotEdited != null)
-        data.snapshotEdited = input.snapshotEdited
+      if (snapshotEdited !== undefined) data.snapshotEdited = snapshotEdited
 
       let journey: JourneyWithPublicUrl | null | undefined
-      if (input.url != null) journey = await resolveJourneyLink(input.url)
+      if (url !== undefined) journey = await resolveJourneyLink(url)
       else if (input.journeyId !== undefined)
         journey =
           input.journeyId == null
             ? null
             : await resolveJourneyId(String(input.journeyId))
 
-      let deletedShortLinkIds: string[] = []
-      const updated = await runWithShortLinkStep(
+      return await runWithShortLinkStep(
         async (shortLinkStep) =>
           await prisma.$transaction(async (tx) => {
             // Decide from the row as locked, not as authorised: a concurrent
@@ -75,18 +84,18 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
             })
 
             if (journey === null && current.journeyId != null) {
-              // Unlink: the QR row goes now, its short link after commit; a relink mints new ones.
-              if (current.qrCode != null)
-                deletedShortLinkIds = await deleteQrCodes(tx, [current.qrCode])
+              // Unlink: the QR row and its short link stay, still pointing at
+              // the last linked journey, so printed codes keep working; a
+              // later link retargets them.
               data.journeyId = null
-              data.qrCodeId = null
               data.title = null
               data.description = null
               data.snapshotEdited = false
             } else if (journey != null) {
               data.journeyId = journey.id
-              data.title = journey.title
-              data.description = journey.description
+              const snapshot = snapshotOf(journey)
+              data.title = snapshot.title
+              data.description = snapshot.description
               data.snapshotEdited = false
               if (current.qrCode == null) {
                 const created = await createRegionLanguageQrCode(
@@ -116,8 +125,6 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
             return updated
           })
       )
-      await deleteShortLinks(deletedShortLinkIds)
-      return updated
     }
   })
 )

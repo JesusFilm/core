@@ -14,6 +14,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
+const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
+
 describe('campaignHeroBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignHeroBlockCreate($input: CampaignHeroBlockCreateInput!) {
@@ -125,7 +127,7 @@ describe('campaignHeroBlockCreate', () => {
 
   it('inserts at the requested position and renumbers the later sections contiguously', async () => {
     const result = await create({
-      id: 'clientId',
+      id: CLIENT_ID,
       parentOrder: 1,
       eyebrow: ' Advent ',
       title: 'A second hero',
@@ -134,7 +136,7 @@ describe('campaignHeroBlockCreate', () => {
     })
 
     expect(result.data.campaignHeroBlockCreate).toMatchObject({
-      id: 'clientId',
+      id: CLIENT_ID,
       parentOrder: 1,
       eyebrow: 'Advent',
       title: 'A second hero',
@@ -148,7 +150,7 @@ describe('campaignHeroBlockCreate', () => {
       ])
     ).toEqual([
       ['heroId', 0],
-      ['clientId', 1],
+      [CLIENT_ID, 1],
       ['landingSwitcherId', 2],
       ['carouselId', 3],
       ['landingJourneyListId', 4],

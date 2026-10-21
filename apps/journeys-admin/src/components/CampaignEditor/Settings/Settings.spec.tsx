@@ -133,6 +133,18 @@ describe('Settings', () => {
     expect(screen.getByText('8 / 100')).toBeInTheDocument()
   })
 
+  it('warns on the slug that changing it breaks links already shared', () => {
+    renderSettings()
+
+    expect(
+      screen.getByRole('textbox', { name: 'Slug' })
+    ).toHaveAccessibleDescription(
+      expect.stringContaining(
+        'Changing this breaks links to this page you have already shared.'
+      )
+    )
+  })
+
   it('shows the permanent root-domain address and the current public address', () => {
     renderSettings()
 

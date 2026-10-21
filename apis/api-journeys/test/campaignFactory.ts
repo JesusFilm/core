@@ -391,6 +391,12 @@ export interface CampaignFactory {
     languageId: string,
     journey: Pick<Journey, 'id' | 'title' | 'description'>
   ) => CampaignFactory
+  /**
+   * Append a Columns section to the landing page whose left Column Slot holds
+   * a hero (`columnHeroId`, titled "Column hero") with a typography Extra
+   * and a cover image: text nested three levels below the section.
+   */
+  withColumnsSection: () => CampaignFactory
   /** Mark the campaign published as of the fixture date. */
   published: () => CampaignFactory
   build: () => CampaignFixture
@@ -483,6 +489,66 @@ function fromFixture(fixture: CampaignFixture): CampaignFactory {
           }
         })
       }),
+    withColumnsSection: () => {
+      const landing = {
+        campaignId: fixture.id,
+        pageId: 'landingPageId'
+      }
+      return fromFixture({
+        ...fixture,
+        blocks: [
+          ...fixture.blocks,
+          block(fixture.id, {
+            ...landing,
+            id: 'columnsId',
+            typename: 'CampaignColumnsBlock',
+            parentOrder: 5,
+            ratio: 'equal'
+          }),
+          block(fixture.id, {
+            ...landing,
+            id: 'slotLeftId',
+            typename: 'CampaignColumnBlock',
+            parentBlockId: 'columnsId',
+            parentOrder: 0
+          }),
+          block(fixture.id, {
+            ...landing,
+            id: 'slotRightId',
+            typename: 'CampaignColumnBlock',
+            parentBlockId: 'columnsId',
+            parentOrder: 1
+          }),
+          block(fixture.id, {
+            ...landing,
+            id: 'columnHeroId',
+            typename: 'CampaignHeroBlock',
+            parentBlockId: 'slotLeftId',
+            parentOrder: 0,
+            title: 'Column hero',
+            backgroundKind: 'image',
+            coverBlockId: 'columnHeroCoverId'
+          }),
+          block(fixture.id, {
+            ...landing,
+            id: 'columnHeroExtraId',
+            typename: 'CampaignTypographyBlock',
+            parentBlockId: 'columnHeroId',
+            parentOrder: 0,
+            content: 'Column extra',
+            placement: 'below'
+          }),
+          block(fixture.id, {
+            ...landing,
+            id: 'columnHeroCoverId',
+            typename: 'CampaignImageBlock',
+            parentBlockId: 'columnHeroId',
+            parentOrder: null,
+            alt: 'Column cover'
+          })
+        ]
+      })
+    },
     published: () =>
       fromFixture({
         ...fixture,

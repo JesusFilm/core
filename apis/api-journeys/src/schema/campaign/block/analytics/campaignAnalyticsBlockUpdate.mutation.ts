@@ -1,33 +1,15 @@
 import { builder } from '../../../builder'
+import { assertNotNull } from '../../validation'
 import { CampaignAnalyticsBlock } from '../campaignAnalyticsBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignAnalyticsBlockUpdateInput = builder.inputType(
-  'CampaignAnalyticsBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      showMap: t.boolean({ required: false }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignAnalyticsBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignAnalyticsBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -46,8 +28,8 @@ builder.mutationField('campaignAnalyticsBlockUpdate', (t) =>
       )
       return await updateBlock(block, {
         ...validateSectionText(input, ['eyebrow', 'title']),
-        ...(input.showMap != null ? { showMap: input.showMap } : {}),
-        ...(await validateSectionStyle(input, block))
+        showMap: assertNotNull(input.showMap, 'showMap'),
+        ...sectionStyleColumns(input)
       })
     }
   })

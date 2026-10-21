@@ -41,7 +41,7 @@ function CampaignVideoCaption({
           variant="subtitle1"
           component="p"
           data-testid="CampaignVideoTitle"
-          sx={{ color: 'var(--campaign-band-heading)' }}
+          sx={{ color: 'var(--campaign-band-heading)', whiteSpace: 'pre-line' }}
         >
           {details.title}
         </Typography>
@@ -55,7 +55,8 @@ function CampaignVideoCaption({
             display: '-webkit-box',
             WebkitLineClamp: 3,
             WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            whiteSpace: 'pre-line'
           }}
         >
           {details.description}
@@ -133,7 +134,10 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
             <Typography
               variant="h5"
               component="span"
-              sx={{ color: 'var(--campaign-band-heading)' }}
+              sx={{
+                color: 'var(--campaign-band-heading)',
+                whiteSpace: 'pre-line'
+              }}
             >
               {details.title}
             </Typography>
@@ -141,7 +145,7 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
           <Typography
             variant="body2"
             component="span"
-            sx={{ color: 'var(--campaign-band-muted)' }}
+            sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
           >
             {videoCountLabel(
               details.childrenCount,

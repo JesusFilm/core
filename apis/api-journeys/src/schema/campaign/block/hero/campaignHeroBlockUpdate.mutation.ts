@@ -1,51 +1,17 @@
-import { TypographyAlign } from '../../../block/typography/enums/typographyAlign'
 import { builder } from '../../../builder'
 import { assertEnumOrNull, assertPercentOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
-import {
-  MEDIA_SLOT_ERRORS,
-  mediaSlotInputField,
-  mediaSlotUpdate
-} from '../mediaSlotInput'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { MEDIA_SLOT_ERRORS, mediaSlotColumns } from '../inputs/mediaSlotInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignHeroBlockUpdateInput = builder.inputType(
-  'CampaignHeroBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      description: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      align: t.field({ type: TypographyAlign, required: false }),
-      minHeight: t.int({
-        required: false,
-        description:
-          'Minimum height as a percentage of the viewport height, 0 to 100; null for content height.'
-      }),
-      mediaBlockId: mediaSlotInputField(t),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignHeroBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignHeroBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -75,13 +41,14 @@ builder.mutationField('campaignHeroBlockUpdate', (t) =>
         input.minHeight !== undefined
           ? { minHeight: assertPercentOrNull(input.minHeight, 'minHeight') }
           : {}
-      const style = await validateSectionStyle(input, block)
-      const media = await mediaSlotUpdate(input.mediaBlockId, block)
-      return await updateBlock(
-        block,
-        { ...text, ...align, ...minHeight, ...style, ...media.data },
-        media.before
-      )
+      const style = sectionStyleColumns(input)
+      return await updateBlock(block, {
+        ...text,
+        ...align,
+        ...minHeight,
+        ...style,
+        ...mediaSlotColumns(input.mediaBlockId)
+      })
     }
   })
 )

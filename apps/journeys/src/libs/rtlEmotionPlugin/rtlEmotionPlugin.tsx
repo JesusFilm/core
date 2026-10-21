@@ -10,15 +10,16 @@ type EmotionPlugin = NonNullable<
   NonNullable<Parameters<typeof documentGetInitialProps>[1]>['plugins']
 >[number]
 
-type PageRTLProps = Parameters<typeof getPageRTL>[0]
+type CampaignPageProps = Pick<Parameters<typeof getPageRTL>[0], 'campaign'>
 
 /**
- * A `documentGetInitialProps` plugin that serves right-to-left pages (PRD §2,
- * §11) their CSS compiled right-to-left. The document builds its cache before
- * any page has rendered, so it cannot know the page's language; this plugin
- * holds a second, RTL cache and swaps it in for the render of a page whose
- * props say RTL, then adds that cache's critical styles to the document head.
- * Left-to-right pages never touch it and keep the document's own cache.
+ * A `documentGetInitialProps` plugin that serves right-to-left campaign pages
+ * (PRD §2, §11) their CSS compiled right-to-left. The document builds its
+ * cache before any page has rendered, so it cannot know the page's language;
+ * this plugin holds a second, RTL cache and swaps it in for the render of a
+ * campaign page whose Page Language is RTL, then adds that cache's critical
+ * styles to the document head. Every other page, an RTL journey page
+ * included, never touches it and keeps the document's own cache.
  *
  * Create one per request: the cache accumulates the styles it renders.
  */
@@ -29,10 +30,11 @@ export function createRtlEmotionPlugin(): EmotionPlugin {
   return {
     enhanceApp: (App) =>
       function RtlEmotionApp(props: {
-        pageProps?: PageRTLProps
+        pageProps?: CampaignPageProps
       }): ReactElement {
         const Page = App as ComponentType<Record<string, unknown>>
-        if (!getPageRTL(props.pageProps ?? {})) return <Page {...props} />
+        if (!getPageRTL({ campaign: props.pageProps?.campaign }))
+          return <Page {...props} />
         return <Page {...props} emotionCache={cache} />
       },
     resolveProps: (initialProps) => {

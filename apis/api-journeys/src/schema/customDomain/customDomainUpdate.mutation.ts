@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
 import {
   campaignLanguageTags,
@@ -148,8 +149,16 @@ builder.mutationField('customDomainUpdate', (t) =>
       const journeyCollectionChanged =
         'journeyCollectionId' in input &&
         (input.journeyCollectionId ?? null) !== customDomain.journeyCollectionId
-      if (routeAllChanged || journeyCollectionChanged)
-        await updateTeamShortLinks(customDomain.teamId)
+      if (routeAllChanged || journeyCollectionChanged) {
+        try {
+          await updateTeamShortLinks(customDomain.teamId)
+        } catch (error) {
+          logger.error(
+            { teamId: customDomain.teamId, error },
+            'Failed to update team QR code short links'
+          )
+        }
+      }
 
       return updated
     }

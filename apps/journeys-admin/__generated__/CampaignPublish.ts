@@ -23,7 +23,7 @@ export interface CampaignPublish {
   /**
    * Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
    * 
-   * Auth: campaign Manage — a manager of the campaign’s team.
+   * Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve.

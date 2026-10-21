@@ -22,6 +22,10 @@ vi.mock('../../../block/image/transformInput', () => ({
 const SRC =
   'https://imagedelivery.net/test-cloudflare-account-hash/imageId/public'
 
+const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
+const NEW_COVER_ID = '07e3144d-97f2-4e73-929b-501b3b1838aa'
+const NEW_LOGO_ID = '3580f52c-3a97-4144-b5e5-828de130b790'
+
 describe('campaignImageBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignImageBlockCreate($input: CampaignImageBlockCreateInput!) {
@@ -52,6 +56,7 @@ describe('campaignImageBlockCreate', () => {
     }))
     const hero = campaignBlockWithAcl(fixture, 'heroId')
     prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[0])
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
     prismaMock.campaignBlock.findMany.mockResolvedValue(
       fixture.blocks.filter(
         (block) =>
@@ -141,13 +146,13 @@ describe('campaignImageBlockCreate', () => {
 
     it('creates an empty image section (no src, no size) at the requested position', async () => {
       const result = await create({
-        id: 'clientId',
+        id: CLIENT_ID,
         pageId: 'landingPageId',
         parentOrder: 1
       })
 
       expect(result.data.campaignImageBlockCreate).toMatchObject({
-        id: 'clientId',
+        id: CLIENT_ID,
         parentOrder: 1,
         src: null,
         width: null,
@@ -161,7 +166,7 @@ describe('campaignImageBlockCreate', () => {
         ])
       ).toEqual([
         ['heroId', 0],
-        ['clientId', 1],
+        [CLIENT_ID, 1],
         ['landingSwitcherId', 2],
         ['carouselId', 3],
         ['landingJourneyListId', 4],
@@ -255,16 +260,20 @@ describe('campaignImageBlockCreate', () => {
         ...hero,
         coverBlockId: 'oldCoverId'
       })
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
+        ...hero,
+        coverBlockId: 'oldCoverId'
+      })
 
       const result = await create({
-        id: 'coverId',
+        id: NEW_COVER_ID,
         parentBlockId: 'heroId',
         slot: 'cover',
         src: SRC
       })
 
       expect(result.data.campaignImageBlockCreate).toMatchObject({
-        id: 'coverId',
+        id: NEW_COVER_ID,
         pageId: 'landingPageId',
         regionId: null,
         parentBlockId: 'heroId',
@@ -274,11 +283,16 @@ describe('campaignImageBlockCreate', () => {
         height: 900
       })
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
-        where: { id: 'heroId', campaignId: 'campaignId', deletedAt: null }
+        where: {
+          id: 'heroId',
+          campaignId: 'campaignId',
+          deletedAt: null,
+          parentOrder: { not: null }
+        }
       })
       expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
-          id: 'coverId',
+          id: NEW_COVER_ID,
           typename: 'CampaignImageBlock',
           campaignId: 'campaignId',
           pageId: 'landingPageId',
@@ -295,7 +309,7 @@ describe('campaignImageBlockCreate', () => {
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
         where: { id: 'heroId' },
-        data: { coverBlockId: 'coverId' }
+        data: { coverBlockId: NEW_COVER_ID }
       })
       // Siblings are never read for an owned block.
       expect(prismaMock.campaignBlock.findMany).not.toHaveBeenCalled()
@@ -315,12 +329,12 @@ describe('campaignImageBlockCreate', () => {
     })
 
     it('creates the header logo with chrome scoping and points logoBlockId at it', async () => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue(
-        fixture.blocks.find((block) => block.id === 'headerId')!
-      )
+      const header = fixture.blocks.find((block) => block.id === 'headerId')!
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(header)
 
       const result = await create({
-        id: 'logoId',
+        id: NEW_LOGO_ID,
         parentBlockId: 'headerId',
         slot: 'logo',
         src: SRC,
@@ -328,7 +342,7 @@ describe('campaignImageBlockCreate', () => {
       })
 
       expect(result.data.campaignImageBlockCreate).toMatchObject({
-        id: 'logoId',
+        id: NEW_LOGO_ID,
         pageId: null,
         regionId: null,
         parentBlockId: 'headerId',
@@ -337,7 +351,7 @@ describe('campaignImageBlockCreate', () => {
       })
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
         where: { id: 'headerId' },
-        data: { logoBlockId: 'logoId' }
+        data: { logoBlockId: NEW_LOGO_ID }
       })
     })
 

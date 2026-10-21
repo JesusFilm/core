@@ -1,5 +1,5 @@
 import { fetchLanguage, fetchWatchVideoById } from '../../gatewayClient'
-import { badUserInput } from '../../validation'
+import { assertNotNull, badUserInput } from '../../validation'
 import { resolveWatchUrl } from '../video/watchUrl'
 
 export interface CarouselVideoInput {
@@ -41,10 +41,11 @@ export async function validateCarouselVideo(
   input: CarouselVideoInput,
   campaignLanguageId: string
 ): Promise<CarouselVideoColumns> {
-  if (input.url != null) {
+  const url = assertNotNull(input.url, 'url')
+  if (url !== undefined) {
     if (input.videoId !== undefined)
       throw badUserInput('give either url or videoId', 'url')
-    const watch = await resolveWatchUrl(input.url)
+    const watch = await resolveWatchUrl(url)
     return {
       videoId: watch.videoId,
       videoVariantLanguageId: await resolveVariantLanguageId(

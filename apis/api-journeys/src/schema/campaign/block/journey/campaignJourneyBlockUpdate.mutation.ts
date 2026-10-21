@@ -1,5 +1,10 @@
 import { builder } from '../../../builder'
-import { TEXT_CAPS, assertLengthOrNull } from '../../validation'
+import {
+  NULL_FIELD_ERROR,
+  TEXT_CAPS,
+  assertLengthOrNull,
+  assertNotNull
+} from '../../validation'
 import { CampaignJourneyBlock } from '../campaignJourneyBlock'
 import { authorizeTypedBlockUpdate, updateBlock } from '../service'
 
@@ -10,7 +15,9 @@ builder.mutationField('campaignJourneyBlockUpdate', (t) =>
     type: CampaignJourneyBlock,
     nullable: false,
     description:
-      'Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.',
+      'Edit a journey card’s snapshot: its default-language title and description. Only the given fields change; translations are untouched. Editing the title or description marks the snapshot edited (`snapshotEdited`, which an undo can set back outright).\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.\n' +
+      NULL_FIELD_ERROR +
+      '',
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: CampaignJourneyBlockUpdateInput, required: true })
@@ -23,7 +30,9 @@ builder.mutationField('campaignJourneyBlockUpdate', (t) =>
       )
       const textEdited =
         input.title !== undefined || input.description !== undefined
-      const snapshotEdited = input.snapshotEdited ?? (textEdited ? true : null)
+      const snapshotEdited =
+        assertNotNull(input.snapshotEdited, 'snapshotEdited') ??
+        (textEdited ? true : undefined)
       return await updateBlock(block, {
         ...(input.title !== undefined
           ? {
@@ -43,7 +52,7 @@ builder.mutationField('campaignJourneyBlockUpdate', (t) =>
               )
             }
           : {}),
-        ...(snapshotEdited != null ? { snapshotEdited } : {})
+        snapshotEdited
       })
     }
   })

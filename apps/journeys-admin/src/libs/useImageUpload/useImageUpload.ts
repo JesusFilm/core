@@ -10,6 +10,7 @@ import {
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 
+import { useCloudflareTeamUploadByFileMutation } from '../useCloudflareTeamUploadByFileMutation'
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
 
 /**
@@ -24,8 +25,7 @@ export interface UseImageUploadOptions {
   onUploadComplete: (url: string) => void
   /**
    * The team the upload belongs to when there is no journey (a campaign
-   * edit). Given, it is passed to the Cloudflare mutation instead of the
-   * surrounding journey's id.
+   * edit). Given, the team upload mutation runs instead of the journey one.
    */
   teamId?: string
   onUploadStart?: () => void
@@ -83,6 +83,8 @@ export function useImageUpload(
     noKeyboard = false
   } = useImageUploadOptions
   const [createCloudflareUploadByFile] = useCloudflareUploadByFileMutation()
+  const [createCloudflareTeamUploadByFile] =
+    useCloudflareTeamUploadByFileMutation()
   const [loading, setLoading] = useState(false)
   const loadingRef = useRef(false)
   const [success, setSuccess] = useState<boolean | undefined>(undefined)
@@ -146,9 +148,12 @@ export function useImageUpload(
     onUploadStart?.()
 
     try {
-      const { data } = await createCloudflareUploadByFile({
-        variables: teamId != null ? { teamId } : { journeyId: journey?.id }
-      })
+      const { data } =
+        teamId != null
+          ? await createCloudflareTeamUploadByFile({ variables: { teamId } })
+          : await createCloudflareUploadByFile({
+              variables: { journeyId: journey?.id }
+            })
 
       if (data?.createCloudflareUploadByFile?.uploadUrl != null) {
         const file = acceptedFiles[0]

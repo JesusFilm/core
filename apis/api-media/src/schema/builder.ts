@@ -52,9 +52,17 @@ const SHORT_LINK_EDITOR_ROLES: MediaRole[] = [
   ...SHORT_LINK_ADMIN_ROLES
 ]
 
-/** shortLinkAdmin or publisher: domain settings, protected links, republishing */
+/** shortLinkAdmin or publisher: protected links, global links, republishing */
 export function isShortLinkAdmin(roles: MediaRole[]): boolean {
   return roles.some((role) => SHORT_LINK_ADMIN_ROLES.includes(role))
+}
+
+/**
+ * The shortLinkAdmin role itself, not publisher: with superAdmin, adds domains
+ * and changes their settings.
+ */
+export function isShortLinkDomainAdmin(roles: MediaRole[]): boolean {
+  return roles.includes('shortLinkAdmin')
 }
 
 /** shortLinkEditor, shortLinkAdmin or publisher: links, campaigns, QR codes */
@@ -75,6 +83,7 @@ export const builder = new SchemaBuilder<{
     isYoutubeAdmin: boolean
     isShortLinkEditor: boolean
     isShortLinkAdmin: boolean
+    isShortLinkDomainAdmin: boolean
     isSuperAdmin: boolean
   }
   AuthContexts: {
@@ -84,6 +93,7 @@ export const builder = new SchemaBuilder<{
     isYoutubeAdmin: Extract<Context, { type: 'authenticated' }>
     isShortLinkEditor: Extract<Context, { type: 'authenticated' }>
     isShortLinkAdmin: Extract<Context, { type: 'authenticated' }>
+    isShortLinkDomainAdmin: Extract<Context, { type: 'authenticated' }>
     isSuperAdmin: Extract<Context, { type: 'authenticated' }>
     isValidInterop: Extract<Context, { type: 'interop' }>
   }
@@ -122,6 +132,9 @@ export const builder = new SchemaBuilder<{
             isYoutubeAdmin: context.currentRoles.includes('youtubeAdmin'),
             isShortLinkEditor: isShortLinkEditor(context.currentRoles),
             isShortLinkAdmin: isShortLinkAdmin(context.currentRoles),
+            isShortLinkDomainAdmin: isShortLinkDomainAdmin(
+              context.currentRoles
+            ),
             // Lazy: the users database is only queried when a resolver checks
             // this scope, and only after the boolean scopes in an `$any`.
             isSuperAdmin: async () => await contextIsSuperAdmin(context),
@@ -135,6 +148,7 @@ export const builder = new SchemaBuilder<{
             isYoutubeAdmin: false,
             isShortLinkEditor: false,
             isShortLinkAdmin: false,
+            isShortLinkDomainAdmin: false,
             isSuperAdmin: false,
             isValidInterop: true
           }
@@ -146,6 +160,7 @@ export const builder = new SchemaBuilder<{
             isYoutubeAdmin: false,
             isShortLinkEditor: false,
             isShortLinkAdmin: false,
+            isShortLinkDomainAdmin: false,
             isSuperAdmin: false,
             isValidInterop: false
           }

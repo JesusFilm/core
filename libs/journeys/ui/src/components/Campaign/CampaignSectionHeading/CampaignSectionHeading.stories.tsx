@@ -26,4 +26,12 @@ export const Centered: Story = {
   args: { ...text, align: TypographyAlign.center }
 }
 
+export const LineBreaks: Story = {
+  args: {
+    eyebrow: 'Why\nit matters',
+    title: 'A story\nfor every home',
+    description: 'Short films in the languages\nyour neighbours speak.'
+  }
+}
+
 export default meta

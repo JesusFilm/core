@@ -25,7 +25,7 @@ export interface CampaignContextValue {
   basePath: string
   /** The projected world map for the Analytics section; null when the page has none (the section then skips the map). */
   worldMap?: WorldMapShapes | null
-  /** Ids of every block on the current page, for same-page anchors. */
+  /** Ids of the blocks a same-page anchor can scroll to on the current page. */
   pageBlockIds: ReadonlySet<string>
   /** A Campaign String in the Page Language; empty when the campaign lacks the row or it is blank. */
   string: (key: CampaignStringKey) => string
@@ -36,6 +36,8 @@ const CampaignContext = createContext<CampaignContextValue | null>(null)
 interface CampaignProviderProps {
   value: Omit<CampaignContextValue, 'pageBlockIds' | 'basePath' | 'string'> & {
     basePath?: string
+    /** The sections the page renders; defaults to every block of the page (the canvas). */
+    pageBlockIds?: ReadonlySet<string>
   }
   children: ReactNode
 }
@@ -79,7 +81,9 @@ export function CampaignProvider({
     return {
       ...value,
       basePath: value.basePath ?? campaignBasePath(value.campaign.slug),
-      pageBlockIds: new Set(page?.blocks.map((block) => block.id) ?? []),
+      pageBlockIds:
+        value.pageBlockIds ??
+        new Set(page?.blocks.map((block) => block.id) ?? []),
       string: (key) => campaignString(value.campaign.strings, key)
     }
   }, [value])

@@ -1,53 +1,15 @@
 import { builder } from '../../../builder'
 import { CampaignVideoCarouselBlock } from '../campaignVideoCarouselBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
+import { CampaignVideoCarouselBlockUpdateInput } from './inputs'
 import { validateCarouselVideo } from './validateCarouselVideo'
-
-export const CampaignVideoCarouselBlockUpdateInput = builder.inputType(
-  'CampaignVideoCarouselBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      description: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      url: t.string({
-        required: false,
-        description:
-          'A pasted Watch address: resolved by the server through its variant slug to a Video of any label, which becomes `videoId` (Watch expansion). Not together with `videoId`.'
-      }),
-      videoId: t.id({
-        required: false,
-        description:
-          'A published Watch Video id (Watch expansion), or null for explicit mode (the ordered CampaignVideoBlock children). Omitted leaves the mode alone.'
-      }),
-      videoVariantLanguageId: t.id({
-        required: false,
-        description:
-          'With `url` or `videoId`: the language the expansion resolves in; defaults to the language the pasted address named, else the campaign language.'
-      }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
 
 builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -72,7 +34,7 @@ builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
         'title',
         'description'
       ])
-      const style = await validateSectionStyle(input, block)
+      const style = sectionStyleColumns(input)
       const video = await validateCarouselVideo(
         input,
         block.campaign.defaultLanguageId

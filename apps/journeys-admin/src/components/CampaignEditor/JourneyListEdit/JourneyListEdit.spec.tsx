@@ -78,9 +78,11 @@ const createMock = {
   request: {
     query: CAMPAIGN_JOURNEY_BLOCK_CREATE,
     variables: {
-      id: 'newJourneyItemId',
-      parentBlockId: 'landingJourneyListId',
-      url: ADMIN_LINK
+      input: {
+        id: 'newJourneyItemId',
+        parentBlockId: 'landingJourneyListId',
+        url: ADMIN_LINK
+      }
     }
   },
   result: vi.fn(() => ({

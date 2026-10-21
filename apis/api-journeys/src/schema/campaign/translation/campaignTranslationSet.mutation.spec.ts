@@ -2,8 +2,8 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { authClient, mockUser } from '../../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../../test/campaignFactory'
-import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -23,20 +23,6 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 const FRENCH = '496'
 
 describe('campaignTranslationSet', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_TRANSLATION_SET = graphql(`
     mutation CampaignTranslationSet($input: CampaignTranslationSetInput!) {
       campaignTranslationSet(input: $input) {
@@ -302,6 +288,61 @@ describe('campaignTranslationSet', () => {
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
+  describe('the language checked again under the campaign lock', () => {
+    function campaignLockIndex(): number {
+      return prismaMock.$queryRaw.mock.calls.findIndex(([sql]) =>
+        (sql as unknown as string[]).join('').includes('FROM "Campaign" ')
+      )
+    }
+
+    it('refuses a language a concurrent swap made the default (BAD_USER_INPUT, field languageId)', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue({
+        ...fixture,
+        defaultLanguageId: FRENCH
+      })
+
+      const result = await set({
+        target: { blockId: 'heroId' },
+        field: 'title',
+        value: 'Partagez'
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'languageId'
+      })
+      expect(campaignLockIndex()).toBe(1)
+      expect(prismaMock.campaign.findUnique).toHaveBeenCalledWith({
+        where: { id: 'campaignId' },
+        select: { defaultLanguageId: true, languages: true }
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    })
+
+    it('refuses a language removed from the campaign meanwhile (BAD_USER_INPUT, field languageId)', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue({
+        ...fixture,
+        languages: fixture.languages.filter(
+          (language) => language.languageId !== FRENCH
+        )
+      } as never)
+
+      const result = await set({
+        target: { blockId: 'heroId' },
+        field: 'title',
+        value: 'Partagez'
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'languageId'
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    })
+  })
+
   it('requires exactly one target id (BAD_USER_INPUT, field target)', async () => {
     const none = await set({ target: {}, field: 'title', value: 'x' })
     expect(none.errors[0].extensions).toMatchObject({
@@ -335,6 +376,43 @@ describe('campaignTranslationSet', () => {
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })
   })
+
+  it.each([
+    [
+      'region',
+      'regionId',
+      'name',
+      () => prismaMock.campaignRegion.findUnique.mockResolvedValue(null)
+    ],
+    [
+      'string',
+      'stringId',
+      'value',
+      () => prismaMock.campaignString.findUnique.mockResolvedValue(null)
+    ],
+    [
+      'campaign',
+      'campaignId',
+      'title',
+      () => prismaMock.campaign.findUnique.mockResolvedValue(null)
+    ]
+  ])(
+    'is NOT_FOUND for an unknown %s target',
+    async (kind, targetKey, field, missTarget) => {
+      missTarget()
+
+      const result = await set({
+        target: { [targetKey]: 'gone' },
+        field,
+        value: 'x'
+      })
+
+      expect(result.errors[0]).toMatchObject({
+        message: `${kind} not found`,
+        extensions: expect.objectContaining({ code: 'NOT_FOUND' })
+      })
+    }
+  )
 
   it('throws FORBIDDEN for a user outside the team', async () => {
     const outsider = campaignFactory({ userId: 'someoneElse' })

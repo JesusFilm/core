@@ -53,10 +53,25 @@ const campaignsMock = {
   }
 }
 
-function renderList(flags: Record<string, boolean>): void {
+const campaignsErrorMock = {
+  request: { query: GET_CAMPAIGNS, variables: { teamId: 'teamId' } },
+  error: new Error('Bad gateway')
+}
+
+const emptyCampaignsMock = {
+  request: { query: GET_CAMPAIGNS, variables: { teamId: 'teamId' } },
+  result: { data: { campaigns: [] } }
+}
+
+function renderList(
+  flags: Record<string, boolean>,
+  mocks: unknown[] = [campaignsMock]
+): void {
   render(
     <FlagsProvider flags={flags}>
-      <MockedProvider mocks={[getLastActiveTeamIdAndTeamsMock, campaignsMock]}>
+      <MockedProvider
+        mocks={[getLastActiveTeamIdAndTeamsMock, ...mocks] as never}
+      >
         <SnackbarProvider>
           <TeamProvider>
             <CampaignList />
@@ -101,6 +116,31 @@ describe('CampaignList', () => {
     await screen.findByText('Outreach 2026')
     fireEvent.click(screen.getByRole('button', { name: 'Create campaign' }))
     expect(screen.getByTestId('CreateCampaignDialog')).toBeInTheDocument()
+  })
+
+  it('shows an error with a retry, not the empty state, when the campaigns fail to load', async () => {
+    renderList({ campaignBuilder: true }, [campaignsErrorMock, campaignsMock])
+
+    expect(
+      await screen.findByText('There was an error loading campaigns.')
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/No campaigns yet/)).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
+
+    expect(await screen.findByText('Christmas 2026')).toBeInTheDocument()
+    expect(
+      screen.queryByText('There was an error loading campaigns.')
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows the empty state when the team has no campaigns', async () => {
+    renderList({ campaignBuilder: true }, [emptyCampaignsMock])
+
+    expect(await screen.findByText(/No campaigns yet/)).toBeInTheDocument()
+    expect(
+      screen.queryByText('There was an error loading campaigns.')
+    ).not.toBeInTheDocument()
   })
 
   it('renders nothing and redirects home when the flag is off', async () => {

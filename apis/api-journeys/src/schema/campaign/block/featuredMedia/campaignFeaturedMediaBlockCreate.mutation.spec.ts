@@ -14,6 +14,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
+const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
+
 describe('campaignFeaturedMediaBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignFeaturedMediaBlockCreate(
@@ -131,7 +133,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
 
   it('inserts at the requested position with trimmed text, multi-line bullets and the media on the left, renumbering the later sections', async () => {
     const result = await create({
-      id: 'clientId',
+      id: CLIENT_ID,
       parentOrder: 1,
       eyebrow: ' Watch ',
       title: 'The story of Jesus',
@@ -141,7 +143,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
     })
 
     expect(result.data.campaignFeaturedMediaBlockCreate).toMatchObject({
-      id: 'clientId',
+      id: CLIENT_ID,
       parentOrder: 1,
       eyebrow: 'Watch',
       title: 'The story of Jesus',
@@ -156,7 +158,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
       ])
     ).toEqual([
       ['heroId', 0],
-      ['clientId', 1],
+      [CLIENT_ID, 1],
       ['landingSwitcherId', 2],
       ['carouselId', 3],
       ['landingJourneyListId', 4],
@@ -228,7 +230,9 @@ describe('campaignFeaturedMediaBlockCreate', () => {
   it('rejects an unknown mediaSide at the schema (the enum) before the resolver', async () => {
     const result = await create({ mediaSide: 'top' })
 
-    expect(result.errors[0]).toBeDefined()
+    expect(result.errors[0].message).toContain(
+      'Value "top" does not exist in "CampaignMediaSide" enum'
+    )
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 

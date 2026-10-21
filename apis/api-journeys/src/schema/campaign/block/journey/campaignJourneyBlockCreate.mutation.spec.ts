@@ -32,18 +32,14 @@ function journeyRow(
   }
 }
 
+const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
+
 describe('campaignJourneyBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignJourneyBlockCreate(
-      $id: ID
-      $parentBlockId: ID!
-      $url: String!
+      $input: CampaignJourneyBlockCreateInput!
     ) {
-      campaignJourneyBlockCreate(
-        id: $id
-        parentBlockId: $parentBlockId
-        url: $url
-      ) {
+      campaignJourneyBlockCreate(input: $input) {
         id
         parentBlockId
         parentOrder
@@ -80,7 +76,7 @@ describe('campaignJourneyBlockCreate', () => {
   ): Promise<any> {
     return await authClient({
       document: CREATE,
-      variables: { id, parentBlockId, url }
+      variables: { input: { id, parentBlockId, url } }
     })
   }
 
@@ -150,10 +146,10 @@ describe('campaignJourneyBlockCreate', () => {
     const result = await create(
       'https://admin.nextstep.is/journeys/journeyId',
       'landingJourneyListId',
-      'clientId'
+      CLIENT_ID
     )
 
-    expect(result.data.campaignJourneyBlockCreate.id).toBe('clientId')
+    expect(result.data.campaignJourneyBlockCreate.id).toBe(CLIENT_ID)
   })
 
   it('appends the item as an ordered child of the list, after its siblings', async () => {

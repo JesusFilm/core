@@ -39,10 +39,20 @@ builder.objectType(TranslatedValueRef, {
   })
 })
 
+/**
+ * Read a `<field>Translations` JSON column as a fresh object the caller may
+ * change. Anything but a JSON object (null, an array, a string, a number)
+ * reads as no translations; entries are returned as stored, so each reader
+ * still checks the entry it uses.
+ */
+export function parseTranslations(json: unknown): TranslationsJson {
+  if (json == null || typeof json !== 'object' || Array.isArray(json)) return {}
+  return { ...(json as TranslationsJson) }
+}
+
 /** Turn a `<field>Translations` JSON column into the GraphQL list shape. */
 export function toTranslatedValues(json: unknown): TranslatedValueShape[] {
-  if (json == null || typeof json !== 'object' || Array.isArray(json)) return []
-  return Object.entries(json as TranslationsJson)
+  return Object.entries(parseTranslations(json))
     .filter(([, entry]) => entry != null && typeof entry.value === 'string')
     .map(([languageId, entry]) => ({
       languageId,

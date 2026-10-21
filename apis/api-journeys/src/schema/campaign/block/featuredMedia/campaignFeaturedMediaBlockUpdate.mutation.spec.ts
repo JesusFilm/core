@@ -64,6 +64,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     featuredMedia = campaignBlockWithAcl(fixture, 'heroId', FEATURED_MEDIA)
     prismaMock.campaignBlock.findFirst.mockResolvedValue(featuredMedia)
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(featuredMedia)
     prismaMock.campaignBlock.update.mockImplementation((async ({
       data
     }: any) => ({ ...featuredMedia, ...data })) as never)
@@ -156,6 +157,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       mediaSide: null
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(featuredMedia)
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(featuredMedia)
 
     const result = await update({ title: 'x' })
 
@@ -198,7 +200,9 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
   it('rejects an unknown layout at the schema (the enum) before the resolver', async () => {
     const result = await update({ layout: 'diagonal' })
 
-    expect(result.errors).toBeDefined()
+    expect(result.errors[0].message).toContain(
+      'Value "diagonal" does not exist in "CampaignFeaturedMediaLayout" enum'
+    )
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 

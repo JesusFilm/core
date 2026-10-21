@@ -1,13 +1,12 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { touchCampaign } from '../block/service'
-import { Action, campaignAcl } from '../campaign.acl'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
+import { notFound } from '../errors'
+import { renumber } from '../order'
 
-import { INCLUDE_CAMPAIGN_REGION_ACL } from './service'
+import { authorizeRegionUpdate } from './service'
 
 builder.mutationField('campaignRegionCountryRemove', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -22,16 +21,10 @@ builder.mutationField('campaignRegionCountryRemove', (t) =>
       const id = String(rawId)
       const row = await prisma.campaignRegionCountry.findUnique({
         where: { id },
-        include: { region: { include: INCLUDE_CAMPAIGN_REGION_ACL } }
+        select: { regionId: true }
       })
-      if (row == null)
-        throw new GraphQLError('region country not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Update, row.region.campaign, context.user))
-        throw new GraphQLError('user is not allowed to update region', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      if (row == null) throw notFound('region country not found')
+      const region = await authorizeRegionUpdate(row.regionId, context.user)
 
       return await prisma.$transaction(async (tx) => {
         const deleted = await tx.campaignRegionCountry.delete({
@@ -41,16 +34,15 @@ builder.mutationField('campaignRegionCountryRemove', (t) =>
           where: { regionId: row.regionId },
           orderBy: { order: 'asc' }
         })
-        await Promise.all(
-          remaining.map(
-            async (country, order) =>
-              await tx.campaignRegionCountry.update({
-                where: { id: country.id },
-                data: { order }
-              })
-          )
+        await renumber(
+          remaining,
+          async (country, order) =>
+            await tx.campaignRegionCountry.update({
+              where: { id: country.id },
+              data: { order }
+            })
         )
-        await touchCampaign(tx, row.region.campaignId)
+        await touchCampaign(tx, region.campaignId)
         return deleted
       })
     }

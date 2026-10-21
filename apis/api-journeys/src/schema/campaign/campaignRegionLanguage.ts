@@ -50,7 +50,7 @@ export const CampaignRegionLanguageRef = builder.prismaObject(
       qrCode: t.relation('qrCode', {
         nullable: true,
         description:
-          'The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.'
+          'The Campaign QR Code, present from the moment a journey is linked and kept across an unlink; its short link is the Share Link.'
       }),
       order: t.exposeInt('order', { nullable: false })
     })

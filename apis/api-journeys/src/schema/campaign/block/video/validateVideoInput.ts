@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import {
   fetchFieldsFromMux,
   fetchFieldsFromYouTube,
@@ -5,12 +7,14 @@ import {
   videoBlockMuxSchema,
   videoBlockYouTubeSchema
 } from '../../../block/video/service'
+import { fetchWatchVideoById } from '../../gatewayClient'
 import {
   TEXT_CAPS,
   assertEnum,
   assertLengthOrNull,
   badUserInput,
-  parseWithZod
+  parseWithZod,
+  truncate
 } from '../../validation'
 
 import { resolveWatchUrl } from './watchUrl'
@@ -50,8 +54,8 @@ async function youTubeColumns(videoId: string): Promise<VideoColumns> {
     source: 'youTube',
     videoId,
     videoVariantLanguageId: null,
-    title: fields.title,
-    description: fields.description,
+    title: truncate(fields.title, TEXT_CAPS.videoTitle),
+    description: truncate(fields.description, TEXT_CAPS.videoDescription),
     image: fields.image,
     duration: fields.duration
   }
@@ -63,7 +67,10 @@ async function muxColumns(videoId: string): Promise<VideoColumns> {
     source: 'mux',
     videoId,
     videoVariantLanguageId: null,
-    title: fields.title,
+    title:
+      fields.title == null
+        ? null
+        : truncate(fields.title, TEXT_CAPS.videoTitle),
     description: null,
     image: 'image' in fields ? fields.image : null,
     duration: 'duration' in fields ? fields.duration : null
@@ -71,14 +78,53 @@ async function muxColumns(videoId: string): Promise<VideoColumns> {
 }
 
 /**
+ * A picked id its service does not know is a bad value, not a missing row:
+ * the fetchers' `NOT_FOUND` becomes `BAD_USER_INPUT` / `videoId`. Any other
+ * error, such as a YouTube quota or auth failure, passes through.
+ */
+async function pickedColumns(
+  columns: Promise<VideoColumns>,
+  message: string
+): Promise<VideoColumns> {
+  try {
+    return await columns
+  } catch (error) {
+    if (error instanceof GraphQLError && error.extensions.code === 'NOT_FOUND')
+      throw badUserInput(message, 'videoId')
+    throw error
+  }
+}
+
+/**
+ * A Watch video picked by `videoId`: shape-checked, then resolved through the
+ * gateway to a published Watch Video (`BAD_USER_INPUT` / `videoId` if not);
+ * `null` when no id is given.
+ */
+async function resolveWatchVideoId(
+  id: string | number | null | undefined
+): Promise<string | null> {
+  const { videoId } = parseWithZod(
+    videoBlockInternalSchema,
+    { videoId: optionalId(id) },
+    'videoId'
+  )
+  if (videoId == null) return null
+  const video = await fetchWatchVideoById(videoId)
+  if (video == null)
+    throw badUserInput('videoId is not a published Watch video', 'videoId')
+  return video.id
+}
+
+/**
  * Pick time, copying the VideoBlock service: `source` is `internal`,
  * `youTube` or `mux` (`BAD_USER_INPUT` / `source`). YouTube and Mux ids are
  * validated by the existing zod schemas (`BAD_USER_INPUT`, field from the
  * first issue path) and their title, description, poster and duration
- * fetched once by the existing fetchers. A Watch video is a pasted `url`
- * resolved through the gateway (or a known `videoId`) and stores only its
- * ids, the variant language being the one the pasted address named, else
- * the campaign language at link time.
+ * fetched once by the existing fetchers, the text cut to the override caps;
+ * an id its service does not know is `BAD_USER_INPUT` / `videoId`.
+ * A Watch video is a pasted `url` or a `videoId`, either resolved through
+ * the gateway, and stores only its ids, the variant language being the one
+ * the pasted address named, else the campaign language at link time.
  */
 export async function pickVideo(
   input: VideoPickInput,
@@ -97,7 +143,10 @@ export async function pickVideo(
         { videoId: optionalId(input.videoId) },
         'videoId'
       )
-      return await youTubeColumns(videoId)
+      return await pickedColumns(
+        youTubeColumns(videoId),
+        'videoId must be a valid YouTube videoId'
+      )
     }
     case 'mux': {
       const { videoId } = parseWithZod(
@@ -105,18 +154,17 @@ export async function pickVideo(
         { videoId: optionalId(input.videoId) },
         'videoId'
       )
-      return await muxColumns(videoId)
+      return await pickedColumns(
+        muxColumns(videoId),
+        'videoId must be a valid Mux videoId'
+      )
     }
     case 'internal': {
       const watch =
         input.url != null
           ? await resolveWatchUrl(input.url)
           : {
-              videoId: parseWithZod(
-                videoBlockInternalSchema,
-                { videoId: optionalId(input.videoId) },
-                'videoId'
-              ).videoId,
+              videoId: await resolveWatchVideoId(input.videoId),
               languageId: null
             }
       if (watch.videoId == null)

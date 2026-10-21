@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -15,7 +16,7 @@ import {
   fetchFieldsFromMux,
   fetchFieldsFromYouTube
 } from '../../../block/video/service'
-import { fetchWatchVideoBySlug } from '../../gatewayClient'
+import { fetchWatchVideoById, fetchWatchVideoBySlug } from '../../gatewayClient'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -29,11 +30,15 @@ vi.mock('../../../block/video/service', async () => ({
 
 vi.mock('../../gatewayClient', async () => ({
   ...(await vi.importActual('../../gatewayClient')),
-  fetchWatchVideoBySlug: vi.fn()
+  fetchWatchVideoBySlug: vi.fn(),
+  fetchWatchVideoById: vi.fn()
 }))
 
 const YOUTUBE_ID = 'jQaN9DvFTbw'
 const WATCH_URL = 'https://www.jesusfilm.org/watch/jesus.html/english.html'
+
+const NEW_VIDEO_ID = 'a494f58c-5a7a-4be5-97c2-6196cbfc6a14'
+const NEW_ITEM_ID = '676360cc-6ced-4cdc-960c-a2f90d08f48c'
 
 describe('campaignVideoBlockCreate', () => {
   const CREATE = graphql(`
@@ -78,6 +83,7 @@ describe('campaignVideoBlockCreate', () => {
     fixture = setupCampaignBlockSpec()
     hero = fixture.blocks.find((block) => block.id === 'heroId')!
     prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
     vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
       title: 'YouTube title',
       description: 'YouTube description',
@@ -95,6 +101,11 @@ describe('campaignVideoBlockCreate', () => {
       label: 'featureFilm',
       childrenCount: 61,
       variant: { language: { id: '529' } }
+    })
+    vi.mocked(fetchWatchVideoById).mockResolvedValue({
+      id: '1_jf-0-0',
+      label: 'featureFilm',
+      childrenCount: 61
     })
     prismaMock.campaignBlock.create.mockImplementation((async ({
       data
@@ -132,9 +143,13 @@ describe('campaignVideoBlockCreate', () => {
         ...hero,
         mediaBlockId: 'oldMediaId'
       })
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
+        ...hero,
+        mediaBlockId: 'oldMediaId'
+      })
 
       const result = await create({
-        id: 'videoId',
+        id: NEW_VIDEO_ID,
         source: 'youTube',
         videoId: YOUTUBE_ID
       })
@@ -142,7 +157,7 @@ describe('campaignVideoBlockCreate', () => {
       expect(result).toEqual({
         data: {
           campaignVideoBlockCreate: {
-            id: 'videoId',
+            id: NEW_VIDEO_ID,
             pageId: 'landingPageId',
             regionId: null,
             parentBlockId: 'heroId',
@@ -163,11 +178,16 @@ describe('campaignVideoBlockCreate', () => {
         }
       })
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
-        where: { id: 'heroId', campaignId: 'campaignId', deletedAt: null }
+        where: {
+          id: 'heroId',
+          campaignId: 'campaignId',
+          deletedAt: null,
+          parentOrder: { not: null }
+        }
       })
       expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
-          id: 'videoId',
+          id: NEW_VIDEO_ID,
           typename: 'CampaignVideoBlock',
           campaignId: 'campaignId',
           pageId: 'landingPageId',
@@ -184,7 +204,7 @@ describe('campaignVideoBlockCreate', () => {
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
         where: { id: 'heroId' },
-        data: { mediaBlockId: 'videoId' }
+        data: { mediaBlockId: NEW_VIDEO_ID }
       })
       expect(prismaMock.campaign.update).toHaveBeenCalledWith({
         where: { id: 'campaignId' },
@@ -254,7 +274,7 @@ describe('campaignVideoBlockCreate', () => {
       ])
 
       const result = await create({
-        id: 'itemId',
+        id: NEW_ITEM_ID,
         parentBlockId: 'carouselId',
         source: 'youTube',
         videoId: YOUTUBE_ID
@@ -262,7 +282,7 @@ describe('campaignVideoBlockCreate', () => {
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignVideoBlockCreate).toMatchObject({
-        id: 'itemId',
+        id: NEW_ITEM_ID,
         parentBlockId: 'carouselId',
         parentOrder: 1,
         source: 'youTube',
@@ -317,6 +337,48 @@ describe('campaignVideoBlockCreate', () => {
         image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
         duration: 120
       })
+    })
+
+    it('cuts a fetched YouTube title to 200 and description to 1000 code points', async () => {
+      vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
+        title: '😀'.repeat(250),
+        description: '😀'.repeat(1800),
+        image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+        duration: 120
+      })
+
+      await create({ source: 'youTube', videoId: YOUTUBE_ID })
+
+      expect(createdData()).toMatchObject({
+        title: '😀'.repeat(200),
+        description: '😀'.repeat(1000)
+      })
+    })
+
+    it('stores a fetched YouTube description under the cap unchanged', async () => {
+      vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
+        title: 'YouTube title',
+        description: 'x'.repeat(999),
+        image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+        duration: 120
+      })
+
+      await create({ source: 'youTube', videoId: YOUTUBE_ID })
+
+      expect(createdData()).toMatchObject({
+        title: 'YouTube title',
+        description: 'x'.repeat(999)
+      })
+    })
+
+    it('cuts a fetched Mux title to 200 code points', async () => {
+      vi.mocked(fetchFieldsFromMux).mockResolvedValue({
+        title: 'x'.repeat(250)
+      })
+
+      await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(createdData()).toMatchObject({ title: 'x'.repeat(200) })
     })
 
     it('fetches a Mux video’s title, poster and duration once at pick, with no description', async () => {
@@ -397,7 +459,7 @@ describe('campaignVideoBlockCreate', () => {
       expect(fetchFieldsFromMux).not.toHaveBeenCalled()
     })
 
-    it('passes on NOT_FOUND for an id unknown to its service', async () => {
+    it('rejects a YouTube id unknown to YouTube (BAD_USER_INPUT, videoId)', async () => {
       vi.mocked(fetchFieldsFromYouTube).mockRejectedValue(
         new GraphQLError('videoId cannot be found on YouTube', {
           extensions: { code: 'NOT_FOUND' }
@@ -406,8 +468,68 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
 
-      expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+      expect(result.errors[0]).toMatchObject({
+        message: 'videoId must be a valid YouTube videoId',
+        extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
+      })
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('rejects a Mux id unknown to Mux (BAD_USER_INPUT, videoId)', async () => {
+      vi.mocked(fetchFieldsFromMux).mockRejectedValue(
+        new GraphQLError('videoId cannot be found on Mux', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      )
+
+      const result = await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'videoId must be a valid Mux videoId',
+        extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('passes on a Mux gateway failure without reading it as an unknown id', async () => {
+      vi.mocked(fetchFieldsFromMux).mockRejectedValue(
+        new CombinedGraphQLErrors({
+          data: { getMuxVideo: null },
+          errors: [
+            {
+              message: 'Unexpected error.',
+              path: ['getMuxVideo'],
+              extensions: { code: 'INTERNAL_SERVER_ERROR' }
+            }
+          ]
+        })
+      )
+
+      const result = await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(result.errors[0].message).toBe('Unexpected error.')
+      expect(result.errors[0].extensions?.code).not.toBe('BAD_USER_INPUT')
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('passes on INTERNAL_SERVER_ERROR from a YouTube quota or auth failure', async () => {
+      vi.mocked(fetchFieldsFromYouTube).mockRejectedValue(
+        new GraphQLError('YouTube API request failed: quotaExceeded', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+      )
+
+      const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'YouTube API request failed: quotaExceeded',
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
 
     it('refuses a url on a YouTube or Mux video (BAD_USER_INPUT, url)', async () => {
@@ -561,6 +683,31 @@ describe('campaignVideoBlockCreate', () => {
         expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
       }
     )
+
+    it('resolves a Watch video picked by videoId through the gateway and stores its id', async () => {
+      const result = await create({ source: 'internal', videoId: '1_jf-0-0' })
+
+      expect(result.errors).toBeUndefined()
+      expect(fetchWatchVideoById).toHaveBeenCalledWith('1_jf-0-0')
+      expect(fetchWatchVideoBySlug).not.toHaveBeenCalled()
+      expect(createdData()).toMatchObject({
+        source: 'internal',
+        videoId: '1_jf-0-0',
+        videoVariantLanguageId: '529'
+      })
+    })
+
+    it('rejects a videoId that is not a published Watch video (BAD_USER_INPUT, videoId)', async () => {
+      vi.mocked(fetchWatchVideoById).mockResolvedValue(null)
+
+      const result = await create({ source: 'internal', videoId: 'unknown' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'videoId is not a published Watch video',
+        extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
 
     it('needs a url or a known Video id (BAD_USER_INPUT, url)', async () => {
       const result = await create({ source: 'internal' })

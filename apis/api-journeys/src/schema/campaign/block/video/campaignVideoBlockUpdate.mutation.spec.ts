@@ -1,3 +1,5 @@
+import { GraphQLError } from 'graphql'
+
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockFactory'
 import {
   authClient,
@@ -173,6 +175,59 @@ describe('campaignVideoBlockUpdate', () => {
       data: { title: 'YouTube title', description: 'YouTube description' },
       include: { action: true }
     })
+  })
+
+  it('cuts a re-read YouTube title to 200 code points', async () => {
+    videoBlock({ source: 'youTube', videoId: YOUTUBE_ID })
+    vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
+      title: '😀'.repeat(250),
+      description: 'YouTube description',
+      image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+      duration: 120
+    })
+
+    await update({ title: null })
+
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+      where: { id: 'heroMediaId' },
+      data: { title: '😀'.repeat(200) },
+      include: { action: true }
+    })
+  })
+
+  it('refuses with a plain message, writing nothing, when YouTube is unavailable', async () => {
+    videoBlock({ source: 'youTube', videoId: YOUTUBE_ID })
+    vi.mocked(fetchFieldsFromYouTube).mockRejectedValue(
+      new GraphQLError('YouTube API request failed: quota exceeded', {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+    )
+
+    const result = await update({ title: null })
+
+    expect(result.errors[0]).toMatchObject({
+      message:
+        "YouTube is unavailable right now, so the video's original text can't be restored. Try again later.",
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+  })
+
+  it('passes on any other re-read error unchanged', async () => {
+    videoBlock({ source: 'youTube', videoId: YOUTUBE_ID })
+    vi.mocked(fetchFieldsFromYouTube).mockRejectedValue(
+      new GraphQLError('videoId cannot be found on YouTube', {
+        extensions: { code: 'NOT_FOUND' }
+      })
+    )
+
+    const result = await update({ description: null })
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'videoId cannot be found on YouTube',
+      extensions: { code: 'NOT_FOUND' }
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
   it('re-reads only the field set back to null, keeping the other override', async () => {

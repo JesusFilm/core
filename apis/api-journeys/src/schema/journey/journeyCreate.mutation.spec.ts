@@ -11,12 +11,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: vi.fn().mockResolvedValue(undefined) }
-  })
-}))
-
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
@@ -78,7 +72,7 @@ describe('journeyCreate', () => {
 
     expect(result.errors).toBeUndefined()
     expect(prismaMock.journey.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ slug: 'campaign-journeyId' })
+      data: expect.objectContaining({ slug: 'campaign-journeyid' })
     })
   })
 })

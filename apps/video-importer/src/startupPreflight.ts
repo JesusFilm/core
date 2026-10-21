@@ -2,8 +2,10 @@ import './loadEnv'
 
 import { z } from 'zod'
 
+import { graphqlEndpointSchema } from './utils/graphqlEndpoint'
+
 const requiredEnvSchema = z.object({
-  GRAPHQL_ENDPOINT: z.url().trim().min(1),
+  GRAPHQL_ENDPOINT: graphqlEndpointSchema,
   FIREBASE_EMAIL: z.string().trim().min(1),
   FIREBASE_PASSWORD: z.string().trim().min(1),
   FIREBASE_API_KEY: z.string().trim().min(1),

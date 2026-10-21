@@ -1,35 +1,16 @@
-import { CampaignSwitcherVariant as PrismaCampaignSwitcherVariant } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignSwitcherVariant } from '../../enums'
-import { assertEnum } from '../../validation'
+import { CAMPAIGN_SWITCHER_VARIANTS } from '../../enums'
+import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignRegionSwitcherBlock } from '../campaignRegionSwitcherBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-const SWITCHER_VARIANTS = Object.values(PrismaCampaignSwitcherVariant)
-
-export const CampaignRegionSwitcherBlockUpdateInput = builder.inputType(
-  'CampaignRegionSwitcherBlockUpdateInput',
-  {
-    fields: (t) => ({
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      variant: t.field({ type: CampaignSwitcherVariant, required: false }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignRegionSwitcherBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignRegionSwitcherBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -49,18 +30,19 @@ builder.mutationField('campaignRegionSwitcherBlockUpdate', (t) =>
         context.user,
         'CampaignRegionSwitcherBlock'
       )
+      const variant = assertNotNull(input.variant, 'variant')
       return await updateBlock(block, {
         ...validateSectionText(input, ['title']),
-        ...(input.variant != null
+        ...(variant !== undefined
           ? {
               switcherVariant: assertEnum(
-                input.variant,
+                variant,
                 'variant',
-                SWITCHER_VARIANTS
+                CAMPAIGN_SWITCHER_VARIANTS
               )
             }
           : {}),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })

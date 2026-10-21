@@ -1,15 +1,15 @@
-import { GraphQLError } from 'graphql'
-
 import { CampaignRegion, Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { Action } from '../../../lib/auth/ability'
 import { touchCampaign } from '../block/service'
 import {
-  Action,
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
+import { forbidden, notFound } from '../errors'
+import { renumber } from '../order'
 
 /**
  * The campaign region service: every region mutation is campaign Update on
@@ -27,14 +27,6 @@ export type CampaignRegionWithCampaignAcl = Prisma.CampaignRegionGetPayload<{
 
 /** The name every region is born with, in the campaign default language (PRD §3). */
 export const NEW_REGION_NAME = 'New region'
-
-function notFound(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
-}
-
-function forbidden(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } })
-}
 
 /** Region create is campaign Update on the campaign the region will belong to. */
 export async function authorizeRegionCreate(
@@ -82,14 +74,13 @@ export async function reorderRegions(
   regions: CampaignRegion[],
   tx: Prisma.TransactionClient = prisma
 ): Promise<CampaignRegion[]> {
-  return await Promise.all(
-    regions.map(
-      async (region, order) =>
-        await tx.campaignRegion.update({
-          where: { id: region.id },
-          data: { order }
-        })
-    )
+  return await renumber(
+    regions,
+    async (region, order) =>
+      await tx.campaignRegion.update({
+        where: { id: region.id },
+        data: { order }
+      })
   )
 }
 

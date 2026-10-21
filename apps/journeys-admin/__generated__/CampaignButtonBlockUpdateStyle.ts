@@ -45,6 +45,7 @@ export interface CampaignButtonBlockUpdateStyle {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `label`): over 60 characters.
    * - BAD_USER_INPUT (field: `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignButtonBlockUpdate: CampaignButtonBlockUpdateStyle_campaignButtonBlockUpdate;
 }

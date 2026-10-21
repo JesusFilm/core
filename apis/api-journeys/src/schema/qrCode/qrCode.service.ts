@@ -1,11 +1,13 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
+import { JourneyStatus, Prisma, prisma } from '@core/prisma/journeys/client'
 
+import { graphqlRequest } from '../../lib/gateway/graphqlRequest'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyPublicUrl
 } from '../campaign/getJourneyPublicUrl'
+import { badUserInput } from '../campaign/validation'
 
 interface ShortLinkCreateInput {
   id: string
@@ -19,46 +21,17 @@ interface ShortLinkUpdateInput {
   to: string
 }
 
-const GATEWAY_URL = process.env.GATEWAY_URL
-const INTEROP_TOKEN = process.env.INTEROP_TOKEN ?? ''
 const JOURNEYS_SHORTLINK_DOMAIN = process.env.JOURNEYS_SHORTLINK_DOMAIN
 
-async function graphqlRequest(
-  query: string,
-  variables: Record<string, unknown>
-): Promise<Record<string, unknown>> {
-  if (GATEWAY_URL == null)
-    throw new GraphQLError('Gateway URL not configured', {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
-  const response = await fetch(GATEWAY_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'interop-token': INTEROP_TOKEN,
-      'x-graphql-client-name': 'api-journeys-modern',
-      'x-graphql-client-version': process.env.SERVICE_VERSION ?? ''
-    },
-    body: JSON.stringify({ query, variables })
-  })
-
-  const result = (await response.json()) as {
-    data?: Record<string, unknown>
-    errors?: Array<{ message: string }>
-  }
-
-  if (result.errors != null && result.errors.length > 0)
-    throw new GraphQLError(result.errors[0].message, {
-      extensions: { code: 'INTERNAL_SERVER_ERROR' }
-    })
-
-  return result.data ?? {}
-}
-
+/**
+ * Create a short link through the gateway. Returns its id and its public
+ * address as api-media builds it (`https://<hostname>/<pathname>`, with the
+ * domain's path prefix when it has one); `shortUrl` is null when api-media
+ * returns no link.
+ */
 export async function createShortLink(
   input: ShortLinkCreateInput
-): Promise<{ id: string }> {
+): Promise<{ id: string; shortUrl: string | null }> {
   const query = `
     mutation shortLinkCreate($input: MutationShortLinkCreateInput!) {
       shortLinkCreate(input: $input) {
@@ -66,7 +39,7 @@ export async function createShortLink(
         ... on ZodError { message }
         ... on NotUniqueError { message }
         ... on MutationShortLinkCreateSuccess {
-          data { id pathname to domain { hostname } }
+          data { id shortUrl }
         }
       }
     }
@@ -76,7 +49,7 @@ export async function createShortLink(
   const result = data.shortLinkCreate as {
     __typename?: string
     message?: string
-    data?: { id: string }
+    data?: { id: string; shortUrl: string }
   }
 
   if (
@@ -87,7 +60,10 @@ export async function createShortLink(
       extensions: { code: 'BAD_USER_INPUT' }
     })
 
-  return { id: result.data?.id ?? input.id }
+  return {
+    id: result.data?.id ?? input.id,
+    shortUrl: result.data?.shortUrl ?? null
+  }
 }
 
 export async function updateShortLink(
@@ -141,25 +117,28 @@ export async function deleteShortLink(id: string): Promise<void> {
  * QR attribution parameters. The QR row's own team no longer decides the
  * domain, so a campaign QR code pointing at another team's journey lands
  * where that team serves it; for a QR whose team owns the journey the
- * result is unchanged.
+ * result is unchanged. Reads through `tx` when the caller has one open.
  */
-export async function getTo({
-  shortLinkId,
-  toJourneyId,
-  toBlockId
-}: {
-  shortLinkId: string
-  toJourneyId: string
-  toBlockId?: string | null
-}): Promise<string> {
-  const journey = await prisma.journey.findUniqueOrThrow({
+export async function getTo(
+  {
+    shortLinkId,
+    toJourneyId,
+    toBlockId
+  }: {
+    shortLinkId: string
+    toJourneyId: string
+    toBlockId?: string | null
+  },
+  tx: Prisma.TransactionClient = prisma
+): Promise<string> {
+  const journey = await tx.journey.findUniqueOrThrow({
     where: { id: toJourneyId },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
 
   const block =
     toBlockId != null
-      ? await prisma.block.findUniqueOrThrow({
+      ? await tx.block.findUniqueOrThrow({
           where: { journeyId: journey.id, id: toBlockId }
         })
       : null
@@ -183,18 +162,22 @@ export async function parseAndVerifyTo(
   to: string,
   teamId: string
 ): Promise<{ toJourneyId: string; toBlockId?: string | null }> {
-  const { origin, pathname } = new URL(to)
+  let url: URL
+  try {
+    url = new URL(to)
+  } catch {
+    throw badUserInput('to must be a URL', 'to')
+  }
+  const { origin, pathname } = url
 
   const pathArray = pathname.split('/')
   const journeySlug = pathArray[1]
   const blockId = pathArray[2]
 
   if (journeySlug == null || journeySlug === '')
-    throw new GraphQLError('Invalid to', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
+    throw badUserInput('Invalid to', 'to')
 
-  const journey = await prisma.journey.findFirstOrThrow({
+  const journey = await prisma.journey.findFirst({
     where: {
       slug: journeySlug,
       deletedAt: null,
@@ -204,17 +187,24 @@ export async function parseAndVerifyTo(
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
 
+  if (journey == null)
+    throw badUserInput(
+      'to does not name a journey this QR code can point at',
+      'to'
+    )
+
   if (new URL(getJourneyPublicUrl(journey)).origin !== origin)
-    throw new GraphQLError('Invalid hostname', {
-      extensions: { code: 'BAD_USER_INPUT' }
-    })
+    throw badUserInput('Invalid hostname', 'to')
 
   const block =
     blockId != null
-      ? await prisma.block.findFirstOrThrow({
+      ? await prisma.block.findFirst({
           where: { journeyId: journey.id, id: blockId }
         })
       : undefined
+
+  if (blockId != null && block == null)
+    throw badUserInput('to names a block that is not in that journey', 'to')
 
   return {
     toJourneyId: journey.id,

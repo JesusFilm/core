@@ -2,7 +2,7 @@ import { builder } from '../../builder'
 import { CampaignFeaturedMediaLayout, CampaignMediaSide } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignFeaturedMediaBlock = builder.prismaObject(
@@ -10,7 +10,8 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
   {
     variant: 'CampaignFeaturedMediaBlock',
     interfaces: [CampaignBlock, CampaignSectionBlock],
-    isTypeOf: (block: any) => block.typename === 'CampaignFeaturedMediaBlock',
+    isTypeOf: (block: unknown) =>
+      isCampaignBlockOfType(block, 'CampaignFeaturedMediaBlock'),
     description:
       'A section placing one Media Slot beside eyebrow, title, description and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.',
     fields: (t) => ({

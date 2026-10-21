@@ -1,27 +1,20 @@
-import { readFile } from 'fs/promises'
-import { join } from 'path'
-
 import type {
   WorldAtlasTopology,
   WorldMapShapes
 } from '@core/journeys/ui/Campaign'
 import { buildWorldMap } from '@core/journeys/ui/Campaign/CampaignAnalytics/WorldMap/buildWorldMap'
 
-let worldMap: Promise<WorldMapShapes> | undefined
+import topology from '../../../public/countries-110m.json'
+
+let worldMap: WorldMapShapes | undefined
 
 /**
- * The Analytics world map, read from `public/countries-110m.json` (world-atlas
- * 2.0.2) and projected into path strings once per server process, so every
- * campaign page render reuses the same shapes.
+ * The Analytics world map, projected from `public/countries-110m.json`
+ * (world-atlas 2.0.2) into path strings once per server process, so every
+ * campaign page render reuses the same shapes. The topology is a module
+ * import, not a read from disk, so it ships in the function bundle.
  */
 export async function getWorldMap(): Promise<WorldMapShapes> {
-  worldMap ??= readFile(join(process.cwd(), 'public', 'countries-110m.json'), {
-    encoding: 'utf8'
-  })
-    .then((json) => buildWorldMap(JSON.parse(json) as WorldAtlasTopology))
-    .catch((error: unknown) => {
-      worldMap = undefined
-      throw error
-    })
-  return await worldMap
+  worldMap ??= buildWorldMap(topology as unknown as WorldAtlasTopology)
+  return worldMap
 }

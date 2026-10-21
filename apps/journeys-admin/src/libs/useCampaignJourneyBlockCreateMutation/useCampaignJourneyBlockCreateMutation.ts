@@ -14,16 +14,10 @@ export const CAMPAIGN_JOURNEY_BLOCK_CREATE = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}
   ${CAMPAIGN_BLOCK_TRANSLATION_FIELDS}
   mutation CampaignJourneyBlockCreate(
-    $id: ID
-    $parentBlockId: ID!
-    $url: String!
+    $input: CampaignJourneyBlockCreateInput!
     $languageId: ID
   ) {
-    campaignJourneyBlockCreate(
-      id: $id
-      parentBlockId: $parentBlockId
-      url: $url
-    ) {
+    campaignJourneyBlockCreate(input: $input) {
       ...CampaignPublicBlockFields
       ...CampaignBlockTranslationFields
     }

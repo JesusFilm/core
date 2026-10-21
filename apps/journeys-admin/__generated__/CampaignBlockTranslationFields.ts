@@ -9,8 +9,8 @@ import { CampaignTextSource } from "./globalTypes";
 // GraphQL fragment: CampaignBlockTranslationFields
 // ====================================================
 
-export interface CampaignBlockTranslationFields_CampaignColumnBlock {
-  __typename: "CampaignColumnBlock" | "CampaignColumnsBlock" | "CampaignFooterBlock" | "CampaignHeaderBlock";
+export interface CampaignBlockTranslationFields_CampaignHeaderBlock {
+  __typename: "CampaignHeaderBlock" | "CampaignFooterBlock" | "CampaignColumnsBlock" | "CampaignColumnBlock";
 }
 
 export interface CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations {
@@ -385,4 +385,4 @@ export interface CampaignBlockTranslationFields_CampaignVideoBlock {
   descriptionTranslations: CampaignBlockTranslationFields_CampaignVideoBlock_descriptionTranslations[];
 }
 
-export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignColumnBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock | CampaignBlockTranslationFields_CampaignRichTextBlock | CampaignBlockTranslationFields_CampaignFeaturedMediaBlock | CampaignBlockTranslationFields_CampaignImageBlock | CampaignBlockTranslationFields_CampaignVideoBlock;
+export type CampaignBlockTranslationFields = CampaignBlockTranslationFields_CampaignHeaderBlock | CampaignBlockTranslationFields_CampaignHeroBlock | CampaignBlockTranslationFields_CampaignRegionSwitcherBlock | CampaignBlockTranslationFields_CampaignVideoCarouselBlock | CampaignBlockTranslationFields_CampaignJourneyListBlock | CampaignBlockTranslationFields_CampaignAnalyticsBlock | CampaignBlockTranslationFields_CampaignRegionHeaderBlock | CampaignBlockTranslationFields_CampaignRegionShareBlock | CampaignBlockTranslationFields_CampaignTypographyBlock | CampaignBlockTranslationFields_CampaignButtonBlock | CampaignBlockTranslationFields_CampaignJourneyBlock | CampaignBlockTranslationFields_CampaignRichTextBlock | CampaignBlockTranslationFields_CampaignFeaturedMediaBlock | CampaignBlockTranslationFields_CampaignImageBlock | CampaignBlockTranslationFields_CampaignVideoBlock;

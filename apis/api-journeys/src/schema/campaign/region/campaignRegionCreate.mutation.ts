@@ -1,16 +1,21 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { conflict, touchCampaign } from '../block/service'
+import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
-import { generateUniqueRegionSlug } from '../validation'
+import { conflict } from '../errors'
+import {
+  CAMPAIGN_REGIONS_MAX,
+  badUserInput,
+  generateUniqueRegionSlug
+} from '../validation'
 
 import { NEW_REGION_NAME, authorizeRegionCreate } from './service'
 
 builder.mutationField('campaignRegionCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nIdempotent per id: a retry with the id of an existing region of the same campaign returns that region.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT: a concurrent create took the id or the derived slug; retry.',
+      'Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …, skipping the slugs of the team’s live journeys), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nIdempotent per id: a retry with the id of an existing region of the same campaign returns that region.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `campaignId`): the campaign already has 100 regions.\n- CONFLICT: a concurrent create took the id or the derived slug; retry.',
     type: CampaignRegionRef,
     nullable: false,
     args: {
@@ -32,12 +37,18 @@ builder.mutationField('campaignRegionCreate', (t) =>
 
       try {
         return await prisma.$transaction(async (tx) => {
+          await lockCampaignStructure(tx, campaignId)
+          const order = await tx.campaignRegion.count({ where: { campaignId } })
+          if (order >= CAMPAIGN_REGIONS_MAX)
+            throw badUserInput(
+              `a campaign has at most ${CAMPAIGN_REGIONS_MAX} regions`,
+              'campaignId'
+            )
           const slug = await generateUniqueRegionSlug(
-            campaignId,
+            campaign,
             NEW_REGION_NAME,
             tx
           )
-          const order = await tx.campaignRegion.count({ where: { campaignId } })
           const region = await tx.campaignRegion.create({
             ...query,
             data: {
