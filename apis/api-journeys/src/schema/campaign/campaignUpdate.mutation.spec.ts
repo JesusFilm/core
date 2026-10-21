@@ -122,8 +122,8 @@ describe('campaignUpdate', () => {
     await update({ slug: 'xmas-2026' })
 
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
       '/home/campaign/xmas-2026',
       '/home/campaign/xmas-2026/eur'
     ])
@@ -147,7 +147,7 @@ describe('campaignUpdate', () => {
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
     prismaMock.campaign.update.mockResolvedValue(campaign)
 
-    await update({ slug: 'christmas-2026' })
+    await update({ slug: 'outreach-2026' })
 
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })

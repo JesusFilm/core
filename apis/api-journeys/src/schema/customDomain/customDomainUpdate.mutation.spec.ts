@@ -482,9 +482,9 @@ describe('customDomainUpdate', () => {
         })
       )
       expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-        '/home/campaign/christmas-2026',
-        '/home/campaign/christmas-2026/eur',
-        '/home/campaign/christmas-2026/afr',
+        '/home/campaign/outreach-2026',
+        '/home/campaign/outreach-2026/eur',
+        '/home/campaign/outreach-2026/afr',
         '/example.com',
         '/example.com/eur',
         '/example.com/afr'
