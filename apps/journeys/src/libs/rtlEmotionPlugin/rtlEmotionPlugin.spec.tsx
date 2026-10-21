@@ -15,7 +15,10 @@ const Padded = styled('div')({ paddingLeft: '8px' })
 
 interface TestAppProps {
   emotionCache?: ReturnType<typeof createEmotionCache>
-  pageProps: { campaign?: { language?: { bcp47?: string | null } } }
+  pageProps: {
+    campaign?: { language?: { bcp47?: string | null } }
+    journey?: { language?: { bcp47?: string | null } }
+  }
 }
 
 function TestApp({ emotionCache }: TestAppProps): ReactElement {
@@ -71,6 +74,15 @@ describe('createRtlEmotionPlugin', () => {
   it('leaves a left-to-right campaign page on the document cache', async () => {
     const css = await renderDocumentStyles({
       campaign: { language: { bcp47: 'en' } }
+    })
+
+    expect(css).toContain('padding-left:8px')
+    expect(css).not.toContain('padding-right:8px')
+  })
+
+  it('leaves an RTL journey page on the document cache', async () => {
+    const css = await renderDocumentStyles({
+      journey: { language: { bcp47: 'ar' } }
     })
 
     expect(css).toContain('padding-left:8px')
