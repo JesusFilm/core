@@ -58,4 +58,4 @@ export function sectionStyleInputFields(t: InputFieldBuilder) {
 }
 
 export const SECTION_STYLE_ERRORS =
-  '- BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.\n- BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.\n- BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).\n- BAD_USER_INPUT (field: `coverBlockId`): not a live CampaignImageBlock owned by this section.'
+  '- BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.\n- BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.\n- BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).\n- BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.'

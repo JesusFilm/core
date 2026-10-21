@@ -162,6 +162,7 @@ describe('campaignHeroBlockUpdate', () => {
       const hero = campaignBlockWithAcl(fixture, 'heroId', {
         mediaBlockId: 'heroImageId'
       })
+      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
       prismaMock.campaignBlock.findFirst
         .mockResolvedValueOnce(hero)
         .mockResolvedValueOnce({

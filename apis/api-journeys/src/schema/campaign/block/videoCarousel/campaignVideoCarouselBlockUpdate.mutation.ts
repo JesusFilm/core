@@ -6,8 +6,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
@@ -64,7 +64,7 @@ builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
         'CampaignVideoCarouselBlock'
       )
       const text = validateSectionText(input, ['eyebrow', 'title'])
-      const style = await validateSectionStyle(input, block)
+      const style = sectionStyleColumns(input)
       const video = await validateCarouselVideo(
         input,
         block.campaign.defaultLanguageId

@@ -10,8 +10,8 @@ import {
 } from '../sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
-  updateBlock,
-  validateSectionStyle
+  sectionStyleColumns,
+  updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
@@ -62,7 +62,7 @@ builder.mutationField('campaignJourneyListBlockUpdate', (t) =>
         ...(input.display != null
           ? { display: assertEnum(input.display, 'display', DISPLAYS) }
           : {}),
-        ...(await validateSectionStyle(input, block))
+        ...sectionStyleColumns(input)
       })
     }
   })
