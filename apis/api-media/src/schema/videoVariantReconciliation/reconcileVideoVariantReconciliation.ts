@@ -20,6 +20,7 @@ import {
   syncVideoRecordStage
 } from './reconciliationStages'
 import type { VideoVariantReconciliationReason } from './requestVideoVariantReconciliation'
+import { videoVariantHasUsableMedia } from './videoVariantHasUsableMedia'
 
 export type ReconciliationRecord = {
   reason: VideoVariantReconciliationReason
@@ -91,11 +92,7 @@ export async function reconcileVideoVariantReconciliation(
   })
   if (reasonSpecificResult != null) return reasonSpecificResult
 
-  const hasUsableMedia =
-    variant != null &&
-    (variant.muxVideo?.readyToStream === true ||
-      Boolean(variant.hls) ||
-      Boolean(variant.share))
+  const hasUsableMedia = variant != null && videoVariantHasUsableMedia(variant)
   if (!hasUsableMedia) {
     const muxTimedOut =
       Date.now() - reconciliation.createdAt.getTime() >= 2 * 60 * 60 * 1000
@@ -201,26 +198,37 @@ export async function reconcileVideoVariantReconciliation(
     stages.downloads = completedStage()
   }
 
+  // The reconciliation row this sweep read at the top of the function can be
+  // superseded by a newer request (e.g. an explicit Draft) while the
+  // Algolia/parent-sync work above was in flight. Checking reconciliation.published
+  // again here would still be a stale in-memory value, so gate the write on the
+  // row's state at write time, in the same statement, instead of a read-then-write.
   if (reconciliation.published && !variant.published) {
-    await prisma.videoVariant.update({
-      where: { id: variant.id },
-      data: { published: true }
-    })
+    await prisma.$executeRaw`
+      UPDATE "VideoVariant"
+      SET published = true
+      WHERE id = ${variant.id}
+        AND published = false
+        AND EXISTS (
+          SELECT 1 FROM "VideoVariantReconciliation"
+          WHERE "videoVariantId" = ${variant.id} AND published = true
+        )
+    `
   }
   try {
     await updateVideoVariantInAlgolia(variant.id)
     stages.algoliaVariant = completedStage(stages.algoliaVariant.attempts + 1)
   } catch (error) {
+    // Deliberately no compensating rollback of `published` here: an editor
+    // can explicitly unpublish and republish between the conditional UPDATE
+    // above and this failure, and a rollback gated on this sweep's own state
+    // cannot tell that fresh explicit write apart from the one it made itself.
+    // Leaving `published` alone and retrying degraded until Algolia succeeds
+    // avoids silently undoing an explicit action.
     stages.algoliaVariant = failedStage(
       error,
       stages.algoliaVariant.attempts + 1
     )
-    if (reconciliation.published && !variant.published) {
-      await prisma.videoVariant.update({
-        where: { id: variant.id },
-        data: { published: false }
-      })
-    }
     await persistStatus('degraded', stages.algoliaVariant)
     return { publicationReady: false, status: 'degraded' }
   }
