@@ -1,3 +1,5 @@
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 import { ErrorCode, useDropzone } from 'react-dropzone'
@@ -6,7 +8,14 @@ import { type Mock, type MockedFunction } from 'vitest'
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
 import { JourneyFields as Journey } from '@core/journeys/ui/JourneyProvider/__generated__/JourneyFields'
 
+import { CreateCloudflareTeamUploadByFile } from '../../../__generated__/CreateCloudflareTeamUploadByFile'
+import { CreateCloudflareUploadByFile } from '../../../__generated__/CreateCloudflareUploadByFile'
+import {
+  CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_FILE,
+  useCloudflareTeamUploadByFileMutation
+} from '../useCloudflareTeamUploadByFileMutation'
 import { useCloudflareUploadByFileMutation } from '../useCloudflareUploadByFileMutation'
+import { CREATE_CLOUDFLARE_UPLOAD_BY_FILE } from '../useCloudflareUploadByFileMutation/useCloudflareUploadByFileMutation'
 
 import { useImageUpload } from './useImageUpload'
 
@@ -16,13 +25,23 @@ vi.mock('react-dropzone', async () => ({
 }))
 
 vi.mock('../useCloudflareUploadByFileMutation', async () => ({
+  ...(await vi.importActual('../useCloudflareUploadByFileMutation')),
   useCloudflareUploadByFileMutation: vi.fn()
+}))
+
+vi.mock('../useCloudflareTeamUploadByFileMutation', async () => ({
+  ...(await vi.importActual('../useCloudflareTeamUploadByFileMutation')),
+  useCloudflareTeamUploadByFileMutation: vi.fn()
 }))
 
 const mockUseDropzone = useDropzone as MockedFunction<typeof useDropzone>
 const mockUseCloudflareUploadByFileMutation =
   useCloudflareUploadByFileMutation as MockedFunction<
     typeof useCloudflareUploadByFileMutation
+  >
+const mockUseCloudflareTeamUploadByFileMutation =
+  useCloudflareTeamUploadByFileMutation as MockedFunction<
+    typeof useCloudflareTeamUploadByFileMutation
   >
 
 describe('useImageUpload', () => {
@@ -53,6 +72,9 @@ describe('useImageUpload', () => {
     mockUseCloudflareUploadByFileMutation.mockReturnValue([
       vi.fn()
     ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
+    mockUseCloudflareTeamUploadByFileMutation.mockReturnValue([
+      vi.fn()
+    ] as unknown as ReturnType<typeof useCloudflareTeamUploadByFileMutation>)
   })
 
   afterEach(() => {
@@ -331,87 +353,108 @@ describe('useImageUpload', () => {
     expect(result.current.success).toBe(false)
   })
 
-  it('should forward the active journey id to the upload mutation', async () => {
-    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
-      data: {
-        createCloudflareUploadByFile: {
-          uploadUrl: 'https://upload.url'
-        }
-      }
-    })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([
-      createCloudflareUploadByFile
-    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
+  describe('mutation document', () => {
+    const uploadResult = {
+      __typename: 'CloudflareImage' as const,
+      uploadUrl: 'https://upload.url',
+      id: 'cloudflare-image-id'
+    }
 
-    getMockFetch().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        success: true,
-        result: { id: 'image-id' }
+    async function dropFile(): Promise<void> {
+      const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
+      await act(async () => {
+        await onDrop?.(
+          [new File(['file'], 'test.png', { type: 'image/png' })],
+          [],
+          {} as any
+        )
+      })
+    }
+
+    beforeEach(async () => {
+      // Run the real mutation hooks so each case resolves against the
+      // MockedProvider mocks, which only exist for the expected document.
+      mockUseCloudflareUploadByFileMutation.mockImplementation(
+        (
+          await vi.importActual<
+            typeof import('../useCloudflareUploadByFileMutation')
+          >('../useCloudflareUploadByFileMutation')
+        ).useCloudflareUploadByFileMutation
+      )
+      mockUseCloudflareTeamUploadByFileMutation.mockImplementation(
+        (
+          await vi.importActual<
+            typeof import('../useCloudflareTeamUploadByFileMutation')
+          >('../useCloudflareTeamUploadByFileMutation')
+        ).useCloudflareTeamUploadByFileMutation
+      )
+      getMockFetch().mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true, result: { id: 'image-id' } })
       })
     })
 
-    const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-      <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
-      >
-        {children}
-      </JourneyProvider>
-    )
+    it('should upload through the journey document with the active journey id', async () => {
+      const journeyUploadMock: MockLink.MockedResponse<CreateCloudflareUploadByFile> =
+        {
+          request: {
+            query: CREATE_CLOUDFLARE_UPLOAD_BY_FILE,
+            variables: { journeyId: 'journeyId' }
+          },
+          result: vi.fn(() => ({
+            data: { createCloudflareUploadByFile: uploadResult }
+          })) as MockLink.MockedResponse<CreateCloudflareUploadByFile>['result']
+        }
+      const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
+        <MockedProvider mocks={[journeyUploadMock]}>
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
+            {children}
+          </JourneyProvider>
+        </MockedProvider>
+      )
 
-    renderHook(() => useImageUpload({ onUploadComplete }), { wrapper })
+      renderHook(() => useImageUpload({ onUploadComplete }), { wrapper })
+      await dropFile()
 
-    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
-    const file = new File(['file'], 'test.png', { type: 'image/png' })
-
-    await act(async () => {
-      await onDrop?.([file], [], {} as any)
-    })
-
-    expect(createCloudflareUploadByFile).toHaveBeenCalledWith({
-      variables: { journeyId: 'journeyId' }
-    })
-  })
-
-  it('should pass teamId to the upload mutation instead of the journey id when given', async () => {
-    const createCloudflareUploadByFile = vi.fn().mockResolvedValue({
-      data: {
-        createCloudflareUploadByFile: { uploadUrl: 'https://upload.url' }
-      }
-    })
-    mockUseCloudflareUploadByFileMutation.mockReturnValue([
-      createCloudflareUploadByFile
-    ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
-    getMockFetch().mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ success: true, result: { id: 'image-id' } })
-    })
-    const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
-      <JourneyProvider
-        value={{ journey: { id: 'journeyId' } as unknown as Journey }}
-      >
-        {children}
-      </JourneyProvider>
-    )
-
-    renderHook(() => useImageUpload({ onUploadComplete, teamId: 'teamId' }), {
-      wrapper
-    })
-    const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
-    await act(async () => {
-      await onDrop?.(
-        [new File(['file'], 'test.png', { type: 'image/png' })],
-        [],
-        {} as any
+      expect(journeyUploadMock.result).toHaveBeenCalled()
+      expect(onUploadComplete).toHaveBeenCalledWith(
+        'https://imagedelivery.net/cloudflare-key/image-id/public'
       )
     })
 
-    expect(createCloudflareUploadByFile).toHaveBeenCalledWith({
-      variables: { teamId: 'teamId' }
+    it('should upload through the team document with teamId instead of the journey id when given', async () => {
+      const teamUploadMock: MockLink.MockedResponse<CreateCloudflareTeamUploadByFile> =
+        {
+          request: {
+            query: CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_FILE,
+            variables: { teamId: 'teamId' }
+          },
+          result: vi.fn(() => ({
+            data: { createCloudflareUploadByFile: uploadResult }
+          })) as MockLink.MockedResponse<CreateCloudflareTeamUploadByFile>['result']
+        }
+      const wrapper = ({ children }: { children: ReactNode }): ReactElement => (
+        <MockedProvider mocks={[teamUploadMock]}>
+          <JourneyProvider
+            value={{ journey: { id: 'journeyId' } as unknown as Journey }}
+          >
+            {children}
+          </JourneyProvider>
+        </MockedProvider>
+      )
+
+      renderHook(() => useImageUpload({ onUploadComplete, teamId: 'teamId' }), {
+        wrapper
+      })
+      await dropFile()
+
+      expect(teamUploadMock.result).toHaveBeenCalled()
+      expect(onUploadComplete).toHaveBeenCalledWith(
+        'https://imagedelivery.net/cloudflare-key/image-id/public'
+      )
     })
-    expect(onUploadComplete).toHaveBeenCalledWith(
-      'https://imagedelivery.net/cloudflare-key/image-id/public'
-    )
   })
 
   it('should handle missing uploadUrl in mutation response', async () => {
