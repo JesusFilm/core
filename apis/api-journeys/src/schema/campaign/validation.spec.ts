@@ -434,18 +434,39 @@ describe('campaign validation', () => {
   describe('region slug', () => {
     beforeEach(() => {
       prismaMock.campaignRegion.findMany.mockResolvedValue([])
+      prismaMock.journey.findMany.mockResolvedValue([])
       prismaMock.campaignRegion.findFirst.mockResolvedValue(null)
     })
+
+    const campaign = { id: 'campaignId', teamId: 'teamId' }
 
     it('generates the slug from the name, unique per campaign', async () => {
       prismaMock.campaignRegion.findMany.mockResolvedValue([
         { slug: 'eur' }
       ] as any)
-      await expect(generateUniqueRegionSlug('campaignId', 'EUR')).resolves.toBe(
+      await expect(generateUniqueRegionSlug(campaign, 'EUR')).resolves.toBe(
         'eur-2'
       )
       expect(prismaMock.campaignRegion.findMany).toHaveBeenCalledWith({
         where: { campaignId: 'campaignId', slug: { startsWith: 'eur' } },
+        select: { slug: true }
+      })
+    })
+
+    it('skips the slugs of the team’s live journeys', async () => {
+      prismaMock.campaignRegion.findMany.mockResolvedValue([
+        { slug: 'eur-2' }
+      ] as any)
+      prismaMock.journey.findMany.mockResolvedValue([{ slug: 'eur' }] as any)
+      await expect(generateUniqueRegionSlug(campaign, 'EUR')).resolves.toBe(
+        'eur-3'
+      )
+      expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
+        where: {
+          teamId: 'teamId',
+          slug: { startsWith: 'eur' },
+          deletedAt: null
+        },
         select: { slug: true }
       })
     })
@@ -465,7 +486,7 @@ describe('campaign validation', () => {
         expect(REGION_RESERVED_SLUGS.has(reserved)).toBe(true)
       }
       await expectBadUserInputAsync(
-        generateUniqueRegionSlug('campaignId', 'Embed'),
+        generateUniqueRegionSlug(campaign, 'Embed'),
         'slug'
       )
       await expectBadUserInputAsync(

@@ -1,5 +1,6 @@
 import { vi } from 'vitest'
 
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -7,10 +8,12 @@ import {
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { fetchLanguage } from '../gatewayClient'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+vi.mock('../gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 const FRENCH = '496'
 const SPANISH = '21028'
@@ -38,6 +41,10 @@ describe('campaignLanguageRemove', () => {
 
   beforeEach(() => {
     setupCampaignBlockSpec()
+    vi.mocked(fetchLanguage).mockImplementation(async (id) => ({
+      id,
+      bcp47: { '529': 'en', [FRENCH]: 'fr', [SPANISH]: 'es' }[id] ?? null
+    }))
   })
 
   it('removes a non-default language and closes the gap in the order', async () => {
@@ -76,6 +83,45 @@ describe('campaignLanguageRemove', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalledWith(
       expect.objectContaining({ where: { id: 'campaignId' } })
     )
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
+  it('queues every page of a published campaign, the removed language’s _lang pages included', async () => {
+    const campaign = campaignFactory({ role: 'member' })
+      .withLanguage(FRENCH)
+      .withRegion('EUR')
+      .published()
+      .build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(campaign)
+    prismaMock.campaignLanguage.findMany.mockResolvedValue([
+      campaign.languages[0]
+    ])
+
+    await remove(FRENCH)
+
+    expect(prismaMock.campaignLanguage.delete).toHaveBeenCalled()
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/christmas-2026/_lang/en',
+      '/home/campaign/christmas-2026/_lang/en/eur',
+      '/home/campaign/christmas-2026/_lang/fr',
+      '/home/campaign/christmas-2026/_lang/fr/eur'
+    ])
+  })
+
+  it('queues nothing when the removal is refused', async () => {
+    prismaMock.campaign.findUnique.mockResolvedValue(
+      campaignFactory({ role: 'member' })
+        .withLanguage(FRENCH)
+        .published()
+        .build()
+    )
+
+    await remove('529')
+
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
   it('refuses to remove the default language (CONFLICT, field languageId)', async () => {

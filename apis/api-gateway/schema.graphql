@@ -417,6 +417,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock; the playlist is unknown to YouTube.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `url`): "That link isn't a YouTube playlist", or the playlist has no public videos.
+  - BAD_USER_INPUT (field: `campaignId`): the videos would take the campaign past 500 blocks.
   """
   campaignVideoCarouselBlockPlaylistImport(id: ID!, """
   A `youtube.com/playlist?list=<id>` address.
@@ -874,7 +875,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignBlockDeleteAction(id: ID!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
+  Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …, skipping the slugs of the team’s live journeys), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -883,6 +884,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Errors:
   - NOT_FOUND: campaignId does not resolve.
   - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `campaignId`): the campaign already has 100 regions.
   - CONFLICT: a concurrent create took the id or the derived slug; retry.
   """
   campaignRegionCreate(
@@ -957,7 +959,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Errors:
   - NOT_FOUND: regionId does not resolve.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already on the region.
+  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, already on the region, or the region already has 20 share languages.
   """
   campaignRegionLanguageCreate(regionId: ID!, languageId: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1022,6 +1024,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
   - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
   - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
+  
+  A slug change on a published campaign queues on-demand revalidation of its pages under the old and the new slug.
   """
   campaignUpdate(id: ID!, input: CampaignUpdateInput!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1092,7 +1096,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Errors:
   - NOT_FOUND: campaign does not resolve.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, or already a language of this campaign.
+  - BAD_USER_INPUT (field: `languageId`): not an api-languages language, already a language of this campaign, or the campaign already has 50 languages.
+  
+  On a published campaign, queues on-demand revalidation of its pages.
   """
   campaignLanguageAdd(campaignId: ID!, languageId: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1104,6 +1110,8 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: campaign does not resolve, or the language is not one of its languages.
   - FORBIDDEN: caller is not in the team.
   - CONFLICT (field: `languageId`): the language is the campaign default, or its last language.
+  
+  On a published campaign, queues on-demand revalidation of its pages, including the removed language’s.
   """
   campaignLanguageRemove(campaignId: ID!, languageId: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """

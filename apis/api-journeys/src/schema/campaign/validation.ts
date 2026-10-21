@@ -102,6 +102,14 @@ export const LINK_URL_MAX_LENGTH = 2048
 export const PALETTE_MAX_LENGTH = 8
 export const REGION_COUNTRIES_MAX = 250
 
+// Every translation JSON, the public payload and the stats sweep grow with
+// these. They bound adds only: a campaign already over one keeps working, it
+// just cannot grow.
+export const CAMPAIGN_LANGUAGES_MAX = 50
+export const CAMPAIGN_REGIONS_MAX = 100
+export const REGION_SHARE_LANGUAGES_MAX = 20
+export const CAMPAIGN_BLOCKS_MAX = 500
+
 /**
  * Cut to at most `max` Unicode code points: for text copied in from a source
  * (YouTube, Mux, a linked journey) so a later save of it passes the cap.
@@ -275,18 +283,34 @@ export async function validateCampaignSlug(
   return slug
 }
 
-/** Generate a region slug from the name, unique within the campaign. */
+/**
+ * Generate a region slug from the name, unique within the campaign and free
+ * of the team's live journeys: on a Custom Domain a region slug outranks a
+ * journey slug (`assertRegionSlugFreeOfJourneys`), so a journey's slug counts
+ * as taken.
+ */
 export async function generateUniqueRegionSlug(
-  campaignId: string,
+  campaign: { id: string; teamId: string },
   name: string,
   tx: Prisma.TransactionClient = prisma
 ): Promise<string> {
   const base = slugBase(name, REGION_RESERVED_SLUGS)
-  const collisions = await tx.campaignRegion.findMany({
-    where: { campaignId, slug: { startsWith: base } },
+  const regions = await tx.campaignRegion.findMany({
+    where: { campaignId: campaign.id, slug: { startsWith: base } },
     select: { slug: true }
   })
-  return firstFreeSlug(base, new Set(collisions.map((c) => c.slug)))
+  const journeys = await tx.journey.findMany({
+    where: {
+      teamId: campaign.teamId,
+      slug: { startsWith: base },
+      deletedAt: null
+    },
+    select: { slug: true }
+  })
+  return firstFreeSlug(
+    base,
+    new Set([...regions, ...journeys].map((c) => c.slug))
+  )
 }
 
 /** Validate an author-edited region slug against the campaign's other regions. */

@@ -95,10 +95,10 @@ describe('campaignPublish', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/afr'] }]
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/christmas-2026/afr'
     ])
   })
 
@@ -119,11 +119,11 @@ describe('campaignPublish', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-      ['revalidate', { paths: ['/christmas.example.org'] }],
-      ['revalidate', { paths: ['/christmas.example.org/eur'] }]
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/christmas.example.org',
+      '/christmas.example.org/eur'
     ])
   })
 

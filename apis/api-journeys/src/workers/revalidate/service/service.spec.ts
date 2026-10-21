@@ -92,7 +92,7 @@ describe('RevalidateService', () => {
       ])
     })
 
-    it('logs a failed path and continues with the rest', async () => {
+    it('logs a failed path, continues with the rest, then rejects so the job retries', async () => {
       const job = {
         data: { paths: ['/home/campaign/a', '/home/campaign/a/eur'] }
       } as Job
@@ -101,7 +101,9 @@ describe('RevalidateService', () => {
         .mockRejectedValueOnce(new Error('Network error'))
         .mockResolvedValueOnce({ ok: true } as any)
 
-      await revalidatePaths(job, mockLogger as unknown as Logger)
+      await expect(
+        revalidatePaths(job, mockLogger as unknown as Logger)
+      ).rejects.toThrow('Failed to revalidate /home/campaign/a')
 
       expect(mockFetch).toHaveBeenCalledTimes(2)
       expect(mockLogger.error).toHaveBeenCalledWith(
@@ -109,14 +111,16 @@ describe('RevalidateService', () => {
       )
     })
 
-    it('logs a rejected revalidation with its status', async () => {
+    it('logs a rejected revalidation with its status, then rejects so the job retries', async () => {
       const job = {
         data: { paths: ['/home/campaign/a'] }
       } as Job
 
       mockFetch.mockResolvedValueOnce({ ok: false, status: 401 } as any)
 
-      await revalidatePaths(job, mockLogger as unknown as Logger)
+      await expect(
+        revalidatePaths(job, mockLogger as unknown as Logger)
+      ).rejects.toThrow('Failed to revalidate /home/campaign/a')
 
       expect(mockLogger.error).toHaveBeenCalledWith(
         'Failed to revalidate /home/campaign/a: HTTP 401'

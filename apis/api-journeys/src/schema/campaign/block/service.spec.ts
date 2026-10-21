@@ -10,6 +10,7 @@ import {
 } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
+import { CAMPAIGN_BLOCKS_MAX } from '../validation'
 
 import {
   assertImageSlot,
@@ -2370,6 +2371,213 @@ describe('restoreBlock under a deleted parent', () => {
       deletedAt: new Date()
     })
 
-    expect(prismaMock.campaignBlock.count).not.toHaveBeenCalled()
+    expect(prismaMock.campaignBlock.count).not.toHaveBeenCalledWith({
+      where: expect.objectContaining({ deletedAt: { not: null } })
+    })
+  })
+})
+
+describe('the block cap', () => {
+  const fixture = campaignFactory().build()
+  const hero = fixture.blocks.find((block) => block.id === 'heroId')!
+  const heroButton = fixture.blocks.find(
+    (block) => block.id === 'heroButtonId'
+  )!
+  const page = fixture.pages[0]
+  const region = campaignFactory().withRegion('EUR').build().regions[0]
+
+  /** `live` blocks in the campaign; `restoring` rows share the restored block's `deletedAt`. */
+  function countBlocks(live: number, restoring = 0): void {
+    prismaMock.campaignBlock.count.mockImplementation((async ({
+      where
+    }: any) =>
+      where.deletedAt === null
+        ? live
+        : where.deletedAt instanceof Date
+          ? restoring
+          : 0) as never)
+  }
+
+  async function expectRefused(promise: Promise<unknown>): Promise<void> {
+    const error = await errorOf(promise)
+    expect(error.message).toBe(
+      `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`
+    )
+    expect(error.extensions).toEqual({
+      code: 'BAD_USER_INPUT',
+      field: 'campaignId'
+    })
+    expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+  }
+
+  beforeEach(() => {
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
+    prismaMock.campaign.update.mockResolvedValue(fixture)
+    prismaMock.campaignBlock.findMany.mockResolvedValue([])
+    prismaMock.campaignBlock.create.mockImplementation((async ({
+      data
+    }: any) => ({ ...hero, ...data, id: data.id ?? 'newId' })) as never)
+  })
+
+  it('counts the live blocks inside the transaction, after the structure lock', async () => {
+    countBlocks(0)
+
+    await createChildBlock(prismaMock, hero, {
+      typename: 'CampaignTypographyBlock'
+    })
+
+    expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+      where: { campaignId: 'campaignId', deletedAt: null }
+    })
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignBlock.count.mock.invocationCallOrder[0]
+    )
+  })
+
+  describe('a child block', () => {
+    it(`is refused at ${CAMPAIGN_BLOCKS_MAX} live blocks`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX)
+      await expectRefused(
+        createChildBlock(prismaMock, hero, {
+          typename: 'CampaignTypographyBlock'
+        })
+      )
+    })
+
+    it('is allowed one below', async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 1)
+      await createChildBlock(prismaMock, hero, {
+        typename: 'CampaignTypographyBlock'
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('a section', () => {
+    it(`is refused at ${CAMPAIGN_BLOCKS_MAX} live blocks`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX)
+      await expectRefused(
+        createTopLevelBlock(
+          prismaMock,
+          { campaignId: 'campaignId', pageId: page.id, regionId: null },
+          { typename: 'CampaignHeroBlock' }
+        )
+      )
+    })
+
+    it('is allowed one below', async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 1)
+      await createTopLevelBlock(
+        prismaMock,
+        { campaignId: 'campaignId', pageId: page.id, regionId: null },
+        { typename: 'CampaignHeroBlock' }
+      )
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('a Region Line', () => {
+    it(`is refused at ${CAMPAIGN_BLOCKS_MAX} live blocks`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX)
+      await expectRefused(
+        createRegionLine(prismaMock, region, {
+          typename: 'CampaignTypographyBlock',
+          content: 'Line'
+        })
+      )
+    })
+
+    it('is allowed one below', async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 1)
+      await createRegionLine(prismaMock, region, {
+        typename: 'CampaignTypographyBlock',
+        content: 'Line'
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('a Columns section', () => {
+    it('is refused when its two slots would cross the cap', async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 1)
+      const error = await errorOf(
+        createColumnsSection(prismaMock, page, {
+          typename: 'CampaignColumnsBlock'
+        })
+      )
+      expect(error.extensions).toEqual({
+        code: 'BAD_USER_INPUT',
+        field: 'campaignId'
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(1)
+    })
+
+    it('is allowed when the section and its slots fit', async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 2)
+      await createColumnsSection(prismaMock, page, {
+        typename: 'CampaignColumnsBlock'
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(3)
+    })
+  })
+
+  describe('a duplicate', () => {
+    beforeEach(() => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([
+        { ...hero, action: null },
+        { ...heroButton, action: null }
+      ] as never)
+    })
+
+    it(`is refused when its subtree would cross ${CAMPAIGN_BLOCKS_MAX}`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 1)
+      await expectRefused(duplicateBlock(hero))
+    })
+
+    it(`is allowed when its subtree reaches ${CAMPAIGN_BLOCKS_MAX}`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 2)
+      await duplicateBlock(hero)
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('a restore', () => {
+    const deleted = {
+      ...hero,
+      parentOrder: null,
+      deletedAt: new Date('2026-10-01T00:00:00.000Z')
+    }
+
+    beforeEach(() => {
+      prismaMock.campaignBlock.update.mockResolvedValue(deleted)
+    })
+
+    it(`is refused when the rows deleted with the block would cross ${CAMPAIGN_BLOCKS_MAX}`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 2, 3)
+      const error = await errorOf(restoreBlock(deleted))
+      expect(error.extensions).toEqual({
+        code: 'BAD_USER_INPUT',
+        field: 'campaignId'
+      })
+      expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+        where: { campaignId: 'campaignId', deletedAt: deleted.deletedAt }
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
+    })
+
+    it(`is allowed when they reach ${CAMPAIGN_BLOCKS_MAX}`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX - 3, 3)
+      await restoreBlock(deleted)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalled()
+    })
+
+    it('counts nothing for a live block, which only renumbers', async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX)
+      await restoreBlock({ ...deleted, deletedAt: null })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalled()
+    })
   })
 })

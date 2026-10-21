@@ -10,6 +10,7 @@ import {
 } from '../block/service'
 import { CampaignRef } from '../campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import { enqueueLanguageRevalidation } from '../revalidateCampaign'
 
 function conflict(message: string): GraphQLError {
   return new GraphQLError(message, {
@@ -20,7 +21,7 @@ function conflict(message: string): GraphQLError {
 builder.mutationField('campaignLanguageRemove', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Remove a Page Language from a campaign and close the gap in the selector order. `Campaign.defaultLanguageId` is always one of its languages and a campaign always has at least one, so the default and the last language cannot be removed. Stored translations in that language are kept. Not a Command.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve, or the language is not one of its languages.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT (field: `languageId`): the language is the campaign default, or its last language.',
+      'Remove a Page Language from a campaign and close the gap in the selector order. `Campaign.defaultLanguageId` is always one of its languages and a campaign always has at least one, so the default and the last language cannot be removed. Stored translations in that language are kept. Not a Command.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve, or the language is not one of its languages.\n- FORBIDDEN: caller is not in the team.\n- CONFLICT (field: `languageId`): the language is the campaign default, or its last language.\n\nOn a published campaign, queues on-demand revalidation of its pages, including the removed language’s.',
     type: CampaignRef,
     nullable: false,
     args: {
@@ -32,7 +33,11 @@ builder.mutationField('campaignLanguageRemove', (t) =>
       const languageId = String(args.languageId)
       const campaign = await prisma.campaign.findUnique({
         where: { id: campaignId },
-        include: INCLUDE_CAMPAIGN_ACL
+        include: {
+          ...INCLUDE_CAMPAIGN_ACL,
+          regions: true,
+          customDomains: true
+        }
       })
       if (campaign == null)
         throw new GraphQLError('campaign not found', {
@@ -43,7 +48,7 @@ builder.mutationField('campaignLanguageRemove', (t) =>
           extensions: { code: 'FORBIDDEN' }
         })
 
-      return await prisma.$transaction(async (tx) => {
+      const updated = await prisma.$transaction(async (tx) => {
         // A concurrent default-language swap or removal can move the default
         // or the language list after the read above: lock the campaign row and
         // judge the removal against what is committed now.
@@ -96,6 +101,8 @@ builder.mutationField('campaignLanguageRemove', (t) =>
           where: { id: campaignId }
         })
       })
+      await enqueueLanguageRevalidation(campaign, languageId)
+      return updated
     }
   })
 )

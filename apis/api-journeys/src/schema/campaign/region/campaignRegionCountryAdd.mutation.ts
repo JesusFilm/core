@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
 import { fetchCountry } from '../gatewayClient'
 import { assertRegionCountries, badUserInput } from '../validation'
@@ -40,9 +40,18 @@ builder.mutationField('campaignRegionCountryAdd', (t) =>
         throw badUserInput('countryId must be an existing country', 'countryId')
 
       return await prisma.$transaction(async (tx) => {
+        await lockCampaignStructure(tx, region.campaignId)
+        const current = await tx.campaignRegionCountry.findMany({
+          where: { regionId },
+          orderBy: { order: 'asc' }
+        })
+        assertRegionCountries([
+          ...current.map((row) => row.countryId),
+          countryId
+        ])
         const created = await tx.campaignRegionCountry.create({
           ...query,
-          data: { regionId, countryId, order: existing.length }
+          data: { regionId, countryId, order: current.length }
         })
         await touchCampaign(tx, region.campaignId)
         return created

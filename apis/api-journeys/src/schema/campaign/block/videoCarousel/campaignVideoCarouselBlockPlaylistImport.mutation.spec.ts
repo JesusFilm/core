@@ -9,6 +9,7 @@ import {
 } from '../../../../../test/campaignFactory'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
+import { CAMPAIGN_BLOCKS_MAX } from '../../validation'
 
 import { parsePlaylistUrl } from './youTubePlaylist'
 
@@ -241,6 +242,32 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     })
     expect(fetchSpy).not.toHaveBeenCalled()
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it(`refuses videos that would take the campaign past ${CAMPAIGN_BLOCKS_MAX} blocks`, async () => {
+    mockYouTube(3)
+    prismaMock.campaignBlock.count.mockResolvedValue(CAMPAIGN_BLOCKS_MAX - 2)
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: `a campaign has at most ${CAMPAIGN_BLOCKS_MAX} blocks`,
+      extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
+    })
+    expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+      where: { campaignId: 'campaignId', deletedAt: null }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it(`allows videos that take the campaign to ${CAMPAIGN_BLOCKS_MAX} blocks`, async () => {
+    mockYouTube(3)
+    prismaMock.campaignBlock.count.mockResolvedValue(CAMPAIGN_BLOCKS_MAX - 3)
+
+    const result = await importPlaylist()
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignBlock.createManyAndReturn).toHaveBeenCalled()
   })
 
   it('refuses an empty playlist (BAD_USER_INPUT, url)', async () => {

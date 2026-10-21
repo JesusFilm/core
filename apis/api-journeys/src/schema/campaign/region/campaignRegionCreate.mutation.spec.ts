@@ -10,6 +10,7 @@ import {
 } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
+import { CAMPAIGN_REGIONS_MAX } from '../validation'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -34,6 +35,7 @@ describe('campaignRegionCreate', () => {
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
     prismaMock.campaignRegion.findMany.mockResolvedValue([])
+    prismaMock.journey.findMany.mockResolvedValue([])
     prismaMock.campaignRegion.count.mockResolvedValue(0)
     prismaMock.campaignRegion.create.mockImplementation((async ({
       data
@@ -108,6 +110,65 @@ describe('campaignRegionCreate', () => {
       where: { campaignId: 'campaignId', slug: { startsWith: 'new-region' } },
       select: { slug: true }
     })
+  })
+
+  it('skips a slug a live journey of the team already has', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([
+      { slug: 'new-region' }
+    ] as never)
+
+    const result = await create()
+
+    expect(result.data.campaignRegionCreate.slug).toBe('new-region-2')
+    expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
+      where: {
+        teamId: fixture.teamId,
+        slug: { startsWith: 'new-region' },
+        deletedAt: null
+      },
+      select: { slug: true }
+    })
+  })
+
+  it('takes the structure lock before it counts the regions for the order', async () => {
+    prismaMock.campaignRegion.count.mockResolvedValue(3)
+
+    const result = await create()
+
+    expect(result.data.campaignRegionCreate.order).toBe(3)
+    const lock = prismaMock.$queryRaw.mock.calls[0]
+    expect((lock[0] as unknown as string[]).join('?')).toContain(
+      'pg_advisory_xact_lock(hashtext('
+    )
+    expect(lock[1]).toBe('campaign:campaignId')
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignRegion.count.mock.invocationCallOrder[0]
+    )
+    expect(prismaMock.campaignRegion.count).toHaveBeenCalledWith({
+      where: { campaignId: 'campaignId' }
+    })
+  })
+
+  it(`refuses a region past ${CAMPAIGN_REGIONS_MAX} (BAD_USER_INPUT)`, async () => {
+    prismaMock.campaignRegion.count.mockResolvedValue(CAMPAIGN_REGIONS_MAX)
+
+    const result = await create()
+
+    expect(result.errors[0]).toMatchObject({
+      message: `a campaign has at most ${CAMPAIGN_REGIONS_MAX} regions`,
+      extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
+    })
+    expect(prismaMock.campaignRegion.create).not.toHaveBeenCalled()
+  })
+
+  it(`allows the ${CAMPAIGN_REGIONS_MAX}th region`, async () => {
+    prismaMock.campaignRegion.count.mockResolvedValue(CAMPAIGN_REGIONS_MAX - 1)
+
+    const result = await create()
+
+    expect(result.data.campaignRegionCreate.order).toBe(
+      CAMPAIGN_REGIONS_MAX - 1
+    )
   })
 
   describe('unique violation', () => {

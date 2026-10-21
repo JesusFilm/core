@@ -50,6 +50,8 @@ export interface CampaignLanguageRemove {
    * - NOT_FOUND: campaign does not resolve, or the language is not one of its languages.
    * - FORBIDDEN: caller is not in the team.
    * - CONFLICT (field: `languageId`): the language is the campaign default, or its last language.
+   * 
+   * On a published campaign, queues on-demand revalidation of its pages, including the removed language’s.
    */
   campaignLanguageRemove: CampaignLanguageRemove_campaignLanguageRemove;
 }

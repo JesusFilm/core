@@ -28,7 +28,10 @@ function readCookie(name: string): string | null {
  * The page is statically generated, so it cannot see either; a visit with no
  * `lang` param is served in the campaign default, and a visitor whose cookie
  * or browser languages name another campaign language is sent to that
- * language's page, which every link on it then carries forward.
+ * language's page, which every link on it then carries forward. Any `lang`
+ * param stops it, the empty one included: `LanguageFallbackRedirect` sends the
+ * visitor here with `?lang=` once their language has left the campaign, and a
+ * stale page still listing that language must not send them back.
  */
 export function CampaignLanguageRedirect({
   campaign

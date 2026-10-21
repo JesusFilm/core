@@ -136,10 +136,10 @@ describe('campaignUnpublish', () => {
       variables: { id: 'campaignId' }
     })
 
-    expect(mockQueueAdd.mock.calls).toEqual([
-      ['revalidate', { paths: ['/home/campaign/christmas-2026'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/eur'] }],
-      ['revalidate', { paths: ['/home/campaign/christmas-2026/afr'] }]
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+      '/home/campaign/christmas-2026',
+      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/christmas-2026/afr'
     ])
   })
 

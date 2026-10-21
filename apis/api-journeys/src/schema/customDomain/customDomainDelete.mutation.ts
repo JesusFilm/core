@@ -5,6 +5,11 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
+import {
+  campaignLanguageTags,
+  campaignPagePaths,
+  enqueueCampaignRevalidation
+} from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -22,7 +27,10 @@ builder.mutationField('customDomainDelete', (t) =>
 
       const customDomain = await prisma.customDomain.findUnique({
         where: { id },
-        include: { team: { include: { userTeams: true } } }
+        include: {
+          team: { include: { userTeams: true } },
+          campaign: { include: { regions: true } }
+        }
       })
 
       if (customDomain == null) {
@@ -41,6 +49,18 @@ builder.mutationField('customDomainDelete', (t) =>
         await tx.customDomain.delete({ where: { id } })
         await deleteVercelDomain(customDomain)
       })
+
+      // The domain form of the Campaign Root it released stops resolving, and
+      // the root-domain form loses its canonical link to the domain.
+      const { campaign } = customDomain
+      if (campaign?.status === 'published')
+        await enqueueCampaignRevalidation(
+          campaignPagePaths({
+            ...campaign,
+            hostnames: [customDomain.name],
+            languageTags: await campaignLanguageTags(campaign.id)
+          })
+        )
 
       try {
         await updateTeamShortLinks(customDomain.teamId)
