@@ -56,6 +56,14 @@ function errorOf(promise: Promise<unknown>): Promise<GraphQLError> {
   )
 }
 
+const HERO_COPY_ID = 'dba93414-2864-41ed-801d-43f535a9e73e'
+const HERO_MEDIA_COPY_ID = '1f4216be-2642-4f2d-a4a7-7512e06bda00'
+const COLUMNS_COPY_ID = 'f594bc44-c5a8-480d-b7ea-cbd7a72e98f5'
+const SLOT_LEFT_COPY_ID = 'c0766f79-1f71-495f-b289-b8708e0222c7'
+const SLOT_RIGHT_COPY_ID = '42850655-d582-4511-9770-f3c69a746f54'
+const SLOT_HERO_COPY_ID = 'e55e9041-3b12-4000-b0f4-496845a0c5ee'
+const SLOT_BUTTON_COPY_ID = 'a5220e28-1889-4952-9c39-b272e1cb9f8c'
+
 describe('campaign block service', () => {
   const fixture = campaignFactory().build()
   const hero = fixture.blocks.find((block) => block.id === 'heroId')!
@@ -1361,11 +1369,11 @@ describe('campaign block service', () => {
     }
 
     const idMap = [
-      { oldId: 'columnsId', newId: 'columnsCopyId' },
-      { oldId: 'slotLeftId', newId: 'slotLeftCopyId' },
-      { oldId: 'slotRightId', newId: 'slotRightCopyId' },
-      { oldId: 'slotHeroId', newId: 'slotHeroCopyId' },
-      { oldId: 'slotButtonId', newId: 'slotButtonCopyId' }
+      { oldId: 'columnsId', newId: COLUMNS_COPY_ID },
+      { oldId: 'slotLeftId', newId: SLOT_LEFT_COPY_ID },
+      { oldId: 'slotRightId', newId: SLOT_RIGHT_COPY_ID },
+      { oldId: 'slotHeroId', newId: SLOT_HERO_COPY_ID },
+      { oldId: 'slotButtonId', newId: SLOT_BUTTON_COPY_ID }
     ]
 
     const columnsSection = [
@@ -1386,10 +1394,10 @@ describe('campaign block service', () => {
         ([args]) => args.data
       )
       expect(created.map((data) => data.id)).toHaveLength(5)
-      expect(created[0].id).toBe('columnsCopyId')
+      expect(created[0].id).toBe(COLUMNS_COPY_ID)
       const seen = new Set<string>()
       for (const data of created) {
-        if (data.id !== 'columnsCopyId')
+        if (data.id !== COLUMNS_COPY_ID)
           expect(seen).toContain(data.parentBlockId)
         seen.add(data.id as string)
       }
@@ -1400,11 +1408,15 @@ describe('campaign block service', () => {
 
       await duplicateBlock(columnsSection[0], idMap)
 
-      expect(createdData('slotLeftCopyId').parentBlockId).toBe('columnsCopyId')
-      expect(createdData('slotRightCopyId').parentBlockId).toBe('columnsCopyId')
-      expect(createdData('slotHeroCopyId').parentBlockId).toBe('slotLeftCopyId')
-      expect(createdData('slotButtonCopyId').parentBlockId).toBe(
-        'slotHeroCopyId'
+      expect(createdData(SLOT_LEFT_COPY_ID).parentBlockId).toBe(COLUMNS_COPY_ID)
+      expect(createdData(SLOT_RIGHT_COPY_ID).parentBlockId).toBe(
+        COLUMNS_COPY_ID
+      )
+      expect(createdData(SLOT_HERO_COPY_ID).parentBlockId).toBe(
+        SLOT_LEFT_COPY_ID
+      )
+      expect(createdData(SLOT_BUTTON_COPY_ID).parentBlockId).toBe(
+        SLOT_HERO_COPY_ID
       )
     })
 
@@ -1429,17 +1441,17 @@ describe('campaign block service', () => {
 
       await duplicateBlock(columnsSection[0], idMap)
 
-      expect(patchedData('slotHeroCopyId')).toEqual({
+      expect(patchedData(SLOT_HERO_COPY_ID)).toEqual({
         action: {
           create: {
-            blockId: 'slotRightCopyId',
+            blockId: SLOT_RIGHT_COPY_ID,
             regionId: null,
             url: null,
             target: null
           }
         }
       })
-      expect(patchedData('slotButtonCopyId')).toEqual({
+      expect(patchedData(SLOT_BUTTON_COPY_ID)).toEqual({
         action: {
           create: {
             blockId: 'outsideBlockId',
@@ -1466,17 +1478,17 @@ describe('campaign block service', () => {
       ])
 
       await duplicateBlock(hero, [
-        { oldId: 'heroId', newId: 'heroCopyId' },
-        { oldId: 'heroMediaId', newId: 'heroMediaCopyId' }
+        { oldId: 'heroId', newId: HERO_COPY_ID },
+        { oldId: 'heroMediaId', newId: HERO_MEDIA_COPY_ID }
       ])
 
-      expect(createdData('heroMediaCopyId')).toMatchObject({
-        parentBlockId: 'heroCopyId',
+      expect(createdData(HERO_MEDIA_COPY_ID)).toMatchObject({
+        parentBlockId: HERO_COPY_ID,
         parentOrder: null
       })
-      expect(createdData('heroCopyId')).not.toHaveProperty('mediaBlockId')
-      expect(patchedData('heroCopyId')).toEqual({
-        mediaBlockId: 'heroMediaCopyId'
+      expect(createdData(HERO_COPY_ID)).not.toHaveProperty('mediaBlockId')
+      expect(patchedData(HERO_COPY_ID)).toEqual({
+        mediaBlockId: HERO_MEDIA_COPY_ID
       })
     })
 
@@ -1490,12 +1502,12 @@ describe('campaign block service', () => {
 
       expect(result.map((block) => block.id)).toEqual([
         'columnsId',
-        'columnsCopyId',
+        COLUMNS_COPY_ID,
         'footerSectionId',
-        'slotLeftCopyId',
-        'slotRightCopyId',
-        'slotHeroCopyId',
-        'slotButtonCopyId'
+        SLOT_LEFT_COPY_ID,
+        SLOT_RIGHT_COPY_ID,
+        SLOT_HERO_COPY_ID,
+        SLOT_BUTTON_COPY_ID
       ])
     })
 
@@ -1503,14 +1515,14 @@ describe('campaign block service', () => {
       setLive(columnsSection)
 
       const result = await duplicateBlock(columnsSection[0], [
-        { oldId: 'columnsId', newId: 'columnsCopyId' }
+        { oldId: 'columnsId', newId: COLUMNS_COPY_ID }
       ])
 
       const copiedIds = result
         .map((block) => block.id)
         .filter((id) => !columnsSection.some((block) => block.id === id))
       expect(copiedIds).toHaveLength(columnsSection.length)
-      expect(copiedIds).toContain('columnsCopyId')
+      expect(copiedIds).toContain(COLUMNS_COPY_ID)
       expect(new Set(copiedIds).size).toBe(columnsSection.length)
     })
 

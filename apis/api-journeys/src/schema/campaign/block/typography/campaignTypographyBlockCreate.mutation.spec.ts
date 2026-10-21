@@ -15,6 +15,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
+const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
+
 describe('campaignTypographyBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignTypographyBlockCreate(
@@ -99,7 +101,7 @@ describe('campaignTypographyBlockCreate', () => {
 
   it('places the Extra above the body when asked and keeps a client-chosen id', async () => {
     const result = await create({
-      id: 'clientId',
+      id: CLIENT_ID,
       placement: 'above',
       content: ' Hello ',
       variant: 'h3',
@@ -108,7 +110,7 @@ describe('campaignTypographyBlockCreate', () => {
     })
 
     expect(result.data.campaignTypographyBlockCreate).toMatchObject({
-      id: 'clientId',
+      id: CLIENT_ID,
       placement: 'above',
       content: 'Hello',
       variant: 'h3',

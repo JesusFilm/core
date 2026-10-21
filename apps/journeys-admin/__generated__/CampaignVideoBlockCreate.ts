@@ -168,6 +168,7 @@ export interface CampaignVideoBlockCreate {
    * - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id, "videoId must be a valid YouTube videoId" / "videoId must be a valid Mux videoId" for an id unknown to its service, or "videoId is not a published Watch video" for a Watch video picked by id.
    * - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or a url on a YouTube or Mux video.
    * - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+   * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    */
   campaignVideoBlockCreate: CampaignVideoBlockCreate_campaignVideoBlockCreate;
 }

@@ -46,6 +46,7 @@ export interface CampaignThemeUpdate {
    * - BAD_USER_INPUT (field: the colour column): a colour is null, empty or not a hex colour.
    * - BAD_USER_INPUT (field: `headerFont` / `bodyFont` / `labelFont`): a font name is not in the shared curated list.
    * - BAD_USER_INPUT (field: `themeMode` / `radius` / `buttonRadius`): null, or not one of the enum’s values.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignThemeUpdate: CampaignThemeUpdate_campaignThemeUpdate;
 }

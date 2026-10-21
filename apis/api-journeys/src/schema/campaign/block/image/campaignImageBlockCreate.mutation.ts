@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { badUserInput } from '../../validation'
+import { assertClientId, badUserInput } from '../../validation'
 import { CampaignImageBlock } from '../campaignImageBlock'
 import { SECTION_CREATE_ERRORS } from '../createSection'
 import {
@@ -10,7 +10,8 @@ import {
   createOwnedImageBlock,
   createSectionBlock,
   validateImageOwner,
-  validateSectionPage
+  validateSectionPage,
+  withClientIds
 } from '../service'
 
 import { CampaignImageBlockCreateInput } from './inputs'
@@ -32,7 +33,7 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
           'pageId'
         )
       await authorizeBlockCreate(campaignId, context.user)
-      const id = input.id != null ? String(input.id) : undefined
+      const id = assertClientId(input.id)
 
       if (input.pageId != null) {
         const page = await validateSectionPage(
@@ -41,13 +42,17 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
           'CampaignImageBlock'
         )
         const data = await validateImageInput(input)
-        return await prisma.$transaction(
-          async (tx) =>
-            await createSectionBlock(
-              tx,
-              page,
-              { id, typename: 'CampaignImageBlock', ...data },
-              input.parentOrder
+        return await withClientIds(
+          { id: [id] },
+          async () =>
+            await prisma.$transaction(
+              async (tx) =>
+                await createSectionBlock(
+                  tx,
+                  page,
+                  { id, typename: 'CampaignImageBlock', ...data },
+                  input.parentOrder
+                )
             )
         )
       }
@@ -58,9 +63,13 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
       )
       const slot = assertImageSlot(owner, input.slot)
       const data = await validateImageInput(input)
-      return await prisma.$transaction(
-        async (tx) =>
-          await createOwnedImageBlock(tx, owner, slot, { id, ...data })
+      return await withClientIds(
+        { id: [id] },
+        async () =>
+          await prisma.$transaction(
+            async (tx) =>
+              await createOwnedImageBlock(tx, owner, slot, { id, ...data })
+          )
       )
     }
   })

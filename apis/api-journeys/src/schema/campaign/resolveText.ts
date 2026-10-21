@@ -1,4 +1,4 @@
-import { TranslationsJson } from './translatedValue'
+import { parseTranslations } from './translatedValue'
 
 /**
  * The public read of a Translated Field: the requested language's translation
@@ -13,14 +13,8 @@ export function resolveText(
   languageId: string | null | undefined,
   defaultLanguageId: string
 ): string {
-  if (
-    languageId != null &&
-    languageId !== defaultLanguageId &&
-    translations != null &&
-    typeof translations === 'object' &&
-    !Array.isArray(translations)
-  ) {
-    const entry = (translations as TranslationsJson)[languageId]
+  if (languageId != null && languageId !== defaultLanguageId) {
+    const entry = parseTranslations(translations)[languageId]
     if (entry != null && typeof entry.value === 'string' && entry.value !== '')
       return entry.value
   }

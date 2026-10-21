@@ -9,3 +9,8 @@ export const CampaignJourneyListDisplay = builder.enumType(
     description: 'How a Journey List renders its items: a card grid or a list.'
   }
 )
+
+/** Every `CampaignJourneyListDisplay` value, for `assertEnum`. */
+export const CAMPAIGN_JOURNEY_LIST_DISPLAYS = Object.values(
+  PrismaCampaignJourneyListDisplay
+)

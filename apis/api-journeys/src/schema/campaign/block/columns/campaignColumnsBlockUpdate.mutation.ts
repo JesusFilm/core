@@ -1,6 +1,6 @@
 import { builder } from '../../../builder'
 import { CampaignColumnsRatio } from '../../enums'
-import { assertEnum } from '../../validation'
+import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignColumnsBlock } from '../campaignColumnsBlock'
 import {
   SECTION_STYLE_ERRORS,
@@ -39,11 +39,10 @@ builder.mutationField('campaignColumnsBlockUpdate', (t) =>
         context.user,
         'CampaignColumnsBlock'
       )
+      const ratio = assertNotNull(input.ratio, 'ratio')
       return await updateBlock(block, {
-        ...(input.ratio != null
-          ? {
-              ratio: assertEnum(input.ratio, 'ratio', CAMPAIGN_COLUMNS_RATIOS)
-            }
+        ...(ratio !== undefined
+          ? { ratio: assertEnum(ratio, 'ratio', CAMPAIGN_COLUMNS_RATIOS) }
           : {}),
         ...sectionStyleColumns(input)
       })

@@ -37,6 +37,9 @@ vi.mock('../../gatewayClient', async () => ({
 const YOUTUBE_ID = 'jQaN9DvFTbw'
 const WATCH_URL = 'https://www.jesusfilm.org/watch/jesus.html/english.html'
 
+const NEW_VIDEO_ID = 'a494f58c-5a7a-4be5-97c2-6196cbfc6a14'
+const NEW_ITEM_ID = '676360cc-6ced-4cdc-960c-a2f90d08f48c'
+
 describe('campaignVideoBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignVideoBlockCreate($input: CampaignVideoBlockCreateInput!) {
@@ -145,7 +148,7 @@ describe('campaignVideoBlockCreate', () => {
       })
 
       const result = await create({
-        id: 'videoId',
+        id: NEW_VIDEO_ID,
         source: 'youTube',
         videoId: YOUTUBE_ID
       })
@@ -153,7 +156,7 @@ describe('campaignVideoBlockCreate', () => {
       expect(result).toEqual({
         data: {
           campaignVideoBlockCreate: {
-            id: 'videoId',
+            id: NEW_VIDEO_ID,
             pageId: 'landingPageId',
             regionId: null,
             parentBlockId: 'heroId',
@@ -183,7 +186,7 @@ describe('campaignVideoBlockCreate', () => {
       })
       expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
-          id: 'videoId',
+          id: NEW_VIDEO_ID,
           typename: 'CampaignVideoBlock',
           campaignId: 'campaignId',
           pageId: 'landingPageId',
@@ -200,7 +203,7 @@ describe('campaignVideoBlockCreate', () => {
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledTimes(1)
       expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
         where: { id: 'heroId' },
-        data: { mediaBlockId: 'videoId' }
+        data: { mediaBlockId: NEW_VIDEO_ID }
       })
       expect(prismaMock.campaign.update).toHaveBeenCalledWith({
         where: { id: 'campaignId' },
@@ -270,7 +273,7 @@ describe('campaignVideoBlockCreate', () => {
       ])
 
       const result = await create({
-        id: 'itemId',
+        id: NEW_ITEM_ID,
         parentBlockId: 'carouselId',
         source: 'youTube',
         videoId: YOUTUBE_ID
@@ -278,7 +281,7 @@ describe('campaignVideoBlockCreate', () => {
 
       expect(result.errors).toBeUndefined()
       expect(result.data.campaignVideoBlockCreate).toMatchObject({
-        id: 'itemId',
+        id: NEW_ITEM_ID,
         parentBlockId: 'carouselId',
         parentOrder: 1,
         source: 'youTube',

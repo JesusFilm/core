@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { logger } from '../../../../logger'
 import { builder } from '../../../builder'
+import { NULL_FIELD_ERROR } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
 import {
   CAMPAIGN_VIDEO_TYPENAME,
@@ -50,7 +51,8 @@ builder.mutationField('campaignVideoBlockUpdate', (t) =>
     type: CampaignVideoBlock,
     nullable: false,
     description:
-      "Set or clear a Campaign Video's default-language title and description overrides. Only the given fields change; translations are untouched. Null (or empty) falls back to the source text: a Watch video's is read live, so the column is cleared; a YouTube or Mux video's is fetched again, cut to the override caps, and stored.\n\nAuth: campaign Update — any member or manager of the campaign's team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignVideoBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.\n- INTERNAL_SERVER_ERROR: YouTube is unavailable, so a YouTube video's source text cannot be fetched again; nothing is written.",
+      "Set or clear a Campaign Video's default-language title and description overrides. Only the given fields change; translations are untouched. Null (or empty) falls back to the source text: a Watch video's is read live, so the column is cleared; a YouTube or Mux video's is fetched again, cut to the override caps, and stored.\n\nAuth: campaign Update — any member or manager of the campaign's team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignVideoBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.\n- INTERNAL_SERVER_ERROR: YouTube is unavailable, so a YouTube video's source text cannot be fetched again; nothing is written.\n" +
+      NULL_FIELD_ERROR,
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: CampaignVideoBlockUpdateInput, required: true })

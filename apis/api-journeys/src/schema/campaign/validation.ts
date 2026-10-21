@@ -1,5 +1,6 @@
 import { GraphQLError } from 'graphql'
 import slugify from 'slugify'
+import { validate as isUuid } from 'uuid'
 import type { ZodType } from 'zod'
 
 import { Prisma, prisma } from '@core/prisma/journeys/client'
@@ -30,6 +31,25 @@ export function badUserInput(message: string, field: string): GraphQLError {
     extensions: { code: 'BAD_USER_INPUT', field }
   })
 }
+
+/**
+ * The null rule of every campaign update mutation: an omitted field
+ * (`undefined`) is left alone, and an explicit `null` on a field that cannot
+ * be null is `BAD_USER_INPUT` on that field. Nullable fields keep taking
+ * `null` and do not go through this. Returns the value, undefined when
+ * omitted.
+ */
+export function assertNotNull<T>(
+  value: T | null | undefined,
+  field: string
+): T | undefined {
+  if (value === null) throw badUserInput(`${field} cannot be null`, field)
+  return value
+}
+
+/** The null rule, as the line each campaign update mutation's `Errors:` description carries. */
+export const NULL_FIELD_ERROR =
+  '- BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.'
 
 const HEX_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
 
@@ -206,6 +226,64 @@ export function assertUniqueIds(ids: string[], field: string): string[] {
     seen.add(id)
   }
   return ids
+}
+
+/**
+ * Client-chosen ids of one call (a create's `id`, a Columns section's
+ * `slotIds`, a duplicate's `idMap`): each a UUID, and none used twice
+ * within the call, counting `chosen` (ids the same call already chose).
+ * `BAD_USER_INPUT` on `field`.
+ */
+export function assertClientIds(
+  ids: string[],
+  field: string,
+  chosen: string[] = []
+): string[] {
+  for (const id of ids)
+    if (!isUuid(id)) throw badUserInput(`${field} must be a UUID`, field)
+  assertUniqueIds([...chosen, ...ids], field)
+  return ids
+}
+
+/** A create's optional client-chosen `id` through `assertClientIds`; undefined when omitted. */
+export function assertClientId(
+  id: string | number | null | undefined,
+  field = 'id'
+): string | undefined {
+  if (id == null) return undefined
+  return assertClientIds([String(id)], field)[0]
+}
+
+/** The client-id rule, as the line each campaign block create's `Errors:` description carries. */
+export const CLIENT_ID_ERROR =
+  '- BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).'
+
+/**
+ * Whether `error` is a unique violation (P2002) on `column`: the classic
+ * engine names the columns in `meta.target`, a driver adapter in its
+ * constraint's `fields` (quoted when mixed case).
+ */
+export function isUniqueViolation(error: unknown, column: string): boolean {
+  if (
+    !(error instanceof Prisma.PrismaClientKnownRequestError) ||
+    error.code !== 'P2002'
+  )
+    return false
+  const meta = error.meta as
+    | {
+        target?: unknown
+        driverAdapterError?: {
+          cause?: { constraint?: { fields?: unknown } }
+        }
+      }
+    | undefined
+  const fields = Array.isArray(meta?.target)
+    ? meta.target
+    : meta?.driverAdapterError?.cause?.constraint?.fields
+  return (
+    Array.isArray(fields) &&
+    fields.some((field) => String(field).replace(/"/g, '') === column)
+  )
 }
 
 /** Countries per region: no duplicates and at most 250. */

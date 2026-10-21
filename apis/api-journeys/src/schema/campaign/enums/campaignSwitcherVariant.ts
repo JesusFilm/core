@@ -10,3 +10,8 @@ export const CampaignSwitcherVariant = builder.enumType(
       'How a Region Switcher lists the regions: cards, a list, or pills.'
   }
 )
+
+/** Every `CampaignSwitcherVariant` value, for `assertEnum`. */
+export const CAMPAIGN_SWITCHER_VARIANTS = Object.values(
+  PrismaCampaignSwitcherVariant
+)

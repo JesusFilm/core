@@ -68,6 +68,7 @@ export interface CampaignTypographyBlockCreate {
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign, or neither / both of parentBlockId and regionId given.
    * - BAD_USER_INPUT (field: `regionId`): not a region of this campaign.
    * - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule; placement is refused on a Region Line.
+   * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    */
   campaignTypographyBlockCreate: CampaignTypographyBlockCreate_campaignTypographyBlockCreate;
 }

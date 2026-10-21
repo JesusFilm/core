@@ -55,6 +55,7 @@ export interface CampaignBlockOrderUpdate {
    * - CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block with no order.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `placement`): not above or below, or given for a block that is not a section child.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignBlockOrderUpdate: CampaignBlockOrderUpdate_campaignBlockOrderUpdate[];
 }

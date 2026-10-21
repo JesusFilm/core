@@ -94,7 +94,7 @@ describe('journeyDuplicate', () => {
     expect(prismaMock.journey.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         title: 'Embed',
-        slug: 'embed-duplicateJourneyId'
+        slug: 'embed-duplicatejourneyid'
       })
     })
   })

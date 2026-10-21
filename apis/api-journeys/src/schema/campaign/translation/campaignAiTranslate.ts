@@ -13,11 +13,12 @@ import { User } from '@core/yoga/firebaseClient'
 import { env } from '../../../env'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
-import { conflict, lockCampaign, touchCampaign } from '../block/service'
+import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
 import { Action, campaignAcl } from '../campaign.acl'
+import { conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
-import { TranslationsJson } from '../translatedValue'
+import { TranslationsJson, parseTranslations } from '../translatedValue'
 import { badUserInput } from '../validation'
 
 import {
@@ -34,6 +35,7 @@ import {
   TranslationRunLock,
   acquireTranslationRunLock
 } from './translationRunLock'
+import { TRANSLATION_TARGETS, TranslationTargetKind } from './translationTarget'
 
 type CampaignAiTranslateMode = 'all' | 'missing'
 
@@ -176,9 +178,7 @@ function withinCap(
   return characters.slice(0, cap).join('').trim()
 }
 
-type TargetKind = 'block' | 'region' | 'string' | 'campaign'
-
-function kindOf(row: CampaignTranslationRowShape): TargetKind {
+function kindOf(row: CampaignTranslationRowShape): TranslationTargetKind {
   if (row.target.blockId != null) return 'block'
   if (row.target.regionId != null) return 'region'
   if (row.target.stringId != null) return 'string'
@@ -194,67 +194,13 @@ function kindOf(row: CampaignTranslationRowShape): TargetKind {
 async function lockBatchTargets(
   tx: Prisma.TransactionClient,
   campaignId: string,
-  targetIds: Map<string, TargetKind>
+  targetIds: Map<string, TranslationTargetKind>
 ): Promise<void> {
-  const idsOf = (kind: TargetKind): string[] =>
-    [...targetIds].filter(([, k]) => k === kind).map(([id]) => id)
-  const blockIds = idsOf('block')
-  const regionIds = idsOf('region')
-  const stringIds = idsOf('string')
-  if (blockIds.length > 0)
-    await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE id = ANY(${blockIds}::text[]) ORDER BY id FOR UPDATE`
-  if (regionIds.length > 0)
-    await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ANY(${regionIds}::text[]) ORDER BY id FOR UPDATE`
-  if (stringIds.length > 0)
-    await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE id = ANY(${stringIds}::text[]) ORDER BY id FOR UPDATE`
+  for (const kind of ['block', 'region', 'string'] as const) {
+    const ids = [...targetIds].filter(([, k]) => k === kind).map(([id]) => id)
+    if (ids.length > 0) await TRANSLATION_TARGETS[kind].lock(tx, ids)
+  }
   await lockCampaign(tx, campaignId)
-}
-
-async function readTarget(
-  tx: Prisma.TransactionClient,
-  kind: TargetKind,
-  id: string
-): Promise<Record<string, unknown> | null> {
-  switch (kind) {
-    case 'block':
-      return await tx.campaignBlock.findFirst({
-        where: { id, deletedAt: null }
-      })
-    case 'region':
-      return await tx.campaignRegion.findUnique({ where: { id } })
-    case 'string':
-      return await tx.campaignString.findUnique({ where: { id } })
-    case 'campaign':
-      return await tx.campaign.findUnique({ where: { id } })
-  }
-}
-
-async function writeTarget(
-  tx: Prisma.TransactionClient,
-  kind: TargetKind,
-  id: string,
-  data: Record<string, TranslationsJson>
-): Promise<void> {
-  switch (kind) {
-    case 'block':
-      await tx.campaignBlock.update({ where: { id }, data })
-      break
-    case 'region':
-      await tx.campaignRegion.update({ where: { id }, data })
-      break
-    case 'string':
-      await tx.campaignString.update({ where: { id }, data })
-      break
-    case 'campaign':
-      await tx.campaign.update({ where: { id }, data })
-      break
-  }
-}
-
-function currentTranslations(value: unknown): TranslationsJson {
-  return value != null && typeof value === 'object' && !Array.isArray(value)
-    ? { ...(value as TranslationsJson) }
-    : {}
 }
 
 /**
@@ -311,14 +257,15 @@ async function writeBatch({
 
     let written = 0
     for (const [targetId, rows] of rowsByTarget) {
-      const kind = kinds.get(targetId) as TargetKind
-      const record = await readTarget(tx, kind, targetId)
+      const model =
+        TRANSLATION_TARGETS[kinds.get(targetId) as TranslationTargetKind]
+      const record = await model.find(tx, targetId)
       if (record == null) continue
 
       const data: Record<string, TranslationsJson> = {}
       for (const row of rows) {
         const column = translationsColumn(row.field)
-        const json = data[column] ?? currentTranslations(record[column])
+        const json = data[column] ?? parseTranslations(record[column])
         const existing = json[languageId]
         const hasEntry = existing != null && existing.value !== ''
         if (hasEntry && (mode === 'missing' || existing.source === 'human'))
@@ -334,8 +281,7 @@ async function writeBatch({
         data[column] = json
         written++
       }
-      if (Object.keys(data).length > 0)
-        await writeTarget(tx, kind, targetId, data)
+      if (Object.keys(data).length > 0) await model.update(tx, targetId, data)
     }
     if (written > 0) await touchCampaign(tx, campaignId)
     return written

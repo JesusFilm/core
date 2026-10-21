@@ -4,9 +4,9 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
-import { conflict } from './block/service'
 import { CampaignRef } from './campaign'
 import { Action, campaignAcl } from './campaign.acl'
+import { conflict } from './errors'
 import { fetchLanguage } from './gatewayClient'
 import { CampaignCreateInput } from './inputs'
 import { resolveCampaignStringValues, seedCampaign } from './seed'

@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -18,6 +17,8 @@ import {
   updateShortLink
 } from '../../qrCode/qrCode.service'
 import { Action, campaignAcl } from '../campaign.acl'
+import { forbidden, notFound } from '../errors'
+import { renumber } from '../order'
 import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
 
 /**
@@ -37,14 +38,6 @@ export type CampaignRegionLanguageWithCampaignAcl =
   Prisma.CampaignRegionLanguageGetPayload<{
     include: typeof INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL
   }>
-
-function notFound(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
-}
-
-function forbidden(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } })
-}
 
 /** Update, unlink, delete and reorder of a Share Language are campaign Update on its region's campaign. */
 export async function authorizeRegionLanguageUpdate(
@@ -251,13 +244,12 @@ export async function reorderRegionLanguages(
   regionLanguages: CampaignRegionLanguage[],
   tx: Prisma.TransactionClient = prisma
 ): Promise<CampaignRegionLanguage[]> {
-  return await Promise.all(
-    regionLanguages.map(
-      async (regionLanguage, order) =>
-        await tx.campaignRegionLanguage.update({
-          where: { id: regionLanguage.id },
-          data: { order }
-        })
-    )
+  return await renumber(
+    regionLanguages,
+    async (regionLanguage, order) =>
+      await tx.campaignRegionLanguage.update({
+        where: { id: regionLanguage.id },
+        data: { order }
+      })
   )
 }

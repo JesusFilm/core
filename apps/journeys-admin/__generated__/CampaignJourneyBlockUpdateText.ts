@@ -36,6 +36,7 @@ export interface CampaignJourneyBlockUpdateText {
    * - NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignJourneyBlockUpdate: CampaignJourneyBlockUpdateText_campaignJourneyBlockUpdate;
 }

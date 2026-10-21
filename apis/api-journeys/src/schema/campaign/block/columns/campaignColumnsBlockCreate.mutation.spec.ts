@@ -1,3 +1,5 @@
+import { Prisma } from '@core/prisma/journeys/client'
+
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockFactory'
 import {
   authClient,
@@ -13,6 +15,24 @@ import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+const LEFT_SLOT_ID = 'd4c11dcb-4ff3-4bd6-849e-817bae5d3f17'
+const RIGHT_SLOT_ID = 'e09e15db-3ec7-44a2-9772-dc143d3f14cd'
+
+function idTaken(): Prisma.PrismaClientKnownRequestError {
+  return new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+    code: 'P2002',
+    clientVersion: 'test',
+    meta: {
+      driverAdapterError: {
+        cause: {
+          kind: 'UniqueConstraintViolation',
+          constraint: { fields: ['id'] }
+        }
+      }
+    }
+  })
+}
 
 describe('campaignColumnsBlockCreate', () => {
   const CREATE = graphql(`
@@ -116,13 +136,13 @@ describe('campaignColumnsBlockCreate', () => {
   )
 
   it('creates the slots under the ids the client chose', async () => {
-    await create({ slotIds: ['leftId', 'rightId'] })
+    await create({ slotIds: [LEFT_SLOT_ID, RIGHT_SLOT_ID] })
 
     expect(prismaMock.campaignBlock.create).toHaveBeenNthCalledWith(2, {
-      data: expect.objectContaining({ id: 'leftId', parentOrder: 0 })
+      data: expect.objectContaining({ id: LEFT_SLOT_ID, parentOrder: 0 })
     })
     expect(prismaMock.campaignBlock.create).toHaveBeenNthCalledWith(3, {
-      data: expect.objectContaining({ id: 'rightId', parentOrder: 1 })
+      data: expect.objectContaining({ id: RIGHT_SLOT_ID, parentOrder: 1 })
     })
   })
 
@@ -173,5 +193,68 @@ describe('campaignColumnsBlockCreate', () => {
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+  })
+
+  describe('the client-chosen ids', () => {
+    const SECTION_ID = '5a1d2c3b-4e5f-4a6b-8c7d-9e0f1a2b3c4d'
+
+    it('refuses the same slot id twice (BAD_USER_INPUT, slotIds)', async () => {
+      const result = await create({ slotIds: [LEFT_SLOT_ID, LEFT_SLOT_ID] })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'slotIds'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
+
+    it('refuses a slot id equal to the section id (BAD_USER_INPUT, slotIds)', async () => {
+      const result = await create({
+        id: SECTION_ID,
+        slotIds: [SECTION_ID, RIGHT_SLOT_ID]
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'slotIds'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
+
+    it('refuses a slot id that is not a UUID (BAD_USER_INPUT, slotIds)', async () => {
+      const result = await create({ slotIds: [LEFT_SLOT_ID, 'rightId'] })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'slotIds'
+      })
+    })
+
+    it('names slotIds when the taken id is a slot’s', async () => {
+      const insert = prismaMock.campaignBlock.create.getMockImplementation()
+      prismaMock.campaignBlock.create.mockImplementation((async (args: any) => {
+        if (args.data.id === RIGHT_SLOT_ID) throw idTaken()
+        return await insert?.(args)
+      }) as never)
+      prismaMock.campaignBlock.findMany.mockImplementation((async (
+        args: any
+      ) =>
+        args?.where?.id?.in != null
+          ? [{ id: RIGHT_SLOT_ID }]
+          : fixture.blocks.filter(
+              (block) =>
+                block.pageId === 'landingPageId' && block.parentBlockId == null
+            )) as never)
+
+      const result = await create({
+        id: SECTION_ID,
+        slotIds: [LEFT_SLOT_ID, RIGHT_SLOT_ID]
+      })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'slotIds is already taken',
+        extensions: { code: 'BAD_USER_INPUT', field: 'slotIds' }
+      })
+    })
   })
 })

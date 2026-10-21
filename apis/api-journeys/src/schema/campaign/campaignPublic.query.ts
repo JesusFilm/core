@@ -16,6 +16,7 @@ import {
   CampaignRegionLanguagePublicPayload,
   CampaignRegionPublicPayload
 } from './campaignPublic'
+import { notFound } from './errors'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyEmbedUrl,
@@ -77,15 +78,6 @@ export async function resolveJourneyLives(
   return await loadCampaignJourneyLives(journeyIds)
 }
 
-/** Every translatable text column of CampaignBlock and its translations sibling, from the `CampaignTextField` map. */
-const BLOCK_TEXT_FIELDS = CAMPAIGN_BLOCK_TEXT_COLUMNS
-
-function notFound(): GraphQLError {
-  return new GraphQLError('campaign not found', {
-    extensions: { code: 'NOT_FOUND' }
-  })
-}
-
 /** Resolve every text column of a block to `languageId` and drop its translations. */
 function resolveBlockText(
   block: CampaignPublicBlock,
@@ -93,7 +85,7 @@ function resolveBlockText(
   defaultLanguageId: string
 ): CampaignPublicBlock {
   const resolved: CampaignPublicBlock = { ...block }
-  for (const [field, translations] of BLOCK_TEXT_FIELDS) {
+  for (const [field, translations] of CAMPAIGN_BLOCK_TEXT_COLUMNS) {
     if (block[field] == null && block[translations] == null) continue
     resolved[field] = resolveText(
       block[field],
@@ -145,7 +137,7 @@ export function toCampaignPublic(
   journeyLives: JourneyLives = new Map()
 ): CampaignPublicPayload {
   const theme = campaign.theme
-  if (theme == null) throw notFound()
+  if (theme == null) throw notFound('campaign not found')
 
   const languageId =
     requestedLanguageId != null &&
@@ -185,7 +177,7 @@ export function toCampaignPublic(
   const footer = chrome.find(
     (block) => block.typename === 'CampaignFooterBlock'
   )
-  if (header == null || footer == null) throw notFound()
+  if (header == null || footer == null) throw notFound('campaign not found')
 
   const regions: CampaignRegionPublicPayload[] = campaign.regions.map(
     (region) => ({
@@ -286,7 +278,7 @@ builder.queryField('campaignPublic', (t) =>
         slug != null &&
         (!SLUG_PATTERN.test(slug) || slug.length > SLUG_MAX_LENGTH)
       )
-        throw notFound()
+        throw notFound('campaign not found')
 
       const campaign = await prisma.campaign.findFirst({
         where:
@@ -298,7 +290,7 @@ builder.queryField('campaignPublic', (t) =>
               },
         include: INCLUDE_CAMPAIGN_PUBLIC
       })
-      if (campaign == null) throw notFound()
+      if (campaign == null) throw notFound('campaign not found')
       const journeyLives = await resolveJourneyLives(campaign)
       return toCampaignPublic(
         campaign,

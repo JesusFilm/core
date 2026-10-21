@@ -6,6 +6,7 @@ import { builder } from '../../builder'
 import { touchCampaign } from '../block/service'
 import { Action, campaignAcl } from '../campaign.acl'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
+import { renumber } from '../order'
 
 import { INCLUDE_CAMPAIGN_REGION_ACL } from './service'
 
@@ -41,14 +42,13 @@ builder.mutationField('campaignRegionCountryRemove', (t) =>
           where: { regionId: row.regionId },
           orderBy: { order: 'asc' }
         })
-        await Promise.all(
-          remaining.map(
-            async (country, order) =>
-              await tx.campaignRegionCountry.update({
-                where: { id: country.id },
-                data: { order }
-              })
-          )
+        await renumber(
+          remaining,
+          async (country, order) =>
+            await tx.campaignRegionCountry.update({
+              where: { id: country.id },
+              data: { order }
+            })
         )
         await touchCampaign(tx, row.region.campaignId)
         return deleted

@@ -1,3 +1,5 @@
+import { Prisma } from '@core/prisma/journeys/client'
+
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockFactory'
 import {
   authClient,
@@ -13,6 +15,21 @@ import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+function idTaken(): Prisma.PrismaClientKnownRequestError {
+  return new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+    code: 'P2002',
+    clientVersion: 'test',
+    meta: {
+      driverAdapterError: {
+        cause: {
+          kind: 'UniqueConstraintViolation',
+          constraint: { fields: ['id'] }
+        }
+      }
+    }
+  })
+}
 
 describe('campaignButtonBlockCreate', () => {
   const CREATE = graphql(`
@@ -156,5 +173,41 @@ describe('campaignButtonBlockCreate', () => {
     const result = await create({})
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
+  })
+
+  describe('the client-chosen id', () => {
+    it.each([
+      ['empty', ''],
+      ['not a UUID', 'not-a-uuid']
+    ])('refuses an id that is %s (BAD_USER_INPUT, id)', async (_label, id) => {
+      const result = await create({ id })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'id must be a UUID',
+        extensions: { code: 'BAD_USER_INPUT', field: 'id' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
+
+    it('answers an id already taken by another block with BAD_USER_INPUT, id', async () => {
+      prismaMock.campaignBlock.create.mockRejectedValue(idTaken())
+
+      const result = await create({
+        id: '0f2b4c6d-8e9f-4a1b-9c2d-3e4f5a6b7c8d'
+      })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'id is already taken',
+        extensions: { code: 'BAD_USER_INPUT', field: 'id' }
+      })
+    })
+
+    it('keeps a UUID the client chose', async () => {
+      const id = '0f2b4c6d-8e9f-4a1b-9c2d-3e4f5a6b7c8d'
+
+      const result = await create({ id })
+
+      expect(result.data.campaignButtonBlockCreate.id).toBe(id)
+    })
   })
 })

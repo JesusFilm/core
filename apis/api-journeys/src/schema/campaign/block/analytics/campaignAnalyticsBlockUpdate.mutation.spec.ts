@@ -81,6 +81,26 @@ describe('campaignAnalyticsBlockUpdate', () => {
     )
   })
 
+  it('refuses showMap: null (BAD_USER_INPUT, showMap) and leaves an omitted showMap alone', async () => {
+    const nulled = await update({ showMap: null })
+
+    expect(nulled.errors[0]).toMatchObject({
+      message: 'showMap cannot be null',
+      extensions: { code: 'BAD_USER_INPUT', field: 'showMap' }
+    })
+    expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+
+    const omitted = await update({ title: 'Reach' })
+
+    expect(omitted.errors).toBeUndefined()
+    expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { title: 'Reach' } })
+    )
+    expect(
+      prismaMock.campaignBlock.update.mock.calls[0][0].data.showMap
+    ).toBeUndefined()
+  })
+
   it('throws NOT_FOUND when the id is not a live CampaignAnalyticsBlock', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroButtonId')
