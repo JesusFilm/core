@@ -84,19 +84,29 @@ interface Pass {
   mutation: DocumentNode
   field: 'sitesDeletePrepare' | 'sitesDelete'
   batchSize: number
+  /** How many batches are sent at once. */
+  concurrency: number
 }
 
 // Plausible's database has no site_id index on goals or setup_help_emails, so
 // each site deleted makes Postgres read both tables in full. The prepare pass
 // clears every orphan's rows out of them first, in big batches (one read per
-// batch), so the delete pass only has small tables to read per site.
+// batch), so the delete pass only has small tables to read per site. Goals of
+// live sites remain, so each delete is still a full read of goals; running
+// several batches at once spreads those reads across the database's CPUs.
 const PASSES: Record<PassName, Pass> = {
   prepare: {
     mutation: SITES_DELETE_PREPARE,
     field: 'sitesDeletePrepare',
-    batchSize: 500
+    batchSize: 500,
+    concurrency: 1
   },
-  delete: { mutation: SITES_DELETE, field: 'sitesDelete', batchSize: 20 }
+  delete: {
+    mutation: SITES_DELETE,
+    field: 'sitesDelete',
+    batchSize: 20,
+    concurrency: 4
+  }
 }
 
 const client = new ApolloClient({
@@ -196,7 +206,7 @@ interface PassResult {
 
 /**
  * Pages through every api-journeys site and runs the pass over the orphans,
- * batch by batch. A failed batch is logged and skipped, since the next run
+ * a few batches at a time. A failed batch is logged and skipped, since the next run
  * finds its sites again; several failures in a row end the run.
  */
 async function runPass(
@@ -228,19 +238,33 @@ async function runPass(
     result.sample.push(...domains.slice(0, SAMPLE_SIZE - result.sample.length))
 
     if (!dryRun) {
-      for (const batch of chunk(domains, pass.batchSize)) {
-        try {
-          result.rows += await runBatch(pass, batch)
-          consecutiveFailures = 0
-        } catch (error) {
+      const batches = chunk(domains, pass.batchSize)
+      for (const group of chunk(batches, pass.concurrency)) {
+        const settled = await Promise.allSettled(
+          group.map(async (batch) => await runBatch(pass, batch))
+        )
+        let lastError: unknown
+        settled.forEach((outcome, index) => {
+          if (outcome.status === 'fulfilled') {
+            result.rows += outcome.value
+            consecutiveFailures = 0
+            return
+          }
+          const batch = group[index]
+          lastError = outcome.reason
           result.failedBatches++
           consecutiveFailures++
           logger?.warn(
-            { pass: name, error, size: batch.length, firstDomain: batch[0] },
+            {
+              pass: name,
+              error: outcome.reason,
+              size: batch.length,
+              firstDomain: batch[0]
+            },
             'plausible site cleanup batch failed'
           )
-          if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) throw error
-        }
+        })
+        if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) throw lastError
       }
     }
 

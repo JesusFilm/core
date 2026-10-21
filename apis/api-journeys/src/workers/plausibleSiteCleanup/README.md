@@ -22,8 +22,8 @@ cleanups:
    pattern are never touched.
 3. Clears the orphans' goals and setup-help email records, 500 sites at a time
    (`sitesDeletePrepare`).
-4. Pages through again and deletes the orphaned sites, 20 at a time
-   (`sitesDelete`). Their shared links and memberships cascade. Their events
+4. Pages through again and deletes the orphaned sites, 20 at a time with four
+   batches in flight (`sitesDelete`). Their shared links and memberships cascade. Their events
    stay in ClickHouse, unreferenced.
 
 Why two passes: Plausible's database has no `site_id` index on `goals` or
@@ -31,8 +31,10 @@ Why two passes: Plausible's database has no `site_id` index on `goals` or
 On stage they held 16 million and half a million rows, and a batch of 100 sites
 ran past the load balancer's 60-second timeout. The first pass empties those
 tables of every orphan's rows with one read per batch, so by the second pass
-there is little left to read. We don't add the indexes because Plausible owns
-that schema.
+there is less left to read. The goals of live sites still have to be read for
+every site deleted (about a second each on stage, with 6 million left), so the
+delete pass sends four batches at once. We don't add the indexes because
+Plausible owns that schema.
 
 A failed batch is logged (`plausible site cleanup batch failed`) and skipped;
 the next run finds those sites again. Five failures in a row end the run.
