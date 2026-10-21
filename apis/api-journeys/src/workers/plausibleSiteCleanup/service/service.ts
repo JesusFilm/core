@@ -1,5 +1,6 @@
 import { ApolloClient, HttpLink, InMemoryCache, gql } from '@apollo/client'
 import { Job } from 'bullmq'
+import type { DocumentNode } from 'graphql'
 import chunk from 'lodash/chunk'
 import uniq from 'lodash/uniq'
 import { Logger } from 'pino'
@@ -18,8 +19,13 @@ interface Site {
   domain: string
 }
 
-type SitesDeleteResult =
-  | { __typename: 'MutationSitesDeleteSuccess'; data: number }
+type DeleteResult =
+  | {
+      __typename:
+        | 'MutationSitesDeletePrepareSuccess'
+        | 'MutationSitesDeleteSuccess'
+      data: number
+    }
   | { __typename: 'Error'; message: string }
 
 // Every site api-journeys creates is named after the journey, team or template
@@ -27,7 +33,9 @@ type SitesDeleteResult =
 const SITE_PREFIX = 'api-journeys-'
 const SITE_DOMAIN = /^api-journeys-(journey|team|template)-(.+)$/
 const PAGE_SIZE = 1000
-const DELETE_BATCH_SIZE = 100
+const PROGRESS_EVERY_PAGES = 10
+const MAX_CONSECUTIVE_FAILURES = 5
+const SAMPLE_SIZE = 10
 
 export const SITES = gql`
   query PlausibleSiteCleanupSites(
@@ -38,6 +46,20 @@ export const SITES = gql`
     sites(domainStartsWith: $domainStartsWith, after: $after, first: $first) {
       id
       domain
+    }
+  }
+`
+
+export const SITES_DELETE_PREPARE = gql`
+  mutation PlausibleSiteCleanupSitesDeletePrepare($domains: [String!]!) {
+    sitesDeletePrepare(domains: $domains) {
+      __typename
+      ... on Error {
+        message
+      }
+      ... on MutationSitesDeletePrepareSuccess {
+        data
+      }
     }
   }
 `
@@ -55,6 +77,27 @@ export const SITES_DELETE = gql`
     }
   }
 `
+
+type PassName = 'prepare' | 'delete'
+
+interface Pass {
+  mutation: DocumentNode
+  field: 'sitesDeletePrepare' | 'sitesDelete'
+  batchSize: number
+}
+
+// Plausible's database has no site_id index on goals or setup_help_emails, so
+// each site deleted makes Postgres read both tables in full. The prepare pass
+// clears every orphan's rows out of them first, in big batches (one read per
+// batch), so the delete pass only has small tables to read per site.
+const PASSES: Record<PassName, Pass> = {
+  prepare: {
+    mutation: SITES_DELETE_PREPARE,
+    field: 'sitesDeletePrepare',
+    batchSize: 500
+  },
+  delete: { mutation: SITES_DELETE, field: 'sitesDelete', batchSize: 20 }
+}
 
 const client = new ApolloClient({
   link: new HttpLink({
@@ -132,15 +175,90 @@ async function fetchSites(after?: string): Promise<Site[]> {
   return data?.sites ?? []
 }
 
-async function deleteSites(domains: string[]): Promise<number> {
-  const { data } = await client.mutate<{ sitesDelete: SitesDeleteResult }>({
-    mutation: SITES_DELETE,
+async function runBatch(pass: Pass, domains: string[]): Promise<number> {
+  const { data } = await client.mutate<Record<string, DeleteResult>>({
+    mutation: pass.mutation,
     variables: { domains }
   })
-  const result = data?.sitesDelete
-  if (result == null) throw new Error('sitesDelete returned no result')
+  const result = data?.[pass.field]
+  if (result == null) throw new Error(`${pass.field} returned no result`)
   if (result.__typename === 'Error') throw new Error(result.message)
   return result.data
+}
+
+interface PassResult {
+  checked: number
+  orphaned: number
+  rows: number
+  failedBatches: number
+  sample: string[]
+}
+
+/**
+ * Pages through every api-journeys site and runs the pass over the orphans,
+ * batch by batch. A failed batch is logged and skipped, since the next run
+ * finds its sites again; several failures in a row end the run.
+ */
+async function runPass(
+  name: PassName,
+  dryRun: boolean,
+  logger?: Logger
+): Promise<PassResult> {
+  const pass = PASSES[name]
+  const result: PassResult = {
+    checked: 0,
+    orphaned: 0,
+    rows: 0,
+    failedBatches: 0,
+    sample: []
+  }
+  let consecutiveFailures = 0
+  let after: string | undefined
+  let pages = 0
+
+  while (true) {
+    const sites = await fetchSites(after)
+    if (sites.length === 0) break
+    pages++
+    result.checked += sites.length
+    after = sites[sites.length - 1].id
+
+    const domains = await orphanedDomains(sites)
+    result.orphaned += domains.length
+    result.sample.push(...domains.slice(0, SAMPLE_SIZE - result.sample.length))
+
+    if (!dryRun) {
+      for (const batch of chunk(domains, pass.batchSize)) {
+        try {
+          result.rows += await runBatch(pass, batch)
+          consecutiveFailures = 0
+        } catch (error) {
+          result.failedBatches++
+          consecutiveFailures++
+          logger?.warn(
+            { pass: name, error, size: batch.length, firstDomain: batch[0] },
+            'plausible site cleanup batch failed'
+          )
+          if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) throw error
+        }
+      }
+    }
+
+    if (pages % PROGRESS_EVERY_PAGES === 0)
+      logger?.info(
+        {
+          pass: name,
+          checked: result.checked,
+          orphaned: result.orphaned,
+          rows: result.rows,
+          failedBatches: result.failedBatches
+        },
+        'plausible site cleanup progress'
+      )
+    if (sites.length < PAGE_SIZE) break
+  }
+
+  return result
 }
 
 /**
@@ -161,36 +279,25 @@ export async function service(
     return
   }
 
-  let after: string | undefined
-  let checked = 0
-  let orphaned = 0
-  let deleted = 0
-
-  while (true) {
-    const sites = await fetchSites(after)
-    if (sites.length === 0) break
-    checked += sites.length
-    after = sites[sites.length - 1].id
-
-    const domains = await orphanedDomains(sites)
-    orphaned += domains.length
-    if (dryRun) {
-      if (domains.length > 0)
-        logger?.info(
-          { count: domains.length, sample: domains.slice(0, 10) },
-          'DRY RUN: would delete plausible sites'
-        )
-    } else {
-      for (const batch of chunk(domains, DELETE_BATCH_SIZE)) {
-        deleted += await deleteSites(batch)
-      }
-    }
-
-    if (sites.length < PAGE_SIZE) break
+  if (dryRun) {
+    const { checked, orphaned, sample } = await runPass('delete', true, logger)
+    logger?.info(
+      { checked, orphaned, sample },
+      'DRY RUN: would delete plausible sites'
+    )
+    return
   }
 
+  const prepared = await runPass('prepare', false, logger)
+  const deleted = await runPass('delete', false, logger)
   logger?.info(
-    { checked, orphaned, deleted, dryRun },
+    {
+      checked: deleted.checked,
+      orphaned: prepared.orphaned,
+      rowsPrepared: prepared.rows,
+      deleted: deleted.rows,
+      failedBatches: prepared.failedBatches + deleted.failedBatches
+    },
     'plausible site cleanup finished'
   )
 }

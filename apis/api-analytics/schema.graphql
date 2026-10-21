@@ -15,7 +15,12 @@ type Mutation {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
 
   """
-  Deletes the sites with these domains that the caller owns, and returns how many it deleted. Goals, shared links and memberships go with them (the foreign keys cascade). Events already recorded in ClickHouse are left in place.
+  Deletes the goals and setup-help email records of the sites with these domains that the caller owns, leaving the sites, and returns how many rows it deleted. Plausible's database has no site_id index on those two tables, so deleting a site makes Postgres read each of them in full. Run this over every site you are about to delete first, so those tables are small by the time sitesDelete runs.
+  """
+  sitesDeletePrepare(domains: [String!]!): MutationSitesDeletePrepareResult!
+
+  """
+  Deletes the sites with these domains that the caller owns, and returns how many it deleted. Goals, shared links and memberships go with them (the foreign keys cascade). Events already recorded in ClickHouse are left in place. Deleting many sites is slow unless sitesDeletePrepare has run over them first.
   """
   sitesDelete(domains: [String!]!): MutationSitesDeleteResult!
 }
@@ -24,6 +29,12 @@ union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
 
 type MutationSiteCreateSuccess {
   data: Site!
+}
+
+union MutationSitesDeletePrepareResult = Error | MutationSitesDeletePrepareSuccess
+
+type MutationSitesDeletePrepareSuccess {
+  data: Int!
 }
 
 union MutationSitesDeleteResult = Error | MutationSitesDeleteSuccess
