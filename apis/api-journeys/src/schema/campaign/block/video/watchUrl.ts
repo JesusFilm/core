@@ -17,10 +17,16 @@ export function parseWatchUrl(url: string): string | null {
     return null
   }
   if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null
-  const segments = parsed.pathname
-    .split('/')
-    .filter((segment) => segment !== '')
-    .map((segment) => decodeURIComponent(segment).replace(/\.html$/, ''))
+  let segments: string[]
+  try {
+    segments = parsed.pathname
+      .split('/')
+      .filter((segment) => segment !== '')
+      .map((segment) => decodeURIComponent(segment).replace(/\.html$/, ''))
+  } catch (error) {
+    if (error instanceof URIError) return null
+    throw error
+  }
   const watch = segments.indexOf('watch')
   if (watch === -1) return null
   const rest = segments.slice(watch + 1)

@@ -159,6 +159,32 @@ describe('campaignRegionLanguageUpdate', () => {
       )
     })
 
+    it('cuts the snapshot to the caps an edit is held to: title 200, description 1000', async () => {
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyRow('journeyId', 'christmas-europe', {
+          title: '😀'.repeat(250),
+          description: '😀'.repeat(1800)
+        }) as never
+      )
+
+      const result = await update({
+        url: 'https://admin.nextstep.is/journeys/journeyId'
+      })
+
+      expect(result.data.campaignRegionLanguageUpdate).toMatchObject({
+        title: '😀'.repeat(200),
+        description: '😀'.repeat(1000)
+      })
+      expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: '😀'.repeat(200),
+            description: '😀'.repeat(1000)
+          })
+        })
+      )
+    })
+
     it('resolves a public URL on any domain by slug', async () => {
       await update({ url: 'https://journeys.example.org/christmas-europe' })
 

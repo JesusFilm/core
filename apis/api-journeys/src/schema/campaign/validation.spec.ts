@@ -39,6 +39,7 @@ import {
   generateUniqueCampaignSlug,
   generateUniqueRegionSlug,
   parseWithZod,
+  truncate,
   validateCampaignSlug,
   validateRegionSlug
 } from './validation'
@@ -101,6 +102,17 @@ describe('campaign validation', () => {
       expect(assertHexOrNull(undefined, 'color')).toBeUndefined()
       expect(assertHexOrNull('#abc', 'color')).toBe('#AABBCC')
       expectBadUserInput(() => assertHexOrNull('', 'color'), 'color')
+    })
+  })
+
+  describe('truncate', () => {
+    it('cuts to the cap in code points, so an emoji counts as one', () => {
+      expect(truncate('😀'.repeat(5), 3)).toBe('😀'.repeat(3))
+    })
+
+    it('returns a value at or under the cap unchanged', () => {
+      expect(truncate('abc', 3)).toBe('abc')
+      expect(truncate('', 3)).toBe('')
     })
   })
 

@@ -101,6 +101,26 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
     )
   })
 
+  it('cuts the snapshot to the caps an edit is held to: title 200, description 1000', async () => {
+    prismaMock.journey.findFirst.mockResolvedValue({
+      ...JOURNEY,
+      title: '😀'.repeat(250),
+      description: '😀'.repeat(1800)
+    } as never)
+
+    await refresh()
+
+    expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          title: '😀'.repeat(200),
+          description: '😀'.repeat(1000),
+          snapshotEdited: false
+        }
+      })
+    )
+  })
+
   it('is BAD_USER_INPUT on url, "Journey not found or not published", when the journey is no longer published', async () => {
     prismaMock.journey.findFirst.mockResolvedValue(null)
 
