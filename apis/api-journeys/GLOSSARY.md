@@ -344,7 +344,7 @@ One of the Campaign's fixed interface phrases (such as "Copy link" or "All regio
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:
-The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote, and "Needs review" is simply every translation still marked as machine-made.
+The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote, even one written while the run is going, and "Needs review" is simply every translation still marked as machine-made. Only one run into a given language of a Campaign is in flight at a time; a second is refused until the first ends.
 _Avoid_: auto-translate (as a feature name), AI translate, sync
 
 **Campaign Translations**:

@@ -4,16 +4,18 @@ import { TranslationsJson } from './translatedValue'
  * The public read of a Translated Field: the requested language's translation
  * when one is stored and non-empty, else the default-language column, else
  * empty. Two steps, server-side, so the viewer never receives a missing
- * marker. The default language has no entry in `translations` (its value is
- * the column itself), so asking for the default simply returns the column.
+ * marker. The default language's value is the column itself, so asking for
+ * the default returns the column and ignores any entry stored under it.
  */
 export function resolveText(
   field: string | null | undefined,
   translations: unknown,
-  languageId: string | null | undefined
+  languageId: string | null | undefined,
+  defaultLanguageId: string
 ): string {
   if (
     languageId != null &&
+    languageId !== defaultLanguageId &&
     translations != null &&
     typeof translations === 'object' &&
     !Array.isArray(translations)

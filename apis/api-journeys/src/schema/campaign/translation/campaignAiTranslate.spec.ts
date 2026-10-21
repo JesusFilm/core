@@ -20,6 +20,33 @@ import { campaignAiTranslate } from './campaignAiTranslate'
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
+
+/** An in-memory Redis for the one-run key: `SET NX` and the two compare-and-act scripts. */
+const redis = vi.hoisted(() => {
+  const store = new Map<string, string>()
+  return {
+    store,
+    set: vi.fn(async (key: string, value: string) => {
+      if (store.has(key)) return null
+      store.set(key, value)
+      return 'OK'
+    }),
+    eval: vi.fn(
+      async (script: string, _keys: number, key: string, token: string) => {
+        if (store.get(key) !== token) return 0
+        if (script.includes("'del'")) store.delete(key)
+        return 1
+      }
+    ),
+    on: vi.fn()
+  }
+})
+
+vi.mock('ioredis', () => ({
+  default: vi.fn(function () {
+    return redis
+  })
+}))
 vi.mock('ai', () => ({
   Output: { array: vi.fn((config) => ({ type: 'array', ...config })) },
   streamText: vi.fn()
@@ -152,8 +179,14 @@ describe('campaignAiTranslate', () => {
     )
   }
 
+  /** The in-transaction read of the campaign's default and languages. */
+  function isLanguageReread(args: any): boolean {
+    return args?.select?.defaultLanguageId === true
+  }
+
   beforeEach(() => {
     vi.clearAllMocks()
+    redis.store.clear()
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
@@ -273,6 +306,279 @@ describe('campaignAiTranslate', () => {
       await run({ mode: 'all' })
 
       expect(blockWrites().heroId?.ledeTranslations).toBeUndefined()
+    })
+  })
+
+  describe('locking', () => {
+    it('keeps a human entry committed while the batch waited for its row lock', async () => {
+      let committed = false
+      prismaMock.$queryRaw.mockImplementation((async (
+        _sql: TemplateStringsArray,
+        ...values: unknown[]
+      ) => {
+        if (values.flat().includes('heroId')) committed = true
+        return []
+      }) as any)
+      prismaMock.campaignBlock.findFirst.mockImplementation((async ({
+        where
+      }: any) => {
+        const block = campaign.blocks.find((b) => b.id === where.id) ?? null
+        if (!committed || where.id !== 'heroId') return block
+        return {
+          ...block,
+          ledeTranslations: {
+            [FRENCH]: { value: 'Écrit à la main', source: 'human' }
+          }
+        }
+      }) as any)
+
+      await run({ mode: 'all' })
+
+      const hero$ = blockWrites().heroId
+      expect(hero$.ledeTranslations).toBeUndefined()
+      expect(hero$.eyebrowTranslations).toEqual({
+        [FRENCH]: { value: 'FR heroId eyebrow', source: 'machine' }
+      })
+    })
+
+    it('locks blocks, regions, strings, then the campaign, each by id, before re-reading', async () => {
+      const regionLine = {
+        ...hero,
+        id: 'regionLineId',
+        typename: 'CampaignTypographyBlock',
+        pageId: null,
+        regionId: region.id,
+        parentBlockId: null,
+        parentOrder: 0,
+        eyebrow: null,
+        title: null,
+        lede: null,
+        content: 'EUR'
+      }
+      const withLine = { ...campaign, blocks: [...campaign.blocks, regionLine] }
+      prismaMock.campaign.findUnique.mockResolvedValue(withLine)
+      prismaMock.campaignBlock.findFirst.mockImplementation(
+        (async ({ where }: any) =>
+          withLine.blocks.find((block) => block.id === where.id) ?? null) as any
+      )
+      const transactions: string[][] = []
+      const log = (event: string): void => {
+        transactions.at(-1)?.push(event)
+      }
+      prismaMock.$transaction.mockImplementation(async (callback: any) => {
+        transactions.push([])
+        return await callback(prismaMock)
+      })
+      prismaMock.$queryRaw.mockImplementation((async (
+        sql: TemplateStringsArray
+      ) => {
+        const statement = sql.join('?')
+        expect(statement).toContain('FOR UPDATE')
+        log(`lock ${/FROM "(\w+)"/.exec(statement)?.[1]}`)
+        if (statement.includes('ANY'))
+          expect(statement).toContain('ORDER BY id')
+        return []
+      }) as any)
+      const findUnique = prismaMock.campaign.findUnique.getMockImplementation()
+      prismaMock.campaign.findUnique.mockImplementation(((args: any) => {
+        if (isLanguageReread(args)) log('re-read')
+        return findUnique?.(args)
+      }) as any)
+      prismaMock.campaignBlock.findFirst.mockImplementation((async ({
+        where
+      }: any) => {
+        log('read')
+        return withLine.blocks.find((block) => block.id === where.id) ?? null
+      }) as any)
+
+      await run({ mode: 'all' })
+
+      const order = [
+        'CampaignBlock',
+        'CampaignRegion',
+        'CampaignString',
+        'Campaign'
+      ]
+      expect(transactions.length).toBeGreaterThan(0)
+      for (const events of transactions) {
+        const locks = events
+          .filter((event) => event.startsWith('lock '))
+          .map((event) => event.slice('lock '.length))
+        expect(locks.at(-1)).toBe('Campaign')
+        const indexes = locks.map((table) => order.indexOf(table))
+        expect(indexes).toEqual([...indexes].sort((a, b) => a - b))
+        expect(new Set(locks).size).toBe(locks.length)
+        expect(events.indexOf('re-read')).toBe(locks.length)
+      }
+      const tables = transactions.map((events) =>
+        events.filter((event) => event.startsWith('lock ')).join(', ')
+      )
+      expect(tables).toContain(
+        'lock CampaignBlock, lock CampaignString, lock Campaign'
+      )
+      expect(tables).toContain(
+        'lock CampaignBlock, lock CampaignRegion, lock Campaign'
+      )
+      const regionBatch = prismaMock.$queryRaw.mock.calls.find(([sql]) =>
+        (sql as unknown as string[]).join('').includes('"CampaignRegion"')
+      )
+      expect(regionBatch?.slice(1)).toEqual([[region.id]])
+    })
+
+    it('writes nothing in a batch whose re-read shows the language promoted to default', async () => {
+      prismaMock.campaign.findUnique.mockImplementation((async (args: any) =>
+        isLanguageReread(args)
+          ? { ...campaign, defaultLanguageId: FRENCH }
+          : campaign) as any)
+
+      const updates = await run({ mode: 'all' })
+
+      expect(mockStreamText).toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignRegion.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignString.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+      expect(updates.at(-1)?.translatedCount).toBe(0)
+    })
+
+    it('skips a batch whose re-read shows the language removed, and still runs the next', async () => {
+      let rereads = 0
+      prismaMock.campaign.findUnique.mockImplementation((async (args: any) => {
+        if (!isLanguageReread(args)) return campaign
+        rereads++
+        return rereads === 1
+          ? {
+              ...campaign,
+              languages: campaign.languages.filter(
+                (language) => language.languageId !== FRENCH
+              )
+            }
+          : campaign
+      }) as any)
+
+      await run({ mode: 'all' })
+
+      expect(rereads).toBeGreaterThan(1)
+      expect(prismaMock.campaignString.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            titleTranslations: expect.anything()
+          })
+        })
+      )
+      expect(blockWrites().heroId.eyebrowTranslations).toEqual({
+        [FRENCH]: { value: 'FR heroId eyebrow', source: 'machine' }
+      })
+    })
+  })
+
+  describe('one run per campaign language', () => {
+    const KEY = `campaign-translate:campaignId:${FRENCH}`
+
+    it('takes the key with a TTL, extends it after every batch and releases it when the run completes', async () => {
+      await run({ mode: 'all' })
+
+      expect(redis.set).toHaveBeenCalledWith(
+        KEY,
+        expect.any(String),
+        'EX',
+        600,
+        'NX'
+      )
+      const token = redis.set.mock.calls[0][1]
+      const extends$ = redis.eval.mock.calls.filter(([script]) =>
+        script.includes("'expire'")
+      )
+      expect(extends$).toHaveLength(mockStreamText.mock.calls.length)
+      expect(extends$[0].slice(1)).toEqual([1, KEY, token, 600])
+      expect(redis.eval).toHaveBeenLastCalledWith(
+        expect.stringContaining("'del'"),
+        1,
+        KEY,
+        token
+      )
+      expect(redis.store.has(KEY)).toBe(false)
+    })
+
+    it('refuses a second run into the same language while one runs (CONFLICT, field languageId)', async () => {
+      const first = campaignAiTranslate(
+        { campaignId: 'campaignId', languageId: FRENCH, mode: 'all' },
+        mockUser
+      )
+      await first.next()
+      await first.next()
+      expect(redis.store.has(KEY)).toBe(true)
+      mockStreamText.mockClear()
+
+      await expect(run({ mode: 'all' })).rejects.toMatchObject({
+        extensions: { code: 'CONFLICT', field: 'languageId' }
+      })
+      expect(mockStreamText).not.toHaveBeenCalled()
+      expect(redis.store.has(KEY)).toBe(true)
+
+      await expect(
+        run({ mode: 'all', languageId: SPANISH })
+      ).resolves.toBeDefined()
+
+      await first.return(undefined)
+      expect(redis.store.has(KEY)).toBe(false)
+    })
+
+    it('releases the key when the caller cancels mid-batch', async () => {
+      const disconnect = new AbortController()
+      const scripted = mockStreamText.getMockImplementation()!
+      mockStreamText.mockImplementation((options: unknown) => {
+        expect(redis.store.has(KEY)).toBe(true)
+        disconnect.abort()
+        return scripted(options as never)
+      })
+
+      await run({ mode: 'all' }, mockUser, disconnect.signal)
+
+      expect(redis.store.has(KEY)).toBe(false)
+    })
+
+    it('releases the key when the run fails', async () => {
+      mockStreamText.mockImplementation(() => {
+        throw new Error('model down')
+      })
+
+      await expect(run({ mode: 'all' })).rejects.toThrow('Translation failed')
+      expect(redis.store.has(KEY)).toBe(false)
+    })
+
+    it('does not release a key another run took after this one’s expired', async () => {
+      const scripted = mockStreamText.getMockImplementation()!
+      mockStreamText.mockImplementation((options: unknown) => {
+        redis.store.set(KEY, 'another-run')
+        return scripted(options as never)
+      })
+
+      await run({ mode: 'all' })
+
+      expect(redis.store.get(KEY)).toBe('another-run')
+    })
+
+    it('refuses the run and calls no model when Redis cannot be reached', async () => {
+      redis.set.mockRejectedValueOnce(new Error('connect ECONNREFUSED'))
+
+      await expect(run({ mode: 'all' })).rejects.toThrow(
+        'Translation is temporarily unavailable. Please try again.'
+      )
+      expect(mockStreamText).not.toHaveBeenCalled()
+      expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('takes no key when the caller may not run', async () => {
+      await expect(
+        run({ mode: 'missing', languageId: '529' })
+      ).rejects.toThrow()
+      await expect(
+        run({ mode: 'missing' }, { ...mockUser, id: 'someoneElse' })
+      ).rejects.toThrow()
+
+      expect(redis.set).not.toHaveBeenCalled()
     })
   })
 

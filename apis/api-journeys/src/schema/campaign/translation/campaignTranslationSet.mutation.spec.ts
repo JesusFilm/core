@@ -283,6 +283,61 @@ describe('campaignTranslationSet', () => {
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 
+  describe('the language checked again under the campaign lock', () => {
+    function campaignLockIndex(): number {
+      return prismaMock.$queryRaw.mock.calls.findIndex(([sql]) =>
+        (sql as unknown as string[]).join('').includes('FROM "Campaign" ')
+      )
+    }
+
+    it('refuses a language a concurrent swap made the default (BAD_USER_INPUT, field languageId)', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue({
+        ...fixture,
+        defaultLanguageId: FRENCH
+      })
+
+      const result = await set({
+        target: { blockId: 'heroId' },
+        field: 'title',
+        value: 'Partagez'
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'languageId'
+      })
+      expect(campaignLockIndex()).toBe(1)
+      expect(prismaMock.campaign.findUnique).toHaveBeenCalledWith({
+        where: { id: 'campaignId' },
+        select: { defaultLanguageId: true, languages: true }
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    })
+
+    it('refuses a language removed from the campaign meanwhile (BAD_USER_INPUT, field languageId)', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue({
+        ...fixture,
+        languages: fixture.languages.filter(
+          (language) => language.languageId !== FRENCH
+        )
+      } as never)
+
+      const result = await set({
+        target: { blockId: 'heroId' },
+        field: 'title',
+        value: 'Partagez'
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'languageId'
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    })
+  })
+
   it('requires exactly one target id (BAD_USER_INPUT, field target)', async () => {
     const none = await set({ target: {}, field: 'title', value: 'x' })
     expect(none.errors[0].extensions).toMatchObject({

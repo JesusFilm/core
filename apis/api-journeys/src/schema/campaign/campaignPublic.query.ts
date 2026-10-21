@@ -138,12 +138,18 @@ function notFound(): GraphQLError {
 /** Resolve every text column of a block to `languageId` and drop its translations. */
 function resolveBlockText(
   block: CampaignPublicBlock,
-  languageId: string
+  languageId: string,
+  defaultLanguageId: string
 ): CampaignPublicBlock {
   const resolved: CampaignPublicBlock = { ...block }
   for (const [field, translations] of BLOCK_TEXT_FIELDS) {
     if (block[field] == null && block[translations] == null) continue
-    resolved[field] = resolveText(block[field], block[translations], languageId)
+    resolved[field] = resolveText(
+      block[field],
+      block[translations],
+      languageId,
+      defaultLanguageId
+    )
     resolved[translations] = null
   }
   return resolved
@@ -199,7 +205,11 @@ export function toCampaignPublic(
         isJourneyVisible(journeyLives.get(block.journeyId)?.status ?? null))
   )
   const blocks = visibleBlocks.map((block) => {
-    const resolved = resolveBlockText(block, languageId)
+    const resolved = resolveBlockText(
+      block,
+      languageId,
+      campaign.defaultLanguageId
+    )
     if (block.typename !== 'CampaignJourneyBlock') return resolved
     return {
       ...resolved,
@@ -224,7 +234,12 @@ export function toCampaignPublic(
     (region) => ({
       id: region.id,
       slug: region.slug,
-      name: resolveText(region.name, region.nameTranslations, languageId),
+      name: resolveText(
+        region.name,
+        region.nameTranslations,
+        languageId,
+        campaign.defaultLanguageId
+      ),
       listed: region.listed,
       order: region.order,
       countries: region.countries,
@@ -239,7 +254,12 @@ export function toCampaignPublic(
     id: campaign.id,
     teamId: campaign.teamId,
     slug: campaign.slug,
-    title: resolveText(campaign.title, campaign.titleTranslations, languageId),
+    title: resolveText(
+      campaign.title,
+      campaign.titleTranslations,
+      languageId,
+      campaign.defaultLanguageId
+    ),
     defaultLanguageId: campaign.defaultLanguageId,
     languageId,
     publishedAt: campaign.publishedAt,
@@ -251,7 +271,12 @@ export function toCampaignPublic(
       })(),
     strings: campaign.strings.map((string) => ({
       ...string,
-      value: resolveText(string.value, string.valueTranslations, languageId),
+      value: resolveText(
+        string.value,
+        string.valueTranslations,
+        languageId,
+        campaign.defaultLanguageId
+      ),
       valueTranslations: {}
     })),
     regions,

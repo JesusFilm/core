@@ -4,7 +4,7 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { lockCampaign, touchCampaign } from '../block/service'
 import {
   Action,
   CampaignAclSubject,
@@ -164,10 +164,39 @@ export function withTranslation(
 }
 
 /**
+ * Refuse `languageId` unless it is a campaign language other than the
+ * default: `BAD_USER_INPUT`, field `languageId`.
+ */
+function assertTranslationLanguage(
+  campaign: {
+    defaultLanguageId: string
+    languages: Array<{ languageId: string }>
+  },
+  languageId: string
+): void {
+  if (
+    !campaign.languages.some((language) => language.languageId === languageId)
+  )
+    throw badUserInput(
+      'languageId must be one of the campaign languages',
+      'languageId'
+    )
+  if (languageId === campaign.defaultLanguageId)
+    throw badUserInput(
+      'languageId must not be the default language; edit the field itself instead',
+      'languageId'
+    )
+}
+
+/**
  * Lock the target row, read its current `<column>` JSON and write the merged
  * entry back in one transaction. The read happens under the lock, not in
  * `loadTarget`, so two writes to the same field in different languages
- * serialize instead of overwriting each other's JSON.
+ * serialize instead of overwriting each other's JSON. The campaign row is
+ * then locked (after the target row, the order the default-language swap and
+ * block edits take) and the language checked again, so a swap that made
+ * `languageId` the default, or a removal of the language, while this write
+ * waited is refused rather than leaving an entry under the default.
  */
 async function writeTranslation(
   target: TranslationTarget,
@@ -209,6 +238,13 @@ async function writeTranslation(
         break
     }
     if (current == null) throw notFound(`${target.kind} not found`)
+    await lockCampaign(tx, target.campaign.id)
+    const campaign = await tx.campaign.findUnique({
+      where: { id: target.campaign.id },
+      select: { defaultLanguageId: true, languages: true }
+    })
+    if (campaign == null) throw notFound('campaign not found')
+    assertTranslationLanguage(campaign, languageId)
     const json = withTranslation(current[column], languageId, value)
     const data = { [column]: json }
     switch (target.kind) {
@@ -254,20 +290,7 @@ export async function setCampaignTranslation(
     )
 
   const languageId = String(input.languageId)
-  if (
-    !target.campaign.languages.some(
-      (language) => language.languageId === languageId
-    )
-  )
-    throw badUserInput(
-      'languageId must be one of the campaign languages',
-      'languageId'
-    )
-  if (languageId === target.campaign.defaultLanguageId)
-    throw badUserInput(
-      'languageId must not be the default language; edit the field itself instead',
-      'languageId'
-    )
+  assertTranslationLanguage(target.campaign, languageId)
 
   const value = assertLength(input.value, input.field, cap)
   const column = translationsColumn(input.field)
