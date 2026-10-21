@@ -85,6 +85,7 @@ export interface CampaignRichTextBlockCreate {
    * - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+   * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    * - BAD_USER_INPUT (field: `title` / `content`): over 150 / 5000 characters.
    */
   campaignRichTextBlockCreate: CampaignRichTextBlockCreate_campaignRichTextBlockCreate;

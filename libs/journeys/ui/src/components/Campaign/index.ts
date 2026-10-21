@@ -115,7 +115,8 @@ export {
   CAMPAIGN_RADIUS_PX,
   createCampaignTheme
 } from './libs/createCampaignTheme'
-export { VIEWER_OWNED_SEGMENTS, matchRegionSlug } from './libs/matchRegionSlug'
+export { matchRegionSlug } from './libs/matchRegionSlug'
+export { VIEWER_RESERVED_SEGMENTS } from './libs/viewerReservedSegments'
 export {
   CAMPAIGN_OVERLAY_ALPHA,
   bandCssVariables,

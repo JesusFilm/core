@@ -32,6 +32,8 @@ function journeyRow(
   }
 }
 
+const CLIENT_ID = '089533f4-9bff-4587-8ff7-31c8c05187ef'
+
 describe('campaignJourneyBlockCreate', () => {
   const CREATE = graphql(`
     mutation CampaignJourneyBlockCreate(
@@ -150,10 +152,10 @@ describe('campaignJourneyBlockCreate', () => {
     const result = await create(
       'https://admin.nextstep.is/journeys/journeyId',
       'landingJourneyListId',
-      'clientId'
+      CLIENT_ID
     )
 
-    expect(result.data.campaignJourneyBlockCreate.id).toBe('clientId')
+    expect(result.data.campaignJourneyBlockCreate.id).toBe(CLIENT_ID)
   })
 
   it('appends the item as an ordered child of the list, after its siblings', async () => {

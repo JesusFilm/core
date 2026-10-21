@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { badUserInput } from '../../validation'
+import { CLIENT_ID_ERROR, assertClientId, badUserInput } from '../../validation'
 import { CampaignTypographyBlock } from '../campaignTypographyBlock'
 import {
   assertPlacement,
@@ -9,7 +9,8 @@ import {
   createChildBlock,
   createRegionLine,
   validateParentBlock,
-  validateRegion
+  validateRegion,
+  withClientIds
 } from '../service'
 
 import { CampaignTypographyBlockCreateInput } from './inputs'
@@ -20,7 +21,9 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
     type: CampaignTypographyBlock,
     nullable: false,
     description:
-      'Add a text block: with `parentBlockId`, a text Extra of a section or chrome block, landing last among its siblings (`parentOrder = siblings.length`) on the side the placement names and copying the parent’s page or region scoping down; with `regionId`, a Region Line, scoped to the region alone (`pageId`, `parentBlockId` and `placement` null) and appended last among the region’s lines. Omitted content is empty; the editor shows the placeholder "Your text".\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign, or neither / both of parentBlockId and regionId given.\n- BAD_USER_INPUT (field: `regionId`): not a region of this campaign.\n- BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule; placement is refused on a Region Line.',
+      'Add a text block: with `parentBlockId`, a text Extra of a section or chrome block, landing last among its siblings (`parentOrder = siblings.length`) on the side the placement names and copying the parent’s page or region scoping down; with `regionId`, a Region Line, scoped to the region alone (`pageId`, `parentBlockId` and `placement` null) and appended last among the region’s lines. Omitted content is empty; the editor shows the placeholder "Your text".\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign, or neither / both of parentBlockId and regionId given.\n- BAD_USER_INPUT (field: `regionId`): not a region of this campaign.\n- BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule; placement is refused on a Region Line.\n' +
+      CLIENT_ID_ERROR +
+      '',
     args: {
       input: t.arg({ type: CampaignTypographyBlockCreateInput, required: true })
     },
@@ -36,7 +39,7 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
         ...input,
         content: input.content ?? ''
       })
-      const id = input.id != null ? String(input.id) : undefined
+      const id = assertClientId(input.id)
 
       if (input.regionId != null) {
         if (input.placement != null)
@@ -45,13 +48,17 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
             'placement'
           )
         const region = await validateRegion(String(input.regionId), campaignId)
-        return await prisma.$transaction(
-          async (tx) =>
-            await createRegionLine(tx, region, {
-              id,
-              typename: 'CampaignTypographyBlock',
-              ...data
-            })
+        return await withClientIds(
+          { id: [id] },
+          async () =>
+            await prisma.$transaction(
+              async (tx) =>
+                await createRegionLine(tx, region, {
+                  id,
+                  typename: 'CampaignTypographyBlock',
+                  ...data
+                })
+            )
         )
       }
 
@@ -62,14 +69,18 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
       )
       const placement = assertPlacement(input.placement)
 
-      return await prisma.$transaction(
-        async (tx) =>
-          await createChildBlock(tx, parent, {
-            id,
-            typename: 'CampaignTypographyBlock',
-            ...data,
-            placement
-          })
+      return await withClientIds(
+        { id: [id] },
+        async () =>
+          await prisma.$transaction(
+            async (tx) =>
+              await createChildBlock(tx, parent, {
+                id,
+                typename: 'CampaignTypographyBlock',
+                ...data,
+                placement
+              })
+          )
       )
     }
   })

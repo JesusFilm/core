@@ -277,6 +277,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign, or neither / both of parentBlockId and regionId given.
   - BAD_USER_INPUT (field: `regionId`): not a region of this campaign.
   - BAD_USER_INPUT (field: `content`, `variant`, `align`, `color`, `placement`): the value fails its rule; placement is refused on a Region Line.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
   campaignTypographyBlockCreate(input: CampaignTypographyBlockCreateInput!) : CampaignTypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -289,6 +290,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `content`): over 2000 characters.
   - BAD_USER_INPUT (field: `variant`, `align`, `color`, `placement`): the value fails its rule.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignTypographyBlockUpdate(id: ID!, input: CampaignTypographyBlockUpdateInput!) : CampaignTypographyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -301,6 +303,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
   - BAD_USER_INPUT (field: `label`, `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
   campaignButtonBlockCreate(input: CampaignButtonBlockCreateInput!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -313,6 +316,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `label`): over 60 characters.
   - BAD_USER_INPUT (field: `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignButtonBlockUpdate(id: ID!, input: CampaignButtonBlockUpdateInput!) : CampaignButtonBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -326,6 +330,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -344,6 +349,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignHeroBlockUpdate(id: ID!, input: CampaignHeroBlockUpdateInput!) : CampaignHeroBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -357,6 +363,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `title` / `variant`): the value fails its rule.
   """
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -374,6 +381,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignRegionSwitcherBlockUpdate(id: ID!, input: CampaignRegionSwitcherBlockUpdateInput!) : CampaignRegionSwitcherBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -387,6 +395,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -406,6 +415,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignVideoCarouselBlockUpdate(id: ID!, input: CampaignVideoCarouselBlockUpdateInput!) : CampaignVideoCarouselBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -434,6 +444,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -451,6 +462,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignJourneyListBlockUpdate(id: ID!, input: CampaignJourneyListBlockUpdateInput!) : CampaignJourneyListBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -463,6 +475,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
   - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
   campaignJourneyBlockCreate(
     """
@@ -487,6 +500,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignJourneyBlockUpdate(id: ID!, input: CampaignJourneyBlockUpdateInput!) : CampaignJourneyBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -511,6 +525,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -527,6 +542,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignAnalyticsBlockUpdate(id: ID!, input: CampaignAnalyticsBlockUpdateInput!) : CampaignAnalyticsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -540,6 +556,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `pageId`): the landing page.
   - BAD_USER_INPUT (field: `intro`): over 500 characters.
   """
@@ -557,6 +574,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignRegionHeaderBlockUpdate(id: ID!, input: CampaignRegionHeaderBlockUpdateInput!) : CampaignRegionHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -570,6 +588,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `pageId`): the landing page.
   - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
   """
@@ -587,6 +606,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignRegionShareBlockUpdate(id: ID!, input: CampaignRegionShareBlockUpdateInput!) : CampaignRegionShareBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -600,6 +620,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `title` / `content`): over 150 / 5000 characters.
   """
   campaignRichTextBlockCreate(input: CampaignRichTextBlockCreateInput!) : CampaignRichTextBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -616,6 +637,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignRichTextBlockUpdate(id: ID!, input: CampaignRichTextBlockUpdateInput!) : CampaignRichTextBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -629,8 +651,9 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `ratio`): not equal, wideLeft or wideRight.
-  - BAD_USER_INPUT (field: `slotIds`): given with other than two ids.
+  - BAD_USER_INPUT (field: `slotIds`): given with other than two ids, an id that is not a UUID, the same id twice or the section's `id`, or an id that is already a block's (live or deleted).
   """
   campaignColumnsBlockCreate(input: CampaignColumnsBlockCreateInput!) : CampaignColumnsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -646,6 +669,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignColumnsBlockUpdate(id: ID!, input: CampaignColumnsBlockUpdateInput!) : CampaignColumnsBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -659,6 +683,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
   - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
@@ -681,6 +706,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!) : CampaignImageBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -697,6 +723,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id, "videoId must be a valid YouTube videoId" / "videoId must be a valid Mux videoId" for an id unknown to its service, or "videoId is not a published Watch video" for a Watch video picked by id.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or a url on a YouTube or Mux video.
   - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
   campaignVideoBlockCreate(input: CampaignVideoBlockCreateInput!) : CampaignVideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -709,6 +736,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
   - INTERNAL_SERVER_ERROR: YouTube is unavailable, so a YouTube video's source text cannot be fetched again; nothing is written.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignVideoBlockUpdate(id: ID!, input: CampaignVideoBlockUpdateInput!) : CampaignVideoBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -722,6 +750,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   """
@@ -742,6 +771,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignFeaturedMediaBlockUpdate(id: ID!, input: CampaignFeaturedMediaBlockUpdateInput!) : CampaignFeaturedMediaBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -756,6 +786,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   - BAD_USER_INPUT (field: `logoBlockId`): not a CampaignImageBlock the header owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   """
   campaignHeaderBlockUpdate(id: ID!, input: CampaignHeaderBlockUpdateInput!) : CampaignHeaderBlock! @join__field(graph: API_JOURNEYS_MODERN) 
@@ -771,6 +802,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
   - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
   - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignFooterBlockUpdate(id: ID!, input: CampaignFooterBlockUpdateInput!) : CampaignFooterBlock! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -806,6 +838,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - CONFLICT (field: `id`): the header, the footer, a column slot, a page, or an owned block with no order.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `placement`): not above or below, or given for a block that is not a section child.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignBlockOrderUpdate(
     id: ID!
@@ -824,6 +857,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - NOT_FOUND: id does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - CONFLICT (field: `id`): the header, the footer, a column slot, the section inside a column slot, a page, or an owned block.
+  - BAD_USER_INPUT (field: `idMap`): a `newId` that is not a UUID, the same `newId` twice, or one that is already a block’s id (live or deleted).
   """
   campaignBlockDuplicate(id: ID!, idMap: [CampaignBlockDuplicateIdMapInput!]) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -904,6 +938,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `name`): empty or over 60 characters.
   - BAD_USER_INPUT (field: `slug`): fails the shape, length or reserved-word checks, is taken by another region of the campaign (including the concurrent-update race on the unique constraint), or equals the slug of a journey in the campaign’s team.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   
   A slug or listing change on a published campaign queues on-demand revalidation of the campaign’s pages, including the region’s previous path.
   """
@@ -972,6 +1007,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".
   - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignRegionLanguageUpdate(id: ID!, input: CampaignRegionLanguageUpdateInput!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1025,6 +1061,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: `defaultLanguageId`): not one of the campaign’s languages, including when a concurrent removal took it.
   - BAD_USER_INPUT (field: `title`): given together with a `defaultLanguageId` that changes the default; the title is the default-language text, so change the language first, then the title.
   - CONFLICT (field: `defaultLanguageId`, extension `count`): that many texts have no translation in the new default language yet; machine-translate or write them first. When none is missing, one transaction swaps every field’s default text with the new language’s translation; a machine value promoted to default loses its machine flag.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   
   A slug change on a published campaign queues on-demand revalidation of its pages under the old and the new slug.
   """
@@ -1040,6 +1077,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - BAD_USER_INPUT (field: the colour column): a colour is null, empty or not a hex colour.
   - BAD_USER_INPUT (field: `headerFont` / `bodyFont` / `labelFont`): a font name is not in the shared curated list.
   - BAD_USER_INPUT (field: `themeMode` / `radius` / `buttonRadius`): null, or not one of the enum’s values.
+  - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
   """
   campaignThemeUpdate(
     """

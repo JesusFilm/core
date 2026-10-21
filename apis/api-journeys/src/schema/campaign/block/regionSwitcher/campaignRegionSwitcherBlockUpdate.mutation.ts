@@ -1,8 +1,9 @@
-import { CampaignSwitcherVariant as PrismaCampaignSwitcherVariant } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignSwitcherVariant } from '../../enums'
-import { assertEnum } from '../../validation'
+import {
+  CAMPAIGN_SWITCHER_VARIANTS,
+  CampaignSwitcherVariant
+} from '../../enums'
+import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignRegionSwitcherBlock } from '../campaignRegionSwitcherBlock'
 import {
   SECTION_STYLE_ERRORS,
@@ -14,8 +15,6 @@ import {
   updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
-
-const SWITCHER_VARIANTS = Object.values(PrismaCampaignSwitcherVariant)
 
 export const CampaignRegionSwitcherBlockUpdateInput = builder.inputType(
   'CampaignRegionSwitcherBlockUpdateInput',
@@ -49,14 +48,15 @@ builder.mutationField('campaignRegionSwitcherBlockUpdate', (t) =>
         context.user,
         'CampaignRegionSwitcherBlock'
       )
+      const variant = assertNotNull(input.variant, 'variant')
       return await updateBlock(block, {
         ...validateSectionText(input, ['title']),
-        ...(input.variant != null
+        ...(variant !== undefined
           ? {
               switcherVariant: assertEnum(
-                input.variant,
+                variant,
                 'variant',
-                SWITCHER_VARIANTS
+                CAMPAIGN_SWITCHER_VARIANTS
               )
             }
           : {}),

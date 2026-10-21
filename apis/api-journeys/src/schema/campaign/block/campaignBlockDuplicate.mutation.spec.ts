@@ -15,6 +15,14 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
+const HERO_COPY_ID = 'dba93414-2864-41ed-801d-43f535a9e73e'
+const HERO_BUTTON_COPY_ID = '1929440e-3b7f-41e0-b5db-45489f2ab155'
+const HERO_MEDIA_COPY_ID = '1f4216be-2642-4f2d-a4a7-7512e06bda00'
+const COLUMNS_COPY_ID = 'f594bc44-c5a8-480d-b7ea-cbd7a72e98f5'
+const SLOT_LEFT_COPY_ID = 'c0766f79-1f71-495f-b289-b8708e0222c7'
+const SLOT_RIGHT_COPY_ID = '42850655-d582-4511-9770-f3c69a746f54'
+const SLOT_HERO_COPY_ID = 'e55e9041-3b12-4000-b0f4-496845a0c5ee'
+
 describe('campaignBlockDuplicate', () => {
   const DUPLICATE = graphql(`
     mutation CampaignBlockDuplicate(
@@ -102,8 +110,8 @@ describe('campaignBlockDuplicate', () => {
     setLive(fixture.blocks)
 
     const result = await duplicate('heroId', [
-      { oldId: 'heroId', newId: 'heroCopyId' },
-      { oldId: 'heroButtonId', newId: 'heroButtonCopyId' }
+      { oldId: 'heroId', newId: HERO_COPY_ID },
+      { oldId: 'heroButtonId', newId: HERO_BUTTON_COPY_ID }
     ])
 
     expect(result.data.campaignBlockDuplicate).toEqual([
@@ -115,7 +123,7 @@ describe('campaignBlockDuplicate', () => {
         mediaBlockId: null
       },
       {
-        id: 'heroCopyId',
+        id: HERO_COPY_ID,
         parentBlockId: null,
         parentOrder: 1,
         title: 'Share the story of Christmas',
@@ -126,8 +134,8 @@ describe('campaignBlockDuplicate', () => {
       { id: 'landingJourneyListId', parentBlockId: null, parentOrder: 4 },
       { id: 'landingAnalyticsId', parentBlockId: null, parentOrder: 5 },
       {
-        id: 'heroButtonCopyId',
-        parentBlockId: 'heroCopyId',
+        id: HERO_BUTTON_COPY_ID,
+        parentBlockId: HERO_COPY_ID,
         parentOrder: 0,
         label: 'Choose your region',
         action: {
@@ -138,7 +146,7 @@ describe('campaignBlockDuplicate', () => {
     ])
     expect(prismaMock.campaignBlock.create).toHaveBeenNthCalledWith(1, {
       data: expect.objectContaining({
-        id: 'heroCopyId',
+        id: HERO_COPY_ID,
         typename: 'CampaignHeroBlock',
         campaignId: 'campaignId',
         pageId: 'landingPageId',
@@ -151,9 +159,9 @@ describe('campaignBlockDuplicate', () => {
     })
     expect(prismaMock.campaignBlock.create).toHaveBeenNthCalledWith(2, {
       data: expect.objectContaining({
-        id: 'heroButtonCopyId',
+        id: HERO_BUTTON_COPY_ID,
         typename: 'CampaignButtonBlock',
-        parentBlockId: 'heroCopyId',
+        parentBlockId: HERO_COPY_ID,
         parentOrder: 0,
         placement: 'below'
       }),
@@ -161,7 +169,7 @@ describe('campaignBlockDuplicate', () => {
     })
     // The action is recreated on the copy, pointing at the same target outside the copy.
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'heroButtonCopyId' },
+      where: { id: HERO_BUTTON_COPY_ID },
       data: {
         action: {
           create: {
@@ -207,32 +215,32 @@ describe('campaignBlockDuplicate', () => {
     )
 
     const result = await duplicate('heroId', [
-      { oldId: 'heroId', newId: 'heroCopyId' },
-      { oldId: 'heroMediaId', newId: 'heroMediaCopyId' },
-      { oldId: 'heroButtonId', newId: 'heroButtonCopyId' }
+      { oldId: 'heroId', newId: HERO_COPY_ID },
+      { oldId: 'heroMediaId', newId: HERO_MEDIA_COPY_ID },
+      { oldId: 'heroButtonId', newId: HERO_BUTTON_COPY_ID }
     ])
 
     expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        id: 'heroMediaCopyId',
+        id: HERO_MEDIA_COPY_ID,
         typename: 'CampaignTypographyBlock',
-        parentBlockId: 'heroCopyId',
+        parentBlockId: HERO_COPY_ID,
         parentOrder: null,
         content: 'poster'
       }),
       include: { action: true }
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'heroCopyId' },
-      data: { mediaBlockId: 'heroMediaCopyId' },
+      where: { id: HERO_COPY_ID },
+      data: { mediaBlockId: HERO_MEDIA_COPY_ID },
       include: { action: true }
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
-      where: { id: 'heroButtonCopyId' },
+      where: { id: HERO_BUTTON_COPY_ID },
       data: {
         action: {
           create: {
-            blockId: 'heroCopyId',
+            blockId: HERO_COPY_ID,
             regionId: null,
             url: null,
             target: null
@@ -242,8 +250,8 @@ describe('campaignBlockDuplicate', () => {
       include: { action: true }
     })
     const ids = result.data.campaignBlockDuplicate.map((block: any) => block.id)
-    expect(ids).toContain('heroMediaCopyId')
-    expect(ids).toContain('heroButtonCopyId')
+    expect(ids).toContain(HERO_MEDIA_COPY_ID)
+    expect(ids).toContain(HERO_BUTTON_COPY_ID)
   })
 
   it('leaves a slot empty when its owned block is not live, instead of reusing the original’s id', async () => {
@@ -255,11 +263,11 @@ describe('campaignBlockDuplicate', () => {
       )
     )
 
-    await duplicate('heroId', [{ oldId: 'heroId', newId: 'heroCopyId' }])
+    await duplicate('heroId', [{ oldId: 'heroId', newId: HERO_COPY_ID }])
 
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 'heroCopyId' },
+        where: { id: HERO_COPY_ID },
         data: expect.objectContaining({ mediaBlockId: expect.anything() })
       })
     )
@@ -325,16 +333,23 @@ describe('campaignBlockDuplicate', () => {
     setLive(columns)
 
     const result = await duplicate('columnsId', [
-      { oldId: 'columnsId', newId: 'columnsCopyId' },
-      { oldId: 'slotLeftId', newId: 'slotLeftCopyId' },
-      { oldId: 'slotRightId', newId: 'slotRightCopyId' },
-      { oldId: 'slotHeroId', newId: 'slotHeroCopyId' }
+      { oldId: 'columnsId', newId: COLUMNS_COPY_ID },
+      { oldId: 'slotLeftId', newId: SLOT_LEFT_COPY_ID },
+      { oldId: 'slotRightId', newId: SLOT_RIGHT_COPY_ID },
+      { oldId: 'slotHeroId', newId: SLOT_HERO_COPY_ID }
     ])
 
     expect(result.errors).toBeUndefined()
     expect(
       result.data.campaignBlockDuplicate
-        .filter((block: { id: string }) => block.id.endsWith('CopyId'))
+        .filter((block: { id: string }) =>
+          [
+            COLUMNS_COPY_ID,
+            SLOT_LEFT_COPY_ID,
+            SLOT_RIGHT_COPY_ID,
+            SLOT_HERO_COPY_ID
+          ].includes(block.id)
+        )
         .map(
           (block: {
             id: string
@@ -343,11 +358,30 @@ describe('campaignBlockDuplicate', () => {
           }) => [block.id, block.parentBlockId, block.parentOrder]
         )
     ).toEqual([
-      ['columnsCopyId', null, 1],
-      ['slotLeftCopyId', 'columnsCopyId', 0],
-      ['slotRightCopyId', 'columnsCopyId', 1],
-      ['slotHeroCopyId', 'slotLeftCopyId', 0]
+      [COLUMNS_COPY_ID, null, 1],
+      [SLOT_LEFT_COPY_ID, COLUMNS_COPY_ID, 0],
+      [SLOT_RIGHT_COPY_ID, COLUMNS_COPY_ID, 1],
+      [SLOT_HERO_COPY_ID, SLOT_LEFT_COPY_ID, 0]
     ])
+  })
+
+  it.each([
+    ['a newId that is not a UUID', [{ oldId: 'heroId', newId: 'heroCopyId' }]],
+    [
+      'the same newId twice',
+      [
+        { oldId: 'heroId', newId: HERO_COPY_ID },
+        { oldId: 'heroButtonId', newId: HERO_COPY_ID }
+      ]
+    ]
+  ])('refuses %s (BAD_USER_INPUT, idMap)', async (_label, idMap) => {
+    const result = await duplicate('heroId', idMap)
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'idMap'
+    })
+    expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 
   it('refuses to duplicate a column slot (CONFLICT, id)', async () => {

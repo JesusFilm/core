@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { NULL_FIELD_ERROR } from '../../validation'
 import { CampaignTypographyBlock } from '../campaignTypographyBlock'
 import {
   authorizeTypedBlockUpdate,
@@ -14,7 +15,9 @@ builder.mutationField('campaignTypographyBlockUpdate', (t) =>
     type: CampaignTypographyBlock,
     nullable: false,
     description:
-      'Update a text block’s default-language content, variant, alignment, colour or placement. Only the given fields change; translations are untouched.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignTypographyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `content`): over 2000 characters.\n- BAD_USER_INPUT (field: `variant`, `align`, `color`, `placement`): the value fails its rule.',
+      'Update a text block’s default-language content, variant, alignment, colour or placement. Only the given fields change; translations are untouched.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignTypographyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `content`): over 2000 characters.\n- BAD_USER_INPUT (field: `variant`, `align`, `color`, `placement`): the value fails its rule.\n' +
+      NULL_FIELD_ERROR +
+      '',
     args: {
       id: t.arg({ type: 'ID', required: true }),
       input: t.arg({ type: CampaignTypographyBlockUpdateInput, required: true })

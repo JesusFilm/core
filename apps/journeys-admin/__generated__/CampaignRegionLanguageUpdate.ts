@@ -94,6 +94,7 @@ export interface CampaignRegionLanguageUpdate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".
    * - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignRegionLanguageUpdate: CampaignRegionLanguageUpdate_campaignRegionLanguageUpdate;
 }

@@ -106,6 +106,7 @@ export interface CampaignButtonBlockCreate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
    * - BAD_USER_INPUT (field: `label`, `variant`, `size`, `align`, `color`, `labelColor`, `placement`): the value fails its rule.
+   * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    */
   campaignButtonBlockCreate: CampaignButtonBlockCreate_campaignButtonBlockCreate;
 }

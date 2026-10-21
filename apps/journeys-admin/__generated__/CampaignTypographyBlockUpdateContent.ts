@@ -26,6 +26,7 @@ export interface CampaignTypographyBlockUpdateContent {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `content`): over 2000 characters.
    * - BAD_USER_INPUT (field: `variant`, `align`, `color`, `placement`): the value fails its rule.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignTypographyBlockUpdate: CampaignTypographyBlockUpdateContent_campaignTypographyBlockUpdate;
 }

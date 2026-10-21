@@ -1,6 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { CLIENT_ID_ERROR, assertClientId } from '../validation'
+
 import {
   CampaignBlockCreateData,
   CampaignBlockWithAction,
@@ -10,7 +12,8 @@ import {
   createSectionBlock,
   createSlotChild,
   validateSectionPage,
-  validateSlotParent
+  validateSlotParent,
+  withClientIds
 } from './service'
 
 /** The fields every section create input shares. */
@@ -40,6 +43,8 @@ export async function createSection(
 ): Promise<CampaignBlockWithAction> {
   const campaignId = String(input.campaignId)
   await authorizeBlockCreate(campaignId, user)
+  const id = assertClientId(input.id)
+  const slotIds = input.slotIds?.map(String)
   const page = await validateSectionPage(
     campaignId,
     String(input.pageId),
@@ -55,26 +60,31 @@ export async function createSection(
         )
       : null
   const data = {
-    id: input.id != null ? String(input.id) : undefined,
+    id,
     typename,
     ...body()
   }
-  return await prisma.$transaction(async (tx) => {
-    if (slot != null) return await createSlotChild(tx, slot, data)
-    if (typename === 'CampaignColumnsBlock')
-      return await createColumnsSection(
-        tx,
-        page,
-        data,
-        input.parentOrder,
-        input.slotIds?.map(String)
-      )
-    return await createSectionBlock(tx, page, data, input.parentOrder)
-  })
+  return await withClientIds(
+    { id: [id], slotIds: slotIds ?? [] },
+    async () =>
+      await prisma.$transaction(async (tx) => {
+        if (slot != null) return await createSlotChild(tx, slot, data)
+        if (typename === 'CampaignColumnsBlock')
+          return await createColumnsSection(
+            tx,
+            page,
+            data,
+            input.parentOrder,
+            slotIds
+          )
+        return await createSectionBlock(tx, page, data, input.parentOrder)
+      })
+  )
 }
 
 export const SECTION_CREATE_ERRORS =
-  'Auth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `pageId`): not a page of this campaign.\n- BAD_USER_INPUT (field: `parentOrder`): negative.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.'
+  'Auth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `pageId`): not a page of this campaign.\n- BAD_USER_INPUT (field: `parentOrder`): negative.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.\n' +
+  CLIENT_ID_ERROR
 
 export const SECTION_PARENT_BLOCK_ID_DESCRIPTION =
   'A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.'

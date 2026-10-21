@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { Prisma } from '@core/prisma/journeys/client'
 
 import { lockCampaign, lockCampaignTextRows } from '../block/service'
-import { TranslationsJson } from '../translatedValue'
+import { TranslationsJson, parseTranslations } from '../translatedValue'
 import { badUserInput } from '../validation'
 
 import {
@@ -21,12 +21,6 @@ import {
 } from './campaignTranslations.query'
 
 type SwappedColumns = Record<string, string | TranslationsJson>
-
-function currentTranslations(value: unknown): TranslationsJson {
-  return value != null && typeof value === 'object' && !Array.isArray(value)
-    ? { ...(value as TranslationsJson) }
-    : {}
-}
 
 /**
  * One target's columns after the swap, or null when it has nothing to move.
@@ -46,7 +40,7 @@ export function swapTargetColumns(
     const column = translationsColumn(field)
     const current = record[field]
     const currentText = typeof current === 'string' ? current : ''
-    const translations = currentTranslations(record[column])
+    const translations = parseTranslations(record[column])
     const promoted = translations[newDefaultLanguageId]?.value ?? ''
     if (currentText.trim() === '' && promoted === '') continue
 

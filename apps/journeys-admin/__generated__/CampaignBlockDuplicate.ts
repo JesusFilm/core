@@ -1278,6 +1278,7 @@ export interface CampaignBlockDuplicate {
    * - NOT_FOUND: id does not resolve to a live block.
    * - FORBIDDEN: caller is not in the team.
    * - CONFLICT (field: `id`): the header, the footer, a column slot, the section inside a column slot, a page, or an owned block.
+   * - BAD_USER_INPUT (field: `idMap`): a `newId` that is not a UUID, the same `newId` twice, or one that is already a block’s id (live or deleted).
    */
   campaignBlockDuplicate: CampaignBlockDuplicate_campaignBlockDuplicate[];
 }

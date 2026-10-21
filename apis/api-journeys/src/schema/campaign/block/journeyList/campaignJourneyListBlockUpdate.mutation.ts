@@ -1,8 +1,9 @@
-import { CampaignJourneyListDisplay as PrismaCampaignJourneyListDisplay } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignJourneyListDisplay } from '../../enums'
-import { assertEnum } from '../../validation'
+import {
+  CAMPAIGN_JOURNEY_LIST_DISPLAYS,
+  CampaignJourneyListDisplay
+} from '../../enums'
+import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignJourneyListBlock } from '../campaignJourneyListBlock'
 import {
   SECTION_STYLE_ERRORS,
@@ -14,8 +15,6 @@ import {
   updateBlock
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
-
-const DISPLAYS = Object.values(PrismaCampaignJourneyListDisplay)
 
 export const CampaignJourneyListBlockUpdateInput = builder.inputType(
   'CampaignJourneyListBlockUpdateInput',
@@ -57,10 +56,17 @@ builder.mutationField('campaignJourneyListBlockUpdate', (t) =>
         context.user,
         'CampaignJourneyListBlock'
       )
+      const display = assertNotNull(input.display, 'display')
       return await updateBlock(block, {
         ...validateSectionText(input, ['eyebrow', 'title', 'lede']),
-        ...(input.display != null
-          ? { display: assertEnum(input.display, 'display', DISPLAYS) }
+        ...(display !== undefined
+          ? {
+              display: assertEnum(
+                display,
+                'display',
+                CAMPAIGN_JOURNEY_LIST_DISPLAYS
+              )
+            }
           : {}),
         ...sectionStyleColumns(input)
       })

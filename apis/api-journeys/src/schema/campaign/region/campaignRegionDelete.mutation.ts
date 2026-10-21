@@ -1,8 +1,9 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { conflict, touchCampaign } from '../block/service'
+import { touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
+import { conflict } from '../errors'
 import {
   deleteQrCodes,
   deleteShortLinks,

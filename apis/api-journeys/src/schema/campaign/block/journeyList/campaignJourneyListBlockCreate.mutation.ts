@@ -1,7 +1,8 @@
-import { CampaignJourneyListDisplay as PrismaCampaignJourneyListDisplay } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
-import { CampaignJourneyListDisplay } from '../../enums'
+import {
+  CAMPAIGN_JOURNEY_LIST_DISPLAYS,
+  CampaignJourneyListDisplay
+} from '../../enums'
 import { assertEnum } from '../../validation'
 import { CampaignJourneyListBlock } from '../campaignJourneyListBlock'
 import {
@@ -10,8 +11,6 @@ import {
   createSection
 } from '../createSection'
 import { validateSectionText } from '../validateSectionText'
-
-const DISPLAYS = Object.values(PrismaCampaignJourneyListDisplay)
 
 export const CampaignJourneyListBlockCreateInput = builder.inputType(
   'CampaignJourneyListBlockCreateInput',
@@ -69,7 +68,11 @@ builder.mutationField('campaignJourneyListBlockCreate', (t) =>
         () => ({
           ...validateSectionText(input, ['eyebrow', 'title', 'lede']),
           ...(input.display != null && {
-            display: assertEnum(input.display, 'display', DISPLAYS)
+            display: assertEnum(
+              input.display,
+              'display',
+              CAMPAIGN_JOURNEY_LIST_DISPLAYS
+            )
           })
         })
       )

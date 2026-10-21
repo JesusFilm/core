@@ -1,36 +1,28 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { builder } from '../../builder'
 import { lockCampaign, touchCampaign } from '../block/service'
-import {
-  Action,
-  CampaignAclSubject,
-  INCLUDE_CAMPAIGN_ACL,
-  campaignAcl
-} from '../campaign.acl'
+import { Action, CampaignAclSubject, campaignAcl } from '../campaign.acl'
+import { notFound } from '../errors'
 import {
   TranslatedValueRef,
   TranslatedValueShape,
   TranslationsJson,
+  parseTranslations,
   toTranslatedValues
 } from '../translatedValue'
 import { assertLength, badUserInput } from '../validation'
 
 import {
-  CAMPAIGN_BLOCK_TEXT_FIELDS,
-  CAMPAIGN_REGION_TEXT_FIELDS,
-  CAMPAIGN_STRING_TEXT_FIELDS,
-  CAMPAIGN_TITLE_TEXT_FIELDS,
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
 } from './campaignTextField'
 import { CampaignTranslationSetInput } from './inputs'
-
-type TranslationTargetKind = 'block' | 'region' | 'string' | 'campaign'
+import { TRANSLATION_TARGETS, TranslationTargetKind } from './translationTarget'
 
 interface TranslationTarget {
   kind: TranslationTargetKind
@@ -42,15 +34,6 @@ interface TranslationTarget {
   }
   /** The target's translatable fields and their caps. */
   caps: CampaignTextFieldCaps
-}
-
-const INCLUDE_TARGET_CAMPAIGN = {
-  ...INCLUDE_CAMPAIGN_ACL,
-  languages: true
-} satisfies Prisma.CampaignInclude
-
-function notFound(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
 }
 
 interface TargetIds {
@@ -86,60 +69,10 @@ async function loadTarget(
   kind: TranslationTargetKind,
   id: string
 ): Promise<TranslationTarget> {
-  switch (kind) {
-    case 'block': {
-      const block = await prisma.campaignBlock.findFirst({
-        where: { id, deletedAt: null },
-        include: { campaign: { include: INCLUDE_TARGET_CAMPAIGN } }
-      })
-      if (block == null) throw notFound('block not found')
-      return {
-        kind,
-        id,
-        campaign: block.campaign,
-        caps: CAMPAIGN_BLOCK_TEXT_FIELDS[block.typename] ?? {}
-      }
-    }
-    case 'region': {
-      const region = await prisma.campaignRegion.findUnique({
-        where: { id },
-        include: { campaign: { include: INCLUDE_TARGET_CAMPAIGN } }
-      })
-      if (region == null) throw notFound('region not found')
-      return {
-        kind,
-        id,
-        campaign: region.campaign,
-        caps: CAMPAIGN_REGION_TEXT_FIELDS
-      }
-    }
-    case 'string': {
-      const string = await prisma.campaignString.findUnique({
-        where: { id },
-        include: { campaign: { include: INCLUDE_TARGET_CAMPAIGN } }
-      })
-      if (string == null) throw notFound('string not found')
-      return {
-        kind,
-        id,
-        campaign: string.campaign,
-        caps: CAMPAIGN_STRING_TEXT_FIELDS
-      }
-    }
-    case 'campaign': {
-      const campaign = await prisma.campaign.findUnique({
-        where: { id },
-        include: INCLUDE_TARGET_CAMPAIGN
-      })
-      if (campaign == null) throw notFound('campaign not found')
-      return {
-        kind,
-        id,
-        campaign,
-        caps: CAMPAIGN_TITLE_TEXT_FIELDS
-      }
-    }
-  }
+  const model = TRANSLATION_TARGETS[kind]
+  const found = await model.findWithCampaign(prisma, id)
+  if (found == null) throw notFound(`${kind} not found`)
+  return { kind, id, campaign: found.campaign, caps: model.caps(found.row) }
 }
 
 /**
@@ -151,10 +84,7 @@ export function withTranslation(
   languageId: string,
   value: string
 ): TranslationsJson {
-  const json: TranslationsJson =
-    current != null && typeof current === 'object' && !Array.isArray(current)
-      ? { ...(current as TranslationsJson) }
-      : {}
+  const json = parseTranslations(current)
   if (value === '') {
     delete json[languageId]
     return json
@@ -205,38 +135,9 @@ async function writeTranslation(
   value: string
 ): Promise<TranslationsJson> {
   return await prisma.$transaction(async (tx) => {
-    const select = { [column]: true }
-    let current: Record<string, unknown> | null
-    switch (target.kind) {
-      case 'block':
-        await tx.$queryRaw`SELECT 1 FROM "CampaignBlock" WHERE id = ${target.id} FOR UPDATE`
-        current = await tx.campaignBlock.findUnique({
-          where: { id: target.id },
-          select
-        })
-        break
-      case 'region':
-        await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ${target.id} FOR UPDATE`
-        current = await tx.campaignRegion.findUnique({
-          where: { id: target.id },
-          select
-        })
-        break
-      case 'string':
-        await tx.$queryRaw`SELECT 1 FROM "CampaignString" WHERE id = ${target.id} FOR UPDATE`
-        current = await tx.campaignString.findUnique({
-          where: { id: target.id },
-          select
-        })
-        break
-      case 'campaign':
-        await tx.$queryRaw`SELECT 1 FROM "Campaign" WHERE id = ${target.id} FOR UPDATE`
-        current = await tx.campaign.findUnique({
-          where: { id: target.id },
-          select
-        })
-        break
-    }
+    const model = TRANSLATION_TARGETS[target.kind]
+    await model.lock(tx, [target.id])
+    const current = await model.select(tx, target.id, { [column]: true })
     if (current == null) throw notFound(`${target.kind} not found`)
     await lockCampaign(tx, target.campaign.id)
     const campaign = await tx.campaign.findUnique({
@@ -246,21 +147,7 @@ async function writeTranslation(
     if (campaign == null) throw notFound('campaign not found')
     assertTranslationLanguage(campaign, languageId)
     const json = withTranslation(current[column], languageId, value)
-    const data = { [column]: json }
-    switch (target.kind) {
-      case 'block':
-        await tx.campaignBlock.update({ where: { id: target.id }, data })
-        break
-      case 'region':
-        await tx.campaignRegion.update({ where: { id: target.id }, data })
-        break
-      case 'string':
-        await tx.campaignString.update({ where: { id: target.id }, data })
-        break
-      case 'campaign':
-        await tx.campaign.update({ where: { id: target.id }, data })
-        break
-    }
+    await model.update(tx, target.id, { [column]: json })
     if (target.kind !== 'campaign') await touchCampaign(tx, target.campaign.id)
     return json
   })

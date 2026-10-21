@@ -12,7 +12,7 @@ import {
 import { builder } from '../../builder'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
 import { CampaignTextSource } from '../enums'
-import { TranslationsJson } from '../translatedValue'
+import { parseTranslations } from '../translatedValue'
 import { badUserInput } from '../validation'
 
 import {
@@ -154,13 +154,7 @@ function entryOf(
   translations: unknown,
   languageId: string
 ): { value: string; source: 'human' | 'machine' } | null {
-  if (
-    translations == null ||
-    typeof translations !== 'object' ||
-    Array.isArray(translations)
-  )
-    return null
-  const entry = (translations as TranslationsJson)[languageId]
+  const entry = parseTranslations(translations)[languageId]
   if (entry == null || typeof entry.value !== 'string' || entry.value === '')
     return null
   return { value: entry.value, source: entry.source }

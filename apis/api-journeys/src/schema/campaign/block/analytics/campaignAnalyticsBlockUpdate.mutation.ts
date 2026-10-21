@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { assertNotNull } from '../../validation'
 import { CampaignAnalyticsBlock } from '../campaignAnalyticsBlock'
 import {
   SECTION_STYLE_ERRORS,
@@ -46,7 +47,7 @@ builder.mutationField('campaignAnalyticsBlockUpdate', (t) =>
       )
       return await updateBlock(block, {
         ...validateSectionText(input, ['eyebrow', 'title']),
-        ...(input.showMap != null ? { showMap: input.showMap } : {}),
+        showMap: assertNotNull(input.showMap, 'showMap'),
         ...sectionStyleColumns(input)
       })
     }

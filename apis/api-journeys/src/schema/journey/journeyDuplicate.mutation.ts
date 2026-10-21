@@ -245,7 +245,10 @@ builder.mutationField('journeyDuplicate', (t) =>
 
         let slug = slugify(duplicateTitle, { lower: true, strict: true })
         if (isReservedJourneySlug(slug))
-          slug = slugify(`${slug}-${duplicateJourneyId}`)
+          slug = slugify(`${slug}-${duplicateJourneyId}`, {
+            lower: true,
+            strict: true
+          })
 
         const duplicateCustomizationFields =
           journey.journeyCustomizationFields.map((field) => ({

@@ -72,7 +72,7 @@ describe('journeyCreate', () => {
 
     expect(result.errors).toBeUndefined()
     expect(prismaMock.journey.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ slug: 'campaign-journeyId' })
+      data: expect.objectContaining({ slug: 'campaign-journeyid' })
     })
   })
 })

@@ -10,13 +10,9 @@ import {
 } from '../block/service'
 import { CampaignRef } from '../campaign'
 import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import { conflict } from '../errors'
+import { renumber } from '../order'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
-
-function conflict(message: string): GraphQLError {
-  return new GraphQLError(message, {
-    extensions: { code: 'CONFLICT', field: 'languageId' }
-  })
-}
 
 builder.mutationField('campaignLanguageRemove', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -74,26 +70,26 @@ builder.mutationField('campaignLanguageRemove', (t) =>
           })
         if (languageId === current.defaultLanguageId)
           throw conflict(
-            'languageId is the default language and cannot be removed'
+            'languageId is the default language and cannot be removed',
+            'languageId'
           )
         if (current.languages.length === 1)
           throw conflict(
-            'languageId is the last language and cannot be removed'
+            'languageId is the last language and cannot be removed',
+            'languageId'
           )
 
         await tx.campaignLanguage.delete({ where: { id: row.id } })
         const remaining = current.languages.filter(
           (language) => language.id !== row.id
         )
-        await Promise.all(
-          remaining.map(async (language, order) =>
-            language.order === order
-              ? undefined
-              : await tx.campaignLanguage.update({
-                  where: { id: language.id },
-                  data: { order }
-                })
-          )
+        await renumber(remaining, async (language, order) =>
+          language.order === order
+            ? undefined
+            : await tx.campaignLanguage.update({
+                where: { id: language.id },
+                data: { order }
+              })
         )
         await touchCampaign(tx, campaignId)
         return await tx.campaign.findUniqueOrThrow({

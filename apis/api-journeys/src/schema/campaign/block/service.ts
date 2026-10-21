@@ -1,4 +1,3 @@
-import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -19,12 +18,16 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
+import { conflict, forbidden, notFound } from '../errors'
 import {
   CAMPAIGN_BLOCKS_MAX,
+  assertClientIds,
   assertEnum,
   assertEnumOrNull,
   assertHexOrNull,
-  badUserInput
+  assertNotNull,
+  badUserInput,
+  isUniqueViolation
 } from '../validation'
 
 /**
@@ -142,21 +145,6 @@ export function isCampaignSlotDisallowedTypename(typename: string): boolean {
   return (CAMPAIGN_SLOT_DISALLOWED_TYPENAMES as readonly string[]).includes(
     typename
   )
-}
-
-function notFound(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
-}
-
-function forbidden(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } })
-}
-
-/** A well-formed request refused by the current state (PRD §15). */
-export function conflict(message: string, field: string): GraphQLError {
-  return new GraphQLError(message, {
-    extensions: { code: 'CONFLICT', field }
-  })
 }
 
 /** Block create is campaign Update on the campaign the block will belong to. */
@@ -310,9 +298,7 @@ export function placementUpdate(
       'placement applies to section children only',
       'placement'
     )
-  if (placement === null)
-    throw badUserInput('placement cannot be null', 'placement')
-  return { placement: assertPlacement(placement) }
+  return { placement: assertPlacement(assertNotNull(placement, 'placement')) }
 }
 
 /** The columns that decide which blocks are a block's siblings. */
@@ -456,6 +442,41 @@ export async function touchCampaign(
     where: { id: campaignId },
     data: { updatedAt: new Date() }
   })
+}
+
+/**
+ * Run a block create whose ids the client chose, by input field. A unique
+ * violation on `CampaignBlock.id` (one of them is already a block's id, live
+ * or deleted) is `BAD_USER_INPUT` "<field> is already taken" on the field
+ * that holds it, not a 500.
+ */
+export async function withClientIds<T>(
+  clientIds: Record<string, Array<string | null | undefined>>,
+  create: () => Promise<T>
+): Promise<T> {
+  try {
+    return await create()
+  } catch (error) {
+    if (!isUniqueViolation(error, 'id')) throw error
+    const given = Object.entries(clientIds)
+      .map(([field, ids]) => ({
+        field,
+        ids: ids.filter((id): id is string => id != null)
+      }))
+      .filter(({ ids }) => ids.length > 0)
+    if (given.length === 0) throw error
+    let taken = given[0]
+    if (given.length > 1) {
+      const rows = await prisma.campaignBlock.findMany({
+        where: { id: { in: given.flatMap(({ ids }) => ids) } },
+        select: { id: true }
+      })
+      const takenIds = new Set(rows.map((row) => row.id))
+      taken =
+        given.find(({ ids }) => ids.some((id) => takenIds.has(id))) ?? taken
+    }
+    throw badUserInput(`${taken.field} is already taken`, taken.field)
+  }
 }
 
 export type CampaignChildCreateData = Omit<
@@ -999,6 +1020,20 @@ export async function duplicateBlock(
 ): Promise<CampaignBlockWithAction[]> {
   if (block.parentOrder == null)
     throw conflict('an owned block cannot be duplicated on its own', 'id')
+  const newIds = assertClientIds(
+    idMap.map((entry) => entry.newId),
+    'idMap'
+  )
+  return await withClientIds(
+    { idMap: newIds },
+    async () => await duplicateSubtree(block, idMap)
+  )
+}
+
+async function duplicateSubtree(
+  block: CampaignBlock,
+  idMap: CampaignBlockIdMap[]
+): Promise<CampaignBlockWithAction[]> {
   return await prisma.$transaction(async (tx) => {
     await lockCampaignStructure(tx, block.campaignId)
     const live = await tx.campaignBlock.findMany({
@@ -1086,7 +1121,8 @@ export async function duplicateBlock(
  * Create a Columns section with its two Column Slots in `tx`, so the
  * container never exists without them. The slots are rows of their own at
  * `parentOrder` 0 and 1 with the section's scoping copied down;
- * `slotIds` fixes their ids (exactly two) so the editor can show them
+ * `slotIds` fixes their ids (exactly two UUIDs, unlike each other and the
+ * section id) so the editor can show them
  * before the response arrives. Returns the section; the slots are its
  * children.
  */
@@ -1097,11 +1133,18 @@ export async function createColumnsSection(
   parentOrder?: number | null,
   slotIds?: string[] | null
 ): Promise<CampaignBlockWithAction> {
-  if (slotIds != null && slotIds.length !== CAMPAIGN_COLUMN_SLOT_COUNT)
-    throw badUserInput(
-      `slotIds must name exactly ${CAMPAIGN_COLUMN_SLOT_COUNT} slots`,
-      'slotIds'
+  if (slotIds != null) {
+    if (slotIds.length !== CAMPAIGN_COLUMN_SLOT_COUNT)
+      throw badUserInput(
+        `slotIds must name exactly ${CAMPAIGN_COLUMN_SLOT_COUNT} slots`,
+        'slotIds'
+      )
+    assertClientIds(
+      slotIds,
+      'slotIds',
+      data.id != null ? [String(data.id)] : []
     )
+  }
   const section = await createSectionBlock(tx, page, data, parentOrder)
   await assertCampaignBlockRoom(tx, page.campaignId, CAMPAIGN_COLUMN_SLOT_COUNT)
   for (let slot = 0; slot < CAMPAIGN_COLUMN_SLOT_COUNT; slot++)
@@ -1227,18 +1270,13 @@ export function sectionStyleColumns(
   input: SectionStyleInput
 ): SectionStyleColumns {
   const data: SectionStyleColumns = {}
-  if (input.backgroundKind !== undefined) {
-    if (input.backgroundKind == null)
-      throw badUserInput(
-        `backgroundKind must be one of ${CAMPAIGN_BACKGROUND_KINDS.join(', ')}`,
-        'backgroundKind'
-      )
+  const backgroundKind = assertNotNull(input.backgroundKind, 'backgroundKind')
+  if (backgroundKind !== undefined)
     data.backgroundKind = assertEnum(
-      input.backgroundKind,
+      backgroundKind,
       'backgroundKind',
       CAMPAIGN_BACKGROUND_KINDS
     )
-  }
   if (input.backgroundOverlay !== undefined)
     data.backgroundOverlay = assertEnumOrNull(
       input.backgroundOverlay,

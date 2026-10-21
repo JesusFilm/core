@@ -59,6 +59,9 @@ describe('campaignThemeUpdate', () => {
       userId: mockUser.id,
       roles: []
     })
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
     mockTheme()
   })
 
@@ -102,6 +105,33 @@ describe('campaignThemeUpdate', () => {
         where: { id: 'campaignThemeId' },
         data: { radius: 'square' }
       })
+    )
+  })
+
+  it('updates the theme in a transaction that touches the campaign, so a theme edit is a campaign edit', async () => {
+    await update({ radius: 'square' })
+
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaignTheme.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { radius: 'square' } })
+    )
+    expect(prismaMock.campaign.update).toHaveBeenCalledWith({
+      where: { id: 'campaignId' },
+      data: { updatedAt: expect.any(Date) }
+    })
+  })
+
+  it('refuses null on a column that cannot be null and leaves an omitted one alone', async () => {
+    const nulled = await update({ primaryColor: null })
+    expect(nulled.errors[0]).toMatchObject({
+      message: 'primaryColor cannot be null',
+      extensions: { code: 'BAD_USER_INPUT', field: 'primaryColor' }
+    })
+    expect(prismaMock.campaignTheme.update).not.toHaveBeenCalled()
+
+    await update({ headerFont: null })
+    expect(prismaMock.campaignTheme.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { headerFont: null } })
     )
   })
 

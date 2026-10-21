@@ -142,6 +142,7 @@ export interface CampaignVideoBlockUpdate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
    * - INTERNAL_SERVER_ERROR: YouTube is unavailable, so a YouTube video's source text cannot be fetched again; nothing is written.
+   * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
   campaignVideoBlockUpdate: CampaignVideoBlockUpdate_campaignVideoBlockUpdate;
 }

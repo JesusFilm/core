@@ -34,7 +34,8 @@ builder.mutationField('journeyCreate', (t) =>
           strict: true
         })
         const id = input.id ?? uuidv4()
-        if (isReservedJourneySlug(slug)) slug = slugify(`${slug}-${id}`)
+        if (isReservedJourneySlug(slug))
+          slug = slugify(`${slug}-${id}`, { lower: true, strict: true })
 
         while (retry) {
           try {
