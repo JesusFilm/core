@@ -1,0 +1,51 @@
+--- a/controller.py
++++ b/controller.py
+@@ -454,8 +454,28 @@
+ 
+ 
+ 
++def core_slot(state):
++    # Prefer the node with fewer active CI guests; ties favor the less busy
++    # production host, jfp01. Capacity and template readiness remain per-node.
++    nodes = sorted(TEMPLATES, key=lambda node: (
++        sum(SLOTS[slot][4] == node for slot in state), node != 'jfp01'))
++    for node in nodes:
++        free = [slot for slot in SLOTS if slot not in state and SLOTS[slot][4] == node]
++        if not free or not capacity_ready(node, state, PUBLIC_REPOSITORY):
++            continue
++        try:
++            config = node_command(node, 'qm', 'config', str(TEMPLATES[node]))
++        except Exception as exc:
++            LOG.warning('core template unavailable on %s: %s', node, type(exc).__name__)
++            continue
++        if any(line.startswith('lock:') for line in config.splitlines()):
++            continue
++        return min(free, key=int)
++    return None
++
++
+ def dispatch_public_repository(repository, state, occupied):
+-    # Fill available local slots so core's matrix jobs can run concurrently.
++    # Fill eligible slots on both nodes, balancing active CI guest counts.
+     while True:
+         reconcile(state, core_only=True)
+         # A run's runners can claim a different queued job than the one that
+@@ -463,16 +483,12 @@
+         occupied.intersection_update(
+             (entry['repo'].lower(), entry['run'], entry['job'])
+             for entry in state.values())
+-        config = node_command('jfp00', 'qm', 'config', str(TEMPLATES['jfp00']))
+-        if any(line.startswith('lock:') for line in config.splitlines()):
+-            return
+-        free = [slot for slot in SLOTS if slot not in state and SLOTS[slot][4] == 'jfp00']
+-        if not free or not capacity_ready('jfp00', state, PUBLIC_REPOSITORY):
++        slot = core_slot(state)
++        if slot is None:
+             return
+         item = candidate(repository['full_name'], repository['default_branch'], occupied)
+         if not item:
+             return
+-        slot = min(free, key=int)
+         try:
+             launch(slot, item, state)
+             occupied.add((item['repo'].lower(), item['run'], item['job']))
