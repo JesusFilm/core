@@ -7,6 +7,7 @@ import { getStaticProps as getHostnameStaticProps } from '../../../pages/[hostna
 import { getStaticProps as getSlugStaticProps } from '../../../pages/[hostname]/[journeySlug]'
 import { getStaticProps as getLangHostnameStaticProps } from '../../../pages/[hostname]/_lang/[lang]'
 import { getStaticProps as getLangSlugStaticProps } from '../../../pages/[hostname]/_lang/[lang]/[journeySlug]'
+import { logger } from '../../../src/libs/logger'
 
 vi.mock('../../../src/libs/getFlags', () => ({
   getFlags: vi.fn().mockResolvedValue({})
@@ -16,6 +17,10 @@ vi.mock('../../../src/libs/getWorldMap', () => ({
   getWorldMap: vi
     .fn()
     .mockResolvedValue({ width: 960, height: 500, countries: [] })
+}))
+
+vi.mock('../../../src/libs/logger', () => ({
+  logger: { error: vi.fn() }
 }))
 
 const mockQuery = vi.fn()
@@ -33,6 +38,17 @@ function notFoundError(): CombinedGraphQLErrors {
   return new CombinedGraphQLErrors({
     errors: [
       { message: 'campaign not found', extensions: { code: 'NOT_FOUND' } }
+    ]
+  } as ConstructorParameters<typeof CombinedGraphQLErrors>[0])
+}
+
+function validationError(): CombinedGraphQLErrors {
+  return new CombinedGraphQLErrors({
+    errors: [
+      {
+        message: 'Cannot query field "campaignPublic"',
+        extensions: { code: 'GRAPHQL_VALIDATION_FAILED' }
+      }
     ]
   } as ConstructorParameters<typeof CombinedGraphQLErrors>[0])
 }
@@ -58,6 +74,7 @@ const french = { ...campaignPublic, languageId: '496', title: 'Noël' }
 describe('Campaign Root on a custom domain', () => {
   beforeEach(() => {
     mockQuery.mockReset()
+    vi.mocked(logger.error).mockClear()
   })
 
   describe('/', () => {
@@ -274,6 +291,88 @@ describe('Campaign Root on a custom domain', () => {
         props: { languageFallback: `/${region.slug}` },
         revalidate: 60
       })
+    })
+  })
+
+  describe.each([
+    ['a gateway validation error', validationError],
+    ['a network failure', () => new Error('socket hang up')]
+  ])('when the Campaign Root read fails with %s', (_name, failure) => {
+    it('serves the journey collection logic on /', async () => {
+      mockQuery
+        .mockRejectedValueOnce(failure())
+        .mockResolvedValueOnce({ data: { journeys: null } })
+
+      const result = await getHostnameStaticProps(context({}))
+
+      expect(mockQuery.mock.calls[1][0].variables).toEqual({
+        options: { hostname: HOSTNAME, journeyCollection: true }
+      })
+      expect(result).toEqual(
+        expect.objectContaining({ notFound: true, revalidate: 1 })
+      )
+      expect(logger.error).toHaveBeenCalledTimes(1)
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({ hostname: HOSTNAME }),
+        'campaign root read failed'
+      )
+    })
+
+    it('serves the journey on /<segment>', async () => {
+      mockQuery.mockRejectedValueOnce(failure()).mockResolvedValueOnce({
+        data: { journey: journeyRow('my-journey') }
+      })
+
+      const result = await getSlugStaticProps(
+        context({ journeySlug: 'my-journey' })
+      )
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          props: expect.objectContaining({
+            journey: journeyRow('my-journey')
+          })
+        })
+      )
+      expect(logger.error).toHaveBeenCalledTimes(1)
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({ hostname: HOSTNAME }),
+        'campaign root read failed'
+      )
+    })
+
+    it('redirects /_lang/<tag> to /', async () => {
+      mockQuery.mockRejectedValueOnce(failure())
+
+      const result = await getLangHostnameStaticProps(context({ lang: 'fr' }))
+
+      expect(result).toEqual({
+        props: { languageFallback: '/' },
+        revalidate: 60
+      })
+      expect(logger.error).toHaveBeenCalledTimes(1)
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({ hostname: HOSTNAME }),
+        'campaign root read failed'
+      )
+    })
+
+    it('redirects /_lang/<tag>/<segment> to the plain path', async () => {
+      mockQuery.mockRejectedValueOnce(failure())
+
+      const result = await getLangSlugStaticProps(
+        context({ lang: 'fr', journeySlug: 'my-journey' })
+      )
+
+      expect(result).toEqual({
+        props: { languageFallback: '/my-journey' },
+        revalidate: 60
+      })
+      expect(logger.error).toHaveBeenCalledTimes(1)
+      expect(logger.error).toHaveBeenCalledWith(
+        expect.objectContaining({ hostname: HOSTNAME }),
+        'campaign root read failed'
+      )
     })
   })
 })

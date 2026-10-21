@@ -17,6 +17,7 @@ import {
 } from '../getCampaignPublic'
 import { getFlags } from '../getFlags'
 import { getWorldMap } from '../getWorldMap'
+import { logger } from '../logger'
 
 /** The ISR window of every campaign page (PRD §11). */
 export const CAMPAIGN_REVALIDATE_SECONDS = 60
@@ -157,7 +158,9 @@ export async function getCampaignStaticProps({
  * request is not one: the domain has no published root campaign, or the
  * segment is not one of its regions (a journey slug). The region is matched
  * on the first, default-language read, before the Page Language costs a
- * second, so a journey visit is not charged for the campaign.
+ * second, so a journey visit is not charged for the campaign. A failed read
+ * is logged and answered as null too, so an unreachable `campaignPublic`
+ * costs a custom domain its campaign, not its journeys.
  */
 export async function getHostCampaignStaticProps({
   hostname,
@@ -165,14 +168,22 @@ export async function getHostCampaignStaticProps({
   language,
   locale
 }: HostCampaignRequest): Promise<GetStaticPropsResult<CampaignStaticProps> | null> {
-  const result = await fetchCampaignPublicInPageLanguageByHostname(
-    createApolloClient(),
-    hostname,
-    language,
-    segment == null
-      ? undefined
-      : (inDefault) => matchRegionSlug(segment, inDefault.regions) != null
-  )
+  let result: Awaited<
+    ReturnType<typeof fetchCampaignPublicInPageLanguageByHostname>
+  >
+  try {
+    result = await fetchCampaignPublicInPageLanguageByHostname(
+      createApolloClient(),
+      hostname,
+      language,
+      segment == null
+        ? undefined
+        : (inDefault) => matchRegionSlug(segment, inDefault.regions) != null
+    )
+  } catch (error) {
+    logger.error({ error, hostname, segment }, 'campaign root read failed')
+    return null
+  }
   if (result == null) return null
   if (language != null && result.language.source !== 'param')
     return unknownLanguage(`/${segment ?? ''}`)
