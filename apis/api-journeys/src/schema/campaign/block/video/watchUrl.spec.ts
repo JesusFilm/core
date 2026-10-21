@@ -8,6 +8,9 @@ vi.mock('../../gatewayClient', () => ({
   fetchWatchVideoBySlug: vi.fn()
 }))
 
+const MALFORMED_WATCH_URL =
+  'https://www.jesusfilm.org/watch/%E0%A4%A.html/english.html'
+
 describe('parseWatchUrl', () => {
   it.each([
     [
@@ -46,6 +49,10 @@ describe('parseWatchUrl', () => {
   ])('is null for %s, not a Watch address', (url) => {
     expect(parseWatchUrl(url)).toBeNull()
   })
+
+  it('is null for a path segment that is not valid percent-encoding', () => {
+    expect(parseWatchUrl(MALFORMED_WATCH_URL)).toBeNull()
+  })
 })
 
 describe('resolveWatchUrl', () => {
@@ -77,6 +84,16 @@ describe('resolveWatchUrl', () => {
         extensions: { code: 'BAD_USER_INPUT', field: 'url' }
       })
     )
+  })
+
+  it('is BAD_USER_INPUT on url for a malformed percent-encoding without a gateway call', async () => {
+    await expect(resolveWatchUrl(MALFORMED_WATCH_URL)).rejects.toEqual(
+      expect.objectContaining({
+        message: WATCH_URL_ERROR,
+        extensions: { code: 'BAD_USER_INPUT', field: 'url' }
+      })
+    )
+    expect(fetchWatchVideoBySlug).not.toHaveBeenCalled()
   })
 
   it('is BAD_USER_INPUT on url for a non-Watch shape without a gateway call', async () => {

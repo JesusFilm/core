@@ -15,7 +15,7 @@ import {
   fetchFieldsFromMux,
   fetchFieldsFromYouTube
 } from '../../../block/video/service'
-import { fetchWatchVideoBySlug } from '../../gatewayClient'
+import { fetchWatchVideoById, fetchWatchVideoBySlug } from '../../gatewayClient'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -29,7 +29,8 @@ vi.mock('../../../block/video/service', async () => ({
 
 vi.mock('../../gatewayClient', async () => ({
   ...(await vi.importActual('../../gatewayClient')),
-  fetchWatchVideoBySlug: vi.fn()
+  fetchWatchVideoBySlug: vi.fn(),
+  fetchWatchVideoById: vi.fn()
 }))
 
 const YOUTUBE_ID = 'jQaN9DvFTbw'
@@ -92,6 +93,11 @@ describe('campaignVideoBlockCreate', () => {
       endAt: 90
     })
     vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
+      id: '1_jf-0-0',
+      label: 'featureFilm',
+      childrenCount: 61
+    })
+    vi.mocked(fetchWatchVideoById).mockResolvedValue({
       id: '1_jf-0-0',
       label: 'featureFilm',
       childrenCount: 61
@@ -328,6 +334,48 @@ describe('campaignVideoBlockCreate', () => {
       })
     })
 
+    it('cuts a fetched YouTube title to 200 and description to 1000 code points', async () => {
+      vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
+        title: '😀'.repeat(250),
+        description: '😀'.repeat(1800),
+        image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+        duration: 120
+      })
+
+      await create({ source: 'youTube', videoId: YOUTUBE_ID })
+
+      expect(createdData()).toMatchObject({
+        title: '😀'.repeat(200),
+        description: '😀'.repeat(1000)
+      })
+    })
+
+    it('stores a fetched YouTube description under the cap unchanged', async () => {
+      vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
+        title: 'YouTube title',
+        description: 'x'.repeat(999),
+        image: 'https://i.ytimg.com/vi/jQaN9DvFTbw/hqdefault.jpg',
+        duration: 120
+      })
+
+      await create({ source: 'youTube', videoId: YOUTUBE_ID })
+
+      expect(createdData()).toMatchObject({
+        title: 'YouTube title',
+        description: 'x'.repeat(999)
+      })
+    })
+
+    it('cuts a fetched Mux title to 200 code points', async () => {
+      vi.mocked(fetchFieldsFromMux).mockResolvedValue({
+        title: 'x'.repeat(250)
+      })
+
+      await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(createdData()).toMatchObject({ title: 'x'.repeat(200) })
+    })
+
     it('fetches a Mux video’s title, poster and duration once at pick, with no description', async () => {
       const result = await create({ source: 'mux', videoId: 'muxVideoId' })
 
@@ -542,6 +590,31 @@ describe('campaignVideoBlockCreate', () => {
         expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
       }
     )
+
+    it('resolves a Watch video picked by videoId through the gateway and stores its id', async () => {
+      const result = await create({ source: 'internal', videoId: '1_jf-0-0' })
+
+      expect(result.errors).toBeUndefined()
+      expect(fetchWatchVideoById).toHaveBeenCalledWith('1_jf-0-0')
+      expect(fetchWatchVideoBySlug).not.toHaveBeenCalled()
+      expect(createdData()).toMatchObject({
+        source: 'internal',
+        videoId: '1_jf-0-0',
+        videoVariantLanguageId: '529'
+      })
+    })
+
+    it('rejects a videoId that is not a published Watch video (BAD_USER_INPUT, videoId)', async () => {
+      vi.mocked(fetchWatchVideoById).mockResolvedValue(null)
+
+      const result = await create({ source: 'internal', videoId: 'unknown' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'videoId is not a published Watch video',
+        extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
 
     it('needs a url or a known Video id (BAD_USER_INPUT, url)', async () => {
       const result = await create({ source: 'internal' })

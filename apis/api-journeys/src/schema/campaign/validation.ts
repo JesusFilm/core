@@ -103,6 +103,15 @@ export const PALETTE_MAX_LENGTH = 8
 export const REGION_COUNTRIES_MAX = 250
 
 /**
+ * Cut to at most `max` Unicode code points: for text copied in from a source
+ * (YouTube, Mux, a linked journey) so a later save of it passes the cap.
+ */
+export function truncate(value: string, max: number): string {
+  const characters = [...value]
+  return characters.length <= max ? value : characters.slice(0, max).join('')
+}
+
+/**
  * Trim and count Unicode code points. Empty is allowed unless `required`;
  * over-length is `BAD_USER_INPUT` / `field`. Returns the trimmed value.
  */

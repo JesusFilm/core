@@ -59,7 +59,11 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
   let fetchSpy: ReturnType<typeof vi.spyOn>
 
   /** The playlist's items, then the videos request answering for whichever ids it names. */
-  function mockYouTube(count: number, missing: string[] = []): void {
+  function mockYouTube(
+    count: number,
+    missing: string[] = [],
+    description = (id: string): string => `Description ${id}`
+  ): void {
     fetchSpy.mockImplementation(async (input: string) => {
       const url = new URL(input)
       if (url.pathname.endsWith('/playlistItems'))
@@ -77,7 +81,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
             id,
             snippet: {
               title: `Title ${id}`,
-              description: `Description ${id}`,
+              description: description(id),
               thumbnails: {
                 high: { url: `https://i.ytimg.com/vi/${id}/hq.jpg` }
               }
@@ -210,6 +214,17 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
         (item: any) => item.videoId
       )
     ).toEqual([youTubeId(0), youTubeId(2)])
+  })
+
+  it('cuts an imported description to 1000 characters, the override cap', async () => {
+    mockYouTube(1, [], () => 'x'.repeat(1800))
+
+    await importPlaylist()
+
+    const [{ data }] = vi.mocked(prismaMock.campaignBlock.createManyAndReturn)
+      .mock.calls[0] as any
+    expect(data[0].description).toBe('x'.repeat(1000))
+    expect(data[0].title).toBe(`Title ${youTubeId(0)}`)
   })
 
   it('refuses a link that is not a playlist (BAD_USER_INPUT, url) without calling YouTube', async () => {

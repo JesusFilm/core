@@ -1,6 +1,7 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { snapshotOf } from '../block/journey/snapshot'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import { JourneyWithPublicUrl } from '../getJourneyPublicUrl'
@@ -85,8 +86,9 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
               data.snapshotEdited = false
             } else if (journey != null) {
               data.journeyId = journey.id
-              data.title = journey.title
-              data.description = journey.description
+              const snapshot = snapshotOf(journey)
+              data.title = snapshot.title
+              data.description = snapshot.description
               data.snapshotEdited = false
               if (current.qrCode == null) {
                 const created = await createRegionLanguageQrCode(
