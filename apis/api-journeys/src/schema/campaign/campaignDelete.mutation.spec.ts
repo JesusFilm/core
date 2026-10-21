@@ -3,8 +3,8 @@ import { type MockedFunction, vi } from 'vitest'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
+import { authClient, mockUser } from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../qrCode/qrCode.service'
@@ -27,20 +27,6 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 >
 
 describe('campaignDelete', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_DELETE = graphql(`
     mutation CampaignDelete($id: ID!) {
       campaignDelete(id: $id) {
@@ -210,7 +196,7 @@ describe('campaignDelete', () => {
       variables: { id: 'campaignId' }
     })) as any
 
-    expect(result.errors).toBeDefined()
+    expect(result.errors[0].message).toBe('delete failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 

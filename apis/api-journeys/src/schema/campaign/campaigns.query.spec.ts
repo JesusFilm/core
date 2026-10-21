@@ -1,9 +1,10 @@
-import { type MockedFunction, vi } from 'vitest'
+import { vi } from 'vitest'
 
-import { getUserFromPayload } from '@core/yoga/firebaseClient'
-
+import {
+  authClient,
+  setupCampaignBlockSpec
+} from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -11,25 +12,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
-  typeof getUserFromPayload
->
-
 describe('campaigns', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGNS = graphql(`
     query Campaigns($teamId: ID!) {
       campaigns(teamId: $teamId) {
@@ -43,13 +26,7 @@ describe('campaigns', () => {
   `)
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockGetUserFromPayload.mockReturnValue(mockUser)
-    prismaMock.userRole.findUnique.mockResolvedValue({
-      id: 'userRoleId',
-      userId: mockUser.id,
-      roles: []
-    })
+    setupCampaignBlockSpec()
   })
 
   it("lists the team's campaigns newest first behind campaign Read", async () => {

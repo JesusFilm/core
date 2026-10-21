@@ -196,7 +196,9 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
   it('rejects an unknown layout at the schema (the enum) before the resolver', async () => {
     const result = await update({ layout: 'diagonal' })
 
-    expect(result.errors).toBeDefined()
+    expect(result.errors[0].message).toContain(
+      'Value "diagonal" does not exist in "CampaignFeaturedMediaLayout" enum'
+    )
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
   })
 

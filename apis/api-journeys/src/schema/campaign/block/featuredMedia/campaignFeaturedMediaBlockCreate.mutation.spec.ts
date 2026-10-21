@@ -228,7 +228,9 @@ describe('campaignFeaturedMediaBlockCreate', () => {
   it('rejects an unknown mediaSide at the schema (the enum) before the resolver', async () => {
     const result = await create({ mediaSide: 'top' })
 
-    expect(result.errors[0]).toBeDefined()
+    expect(result.errors[0].message).toContain(
+      'Value "top" does not exist in "CampaignMediaSide" enum'
+    )
     expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
   })
 

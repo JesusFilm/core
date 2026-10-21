@@ -1,9 +1,10 @@
-import { type MockedFunction, vi } from 'vitest'
+import { vi } from 'vitest'
 
-import { getUserFromPayload } from '@core/yoga/firebaseClient'
-
+import {
+  authClient,
+  setupCampaignBlockSpec
+} from '../../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../../test/campaignFactory'
-import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -11,28 +12,10 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
-  typeof getUserFromPayload
->
-
 const FRENCH = '496'
 const SPANISH = '21028'
 
 describe('campaignLanguageRemove', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_LANGUAGE_REMOVE = graphql(`
     mutation CampaignLanguageRemove($campaignId: ID!, $languageId: ID!) {
       campaignLanguageRemove(campaignId: $campaignId, languageId: $languageId) {
@@ -54,16 +37,7 @@ describe('campaignLanguageRemove', () => {
   }
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    mockGetUserFromPayload.mockReturnValue(mockUser)
-    prismaMock.userRole.findUnique.mockResolvedValue({
-      id: 'userRoleId',
-      userId: mockUser.id,
-      roles: []
-    })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    setupCampaignBlockSpec()
   })
 
   it('removes a non-default language and closes the gap in the order', async () => {

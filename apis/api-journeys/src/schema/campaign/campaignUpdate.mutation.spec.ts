@@ -3,8 +3,8 @@ import { type MockedFunction, vi } from 'vitest'
 import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { authClient, mockUser } from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
-import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -24,20 +24,6 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 >
 
 describe('campaignUpdate', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_UPDATE = graphql(`
     mutation CampaignUpdate($id: ID!, $input: CampaignUpdateInput!) {
       campaignUpdate(id: $id, input: $input) {

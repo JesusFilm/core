@@ -366,7 +366,7 @@ describe('campaignRegionLanguageUpdate', () => {
           url: 'https://admin.nextstep.is/journeys/journeyId'
         })
 
-        expect(result.errors).toBeDefined()
+        expect(result.errors[0].message).toBe('gateway down')
         expect(deleteShortLink).not.toHaveBeenCalled()
       })
 
@@ -382,7 +382,7 @@ describe('campaignRegionLanguageUpdate', () => {
           url: 'https://admin.nextstep.is/journeys/journeyId'
         })
 
-        expect(result.errors).toBeDefined()
+        expect(result.errors[0].message).toBe('transaction timed out')
         const createdId = vi.mocked(createShortLink).mock.calls[0][0].id
         expect(deleteShortLink).toHaveBeenCalledWith(createdId)
       })
@@ -403,7 +403,7 @@ describe('campaignRegionLanguageUpdate', () => {
           url: 'https://admin.nextstep.is/journeys/otherJourneyId'
         })
 
-        expect(result.errors).toBeDefined()
+        expect(result.errors[0].message).toBe('transaction timed out')
         expect(updateShortLink).toHaveBeenCalledTimes(2)
         expect(updateShortLink).toHaveBeenLastCalledWith({
           id: 'shortLinkId',

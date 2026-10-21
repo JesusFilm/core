@@ -2,8 +2,8 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { authClient, mockUser } from '../../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../../test/campaignFactory'
-import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchLanguage } from '../gatewayClient'
@@ -21,20 +21,6 @@ const mockFetchLanguage = fetchLanguage as MockedFunction<typeof fetchLanguage>
 const FRENCH = '496'
 
 describe('campaignLanguageAdd', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_LANGUAGE_ADD = graphql(`
     mutation CampaignLanguageAdd($campaignId: ID!, $languageId: ID!) {
       campaignLanguageAdd(campaignId: $campaignId, languageId: $languageId) {

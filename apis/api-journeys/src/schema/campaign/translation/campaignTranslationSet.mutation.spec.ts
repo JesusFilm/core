@@ -2,8 +2,8 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { authClient, mockUser } from '../../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../../test/campaignFactory'
-import { getClient } from '../../../../test/client'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -23,20 +23,6 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 const FRENCH = '496'
 
 describe('campaignTranslationSet', () => {
-  const mockUser = {
-    id: 'userId',
-    email: 'test@example.com',
-    emailVerified: true,
-    firstName: 'Test',
-    lastName: 'User',
-    imageUrl: null,
-    roles: []
-  }
-  const authClient = getClient({
-    headers: { authorization: 'token' },
-    context: { currentUser: mockUser }
-  })
-
   const CAMPAIGN_TRANSLATION_SET = graphql(`
     mutation CampaignTranslationSet($input: CampaignTranslationSetInput!) {
       campaignTranslationSet(input: $input) {
@@ -330,6 +316,43 @@ describe('campaignTranslationSet', () => {
       extensions: expect.objectContaining({ code: 'NOT_FOUND' })
     })
   })
+
+  it.each([
+    [
+      'region',
+      'regionId',
+      'name',
+      () => prismaMock.campaignRegion.findUnique.mockResolvedValue(null)
+    ],
+    [
+      'string',
+      'stringId',
+      'value',
+      () => prismaMock.campaignString.findUnique.mockResolvedValue(null)
+    ],
+    [
+      'campaign',
+      'campaignId',
+      'title',
+      () => prismaMock.campaign.findUnique.mockResolvedValue(null)
+    ]
+  ])(
+    'is NOT_FOUND for an unknown %s target',
+    async (kind, targetKey, field, missTarget) => {
+      missTarget()
+
+      const result = await set({
+        target: { [targetKey]: 'gone' },
+        field,
+        value: 'x'
+      })
+
+      expect(result.errors[0]).toMatchObject({
+        message: `${kind} not found`,
+        extensions: expect.objectContaining({ code: 'NOT_FOUND' })
+      })
+    }
+  )
 
   it('throws FORBIDDEN for a user outside the team', async () => {
     const outsider = campaignFactory({ userId: 'someoneElse' })
