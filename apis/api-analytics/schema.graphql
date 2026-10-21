@@ -13,12 +13,30 @@ type Error implements BaseError
 
 type Mutation {
   siteCreate(input: SiteCreateInput!): MutationSiteCreateResult!
+
+  """
+  Deletes the sites with these domains that the caller owns, and returns how many it deleted. Goals, shared links and memberships go with them (the foreign keys cascade). Events already recorded in ClickHouse are left in place.
+  """
+  sitesDelete(domains: [String!]!): MutationSitesDeleteResult!
 }
 
 union MutationSiteCreateResult = Error | MutationSiteCreateSuccess
 
 type MutationSiteCreateSuccess {
   data: Site!
+}
+
+union MutationSitesDeleteResult = Error | MutationSitesDeleteSuccess
+
+type MutationSitesDeleteSuccess {
+  data: Int!
+}
+
+type Query {
+  """
+  Sites the caller owns, ordered by id. Page with `after` set to the last id returned.
+  """
+  sites(domainStartsWith: String, after: String, first: Int): [Site!]!
 }
 
 type Site {
