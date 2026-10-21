@@ -152,7 +152,7 @@ jobs:
       contents: read
       issues: read
       pull-requests: read
-    if: ${{ github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && !contains(github.event.pull_request.labels.*.name, 'skip-migration-check') }}
+    if: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip-migration-check') }}
     steps:
       # fetch-depth: 0 fetches full history for all branches, which is what
       # merge-base needs. No extra shallow fetch of the base branch here — a
