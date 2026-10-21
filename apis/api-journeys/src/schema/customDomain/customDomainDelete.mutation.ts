@@ -3,6 +3,7 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
 
 import { CustomDomainRef } from './customDomain'
@@ -41,7 +42,14 @@ builder.mutationField('customDomainDelete', (t) =>
         await deleteVercelDomain(customDomain)
       })
 
-      await updateTeamShortLinks(customDomain.teamId)
+      try {
+        await updateTeamShortLinks(customDomain.teamId)
+      } catch (error) {
+        logger.error(
+          { teamId: customDomain.teamId, error },
+          'Failed to update team QR code short links'
+        )
+      }
 
       return customDomain
     }

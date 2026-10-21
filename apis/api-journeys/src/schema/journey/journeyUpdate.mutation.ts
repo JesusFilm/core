@@ -5,6 +5,7 @@ import slugify from 'slugify'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+import { logger } from '../../logger'
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
 import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
 import { builder } from '../builder'
@@ -99,12 +100,19 @@ builder.mutationField('journeyUpdate', (t) =>
               }
             })
 
-            if (input.slug != null) {
-              await updateJourneyShortlink(updated.id, input.slug)
-            }
-
             return updated
           })
+
+          if (input.slug != null) {
+            try {
+              await updateJourneyShortlink(result.id)
+            } catch (error) {
+              logger.error(
+                { journeyId: result.id, error },
+                'Failed to update journey QR code short links'
+              )
+            }
+          }
 
           if (
             input.seoTitle != null ||
