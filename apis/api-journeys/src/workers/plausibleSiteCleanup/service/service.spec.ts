@@ -6,7 +6,13 @@ import { Journey, Team } from '@core/prisma/journeys/client'
 
 import { prismaMock } from '../../../../test/prismaMock'
 
-import { SITES, SITES_DELETE, service, siteOwner } from './service'
+import {
+  SITES,
+  SITES_DELETE,
+  SITES_DELETE_PREPARE,
+  service,
+  siteOwner
+} from './service'
 
 vi.mock('@apollo/client', async () => {
   const actual =
@@ -35,6 +41,17 @@ function sitesPage(...domains: string[]): { data: { sites: unknown[] } } {
   return {
     data: {
       sites: domains.map((domain, index) => ({ id: String(index + 1), domain }))
+    }
+  }
+}
+
+function prepared(count: number): { data: { sitesDeletePrepare: unknown } } {
+  return {
+    data: {
+      sitesDeletePrepare: {
+        __typename: 'MutationSitesDeletePrepareSuccess',
+        data: count
+      }
     }
   }
 }
@@ -85,24 +102,25 @@ describe('plausibleSiteCleanup service', () => {
     })
   })
 
-  it('deletes the sites whose journey or team no longer exists', async () => {
-    querySpy.mockResolvedValueOnce(
-      sitesPage(
-        'api-journeys-journey-live',
-        'api-journeys-journey-gone',
-        'api-journeys-template-gone',
-        'api-journeys-team-live',
-        'api-journeys-team-gone',
-        'api-journeys-unknown-x'
-      )
+  it('clears the orphans\' goals first, then deletes the orphaned sites', async () => {
+    const page = sitesPage(
+      'api-journeys-journey-live',
+      'api-journeys-journey-gone',
+      'api-journeys-template-gone',
+      'api-journeys-team-live',
+      'api-journeys-team-gone',
+      'api-journeys-unknown-x'
     )
+    querySpy.mockResolvedValueOnce(page).mockResolvedValueOnce(page)
     prismaMock.journey.findMany.mockResolvedValue([
       { id: 'live' }
     ] as unknown as Journey[])
     prismaMock.team.findMany.mockResolvedValue([
       { id: 'live' }
     ] as unknown as Team[])
-    mutateSpy.mockResolvedValueOnce(deleted(3))
+    mutateSpy
+      .mockResolvedValueOnce(prepared(90))
+      .mockResolvedValueOnce(deleted(3))
 
     await service(job(), logger)
 
@@ -123,47 +141,76 @@ describe('plausibleSiteCleanup service', () => {
       where: { id: { in: ['live', 'gone'] } },
       select: { id: true }
     })
-    expect(mutateSpy).toHaveBeenCalledTimes(1)
-    expect(mutateSpy).toHaveBeenCalledWith({
+    const orphans = [
+      'api-journeys-journey-gone',
+      'api-journeys-template-gone',
+      'api-journeys-team-gone'
+    ]
+    expect(mutateSpy).toHaveBeenCalledTimes(2)
+    expect(mutateSpy).toHaveBeenNthCalledWith(1, {
+      mutation: SITES_DELETE_PREPARE,
+      variables: { domains: orphans }
+    })
+    expect(mutateSpy).toHaveBeenNthCalledWith(2, {
       mutation: SITES_DELETE,
-      variables: {
-        domains: [
-          'api-journeys-journey-gone',
-          'api-journeys-template-gone',
-          'api-journeys-team-gone'
-        ]
-      }
+      variables: { domains: orphans }
     })
     expect(logger.info).toHaveBeenCalledWith(
-      { checked: 6, orphaned: 3, deleted: 3, dryRun: false },
+      {
+        checked: 6,
+        orphaned: 3,
+        rowsPrepared: 90,
+        deleted: 3,
+        failedBatches: 0
+      },
       'plausible site cleanup finished'
     )
   })
 
-  it('pages through every site, in batches of 100 deletes', async () => {
-    const fullPage = Array.from(
-      { length: 1000 },
-      (_, index) => `api-journeys-journey-gone-${index}`
+  it('pages through every site, preparing 500 and deleting 20 at a time', async () => {
+    const fullPage = sitesPage(
+      ...Array.from(
+        { length: 1000 },
+        (_, index) => `api-journeys-journey-gone-${index}`
+      )
     )
+    const lastPage = sitesPage('api-journeys-journey-live')
     querySpy
-      .mockResolvedValueOnce(sitesPage(...fullPage))
-      .mockResolvedValueOnce(sitesPage('api-journeys-journey-live'))
-    prismaMock.journey.findMany
-      .mockResolvedValueOnce([])
-      .mockResolvedValueOnce([{ id: 'live' }] as unknown as Journey[])
-    mutateSpy.mockResolvedValue(deleted(100))
+      .mockResolvedValueOnce(fullPage)
+      .mockResolvedValueOnce(lastPage)
+      .mockResolvedValueOnce(fullPage)
+      .mockResolvedValueOnce(lastPage)
+    prismaMock.journey.findMany.mockImplementation(
+      async () => [{ id: 'live' }] as unknown as Journey[]
+    )
+    mutateSpy.mockImplementation(async ({ mutation }) =>
+      mutation === SITES_DELETE_PREPARE ? prepared(15000) : deleted(20)
+    )
 
     await service(job(), logger)
 
-    expect(querySpy).toHaveBeenCalledTimes(2)
-    expect(querySpy).toHaveBeenLastCalledWith(
+    expect(querySpy).toHaveBeenCalledTimes(4)
+    expect(querySpy).toHaveBeenNthCalledWith(
+      2,
       expect.objectContaining({
         variables: expect.objectContaining({ after: '1000' })
       })
     )
-    expect(mutateSpy).toHaveBeenCalledTimes(10)
+    const calls = mutateSpy.mock.calls.map(([options]) => options)
+    expect(
+      calls.filter(({ mutation }) => mutation === SITES_DELETE_PREPARE)
+    ).toHaveLength(2)
+    expect(
+      calls.filter(({ mutation }) => mutation === SITES_DELETE)
+    ).toHaveLength(50)
     expect(logger.info).toHaveBeenCalledWith(
-      { checked: 1001, orphaned: 1000, deleted: 1000, dryRun: false },
+      {
+        checked: 1001,
+        orphaned: 1000,
+        rowsPrepared: 30000,
+        deleted: 1000,
+        failedBatches: 0
+      },
       'plausible site cleanup finished'
     )
   })
@@ -176,19 +223,52 @@ describe('plausibleSiteCleanup service', () => {
 
     expect(mutateSpy).not.toHaveBeenCalled()
     expect(logger.info).toHaveBeenCalledWith(
-      { count: 1, sample: ['api-journeys-journey-gone'] },
+      { checked: 1, orphaned: 1, sample: ['api-journeys-journey-gone'] },
       'DRY RUN: would delete plausible sites'
     )
   })
 
-  it('stops if sitesDelete returns an error', async () => {
-    querySpy.mockResolvedValueOnce(sitesPage('api-journeys-journey-gone'))
+  it('skips a failed batch and carries on', async () => {
+    const page = sitesPage(
+      ...Array.from(
+        { length: 40 },
+        (_, index) => `api-journeys-journey-gone-${index}`
+      )
+    )
+    querySpy.mockResolvedValueOnce(page).mockResolvedValueOnce(page)
     prismaMock.journey.findMany.mockResolvedValue([])
-    mutateSpy.mockResolvedValueOnce({
-      data: { sitesDelete: { __typename: 'Error', message: 'nope' } }
+    mutateSpy
+      .mockResolvedValueOnce(prepared(40))
+      .mockRejectedValueOnce(new Error('Received status code 504'))
+      .mockResolvedValueOnce(deleted(20))
+
+    await service(job(), logger)
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ pass: 'delete', size: 20 }),
+      'plausible site cleanup batch failed'
+    )
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.objectContaining({ deleted: 20, failedBatches: 1 }),
+      'plausible site cleanup finished'
+    )
+  })
+
+  it('stops after five failed batches in a row', async () => {
+    const fullPage = sitesPage(
+      ...Array.from(
+        { length: 1000 },
+        (_, index) => `api-journeys-journey-gone-${index}`
+      )
+    )
+    querySpy.mockResolvedValue(fullPage)
+    prismaMock.journey.findMany.mockResolvedValue([])
+    mutateSpy.mockResolvedValue({
+      data: { sitesDeletePrepare: { __typename: 'Error', message: 'nope' } }
     })
 
     await expect(service(job(), logger)).rejects.toThrow('nope')
+    expect(mutateSpy).toHaveBeenCalledTimes(5)
   })
 
   it('does nothing when the journeys database is empty', async () => {

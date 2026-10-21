@@ -1,6 +1,6 @@
 # Plausible Provisioning
 
-The measurement-provisioning context (deployable: `api-analytics`). A thin GraphQL federation subgraph sitting **directly on top of [Plausible Analytics](https://plausible.io)' own database** — its Prisma schema is _introspected_ from Plausible, not owned. Its sole job is to provision the Plausible **Sites**, **Goals**, and **Shared Links** that the rest of the platform (chiefly `api-journeys`) reports traffic against. It exposes `siteCreate`, plus `sites` and `sitesDelete` so a caller can find and remove the Sites it owns; every operation is limited to Sites the calling Plausible User owns.
+The measurement-provisioning context (deployable: `api-analytics`). A thin GraphQL federation subgraph sitting **directly on top of [Plausible Analytics](https://plausible.io)' own database** — its Prisma schema is _introspected_ from Plausible, not owned. Its sole job is to provision the Plausible **Sites**, **Goals**, and **Shared Links** that the rest of the platform (chiefly `api-journeys`) reports traffic against. It exposes `siteCreate`, plus `sites`, `sitesDeletePrepare` and `sitesDelete` so a caller can find and remove the Sites it owns; every operation is limited to Sites the calling Plausible User owns.
 
 ## Language
 
@@ -15,7 +15,7 @@ A Site's unique key. Despite the name it is **not a web URL** — for platform-c
 _Avoid_: url, hostname, website, address
 
 **Orphaned Site**:
-A platform-created Site whose journey, team or template no longer exists, because the row was hard-deleted (the e2e and anonymous journey cleanups, a user deletion). Plausible loads every Site into memory at boot, so orphans are not harmless clutter. `api-journeys`' `plausibleSiteCleanup` worker finds them nightly with `sites` and removes them with `sitesDelete`; the Site's goals, shared links and memberships cascade with it, and its ClickHouse events stay behind unreferenced.
+A platform-created Site whose journey, team or template no longer exists, because the row was hard-deleted (the e2e and anonymous journey cleanups, a user deletion). Plausible loads every Site into memory at boot, so orphans are not harmless clutter. `api-journeys`' `plausibleSiteCleanup` worker finds them nightly with `sites`, clears their goals with `sitesDeletePrepare` and removes them with `sitesDelete`; the Site's shared links and memberships cascade with it, and its ClickHouse events stay behind unreferenced.
 _Avoid_: stale site, dead site, leaked site
 
 **Goal**:
