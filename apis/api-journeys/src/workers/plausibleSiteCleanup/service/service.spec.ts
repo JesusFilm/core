@@ -221,6 +221,35 @@ describe('plausibleSiteCleanup service', () => {
     )
   })
 
+  it('sends at most four delete batches at once', async () => {
+    const page = sitesPage(
+      ...Array.from(
+        { length: 200 },
+        (_, index) => `api-journeys-journey-gone-${index}`
+      )
+    )
+    querySpy.mockResolvedValueOnce(page).mockResolvedValueOnce(page)
+    prismaMock.journey.findMany.mockResolvedValue([])
+    let inFlight = 0
+    let mostInFlight = 0
+    mutateSpy.mockImplementation(async ({ mutation }: MutateOptions) => {
+      if (mutation === SITES_DELETE_PREPARE) return prepared(0)
+      inFlight++
+      mostInFlight = Math.max(mostInFlight, inFlight)
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      inFlight--
+      return deleted(20)
+    })
+
+    await service(job(), logger)
+
+    expect(mostInFlight).toBe(4)
+    expect(logger.info).toHaveBeenCalledWith(
+      expect.objectContaining({ deleted: 200, failedBatches: 0 }),
+      'plausible site cleanup finished'
+    )
+  })
+
   it('only reports in a dry run', async () => {
     querySpy.mockResolvedValueOnce(sitesPage('api-journeys-journey-gone'))
     prismaMock.journey.findMany.mockResolvedValue([])
