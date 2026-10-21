@@ -10,6 +10,9 @@ import {
  * Fetch a pasted image URL into Cloudflare Images under a team (a campaign
  * edit) or a journey; the returned `url` is the imagedelivery.net address
  * the campaign stores.
+ *
+ * A journey caller must get its own `($journeyId)` document rather than reuse
+ * this one.
  */
 export const CREATE_CLOUDFLARE_UPLOAD_BY_URL = gql`
   mutation CreateCloudflareUploadByUrl(
