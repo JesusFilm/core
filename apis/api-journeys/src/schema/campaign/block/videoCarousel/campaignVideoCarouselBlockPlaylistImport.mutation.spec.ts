@@ -282,14 +282,32 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
 
-  it('throws NOT_FOUND for a playlist YouTube does not know', async () => {
+  it('rejects a playlist YouTube does not know (BAD_USER_INPUT, url)', async () => {
     fetchSpy.mockResolvedValue(
       jsonResponse({ error: { code: 404, message: 'playlistNotFound' } })
     )
 
     const result = await importPlaylist()
 
-    expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+    expect(result.errors[0]).toMatchObject({
+      message: 'playlist cannot be found on YouTube',
+      extensions: { code: 'BAD_USER_INPUT', field: 'url' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it('passes on INTERNAL_SERVER_ERROR from a YouTube quota failure', async () => {
+    fetchSpy.mockResolvedValue(
+      jsonResponse({ error: { code: 403, message: 'quotaExceeded' } })
+    )
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'YouTube API request failed: quotaExceeded',
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
   })
 
   it('throws NOT_FOUND when the id is not a live CampaignVideoCarouselBlock', async () => {
