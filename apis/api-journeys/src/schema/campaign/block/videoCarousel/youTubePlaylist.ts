@@ -49,9 +49,7 @@ interface YoutubePlaylistItemsData {
 
 function youTubeError(error: { code: number; message: string }): GraphQLError {
   if (error.code === 404)
-    return new GraphQLError('playlist cannot be found on YouTube', {
-      extensions: { code: 'NOT_FOUND' }
-    })
+    return badUserInput('playlist cannot be found on YouTube', 'url')
   // quota/auth failures must not read as "playlist does not exist"
   return new GraphQLError(`YouTube API request failed: ${error.message}`, {
     extensions: { code: 'INTERNAL_SERVER_ERROR' }

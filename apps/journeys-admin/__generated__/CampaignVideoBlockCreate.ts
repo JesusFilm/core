@@ -160,12 +160,12 @@ export interface CampaignVideoBlockCreate {
    * Auth: campaign Update — any member or manager of the campaign's team.
    * 
    * Errors:
-   * - NOT_FOUND: campaignId does not resolve; a YouTube or Mux id unknown to its service.
+   * - NOT_FOUND: campaignId does not resolve.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live section of this campaign.
    * - BAD_USER_INPUT (field: `mediaBlockId`): the section has no Media Slot (only hero and Featured Media do) and is not a video carousel.
    * - BAD_USER_INPUT (field: `source`): not internal, youTube or mux.
-   * - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id, or "videoId is not a published Watch video" for a Watch video picked by id.
+   * - BAD_USER_INPUT (field: `videoId`): not a valid YouTube or Mux id, "videoId must be a valid YouTube videoId" / "videoId must be a valid Mux videoId" for an id unknown to its service, or "videoId is not a published Watch video" for a Watch video picked by id.
    * - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or a url on a YouTube or Mux video.
    * - BAD_USER_INPUT (field: `title` / `description`): over 200 / 1000 characters.
    */

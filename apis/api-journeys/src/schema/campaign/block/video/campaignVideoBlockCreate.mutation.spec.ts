@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -454,7 +455,7 @@ describe('campaignVideoBlockCreate', () => {
       expect(fetchFieldsFromMux).not.toHaveBeenCalled()
     })
 
-    it('passes on NOT_FOUND for an id unknown to its service', async () => {
+    it('rejects a YouTube id unknown to YouTube (BAD_USER_INPUT, videoId)', async () => {
       vi.mocked(fetchFieldsFromYouTube).mockRejectedValue(
         new GraphQLError('videoId cannot be found on YouTube', {
           extensions: { code: 'NOT_FOUND' }
@@ -463,8 +464,68 @@ describe('campaignVideoBlockCreate', () => {
 
       const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
 
-      expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
+      expect(result.errors[0]).toMatchObject({
+        message: 'videoId must be a valid YouTube videoId',
+        extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
+      })
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('rejects a Mux id unknown to Mux (BAD_USER_INPUT, videoId)', async () => {
+      vi.mocked(fetchFieldsFromMux).mockRejectedValue(
+        new GraphQLError('videoId cannot be found on Mux', {
+          extensions: { code: 'NOT_FOUND' }
+        })
+      )
+
+      const result = await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'videoId must be a valid Mux videoId',
+        extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('passes on a Mux gateway failure without reading it as an unknown id', async () => {
+      vi.mocked(fetchFieldsFromMux).mockRejectedValue(
+        new CombinedGraphQLErrors({
+          data: { getMuxVideo: null },
+          errors: [
+            {
+              message: 'Unexpected error.',
+              path: ['getMuxVideo'],
+              extensions: { code: 'INTERNAL_SERVER_ERROR' }
+            }
+          ]
+        })
+      )
+
+      const result = await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(result.errors[0].message).toBe('Unexpected error.')
+      expect(result.errors[0].extensions?.code).not.toBe('BAD_USER_INPUT')
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('passes on INTERNAL_SERVER_ERROR from a YouTube quota or auth failure', async () => {
+      vi.mocked(fetchFieldsFromYouTube).mockRejectedValue(
+        new GraphQLError('YouTube API request failed: quotaExceeded', {
+          extensions: { code: 'INTERNAL_SERVER_ERROR' }
+        })
+      )
+
+      const result = await create({ source: 'youTube', videoId: YOUTUBE_ID })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'YouTube API request failed: quotaExceeded',
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
 
     it('refuses a url on a YouTube or Mux video (BAD_USER_INPUT, url)', async () => {
