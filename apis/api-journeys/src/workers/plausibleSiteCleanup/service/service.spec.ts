@@ -102,7 +102,7 @@ describe('plausibleSiteCleanup service', () => {
     })
   })
 
-  it('clears the orphans\' goals first, then deletes the orphaned sites', async () => {
+  it("clears the orphans' goals first, then deletes the orphaned sites", async () => {
     const page = sitesPage(
       'api-journeys-journey-live',
       'api-journeys-journey-gone',

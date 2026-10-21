@@ -225,9 +225,7 @@ async function runPass(
 
     const domains = await orphanedDomains(sites)
     result.orphaned += domains.length
-    result.sample.push(
-      ...domains.slice(0, SAMPLE_SIZE - result.sample.length)
-    )
+    result.sample.push(...domains.slice(0, SAMPLE_SIZE - result.sample.length))
 
     if (!dryRun) {
       for (const batch of chunk(domains, pass.batchSize)) {
