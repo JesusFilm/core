@@ -1,3 +1,4 @@
+import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Card from '@mui/material/Card'
 import CardActionArea from '@mui/material/CardActionArea'
@@ -32,7 +33,7 @@ export function CampaignList(): ReactElement | null {
   const { activeTeam } = useTeam()
   const enabled = campaignBuilder === true
   const [createOpen, setCreateOpen] = useState(false)
-  const { data, loading } = useCampaignsQuery(
+  const { data, loading, error, refetch } = useCampaignsQuery(
     enabled && activeTeam?.id != null ? { teamId: activeTeam.id } : undefined
   )
 
@@ -61,7 +62,25 @@ export function CampaignList(): ReactElement | null {
         </Button>
       </Stack>
       {loading && <CircularProgress data-testid="CampaignListLoading" />}
-      {!loading && activeTeam != null && campaigns.length === 0 && (
+      {!loading && error != null && data == null && (
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={() => {
+                void refetch()
+              }}
+            >
+              {t('Try again')}
+            </Button>
+          }
+        >
+          {t('There was an error loading campaigns.')}
+        </Alert>
+      )}
+      {!loading && data != null && campaigns.length === 0 && (
         <Typography color="text.secondary">
           {t(
             'No campaigns yet. Create one to build a seasonal landing page with a page for every region.'
