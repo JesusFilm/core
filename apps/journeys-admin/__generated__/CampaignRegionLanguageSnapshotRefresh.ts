@@ -78,7 +78,7 @@ export interface CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSna
   language: CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSnapshotRefresh_language;
   journey: CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSnapshotRefresh_journey | null;
   /**
-   * The Campaign QR Code, present from the moment a journey is linked; its short link is the Share Link.
+   * The Campaign QR Code, present from the moment a journey is linked and kept across an unlink; its short link is the Share Link.
    */
   qrCode: CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSnapshotRefresh_qrCode | null;
 }

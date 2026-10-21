@@ -123,6 +123,12 @@ async function main(): Promise<void> {
     )
     run(
       await import(
+        /* webpackChunkName: 'shortlinkDelete' */
+        './shortlinkDelete'
+      )
+    )
+    run(
+      await import(
         /* webpackChunkName: "e2eCleanup" */
         './e2eCleanup'
       )

@@ -4,6 +4,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { UserJourneyRole } from '@core/prisma/journeys/client'
 
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import { prismaMock } from '../../../../test/prismaMock'
 import {
   collectMediaFromJourneys,
@@ -46,6 +47,7 @@ describe('E2E Cleanup Service', () => {
       error: vi.fn()
     } as any
 
+    prismaMock.qrCode.findMany.mockResolvedValue([])
     mockCollectMediaFromJourneys.mockResolvedValue({
       muxVideoIds: new Set(),
       cloudflareImageIds: new Set()
@@ -328,6 +330,56 @@ describe('E2E Cleanup Service', () => {
       expect(mockPrismaUsers.user.delete).toHaveBeenCalledWith({
         where: { id: 'user-1' }
       })
+    })
+
+    it("enqueues a deleted journey's QR short links, and none for a journey whose delete fails", async () => {
+      mockPrismaUsers.user.findMany.mockResolvedValue([
+        {
+          id: 'user-1',
+          userId: 'playwright-user-1',
+          email: 'playwright123@example.com'
+        }
+      ])
+      prismaMock.journey.findMany.mockResolvedValue([
+        { id: 'journey-1', title: 'Failing Journey' },
+        { id: 'journey-2', title: 'Good Journey' }
+      ] as any)
+      prismaMock.qrCode.findMany.mockImplementation((async ({ where }: any) =>
+        where.OR[0].journeyId.in[0] === 'journey-1'
+          ? [{ shortLinkId: 'shortLink-1' }]
+          : [
+              { shortLinkId: 'shortLink-2-of' },
+              { shortLinkId: 'shortLink-2-to' }
+            ]) as never)
+      prismaMock.journey.delete
+        .mockRejectedValueOnce(new Error('delete failed'))
+        .mockResolvedValueOnce({} as any)
+
+      await service(
+        { data: { __typename: 'e2eCleanup', dryRun: false } } as Job,
+        mockLogger
+      )
+
+      expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
+        where: {
+          OR: [
+            { journeyId: { in: ['journey-2'] } },
+            { toJourneyId: { in: ['journey-2'] } }
+          ]
+        },
+        select: { shortLinkId: true }
+      })
+      expect(mockQueueAdd.mock.calls.map(([, data]) => data)).toEqual([
+        { shortLinkId: 'shortLink-2-of' },
+        { shortLinkId: 'shortLink-2-to' }
+      ])
+      expect(mockQueueAdd.mock.calls.map(([, , opts]) => opts.jobId)).toEqual([
+        'shortlink-delete-shortLink-2-of',
+        'shortlink-delete-shortLink-2-to'
+      ])
+      expect(
+        prismaMock.qrCode.findMany.mock.invocationCallOrder[1]
+      ).toBeLessThan(prismaMock.journey.delete.mock.invocationCallOrder[1])
     })
 
     it('should use default cleanup hours when not specified', async () => {

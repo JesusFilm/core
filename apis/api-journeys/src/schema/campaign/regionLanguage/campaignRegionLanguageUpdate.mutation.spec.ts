@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -294,31 +295,97 @@ describe('campaignRegionLanguageUpdate', () => {
       ).not.toHaveProperty('qrCodeId')
     })
 
-    it('unlinking deletes the QR row and its short link; relinking creates a new one', async () => {
-      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+    describe('unlink keeps the Campaign QR Code', () => {
+      /** Unlinked earlier: the QR row is kept, still targeting `journeyId`. */
+      function unlinkedKeepingQrCode() {
+        return campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529', {
+          journeyId: null,
+          title: null,
+          description: null,
+          qrCodeId: 'qrCodeId',
+          qrCode: QR_CODE
+        })
+      }
 
-      const result = await update({ journeyId: null })
+      function queuedShortLinkDeletes(): unknown[] {
+        return mockQueueAdd.mock.calls.filter(
+          ([name]) => name === 'api-journeys-shortlink-delete-job'
+        )
+      }
 
-      expect(result.data.campaignRegionLanguageUpdate).toEqual({
-        id: 'eurRegionId-529',
-        journeyId: null,
-        title: null,
-        description: null,
-        qrCodeId: null
+      it('unlinking clears the journey and snapshot but keeps the QR row and its short link', async () => {
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+
+        const result = await update({ journeyId: null })
+
+        expect(result.data.campaignRegionLanguageUpdate).toEqual({
+          id: 'eurRegionId-529',
+          journeyId: null,
+          title: null,
+          description: null,
+          qrCodeId: 'qrCodeId'
+        })
+        expect(
+          vi.mocked(prismaMock.campaignRegionLanguage.update).mock.calls[0][0]
+            .data
+        ).toEqual({
+          journeyId: null,
+          title: null,
+          description: null,
+          snapshotEdited: false
+        })
+        expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+        expect(deleteShortLink).not.toHaveBeenCalled()
+        expect(updateShortLink).not.toHaveBeenCalled()
+        expect(queuedShortLinkDeletes()).toEqual([])
       })
-      expect(deleteShortLink).toHaveBeenCalledWith('shortLinkId')
-      expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
-        where: { id: { in: ['qrCodeId'] } }
+
+      it('linking another journey afterwards retargets the same QR row and short link', async () => {
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+          unlinkedKeepingQrCode()
+        )
+        prismaMock.journey.findFirst.mockResolvedValue(
+          journeyRow('otherJourneyId', 'noel-europe') as never
+        )
+
+        const result = await update({
+          url: 'https://admin.nextstep.is/journeys/otherJourneyId'
+        })
+
+        expect(result.data.campaignRegionLanguageUpdate).toMatchObject({
+          journeyId: 'otherJourneyId',
+          qrCodeId: 'qrCodeId'
+        })
+        expect(prismaMock.qrCode.update).toHaveBeenCalledWith({
+          where: { id: 'qrCodeId' },
+          data: { journeyId: 'otherJourneyId', toJourneyId: 'otherJourneyId' }
+        })
+        expect(updateShortLink).toHaveBeenCalledWith({
+          id: 'shortLinkId',
+          to: 'https://example.com/noel-europe?utm_source=ns-qr-code&utm_campaign=shortLinkId'
+        })
+        expect(prismaMock.qrCode.create).not.toHaveBeenCalled()
+        expect(createShortLink).not.toHaveBeenCalled()
       })
 
-      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
-        campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529')
-      )
-      await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
+      it('linking the same journey back changes no short link', async () => {
+        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+          unlinkedKeepingQrCode()
+        )
 
-      expect(createShortLink).toHaveBeenCalledTimes(1)
-      expect(prismaMock.qrCode.create).toHaveBeenCalledTimes(1)
-      expect(updateShortLink).not.toHaveBeenCalled()
+        const result = await update({
+          url: 'https://admin.nextstep.is/journeys/journeyId'
+        })
+
+        expect(result.data.campaignRegionLanguageUpdate).toMatchObject({
+          journeyId: 'journeyId',
+          qrCodeId: 'qrCodeId'
+        })
+        expect(prismaMock.qrCode.update).not.toHaveBeenCalled()
+        expect(prismaMock.qrCode.create).not.toHaveBeenCalled()
+        expect(updateShortLink).not.toHaveBeenCalled()
+        expect(createShortLink).not.toHaveBeenCalled()
+      })
     })
 
     describe('gateway consistency', () => {
@@ -409,30 +476,6 @@ describe('campaignRegionLanguageUpdate', () => {
           id: 'shortLinkId',
           to: 'https://example.com/christmas-europe?utm_source=ns-qr-code&utm_campaign=shortLinkId'
         })
-      })
-
-      it('deletes the short link only after the QR row is deleted and the transaction has committed, and a failed delete does not fail the unlink', async () => {
-        prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
-        let committed = false
-        prismaMock.$transaction.mockImplementationOnce((async (
-          callback: any
-        ) => {
-          const result = await callback(prismaMock)
-          committed = true
-          return result
-        }) as never)
-        vi.mocked(deleteShortLink).mockImplementation(async () => {
-          expect(committed).toBe(true)
-          throw new Error('gateway down')
-        })
-
-        const result = await update({ journeyId: null })
-
-        expect(result.errors).toBeUndefined()
-        expect(deleteShortLink).toHaveBeenCalledWith('shortLinkId')
-        expect(
-          vi.mocked(prismaMock.qrCode.deleteMany).mock.invocationCallOrder[0]
-        ).toBeLessThan(vi.mocked(deleteShortLink).mock.invocationCallOrder[0])
       })
     })
 

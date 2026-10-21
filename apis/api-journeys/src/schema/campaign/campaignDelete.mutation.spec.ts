@@ -77,7 +77,7 @@ describe('campaignDelete', () => {
     expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
   })
 
-  it("deletes every Share Language's QR row and short link before the campaign", async () => {
+  it("deletes every Share Language's QR row before the campaign and queues its short link delete", async () => {
     const campaign = campaignFactory({ role: 'manager' })
       .withRegion('EUR')
       .build()
@@ -98,8 +98,13 @@ describe('campaignDelete', () => {
       where: { region: { campaignId: 'campaignId' }, qrCodeId: { not: null } },
       select: { qrCode: { select: { id: true, shortLinkId: true } } }
     })
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkA')
-    expect(deleteShortLink).toHaveBeenCalledWith('shortLinkB')
+    // The short links go on the retried delete queue, not straight to the gateway.
+    expect(
+      mockQueueAdd.mock.calls
+        .filter(([name]) => name === 'api-journeys-shortlink-delete-job')
+        .map(([, data]) => data.shortLinkId)
+    ).toEqual(['shortLinkA', 'shortLinkB'])
+    expect(deleteShortLink).not.toHaveBeenCalled()
     expect(prismaMock.qrCode.deleteMany).toHaveBeenCalledWith({
       where: { id: { in: ['qrCodeA', 'qrCodeB'] } }
     })

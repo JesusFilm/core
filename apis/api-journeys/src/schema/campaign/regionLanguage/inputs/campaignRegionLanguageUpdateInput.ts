@@ -12,7 +12,7 @@ export const CampaignRegionLanguageUpdateInput = builder.inputType(
       journeyId: t.id({
         required: false,
         description:
-          'Link a live-published journey by id, or `null` to unlink the current journey, which deletes its Campaign QR Code and short link. Ignored when `url` is given.'
+          'Link a live-published journey by id, or `null` to unlink the current journey, which keeps its Campaign QR Code and short link for a later link to retarget. Ignored when `url` is given.'
       }),
       title: t.string({
         required: false,
