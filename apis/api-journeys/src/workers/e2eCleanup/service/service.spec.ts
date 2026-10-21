@@ -345,11 +345,11 @@ describe('E2E Cleanup Service', () => {
         { id: 'journey-2', title: 'Good Journey' }
       ] as any)
       prismaMock.qrCode.findMany.mockImplementation((async ({ where }: any) =>
-        where.OR[0].journeyId.in[0] === 'journey-1'
+        where.journeyId.in[0] === 'journey-1'
           ? [{ shortLinkId: 'shortLink-1' }]
           : [
-              { shortLinkId: 'shortLink-2-of' },
-              { shortLinkId: 'shortLink-2-to' }
+              { shortLinkId: 'shortLink-2-a' },
+              { shortLinkId: 'shortLink-2-b' }
             ]) as never)
       prismaMock.journey.delete
         .mockRejectedValueOnce(new Error('delete failed'))
@@ -361,21 +361,16 @@ describe('E2E Cleanup Service', () => {
       )
 
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
-        where: {
-          OR: [
-            { journeyId: { in: ['journey-2'] } },
-            { toJourneyId: { in: ['journey-2'] } }
-          ]
-        },
+        where: { journeyId: { in: ['journey-2'] } },
         select: { shortLinkId: true }
       })
       expect(mockQueueAdd.mock.calls.map(([, data]) => data)).toEqual([
-        { shortLinkId: 'shortLink-2-of' },
-        { shortLinkId: 'shortLink-2-to' }
+        { shortLinkId: 'shortLink-2-a' },
+        { shortLinkId: 'shortLink-2-b' }
       ])
       expect(mockQueueAdd.mock.calls.map(([, , opts]) => opts.jobId)).toEqual([
-        'shortlink-delete-shortLink-2-of',
-        'shortlink-delete-shortLink-2-to'
+        'shortlink-delete-shortLink-2-a',
+        'shortlink-delete-shortLink-2-b'
       ])
       expect(
         prismaMock.qrCode.findMany.mock.invocationCallOrder[1]

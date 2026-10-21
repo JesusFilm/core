@@ -193,8 +193,8 @@ export async function deleteJourneysData(
           if (blockCount.count > 0)
             txLogs.push(createLog(`🗑️ Deleted ${blockCount.count} blocks`))
 
-          // QR rows of or targeting these journeys cascade with them,
-          // whichever team owns them
+          // QR rows of these journeys cascade with them, whichever team owns
+          // them
           shortLinkIds.push(
             ...(await findJourneyShortLinkIds(journeyIdsToDelete, tx))
           )

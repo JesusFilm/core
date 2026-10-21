@@ -1,10 +1,11 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 /**
- * The short link ids of every QR row that a hard delete of these journeys
- * cascades away: rows of the journey and rows targeting it, Campaign QR Codes
- * of other teams included. Read them before the delete; enqueue them with
- * `enqueueShortLinkDeletes` once it has committed.
+ * The short link ids of the QR rows that a hard delete of these journeys
+ * cascades away: rows whose `journeyId` is one of them, Campaign QR Codes of
+ * other teams included. A row that only targets one of them (`toJourneyId`)
+ * survives the delete, so its short link stays. Read them before the delete;
+ * enqueue them with `enqueueShortLinkDeletes` once it has committed.
  */
 export async function findJourneyShortLinkIds(
   journeyIds: string[],
@@ -12,12 +13,7 @@ export async function findJourneyShortLinkIds(
 ): Promise<string[]> {
   if (journeyIds.length === 0) return []
   const qrCodes = await tx.qrCode.findMany({
-    where: {
-      OR: [
-        { journeyId: { in: journeyIds } },
-        { toJourneyId: { in: journeyIds } }
-      ]
-    },
+    where: { journeyId: { in: journeyIds } },
     select: { shortLinkId: true }
   })
   return qrCodes.map(({ shortLinkId }) => shortLinkId)

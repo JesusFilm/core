@@ -156,13 +156,11 @@ describe('deleteJourneysData', () => {
       )
     })
 
-    it('reads the QR rows of and targeting the deleted journeys before deleting them', async () => {
+    it('reads the QR rows of the deleted journeys, by journeyId only, before deleting them', async () => {
       await deleteJourneysData('user-1')
 
       expect(txMock.qrCode.findMany).toHaveBeenCalledWith({
-        where: {
-          OR: [{ journeyId: { in: ['j1'] } }, { toJourneyId: { in: ['j1'] } }]
-        },
+        where: { journeyId: { in: ['j1'] } },
         select: { shortLinkId: true }
       })
       expect(txMock.qrCode.findMany.mock.invocationCallOrder[0]).toBeLessThan(
