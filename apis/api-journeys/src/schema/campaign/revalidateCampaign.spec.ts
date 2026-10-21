@@ -5,12 +5,6 @@ import { prismaMock } from '../../../test/prismaMock'
 import { fetchLanguage } from './gatewayClient'
 import { campaignLanguageTags, campaignPagePaths } from './revalidateCampaign'
 
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: vi.fn() }
-  })
-}))
-
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
 
 const mockFetchLanguage = fetchLanguage as MockedFunction<typeof fetchLanguage>

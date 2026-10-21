@@ -11,12 +11,6 @@ vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: vi.fn().mockResolvedValue(undefined) }
-  })
-}))
-
 vi.mock('uuid', () => ({
   v4: vi.fn(() => 'duplicateJourneyId')
 }))

@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
@@ -20,14 +21,6 @@ vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
   deleteShortLink: vi.fn()
 }))
 
-const { mockQueueAdd } = vi.hoisted(() => ({ mockQueueAdd: vi.fn() }))
-
-vi.mock('bullmq', () => ({
-  Queue: vi.fn(function () {
-    return { add: mockQueueAdd }
-  })
-}))
-
 describe('campaignRegionDelete', () => {
   const DELETE = graphql(`
     mutation CampaignRegionDelete($id: ID!) {
@@ -42,7 +35,6 @@ describe('campaignRegionDelete', () => {
 
   beforeEach(() => {
     setupCampaignBlockSpec()
-    mockQueueAdd.mockResolvedValue(undefined)
     fixture = campaignFactory().withRegion('EUR').withRegion('AFR').build()
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
