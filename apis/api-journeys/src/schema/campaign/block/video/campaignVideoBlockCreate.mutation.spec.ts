@@ -1,3 +1,4 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
 import {
@@ -484,6 +485,28 @@ describe('campaignVideoBlockCreate', () => {
         message: 'videoId must be a valid Mux videoId',
         extensions: { code: 'BAD_USER_INPUT', field: 'videoId' }
       })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('passes on a Mux gateway failure without reading it as an unknown id', async () => {
+      vi.mocked(fetchFieldsFromMux).mockRejectedValue(
+        new CombinedGraphQLErrors({
+          data: { getMuxVideo: null },
+          errors: [
+            {
+              message: 'Unexpected error.',
+              path: ['getMuxVideo'],
+              extensions: { code: 'INTERNAL_SERVER_ERROR' }
+            }
+          ]
+        })
+      )
+
+      const result = await create({ source: 'mux', videoId: 'muxVideoId' })
+
+      expect(result.errors[0].message).toBe('Unexpected error.')
+      expect(result.errors[0].extensions?.code).not.toBe('BAD_USER_INPUT')
       expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
     })
