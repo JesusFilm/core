@@ -14,6 +14,7 @@ import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
+import { hasText } from '../types'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -48,6 +49,7 @@ const cardSx = {
 
 interface CardFrameProps {
   testId: string
+  ariaLabel?: string
   href?: string | null
   onClick?: () => void
   children: ReactNode
@@ -56,6 +58,7 @@ interface CardFrameProps {
 /** A card opens its page in a new tab, or (an upload) plays in place. */
 function CardFrame({
   testId,
+  ariaLabel,
   href,
   onClick,
   children
@@ -67,6 +70,7 @@ function CardFrame({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        aria-label={ariaLabel}
         data-testid={testId}
         sx={cardSx}
       >
@@ -77,6 +81,7 @@ function CardFrame({
     <ButtonBase
       onClick={onClick}
       disabled={onClick == null}
+      aria-label={ariaLabel}
       data-testid={testId}
       sx={cardSx}
     >
@@ -166,7 +171,8 @@ function VideoCard({
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              whiteSpace: 'pre-line'
             }}
           >
             {card.title}
@@ -176,7 +182,10 @@ function VideoCard({
           <Typography
             variant="body2"
             component="span"
-            sx={{ color: 'var(--campaign-band-accent)' }}
+            sx={{
+              color: 'var(--campaign-band-accent)',
+              whiteSpace: 'pre-line'
+            }}
           >
             {action}
           </Typography>
@@ -191,10 +200,15 @@ function SeeAllCard({
 }: {
   card: CampaignCarouselSeeAllCard
 }): ReactElement {
+  const { t } = useTranslation('libs-journeys-ui')
   const { string } = useCampaign()
   const label = string(CampaignStringKey.seeAllOnWatch)
   return (
-    <CardFrame testId="CampaignVideoCarouselSeeAll" href={card.href}>
+    <CardFrame
+      testId="CampaignVideoCarouselSeeAll"
+      ariaLabel={hasText(label) ? undefined : t('See all')}
+      href={card.href}
+    >
       <Box
         sx={{
           display: 'flex',
@@ -208,7 +222,11 @@ function SeeAllCard({
         <Typography
           variant="h6"
           component="span"
-          sx={{ color: 'var(--campaign-band-heading)', textAlign: 'center' }}
+          sx={{
+            color: 'var(--campaign-band-heading)',
+            textAlign: 'center',
+            whiteSpace: 'pre-line'
+          }}
         >
           {label}
         </Typography>

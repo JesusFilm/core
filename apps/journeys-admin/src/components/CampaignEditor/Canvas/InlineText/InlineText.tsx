@@ -35,8 +35,8 @@ interface InlineTextProps
   variantMapping?: TypographyProps['variantMapping']
   /**
    * Size the input to its text (a button label): it grows as the author
-   * types, single line, never wider than its container, instead of taking
-   * the full width like a text field.
+   * types, never wider than its container, instead of taking the full width
+   * like a text field. Still multi-line: Enter inserts a line break.
    */
   autoWidth?: boolean
 }
@@ -147,7 +147,7 @@ export function InlineText({
     <InlineEditInput
       name={target.string != null ? target.string.key : target.field}
       fullWidth
-      multiline={!autoWidth}
+      multiline
       inputRef={inputRef}
       value={value}
       placeholder={fallback !== '' ? fallback : placeholder}
@@ -156,9 +156,9 @@ export function InlineText({
       onBlur={handleBlur}
       inputProps={{
         'aria-label': placeholder,
-        // size 1 drops the native input's default width, so the hidden
-        // sizer alone decides the cell's width.
-        ...(autoWidth ? { size: 1 } : {})
+        // cols 1 drops the textarea's default width, so the hidden sizer
+        // alone decides the cell's width.
+        ...(autoWidth ? { cols: 1 } : {})
       }}
       sx={{
         // The shared input paints its caret in the admin red, which vanishes
@@ -193,8 +193,9 @@ export function InlineText({
         sx={{ color: 'inherit' }}
       >
         {autoWidth ? (
-          // A hidden copy of the text sets the cell's width; the input fills
-          // the same cell, so it is exactly as wide as what is typed.
+          // A hidden copy of the text sets the cell's width (its longest
+          // line); the input fills the same cell, so it is exactly as wide as
+          // what is typed.
           <Box sx={{ display: 'inline-grid', maxWidth: '100%' }}>
             <Box
               component="span"

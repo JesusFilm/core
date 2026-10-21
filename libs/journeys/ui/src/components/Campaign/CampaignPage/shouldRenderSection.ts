@@ -3,7 +3,7 @@ import { featuredMediaBullets } from '../CampaignFeaturedMedia'
 import { liveJourneyCards } from '../CampaignJourneyList'
 import { hasCampaignMedia } from '../CampaignMediaSlot'
 import { shareLanguages } from '../CampaignRegionShare'
-import { listedRegions } from '../CampaignRegionSwitcher'
+import { switcherRegions } from '../CampaignRegionSwitcher'
 import { splitParagraphs } from '../CampaignRichText'
 import { hasCarouselCards } from '../CampaignVideoCarousel'
 import { hasText, isCampaignSection } from '../types'
@@ -48,7 +48,8 @@ function hasExtras(section: CampaignSectionTree): boolean {
  * or empty frames. Per type: Hero renders with any text, media or Extra;
  * Featured Media renders with any text, bullet, media or Extra (text alone
  * full width, media alone, both empty skipped); a Region Switcher with no
- * listed regions is skipped; a Video Carousel with no card (explicit mode
+ * region to show and no Extra is skipped (on a Region Page the current
+ * region is not shown, so one listed region there skips it); a Video Carousel with no card (explicit mode
  * with no items, or a Watch video the gateway no longer serves) renders its
  * text if any, else is skipped — an expanded Video with no published
  * children is still its own card; a Journey List with no
@@ -83,7 +84,9 @@ export function shouldRenderSection(
         extras
       )
     case 'CampaignRegionSwitcherBlock':
-      return listedRegions(context.regions).length > 0
+      return (
+        switcherRegions(context.regions, context.region).length > 0 || extras
+      )
     case 'CampaignVideoCarouselBlock':
       return (
         hasCarouselCards(section) ||
@@ -132,4 +135,27 @@ export function shouldRenderSection(
     default:
       return false
   }
+}
+
+/**
+ * The ids of the sections a page renders, given its top-level sections that
+ * pass `shouldRenderSection`: each of them, and the section of every Column
+ * Slot that renders one. These are the anchors a same-page scroll can reach;
+ * a target outside the set renders its button inert.
+ */
+export function renderedSectionIds(
+  sections: CampaignSectionTree[],
+  context: SectionRenderContext
+): Set<string> {
+  const ids = new Set<string>()
+  function add(section: CampaignSectionTree): void {
+    ids.add(section.id)
+    if (section.__typename !== 'CampaignColumnsBlock') return
+    for (const slot of section.children) {
+      const child = slotSection(slot, context)
+      if (child != null) add(child)
+    }
+  }
+  sections.forEach(add)
+  return ids
 }

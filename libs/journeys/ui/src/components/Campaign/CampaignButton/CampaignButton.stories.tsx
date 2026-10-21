@@ -24,4 +24,9 @@ export const Inert: Story = {
   args: { block: { ...button, action: null } }
 }
 
+/** A line break the author typed in the label is kept. */
+export const LineBreak: Story = {
+  args: { block: { ...button, label: 'Choose\nyour region' } }
+}
+
 export default meta

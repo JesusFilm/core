@@ -2,19 +2,25 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import { ThemeProvider } from '@mui/material/styles'
 import { render, screen, waitFor, within } from '@testing-library/react'
 
-import { CampaignPageKind } from '../../../../__generated__/globalTypes'
+import {
+  CampaignColumnsRatio,
+  CampaignPageKind
+} from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import {
+  LANDING_PAGE_ID,
   afrRegion,
   campaignPublic,
   campaignStatsFixture,
+  columnSlot,
   eurRegion,
   featuredMediaImageBlock,
   featuredMediaSectionBlock,
   heroVideoBlock,
   landingBlocks,
-  regionPageBlocks
+  regionPageBlocks,
+  section
 } from '../testData'
 import type { CampaignBlock, CampaignPublic, CampaignRegion } from '../types'
 
@@ -408,6 +414,98 @@ describe('CampaignPage', () => {
         'regionAnalyticsId',
         'regionSwitcherId'
       ])
+    })
+  })
+
+  describe('same-page scroll targets', () => {
+    function scrollTo(blockId: string): CampaignBlock {
+      return pick('heroButtonId', {
+        action: {
+          __typename: 'CampaignScrollToBlockAction',
+          parentBlockId: 'heroButtonId',
+          blockId
+        }
+      })
+    }
+
+    function heroButton(): HTMLElement {
+      return within(
+        screen.getByTestId('CampaignSectionBand-heroId')
+      ).getByTestId('CampaignButton')
+    }
+
+    const columns = [
+      section('CampaignColumnsBlock', {
+        id: 'columnsId',
+        pageId: LANDING_PAGE_ID,
+        parentOrder: 2,
+        ratio: CampaignColumnsRatio.equal
+      }),
+      columnSlot({
+        id: 'slotLeftId',
+        parentBlockId: 'columnsId',
+        parentOrder: 0
+      }),
+      columnSlot({
+        id: 'slotRightId',
+        parentBlockId: 'columnsId',
+        parentOrder: 1
+      }),
+      section('CampaignRichTextBlock', {
+        id: 'emptyRichTextId',
+        pageId: LANDING_PAGE_ID,
+        parentBlockId: 'slotLeftId',
+        parentOrder: 0,
+        title: null,
+        richTextContent: ''
+      }),
+      section('CampaignHeroBlock', {
+        id: 'slotHeroId',
+        pageId: LANDING_PAGE_ID,
+        parentBlockId: 'slotRightId',
+        parentOrder: 0,
+        eyebrow: null,
+        title: 'In a column',
+        lede: null,
+        align: null,
+        mediaBlockId: null
+      })
+    ] as CampaignBlock[]
+
+    it('renders the seeded hero button inert on a fresh campaign, whose switcher is skipped', () => {
+      renderPage(
+        withLanding(
+          [pick('heroId'), pick('heroButtonId'), pick('landingSwitcherId')],
+          { regions: [] }
+        )
+      )
+
+      expect(bandIds()).toEqual(['heroId'])
+      expect(heroButton()).toHaveAttribute('aria-disabled', 'true')
+      expect(heroButton()).not.toHaveAttribute('href')
+    })
+
+    it('renders a button aimed at a section in a skipped Column Slot inert', () => {
+      renderPage(
+        withLanding([pick('heroId'), scrollTo('emptyRichTextId'), ...columns])
+      )
+
+      expect(bandIds()).toEqual(['heroId', 'columnsId', 'slotHeroId'])
+      expect(heroButton()).toHaveAttribute('aria-disabled', 'true')
+      expect(heroButton()).not.toHaveAttribute('href')
+    })
+
+    it('keeps the anchor of a button aimed at a section the page renders, in a slot or not', () => {
+      const { unmount } = renderPage(
+        withLanding([pick('heroId'), scrollTo('slotHeroId'), ...columns])
+      )
+      expect(heroButton()).toHaveAttribute('href', '#slotHeroId')
+      unmount()
+
+      renderPage(
+        withLanding([pick('heroId'), scrollTo('columnsId'), ...columns])
+      )
+      expect(heroButton()).toHaveAttribute('href', '#columnsId')
     })
   })
 

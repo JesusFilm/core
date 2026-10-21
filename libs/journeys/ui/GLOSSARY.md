@@ -44,7 +44,7 @@ The one component every campaign section renders through: it paints the section'
 _Avoid_: section wrapper, card (a card sits inside a band)
 
 **Inert button**:
-A campaign button whose action target is missing (a scroll target on another page, a deleted region, no action at all): rendered static with the same look and never hidden.
+A campaign button whose action target is missing (a scroll target on another page or a section the page skips, a deleted region, no action at all): rendered static with the same look and never hidden.
 
 **Analytics Panel**:
 The body of the Analytics section, shared by the public page and the editor canvas: the Top country and visitors tiles and a ranked, numbered list of top countries whose rows animate when the ranking changes. The landing page has a tab per region plus an all-regions tab that follow the WAI-ARIA tabs pattern, a Region Page is fixed to its region, and the **World Map** is optional.

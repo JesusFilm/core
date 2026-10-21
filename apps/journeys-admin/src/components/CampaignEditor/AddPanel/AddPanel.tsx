@@ -16,12 +16,6 @@ import { blockLabel } from '../blockLabel'
 import { blockIcon } from '../Inspector/blockIcon'
 import { LeftPanelBody } from '../LeftPanel'
 import { useCampaignAddCommand } from '../utils/useCampaignAddCommand'
-import type { ExtraTypename } from '../utils/useCampaignAddCommand'
-
-const EXTRAS: readonly ExtraTypename[] = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-]
 
 interface AddGroupProps {
   title: string
@@ -144,7 +138,7 @@ export function AddPanel(): ReactElement {
       >
         {targets.extra == null
           ? undefined
-          : EXTRAS.map((typename) => (
+          : targets.extra.typenames.map((typename) => (
               <AddItem
                 key={typename}
                 label={blockLabel(t, typename)}

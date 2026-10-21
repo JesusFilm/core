@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within
+} from '@testing-library/react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
@@ -43,7 +49,7 @@ const extraBelowMock = {
       input: {
         id: 'newId',
         campaignId: 'campaignId',
-        parentBlockId: 'headerId',
+        parentBlockId: 'footerId',
         placement: 'below'
       }
     }
@@ -51,7 +57,7 @@ const extraBelowMock = {
   result: vi.fn(() => ({
     data: {
       campaignTypographyBlockCreate: typographyResult({
-        parentBlockId: 'headerId',
+        parentBlockId: 'footerId',
         placement: 'below'
       })
     }
@@ -321,8 +327,23 @@ describe('AddPanel', () => {
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('newId')
   })
 
-  it('adds a text Extra below a chrome block, with the chrome block’s page-wide section list', async () => {
+  it('offers only Button for the header, whose nav renders buttons only', () => {
     renderPanel({ selectedBlockId: 'headerId' })
+
+    const extras = screen.getByRole('list', { name: 'Extras' })
+    expect(
+      within(extras).getByRole('button', { name: 'Button' })
+    ).toBeInTheDocument()
+    expect(within(extras).queryByRole('button', { name: 'Text' })).toBeNull()
+  })
+
+  it('adds a text Extra below the footer, with the chrome block’s page-wide section list', async () => {
+    renderPanel({ selectedBlockId: 'footerId' })
+
+    const extras = screen.getByRole('list', { name: 'Extras' })
+    expect(
+      within(extras).getByRole('button', { name: 'Button' })
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Text' }))
 

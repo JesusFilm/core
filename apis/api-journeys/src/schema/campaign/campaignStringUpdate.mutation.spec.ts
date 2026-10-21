@@ -96,6 +96,51 @@ describe('campaignStringUpdate', () => {
     expect(result.data.campaignStringUpdate.value).toBe('')
   })
 
+  it('keeps line breaks and drops other control characters', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    const copy = campaign.strings.find((string) => string.key === 'copy')
+    prismaMock.campaignString.update.mockResolvedValue({
+      ...copy!,
+      value: 'a\nb c'
+    })
+
+    await update('copy', 'a\r\nb\tc\u0007')
+
+    expect(prismaMock.campaignString.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { value: 'a\nb c' } })
+    )
+  })
+
+  it('normalises a lone carriage return to a line break', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    const copy = campaign.strings.find((string) => string.key === 'copy')
+    prismaMock.campaignString.update.mockResolvedValue({
+      ...copy!,
+      value: 'a\nb'
+    })
+
+    await update('copy', 'a\rb')
+
+    expect(prismaMock.campaignString.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { value: 'a\nb' } })
+    )
+  })
+
+  it('stores an empty value as empty', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    const copy = campaign.strings.find((string) => string.key === 'copy')
+    prismaMock.campaignString.update.mockResolvedValue({ ...copy!, value: '' })
+
+    await update('copy', '')
+
+    expect(prismaMock.campaignString.update).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { value: '' } })
+    )
+  })
+
   it('caps the value at 200 characters (BAD_USER_INPUT, field value)', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(
       campaignFactory({ role: 'member' }).build()

@@ -212,6 +212,24 @@ describe('CampaignRegionShare', () => {
     expect(options[0]).toHaveAttribute('lang', 'fr')
   })
 
+  it('names the selector Language when the step one string is blank, showing no step text', () => {
+    renderShare(region, {
+      ...campaignPublic,
+      strings: campaignPublic.strings.map((string) =>
+        string.key === CampaignStringKey.step1
+          ? { ...string, value: '' }
+          : string
+      )
+    })
+
+    expect(
+      screen.getByRole('combobox', { name: 'Language' })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Pick a language your friend understands.')
+    ).not.toBeInTheDocument()
+  })
+
   it('takes the four step labels, the help line and the button texts from the Campaign Strings', () => {
     renderShare(region, rewordedCampaign)
 
