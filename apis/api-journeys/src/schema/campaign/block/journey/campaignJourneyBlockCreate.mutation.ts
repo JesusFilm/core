@@ -10,6 +10,7 @@ import {
   withClientIds
 } from '../service'
 
+import { CampaignJourneyBlockCreateInput } from './inputs'
 import { snapshotOf } from './snapshot'
 
 builder.mutationField('campaignJourneyBlockCreate', (t) =>
@@ -21,22 +22,10 @@ builder.mutationField('campaignJourneyBlockCreate', (t) =>
       CLIENT_ID_ERROR +
       '',
     args: {
-      id: t.arg({
-        type: 'ID',
-        required: false,
-        description: 'A client-chosen id for the new item.'
-      }),
-      parentBlockId: t.arg({
-        type: 'ID',
-        required: true,
-        description: 'The journey list the card is added to.'
-      }),
-      url: t.arg.string({
-        required: true,
-        description: 'The journey’s admin link or public URL on any domain.'
-      })
+      input: t.arg({ type: CampaignJourneyBlockCreateInput, required: true })
     },
-    resolve: async (_parent, { id, parentBlockId, url }, context) => {
+    resolve: async (_parent, { input }, context) => {
+      const { id, parentBlockId, url } = input
       const parent = await authorizeBlockUpdate(
         String(parentBlockId),
         context.user

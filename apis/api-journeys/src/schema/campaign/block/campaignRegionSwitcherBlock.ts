@@ -2,7 +2,7 @@ import { builder } from '../../builder'
 import { CampaignSwitcherVariant } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignRegionSwitcherBlock = builder.prismaObject(
@@ -10,7 +10,8 @@ export const CampaignRegionSwitcherBlock = builder.prismaObject(
   {
     variant: 'CampaignRegionSwitcherBlock',
     interfaces: [CampaignBlock, CampaignSectionBlock],
-    isTypeOf: (block: any) => block.typename === 'CampaignRegionSwitcherBlock',
+    isTypeOf: (block: unknown) =>
+      isCampaignBlockOfType(block, 'CampaignRegionSwitcherBlock'),
     description:
       'Lists the listed Campaign Regions by order. Holds no items of its own: it reads CampaignRegion rows live.',
     fields: (t) => ({

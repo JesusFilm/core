@@ -3,9 +3,10 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import { lockCampaign, touchCampaign } from '../block/service'
-import { Action, CampaignAclSubject, campaignAcl } from '../campaign.acl'
+import { CampaignAclSubject, campaignAcl } from '../campaign.acl'
 import { notFound } from '../errors'
 import {
   TranslatedValueRef,

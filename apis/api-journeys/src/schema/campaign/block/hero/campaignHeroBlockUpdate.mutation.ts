@@ -1,16 +1,8 @@
-import { TypographyAlign } from '../../../block/typography/enums/typographyAlign'
 import { builder } from '../../../builder'
 import { assertEnumOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
-import {
-  MEDIA_SLOT_ERRORS,
-  mediaSlotColumns,
-  mediaSlotInputField
-} from '../mediaSlotInput'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { MEDIA_SLOT_ERRORS, mediaSlotColumns } from '../inputs/mediaSlotInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
@@ -19,28 +11,7 @@ import {
 import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignHeroBlockUpdateInput = builder.inputType(
-  'CampaignHeroBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      lede: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      align: t.field({ type: TypographyAlign, required: false }),
-      mediaBlockId: mediaSlotInputField(t),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignHeroBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignHeroBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

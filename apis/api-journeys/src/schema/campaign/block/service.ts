@@ -12,8 +12,8 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { Action } from '../../../lib/auth/ability'
 import {
-  Action,
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl

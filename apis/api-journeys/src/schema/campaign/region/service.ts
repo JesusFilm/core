@@ -1,9 +1,9 @@
 import { CampaignRegion, Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { Action } from '../../../lib/auth/ability'
 import { touchCampaign } from '../block/service'
 import {
-  Action,
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl

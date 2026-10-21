@@ -2,10 +2,11 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
+import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
-import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import {
   deleteQrCodes,
   deleteShortLinks,

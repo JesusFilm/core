@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { JourneyStatus, prisma } from '@core/prisma/journeys/client'
+import { JourneyStatus, Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { graphqlRequest } from '../../lib/gateway/graphqlRequest'
 import {
@@ -114,25 +114,28 @@ export async function deleteShortLink(id: string): Promise<void> {
  * QR attribution parameters. The QR row's own team no longer decides the
  * domain, so a campaign QR code pointing at another team's journey lands
  * where that team serves it; for a QR whose team owns the journey the
- * result is unchanged.
+ * result is unchanged. Reads through `tx` when the caller has one open.
  */
-export async function getTo({
-  shortLinkId,
-  toJourneyId,
-  toBlockId
-}: {
-  shortLinkId: string
-  toJourneyId: string
-  toBlockId?: string | null
-}): Promise<string> {
-  const journey = await prisma.journey.findUniqueOrThrow({
+export async function getTo(
+  {
+    shortLinkId,
+    toJourneyId,
+    toBlockId
+  }: {
+    shortLinkId: string
+    toJourneyId: string
+    toBlockId?: string | null
+  },
+  tx: Prisma.TransactionClient = prisma
+): Promise<string> {
+  const journey = await tx.journey.findUniqueOrThrow({
     where: { id: toJourneyId },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
 
   const block =
     toBlockId != null
-      ? await prisma.block.findUniqueOrThrow({
+      ? await tx.block.findUniqueOrThrow({
           where: { journeyId: journey.id, id: toBlockId }
         })
       : null

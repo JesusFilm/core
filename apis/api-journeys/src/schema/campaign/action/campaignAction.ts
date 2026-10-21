@@ -22,6 +22,18 @@ export function resolveCampaignActionType(action: {
   return 'CampaignNavigateToRegionAction'
 }
 
+/**
+ * `isTypeOf` for a CampaignAction variant. graphql-js passes any parent value,
+ * so only an object is resolved by its populated column.
+ */
+function isCampaignActionOfType(
+  action: unknown,
+  typename: CampaignActionTypename
+): boolean {
+  if (typeof action !== 'object' || action == null) return false
+  return resolveCampaignActionType(action) === typename
+}
+
 export const CampaignActionInterface = builder.prismaInterface(
   'CampaignAction',
   {
@@ -42,8 +54,8 @@ export const CampaignActionInterface = builder.prismaInterface(
 export const CampaignLinkActionRef = builder.prismaObject('CampaignAction', {
   variant: 'CampaignLinkAction',
   interfaces: [CampaignActionInterface],
-  isTypeOf: (action: any) =>
-    resolveCampaignActionType(action) === 'CampaignLinkAction',
+  isTypeOf: (action: unknown) =>
+    isCampaignActionOfType(action, 'CampaignLinkAction'),
   description:
     'A web link: a journey, video or any https address. The url is validated as https and at most 2048 characters.',
   fields: (t) => ({
@@ -60,8 +72,8 @@ export const CampaignScrollToBlockActionRef = builder.prismaObject(
   {
     variant: 'CampaignScrollToBlockAction',
     interfaces: [CampaignActionInterface],
-    isTypeOf: (action: any) =>
-      resolveCampaignActionType(action) === 'CampaignScrollToBlockAction',
+    isTypeOf: (action: unknown) =>
+      isCampaignActionOfType(action, 'CampaignScrollToBlockAction'),
     description:
       'Scroll to a Campaign Section on the same page. The renderer links to `#<blockId>`; a target on another page renders inert.',
     fields: (t) => ({
@@ -78,8 +90,8 @@ export const CampaignNavigateToRegionActionRef = builder.prismaObject(
   {
     variant: 'CampaignNavigateToRegionAction',
     interfaces: [CampaignActionInterface],
-    isTypeOf: (action: any) =>
-      resolveCampaignActionType(action) === 'CampaignNavigateToRegionAction',
+    isTypeOf: (action: unknown) =>
+      isCampaignActionOfType(action, 'CampaignNavigateToRegionAction'),
     description:
       'Navigate to a Campaign Region\'s page, carrying the visitor\'s Page Language. The target is set null when the region is deleted: the editor shows "Missing region" and the public page renders the button static.',
     fields: (t) => ({

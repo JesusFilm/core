@@ -1,14 +1,8 @@
 import { builder } from '../../../builder'
-import {
-  CAMPAIGN_SWITCHER_VARIANTS,
-  CampaignSwitcherVariant
-} from '../../enums'
+import { CAMPAIGN_SWITCHER_VARIANTS } from '../../enums'
 import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignRegionSwitcherBlock } from '../campaignRegionSwitcherBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
@@ -16,19 +10,7 @@ import {
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignRegionSwitcherBlockUpdateInput = builder.inputType(
-  'CampaignRegionSwitcherBlockUpdateInput',
-  {
-    fields: (t) => ({
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      variant: t.field({ type: CampaignSwitcherVariant, required: false }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignRegionSwitcherBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignRegionSwitcherBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

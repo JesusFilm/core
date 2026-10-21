@@ -2,13 +2,14 @@ import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
 import { builder } from '../../builder'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignHeroBlock',
   interfaces: [CampaignBlock, CampaignSectionBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignHeroBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignHeroBlock'),
   description:
     'The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.',
   fields: (t) => ({

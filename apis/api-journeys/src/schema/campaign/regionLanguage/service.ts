@@ -7,6 +7,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
+import { Action } from '../../../lib/auth/ability'
 import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
 import { logger } from '../../logger'
 import {
@@ -16,7 +17,7 @@ import {
   getTo,
   updateShortLink
 } from '../../qrCode/qrCode.service'
-import { Action, campaignAcl } from '../campaign.acl'
+import { campaignAcl } from '../campaign.acl'
 import { forbidden, notFound } from '../errors'
 import { renumber } from '../order'
 import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
@@ -93,7 +94,7 @@ export async function createRegionLanguageQrCode(
   journeyId: string
 ): Promise<{ qrCodeId: string; step: ShortLinkStep }> {
   const shortLinkId = uuidv4()
-  const to = await getTo({ shortLinkId, toJourneyId: journeyId })
+  const to = await getTo({ shortLinkId, toJourneyId: journeyId }, tx)
   const qrCode = await tx.qrCode.create({
     data: { teamId, journeyId, toJourneyId: journeyId, shortLinkId }
   })
@@ -140,14 +141,14 @@ export async function retargetRegionLanguageQrCode(
   },
   journeyId: string
 ): Promise<ShortLinkStep> {
-  const to = await getTo({
-    shortLinkId: qrCode.shortLinkId,
-    toJourneyId: journeyId
-  })
-  const previousTo = await getTo({
-    shortLinkId: qrCode.shortLinkId,
-    toJourneyId: qrCode.toJourneyId
-  })
+  const to = await getTo(
+    { shortLinkId: qrCode.shortLinkId, toJourneyId: journeyId },
+    tx
+  )
+  const previousTo = await getTo(
+    { shortLinkId: qrCode.shortLinkId, toJourneyId: qrCode.toJourneyId },
+    tx
+  )
   await tx.qrCode.update({
     where: { id: qrCode.id },
     data: { journeyId, toJourneyId: journeyId }

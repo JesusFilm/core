@@ -1,14 +1,8 @@
 import { builder } from '../../../builder'
-import {
-  CAMPAIGN_JOURNEY_LIST_DISPLAYS,
-  CampaignJourneyListDisplay
-} from '../../enums'
+import { CAMPAIGN_JOURNEY_LIST_DISPLAYS } from '../../enums'
 import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignJourneyListBlock } from '../campaignJourneyListBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
@@ -16,27 +10,7 @@ import {
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignJourneyListBlockUpdateInput = builder.inputType(
-  'CampaignJourneyListBlockUpdateInput',
-  {
-    fields: (t) => ({
-      eyebrow: t.string({
-        required: false,
-        description: 'At most 80 characters.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      lede: t.string({
-        required: false,
-        description: 'At most 500 characters.'
-      }),
-      display: t.field({ type: CampaignJourneyListDisplay, required: false }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignJourneyListBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignJourneyListBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

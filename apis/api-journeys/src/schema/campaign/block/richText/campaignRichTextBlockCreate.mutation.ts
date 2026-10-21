@@ -1,40 +1,9 @@
 import { builder } from '../../../builder'
 import { CampaignRichTextBlock } from '../campaignRichTextBlock'
-import {
-  SECTION_CREATE_ERRORS,
-  SECTION_PARENT_BLOCK_ID_DESCRIPTION,
-  createSection
-} from '../createSection'
+import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignRichTextBlockCreateInput = builder.inputType(
-  'CampaignRichTextBlockCreateInput',
-  {
-    fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({ required: true, description: 'A page of the campaign.' }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      content: t.string({
-        required: false,
-        description:
-          'At most 5000 characters; paragraphs separated by blank lines.'
-      })
-    })
-  }
-)
+import { CampaignRichTextBlockCreateInput } from './inputs'
 
 builder.mutationField('campaignRichTextBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

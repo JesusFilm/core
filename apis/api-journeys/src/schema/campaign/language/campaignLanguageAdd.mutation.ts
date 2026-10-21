@@ -2,6 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
+import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import {
   lockCampaign,
@@ -9,7 +10,7 @@ import {
   touchCampaign
 } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
 import { fetchLanguage } from '../gatewayClient'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
 import { CAMPAIGN_LANGUAGES_MAX, badUserInput } from '../validation'

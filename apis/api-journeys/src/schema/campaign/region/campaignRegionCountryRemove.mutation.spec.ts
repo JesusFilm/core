@@ -31,10 +31,10 @@ describe('campaignRegionCountryRemove', () => {
   beforeEach(() => {
     setupCampaignBlockSpec()
     const fixture = campaignFactory().withRegion('EUR').build()
-    prismaMock.campaignRegionCountry.findUnique.mockResolvedValue({
-      ...row,
-      region: campaignRegionWithAcl(fixture, 'eurRegionId')
-    } as never)
+    prismaMock.campaignRegionCountry.findUnique.mockResolvedValue(row)
+    prismaMock.campaignRegion.findUnique.mockResolvedValue(
+      campaignRegionWithAcl(fixture, 'eurRegionId')
+    )
     prismaMock.campaignRegionCountry.delete.mockResolvedValue(row)
     prismaMock.campaignRegionCountry.findMany.mockResolvedValue([
       { ...row, id: 'eurCountry-DE', countryId: 'DE', order: 1 }
@@ -68,13 +68,12 @@ describe('campaignRegionCountryRemove', () => {
   })
 
   it('throws FORBIDDEN for a caller outside the team', async () => {
-    prismaMock.campaignRegionCountry.findUnique.mockResolvedValue({
-      ...row,
-      region: campaignRegionWithAcl(
+    prismaMock.campaignRegion.findUnique.mockResolvedValue(
+      campaignRegionWithAcl(
         campaignFactory({ userId: 'someoneElse' }).withRegion('EUR').build(),
         'eurRegionId'
       )
-    } as never)
+    )
 
     const result = await remove()
 

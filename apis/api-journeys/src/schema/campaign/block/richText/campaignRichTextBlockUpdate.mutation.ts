@@ -1,9 +1,6 @@
 import { builder } from '../../../builder'
 import { CampaignRichTextBlock } from '../campaignRichTextBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
@@ -11,23 +8,7 @@ import {
 } from '../service'
 import { validateSectionText } from '../validateSectionText'
 
-export const CampaignRichTextBlockUpdateInput = builder.inputType(
-  'CampaignRichTextBlockUpdateInput',
-  {
-    fields: (t) => ({
-      title: t.string({
-        required: false,
-        description: 'At most 150 characters.'
-      }),
-      content: t.string({
-        required: false,
-        description:
-          'At most 5000 characters; paragraphs separated by blank lines.'
-      }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
+import { CampaignRichTextBlockUpdateInput } from './inputs'
 
 builder.mutationField('campaignRichTextBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

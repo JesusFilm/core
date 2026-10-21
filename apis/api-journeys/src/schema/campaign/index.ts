@@ -34,4 +34,4 @@ import './translation/campaignTranslations.query'
 import './translation/campaignAiTranslate'
 
 export { CampaignRef } from './campaign'
-export { Action, INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+export { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'

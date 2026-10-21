@@ -11,11 +11,12 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 import { User } from '@core/yoga/firebaseClient'
 
 import { env } from '../../../env'
+import { Action } from '../../../lib/auth/ability'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { Action, campaignAcl } from '../campaign.acl'
+import { campaignAcl } from '../campaign.acl'
 import { conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
 import { TranslationsJson, parseTranslations } from '../translatedValue'
@@ -370,6 +371,11 @@ export async function* campaignAiTranslate(
 ): AsyncGenerator<CampaignAiTranslateProgress> {
   let runLock: TranslationRunLock | null = null
   try {
+    // Load-bearing despite the `User` type: the builder does not set
+    // `scopeAuth.authorizeOnSubscribe`, so `withAuth({ isAuthenticated })`
+    // guards only each event's `resolve`, not `subscribe`. An anonymous
+    // subscription reaches this generator with no user, and without this
+    // check it would start a run before any event is refused.
     if (user == null)
       throw new GraphQLError('Not authenticated', {
         extensions: { code: 'UNAUTHENTICATED' }

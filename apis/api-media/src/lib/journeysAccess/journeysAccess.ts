@@ -59,22 +59,6 @@ export async function resolveAuthorizedTeamId({
 }
 
 /**
- * Optionally resolves the home team for an upload. Returns null when no journeyId
- * is supplied (preserving v1 behavior). When a journeyId is supplied, an
- * authenticated user is required — throws FORBIDDEN otherwise, since a journeyId
- * is only meaningful for an authenticated caller.
- *
- * The team lookup itself is best-effort: team tagging must never block an asset
- * upload, so if resolveAuthorizedTeamId fails for any reason (journeys DB
- * unreachable, journey missing, or the caller is not a member of its team) we
- * log a warning and return null. The asset is still owned by the uploader via
- * userId; a null team only means it won't surface in the team-shared library.
- *
- * Note: this is the write/upload path. The read path (`getMyCloudflareImages`
- * with an explicit teamId) keeps its strict `assertTeamMembership` check, since
- * that guards against viewing another team's assets.
- */
-/**
  * The home team for an upload when the caller names it directly (a campaign
  * edits under its team, not a journey): membership is asserted strictly with
  * `assertTeamMembership` — unlike the journey path, an explicit teamId the
@@ -102,6 +86,22 @@ export async function resolveUploadTeamId({
   return teamId
 }
 
+/**
+ * Optionally resolves the home team for an upload. Returns null when no journeyId
+ * is supplied (preserving v1 behavior). When a journeyId is supplied, an
+ * authenticated user is required — throws FORBIDDEN otherwise, since a journeyId
+ * is only meaningful for an authenticated caller.
+ *
+ * The team lookup itself is best-effort: team tagging must never block an asset
+ * upload, so if resolveAuthorizedTeamId fails for any reason (journeys DB
+ * unreachable, journey missing, or the caller is not a member of its team) we
+ * log a warning and return null. The asset is still owned by the uploader via
+ * userId; a null team only means it won't surface in the team-shared library.
+ *
+ * Note: this is the write/upload path. The read path (`getMyCloudflareImages`
+ * with an explicit teamId) keeps its strict `assertTeamMembership` check, since
+ * that guards against viewing another team's assets.
+ */
 export async function maybeResolveTeamId({
   journeyId,
   userId

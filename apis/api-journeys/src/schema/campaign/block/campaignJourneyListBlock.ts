@@ -2,13 +2,14 @@ import { builder } from '../../builder'
 import { CampaignJourneyListDisplay } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignJourneyListBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignJourneyListBlock',
   interfaces: [CampaignBlock, CampaignSectionBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignJourneyListBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignJourneyListBlock'),
   description:
     'Ready-made journeys as cards. Items are the ordered CampaignJourneyBlock children.',
   fields: (t) => ({

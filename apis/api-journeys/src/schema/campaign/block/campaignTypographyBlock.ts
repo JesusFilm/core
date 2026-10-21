@@ -4,12 +4,13 @@ import { builder } from '../../builder'
 import { CampaignChildPlacement } from '../enums'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 
 export const CampaignTypographyBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignTypographyBlock',
   interfaces: [CampaignBlock],
-  isTypeOf: (block: any) => block.typename === 'CampaignTypographyBlock',
+  isTypeOf: (block: unknown) =>
+    isCampaignBlockOfType(block, 'CampaignTypographyBlock'),
   description:
     'The campaign text block: an Extra of a section or chrome block, or a Region Line when regionId is set. The variant decides size, weight and font family through the Campaign Theme.',
   fields: (t) => ({

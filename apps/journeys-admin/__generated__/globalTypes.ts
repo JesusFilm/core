@@ -852,6 +852,12 @@ export interface CampaignImageBlockUpdateInput {
   accentColor?: string | null;
 }
 
+export interface CampaignJourneyBlockCreateInput {
+  id?: string | null;
+  parentBlockId: string;
+  url: string;
+}
+
 export interface CampaignJourneyBlockUpdateInput {
   title?: string | null;
   description?: string | null;

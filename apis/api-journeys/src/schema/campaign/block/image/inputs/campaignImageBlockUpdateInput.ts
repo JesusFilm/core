@@ -1,5 +1,5 @@
 import { builder } from '../../../../builder'
-import { sectionStyleInputFields } from '../../sectionStyleInput'
+import { sectionStyleInputFields } from '../../inputs/sectionStyleInput'
 
 export const CampaignImageBlockUpdateInput = builder.inputType(
   'CampaignImageBlockUpdateInput',

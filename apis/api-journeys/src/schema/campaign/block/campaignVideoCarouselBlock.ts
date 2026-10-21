@@ -4,7 +4,7 @@ import { builder } from '../../builder'
 import { Video } from '../../mediaVideo/mediaVideo'
 import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
-import { CampaignBlock } from './campaignBlock'
+import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
 
 export const CampaignVideoCarouselBlock = builder.prismaObject(
@@ -12,7 +12,8 @@ export const CampaignVideoCarouselBlock = builder.prismaObject(
   {
     variant: 'CampaignVideoCarouselBlock',
     interfaces: [CampaignBlock, CampaignSectionBlock],
-    isTypeOf: (block: any) => block.typename === 'CampaignVideoCarouselBlock',
+    isTypeOf: (block: unknown) =>
+      isCampaignBlockOfType(block, 'CampaignVideoCarouselBlock'),
     description:
       'A shelf of video cards. `videoId` set means Watch expansion of that Video at read time and explicit children are ignored; null means the ordered CampaignVideoBlock children are the items.',
     fields: (t) => ({

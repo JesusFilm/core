@@ -1,28 +1,15 @@
 import { builder } from '../../../builder'
-import { CampaignColumnsRatio } from '../../enums'
 import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignColumnsBlock } from '../campaignColumnsBlock'
-import {
-  SECTION_STYLE_ERRORS,
-  sectionStyleInputFields
-} from '../sectionStyleInput'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
   updateBlock
 } from '../service'
 
+import { CampaignColumnsBlockUpdateInput } from './inputs'
 import { CAMPAIGN_COLUMNS_RATIOS } from './validateColumnsRatio'
-
-export const CampaignColumnsBlockUpdateInput = builder.inputType(
-  'CampaignColumnsBlockUpdateInput',
-  {
-    fields: (t) => ({
-      ratio: t.field({ type: CampaignColumnsRatio, required: false }),
-      ...sectionStyleInputFields(t)
-    })
-  }
-)
 
 builder.mutationField('campaignColumnsBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
