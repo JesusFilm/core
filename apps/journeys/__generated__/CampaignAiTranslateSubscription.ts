@@ -55,6 +55,8 @@ export interface CampaignAiTranslateSubscription {
    * - NOT_FOUND: campaign does not resolve.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.
+   * - CONFLICT (field: `languageId`): another run into the same campaign language is in flight.
+   * - `Translation is temporarily unavailable. Please try again.` (no code): the one-run check could not reach Redis; nothing is translated.
    */
   campaignAiTranslateSubscription: CampaignAiTranslateSubscription_campaignAiTranslateSubscription;
 }
