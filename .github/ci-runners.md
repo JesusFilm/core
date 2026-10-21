@@ -15,6 +15,13 @@ Both head and base repositories must be `JesusFilm/core`. Eligible PRs are:
 - Crowdin translations opened by `tataihono`, with the exact branch
   `00-00-CI-chore-i10n-updates` and title `chore: new crowdin translations`.
 
+The repository Actions variable `JFP00_PR_AUTHORS` holds the JSON author list:
+`["dependabot[bot]","renovate[bot]","siyang-bot"]`. All 12 routing expressions
+read this one list. Crowdin keeps the exact identity check above. A missing or
+empty variable disables all jfp00 routing, including Crowdin, for new runs.
+The host retains its independent allowlist: adding another author requires a
+reviewed host-policy change as well as updating the variable.
+
 Routing checks the PR author, so a human rerunning a bot PR still uses jfp00.
 A bot acting on a human-authored PR does not qualify. Human PRs, fork PRs,
 pushes, scheduled jobs, manual runs, and merge queue runs retain their existing
@@ -31,9 +38,34 @@ The shared controller is `/usr/local/lib/ci-runner/controller.py` on `jfp00`,
 managed by `ci-runner-controller.service`. The before-job policy hook comes from
 `/usr/local/lib/ci-runner/job_guard.py`. Its public-repository exception is
 explicitly limited to `JesusFilm/core`, and its jobs are placed only on `jfp00`.
-Admission checks reserve memory and storage for the existing workloads.
+Jfp00 has eight runner VM slots shared with the other CI repositories, so the
+upper bound is eight concurrent core jobs (64 vCPUs / 192 GiB guest RAM).
+This is a slot limit, not guaranteed capacity. Occupied slots and admission
+checks reduce availability: the controller reserves at least 32 GiB RAM and
+256 GiB storage, and conservatively budgets active guests plus the next guest.
+Jfp01 has eight additional slots for existing workloads, but core is currently
+restricted to jfp00; these are not an automatic failover pool.
 
-Use `actions/setup-node`, rather than the Blacksmith-specific setup action.
+A selected `ci-run-…` label has **no automatic Blacksmith fallback**. If jfp00
+is offline or admission has no capacity, the job stays queued. During this
+pilot, the PR assignee should check the Actions queue; no automatic stalled-job
+alert is configured. Investigate a core job waiting more than 10 minutes:
+
+1. Check the queued label and other running jobs in GitHub Actions.
+2. On jfp00, inspect `systemctl status ci-runner-controller`,
+   `journalctl --namespace=ci-runner -u ci-runner-controller`, and
+   `/var/lib/ci-runner/state.json`; check available memory/storage and template
+   backup locks. Do not unlock an active backup or delete active job guests.
+3. If the host cannot recover promptly, delete the repository variable
+   `JFP00_PR_AUTHORS` to stop routing new runs to it. Cancel stalled runs and
+   start fresh PR runs after disabling routing; already queued jobs do not
+   automatically change labels. Restore the documented JSON list to re-enable
+   the pilot after recovery.
+
+Main's Blacksmith jobs keep `useblacksmith/setup-node` and its local pnpm
+cache. Mutually exclusive steps use `actions/setup-node` without caching on
+jfp00. The other workflows retain their existing standard setup action on
+Blacksmith, with caching disabled only on jfp00.
 Guest package installation can use passwordless `sudo`; credentials and the
 host filesystem are not mounted in the guest. Local guests install packages directly from the registry: restoring the large
 pnpm cache from GitHub was slower over this connection than a fresh install.
