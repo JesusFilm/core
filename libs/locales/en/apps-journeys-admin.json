@@ -1707,5 +1707,8 @@
   "Preview language: {{language}}": "Preview language: {{language}}",
   "Open journey": "Open journey",
   "There was an error loading campaigns.": "There was an error loading campaigns.",
-  "There was an error refreshing the campaign.": "There was an error refreshing the campaign."
+  "There was an error refreshing the campaign.": "There was an error refreshing the campaign.",
+  "This language has a QR code. Unlink it instead.": "This language has a QR code. Unlink it instead.",
+  "Remove {{language}}?": "Remove {{language}}?",
+  "Every translation into {{language}} is deleted.": "Every translation into {{language}} is deleted."
 }
