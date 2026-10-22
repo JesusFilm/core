@@ -30,12 +30,12 @@ jobs:
         with:
           run_install: false
       - uses: useblacksmith/setup-node@v5
-        if: ${{ !startsWith(runner.name, 'ci-jfp00-') }}
+        if: ${{ !startsWith(runner.name, 'ci-jfp') }}
         with:
           node-version: 22
           cache: 'pnpm'
       - uses: actions/setup-node@v5
-        if: ${{ startsWith(runner.name, 'ci-jfp00-') }}
+        if: ${{ startsWith(runner.name, 'ci-jfp') }}
         with:
           node-version: 22
           package-manager-cache: false
@@ -92,12 +92,12 @@ jobs:
         with:
           run_install: false
       - uses: useblacksmith/setup-node@v5
-        if: ${{ !startsWith(runner.name, 'ci-jfp00-') }}
+        if: ${{ !startsWith(runner.name, 'ci-jfp') }}
         with:
           node-version: 22
           cache: 'pnpm'
       - uses: actions/setup-node@v5
-        if: ${{ startsWith(runner.name, 'ci-jfp00-') }}
+        if: ${{ startsWith(runner.name, 'ci-jfp') }}
         with:
           node-version: 22
           package-manager-cache: false
@@ -205,12 +205,12 @@ jobs:
         with:
           run_install: false
       - uses: useblacksmith/setup-node@v5
-        if: ${{ !startsWith(runner.name, 'ci-jfp00-') }}
+        if: ${{ !startsWith(runner.name, 'ci-jfp') }}
         with:
           node-version: 22
           cache: 'pnpm'
       - uses: actions/setup-node@v5
-        if: ${{ startsWith(runner.name, 'ci-jfp00-') }}
+        if: ${{ startsWith(runner.name, 'ci-jfp') }}
         with:
           node-version: 22
           package-manager-cache: false
