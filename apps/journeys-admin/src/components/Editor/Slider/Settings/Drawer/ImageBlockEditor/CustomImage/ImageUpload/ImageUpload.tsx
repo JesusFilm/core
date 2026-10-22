@@ -185,7 +185,10 @@ export function ImageUpload({
       'image/jpeg': [],
       'image/gif': [],
       'image/svg+xml': [],
-      'image/heic': []
+      // Extensions keep .heic/.heif visible in the file picker where the OS doesn't know these types
+      'image/heic': ['.heic'],
+      'image/heif': ['.heif'],
+      'image/webp': []
     }
   })
 
@@ -201,7 +204,7 @@ export function ImageUpload({
       }
       case ErrorCode.FileInvalidType: {
         return t(
-          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+          'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
         )
       }
       default: {
@@ -320,9 +323,7 @@ export function ImageUpload({
         <Typography variant="caption">
           {hasError
             ? getErrorMessage(errorCode)
-            : t(
-                'Upload an image (PNG, JPG, GIF, SVG, or HEIC). Maximum file size: 10 MB'
-              )}
+            : t('Maximum file size: 10 MB')}
         </Typography>
       </Stack>
     </Stack>

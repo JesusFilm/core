@@ -194,7 +194,7 @@ describe('useImageUpload', () => {
 
     expect(onUploadError).toHaveBeenCalledWith(
       ErrorCode.FileInvalidType,
-      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
     )
   })
 
