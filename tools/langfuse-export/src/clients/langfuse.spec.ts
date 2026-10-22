@@ -369,6 +369,84 @@ describe('v4 observations HTTP contract', () => {
     )
   })
 
+  it('refuses competing roots instead of attributing a child of B to earlier root A', async () => {
+    const rootA = {
+      ...generation,
+      id: 'root-a',
+      type: 'SPAN',
+      parentObservationId: '',
+      startTime: '2026-09-30T23:59:00Z',
+      metadata: { journeyId: 'ordinary-journey' }
+    }
+    const rootB = {
+      ...rootA,
+      id: 'root-b',
+      startTime: generation.startTime,
+      metadata: { journeyId: 'excluded-journey' }
+    }
+    const child = {
+      ...generation,
+      parentObservationId: 'root-b',
+      metadata: rootB.metadata
+    }
+    fetchMock
+      .mockResolvedValueOnce(page([child]))
+      .mockResolvedValueOnce(page([child, rootB, rootA]))
+    await expect(
+      fetchTraceData(client, window, { throttleMs: 0 })
+    ).rejects.toThrow('trace t1 has ambiguous root context (2 root candidates)')
+  })
+
+  it.each([undefined, null, 'malformed', []])(
+    'recovers generation exclusions when root metadata is invalid: %j',
+    async (metadata) => {
+      const root = {
+        ...generation,
+        id: 'invalid-root',
+        type: 'SPAN',
+        isRootObservation: true,
+        metadata,
+        tags: []
+      }
+      const child = { ...generation, parentObservationId: root.id }
+      fetchMock
+        .mockResolvedValueOnce(page([child]))
+        .mockResolvedValueOnce(page([root, child]))
+      const data = await fetchTraceData(client, window, { throttleMs: 0 })
+      expect(data.traces[0]).toMatchObject({
+        journeyId: 'j1',
+        ipCountry: 'NZ',
+        language: 'es',
+        tags: ['synthetic']
+      })
+      for (const exclusions of [
+        { excludeJourneyIds: new Set(['j1']) },
+        { excludeTags: new Set(['synthetic']) }
+      ]) {
+        const result = normalize(data.traces, data.observations, exclusions)
+        expect(result.excludedTurnCount).toBe(1)
+        expect(result.conversations).toEqual([])
+      }
+    }
+  )
+
+  it('stops when root metadata is missing and generation context cannot recover it', async () => {
+    const root = {
+      ...generation,
+      id: 'invalid-root',
+      type: 'SPAN',
+      isRootObservation: true,
+      metadata: undefined
+    }
+    const child = { ...generation, parentObservationId: root.id, metadata: {} }
+    fetchMock
+      .mockResolvedValueOnce(page([child]))
+      .mockResolvedValueOnce(page([root, child]))
+    await expect(
+      fetchTraceData(client, window, { throttleMs: 0 })
+    ).rejects.toThrow('no recoverable root or consistent generation context')
+  })
+
   it('refuses conflicting generation context without an authoritative root', async () => {
     fetchMock.mockResolvedValueOnce(page([generation])).mockResolvedValueOnce(
       page([

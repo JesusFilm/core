@@ -142,11 +142,15 @@ function parseJson(value: unknown): unknown {
   }
 }
 
-function asRecord(value: unknown): Record<string, unknown> {
+function parseRecord(value: unknown): Record<string, unknown> | undefined {
   value = parseJson(value)
   return value != null && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
-    : {}
+    : undefined
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return parseRecord(value) ?? {}
 }
 
 function metaString(
@@ -265,11 +269,20 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
       row.parentObservationId === null ||
       row.parentObservationId === ''
   )
+  // Without verified ancestry, choosing any one of several roots could apply
+  // another journey's context and silently bypass its exclusion rules.
+  if (roots.length > 1) {
+    throw new Error(
+      `Langfuse trace ${traceId} has ambiguous root context (${roots.length} root candidates); export stopped to avoid incorrect attribution or load-test filtering.`
+    )
+  }
+  const root = roots[0]
   // A recovered root is authoritative even when its metadata is empty: that
   // is known untagged history, not a failed recovery. Rootless current Core
   // traces can use the context copied consistently to their generations.
   const generations = ordered.filter((row) => row.type === 'GENERATION')
   const generationContext = generations[0]
+  const generationMetadata = parseRecord(generationContext?.metadata)
   const contextKeys = [
     'journeyId',
     'ipCountry',
@@ -279,13 +292,13 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
   ]
   const consistentGenerationContext =
     generationContext != null &&
-    metaString(asRecord(generationContext.metadata), 'journeyId') != null &&
+    generationMetadata != null &&
+    metaString(generationMetadata, 'journeyId') != null &&
     generations.every(
       (row) =>
+        parseRecord(row.metadata) != null &&
         contextKeys.every(
-          (key) =>
-            asRecord(row.metadata)[key] ===
-            asRecord(generationContext.metadata)[key]
+          (key) => asRecord(row.metadata)[key] === generationMetadata[key]
         ) &&
         row.sessionId === generationContext.sessionId &&
         row.environment === generationContext.environment &&
@@ -293,7 +306,11 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
           JSON.stringify(asStringArray(generationContext.tags).sort())
     )
   const context =
-    roots[0] ?? (consistentGenerationContext ? generationContext : undefined)
+    root != null && parseRecord(root.metadata) != null
+      ? root
+      : consistentGenerationContext
+        ? generationContext
+        : undefined
   if (context == null) {
     // Legacy children can lose trace metadata during migration. Refuse an
     // unattributed export or silently bypassed journey/tag exclusion; an
@@ -305,7 +322,7 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
   return mapTrace({
     ...context,
     id: traceId,
-    timestamp: roots[0]?.startTime ?? ordered[0]?.startTime
+    timestamp: root?.startTime ?? ordered[0]?.startTime
   })
 }
 

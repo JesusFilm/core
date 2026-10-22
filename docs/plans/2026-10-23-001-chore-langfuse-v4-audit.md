@@ -1,8 +1,10 @@
 # Core Langfuse platform v4 audit and verification
 
 Date: 2026-10-23. Baseline: `67c2b9e729ba30fd2ba9f888d3e9b5ac24bcc400`.
-Branch: `10-23-JB-chore-langfuse-v4`. Local implementation only: no push, PR,
-deployment, credentials, production requests, or solution-archive reads.
+Branch: `10-23-JB-chore-langfuse-v4`. Prepared for PR publication by the
+coordinating agent after final review and validation, using the no-deploy plan
+below. Implementation used no production requests, credentials, deployments,
+or solution-archive reads.
 
 ## Requirements and scope
 
@@ -102,9 +104,12 @@ retains it on a root observation. The exporter recognizes roots through
 `isRootObservation` / parent context, without hardcoding an ID prefix, and asks
 for `expandMetadata=journeyId,ipCountry,language,provider,modelId`.
 
-A recovered root is authoritative even when metadata is empty: genuinely
-untagged history is allowed. Rootless current Core traces can use consistent
-context copied to every generation. If no root or trustworthy consistent
+A single recovered root is authoritative when its metadata is an explicit
+object, including `{}` for known untagged history. Missing, null, malformed or
+non-object root metadata requires consistent context copied to every generation,
+as does a rootless current Core trace. Multiple root candidates stop the export:
+ancestry is not verified, so even matching candidates are conservatively rejected
+instead of risking another root's journey attribution. If no root or trustworthy consistent
 generation context exists, **the entire export fails with the trace ID** rather
 than silently breaking journey/tag exclusions or inventing attribution. This
 conservative guard also applies without a discriminator. The precise operator
@@ -122,7 +127,9 @@ The response decoder preserves unsupported JSON-shaped replies (such as
 `[1,2]` and `{"answer":"Yes"}`) as text through mapping and normalization.
 Offline regressions verify legacy root-context recovery, a journey discriminator
 that still excludes one turn, explicit failure for unrecoverable legacy context,
-valid untagged roots, conflicting generation context, cross-window paginated
+valid untagged roots, competing roots, missing/malformed root metadata with
+generation fallback (including journey/tag exclusions), conflicting generation
+context, cross-window paginated
 trace completeness, and supported/unsupported I/O shapes.
 
 ## Local verification
@@ -150,7 +157,7 @@ Final local results (all exit 0):
 | Check                                                | Outcome                                                                                                                                                                           |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Chat/client/wire tests                               | 71 passed across 3 files (baseline 68 across 2 files)                                                                                                                             |
-| Export tool suite                                    | 226 passed across 12 files (baseline 205)                                                                                                                                         |
+| Export tool suite                                    | 232 passed across 12 files (baseline 205)                                                                                                                                         |
 | Journeys direct TS7                                  | Passed                                                                                                                                                                            |
 | Export direct TypeScript                             | Passed                                                                                                                                                                            |
 | `nx affected --target=type-check --base=origin/main` | Passed for all 7 projects visible in this sparse worktree: journeys, journeys-admin, journeys-ui, shared-ai, shared-dev-hosts, shared-ui, shared-ui-dynamic                       |
