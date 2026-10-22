@@ -27,7 +27,7 @@ export interface CampaignPublish {
    * 
    * Errors:
    * - NOT_FOUND: id does not resolve.
-   * - FORBIDDEN: caller is not a manager of the team.
+   * - FORBIDDEN: caller is not in the team.
    */
   campaignPublish: CampaignPublish_campaignPublish;
 }

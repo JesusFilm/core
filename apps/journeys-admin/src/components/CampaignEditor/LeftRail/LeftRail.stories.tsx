@@ -22,7 +22,6 @@ import { LeftRail } from '.'
 interface LeftRailStoryProps {
   initialState?: Partial<CampaignEditorState>
   campaignProp?: Campaign
-  isManager?: boolean
   /** A machine-translation run in flight, ringed round the Localize button. */
   run?: TranslationRun
 }
@@ -31,7 +30,6 @@ interface LeftRailStoryProps {
 function LeftRailStory({
   initialState,
   campaignProp = campaign,
-  isManager = true,
   run
 }: LeftRailStoryProps): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
@@ -51,11 +49,7 @@ function LeftRailStory({
               }}
             >
               <Box sx={{ display: 'flex', height: 560 }}>
-                <LeftRail
-                  view={view}
-                  onViewChange={setView}
-                  isManager={isManager}
-                />
+                <LeftRail view={view} onViewChange={setView} />
               </Box>
             </TranslationRunContext.Provider>
           </CampaignEditorProvider>
