@@ -41,13 +41,8 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
         id
         published
         reconciliation {
-          id
           status
           published
-          reason
-          retryAt
-          errorMessage
-          updatedAt
         }
         language {
           id
