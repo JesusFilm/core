@@ -126,8 +126,7 @@ export function RegionSettings({
     if (value === '' && !(field === 'name' && translationLanguageId != null))
       return field === 'name' ? t('Name is required') : t('Slug is required')
     const max = field === 'name' ? REGION_NAME_MAX_LENGTH : SLUG_MAX_LENGTH
-    if ([...value].length > max)
-      return t('Max {{count}} characters', { count: max })
+    if ([...value].length > max) return t('Max {{max}} characters', { max })
     return undefined
   }
 

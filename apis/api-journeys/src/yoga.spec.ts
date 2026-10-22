@@ -1,6 +1,26 @@
+import { readFileSync, readdirSync } from 'fs'
+import { join } from 'path'
+
 import { useResponseCache } from '@graphql-yoga/plugin-response-cache'
 
 import './yoga'
+
+const CAMPAIGN_SCHEMA_ROOT = join(__dirname, 'schema/campaign')
+
+/** `Query.<name>` for every `builder.queryField('<name>', …)` under `schema/campaign`. */
+const campaignQueryCoordinates = readdirSync(CAMPAIGN_SCHEMA_ROOT, {
+  recursive: true,
+  encoding: 'utf8'
+})
+  .filter((file) => file.endsWith('.ts') && !file.endsWith('.spec.ts'))
+  .flatMap((file) =>
+    [
+      ...readFileSync(join(CAMPAIGN_SCHEMA_ROOT, file), 'utf8').matchAll(
+        /builder\.queryField\(\s*'(\w+)'/g
+      )
+    ].map(([, name]) => `Query.${name}`)
+  )
+  .sort()
 
 vi.mock('@graphql-yoga/plugin-response-cache', () => ({
   createInMemoryCache: vi.fn(() => ({})),
@@ -30,15 +50,18 @@ describe('yoga response cache', () => {
   it('never caches the campaign reads', () => {
     // `campaigns` and `campaign` are team-ACL'd: with the default TTL a fresh
     // team's first empty list would be cached forever and served to everyone.
-    expect(ttlPerSchemaCoordinate).toMatchObject({
-      'Query.campaign': 0,
-      'Query.campaignPublic': 0,
-      'Query.campaignTranslations': 0,
-      'Query.campaigns': 0
-    })
-  })
-
-  it('never caches campaignStats, whose draft gate must run on every read', () => {
-    expect(ttlPerSchemaCoordinate).toHaveProperty('Query.campaignStats', 0)
+    // `campaignStats` gates a draft campaign on the caller. The list is read
+    // from the source, so a new campaign query without a TTL of 0 fails here.
+    expect(campaignQueryCoordinates).toEqual(
+      expect.arrayContaining([
+        'Query.campaign',
+        'Query.campaignPublic',
+        'Query.campaignStats',
+        'Query.campaignTranslations',
+        'Query.campaigns'
+      ])
+    )
+    for (const coordinate of campaignQueryCoordinates)
+      expect(ttlPerSchemaCoordinate).toHaveProperty([coordinate], 0)
   })
 })

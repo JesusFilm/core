@@ -331,6 +331,11 @@ id is the binding name**.
    afterwards. The token is not checked. `CLOUDFLARE_ACCOUNT_ID` is already
    there and is ignored.
 
+   To point links (and Campaign QR Codes) at the journeys app on
+   `http://localhost:4100`, also add `SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true`:
+   it lets a local api-media accept localhost and private destinations. Never
+   deploy it; api-media refuses to boot with it under `NODE_ENV=production`.
+
 2. In the admin, open the domain you serve locally (a `localhost` domain for
    `http://localhost:8788/<slug>`) and set both **KV namespace id** and
    **Worker binding** to one of the dev bindings in `wrangler.toml`, e.g.

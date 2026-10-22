@@ -1,0 +1,99 @@
+--- a/controller.py
++++ b/controller.py
+@@ -3,6 +3,7 @@
+ import json
+ import logging
+ from collections import Counter
++from datetime import datetime, timezone
+ import os
+ from pathlib import Path
+ import re
+@@ -44,6 +45,7 @@
+ LOG = logging.getLogger('ci-runner')
+ # Explicit public-repository exception; never discover other public repositories.
+ PUBLIC_REPOSITORY = 'JesusFilm/core'
++CORE_REMOTE_SINCE = Path('/etc/ci-runner/core-jfp01-since')
+ 
+ 
+ def command(*args, timeout=120, input_data=None):
+@@ -245,7 +247,7 @@
+ def candidate(repo, default_branch, occupied=()):
+     runs = api(f'repos/{repo}/actions/runs?per_page=20',
+                '[.workflow_runs[] | select(.status == "queued" or .status == "in_progress") | '
+-               '{id,event,head_branch,head_repository:.head_repository.full_name,pull_requests}]')
++               '{id,event,head_branch,head_repository:.head_repository.full_name,pull_requests,created_at}]')
+     for run in runs:
+         event = run['event']
+         if repo == PUBLIC_REPOSITORY:
+@@ -278,7 +280,8 @@
+                     and (repo.lower(), run['id'], job['id']) not in occupied):
+                 return {'repo': repo, 'run': run['id'], 'job': job['id'],
+                         'label': label, 'default_branch': default_branch,
+-                        'event': event, 'head_branch': run['head_branch']}
++                        'event': event, 'head_branch': run['head_branch'],
++                        'created_at': run.get('created_at')}
+     return None
+ 
+ 
+@@ -454,8 +457,40 @@
+ 
+ 
+ 
++def core_remote_allowed(item):
++    # A rerun retains its old workflow. Keep pre-rollout runs local even after
++    # new workflows support both node names. Missing/invalid metadata fails closed.
++    try:
++        cutoff = datetime.fromisoformat(CORE_REMOTE_SINCE.read_text().strip())
++        created = datetime.fromisoformat(item['created_at'])
++        return (cutoff.utcoffset() is not None and created.utcoffset() is not None
++                and created.astimezone(timezone.utc) >= cutoff.astimezone(timezone.utc))
++    except (OSError, ValueError, TypeError, KeyError):
++        return False
++
++
++def core_slot(state, *, allow_remote=False):
++    # Prefer the node with fewer active CI guests; ties favor the less busy
++    # production host, jfp01. Capacity and template readiness remain per-node.
++    nodes = sorted((node for node in TEMPLATES if allow_remote or node == 'jfp00'), key=lambda node: (
++        sum(SLOTS[slot][4] == node for slot in state), node != 'jfp01'))
++    for node in nodes:
++        free = [slot for slot in SLOTS if slot not in state and SLOTS[slot][4] == node]
++        if not free or not capacity_ready(node, state, PUBLIC_REPOSITORY):
++            continue
++        try:
++            config = node_command(node, 'qm', 'config', str(TEMPLATES[node]))
++        except Exception as exc:
++            LOG.warning('core template unavailable on %s: %s', node, type(exc).__name__)
++            continue
++        if any(line.startswith('lock:') for line in config.splitlines()):
++            continue
++        return min(free, key=int)
++    return None
++
++
+ def dispatch_public_repository(repository, state, occupied):
+-    # Fill available local slots so core's matrix jobs can run concurrently.
++    # Fill eligible slots on both nodes, balancing active CI guest counts.
+     while True:
+         reconcile(state, core_only=True)
+         # A run's runners can claim a different queued job than the one that
+@@ -463,16 +498,12 @@
+         occupied.intersection_update(
+             (entry['repo'].lower(), entry['run'], entry['job'])
+             for entry in state.values())
+-        config = node_command('jfp00', 'qm', 'config', str(TEMPLATES['jfp00']))
+-        if any(line.startswith('lock:') for line in config.splitlines()):
+-            return
+-        free = [slot for slot in SLOTS if slot not in state and SLOTS[slot][4] == 'jfp00']
+-        if not free or not capacity_ready('jfp00', state, PUBLIC_REPOSITORY):
+-            return
+         item = candidate(repository['full_name'], repository['default_branch'], occupied)
+         if not item:
+             return
+-        slot = min(free, key=int)
++        slot = core_slot(state, allow_remote=core_remote_allowed(item))
++        if slot is None:
++            return
+         try:
+             launch(slot, item, state)
+             occupied.add((item['repo'].lower(), item['run'], item['job']))

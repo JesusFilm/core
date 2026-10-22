@@ -41,8 +41,9 @@ function gatewayUnavailable(): GatewayError {
 
 /**
  * Run a query or mutation against other subgraphs through the gateway as
- * this service. Never call it inside a transaction: it is a network round
- * trip of up to `GATEWAY_TIMEOUT_MS`.
+ * this service. Avoid calling it inside a transaction: it is a network round
+ * trip of up to `GATEWAY_TIMEOUT_MS`, held with the transaction open. The
+ * three `qrCode` mutations still do, as on `main`.
  */
 export async function graphqlRequest(
   query: string,

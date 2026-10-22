@@ -1,5 +1,6 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
+import { GATEWAY_TIMEOUT_MS } from '../../../lib/gateway/graphqlRequest'
 import { builder } from '../../builder'
 import { snapshotOf } from '../block/journey/snapshot'
 import { touchCampaign } from '../block/service'
@@ -74,60 +75,67 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
 
       return await runWithShortLinkStep(
         async (shortLinkStep) =>
-          await prisma.$transaction(async (tx) => {
-            // Decide from the row as locked, not as authorised: a concurrent
-            // call may already have linked or unlinked it.
-            await lockRegionLanguage(tx, id)
-            const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
-              where: { id },
-              include: { qrCode: true }
-            })
+          await prisma.$transaction(
+            async (tx) => {
+              // Decide from the row as locked, not as authorised: a concurrent
+              // call may already have linked or unlinked it.
+              await lockRegionLanguage(tx, id)
+              const current = await tx.campaignRegionLanguage.findUniqueOrThrow(
+                {
+                  where: { id },
+                  include: { qrCode: true }
+                }
+              )
 
-            if (journey === null && current.journeyId != null) {
-              // Unlink: the QR row and its short link stay, still pointing at
-              // the last linked journey, so printed codes keep working; a
-              // later link retargets them.
-              data.journeyId = null
-              data.title = null
-              data.description = null
-              data.snapshotEdited = false
-            } else if (journey != null) {
-              // Re-linking the journey already linked keeps its snapshot, an
-              // edited one included; it only mints a missing QR code.
-              if (journey.id !== current.journeyId) {
-                data.journeyId = journey.id
-                const snapshot = snapshotOf(journey)
-                data.title = snapshot.title
-                data.description = snapshot.description
+              if (journey === null && current.journeyId != null) {
+                // Unlink: the QR row and its short link stay, still pointing at
+                // the last linked journey, so printed codes keep working; a
+                // later link retargets them.
+                data.journeyId = null
+                data.title = null
+                data.description = null
                 data.snapshotEdited = false
-              }
-              if (current.qrCode == null) {
-                const created = await createRegionLanguageQrCode(
-                  tx,
-                  campaign.teamId,
-                  journey.id
-                )
-                data.qrCodeId = created.qrCodeId
-                shortLinkStep.defer(created.step)
-              } else if (current.qrCode.toJourneyId !== journey.id)
-                shortLinkStep.defer(
-                  await retargetRegionLanguageQrCode(
+              } else if (journey != null) {
+                // Re-linking the journey already linked keeps its snapshot, an
+                // edited one included; it only mints a missing QR code.
+                if (journey.id !== current.journeyId) {
+                  data.journeyId = journey.id
+                  const snapshot = snapshotOf(journey)
+                  data.title = snapshot.title
+                  data.description = snapshot.description
+                  data.snapshotEdited = false
+                }
+                if (current.qrCode == null) {
+                  const created = await createRegionLanguageQrCode(
                     tx,
-                    current.qrCode,
+                    campaign.teamId,
                     journey.id
                   )
-                )
-            }
+                  data.qrCodeId = created.qrCodeId
+                  shortLinkStep.defer(created.step)
+                } else if (current.qrCode.toJourneyId !== journey.id)
+                  shortLinkStep.defer(
+                    await retargetRegionLanguageQrCode(
+                      tx,
+                      current.qrCode,
+                      journey.id
+                    )
+                  )
+              }
 
-            const updated = await tx.campaignRegionLanguage.update({
-              ...query,
-              where: { id },
-              data
-            })
-            await touchCampaign(tx, campaign.id)
-            await shortLinkStep.apply()
-            return updated
-          })
+              const updated = await tx.campaignRegionLanguage.update({
+                ...query,
+                where: { id },
+                data
+              })
+              await touchCampaign(tx, campaign.id)
+              await shortLinkStep.apply()
+              return updated
+            },
+            // The short-link step is a gateway call of up to
+            // GATEWAY_TIMEOUT_MS inside this transaction: outlast it.
+            { timeout: GATEWAY_TIMEOUT_MS + 5_000 }
+          )
       )
     }
   })

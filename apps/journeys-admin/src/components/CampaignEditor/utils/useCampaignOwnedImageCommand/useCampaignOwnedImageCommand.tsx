@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { CampaignImageSlot } from '../../../../../__generated__/globalTypes'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import {
   CampaignImageOwner,
   useCampaignImageBlockCreateMutation
@@ -41,18 +40,17 @@ export interface CampaignOwnedImageCommand extends CampaignStyleCommand {
  * (`campaignImageBlockCreate`, which also points the slot column at it on the
  * server) and then writes the owner's fields — the background kind and
  * overlay, or `logoBlockId` — so the canvas shows the picture at once; undo
- * restores the image the slot held (the create soft-deleted it) and writes
- * the owner's previous fields back, leaving the new image row behind, out of
- * the tree; redo writes the fields again without a second create. A refused
- * create is retried by redo, and its undo restores nothing, since nothing
- * was deleted.
+ * writes the owner's previous fields back, and the server's slot swap
+ * restores the image the slot held (the create soft-deleted it) and
+ * soft-deletes the new one; redo writes the fields again without a second
+ * create. An owned image never comes back through `campaignBlockRestore`,
+ * which refuses it. A refused create is retried by redo.
  * `addStyle` is the plain style Command for the slot's other edits (Clear
  * logo, the overlay), sharing this hook's error.
  */
 export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
   const { campaign } = useCampaignEditor()
   const createOwnedImage = useCampaignImageBlockCreateMutation(campaign.id)
-  const [restoreBlock] = useCampaignBlockRestoreMutation(campaign.id)
   const styleCommand = useCampaignStyleCommand()
 
   function addOwnedImage<B extends CampaignBlock, I>({
@@ -86,8 +84,6 @@ export function useCampaignOwnedImageCommand(): CampaignOwnedImageCommand {
             throw error
           }
         }
-        if (created && targetImageId != null && targetImageId !== imageId)
-          await restoreBlock({ variables: { id: targetImageId } })
         return await write(current, next)
       }
     })

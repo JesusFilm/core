@@ -11,6 +11,7 @@ import {
   assertLength,
   assertNotNull,
   assertRegionSlugFreeOfJourneys,
+  isUniqueViolation,
   validateRegionSlug
 } from '../validation'
 
@@ -75,13 +76,7 @@ builder.mutationField('campaignRegionUpdate', (t) =>
           await enqueueRegionRevalidation(region.campaign, regionSlugs)
         return updated
       } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2002' &&
-          Array.isArray(error.meta?.target) &&
-          (error.meta.target as string[]).includes('slug')
-        )
-          throw new SlugTakenError()
+        if (isUniqueViolation(error, 'slug')) throw new SlugTakenError()
         throw error
       }
     }

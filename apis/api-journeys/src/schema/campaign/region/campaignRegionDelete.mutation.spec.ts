@@ -134,6 +134,61 @@ describe('campaignRegionDelete', () => {
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
   })
 
+  it('takes the structure lock, then every block, region and string row of the campaign in id order, then re-reads listed before it deletes', async () => {
+    await remove()
+
+    const statements = prismaMock.$queryRaw.mock.calls.map(
+      ([strings, ...values]) => ({
+        sql: (strings as unknown as string[]).join('?'),
+        values
+      })
+    )
+    expect(statements[0].sql).toContain('pg_advisory_xact_lock(hashtext(')
+    expect(statements[0].values).toEqual(['campaign:campaignId'])
+    expect(statements.slice(1, 4)).toEqual([
+      {
+        sql: 'SELECT 1 FROM "CampaignBlock" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
+        values: ['campaignId']
+      },
+      {
+        sql: 'SELECT 1 FROM "CampaignRegion" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
+        values: ['campaignId']
+      },
+      {
+        sql: 'SELECT 1 FROM "CampaignString" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
+        values: ['campaignId']
+      }
+    ])
+    expect(prismaMock.campaignRegion.findUnique).toHaveBeenLastCalledWith({
+      where: { id: 'eurRegionId' },
+      select: { listed: true }
+    })
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[3]).toBeLessThan(
+      prismaMock.campaignRegion.findUnique.mock.invocationCallOrder[1]
+    )
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[3]).toBeLessThan(
+      prismaMock.campaignRegion.delete.mock.invocationCallOrder[0]
+    )
+  })
+
+  it('refuses a region a concurrent update listed after it was authorised (CONFLICT, field regionId)', async () => {
+    prismaMock.campaignRegion.findUnique
+      .mockResolvedValueOnce(
+        campaignRegionWithAcl(fixture, 'eurRegionId', { listed: false })
+      )
+      .mockResolvedValueOnce({ listed: true } as never)
+
+    const result = await remove()
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'CONFLICT',
+      field: 'regionId'
+    })
+    expect(prismaMock.qrCode.deleteMany).not.toHaveBeenCalled()
+    expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
   it('is NOT_FOUND for the Region Page itself, which is not a region', async () => {
     prismaMock.campaignRegion.findUnique.mockResolvedValue(null)
 

@@ -31,8 +31,6 @@ export const LEFT_RAIL_WIDTH = 56
 interface LeftRailProps {
   view: CanvasView
   onViewChange: (view: CanvasView) => void
-  /** Publish and Unpublish are campaign Manage: a manager of the team only. */
-  isManager: boolean
 }
 
 interface PanelToggleProps {
@@ -102,11 +100,7 @@ function PanelToggle({
  * Undo and redo run the one Command history; the view toggle is never a
  * Command.
  */
-export function LeftRail({
-  view,
-  onViewChange,
-  isManager
-}: LeftRailProps): ReactElement {
+export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { run } = useTranslationRun()
 

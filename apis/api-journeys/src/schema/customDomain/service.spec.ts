@@ -68,7 +68,7 @@ describe('customDomain service', () => {
       expect(mockMutate).not.toHaveBeenCalled()
     })
 
-    it("selects the QR codes of the team and those pointing at the team's journeys", async () => {
+    it("selects the QR codes of the team and those pointing at the team's live journeys", async () => {
       prismaMock.journey.findMany.mockResolvedValue([
         { id: 'journeyId' },
         { id: 'otherJourneyId' }
@@ -78,7 +78,7 @@ describe('customDomain service', () => {
       await updateTeamShortLinks('teamId')
 
       expect(prismaMock.journey.findMany).toHaveBeenCalledWith({
-        where: { teamId: 'teamId' },
+        where: { teamId: 'teamId', deletedAt: null },
         select: { id: true }
       })
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({

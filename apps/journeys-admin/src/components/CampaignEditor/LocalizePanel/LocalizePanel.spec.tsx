@@ -209,7 +209,7 @@ describe('LocalizePanel machine translation run', () => {
     const [tab, setTab] = useState<LocalizeTab>('translations')
     return (
       <StaticEditor link={link}>
-        <LeftRail view="desktop" onViewChange={() => undefined} isManager />
+        <LeftRail view="desktop" onViewChange={() => undefined} />
         <button onClick={() => setOpen(!open)}>Toggle panel</button>
         {open && (
           <LocalizePanel

@@ -98,6 +98,7 @@ export interface CampaignRegionLanguageSnapshotRefresh {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `journeyId`): no journey is linked.
    * - BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.
+   * - CONFLICT (field: `journeyId`): a concurrent call linked another journey; retry.
    */
   campaignRegionLanguageSnapshotRefresh: CampaignRegionLanguageSnapshotRefresh_campaignRegionLanguageSnapshotRefresh;
 }
