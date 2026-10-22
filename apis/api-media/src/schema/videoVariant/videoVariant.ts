@@ -628,19 +628,20 @@ builder.mutationFields((t) => ({
       // evaluated against this same call's own hls/share/muxVideoId, not just
       // the pre-update row, so publishing and relinking usable media in one
       // request publishes immediately instead of waiting on reconciliation.
+      const awaitingMux = videoVariantAwaitsMux({
+        hls: input.hls ?? currentVariant.hls,
+        share: input.share ?? currentVariant.share,
+        muxVideo:
+          input.muxVideoId != null
+            ? await prisma.muxVideo.findUnique({
+                where: { id: input.muxVideoId },
+                select: { readyToStream: true }
+              })
+            : currentVariant.muxVideo
+      })
       const nextPublished =
         input.published === true
-          ? videoVariantAwaitsMux({
-              hls: input.hls ?? currentVariant.hls,
-              share: input.share ?? currentVariant.share,
-              muxVideo:
-                input.muxVideoId != null
-                  ? await prisma.muxVideo.findUnique({
-                      where: { id: input.muxVideoId },
-                      select: { readyToStream: true }
-                    })
-                  : currentVariant.muxVideo
-            })
+          ? awaitingMux
             ? undefined
             : true
           : input.published === false
@@ -725,7 +726,10 @@ builder.mutationFields((t) => ({
             languageId: nextLanguageId,
             edition: input.edition ?? currentVariant.edition,
             published: isNowPublished,
-            reason
+            reason,
+            // Only an explicit toggle knows the Variant's media state here; a
+            // bare language change keeps whatever the row already records.
+            awaitingMux: input.published !== undefined ? awaitingMux : undefined
           })
         } catch (error) {
           console.error('Video variant reconciliation request error:', error)
