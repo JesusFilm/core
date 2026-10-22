@@ -18,21 +18,32 @@ import {
   CampaignEditorProvider,
   useCampaignEditor
 } from './CampaignEditorProvider'
-import { Canvas } from './Canvas'
+import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
 import { Hotkeys } from './Hotkeys'
-import { Inspector } from './Inspector'
-import { LeftPanel } from './LeftPanel'
-import { LeftRail } from './LeftRail'
+import { INSPECTOR_WIDTH, Inspector } from './Inspector'
+import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
+import { LEFT_RAIL_WIDTH, LeftRail } from './LeftRail'
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
 import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import { TranslationRunProvider } from './TranslationRunProvider'
 
-/** The editor shell is desktop only: narrower viewports get a message, no canvas. */
-export const EDITOR_MIN_WIDTH = 1280
+/**
+ * The editor shell is desktop only: narrower viewports get a message, no
+ * canvas. The minimum is the row at its narrowest: the Left Rail (56 px), the
+ * docked left panel (300 px), the Inspector (328 px) and the canvas gutters
+ * (2 × 32 px), plus the 600 px stage the Desktop frame needs at its 0.5 floor
+ * scale, so the frame never paints under the panel or the Inspector. 1348 px.
+ */
+export const EDITOR_MIN_WIDTH =
+  LEFT_RAIL_WIDTH +
+  LEFT_PANEL_WIDTH +
+  INSPECTOR_WIDTH +
+  2 * CANVAS_GUTTER +
+  MIN_STAGE_WIDTH
 
 interface CampaignEditorProps {
   campaign?: Campaign
@@ -156,7 +167,10 @@ export function CampaignEditor({
           {t('Open this on a larger screen')}
         </Typography>
         <Typography color="text.secondary">
-          {t('The campaign editor needs a window at least 1280 pixels wide.')}
+          {t(
+            'The campaign editor needs a window at least {{width}} pixels wide.',
+            { width: EDITOR_MIN_WIDTH }
+          )}
         </Typography>
       </Stack>
     )

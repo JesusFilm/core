@@ -65,15 +65,15 @@ _Avoid_: source, channel
 ### The Campaign Editor
 
 **Campaign Editor**:
-The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
+The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1348 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
-The Campaign Editor's rendering of the open Campaign Page at a fixed Desktop or Phone width, scaled to fit between the Left Rail and the Inspector. Desktop / Phone is a view choice, never a Command, and opening a panel never changes the scale.
+The Campaign Editor's rendering of the open Campaign Page at a fixed Desktop or Phone width, scaled to fit between the open left panel and the Inspector (never below half scale). Desktop / Phone is a view choice, never a Command, and switching panels never changes the scale.
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
 **Left Rail**:
-The narrow column of icon buttons beside the Campaign Canvas: back to the campaigns list, the panel toggles **Pages**, **Navigator**, **Add** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is open at a time, and it overlays the canvas at every width.
+The narrow column of icon buttons beside the Campaign Canvas: back to the campaigns list, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
 _Avoid_: toolbar, sidebar, top bar
 
 **Inspector**:

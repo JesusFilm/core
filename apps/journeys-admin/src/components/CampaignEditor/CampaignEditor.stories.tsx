@@ -8,7 +8,7 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 
-import { CampaignEditor } from './CampaignEditor'
+import { CampaignEditor, EDITOR_MIN_WIDTH } from './CampaignEditor'
 import { CURRENT_USER_ID, campaign } from './data'
 
 const currentUserMock = {
@@ -50,59 +50,31 @@ async function openPagesPanel(): Promise<void> {
   await userEvent.click(await screen.findByRole('button', { name: 'Pages' }))
 }
 
-/** At 1280 px, the minimum, an open panel overlays the canvas. */
-export const PanelOverlaysAt1280: Story = {
-  parameters: { chromatic: { viewports: [1280] } },
+/** At 1348 px, the minimum, the Pages panel is docked beside the rail and the Desktop frame fits between it and the Inspector at 0.5. */
+export const PanelDockedAtMinimum: Story = {
+  parameters: { chromatic: { viewports: [EDITOR_MIN_WIDTH] } },
   play: openPagesPanel
 }
 
-/** At 1440 px an open panel still overlays the canvas. */
-export const PanelOverlaysAt1440: Story = {
+/** At 1440 px the Pages panel is docked beside the rail, the frame at about 0.58. */
+export const PanelDockedAt1440: Story = {
   parameters: { chromatic: { viewports: [1440] } },
   play: openPagesPanel
 }
 
-async function openAddPanel(): Promise<void> {
-  await userEvent.click(await screen.findByRole('button', { name: 'Add' }))
+/** The Desktop frame is 1200 px wide inside, scaled to 0.5 to fit between the docked Add panel and the Inspector at the 1348 px minimum. */
+export const ScaledFrameAtMinimum: Story = {
+  parameters: { chromatic: { viewports: [EDITOR_MIN_WIDTH] } }
 }
 
-/** The whole shell at the 1280 px minimum, the Add panel overlaying the canvas. */
-export const Shell1280: Story = {
-  parameters: { chromatic: { viewports: [1280] } },
-  play: openAddPanel
-}
-
-/** The whole shell at 1440 px, the Add panel overlaying the canvas. */
-export const Shell1440: Story = {
-  parameters: { chromatic: { viewports: [1440] } },
-  play: openAddPanel
-}
-
-/** The whole shell at 1920 px, the Add panel overlaying the canvas. */
-export const Shell1920: Story = {
-  parameters: { chromatic: { viewports: [1920] } },
-  play: openAddPanel
-}
-
-/** The Desktop frame is 1200 px wide inside, scaled to about 0.69 to fit between the rail and the Inspector. */
-export const ScaledFrameAt1280: Story = {
-  parameters: { chromatic: { viewports: [1280] } }
-}
-
-/** About 0.83 with no panel open. */
+/** About 0.58 at 1440 px. */
 export const ScaledFrameAt1440: Story = {
   parameters: { chromatic: { viewports: [1440] } }
 }
 
-/** Wide enough for the frame at its real width, so it is not scaled. */
+/** About 0.98 at 1920 px. */
 export const ScaledFrameAt1920: Story = {
   parameters: { chromatic: { viewports: [1920] } }
-}
-
-/** An open panel overlays the canvas, so the frame keeps its scale (about 0.83 at 1440 px). */
-export const ScaledFrameWithPanelOpenAt1440: Story = {
-  parameters: { chromatic: { viewports: [1440] } },
-  play: openPagesPanel
 }
 
 export default CampaignEditorMeta

@@ -1741,6 +1741,7 @@
   "Use collection": "Use collection",
   "Use series": "Use series",
   "Editor only": "Editor only",
+  "The campaign editor needs a window at least {{width}} pixels wide.": "The campaign editor needs a window at least {{width}} pixels wide.",
   "Max {{max}} characters": "Max {{max}} characters",
   "Pick a team to see its campaigns": "Pick a team to see its campaigns"
 }

@@ -95,8 +95,9 @@ function PanelToggle({
 
 /**
  * The editor's left column of icon buttons: the back button to the campaigns
- * list, the Pages, Navigator, Add and Localize panel toggles (one panel open at a time), and
- * at the bottom undo, redo, the Desktop / Phone view and the Publish button.
+ * list, the Add, Pages, Navigator and Localize panel toggles (one panel always
+ * open, docked beside the rail), and at the bottom undo, redo, the Desktop /
+ * Phone view and the Publish button.
  * Undo and redo run the one Command history; the view toggle is never a
  * Command.
  */

@@ -20,7 +20,11 @@ import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
 import { GET_CURRENT_USER } from '../../libs/useCurrentUserLazyQuery'
 
 import { CampaignEditor, EDITOR_MIN_WIDTH } from './CampaignEditor'
+import { CANVAS_GUTTER } from './Canvas'
 import { CURRENT_USER_ID, campaign, memberCampaign } from './data'
+import { INSPECTOR_WIDTH } from './Inspector'
+import { LEFT_PANEL_WIDTH } from './LeftPanel'
+import { LEFT_RAIL_WIDTH } from './LeftRail'
 import { frameBody } from './testing'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
@@ -118,23 +122,72 @@ describe('CampaignEditor', () => {
     mockUseRouter.mockReturnValue({ push: vi.fn() } as unknown as NextRouter)
   })
 
-  it('shows the larger-screen message and no canvas below 1280 px', () => {
+  it('shows the larger-screen message and no canvas below 1348 px', () => {
     setViewport(EDITOR_MIN_WIDTH - 1)
 
     const { baseElement } = renderEditor()
 
-    expect(useMediaQuery).toHaveBeenCalledWith('(min-width:1280px)')
+    expect(useMediaQuery).toHaveBeenCalledWith('(min-width:1348px)')
     expect(screen.getByText('Open this on a larger screen')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'The campaign editor needs a window at least 1280 pixels wide.'
+        'The campaign editor needs a window at least 1348 pixels wide.'
       )
     ).toBeInTheDocument()
     expect(screen.queryByTestId('CampaignCanvas')).not.toBeInTheDocument()
     expect(baseElement.getElementsByTagName('iframe')).toHaveLength(0)
   })
 
-  it('renders fully at 1280 px: rail, canvas and Inspector, with no top bar, no bottom bar and no drawer', () => {
+  describe('at the minimum width', () => {
+    /** The stage the row leaves the canvas at the minimum, which jsdom never measures. */
+    const stageWidth =
+      EDITOR_MIN_WIDTH -
+      LEFT_RAIL_WIDTH -
+      LEFT_PANEL_WIDTH -
+      INSPECTOR_WIDTH -
+      2 * CANVAS_GUTTER
+
+    beforeEach(() => {
+      vi.stubGlobal(
+        'ResizeObserver',
+        class {
+          constructor(private readonly callback: ResizeObserverCallback) {}
+
+          observe(): void {
+            this.callback(
+              [
+                {
+                  contentRect: { width: stageWidth, height: 600 }
+                } as ResizeObserverEntry
+              ],
+              this
+            )
+          }
+
+          disconnect = vi.fn()
+          unobserve = vi.fn()
+        }
+      )
+    })
+
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('fits the Desktop frame between the docked panel and the Inspector', async () => {
+      const { baseElement } = renderEditor()
+      await frameBody(baseElement, 'CanvasSection-heroId')
+
+      expect(screen.getByTestId('CampaignLeftPanel')).toBeInTheDocument()
+      const scale = Number(
+        screen.getByTestId('CampaignCanvasScale').getAttribute('data-scale')
+      )
+      expect(stageWidth).toBe(600)
+      expect(scale * 1200).toBeLessThanOrEqual(stageWidth)
+    })
+  })
+
+  it('renders fully at the minimum width: rail, canvas and Inspector, with no top bar, no bottom bar and no drawer', () => {
     const { baseElement } = renderEditor()
 
     expect(screen.getByTestId('CampaignLeftRail')).toBeInTheDocument()

@@ -43,11 +43,20 @@ import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
 import { CanvasInsertPoint } from './CanvasInsertPoint'
-import { CanvasView, canvasScale, frameWidthOf } from './canvasScale'
+import {
+  CANVAS_GUTTER,
+  CanvasView,
+  canvasScale,
+  frameWidthOf
+} from './canvasScale'
 import { CanvasSection } from './CanvasSection'
 import { FrameTheme } from './FrameTheme'
 
-export { PHONE_FRAME_WIDTH } from './canvasScale'
+export {
+  CANVAS_GUTTER,
+  MIN_STAGE_WIDTH,
+  PHONE_FRAME_WIDTH
+} from './canvasScale'
 
 /** The frame's corner radius in theme radius units (`borderRadius: 3`). */
 const FRAME_RADIUS = 3
@@ -371,7 +380,7 @@ export function Canvas({
         justifyContent: 'center',
         alignItems: 'stretch',
         bgcolor: 'background.default',
-        px: 4,
+        px: `${CANVAS_GUTTER}px`,
         py: 3
       }}
     >

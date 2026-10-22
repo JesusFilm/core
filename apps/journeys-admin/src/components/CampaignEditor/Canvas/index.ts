@@ -1,5 +1,7 @@
 export {
+  CANVAS_GUTTER,
   Canvas,
+  MIN_STAGE_WIDTH,
   PHONE_FRAME_WIDTH,
   dropEdgeFor,
   dropParentOrder
