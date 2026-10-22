@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql'
 import { CampaignAction, Prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { campaignBlockWithAcl } from '../../../../test/campaignBlockFactory'
+import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
   CampaignBlockRow,
   campaignFactory

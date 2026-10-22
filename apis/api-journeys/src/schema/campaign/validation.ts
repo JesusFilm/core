@@ -3,10 +3,10 @@ import slugify from 'slugify'
 import { validate as isUuid } from 'uuid'
 import type { ZodType } from 'zod'
 
+import { VIEWER_RESERVED_SEGMENTS } from '@core/journeys/ui/Campaign/libs/viewerReservedSegments'
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { FONT_FAMILIES } from '@core/shared/ui/fontFamilies'
 
-import { VIEWER_RESERVED_SEGMENTS } from '../journey/reservedJourneySlugs/reservedJourneySlugs'
 import { assertHttpsUrl } from '../templateGalleryPage/assertHttpsUrl'
 import {
   RESERVED_SLUGS,

@@ -4,7 +4,7 @@ import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
-import { authClient, mockUser } from '../../../test/campaignBlockSpec'
+import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import {

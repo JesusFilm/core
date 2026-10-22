@@ -3,7 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 import {
   authClient,
   setupCampaignBlockSpec
-} from '../../../../test/campaignBlockSpec'
+} from '../../../../test/campaignBlockSetup'
 import {
   CampaignFixture,
   campaignFactory

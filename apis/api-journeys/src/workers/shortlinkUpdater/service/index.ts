@@ -2,6 +2,5 @@ export { service } from './service'
 export {
   rewriteQrCodeShortLinks,
   updateAllShortlinks,
-  updateJourneyShortlink,
-  updateShortLink
+  updateJourneyShortLink
 } from './service'

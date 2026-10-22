@@ -5,11 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
-import {
-  campaignLanguageTags,
-  campaignPagePaths,
-  enqueueCampaignRevalidation
-} from '../campaign/revalidateCampaign'
+import { enqueueCampaignRootRevalidation } from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -47,19 +43,15 @@ builder.mutationField('customDomainDelete', (t) =>
 
       await prisma.$transaction(async (tx) => {
         await tx.customDomain.delete({ where: { id } })
-        await deleteVercelDomain(customDomain)
+        await deleteVercelDomain(customDomain.name)
       })
 
       // The domain form of the Campaign Root it released stops resolving, and
       // the root-domain form loses its canonical link to the domain.
-      const { campaign } = customDomain
-      if (campaign?.status === 'published')
-        await enqueueCampaignRevalidation(
-          campaignPagePaths({
-            ...campaign,
-            hostnames: [customDomain.name],
-            languageTags: await campaignLanguageTags(campaign.id)
-          })
+      if (customDomain.campaign != null)
+        await enqueueCampaignRootRevalidation(
+          [customDomain.campaign],
+          customDomain.name
         )
 
       try {

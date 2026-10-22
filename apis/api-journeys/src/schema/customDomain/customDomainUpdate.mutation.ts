@@ -5,11 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
-import {
-  campaignLanguageTags,
-  campaignPagePaths,
-  enqueueCampaignRevalidation
-} from '../campaign/revalidateCampaign'
+import { enqueueCampaignRootRevalidation } from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -19,7 +15,7 @@ import { updateTeamShortLinks } from './service'
 /**
  * A Campaign Root change moves the domain form of the old and new campaign
  * and flips the canonical link on their root-domain form, so every page of
- * both is revalidated in both forms.
+ * each published one is revalidated in both forms.
  */
 async function revalidateCampaignRootChange(
   campaignIds: Array<string | null>,
@@ -31,16 +27,7 @@ async function revalidateCampaignRootChange(
     where: { id: { in: ids } },
     include: { regions: true }
   })
-  const paths = await Promise.all(
-    campaigns.map(async (campaign) =>
-      campaignPagePaths({
-        ...campaign,
-        hostnames: [hostname],
-        languageTags: await campaignLanguageTags(campaign.id)
-      })
-    )
-  )
-  await enqueueCampaignRevalidation(paths.flat())
+  await enqueueCampaignRootRevalidation(campaigns, hostname)
 }
 
 builder.mutationField('customDomainUpdate', (t) =>

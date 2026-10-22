@@ -2,12 +2,11 @@ import { Queue } from 'bullmq'
 
 import { deleteShortLink } from '../../schema/qrCode/qrCode.service'
 import { connection } from '../lib/connection'
+import { ONE_DAY } from '../lib/jobAge'
 import { logger } from '../lib/logger'
 
 import { jobName, queueName } from './config'
 import type { ShortLinkDeleteJob } from './service'
-
-const ONE_DAY = 86_400
 
 export const queue = new Queue<ShortLinkDeleteJob>(queueName, { connection })
 

@@ -62,8 +62,11 @@ builder.mutationField('customDomainCreate', (t) =>
               data
             })
           })
-          .catch((err: any) => {
-            if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
+          .catch((err: unknown) => {
+            if (
+              err instanceof Prisma.PrismaClientKnownRequestError &&
+              err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
+            ) {
               throw new GraphQLError('custom domain already exists', {
                 extensions: { code: 'BAD_USER_INPUT' }
               })

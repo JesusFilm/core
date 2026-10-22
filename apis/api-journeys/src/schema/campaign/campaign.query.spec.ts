@@ -3,7 +3,7 @@ import { vi } from 'vitest'
 import {
   authClient,
   setupCampaignBlockSpec
-} from '../../../test/campaignBlockSpec'
+} from '../../../test/campaignBlockSetup'
 import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'

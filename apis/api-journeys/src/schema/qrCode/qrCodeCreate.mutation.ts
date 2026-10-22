@@ -36,12 +36,7 @@ builder.mutationField('qrCodeCreate', (t) =>
             extensions: { code: 'NOT_FOUND' }
           })
 
-        if (
-          !canManageQrCode(
-            { journey, team: journey.team, campaignRegionLanguages: [] },
-            context.user
-          )
-        )
+        if (!canManageQrCode({ journey, team: journey.team }, context.user))
           throw new GraphQLError('User is not allowed to create the QrCode', {
             extensions: { code: 'FORBIDDEN' }
           })

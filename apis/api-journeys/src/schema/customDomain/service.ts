@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { CustomDomain, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { rewriteQrCodeShortLinks } from '../../workers/shortlinkUpdater/service'
 
@@ -125,9 +125,7 @@ export async function createVercelDomain(
   return data
 }
 
-export async function deleteVercelDomain({
-  name
-}: CustomDomain): Promise<boolean> {
+export async function deleteVercelDomain(name: string): Promise<boolean> {
   if (process.env.VERCEL_JOURNEYS_PROJECT_ID == null) return true
 
   const response = await fetch(
@@ -158,7 +156,8 @@ export async function deleteVercelDomain({
  * so that is the QR codes the team owns plus the ones another team points at
  * the team's journeys. Call it once the custom domain row is committed, so
  * `getTo` sees the new state and no gateway call holds a transaction open.
- * A row that fails is logged and left for the next sweep; it never throws.
+ * A row that fails is logged and left for the next sweep, but it can still
+ * throw on its own reads, so callers catch and log it.
  */
 export async function updateTeamShortLinks(teamId: string): Promise<void> {
   const teamJourneys = await prisma.journey.findMany({

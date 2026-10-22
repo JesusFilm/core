@@ -1,10 +1,10 @@
 import { GraphQLError } from 'graphql'
 
-import { campaignBlockWithAcl } from '../../../../../test/campaignBlockFactory'
+import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
   authClient,
   setupCampaignBlockSpec
-} from '../../../../../test/campaignBlockSpec'
+} from '../../../../../test/campaignBlockSetup'
 import {
   CampaignBlockRow,
   CampaignFixture,

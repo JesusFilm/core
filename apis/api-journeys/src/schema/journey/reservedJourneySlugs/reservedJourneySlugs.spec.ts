@@ -4,10 +4,9 @@ import { join } from 'path'
 
 import slugify from 'slugify'
 
-import {
-  VIEWER_RESERVED_SEGMENTS,
-  isReservedJourneySlug
-} from './reservedJourneySlugs'
+import { VIEWER_RESERVED_SEGMENTS } from '@core/journeys/ui/Campaign/libs/viewerReservedSegments'
+
+import { isReservedJourneySlug } from './reservedJourneySlugs'
 
 const VIEWER_ROOT = join(__dirname, '../../../../../../apps/journeys')
 

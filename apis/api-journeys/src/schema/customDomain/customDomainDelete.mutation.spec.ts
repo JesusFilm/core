@@ -127,12 +127,7 @@ describe('customDomainDelete', () => {
     expect(prismaMock.customDomain.delete).toHaveBeenCalledWith({
       where: { id: 'customDomainId' }
     })
-    expect(deleteVercelDomain).toHaveBeenCalledWith(
-      expect.objectContaining({
-        id: 'customDomainId',
-        name: 'example.com'
-      })
-    )
+    expect(deleteVercelDomain).toHaveBeenCalledWith('example.com')
   })
 
   it('should change no campaign row when a domain with a Campaign Root is deleted', async () => {

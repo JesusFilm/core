@@ -4,7 +4,7 @@ import { GraphQLError } from 'graphql'
 import {
   authClient,
   setupCampaignBlockSpec
-} from '../../../../../test/campaignBlockSpec'
+} from '../../../../../test/campaignBlockSetup'
 import {
   CampaignBlockRow,
   CampaignFixture,

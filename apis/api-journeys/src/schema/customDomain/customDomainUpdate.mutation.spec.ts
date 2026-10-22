@@ -432,15 +432,16 @@ describe('customDomainUpdate', () => {
       }
     `)
 
-    const campaign = campaignFactory({ role: 'manager' })
+    const campaignFixture = campaignFactory({ role: 'manager' })
       .withRegion('EUR')
       .withRegion('AFR')
-      .build()
+    const campaign = campaignFixture.build()
+    const publishedCampaign = campaignFixture.published().build()
 
     it('connects the Campaign Root and queues one job per landing and region path in both forms', async () => {
       prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
       prismaMock.campaign.findFirst.mockResolvedValue(campaign)
-      prismaMock.campaign.findMany.mockResolvedValue([campaign])
+      prismaMock.campaign.findMany.mockResolvedValue([publishedCampaign])
       prismaMock.customDomain.update.mockResolvedValue({
         ...mockCustomDomain,
         campaignId: 'campaignId'
@@ -532,7 +533,7 @@ describe('customDomainUpdate', () => {
         ...mockCustomDomain,
         campaignId: 'campaignId'
       })
-      prismaMock.campaign.findMany.mockResolvedValue([campaign])
+      prismaMock.campaign.findMany.mockResolvedValue([publishedCampaign])
       prismaMock.customDomain.update.mockResolvedValue({
         ...mockCustomDomain,
         campaignId: null
@@ -562,7 +563,9 @@ describe('customDomainUpdate', () => {
     })
 
     it('revalidates both campaigns when the domain is repointed', async () => {
-      const other = campaignFactory({ role: 'manager', slug: 'easter' }).build()
+      const other = campaignFactory({ role: 'manager', slug: 'easter' })
+        .published()
+        .build()
       prismaMock.customDomain.findUnique.mockResolvedValue({
         ...mockCustomDomain,
         campaignId: 'campaignId'
@@ -571,7 +574,7 @@ describe('customDomainUpdate', () => {
         ...other,
         id: 'otherCampaignId'
       })
-      prismaMock.campaign.findMany.mockResolvedValue([campaign, other])
+      prismaMock.campaign.findMany.mockResolvedValue([publishedCampaign, other])
       prismaMock.customDomain.update.mockResolvedValue({
         ...mockCustomDomain,
         campaignId: 'otherCampaignId'
@@ -616,6 +619,24 @@ describe('customDomainUpdate', () => {
         }
       })
 
+      expect(mockQueueAdd).not.toHaveBeenCalled()
+    })
+
+    it('queues nothing when the Campaign Root is a draft', async () => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
+      prismaMock.campaign.findFirst.mockResolvedValue(campaign)
+      prismaMock.campaign.findMany.mockResolvedValue([campaign])
+      prismaMock.customDomain.update.mockResolvedValue({
+        ...mockCustomDomain,
+        campaignId: 'campaignId'
+      })
+
+      await authClient({
+        document: CAMPAIGN_ROOT_MUTATION,
+        variables: { id: 'customDomainId', input: { campaignId: 'campaignId' } }
+      })
+
+      expect(prismaMock.customDomain.update).toHaveBeenCalled()
       expect(mockQueueAdd).not.toHaveBeenCalled()
     })
 

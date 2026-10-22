@@ -1,44 +1,14 @@
 import { vi } from 'vitest'
 
 import { prismaMock } from '../../../test/prismaMock'
+import {
+  journeyRow,
+  mockMutate,
+  mockQuery,
+  qrCodeRow
+} from '../../../test/qrCodeFixtures'
 
 import { updateTeamShortLinks } from './service'
-
-const mockQuery = vi.fn()
-const mockMutate = vi.fn()
-vi.mock('@apollo/client', () => ({
-  ApolloClient: vi.fn(function () {
-    return { query: mockQuery, mutate: mockMutate }
-  }),
-  InMemoryCache: vi.fn(),
-  HttpLink: vi.fn()
-}))
-
-function qrCodeRow(overrides: Record<string, unknown> = {}): never {
-  return {
-    id: 'qrCodeId',
-    teamId: 'teamId',
-    journeyId: 'journeyId',
-    toJourneyId: 'journeyId',
-    toBlockId: null,
-    shortLinkId: 'shortLinkId',
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
-    ...overrides
-  } as never
-}
-
-function journeyRow(
-  customDomains: Array<{ name: string; routeAllTeamJourneys: boolean }> = []
-): never {
-  return {
-    id: 'journeyId',
-    slug: 'my-journey',
-    teamId: 'teamId',
-    team: { id: 'teamId', customDomains },
-    journeyCollectionJourneys: []
-  } as never
-}
 
 describe('customDomain service', () => {
   describe('updateTeamShortLinks', () => {
@@ -121,7 +91,9 @@ describe('customDomain service', () => {
     it('rewrites the short link of a journey QR code to the team domain', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
-        journeyRow([{ name: 'christmas.org', routeAllTeamJourneys: true }])
+        journeyRow({
+          customDomains: [{ name: 'christmas.org', routeAllTeamJourneys: true }]
+        })
       )
 
       await updateTeamShortLinks('teamId')
@@ -143,7 +115,9 @@ describe('customDomain service', () => {
         qrCodeRow({ campaignRegionLanguages: [{ id: 'regionLanguageId' }] })
       ])
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
-        journeyRow([{ name: 'christmas.org', routeAllTeamJourneys: true }])
+        journeyRow({
+          customDomains: [{ name: 'christmas.org', routeAllTeamJourneys: true }]
+        })
       )
 
       await updateTeamShortLinks('teamId')
