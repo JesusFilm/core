@@ -38,6 +38,22 @@ describe('isPublicHttpsUrl', () => {
 describe('SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS', () => {
   afterEach(() => {
     delete process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS
+    vi.unstubAllEnvs()
+  })
+
+  it('is off when unset', () => {
+    expect(isPublicWebUrl('http://localhost:4100/journey')).toBe(false)
+    expect(isPublicWebUrl('http://169.254.169.254/latest/meta-data/')).toBe(
+      false
+    )
+  })
+
+  it('never arms under NODE_ENV=production: the check throws instead', () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS = 'true'
+    expect(() =>
+      isPublicWebUrl('http://169.254.169.254/latest/meta-data/')
+    ).toThrow(/SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS/)
   })
 
   it('lets a local-dev process point links at localhost, and nothing else changes', () => {

@@ -1,10 +1,14 @@
 import { isIP } from 'node:net'
 
+import { readShortLinksEnv } from './env'
+
 /**
  * A redirect destination (or fallback) must point at the public internet:
  * https, a real hostname, and never a loopback, private, link-local or
  * metadata address. The health check fetches these URLs from inside the VPC,
- * so without this an editor could probe internal services through it.
+ * so without this an editor could probe internal services through it. The
+ * one exception is `SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true`, local
+ * development only.
  */
 export const PUBLIC_HTTPS_URL_MESSAGE =
   'must be a public https URL (no IP addresses, localhost or internal hosts)'
@@ -71,10 +75,11 @@ function bareHostname(url: URL): string {
  * Local development runs the journeys app on localhost, which the rule below
  * would refuse as a destination, so a QR code could never be created there.
  * The opt-in is read on each call so a test can flip it; it must never be
- * set in a deployed environment, where the health check reaches the VPC.
+ * set in a deployed environment, where the health check reaches the VPC, so
+ * `readShortLinksEnv` throws when it is set under `NODE_ENV=production`.
  */
 function allowsLocalDestinations(): boolean {
-  return process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS === 'true'
+  return readShortLinksEnv().SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS === 'true'
 }
 
 export function isPublicHostname(hostname: string): boolean {
