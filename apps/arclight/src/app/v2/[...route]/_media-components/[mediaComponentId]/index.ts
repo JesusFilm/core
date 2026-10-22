@@ -272,11 +272,13 @@ mediaComponent.openapi(route, async (c) => {
         return { data: descriptorsonlyResponse, statusCode: 200 }
       }
 
+      const componentType = getComponentType(video.variant?.hls)
+
       const responseData = {
         mediaComponentId,
-        componentType: getComponentType(video.variant?.hls),
+        componentType,
         subType: video.label,
-        contentType: 'video',
+        contentType: componentType === 'content' ? 'video' : 'none',
         imageUrls: {
           thumbnail:
             video.images.find((image) => image.thumbnail != null)?.thumbnail ??
