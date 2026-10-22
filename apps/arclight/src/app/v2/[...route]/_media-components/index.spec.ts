@@ -164,4 +164,34 @@ describe('GET /media-components', () => {
       })
     )
   })
+
+  it('reports a generated empty parent Variant as a container, not 0-length content', async () => {
+    // Generated parent Variants are stored with hls: '' rather than null.
+    mediaPrismaMock.video.findMany.mockResolvedValue([
+      {
+        ...jesusVideo(undefined),
+        id: '16_Influencers',
+        label: 'series',
+        variants: [
+          {
+            languageId: '529',
+            published: true,
+            hls: '',
+            lengthInMilliseconds: 0,
+            downloadable: false,
+            downloads: []
+          }
+        ]
+      }
+    ] as never)
+
+    const res = await app.request('/media-components?ids=16_Influencers')
+
+    const [influencers] = (await res.json())._embedded.mediaComponents
+    expect(influencers).toMatchObject({
+      mediaComponentId: '16_Influencers',
+      componentType: 'container',
+      contentType: 'none'
+    })
+  })
 })

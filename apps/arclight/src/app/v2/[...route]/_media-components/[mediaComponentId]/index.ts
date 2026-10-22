@@ -8,6 +8,7 @@ import { generateCacheKey } from '../../../../../lib/cache'
 import { getWithStaleCacheForRequest } from '../../../../../lib/cacheBypass'
 import { getLanguageIdsFromTags } from '../../../../../lib/getLanguageIdsFromTags'
 import { getDefaultPlatformForApiKey } from '../../../../../lib/getPlatformFromApiKey'
+import { getComponentType } from '../../../../../lib/mediaComponentType'
 import { mediaComponentSchema } from '../../mediaComponent.schema'
 
 import { mediaComponentLanguages } from './languages'
@@ -273,7 +274,7 @@ mediaComponent.openapi(route, async (c) => {
 
       const responseData = {
         mediaComponentId,
-        componentType: video.variant?.hls != null ? 'content' : 'container',
+        componentType: getComponentType(video.variant?.hls),
         subType: video.label,
         contentType: 'video',
         imageUrls: {

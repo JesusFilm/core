@@ -11,6 +11,7 @@ import {
   getPreferredItems
 } from '../../../../lib/getLanguageIdsFromTags'
 import { getImageUrl } from '../../../../lib/imageHelper'
+import { getComponentType } from '../../../../lib/mediaComponentType'
 
 import { mediaComponent } from './[mediaComponentId]'
 
@@ -361,6 +362,7 @@ mediaComponents.openapi(route, async (c) => {
       )
 
       const variant = video.variants[0]
+      const componentType = getComponentType(variant?.hls)
       const isDownloadable =
         video.label === 'collection' || video.label === 'series'
           ? false
@@ -378,9 +380,9 @@ mediaComponents.openapi(route, async (c) => {
 
       return {
         mediaComponentId: video.id,
-        componentType: variant?.hls != null ? 'content' : 'container',
+        componentType,
         subType: video.label,
-        contentType: variant?.hls != null ? 'video' : 'none',
+        contentType: componentType === 'content' ? 'video' : 'none',
         imageUrls: {
           thumbnail: getImageUrl(hdImage?.id, 'thumbnail'),
           videoStill: getImageUrl(hdImage?.id, 'videoStill'),
