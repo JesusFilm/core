@@ -2236,7 +2236,12 @@ describe('videoVariant', () => {
               reason: 'generated-parent',
               status: 'processing',
               published: true,
-              videoVariantId: 'languageId_collectionId'
+              videoVariantId: 'languageId_collectionId',
+              // Nothing is synced yet, so the first sweep counts attempt 1.
+              processingStages: expect.objectContaining({
+                parentSync: { state: 'pending', attempts: 0 },
+                algoliaVideo: { state: 'pending', attempts: 0 }
+              })
             })
           })
           expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(

@@ -12,6 +12,7 @@ import {
 
 import type { ReconciliationRecord } from './reconcileVideoVariantReconciliation'
 import { reconcileVideoVariantReconciliation } from './reconcileVideoVariantReconciliation'
+import { unsyncedGeneratedParentStages } from './reconciliationStages'
 
 vi.mock('../../lib/algolia/algoliaVideoUpdate', () => ({
   updateVideoInAlgolia: vi.fn()
@@ -726,6 +727,47 @@ describe('reconcileVideoVariantReconciliation', () => {
       })
     })
     expect(result).toEqual({ publicationReady: true, status: 'complete' })
+  })
+
+  it('counts the first sweep of a parent Variant created on publish as attempt 1', async () => {
+    const reconciliation: ReconciliationRecord = {
+      reason: 'generated-parent',
+      videoId: 'series-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: '20770_series-1',
+      processingStages: unsyncedGeneratedParentStages(),
+      createdAt: new Date(),
+      videoVariant: {
+        id: '20770_series-1',
+        videoId: 'series-1',
+        languageId: '20770',
+        slug: 'series-1/20770',
+        published: true,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: null
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+
+    await reconcileVideoVariantReconciliation('status_20770_series-1')
+
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'status_20770_series-1', createdAt: expect.any(Date) },
+      data: expect.objectContaining({
+        status: 'complete',
+        processingStages: expect.objectContaining({
+          parentSync: expect.objectContaining({ attempts: 1 }),
+          algoliaVideo: expect.objectContaining({ attempts: 1 })
+        })
+      })
+    })
   })
 
   describe('when parent-language synchronization fails', () => {

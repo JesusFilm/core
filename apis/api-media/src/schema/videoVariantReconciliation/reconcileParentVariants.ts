@@ -16,7 +16,8 @@ import {
   completedStage,
   failedStage,
   generatedParentStages,
-  syncVideoRecordStage
+  syncVideoRecordStage,
+  unsyncedGeneratedParentStages
 } from './reconciliationStages'
 import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
@@ -141,7 +142,8 @@ async function reconcileParentVariant({
         parentVideo,
         variant,
         published: false,
-        createdAt: parentCreatedAt
+        createdAt: parentCreatedAt,
+        processingStages: generatedParentStages()
       })
     }
     await syncParentLanguage(parentVideo.id, variant.languageId)
@@ -257,7 +259,8 @@ export async function publishParentVariants(
         parentVideo,
         variant,
         published: true,
-        createdAt: new Date()
+        createdAt: new Date(),
+        processingStages: unsyncedGeneratedParentStages()
       })
     }
     await syncParentLanguage(parentVideo.id, variant.languageId)
@@ -268,12 +271,14 @@ async function createGeneratedParentVariant({
   parentVideo,
   variant,
   published,
-  createdAt
+  createdAt,
+  processingStages
 }: {
   parentVideo: { id: string; slug: string | null }
   variant: ChildVariant
   published: boolean
   createdAt: Date
+  processingStages: ProcessingStages
 }): Promise<void> {
   const parentVariantId = `${variant.languageId}_${parentVideo.id}`
   const languageSlug =
@@ -304,7 +309,7 @@ async function createGeneratedParentVariant({
         languageId: variant.languageId,
         published: true,
         videoVariantId: parentVariantId,
-        processingStages: generatedParentStages(),
+        processingStages,
         createdAt
       }
     })
