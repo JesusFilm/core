@@ -101,11 +101,16 @@ export async function requestVideoVariantReconciliation(
       existingReconciliation.reason as VideoVariantReconciliationReason
     ) &&
     isMuxUnresolved(existingReconciliation.processingStages)
-  const reason: VideoVariantReconciliationReason = !freshUploadPending
-    ? intent.reason
-    : intent.reason === 'video-variant-publication-change'
-      ? 'fresh-upload-publication-change'
-      : (existingReconciliation.reason as VideoVariantReconciliationReason)
+  // A process-video-upload callback is itself a fresh-upload reason, and it
+  // only writes when no explicit toggle is pending (see its guard below), so
+  // it records its own reason instead of inheriting a settled toggle's
+  // fresh-upload-publication-change marker.
+  const reason: VideoVariantReconciliationReason =
+    !freshUploadPending || intent.reason === 'process-video-upload'
+      ? intent.reason
+      : intent.reason === 'video-variant-publication-change'
+        ? 'fresh-upload-publication-change'
+        : (existingReconciliation.reason as VideoVariantReconciliationReason)
 
   // `published` is deliberately not in here: whether this call may set it
   // depends on the reason and on the row's live state (see below).

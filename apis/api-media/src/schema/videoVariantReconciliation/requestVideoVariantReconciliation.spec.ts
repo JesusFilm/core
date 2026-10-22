@@ -372,22 +372,56 @@ describe('requestVideoVariantReconciliation', () => {
         reason: 'video-variant-language-change'
       })
 
+      // Check each key on its own: `expect.not.objectContaining` with both
+      // keys passes as soon as either one is missing.
+      const protectedCall =
+        prismaMock.videoVariantReconciliation.updateMany.mock.calls.find(
+          ([args]) => args.where != null && !('NOT' in args.where)
+        )
+      expect(protectedCall?.[0].where).toEqual({
+        id: 'reconciliation-1',
+        reason: {
+          in: [
+            'video-variant-publication-change',
+            'fresh-upload-publication-change'
+          ]
+        },
+        status: { in: ['processing', 'degraded'] }
+      })
+      expect(protectedCall?.[0].data).not.toHaveProperty('reason')
+      expect(protectedCall?.[0].data).not.toHaveProperty('published')
+    })
+
+    it('records an upload callback as process-video-upload after a fresh-upload toggle times out', async () => {
+      // The toggle failed with Mux, so it is no longer pending and the
+      // re-upload's callback is allowed to write. Keeping the toggle's
+      // reason would mark the row as a pending explicit toggle no editor
+      // made, and block the next upload callback while it processes.
+      prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+        id: 'reconciliation-1',
+        reason: 'fresh-upload-publication-change',
+        processingStages: { mux: { state: 'failed', attempts: 1 } }
+      } as never)
+      prismaMock.videoVariantReconciliation.updateMany.mockResolvedValue({
+        count: 1
+      })
+
+      await requestVideoVariantReconciliation({
+        videoVariantId: 'variant-1',
+        videoId: 'video-1',
+        languageId: '20770',
+        edition: 'base',
+        published: true,
+        reason: 'process-video-upload'
+      })
+
       expect(
         prismaMock.videoVariantReconciliation.updateMany
       ).toHaveBeenCalledWith({
-        where: {
-          id: 'reconciliation-1',
-          reason: {
-            in: [
-              'video-variant-publication-change',
-              'fresh-upload-publication-change'
-            ]
-          },
-          status: { in: ['processing', 'degraded'] }
-        },
-        data: expect.not.objectContaining({
-          reason: expect.anything(),
-          published: expect.anything()
+        where: { id: 'reconciliation-1', ...notPendingExplicitPublication },
+        data: expect.objectContaining({
+          reason: 'process-video-upload',
+          published: true
         })
       })
     })
