@@ -46,11 +46,9 @@ export interface CampaignStats {
   regions: CampaignRegionStats[]
 }
 
-/** The part of a Campaign the stats read: its dates and its region → language → journey structure. */
+/** The part of a Campaign the stats read: its region → language → journey structure. */
 export interface CampaignStatsSubject {
   id: string
-  publishedAt: Date | null
-  createdAt: Date
   regions: Array<{
     id: string
     languages: Array<{ journeyId: string | null }>
@@ -131,8 +129,8 @@ async function settleWithConcurrency<Item, Result>(
 
 /**
  * One `visit:country` breakdown (visitors only) per distinct linked journey, on
- * that journey's own site, from the Campaign's first publish (creation for a
- * draft) to now, a few journeys at a time. A journey whose request fails keeps
+ * that journey's own site, from `CAMPAIGN_STATS_FROM` to now (the same window
+ * for every campaign, draft or published), a few journeys at a time. A journey whose request fails keeps
  * its rows from `previous` (the last sweep over the same window), else counts
  * as no visitors, so one bad site cannot sink the rest; `partial` reports that
  * some failed. Throws only when every journey failed.
@@ -342,13 +340,18 @@ function sweepMatchesCampaign(
  * cached, so requests in the next few minutes fail fast instead of sweeping
  * again. A sweep that kept partial results is served, and the journeys that
  * failed are retried after the backoff. A failed refresh is not retried
- * for a few minutes; the first request after that retries it.
+ * for a few minutes; the first request after that retries it. When Redis
+ * cannot be read the request fails fast without sweeping, so a cache outage
+ * never fans out to Plausible.
  */
 export async function getCampaignStats(
   campaignWithAllJourneys: CampaignStatsSubject
 ): Promise<CampaignStats> {
   const campaign = await withExistingJourneys(campaignWithAllJourneys)
-  const cached = await statsCache.get(campaign.id)
+  const cached = await statsCache.get(campaign.id).catch(() => {
+    // statsCache has already logged the read failure.
+    throw new Error(UNAVAILABLE_MESSAGE)
+  })
   if (cached?.sweep == null) {
     if (cached?.backingOff === true) throw new Error(UNAVAILABLE_MESSAGE)
     return sumCampaignStats(

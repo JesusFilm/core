@@ -15,6 +15,7 @@ import {
   UNIQUE_VIOLATION_SHAPES,
   uniqueViolation
 } from '../../../test/uniqueViolation'
+import { env } from '../../env'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { fetchLanguage } from './gatewayClient'
@@ -591,7 +592,7 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('seeds the NextSteps wordmark as the header logo, owned by the header and named by its logoBlockId', async () => {
+    it("seeds this deployment's admin NextSteps wordmark as the header logo, owned by the header and named by its logoBlockId", async () => {
       await create()
       const header = createdBlock('CampaignHeaderBlock')
       const logo = createdBlock('CampaignImageBlock')
@@ -603,7 +604,7 @@ describe('campaignCreate', () => {
         regionId: null,
         parentBlockId: header.id,
         parentOrder: null,
-        src: 'https://admin.nextstep.is/logo.svg',
+        src: `${env.JOURNEYS_ADMIN_URL}/logo.svg`,
         alt: 'NextSteps',
         width: 221,
         height: 41

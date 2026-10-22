@@ -70,16 +70,38 @@ function key(campaignId: string): string {
   return `campaign-stats:${campaignId}`
 }
 
+// While Redis is down every read fails; one line per campaign per minute shows
+// the outage without a line per page view.
+const READ_FAILURE_LOG_INTERVAL_MS = 60 * 1000
+const readFailureLoggedAt = new Map<string, number>()
+
+function logReadFailure(campaignId: string, error: unknown): void {
+  const now = Date.now()
+  for (const [loggedCampaignId, loggedAt] of readFailureLoggedAt)
+    if (now - loggedAt >= READ_FAILURE_LOG_INTERVAL_MS)
+      readFailureLoggedAt.delete(loggedCampaignId)
+  if (readFailureLoggedAt.has(campaignId)) return
+  readFailureLoggedAt.set(campaignId, now)
+  logger.error({ error, campaignId }, 'stats cache read failed')
+}
+
 /**
  * The one cached sweep per Campaign, keyed by campaign id: a plain GET / SET EX
- * on one JSON string. A Redis failure reads as a miss and a failed write is
- * logged, so the cache can never fail the query.
+ * on one JSON string. A failed GET rejects rather than reading as a miss, so a
+ * Redis outage can never turn every read into a Plausible sweep; a corrupt
+ * entry reads as a miss and a failed write is logged.
  */
 export const statsCache = {
   async get(campaignId: string): Promise<CachedCampaignStatsSweep | null> {
+    let raw: string | null
     try {
-      const raw = await getClient().get(key(campaignId))
-      if (raw == null) return null
+      raw = await getClient().get(key(campaignId))
+    } catch (error) {
+      logReadFailure(campaignId, error)
+      throw error
+    }
+    if (raw == null) return null
+    try {
       const entry = JSON.parse(raw) as StatsCacheEntry
       const now = Date.now()
       const partial = entry.partial === true
@@ -95,7 +117,7 @@ export const statsCache = {
         partial
       }
     } catch (error) {
-      logger.error({ error, campaignId }, 'stats cache read failed')
+      logger.error({ error, campaignId }, 'stats cache entry unreadable')
       return null
     }
   },

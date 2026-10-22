@@ -707,6 +707,26 @@ describe('campaignStats', () => {
       expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
     })
 
+    it('fails fast as unavailable without sweeping Plausible when Redis cannot be read', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
+      mockStatsCache.get.mockRejectedValue(new Error('ECONNREFUSED'))
+
+      const result = (await publicClient({
+        document: CAMPAIGN_STATS,
+        variables: { id: 'campaignId' }
+      })) as CampaignStatsFailure
+
+      expect(result.data).toBeNull()
+      expect(result.errors).toEqual([
+        expect.objectContaining({
+          message: 'Campaign stats are temporarily unavailable'
+        })
+      ])
+      expect(mockAxios.get).not.toHaveBeenCalled()
+      expect(mockStatsCache.set).not.toHaveBeenCalled()
+      expect(mockStatsCache.deferRefresh).not.toHaveBeenCalled()
+    })
+
     it('sweeps again once the failure marker has expired', async () => {
       prismaMock.campaign.findUnique.mockResolvedValue(publishedCampaign())
       mockStatsCache.get.mockResolvedValue(null)

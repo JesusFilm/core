@@ -33,7 +33,7 @@ describe('qrCode.service', () => {
       expect(prismaMock.journey.findUniqueOrThrow).toHaveBeenCalledWith({
         where: { id: 'journeyId' },
         include: {
-          team: { include: { customDomains: true } },
+          team: { include: { customDomains: { orderBy: { name: 'asc' } } } },
           journeyCollectionJourneys: {
             include: { journeyCollection: { include: { customDomains: true } } }
           }

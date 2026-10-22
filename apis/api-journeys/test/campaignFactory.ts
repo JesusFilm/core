@@ -15,6 +15,8 @@ import {
   UserTeam
 } from '@core/prisma/journeys/client'
 
+import { env } from '../src/env'
+
 /**
  * The seeded campaign exactly as `campaignCreate` seeds it (PRD §14), as plain
  * objects for the Prisma mock. `campaignCreate.mutation.spec.ts` asserts that
@@ -295,7 +297,7 @@ export function seededBlocks(
       typename: 'CampaignImageBlock',
       parentBlockId: 'headerId',
       parentOrder: null,
-      src: 'https://admin.nextstep.is/logo.svg',
+      src: `${env.JOURNEYS_ADMIN_URL}/logo.svg`,
       alt: 'NextSteps',
       width: 221,
       height: 41

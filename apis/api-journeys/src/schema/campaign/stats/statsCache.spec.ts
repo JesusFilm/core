@@ -11,6 +11,12 @@ const redis = vi.hoisted(() => ({
   options: [] as unknown[]
 }))
 
+const logger = vi.hoisted(() => ({ error: vi.fn() }))
+
+vi.mock('../../logger', () => ({
+  logger: { child: () => logger }
+}))
+
 vi.mock('ioredis', () => ({
   default: vi.fn(function (this: unknown, ...args: unknown[]) {
     redis.options.push(args)
@@ -139,10 +145,32 @@ describe('statsCache', () => {
       })
     })
 
-    it('reads a Redis failure as a miss', async () => {
-      redis.get.mockRejectedValue(new Error('ECONNREFUSED'))
+    it('rejects on a Redis failure rather than reading it as a miss', async () => {
+      const error = new Error('ECONNREFUSED')
+      redis.get.mockRejectedValue(error)
 
-      expect(await statsCache.get('campaignId')).toBeNull()
+      await expect(statsCache.get('campaignId')).rejects.toBe(error)
+    })
+
+    it('logs a Redis read failure once per campaign per minute', async () => {
+      redis.get.mockRejectedValue(new Error('ECONNREFUSED'))
+      const readFailures = (): unknown[] =>
+        logger.error.mock.calls.filter(
+          ([, message]) => message === 'stats cache read failed'
+        )
+
+      await expect(statsCache.get('outageCampaignId')).rejects.toThrow()
+      await expect(statsCache.get('outageCampaignId')).rejects.toThrow()
+      vi.setSystemTime(NOW + 59 * SECOND)
+      await expect(statsCache.get('outageCampaignId')).rejects.toThrow()
+      expect(readFailures()).toHaveLength(1)
+
+      await expect(statsCache.get('otherCampaignId')).rejects.toThrow()
+      expect(readFailures()).toHaveLength(2)
+
+      vi.setSystemTime(NOW + 60 * SECOND)
+      await expect(statsCache.get('outageCampaignId')).rejects.toThrow()
+      expect(readFailures()).toHaveLength(3)
     })
 
     it('reads a corrupt entry as a miss', async () => {

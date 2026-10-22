@@ -38,7 +38,10 @@ export interface ImageColumns {
  * Cloudflare account is refused. A pasted image URL on another host is
  * fetched into Cloudflare by the editor (api-media's
  * `createCloudflareUploadByUrl`) before it reaches this mutation, so the
- * stored address is always one of ours. `BAD_USER_INPUT` / `src`.
+ * stored address is always one of ours. `BAD_USER_INPUT` / `src`. The one
+ * exception is the seeded header logo (`HEADER_LOGO_SEED`), whose `src` is on
+ * this deployment's admin app: `campaignCreate` writes it without this check,
+ * an update that omits `src` keeps it, and one that sends it back is refused.
  */
 export function assertImageSrc(src: string): string {
   const trimmed = src.trim()
