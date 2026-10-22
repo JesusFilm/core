@@ -1008,6 +1008,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `journeyId`): no journey is linked.
   - BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.
+  - CONFLICT (field: `journeyId`): a concurrent call linked another journey; retry.
   """
   campaignRegionLanguageSnapshotRefresh(id: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """

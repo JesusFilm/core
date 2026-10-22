@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import { badUserInput } from '../validation'
 
@@ -27,6 +27,7 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
         context.user
       )
       return await prisma.$transaction(async (tx) => {
+        await lockCampaignStructure(tx, regionLanguage.region.campaignId)
         // Decide from the row as locked, not as authorised: a concurrent link
         // may have given it a QR code since.
         await lockRegionLanguage(tx, regionLanguage.id)

@@ -95,12 +95,30 @@ describe('campaignRegionLanguageDelete', () => {
     })
   })
 
+  it('takes the structure lock before the row lock and any read or delete', async () => {
+    await remove()
+
+    const lock = prismaMock.$queryRaw.mock.calls[0]
+    expect((lock[0] as unknown as string[]).join('?')).toContain(
+      'pg_advisory_xact_lock(hashtext('
+    )
+    expect(lock[1]).toBe('campaign:campaignId')
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignRegionLanguage.findUniqueOrThrow.mock
+        .invocationCallOrder[0]
+    )
+    const rowLock = prismaMock.$queryRaw.mock.calls[1]
+    expect((rowLock[0] as unknown as string[]).join('?')).toContain(
+      'FOR UPDATE'
+    )
+  })
+
   it('takes the row lock before any read or delete in the transaction', async () => {
     await remove()
 
     const order = (mock: unknown): number =>
       vi.mocked(mock as () => void).mock.invocationCallOrder[0]
-    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2)
     expect(order(prismaMock.$queryRaw)).toBeLessThan(
       order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
     )

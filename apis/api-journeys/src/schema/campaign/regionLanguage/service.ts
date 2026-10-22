@@ -12,7 +12,6 @@ import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
 import { logger } from '../../logger'
 import {
   createShortLink,
-  deleteShortLink,
   getShortLinkDomain,
   getTo,
   updateShortLink
@@ -85,8 +84,8 @@ export async function lockRegionLanguage(
  * written in `tx`, and the short link through the existing short-link create
  * as the returned step, which then saves the link's address on the row in
  * `tx` so the public page reads it without a gateway call. Should that save
- * fail, the step deletes the link it made before the transaction rolls back.
- * Returns the QR row id and that step.
+ * or the commit fail, the step queues the delete of the link it made on the
+ * retried short-link delete queue. Returns the QR row id and that step.
  */
 export async function createRegionLanguageQrCode(
   tx: Prisma.TransactionClient,
@@ -98,7 +97,8 @@ export async function createRegionLanguageQrCode(
   const qrCode = await tx.qrCode.create({
     data: { teamId, journeyId, toJourneyId: journeyId, shortLinkId }
   })
-  const revert = async (): Promise<void> => await deleteShortLink(shortLinkId)
+  const revert = async (): Promise<void> =>
+    await enqueueShortLinkDeletes([shortLinkId])
   return {
     qrCodeId: qrCode.id,
     step: {
@@ -129,7 +129,9 @@ export async function createRegionLanguageQrCode(
 /**
  * Swap the journey behind an existing Campaign QR Code: the row is updated in
  * `tx` and the same short link is retargeted by the returned step, so printed
- * codes stay valid.
+ * codes stay valid. Its revert retargets the link back directly, not through
+ * a retried queue (the short-link queue only deletes), so a failed revert is
+ * logged, not retried.
  */
 export async function retargetRegionLanguageQrCode(
   tx: Prisma.TransactionClient,

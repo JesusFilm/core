@@ -4,15 +4,16 @@ import { builder } from '../../builder'
 import { snapshotOf } from '../block/journey/snapshot'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
+import { conflict } from '../errors'
 import { resolveJourneyId } from '../journeyLink'
 import { badUserInput } from '../validation'
 
-import { authorizeRegionLanguageUpdate } from './service'
+import { authorizeRegionLanguageUpdate, lockRegionLanguage } from './service'
 
 builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      '"Refresh from journey": re-read the linked journey’s title and description from the public journey and replace the Share Language’s snapshot with them. The snapshot is the journey’s own language, so only those two values change; nothing else on the row is touched. Never automatic — the editor runs it on request, as a Command whose undo writes the previous snapshot back through `campaignRegionLanguageUpdate`.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `journeyId`): no journey is linked.\n- BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.',
+      '"Refresh from journey": re-read the linked journey’s title and description from the public journey and replace the Share Language’s snapshot with them. The snapshot is the journey’s own language, so only those two values change; nothing else on the row is touched. Never automatic — the editor runs it on request, as a Command whose undo writes the previous snapshot back through `campaignRegionLanguageUpdate`.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `journeyId`): no journey is linked.\n- BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.\n- CONFLICT (field: `journeyId`): a concurrent call linked another journey; retry.',
     type: CampaignRegionLanguageRef,
     nullable: false,
     args: {
@@ -29,6 +30,20 @@ builder.mutationField('campaignRegionLanguageSnapshotRefresh', (t) =>
       const journey = await resolveJourneyId(regionLanguage.journeyId, 'url')
 
       return await prisma.$transaction(async (tx) => {
+        // Decide from the row as locked, not as authorised: a concurrent
+        // unlink or swap may have changed the journey since.
+        await lockRegionLanguage(tx, id)
+        const current = await tx.campaignRegionLanguage.findUniqueOrThrow({
+          where: { id },
+          select: { journeyId: true }
+        })
+        if (current.journeyId == null)
+          throw badUserInput('No journey is linked', 'journeyId')
+        if (current.journeyId !== journey.id)
+          throw conflict(
+            'another journey was just linked; try again',
+            'journeyId'
+          )
         const updated = await tx.campaignRegionLanguage.update({
           ...query,
           where: { id },
