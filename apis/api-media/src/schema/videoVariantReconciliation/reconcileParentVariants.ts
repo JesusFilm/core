@@ -167,7 +167,11 @@ async function reconcileParentVariant({
         languageId: variant.languageId,
         videoVariantId: parentVariantId,
         published: true,
-        processingStages: generatedParentProcessingStages
+        // This parent row was just created, so it has no previous attempts.
+        // reconcileGeneratedParentVariant seeds its own stages from what it is
+        // given; handing it the already-seeded stages would count this first
+        // sync as a second attempt.
+        processingStages: {}
       },
       variant: {
         id: parentVariantId,

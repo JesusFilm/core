@@ -181,6 +181,20 @@ describe('reconcileVideoVariantReconciliation', () => {
         })
       })
     })
+    // The brand-new parent row records this as its first attempt, not its
+    // second -- otherwise its retry backoff starts one step ahead.
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'status_20770_series-1' },
+      data: expect.objectContaining({
+        processingStages: expect.objectContaining({
+          parentSync: expect.objectContaining({ attempts: 1 }),
+          algoliaVideo: expect.objectContaining({
+            state: 'failed',
+            attempts: 1
+          })
+        })
+      })
+    })
     expect(result).toMatchObject({
       publicationReady: false,
       status: 'degraded'
