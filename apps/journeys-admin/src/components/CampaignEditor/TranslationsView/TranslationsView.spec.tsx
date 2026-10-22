@@ -19,7 +19,10 @@ import {
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
-import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
+import {
+  CAMPAIGN_TRANSLATIONS,
+  rowKey
+} from '../../../libs/useCampaignTranslationsQuery'
 import {
   CampaignEditorState,
   useCampaignEditor
@@ -27,7 +30,6 @@ import {
 import { campaign } from '../data'
 import { SelectionProbe, StaticEditor } from '../testing'
 
-import { rowKey } from '../../../libs/useCampaignTranslationsQuery'
 import { TranslationsView } from './TranslationsView'
 
 const FRENCH = '496'

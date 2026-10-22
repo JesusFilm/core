@@ -30,7 +30,7 @@ function withBlock(
   return {
     ...withMedia,
     blocks: withMedia.blocks.map((block, blockIndex) =>
-      blockIndex === index ? ({ ...block, ...changes } as Block) : block
+      blockIndex === index ? { ...block, ...changes } : block
     )
   }
 }
