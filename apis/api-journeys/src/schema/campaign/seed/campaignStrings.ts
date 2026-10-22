@@ -22,7 +22,7 @@ export const CAMPAIGN_STRING_KEYS: readonly CampaignStringKey[] = [
   'noJourneys'
 ]
 
-/** Final English wording (PRD §14). */
+/** Final English wording of the Campaign Strings (GLOSSARY.md: Campaign String). */
 export const CAMPAIGN_STRING_DEFAULTS: Record<CampaignStringKey, string> = {
   allRegions: 'All regions',
   step1: 'Pick a language your friend understands.',

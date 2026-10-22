@@ -1130,7 +1130,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignStringUpdate(campaignId: ID!, key: CampaignStringKey!, value: String!) : CampaignString! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The machine-translation run into the new language is a separate mutation (the Translations ticket).
+  Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The Machine Translation into the new language is a separate run the editor starts.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   

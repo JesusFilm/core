@@ -1,12 +1,9 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+import { authorizeCampaign } from './campaign.acl'
 
 builder.queryField('campaign', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -19,18 +16,7 @@ builder.queryField('campaign', (t) =>
     },
     resolve: async (query, _parent, args, context) => {
       const id = String(args.id)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id },
-        include: INCLUDE_CAMPAIGN_ACL
-      })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Read, campaign, context.user))
-        throw new GraphQLError('user is not allowed to view campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      await authorizeCampaign(id, 'view', context.user)
       return await prisma.campaign.findUniqueOrThrow({
         ...query,
         where: { id }

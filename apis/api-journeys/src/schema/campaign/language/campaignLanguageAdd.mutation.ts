@@ -2,7 +2,6 @@ import { GraphQLError } from 'graphql'
 
 import { prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import {
   lockCampaign,
@@ -10,10 +9,11 @@ import {
   touchCampaign
 } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
+import { authorizeCampaign } from '../campaign.acl'
+import { badUserInput } from '../errors'
 import { fetchLanguage } from '../gatewayClient'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
-import { CAMPAIGN_LANGUAGES_MAX, badUserInput } from '../validation'
+import { CAMPAIGN_LANGUAGES_MAX } from '../validation'
 
 function alreadyAdded(): GraphQLError {
   return badUserInput(
@@ -25,7 +25,7 @@ function alreadyAdded(): GraphQLError {
 builder.mutationField('campaignLanguageAdd', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The machine-translation run into the new language is a separate mutation (the Translations ticket).\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not an api-languages language, already a language of this campaign, or the campaign already has 50 languages.\n\nOn a published campaign, queues on-demand revalidation of its pages.',
+      'Add a Page Language to a campaign: the `CampaignLanguage` row is appended at the end of the selector order. Not a Command. The Machine Translation into the new language is a separate run the editor starts.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not an api-languages language, already a language of this campaign, or the campaign already has 50 languages.\n\nOn a published campaign, queues on-demand revalidation of its pages.',
     type: CampaignRef,
     nullable: false,
     args: {
@@ -35,23 +35,16 @@ builder.mutationField('campaignLanguageAdd', (t) =>
     resolve: async (query, _parent, args, context) => {
       const campaignId = String(args.campaignId)
       const languageId = String(args.languageId)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id: campaignId },
-        include: {
-          ...INCLUDE_CAMPAIGN_ACL,
+      const campaign = await authorizeCampaign(
+        campaignId,
+        'update',
+        context.user,
+        {
           languages: true,
           regions: true,
           customDomains: true
         }
-      })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Update, campaign, context.user))
-        throw new GraphQLError('user is not allowed to update campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      )
       if (
         campaign.languages.some(
           (language) => language.languageId === languageId

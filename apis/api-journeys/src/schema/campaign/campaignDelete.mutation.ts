@@ -1,21 +1,14 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../lib/auth/ability'
+import { enqueueShortLinkDeletes } from '../../workers/shortlinkDelete/queue'
 import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+import { authorizeCampaign } from './campaign.acl'
+import { deleteQrCodes, findRegionQrCodes } from './regionLanguage/service'
 import {
-  deleteQrCodes,
-  deleteShortLinks,
-  findRegionQrCodes
-} from './regionLanguage/service'
-import {
-  campaignLanguageTags,
-  campaignPagePaths,
-  enqueueCampaignRevalidation
+  enqueueCampaignRevalidation,
+  listCampaignPagePaths
 } from './revalidateCampaign'
 
 builder.mutationField('campaignDelete', (t) =>
@@ -29,32 +22,16 @@ builder.mutationField('campaignDelete', (t) =>
     },
     resolve: async (query, _parent, args, context) => {
       const id = String(args.id)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id },
-        include: {
-          ...INCLUDE_CAMPAIGN_ACL,
-          regions: true,
-          customDomains: true
-        }
+      const campaign = await authorizeCampaign(id, 'delete', context.user, {
+        regions: true,
+        customDomains: true
       })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Delete, campaign, context.user))
-        throw new GraphQLError('user is not allowed to delete campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
 
       // The language rows cascade away with the campaign, so the pages to
       // purge are listed before the delete.
       const pagePaths =
         campaign.status === 'published'
-          ? campaignPagePaths({
-              ...campaign,
-              hostnames: campaign.customDomains.map(({ name }) => name),
-              languageTags: await campaignLanguageTags(id)
-            })
+          ? await listCampaignPagePaths(campaign)
           : []
 
       let shortLinkIds: string[] = []
@@ -65,7 +42,7 @@ builder.mutationField('campaignDelete', (t) =>
         )
         return await tx.campaign.delete({ ...query, where: { id } })
       })
-      await deleteShortLinks(shortLinkIds)
+      await enqueueShortLinkDeletes(shortLinkIds)
       await enqueueCampaignRevalidation(pagePaths)
       return deleted
     }

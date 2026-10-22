@@ -1,5 +1,5 @@
 import { builder } from '../../builder'
-import { CAMPAIGN_TEXT_FIELD_VALUES } from '../translation/campaignTextField'
+import { CAMPAIGN_TEXT_FIELD_VALUES } from '../translation/textFields'
 
 export const CampaignTextField = builder.enumType('CampaignTextField', {
   values: CAMPAIGN_TEXT_FIELD_VALUES,

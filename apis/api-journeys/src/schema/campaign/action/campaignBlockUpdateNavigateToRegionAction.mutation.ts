@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { badUserInput } from '../validation'
+import { badUserInput } from '../errors'
 
 import { CampaignNavigateToRegionActionRef } from './campaignAction'
 import { CampaignNavigateToRegionActionInput } from './inputs'

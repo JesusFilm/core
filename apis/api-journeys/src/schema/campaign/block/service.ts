@@ -18,7 +18,7 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
-import { conflict, forbidden, notFound } from '../errors'
+import { badUserInput, conflict, forbidden, notFound } from '../errors'
 import {
   CAMPAIGN_BLOCKS_MAX,
   assertClientIds,
@@ -26,7 +26,6 @@ import {
   assertEnumOrNull,
   assertHexOrNull,
   assertNotNull,
-  badUserInput,
   isUniqueViolation
 } from '../validation'
 

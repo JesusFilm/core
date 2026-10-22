@@ -1,14 +1,8 @@
-import { GraphQLError } from 'graphql'
-
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
-import {
-  CampaignJourneyLive,
-  isJourneyVisible,
-  loadCampaignJourneyLives
-} from './block/campaignJourneyBlock'
+import { isJourneyVisible } from './block/campaignJourneyBlock'
 import {
   CampaignPublicBlock,
   CampaignPublicPayload,
@@ -16,15 +10,16 @@ import {
   CampaignRegionLanguagePublicPayload,
   CampaignRegionPublicPayload
 } from './campaignPublic'
-import { notFound } from './errors'
+import { badUserInput, notFound } from './errors'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyEmbedUrl,
   getJourneyPublicUrl
 } from './getJourneyPublicUrl'
+import { JourneyLives, loadJourneyLives, withJourneyLive } from './journeyLives'
 import { resolveText } from './resolveText'
-import { CAMPAIGN_BLOCK_TEXT_COLUMNS } from './translation/campaignTextField'
-import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './validation'
+import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './slug'
+import { CAMPAIGN_BLOCK_TEXT_COLUMNS } from './translation/textFields'
 
 const INCLUDE_CAMPAIGN_PUBLIC = {
   languages: { orderBy: { order: 'asc' } },
@@ -58,25 +53,6 @@ type CampaignPublicRow = Prisma.CampaignGetPayload<{
 
 type CampaignPublicRegionLanguageRow =
   CampaignPublicRow['regions'][number]['languages'][number]
-
-/** The live journey read of every journey-list item, by journey id. */
-export type JourneyLives = ReadonlyMap<string, CampaignJourneyLive>
-
-/**
- * Read the live status, address and image of every journey a journey-list
- * item links, in one query; cards whose journey is not visible are left out of
- * the public payload by this at request time.
- */
-export async function resolveJourneyLives(
-  campaign: CampaignPublicRow
-): Promise<JourneyLives> {
-  const journeyIds = campaign.blocks.flatMap((block) =>
-    block.typename === 'CampaignJourneyBlock' && block.journeyId != null
-      ? [block.journeyId]
-      : []
-  )
-  return await loadCampaignJourneyLives(journeyIds)
-}
 
 /** Resolve every text column of a block to `languageId` and drop its translations. */
 function resolveBlockText(
@@ -153,21 +129,12 @@ export function toCampaignPublic(
       (block.journeyId != null &&
         isJourneyVisible(journeyLives.get(block.journeyId)?.status ?? null))
   )
-  const blocks = visibleBlocks.map((block) => {
-    const resolved = resolveBlockText(
-      block,
-      languageId,
-      campaign.defaultLanguageId
+  const blocks = visibleBlocks.map((block) =>
+    withJourneyLive(
+      resolveBlockText(block, languageId, campaign.defaultLanguageId),
+      journeyLives
     )
-    if (block.typename !== 'CampaignJourneyBlock') return resolved
-    return {
-      ...resolved,
-      journeyLive:
-        block.journeyId == null
-          ? null
-          : (journeyLives.get(block.journeyId) ?? null)
-    }
-  })
+  )
   const chrome = blocks.filter(
     (block) => block.pageId == null && block.regionId == null
   )
@@ -268,9 +235,9 @@ builder.queryField('campaignPublic', (t) =>
       const slug = args.slug ?? null
       const hostname = args.hostname ?? null
       if ((slug == null) === (hostname == null))
-        throw new GraphQLError(
+        throw badUserInput(
           'campaignPublic takes exactly one of slug or hostname',
-          { extensions: { code: 'BAD_USER_INPUT' } }
+          'slug'
         )
 
       // Reject malformed slugs before the database, as the gallery does.
@@ -291,7 +258,9 @@ builder.queryField('campaignPublic', (t) =>
         include: INCLUDE_CAMPAIGN_PUBLIC
       })
       if (campaign == null) throw notFound('campaign not found')
-      const journeyLives = await resolveJourneyLives(campaign)
+      // Cards whose journey is not visible are left out of the public payload
+      // by this read at request time.
+      const journeyLives = await loadJourneyLives(campaign.blocks)
       return toCampaignPublic(
         campaign,
         args.languageId == null ? null : String(args.languageId),

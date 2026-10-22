@@ -2,14 +2,14 @@ import { builder } from '../builder'
 import { Language } from '../language'
 
 import { CampaignBlock } from './block'
-import { loadCampaignJourneyLives } from './block/campaignJourneyBlock'
 import { CampaignStatus } from './enums'
+import { loadJourneyLives, withJourneyLive } from './journeyLives'
 import { TranslatedValueRef, toTranslatedValues } from './translatedValue'
 
 /**
  * The full admin shape of a Campaign, returned to team members by `campaign`,
- * `campaigns` and every campaign mutation. The anonymous public read arrives
- * with the public page tracer as a narrowed `CampaignPublic` projection.
+ * `campaigns` and every campaign mutation. The anonymous public read is the
+ * narrowed `CampaignPublic` projection (`campaignPublic`).
  */
 export const CampaignRef = builder.prismaObject('Campaign', {
   description:
@@ -88,24 +88,8 @@ export const CampaignRef = builder.prismaObject('Campaign', {
         }
       },
       resolve: async (campaign) => {
-        const lives = await loadCampaignJourneyLives(
-          campaign.blocks.flatMap((block) =>
-            block.typename === 'CampaignJourneyBlock' && block.journeyId != null
-              ? [block.journeyId]
-              : []
-          )
-        )
-        return campaign.blocks.map((block) =>
-          block.typename === 'CampaignJourneyBlock'
-            ? {
-                ...block,
-                journeyLive:
-                  block.journeyId == null
-                    ? null
-                    : (lives.get(block.journeyId) ?? null)
-              }
-            : block
-        )
+        const lives = await loadJourneyLives(campaign.blocks)
+        return campaign.blocks.map((block) => withJourneyLive(block, lives))
       }
     }),
     regions: t.relation('regions', {

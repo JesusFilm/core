@@ -21,11 +21,17 @@ import {
 import { prismaMock } from '../../../test/prismaMock'
 
 import {
-  LINK_URL_MAX_LENGTH,
   REGION_RESERVED_SLUGS,
   RESERVED_SLUGS,
   SLUG_MAX_LENGTH,
   SLUG_PATTERN,
+  generateUniqueCampaignSlug,
+  generateUniqueRegionSlug,
+  validateCampaignSlug,
+  validateRegionSlug
+} from './slug'
+import {
+  LINK_URL_MAX_LENGTH,
   TEXT_CAPS,
   assertClientId,
   assertClientIds,
@@ -40,13 +46,9 @@ import {
   assertPalette,
   assertRegionCountries,
   assertUniqueIds,
-  generateUniqueCampaignSlug,
-  generateUniqueRegionSlug,
   isUniqueViolation,
   parseWithZod,
-  truncate,
-  validateCampaignSlug,
-  validateRegionSlug
+  truncate
 } from './validation'
 
 function expectBadUserInput(fn: () => unknown, field: string): void {

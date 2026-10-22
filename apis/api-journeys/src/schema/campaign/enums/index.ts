@@ -22,6 +22,18 @@ export {
 } from './campaignTextSource'
 export { CampaignImageSlot } from './campaignImageSlot'
 export { CampaignTextField } from './campaignTextField'
-export { CampaignTranslationFilter } from './campaignTranslationFilter'
-export { CampaignTranslationGroup } from './campaignTranslationGroup'
-export { CampaignAiTranslateMode } from './campaignAiTranslateMode'
+export {
+  CAMPAIGN_TRANSLATION_FILTERS,
+  CampaignTranslationFilter,
+  type CampaignTranslationFilterValue
+} from './campaignTranslationFilter'
+export {
+  CAMPAIGN_TRANSLATION_GROUPS,
+  CampaignTranslationGroup,
+  type CampaignTranslationGroupValue
+} from './campaignTranslationGroup'
+export {
+  CAMPAIGN_MACHINE_TRANSLATE_MODES,
+  CampaignMachineTranslateMode,
+  type CampaignMachineTranslateModeValue
+} from './campaignMachineTranslateMode'

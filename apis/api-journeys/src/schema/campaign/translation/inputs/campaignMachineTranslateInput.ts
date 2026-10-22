@@ -1,7 +1,7 @@
 import { builder } from '../../../builder'
-import { CampaignAiTranslateMode } from '../../enums'
+import { CampaignMachineTranslateMode } from '../../enums'
 
-export const CampaignAiTranslateInput = builder.inputType(
+export const CampaignMachineTranslateInput = builder.inputType(
   'CampaignAiTranslateInput',
   {
     description:
@@ -9,7 +9,7 @@ export const CampaignAiTranslateInput = builder.inputType(
     fields: (t) => ({
       campaignId: t.id({ required: true }),
       languageId: t.id({ required: true }),
-      mode: t.field({ type: CampaignAiTranslateMode, required: true })
+      mode: t.field({ type: CampaignMachineTranslateMode, required: true })
     })
   }
 )

@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import {
   CampaignRadius,
   Prisma,
@@ -13,6 +11,7 @@ import { builder } from '../builder'
 import { touchCampaign } from './block/service'
 import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import { CampaignThemeRef } from './campaignTheme'
+import { forbidden, notFound } from './errors'
 import { CampaignThemeUpdateInput } from './inputs'
 import { PRESET_COLOR_COLUMNS } from './seed/presets'
 import {
@@ -33,9 +32,10 @@ type CampaignThemeUpdateArgs = {
   Partial<Record<(typeof FONT_COLUMNS)[number], string | null>>
 
 /**
- * Only the given columns are written (PRD §15): the eight colours through
- * `assertHex`, the three fonts against the shared curated list (null = the
- * default), the three enum columns against their enum's values.
+ * Only the given columns of the Campaign Theme (GLOSSARY.md) are written: the
+ * eight colours through `assertHex`, the three fonts against the shared
+ * curated list (null = the default), the three enum columns against their
+ * enum's values.
  */
 export function validateCampaignThemeInput(
   input: CampaignThemeUpdateArgs
@@ -92,14 +92,9 @@ builder.mutationField('campaignThemeUpdate', (t) =>
         where: { id },
         include: { campaign: { include: INCLUDE_CAMPAIGN_ACL } }
       })
-      if (theme == null)
-        throw new GraphQLError('campaign theme not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
+      if (theme == null) throw notFound('campaign theme not found')
       if (!campaignAcl(Action.Update, theme.campaign, context.user))
-        throw new GraphQLError('user is not allowed to update campaign theme', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+        throw forbidden('user is not allowed to update campaign theme')
 
       const data = validateCampaignThemeInput(input)
       return await prisma.$transaction(async (tx) => {

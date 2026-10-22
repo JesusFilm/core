@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
@@ -7,7 +5,8 @@ import { builder } from '../builder'
 
 import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import { CampaignStatsRef } from './campaignStats'
-import { getCampaignStats } from './stats/campaignStats'
+import { notFound } from './errors'
+import { getCampaignStats } from './stats/getCampaignStats'
 
 builder.queryField('campaignStats', (t) =>
   t.field({
@@ -34,10 +33,7 @@ builder.queryField('campaignStats', (t) =>
         (campaign.status === 'published' ||
           (context.type === 'authenticated' &&
             campaignAcl(Action.Read, campaign, context.user)))
-      if (!readable)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
+      if (!readable) throw notFound('campaign not found')
       return await getCampaignStats(campaign)
     }
   })

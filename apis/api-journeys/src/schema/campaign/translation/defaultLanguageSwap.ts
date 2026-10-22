@@ -1,10 +1,8 @@
-import { GraphQLError } from 'graphql'
-
 import { Prisma } from '@core/prisma/journeys/client'
 
 import { lockCampaign, lockCampaignTextRows } from '../block/service'
+import { badUserInput, conflict } from '../errors'
 import { TranslationsJson, parseTranslations } from '../translatedValue'
-import { badUserInput } from '../validation'
 
 import {
   CAMPAIGN_BLOCK_TEXT_FIELDS,
@@ -14,11 +12,11 @@ import {
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
-} from './campaignTextField'
+} from './textFields'
 import {
   INCLUDE_TRANSLATIONS_CAMPAIGN,
   campaignTranslationRows
-} from './campaignTranslations.query'
+} from './translationRows'
 
 type SwappedColumns = Record<string, string | TranslationsJson>
 
@@ -110,11 +108,10 @@ export async function swapDefaultLanguage(
     newDefaultLanguageId
   )
   if (count > 0)
-    throw new GraphQLError(
+    throw conflict(
       `${count} ${count === 1 ? 'text has' : 'texts have'} no translation in the new default language`,
-      {
-        extensions: { code: 'CONFLICT', field: 'defaultLanguageId', count }
-      }
+      'defaultLanguageId',
+      { count }
     )
 
   const swap = (

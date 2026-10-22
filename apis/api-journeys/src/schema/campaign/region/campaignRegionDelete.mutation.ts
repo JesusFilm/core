@@ -1,5 +1,6 @@
 import { prisma } from '@core/prisma/journeys/client'
 
+import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
 import { builder } from '../../builder'
 import {
   lockCampaignStructure,
@@ -8,14 +9,10 @@ import {
 } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
 import { conflict, notFound } from '../errors'
-import {
-  deleteQrCodes,
-  deleteShortLinks,
-  findRegionQrCodes
-} from '../regionLanguage/service'
+import { deleteQrCodes, findRegionQrCodes } from '../regionLanguage/service'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'
 
-import { authorizeRegionUpdate, getRegions, reorderRegions } from './service'
+import { authorizeRegionUpdate, reorderRegions } from './service'
 
 builder.mutationField('campaignRegionDelete', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -54,11 +51,17 @@ builder.mutationField('campaignRegionDelete', (t) =>
         const deleted = await tx.campaignRegion.delete({
           where: { id: region.id }
         })
-        await reorderRegions(await getRegions(region.campaignId, tx), tx)
+        await reorderRegions(
+          await tx.campaignRegion.findMany({
+            where: { campaignId: region.campaignId },
+            orderBy: { order: 'asc' }
+          }),
+          tx
+        )
         await touchCampaign(tx, region.campaignId)
         return deleted
       })
-      await deleteShortLinks(shortLinkIds)
+      await enqueueShortLinkDeletes(shortLinkIds)
       await enqueueRegionRevalidation(region.campaign, [deleted.slug])
       return deleted
     }

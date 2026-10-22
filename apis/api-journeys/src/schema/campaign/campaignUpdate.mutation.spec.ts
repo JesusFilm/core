@@ -17,7 +17,7 @@ import {
   CAMPAIGN_REGION_TEXT_FIELDS,
   CAMPAIGN_STRING_TEXT_FIELDS,
   CAMPAIGN_TITLE_TEXT_FIELDS
-} from './translation/campaignTextField'
+} from './translation/textFields'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()

@@ -25,7 +25,7 @@ export type CampaignRegionWithCampaignAcl = Prisma.CampaignRegionGetPayload<{
   include: typeof INCLUDE_CAMPAIGN_REGION_ACL
 }>
 
-/** The name every region is born with, in the campaign default language (PRD §3). */
+/** The name every region is born with, in the campaign default language (GLOSSARY.md: Campaign Region). */
 export const NEW_REGION_NAME = 'New region'
 
 /** Region create is campaign Update on the campaign the region will belong to. */
@@ -58,17 +58,6 @@ export async function authorizeRegionUpdate(
   return region
 }
 
-/** The campaign's regions in switcher order. */
-export async function getRegions(
-  campaignId: string,
-  tx: Prisma.TransactionClient = prisma
-): Promise<CampaignRegion[]> {
-  return await tx.campaignRegion.findMany({
-    where: { campaignId },
-    orderBy: { order: 'asc' }
-  })
-}
-
 /** Renumber `CampaignRegion.order` contiguously from zero in the order given. */
 export async function reorderRegions(
   regions: CampaignRegion[],
@@ -95,7 +84,10 @@ export async function moveRegion(
   order: number
 ): Promise<CampaignRegion[]> {
   await lockCampaignStructure(tx, region.campaignId)
-  const all = await getRegions(region.campaignId, tx)
+  const all = await tx.campaignRegion.findMany({
+    where: { campaignId: region.campaignId },
+    orderBy: { order: 'asc' }
+  })
   const self = all.find((candidate) => candidate.id === region.id) ?? region
   const others = all.filter((candidate) => candidate.id !== region.id)
   others.splice(Math.min(order, others.length), 0, self)

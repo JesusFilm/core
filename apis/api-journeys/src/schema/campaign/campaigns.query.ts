@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
@@ -7,6 +5,7 @@ import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
 import { campaignAcl } from './campaign.acl'
+import { forbidden, notFound } from './errors'
 
 builder.queryField('campaigns', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -23,14 +22,9 @@ builder.queryField('campaigns', (t) =>
         where: { id: teamId },
         include: { userTeams: true }
       })
-      if (team == null)
-        throw new GraphQLError('team not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
+      if (team == null) throw notFound('team not found')
       if (!campaignAcl(Action.Read, { team }, context.user))
-        throw new GraphQLError('user is not allowed to view campaigns', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+        throw forbidden('user is not allowed to view campaigns')
       return await prisma.campaign.findMany({
         ...query,
         where: { teamId },

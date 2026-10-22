@@ -85,8 +85,8 @@ export function campaignLocaleFolder(
  * has the given bcp47 tag: the English wording, or the libs-journeys-ui
  * bundle's translation when the language is not English and the bundle has
  * that exact string, falling back per key to the admin bundle's translation
- * and then English (PRD §2, Languages rule). The English wording reaches the
- * bundles through getCampaignStringDefaults in libs/journeys/ui.
+ * and then English (GLOSSARY.md: Campaign String). The English wording reaches
+ * the bundles through getCampaignStringDefaults in libs/journeys/ui.
  */
 export async function resolveCampaignStringValues(
   bcp47: string | null | undefined

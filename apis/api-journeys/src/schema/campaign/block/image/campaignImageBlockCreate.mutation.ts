@@ -1,7 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { assertClientId, badUserInput } from '../../validation'
+import { badUserInput } from '../../errors'
+import { assertClientId } from '../../validation'
 import { CampaignImageBlock } from '../campaignImageBlock'
 import { sectionCreateErrors } from '../createSection'
 import {

@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { badUserInput } from '../validation'
+import { badUserInput } from '../errors'
 
 import { CampaignScrollToBlockActionRef } from './campaignAction'
 import { CampaignScrollToBlockActionInput } from './inputs'

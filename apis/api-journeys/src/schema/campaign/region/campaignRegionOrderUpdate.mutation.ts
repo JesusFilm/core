@@ -2,7 +2,7 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { CampaignRegionRef } from '../campaignRegion'
-import { badUserInput } from '../validation'
+import { badUserInput } from '../errors'
 
 import { authorizeRegionUpdate, moveRegion } from './service'
 

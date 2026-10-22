@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
@@ -7,7 +5,7 @@ import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignAclSubject, campaignAcl } from '../campaign.acl'
-import { notFound } from '../errors'
+import { badUserInput, forbidden, notFound } from '../errors'
 import {
   TranslatedValueRef,
   TranslatedValueShape,
@@ -15,19 +13,23 @@ import {
   parseTranslations,
   toTranslatedValues
 } from '../translatedValue'
-import { assertLength, badUserInput } from '../validation'
+import { assertLength } from '../validation'
 
+import { CampaignTranslationSetInput } from './inputs'
 import {
   CampaignTextFieldCaps,
   CampaignTextFieldName,
   translationsColumn
-} from './campaignTextField'
-import { CampaignTranslationSetInput } from './inputs'
+} from './textFields'
 import { TRANSLATION_TARGETS, TranslationTargetKind } from './translationTarget'
 
-interface TranslationTarget {
+/** Which row a translation is written to; the GraphQL input's four ids become this once, in the resolver. */
+interface TranslationTargetRef {
   kind: TranslationTargetKind
   id: string
+}
+
+interface TranslationTarget extends TranslationTargetRef {
   campaign: CampaignAclSubject & {
     id: string
     defaultLanguageId: string
@@ -45,10 +47,7 @@ interface TargetIds {
 }
 
 /** Exactly one of the four target ids, else `BAD_USER_INPUT` / `target`. */
-export function pickTranslationTarget(target: TargetIds): {
-  kind: TranslationTargetKind
-  id: string
-} {
+export function pickTranslationTarget(target: TargetIds): TranslationTargetRef {
   const given = (
     [
       ['block', target.blockId],
@@ -66,10 +65,10 @@ export function pickTranslationTarget(target: TargetIds): {
   return { kind, id: String(id) }
 }
 
-async function loadTarget(
-  kind: TranslationTargetKind,
-  id: string
-): Promise<TranslationTarget> {
+async function loadTarget({
+  kind,
+  id
+}: TranslationTargetRef): Promise<TranslationTarget> {
   const model = TRANSLATION_TARGETS[kind]
   const found = await model.findWithCampaign(prisma, id)
   if (found == null) throw notFound(`${kind} not found`)
@@ -156,19 +155,16 @@ async function writeTranslation(
 
 export async function setCampaignTranslation(
   input: {
-    target: TargetIds
+    target: TranslationTargetRef
     field: CampaignTextFieldName
     languageId: string | number
     value: string
   },
   user: User
 ): Promise<TranslatedValueShape[]> {
-  const { kind, id } = pickTranslationTarget(input.target)
-  const target = await loadTarget(kind, id)
+  const target = await loadTarget(input.target)
   if (!campaignAcl(Action.Update, target.campaign, user))
-    throw new GraphQLError('user is not allowed to update campaign', {
-      extensions: { code: 'FORBIDDEN' }
-    })
+    throw forbidden('user is not allowed to update campaign')
 
   const cap = target.caps[input.field]
   if (cap == null)
@@ -196,6 +192,9 @@ builder.mutationField('campaignTranslationSet', (t) =>
       input: t.arg({ type: CampaignTranslationSetInput, required: true })
     },
     resolve: async (_parent, { input }, context) =>
-      await setCampaignTranslation(input, context.user)
+      await setCampaignTranslation(
+        { ...input, target: pickTranslationTarget(input.target) },
+        context.user
+      )
   })
 )

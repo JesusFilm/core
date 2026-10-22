@@ -15,7 +15,7 @@ import { logger } from '../../../logger'
 import { schema } from '../../index'
 import { fetchLanguageName } from '../gatewayClient'
 
-import { campaignAiTranslate } from './campaignAiTranslate'
+import { campaignMachineTranslate } from './campaignMachineTranslate'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
@@ -125,7 +125,7 @@ function scriptModel(
   })) as unknown as typeof streamText)
 }
 
-describe('campaignAiTranslate', () => {
+describe('campaignMachineTranslate', () => {
   const fixture = campaignFactory({ role: 'member' })
     .withLanguage(FRENCH)
     .withLanguage(SPANISH)
@@ -165,7 +165,7 @@ describe('campaignAiTranslate', () => {
     }>
   > {
     const updates = []
-    for await (const update of campaignAiTranslate(
+    for await (const update of campaignMachineTranslate(
       { campaignId: 'campaignId', languageId: FRENCH, ...input },
       user,
       cancelSignal
@@ -529,7 +529,7 @@ describe('campaignAiTranslate', () => {
     })
 
     it('refuses a second run into the same language while one runs (CONFLICT, field languageId)', async () => {
-      const first = campaignAiTranslate(
+      const first = campaignMachineTranslate(
         { campaignId: 'campaignId', languageId: FRENCH, mode: 'all' },
         mockUser
       )

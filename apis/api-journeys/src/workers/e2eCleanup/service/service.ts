@@ -10,7 +10,6 @@ import {
 } from '../../../lib/mediaCleanup/mediaCleanup'
 import {
   deleteQrCodes,
-  deleteShortLinks,
   findRegionQrCodes
 } from '../../../schema/campaign/regionLanguage/service'
 import { findJourneyShortLinkIds } from '../../shortlinkDelete/findJourneyShortLinkIds'
@@ -245,7 +244,7 @@ async function deleteLeftoverCampaigns(
         )
         await tx.campaign.delete({ where: { id: campaign.id } })
       })
-      await deleteShortLinks(shortLinkIds)
+      await enqueueShortLinkDeletes(shortLinkIds)
       deletedCount++
       logger?.info(`Deleted campaign "${campaign.title}" (${campaign.id})`)
     } catch (error) {

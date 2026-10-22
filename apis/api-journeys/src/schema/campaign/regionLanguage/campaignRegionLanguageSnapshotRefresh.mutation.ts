@@ -4,9 +4,8 @@ import { builder } from '../../builder'
 import { snapshotOf } from '../block/journey/snapshot'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
-import { conflict } from '../errors'
+import { badUserInput, conflict } from '../errors'
 import { resolveJourneyId } from '../journeyLink'
-import { badUserInput } from '../validation'
 
 import { authorizeRegionLanguageUpdate, lockRegionLanguage } from './service'
 

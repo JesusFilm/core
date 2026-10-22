@@ -1,5 +1,5 @@
+import { badUserInput } from '../../errors'
 import { fetchWatchVideoBySlug } from '../../gatewayClient'
-import { badUserInput } from '../../validation'
 
 export const WATCH_URL_ERROR = "That link isn't a Watch video"
 

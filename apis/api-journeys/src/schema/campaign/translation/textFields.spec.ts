@@ -7,9 +7,8 @@ import {
   CAMPAIGN_STRING_TEXT_FIELDS,
   CAMPAIGN_TEXT_FIELD_VALUES,
   CAMPAIGN_TITLE_TEXT_FIELDS,
-  campaignBlockTextCap,
   translationsColumn
-} from './campaignTextField'
+} from './textFields'
 
 describe('CampaignTextField', () => {
   it('enumerates every translatable field once', () => {
@@ -88,12 +87,5 @@ describe('CampaignTextField', () => {
     )
     expect(CAMPAIGN_BLOCK_TEXT_COLUMNS).toHaveLength(8)
     expect(translationsColumn('name')).toBe('nameTranslations')
-  })
-
-  it('resolves a field cap by block typename, null where the block has no such field', () => {
-    expect(campaignBlockTextCap('CampaignHeroBlock', 'title')).toBe(150)
-    expect(campaignBlockTextCap('CampaignVideoBlock', 'title')).toBe(200)
-    expect(campaignBlockTextCap('CampaignHeroBlock', 'content')).toBeNull()
-    expect(campaignBlockTextCap('CampaignColumnsBlock', 'title')).toBeNull()
   })
 })

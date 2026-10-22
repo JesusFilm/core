@@ -1,7 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { CLIENT_ID_ERROR, assertClientId, badUserInput } from '../../validation'
+import { badUserInput } from '../../errors'
+import { CLIENT_ID_ERROR, assertClientId } from '../../validation'
 import { CampaignTypographyBlock } from '../campaignTypographyBlock'
 import {
   assertPlacement,

@@ -3,10 +3,10 @@ import { Prisma } from '@core/prisma/journeys/client'
 import { env } from '../../../env'
 
 /**
- * The seed tables of PRD §14: every value passes every validation rule, with
- * one exception: the header logo's `src` is this deployment's admin app
- * (`HEADER_LOGO_SEED`), not an imagedelivery.net address, so `assertImageSrc`
- * would refuse it on an update. Ids, scoping and ordering are added by
+ * The seed tables of the Campaign Seed (GLOSSARY.md): every value passes
+ * every validation rule, with one exception: the header logo's `src` is this
+ * deployment's admin app (`HEADER_LOGO_SEED`), not an imagedelivery.net
+ * address, so `assertImageSrc` would refuse it on an update. Ids, scoping and ordering are added by
  * `seedCampaign`.
  */
 export type SectionSeed = Omit<
