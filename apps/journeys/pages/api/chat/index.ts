@@ -1,13 +1,13 @@
 import { google } from '@ai-sdk/google'
 import { openai } from '@ai-sdk/openai'
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
+import { type LangfuseClient, type TextPromptClient } from '@langfuse/client'
 import {
   type LanguageModel,
   UIMessage,
   convertToModelMessages,
   streamText
 } from 'ai'
-import { Langfuse, TextPromptClient } from 'langfuse'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
 
@@ -15,8 +15,10 @@ import { getCardChatEnabled } from '../../../src/libs/getCardChatEnabled'
 import { getFlags } from '../../../src/libs/getFlags'
 import {
   APOLOGIST_PROMPT_NAME,
+  flushLangfuse,
   getActivePromptLabel,
-  getLangfuse
+  getLangfuse,
+  startChatGeneration
 } from '../../../src/libs/langfuse/client'
 import { logger } from '../../../src/libs/logger'
 
@@ -342,17 +344,16 @@ export default async function handler(
     return
   }
 
-  const trace = langfuse?.trace({
-    name: 'apologist-chat',
-    sessionId,
-    metadata: { journeyId, language, ipCountry, provider, modelId }
-  })
-  const generation = trace?.generation({
-    name: 'apologist-generation',
-    model: modelId,
-    input: modelMessages,
-    prompt: promptClient ?? undefined
-  })
+  const generation =
+    langfuse == null
+      ? null
+      : startChatGeneration({
+          sessionId,
+          metadata: { journeyId, language, ipCountry, provider, modelId },
+          model: modelId,
+          input: modelMessages,
+          prompt: promptClient ?? undefined
+        })
 
   let generationEnded = false
   const endGenerationIfPending = (
@@ -369,6 +370,13 @@ export default async function handler(
       instructions: system,
       messages: modelMessages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
+      onAbort: async () => {
+        endGenerationIfPending({
+          level: 'WARNING',
+          statusMessage: 'stream aborted'
+        })
+        await flushLangfuse()
+      },
       onError: async ({ error }) => {
         const err = error as Error
         logger.error(
@@ -387,7 +395,7 @@ export default async function handler(
           level: 'ERROR',
           statusMessage: err?.message ?? 'stream error'
         })
-        await langfuse?.flushAsync()
+        await flushLangfuse()
       },
       onFinish: async ({ text, usage, finishReason }) => {
         if (finishReason === 'error') {
@@ -407,12 +415,15 @@ export default async function handler(
         } else {
           endGenerationIfPending({
             output: text,
-            usage:
+            usageDetails:
               usage != null
                 ? {
-                    input: usage.inputTokens,
-                    output: usage.outputTokens,
-                    unit: 'TOKENS'
+                    ...(usage.inputTokens != null && {
+                      input: usage.inputTokens
+                    }),
+                    ...(usage.outputTokens != null && {
+                      output: usage.outputTokens
+                    })
                   }
                 : undefined,
             level: 'DEFAULT'
@@ -432,7 +443,7 @@ export default async function handler(
             '[chat] completed'
           )
         }
-        await langfuse?.flushAsync()
+        await flushLangfuse()
       }
     })
 
@@ -478,7 +489,7 @@ export default async function handler(
       level: 'ERROR',
       statusMessage: err?.message ?? 'sync throw'
     })
-    await langfuse?.flushAsync()
+    await flushLangfuse()
     if (!res.headersSent) {
       res.status(500).json({ error: 'upstream streamText failed' })
     } else {
@@ -497,16 +508,14 @@ async function resolveSystemMessage({
   langfuse
 }: {
   language?: string
-  langfuse: Langfuse | null
+  langfuse: LangfuseClient | null
 }): Promise<{ system: string; promptClient: TextPromptClient | null }> {
   const fallback = buildFallbackSystemMessage({ language })
   if (langfuse == null) return { system: fallback, promptClient: null }
   try {
-    const promptClient = await langfuse.getPrompt(
-      APOLOGIST_PROMPT_NAME,
-      undefined,
-      { label: getActivePromptLabel() }
-    )
+    const promptClient = await langfuse.prompt.get(APOLOGIST_PROMPT_NAME, {
+      label: getActivePromptLabel()
+    })
     if (promptClient.type !== 'text') {
       logger.warn(
         `[langfuse] expected text prompt for ${APOLOGIST_PROMPT_NAME}, got ${promptClient.type} — using fallback`

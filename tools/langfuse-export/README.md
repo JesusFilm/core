@@ -2,7 +2,7 @@
 
 Engineer-run CLI that pulls Apologist chat traces from the **Langfuse Public API**, scrubs free-text PII, and produces a **self-contained insights-explorer bundle** (**NES-1719**): a single zip containing the full sanitised dataset plus an offline HTML viewer a stakeholder unzips and opens by double-clicking — no server, no install, no internet.
 
-Built for **NES-1690**, implementing the **NES-1656** export-path spike; the explorer bundle supersedes the back half of **NES-1577** (parked PR #9276). The manual CSV observations export drops the trace-level fields needed to group turns into conversations (`sessionId`), attribute country (`metadata.ipCountry`), and tag — this tool reads those from the API instead.
+Built for **NES-1690**, implementing the **NES-1656** export-path spike; the explorer bundle supersedes the back half of **NES-1577** (parked PR #9276). The tool requests enriched v2 observation fields to group turns into conversations (`sessionId`), attribute country (`metadata.ipCountry`), and preserve tags.
 
 > **Read the caveats below before sharing any artifact.** NES-1688 has landed, so `--environment production` (the default) isolates real production traffic. Volume has since accumulated: a 30-day window to 2026-07-10 yields **131 traces across 56 sessions, every one with a real `sessionId`, and zero load-test turns** — so the null-session and load-test warnings that shaped this tool no longer bite on production data. The traffic is heavily multilingual (Bengali, Spanish, Arabic, French, Afrikaans, Korean, Hindi); see [Translation](#translation-nes-1762). To exercise the whole pipeline offline against synthetic data, use `--fixture` (below).
 
@@ -48,7 +48,7 @@ tools/langfuse-export/
     types.ts            # shared types incl. branded SanitisedConversation + dataset types
     cli.ts              # pure arg/window/discriminator parsing
     clients/            # external I/O — verified by the manual run, not unit tests
-      langfuse.ts       #   fetchTraces + per-traceId fetchObservations
+      langfuse.ts       #   cursor-paginated enriched v2 observations
       openrouter.ts     #   OpenRouter client + theme synthesis + llmScrub + translation
       translation-cache.ts #  content-addressed translation cache (node:crypto) — pure, unit tested
       zip.ts            #   dependency-free ZIP writer (node:zlib) — pure, unit tested
@@ -108,7 +108,7 @@ pnpm exec tsx tools/langfuse-export/run.ts --days 7 --environment all --discrimi
 
 Running with no arguments prints usage.
 
-> **`--environment` defaults to `production`** — the share-worthy traffic. Traces are tagged with their deployment environment by NES-1688 (`production` / `stage` / `preview` / `development`). Traces created **before** NES-1688 shipped are untagged (Langfuse buckets them as `default`) and are **only** included via `--environment all`. The env filter is applied at the Langfuse observations index (server-side) and re-checked against each trace's own `environment`. `--fixture` ignores `--environment` (the source is the file, not Langfuse).
+> **`--environment` defaults to `production`** — the share-worthy traffic. Traces are tagged with their deployment environment by NES-1688 (`production` / `stage` / `preview` / `development`). Traces created **before** NES-1688 shipped are untagged (Langfuse buckets them as `default`) and are **only** included via `--environment all`. The env filter is applied at the Langfuse observations API (server-side) and re-checked against each observation's own `environment`. `--fixture` ignores `--environment` (the source is the file, not Langfuse).
 
 ### Flags
 
@@ -144,13 +144,15 @@ Each run writes `tools/langfuse-export/output/<timestamp>/`:
 
 ## How it works
 
-**Fetch.** The Langfuse legacy list endpoints (`/api/public/traces`, `/api/public/observations` — what the SDK v3 wraps) **time out on Langfuse Cloud**, so reads go via raw `fetch` instead: the cursor-paginated **v2 observations index** (`/api/public/v2/observations`) enumerates the distinct `traceId`s in the window, then **`GET /api/public/traces/{id}`** per trace returns the trace context (`sessionId`, `metadata`, `tags`) plus its full nested observations (input/output/usage/cost) in one by-id call. Neither call scans a list, so neither times out.
+**Fetch.** Cursor-page `GET /api/public/v2/observations` with a bounded start-time window, type `GENERATION`, and `core,basic` fields to discover trace IDs. Then cursor-page the same supported endpoint with each exact `traceId` and `core,basic,io,metadata,model,usage,metrics,trace_context` fields. Detail queries intentionally omit time and type filters: they retain the root context and **all** generations, including turns outside the discovery window, preserving the previous trace-complete export contract. Parse JSON-encoded input/output locally, preserving literal JSON-shaped assistant replies when the decoded shape is unsupported. No legacy endpoints are used. This requires Langfuse Cloud or self-hosted v4. Missing data, repeated cursors and pagination limits fail explicitly rather than publishing partial data.
+
+**Historical context.** Prefer the recovered root observation, including a legitimately untagged root with empty metadata. Langfuse's trace-root backfill retains legacy trace metadata even though the observation-child backfill does not copy it. Rootless current Core traces can use consistently propagated generation context; conflicting context is rejected. Detail reads expand `journeyId,ipCountry,language,provider,modelId` to avoid metadata truncation. If neither a root nor trustworthy generation context is available, the export stops with the trace ID, rather than silently bypassing journey/tag exclusions or fabricating country/language attribution. The precise operator blocker is missing/conflicting v2 context, **not** an absent `journeyId` on a recovered root. An owner must verify trace-root migration completion or use an existing authorized snapshot. No deprecated trace reads or server migrations are performed. The existing `--fixture PATH` mode remains an offline alternative for the checked-in synthetic sample or a snapshot in `{traces, observations, themes?}` format that retains trace metadata; it does not recover missing live history. Omit `--translate` and `--llm-scrub` for the offline path.
 
 **Explorer.** `facets.ts` derives the keyword vocabulary deterministically: each session is one document, terms above a document-frequency share (default 50%) are suppressed as over-common, terms below a floor are dropped as noise, the rest are ranked by coverage and capped; it also builds the `country` (ipCountry) and `journey-language` metadata facets. `dataset.ts` serialises the sanitised corpus losslessly (every session, every message, in order) and folds in the LLM's per-session themes (inverted from `synthesizeThemes`). The LLM contributes **only** theme labels — never message text — so it cannot fabricate or leak a quote. `explorer.ts` inlines that dataset into a dependency-free HTML viewer; every piece of corpus text reaches the page via `textContent` (never `innerHTML`), including a hand-rolled minimal-Markdown pass (small headings, bold, `-`/`*` lists, blockquotes, paragraphs) that builds nodes with `createElement`/`textContent` so a hostile `</script>` renders as literal text, and the inlined JSON has its `<` escaped so content cannot break out of the script block. `zip.ts` assembles the archive with `node:zlib` (no external dependency). If theme synthesis fails or `--fixture` supplies none, the explorer still works with keyword/metadata facets.
 
 ## Tests & typecheck
 
-Pure modules (`env`, `normalize`, `sanitize`, `facets`, `translate`, `dataset`, `explorer`, `zip`, `cli`, `translation-cache`) are unit-tested — including the LLM-output boundaries `parseThemes` / `parseTranslations`, the `batchByCharBudget` splitter, and the `isPoisonedEnglish` cache self-heal. The I/O-driving code in `langfuse` / `openrouter` is verified by a manual end-to-end run; the offline end-to-end path is exercised with `--fixture`.
+Pure modules (`env`, `normalize`, `sanitize`, `facets`, `translate`, `dataset`, `explorer`, `zip`, `cli`, `translation-cache`) are unit-tested — including the LLM-output boundaries `parseThemes` / `parseTranslations`, the `batchByCharBudget` splitter, and the `isPoisonedEnglish` cache self-heal. The Langfuse HTTP contract is tested offline with intercepted fetch responses (pagination, environment filtering, enriched fields, JSON I/O, retries and failure handling). The offline end-to-end path is exercised with `--fixture`. See [v4 audit and manual verification](../../docs/plans/2026-10-23-001-chore-langfuse-v4-audit.md).
 
 ```sh
 npx vitest run --config tools/langfuse-export/vitest.config.mts --coverage=false
