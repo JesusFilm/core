@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: ${{ !startsWith(runner.name, 'ci-jfp00-') && 'pnpm' || '' }}
+          cache: ${{ !startsWith(runner.name, 'ci-jfp') && 'pnpm' || '' }}
           package-manager-cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

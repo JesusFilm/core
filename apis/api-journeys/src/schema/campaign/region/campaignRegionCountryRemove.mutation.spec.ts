@@ -67,6 +67,19 @@ describe('campaignRegionCountryRemove', () => {
     })
   })
 
+  it('takes the structure lock before it deletes and renumbers the chips', async () => {
+    await remove()
+
+    const lock = prismaMock.$queryRaw.mock.calls[0]
+    expect((lock[0] as unknown as string[]).join('?')).toContain(
+      'pg_advisory_xact_lock(hashtext('
+    )
+    expect(lock[1]).toBe('campaign:campaignId')
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignRegionCountry.delete.mock.invocationCallOrder[0]
+    )
+  })
+
   it('throws FORBIDDEN for a caller outside the team', async () => {
     prismaMock.campaignRegion.findUnique.mockResolvedValue(
       campaignRegionWithAcl(

@@ -61,6 +61,10 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
       ...data
     })) as never)
     prismaMock.journey.findFirst.mockResolvedValue(JOURNEY as never)
+    // The row re-read under the lock still links the journey unless a test says so.
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockResolvedValue({
+      journeyId: 'journeyId'
+    } as never)
   })
 
   async function refresh(id = 'eurRegionId-529'): Promise<any> {
@@ -145,6 +149,56 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
       extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
     })
     expect(prismaMock.journey.findFirst).not.toHaveBeenCalled()
+  })
+
+  it('takes the row lock, then re-reads the linked journey before it writes', async () => {
+    await refresh()
+
+    const order = (mock: unknown): number =>
+      vi.mocked(mock as () => void).mock.invocationCallOrder[0]
+    const lock = prismaMock.$queryRaw.mock.calls[0]
+    expect((lock[0] as unknown as string[]).join('?')).toContain('FOR UPDATE')
+    expect(lock[1]).toBe('eurRegionId-529')
+    expect(order(prismaMock.$queryRaw)).toBeLessThan(
+      order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
+    )
+    expect(
+      prismaMock.campaignRegionLanguage.findUniqueOrThrow
+    ).toHaveBeenCalledWith({
+      where: { id: 'eurRegionId-529' },
+      select: { journeyId: true }
+    })
+    expect(
+      order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
+    ).toBeLessThan(order(prismaMock.campaignRegionLanguage.update))
+  })
+
+  it('is BAD_USER_INPUT on journeyId when a concurrent unlink cleared the journey after it was authorised', async () => {
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockResolvedValue({
+      journeyId: null
+    } as never)
+
+    const result = await refresh()
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'No journey is linked',
+      extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
+    })
+    expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+  })
+
+  it('is CONFLICT on journeyId when a concurrent swap linked another journey after it was authorised', async () => {
+    prismaMock.campaignRegionLanguage.findUniqueOrThrow.mockResolvedValue({
+      journeyId: 'otherJourneyId'
+    } as never)
+
+    const result = await refresh()
+
+    expect(result.errors[0].extensions).toMatchObject({
+      code: 'CONFLICT',
+      field: 'journeyId'
+    })
+    expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
   })
 
   it('is NOT_FOUND for an unknown id', async () => {

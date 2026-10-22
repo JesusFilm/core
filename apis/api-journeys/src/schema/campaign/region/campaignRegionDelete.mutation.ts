@@ -1,9 +1,13 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import {
+  lockCampaignStructure,
+  lockCampaignTextRows,
+  touchCampaign
+} from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
-import { conflict } from '../errors'
+import { conflict, notFound } from '../errors'
 import {
   deleteQrCodes,
   deleteShortLinks,
@@ -24,13 +28,25 @@ builder.mutationField('campaignRegionDelete', (t) =>
     },
     resolve: async (_parent, { id }, context) => {
       const region = await authorizeRegionUpdate(String(id), context.user)
-      if (region.listed)
-        throw conflict(
-          'a listed region cannot be deleted; unlist it first',
-          'regionId'
-        )
       let shortLinkIds: string[] = []
       const deleted = await prisma.$transaction(async (tx) => {
+        // Decide from the row as locked, not as authorised: a concurrent
+        // update may have listed it since. Lock every block and region in
+        // the default-language swap's order, not this row alone: the delete
+        // cascades into the region's Region Lines and the renumber writes the
+        // other regions, so a lone row lock could deadlock with the swap.
+        await lockCampaignStructure(tx, region.campaignId)
+        await lockCampaignTextRows(tx, region.campaignId)
+        const current = await tx.campaignRegion.findUnique({
+          where: { id: region.id },
+          select: { listed: true }
+        })
+        if (current == null) throw notFound('region not found')
+        if (current.listed)
+          throw conflict(
+            'a listed region cannot be deleted; unlist it first',
+            'regionId'
+          )
         shortLinkIds = await deleteQrCodes(
           tx,
           await findRegionQrCodes(tx, { regionId: region.id })

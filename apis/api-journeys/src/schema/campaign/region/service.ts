@@ -2,7 +2,7 @@ import { CampaignRegion, Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../../lib/auth/ability'
-import { touchCampaign } from '../block/service'
+import { lockCampaignStructure, touchCampaign } from '../block/service'
 import {
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
@@ -86,13 +86,15 @@ export async function reorderRegions(
 
 /**
  * Move a region to `order` among the campaign's regions (clamped to the end)
- * and renumber them contiguously, inside `tx`. Returns every region.
+ * and renumber them contiguously, inside `tx`, under the structure lock so a
+ * concurrent move reads the order this one writes. Returns every region.
  */
 export async function moveRegion(
   tx: Prisma.TransactionClient,
   region: CampaignRegion,
   order: number
 ): Promise<CampaignRegion[]> {
+  await lockCampaignStructure(tx, region.campaignId)
   const all = await getRegions(region.campaignId, tx)
   const self = all.find((candidate) => candidate.id === region.id) ?? region
   const others = all.filter((candidate) => candidate.id !== region.id)

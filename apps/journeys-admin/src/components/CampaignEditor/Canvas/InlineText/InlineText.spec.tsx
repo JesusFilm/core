@@ -101,7 +101,7 @@ describe('InlineText', () => {
     await waitFor(() => expect(near.result).toHaveBeenCalled())
 
     fireEvent.change(input, { target: { value: 'x'.repeat(151) } })
-    expect(screen.getByRole('alert')).toHaveTextContent('Max 150 characters')
+    expect(screen.getByRole('alert')).toHaveTextContent(/^Max 150 characters$/)
     await waitFor(() => expect(over.result).not.toHaveBeenCalled())
   })
 
@@ -220,7 +220,9 @@ describe('InlineText', () => {
       expect(input).toHaveValue('Copy link')
 
       fireEvent.change(input, { target: { value: 'x'.repeat(201) } })
-      expect(screen.getByRole('alert')).toHaveTextContent('Max 200 characters')
+      expect(screen.getByRole('alert')).toHaveTextContent(
+        /^Max 200 characters$/
+      )
     })
   })
 

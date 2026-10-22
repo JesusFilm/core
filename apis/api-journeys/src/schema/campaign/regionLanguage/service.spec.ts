@@ -1,3 +1,4 @@
+import { mockQueueAdd } from '../../../../test/bullmqMock'
 import { prismaMock } from '../../../../test/prismaMock'
 import {
   createShortLink,
@@ -74,14 +75,19 @@ describe('createRegionLanguageQrCode', () => {
     })
   })
 
-  it('rolls back and deletes the new short link when saving its address fails', async () => {
+  it('rolls back and queues the delete of the new short link when saving its address fails', async () => {
     prismaMock.qrCode.update.mockRejectedValue(new Error('write failed'))
 
     await expect(link()).rejects.toThrow('write failed')
 
     const { id: shortLinkId } = vi.mocked(createShortLink).mock.calls[0][0]
-    expect(deleteShortLink).toHaveBeenCalledTimes(1)
-    expect(deleteShortLink).toHaveBeenCalledWith(shortLinkId)
+    expect(mockQueueAdd).toHaveBeenCalledTimes(1)
+    expect(mockQueueAdd).toHaveBeenCalledWith(
+      'api-journeys-shortlink-delete-job',
+      { shortLinkId },
+      expect.objectContaining({ attempts: 5 })
+    )
+    expect(deleteShortLink).not.toHaveBeenCalled()
   })
 
   it('leaves nothing to revert when the short-link create fails', async () => {

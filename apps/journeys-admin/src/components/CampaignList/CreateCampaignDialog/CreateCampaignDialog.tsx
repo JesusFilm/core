@@ -72,7 +72,7 @@ export function CreateCampaignDialog({
       .required(t('Title is required'))
       .max(
         TITLE_MAX_LENGTH,
-        t('Max {{count}} characters', { count: TITLE_MAX_LENGTH })
+        t('Max {{max}} characters', { max: TITLE_MAX_LENGTH })
       ),
     defaultLanguageId: string().required(t('Language is required'))
   })

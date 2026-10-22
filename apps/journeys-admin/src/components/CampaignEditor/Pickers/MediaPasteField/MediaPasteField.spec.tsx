@@ -1,5 +1,6 @@
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { http } from 'msw'
 import { ReactElement } from 'react'
 import { SWRConfig } from 'swr'
 
@@ -47,6 +48,8 @@ const WATCH_URL =
   'https://www.jesusfilm.org/watch/hope.html/the-resurrection/english.html'
 const WATCH_SLUG = 'the-resurrection/english'
 const YOUTUBE_URL = 'https://youtu.be/jQaeIJOA6J0'
+const PLAYLIST_URL =
+  'https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG'
 
 function watchVideoMock(childrenCount: number) {
   return {
@@ -112,16 +115,38 @@ const muxUploadsMock = {
   }
 }
 
+const getPlaylist = http.get(
+  'https://www.googleapis.com/youtube/v3/playlists',
+  () =>
+    new Response(
+      JSON.stringify({
+        items: [
+          {
+            snippet: { title: 'Advent readings', thumbnails: {} },
+            contentDetails: { itemCount: 40 }
+          }
+        ]
+      }),
+      { headers: { 'Content-Type': 'application/json' } }
+    )
+)
+
 let uploadOptions: UseImageUploadOptions | undefined
 
 function renderField(
-  mocks: Array<Record<string, unknown>> = []
+  mocks: Array<Record<string, unknown>> = [],
+  onPickPlaylist?: (url: string) => void
 ): ReturnType<typeof vi.fn> {
   const onPick = vi.fn()
   render(
     <MockedProvider mocks={mocks as never}>
       <SWRConfig value={{ provider: () => new Map() }}>
-        <MediaPasteField teamId="teamId" uploadKey="heroId" onPick={onPick} />
+        <MediaPasteField
+          teamId="teamId"
+          uploadKey="heroId"
+          onPick={onPick}
+          onPickPlaylist={onPickPlaylist}
+        />
       </SWRConfig>
     </MockedProvider>
   )
@@ -276,6 +301,28 @@ describe('MediaPasteField', () => {
       { source: VideoBlockSource.youTube, videoId: 'jQaeIJOA6J0' },
       expect.objectContaining({ childrenCount: 0 })
     )
+  })
+
+  it('previews a long YouTube playlist with how many of its videos an import brings in', async () => {
+    mswServer.use(getPlaylist)
+    const onPickPlaylist = vi.fn()
+    renderField([], onPickPlaylist)
+
+    fireEvent.change(
+      screen.getByRole('textbox', {
+        name: 'Watch, YouTube video or playlist link'
+      }),
+      { target: { value: PLAYLIST_URL } }
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
+
+    expect(
+      await screen.findByText('YouTube playlist · First 12 of 40 videos')
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add videos' }))
+
+    expect(onPickPlaylist).toHaveBeenCalledWith(PLAYLIST_URL)
   })
 
   it('uploads through the video library’s Mux upload under the slot’s section and picks the Mux video when it is ready', () => {

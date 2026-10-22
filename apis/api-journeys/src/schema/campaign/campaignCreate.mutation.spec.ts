@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { type MockedFunction, vi } from 'vitest'
 
-import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { authClient, mockUser } from '../../../test/campaignBlockSpec'
@@ -12,6 +11,10 @@ import {
   campaignFactory
 } from '../../../test/campaignFactory'
 import { prismaMock } from '../../../test/prismaMock'
+import {
+  UNIQUE_VIOLATION_SHAPES,
+  uniqueViolation
+} from '../../../test/uniqueViolation'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import { fetchLanguage } from './gatewayClient'
@@ -804,35 +807,37 @@ describe('campaignCreate', () => {
       expect(prismaMock.campaign.findUniqueOrThrow).not.toHaveBeenCalled()
     })
 
-    it('retries once with a fresh slug on a slug-uniqueness race', async () => {
-      const p2002 = new Prisma.PrismaClientKnownRequestError(
-        'unique constraint failed',
-        { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
-      )
-      prismaMock.campaign.create.mockRejectedValueOnce(p2002)
-      const result = await create()
-      expect(result.errors).toBeUndefined()
-      expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
-      expect(prismaMock.$transaction).toHaveBeenCalledTimes(2)
-    })
+    it.each(UNIQUE_VIOLATION_SHAPES)(
+      'retries once with a fresh slug on a slug-uniqueness race (%s)',
+      async (shape) => {
+        prismaMock.campaign.create.mockRejectedValueOnce(
+          uniqueViolation(shape, ['slug'])
+        )
+        const result = await create()
+        expect(result.errors).toBeUndefined()
+        expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
+        expect(prismaMock.$transaction).toHaveBeenCalledTimes(2)
+      }
+    )
   })
 
   describe('slug race', () => {
-    it('answers CONFLICT (field slug), not a raw Prisma error, when the retry loses the race too', async () => {
-      const p2002 = new Prisma.PrismaClientKnownRequestError(
-        'unique constraint failed',
-        { code: 'P2002', clientVersion: '7.0.0', meta: { target: ['slug'] } }
-      )
-      prismaMock.campaign.create.mockRejectedValue(p2002)
+    it.each(UNIQUE_VIOLATION_SHAPES)(
+      'answers CONFLICT (field slug), not a raw Prisma error, when the retry loses the race too (%s)',
+      async (shape) => {
+        prismaMock.campaign.create.mockRejectedValue(
+          uniqueViolation(shape, ['slug'])
+        )
 
-      const result = await create()
+        const result = await create()
 
-      expect(result.errors[0].extensions).toMatchObject({
-        code: 'CONFLICT',
-        field: 'slug'
-      })
-      expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
-    })
+        expect(result.errors[0].extensions).toMatchObject({
+          code: 'CONFLICT',
+          field: 'slug'
+        })
+        expect(prismaMock.campaign.create).toHaveBeenCalledTimes(2)
+      }
+    )
   })
 
   describe('response', () => {

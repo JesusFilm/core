@@ -5102,6 +5102,7 @@ type Mutation {
   Errors:
   - NOT_FOUND: campaignId does not resolve.
   - FORBIDDEN: caller is not in the team.
+  - BAD_USER_INPUT (field: `id`): not a UUID.
   - BAD_USER_INPUT (field: `campaignId`): the campaign already has 100 regions.
   - CONFLICT: a concurrent create took the id or the derived slug; retry.
   """
@@ -5211,6 +5212,7 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `journeyId`): no journey is linked.
   - BAD_USER_INPUT (field: `url`): "Journey not found or not published" — the linked journey is no longer live.
+  - CONFLICT (field: `journeyId`): a concurrent call linked another journey; retry.
   """
   campaignRegionLanguageSnapshotRefresh(id: ID!): CampaignRegionLanguage!
 
