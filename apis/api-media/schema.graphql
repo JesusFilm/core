@@ -378,7 +378,7 @@ type Mutation {
     journeyId: ID
 
     """
-    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.
     """
     teamId: ID
   ): CloudflareImage!
@@ -388,7 +388,7 @@ type Mutation {
     journeyId: ID
 
     """
-    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.
     """
     teamId: ID
   ): CloudflareImage!

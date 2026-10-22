@@ -1390,7 +1390,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     input: ImageInput
     journeyId: ID
     """
-    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.
     """
     teamId: ID
   ): CloudflareImage! @join__field(graph: API_MEDIA) 
@@ -1399,7 +1399,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
     input: ImageInput
     journeyId: ID
     """
-    The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.
+    The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.
     """
     teamId: ID
   ): CloudflareImage! @join__field(graph: API_MEDIA) 

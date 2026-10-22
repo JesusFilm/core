@@ -5,8 +5,8 @@ import { logger } from '../../logger'
 
 import {
   assertTeamMembership,
-  maybeResolveTeamId,
   resolveAuthorizedTeamId,
+  resolveJourneyUploadTeamId,
   resolveUploadTeamId
 } from './journeysAccess'
 
@@ -150,9 +150,9 @@ describe('journeysAccess', () => {
     })
   })
 
-  describe('maybeResolveTeamId', () => {
+  describe('resolveJourneyUploadTeamId', () => {
     it('should return null when no journeyId is provided', async () => {
-      const teamId = await maybeResolveTeamId({ userId: 'userId' })
+      const teamId = await resolveJourneyUploadTeamId({ userId: 'userId' })
 
       expect(teamId).toBeNull()
       expect(journeysPrismaMock.journey.findUnique).not.toHaveBeenCalled()
@@ -160,7 +160,7 @@ describe('journeysAccess', () => {
 
     it('should throw FORBIDDEN when journeyId is provided without a user', async () => {
       await expect(
-        maybeResolveTeamId({ journeyId: 'journeyId', userId: null })
+        resolveJourneyUploadTeamId({ journeyId: 'journeyId', userId: null })
       ).rejects.toThrow(
         new GraphQLError('journeyId requires an authenticated user', {
           extensions: { code: 'FORBIDDEN' }
@@ -175,7 +175,7 @@ describe('journeysAccess', () => {
         team: { userTeams: [{ id: 'userTeamId' }] }
       } as never)
 
-      const teamId = await maybeResolveTeamId({
+      const teamId = await resolveJourneyUploadTeamId({
         journeyId: 'journeyId',
         userId: 'userId'
       })
@@ -189,7 +189,7 @@ describe('journeysAccess', () => {
         team: { userTeams: [] }
       } as never)
 
-      const teamId = await maybeResolveTeamId({
+      const teamId = await resolveJourneyUploadTeamId({
         journeyId: 'journeyId',
         userId: 'userId'
       })
@@ -203,7 +203,7 @@ describe('journeysAccess', () => {
         new Error('journeys database unreachable')
       )
 
-      const teamId = await maybeResolveTeamId({
+      const teamId = await resolveJourneyUploadTeamId({
         journeyId: 'journeyId',
         userId: 'userId'
       })

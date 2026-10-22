@@ -59,12 +59,12 @@ export async function resolveAuthorizedTeamId({
 }
 
 /**
- * The home team for an upload when the caller names it directly (a campaign
- * edits under its team, not a journey): membership is asserted strictly with
- * `assertTeamMembership` — unlike the journey path, an explicit teamId the
- * caller may not use is FORBIDDEN, not silently dropped — and an
- * authenticated user is required. Without a teamId the journey path decides.
- * api-media learns nothing about what the team is uploading for.
+ * The home team for an upload when the caller names it directly: membership is
+ * asserted strictly with `assertTeamMembership` — unlike the journey path, an
+ * explicit teamId the caller may not use is FORBIDDEN, not silently dropped —
+ * and an authenticated user is required. Without a teamId the best-effort
+ * journey path, `resolveJourneyUploadTeamId`, decides. api-media learns nothing
+ * about what the team is uploading for.
  */
 export async function resolveUploadTeamId({
   journeyId,
@@ -75,7 +75,8 @@ export async function resolveUploadTeamId({
   teamId?: string | null
   userId?: string | null
 }): Promise<string | null> {
-  if (teamId == null) return await maybeResolveTeamId({ journeyId, userId })
+  if (teamId == null)
+    return await resolveJourneyUploadTeamId({ journeyId, userId })
 
   if (userId == null)
     throw new GraphQLError('teamId requires an authenticated user', {
@@ -87,8 +88,8 @@ export async function resolveUploadTeamId({
 }
 
 /**
- * Optionally resolves the home team for an upload. Returns null when no journeyId
- * is supplied (preserving v1 behavior). When a journeyId is supplied, an
+ * Optionally resolves the home team for an upload from its journey. Returns
+ * null when no journeyId is supplied (preserving v1 behavior). When a journeyId is supplied, an
  * authenticated user is required — throws FORBIDDEN otherwise, since a journeyId
  * is only meaningful for an authenticated caller.
  *
@@ -102,7 +103,7 @@ export async function resolveUploadTeamId({
  * with an explicit teamId) keeps its strict `assertTeamMembership` check, since
  * that guards against viewing another team's assets.
  */
-export async function maybeResolveTeamId({
+export async function resolveJourneyUploadTeamId({
   journeyId,
   userId
 }: {

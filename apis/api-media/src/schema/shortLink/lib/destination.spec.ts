@@ -35,9 +35,19 @@ describe('isPublicHttpsUrl', () => {
   })
 })
 
-describe('SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS', () => {
+describe('isPublicHostname', () => {
   afterEach(() => {
     delete process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS
+  })
+
+  it('treats public addresses and names as public', () => {
+    expect(isPublicHostname('8.8.8.8')).toBe(true)
+    expect(isPublicHostname('jesus.film')).toBe(true)
+  })
+
+  it('treats private addresses as not public', () => {
+    expect(isPublicHostname('10.0.0.1')).toBe(false)
+    expect(isPublicHostname('LOCALHOST')).toBe(false)
   })
 
   it('lets a local-dev process point links at localhost, and nothing else changes', () => {
@@ -51,18 +61,6 @@ describe('SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS', () => {
   it('is off unless set to exactly "true"', () => {
     process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS = 'false'
     expect(isPublicWebUrl('http://localhost:4100/journey')).toBe(false)
-  })
-})
-
-describe('isPublicHostname', () => {
-  it('treats public addresses and names as public', () => {
-    expect(isPublicHostname('8.8.8.8')).toBe(true)
-    expect(isPublicHostname('jesus.film')).toBe(true)
-  })
-
-  it('treats private addresses as not public', () => {
-    expect(isPublicHostname('10.0.0.1')).toBe(false)
-    expect(isPublicHostname('LOCALHOST')).toBe(false)
   })
 })
 
