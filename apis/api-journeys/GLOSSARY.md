@@ -13,7 +13,7 @@ The aggregate root and central entity — one interactive experience, addressabl
 _Avoid_: flow, funnel, page, site (each means something narrower here)
 
 **Slug**:
-A Journey's URL-safe public address (the path segment at `<base>/<slug>`), unique across all journeys. Generated from the title on create/duplicate; on collision the Journey's UUID is appended.
+A Journey's URL-safe public address (the path segment at `<base>/<slug>`), unique across all journeys. Generated from the title on create/duplicate; on collision the Journey's UUID is appended. A slug the viewer reserves for its own paths (`isReservedJourneySlug`) is treated the same way: create and duplicate append the id, while update refuses it with `BAD_USER_INPUT` on `slug`.
 _Avoid_: path, permalink, url
 
 **Block**:
@@ -184,8 +184,12 @@ How a Campaign is edited: every edit saves in place as its own change, with no w
 _Avoid_: autosave (as a feature name — it is the only mode), draft mode, preview mode, versioning
 
 **Campaign Settings**:
-The two fields of a Campaign that are not content: the default-language title and the slug, saved outside the Editor's Command history. The slug never follows a title change.
+The parts of a Campaign that are not content: the default-language title, the slug, the default language (changed by a **Default-language swap**) and the **Palette**, all saved outside the Editor's Command history. The slug never follows a title change.
 _Avoid_: metadata, properties, campaign info
+
+**Default-language swap**:
+Changing a Campaign's default language: one transaction moves every Translated Field's text in the new language onto the field and the old default text into a person-written translation, refused while any text has no translation in the new language yet.
+_Avoid_: language change, re-translate
 
 **Campaign access**:
 Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or makes it a Custom Domain's root. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
@@ -214,19 +218,27 @@ What a Campaign Section sits on: nothing, the theme surface, the contrast band, 
 _Avoid_: backdrop, cover (reserve for the owned image itself)
 
 **Column Slot**:
-One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section other than a Columns, Region Share or Image section. Deleting the section in a slot empties the slot and never removes the slot itself; mirrors GridContainer → GridItem.
+One of exactly two fixed cells of a Columns section, each holding at most one Campaign Section other than a Columns or Region Share section; an Image section never lands in a slot either, because its create addresses a page or an owner block, never a slot. Deleting the section in a slot empties the slot and never removes the slot itself; mirrors GridContainer → GridItem.
 _Avoid_: column (ambiguous with the Columns section), cell, pane
 
 **Extra**:
-A **Campaign Typography** or **Campaign Button** block added as a child of a Campaign Section, placed above or below the **Section Body** by its **Placement** and ordered among its siblings like any Block. Only these two typenames may be section children.
+A **Campaign Typography** or **Campaign Button** block added as a child of a Campaign Section, placed above or below the **Section Body** by its **Placement** and ordered among its siblings like any Block. Extras are the only children an author adds around the Section Body, but not the only children a section has: a Video Carousel's `CampaignVideoBlock` cards, a Journey List's **Journey cards** and a Columns section's **Column Slots** are children too, and an **Owned block** carries its host's id as `parentBlockId`. The code's `CAMPAIGN_CHILD_TYPENAMES` and `CampaignChildPlacement` mean Extras.
 _Avoid_: addon, child block (too broad), inline block
+
+**Owned block**:
+A Campaign Block held by a slot on its host rather than placed among its children: a **Section Background** cover, the header's logo, or a **Media Slot** block. It has `parentOrder: null`, is replaced by filling its slot again, and is never deleted on its own.
+_Avoid_: child block, Extra, attachment
+
+**Journey card**:
+The `CampaignJourneyBlock` row under a Journey List section: one linked Journey with its snapshotted title and description, ordered among the list's other cards.
+_Avoid_: journey block (bare, where a Journey's own Blocks could be meant), journey link, item
 
 **Placement**:
 Which side of the Section Body an Extra renders on: `above` or `below`. Sibling order is still one sequence across both sides.
 _Avoid_: position, slot, side
 
 **Protected Block**:
-A Campaign Block that is edited and styled like any other but never deleted or duplicated: the header and footer (one of each per Campaign), a **Column Slot**, and the two Campaign Pages. Only the header, footer and pages never move; the two Column Slots may swap.
+One of the protected rows, edited and styled like any other but never deleted or duplicated: the header, the footer (one of each per Campaign), the **Column Slots** and the two Campaign Pages. A page id is not a block id, but `authorizeStructuralBlock` refuses it the same way. Only the header, footer and pages never move; the two Column Slots may swap.
 _Avoid_: locked, fixed block, system block
 
 **Campaign Typography**:
@@ -242,7 +254,7 @@ What a Campaign Button does when pressed: open a web link, scroll to a block on 
 _Avoid_: link (bare), href, navigation
 
 **Campaign Chrome**:
-The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. The header holds Button Extras only (its nav links); the footer holds Text and Button Extras.
+The header and footer every page of a Campaign shares: one Header and one Footer block per Campaign, owned by the Campaign rather than by a page, styled like any Campaign Section, but never deletable, movable or duplicated. Campaign-owned, not fixed NextSteps chrome: the author edits it like a section. Both take the same Extras as any section; the header's nav links are Button Extras.
 _Avoid_: nav bar, site header/footer, layout, shell
 
 **Brand Mark**:
@@ -250,7 +262,7 @@ The fixed leading element of the Campaign header: the logo image when one is set
 _Avoid_: logo (the logo is one of its two forms), home button, title
 
 **Campaign Image**:
-The campaign picture block, in two roles: an Image section, or an owned block (a **Section Background** cover or the header's **Brand Mark** logo) that is replaced, never edited in place. Every picture is stored on Cloudflare Images under the Campaign's Team, so the stored address is always a Cloudflare one.
+The campaign picture block, in two roles: an Image section, or an owned block (a **Section Background** cover or the header's **Brand Mark** logo) that is replaced, never edited in place. Every picture is stored on Cloudflare Images under the Campaign's Team, so the stored address is always a Cloudflare one, except the seeded header logo, which the admin app serves (`seed/sections.ts`).
 _Avoid_: image block (bare, where the Journey ImageBlock could be meant), photo, asset, media (that includes video)
 
 **Campaign Video**:
@@ -306,7 +318,7 @@ An optional, purely presentational text line (a short code, a tagline) shown und
 _Avoid_: label, caption, subtitle, name
 
 **Region Page**:
-The Campaign's single region-page layout, rendered once per Campaign Region. Every region shows the same sections and the same text; what differs is the region's own rows — its name, lines, countries, and the linked Journey per language — so an edit to the page reaches every region at once.
+The Campaign's single region-page layout, rendered once per Campaign Region. Every region shows the same sections and the same text; what differs is the region's own rows — its name, lines, countries, and the linked Journey per language — so an edit to the page reaches every region at once. The Prisma and GraphQL enum value is `CampaignPageKind.regionTemplate` for historical reasons; the term stays Region Page.
 _Avoid_: region template, shared layout, customised page (there is none), per-region page
 
 **Share Language**:
@@ -318,7 +330,7 @@ The one link a Campaign Region hands out per language: a **short link** that red
 _Avoid_: journey link (the long address nobody hands out), campaign link (that is the Campaign Address), deep link
 
 **Campaign QR Code**:
-A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed, and it is deleted only with its Campaign Region or Campaign. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
+A **QR Code** owned by the Campaign's Team and tied to one Share Language, created the moment a Journey is linked to that language. It survives an unlink, so printed codes keep working; a Share Language that holds one cannot be removed. It is deleted with its Campaign Region or Campaign, with its target Journey (`QrCode.journey` cascades), or with its Team when an account deletion removes the Team; after an account deletion its short link is deleted by the `shortlinkDelete` worker. It encodes the **Share Link**, is always black on white, and is drawn and downloaded in the visitor's browser.
 _Avoid_: campaign code, region QR (the unit is the region language, not the region)
 
 **Snapshot refresh**:
@@ -336,7 +348,7 @@ The language a visitor reads a Campaign in: one of the Campaign's own languages,
 _Avoid_: locale (that is the admin chrome's word), display language, UI language
 
 **Translated Field**:
-A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and reading falls back from the requested language to the default, then to empty.
+A visitor-facing text field of a Campaign. Its default-language value sits on the field itself; every other language sits beside it as a translation that records whether a person or a machine wrote it, and on a machine one whether the model flagged it `uncertain`; reading falls back from the requested language to the default, then to empty.
 _Avoid_: localised string, i18n key, label
 
 **Campaign String**:
@@ -344,11 +356,11 @@ One of the Campaign's fixed interface phrases (such as "Copy link" or "All regio
 _Avoid_: UI string, i18n string, interface key
 
 **Machine Translation**:
-The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote, even one written while the run is going, and "Needs review" is simply every translation still marked as machine-made. Only one run into a given language of a Campaign is in flight at a time; a second is refused until the first ends.
+The one-shot fill of a Campaign's missing or machine-made translations into one language, run over the whole Campaign with progress, through the same AI path journeys use. It never overwrites a translation a person wrote, even one written while the run is going, and "Needs review" is a machine line the model flagged `uncertain`; a person's rewrite clears it. Only one run into a given language of a Campaign is in flight at a time; a second is refused until the first ends.
 _Avoid_: auto-translate (as a feature name), AI translate, sync
 
 **Campaign Translations**:
-The per-language review list behind the Translations View: one row per Translated Field that has default-language text, with the default wording, the wording in the chosen language and who wrote it. Each row is Missing, Needs review (machine-written) or Edited (person-written); the default language has no list, its text being the field.
+The per-language review list behind the Translations View: one row per Translated Field that has default-language text, with the default wording, the wording in the chosen language and who wrote it. A row is Missing (no translation), Edited (person-written) or machine-written, and a machine-written row the model flagged `uncertain` also Needs review; the default language has no list, its text being the field.
 _Avoid_: translation report, review queue
 
 ### Campaign delivery & stats
@@ -374,7 +386,7 @@ The shared viewer code that turns a published Campaign into a page, one componen
 _Avoid_: block renderer (that is the Journey one), template, layout engine
 
 **Campaign Stats**:
-The visitor numbers a Campaign shows: for each linked Journey that is not trashed (published, archived and draft alike), its unique visitors by country from the Campaign's first publish (creation for a draft) to now, read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two linked Journeys counts in both.
+The visitor numbers a Campaign shows: for each linked Journey that is not trashed (published, archived and draft alike), its unique visitors by country over all time (the sweep starts at a fixed early date, and the public tile says "all time"), read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two linked Journeys counts in both.
 _Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read)
 
 ### Account deletion
@@ -384,5 +396,10 @@ When a user is deleted, each Journey/Team they touch is classified as **delete**
 _Avoid_: cleanup, purge
 
 **User Delete Journeys Check / Confirm**:
-The two-phase deletion of this context's half of an account: `Check` is a dry run returning counts and a log; `Confirm` executes it and returns the removed journey/team/membership ids. Identity itself is removed by api-users (see the Context Map).
+The two-phase deletion of this context's half of an account: `Check` is a dry run returning counts and a log; `Confirm` executes it and returns the removed journey/team/membership ids. Confirm also deletes the QR Code rows of the deleted Journeys (whichever Team owns them) and of the deleted Teams, then queues their short links on the `shortlinkDelete` queue once the transaction commits. Identity itself is removed by api-users (see the Context Map).
 _Avoid_: hard delete, wipe
+
+### Terminology traps
+
+**Campaign (three meanings)**:
+Here a **Campaign** is the seasonal campaign site. The short-links admin uses Campaign for a named group of Short Links read together ([Short Links Admin](../../apps/short-links-admin/GLOSSARY.md)), and every QR Code redirect carries a `utm_campaign` parameter (written by `getTo`) whose value is the QR Code's short link id, not a Campaign. Say which one you mean.
