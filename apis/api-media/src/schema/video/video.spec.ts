@@ -1718,8 +1718,19 @@ describe('video', () => {
       expect(data).toHaveProperty('data.video', { id: 'videoId' })
     })
 
-    it('should resolve the variant by video id after the video slug changed', async () => {
-      prismaMock.video.findFirstOrThrow.mockResolvedValueOnce({
+    it('should redirect to the video by its VideoSlug alias when queried by a stale slug', async () => {
+      // Simulates the real failure mode: after a rename, no variant's slug
+      // matches the old full slug anymore, so the direct lookup 404s.
+      prismaMock.video.findFirstOrThrow.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('No Video found', {
+          code: 'P2025',
+          clientVersion: 'prismaVersion'
+        })
+      )
+      prismaMock.videoSlug.findUnique.mockResolvedValueOnce({
+        videoId: 'videoId'
+      } as any)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce({
         ...video,
         slug: 'new-slug'
       })
@@ -1730,6 +1741,7 @@ describe('video', () => {
         document: graphql(`
           query VideoVariantAfterRename($id: ID!, $idType: IdType) {
             video(id: $id, idType: $idType) {
+              id
               variant {
                 id
               }
@@ -1741,6 +1753,17 @@ describe('video', () => {
           idType: 'slug'
         }
       })
+      expect(prismaMock.videoSlug.findUnique).toHaveBeenCalledWith({
+        where: { value: 'old-slug' },
+        select: { videoId: true }
+      })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
+        where: {
+          id: 'videoId',
+          published: true,
+          availableLanguages: { isEmpty: false }
+        }
+      })
       expect(prismaMock.videoVariant.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
@@ -1750,7 +1773,30 @@ describe('video', () => {
           }
         })
       )
+      expect(data).toHaveProperty('data.video.id', 'videoId')
       expect(data).toHaveProperty('data.video.variant', { id: 'variantId' })
+    })
+
+    it('should throw not found when the stale slug has no VideoSlug alias', async () => {
+      prismaMock.video.findFirstOrThrow.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('No Video found', {
+          code: 'P2025',
+          clientVersion: 'prismaVersion'
+        })
+      )
+      prismaMock.videoSlug.findUnique.mockResolvedValueOnce(null)
+      const data = await client({
+        document: VIDEO_QUERY,
+        variables: {
+          id: 'unknown-slug/english',
+          idType: 'slug'
+        }
+      })
+      expect(data).toHaveProperty('errors', [
+        expect.objectContaining({
+          message: 'Video not found with id slug:unknown-slug/english'
+        })
+      ])
     })
 
     it('should query previousSlugs newest first', async () => {
@@ -2590,6 +2636,44 @@ describe('video', () => {
         where: {
           variants: { some: { slug: 'slug' } }
         }
+      })
+      expect(data).toHaveProperty('data.adminVideo', { id: 'videoId' })
+    })
+
+    it('should redirect to the video by its VideoSlug alias when queried by a stale slug', async () => {
+      prismaMock.video.findFirstOrThrow.mockRejectedValueOnce(
+        new Prisma.PrismaClientKnownRequestError('No Video found', {
+          code: 'P2025',
+          clientVersion: 'prismaVersion'
+        })
+      )
+      prismaMock.videoSlug.findUnique.mockResolvedValueOnce({
+        videoId: 'videoId'
+      } as any)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce({
+        ...video,
+        slug: 'new-slug'
+      })
+      prismaMock.userMediaRole.findUnique.mockResolvedValueOnce({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      const data = await authClient({
+        document: ADMIN_VIDEO_QUERY,
+        variables: {
+          id: 'old-slug/english',
+          idType: 'slug'
+        }
+      })
+      expect(prismaMock.videoSlug.findUnique).toHaveBeenCalledWith({
+        where: { value: 'old-slug' },
+        select: { videoId: true }
+      })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith({
+        where: { id: 'videoId' }
       })
       expect(data).toHaveProperty('data.adminVideo', { id: 'videoId' })
     })
@@ -3655,6 +3739,50 @@ describe('video', () => {
             extensions: expect.objectContaining({
               code: 'NOT_UNIQUE_ERROR',
               location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
+      })
+
+      it('should map an unrelated unique constraint violation to a generic NotUniqueError, not a slug error', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: new Date('2023-01-01'),
+          slug: 'old-slug',
+          variants: []
+        } as any)
+        prismaMock.$transaction.mockRejectedValueOnce(
+          new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+            code: 'P2002',
+            clientVersion: 'test',
+            meta: { target: ['id'] }
+          })
+        )
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video with this information already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input'] })]
             })
           })
         ])

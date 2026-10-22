@@ -62,6 +62,21 @@ function isValidClientName(clientName?: string): boolean {
   )
 }
 
+// A slug-based lookup id is `<videoSlug>/<languageSlug>` (VideoVariant.slug's
+// format). Renaming a video resyncs every variant's slug to the new prefix,
+// so a stale id no longer matches any variant directly - resolve the video
+// slug portion through the VideoSlug alias table instead.
+async function resolveVideoIdBySlugAlias(id: string): Promise<string | null> {
+  const separatorIndex = id.lastIndexOf('/')
+  if (separatorIndex === -1) return null
+  const baseSlug = id.slice(0, separatorIndex)
+  const alias = await prisma.videoSlug.findUnique({
+    where: { value: baseSlug },
+    select: { videoId: true }
+  })
+  return alias?.videoId ?? null
+}
+
 interface Info {
   variableValues:
     | Record<
@@ -518,15 +533,33 @@ builder.queryFields((t) => ({
       })
     },
     resolve: async (query, _parent, { id, idType }) => {
-      return idType === IdTypeShape.slug
-        ? await prisma.video.findFirstOrThrow({
-            ...query,
-            where: { variants: { some: { slug: id } } }
-          })
-        : await prisma.video.findUniqueOrThrow({
-            ...query,
-            where: { id }
-          })
+      if (idType !== IdTypeShape.slug) {
+        return await prisma.video.findUniqueOrThrow({
+          ...query,
+          where: { id }
+        })
+      }
+      try {
+        return await prisma.video.findFirstOrThrow({
+          ...query,
+          where: { variants: { some: { slug: id } } }
+        })
+      } catch (err) {
+        if (
+          !(
+            err instanceof Prisma.PrismaClientKnownRequestError &&
+            err.code === 'P2025'
+          )
+        ) {
+          throw err
+        }
+        const aliasedVideoId = await resolveVideoIdBySlugAlias(id)
+        if (aliasedVideoId == null) throw err
+        return await prisma.video.findUniqueOrThrow({
+          ...query,
+          where: { id: aliasedVideoId }
+        })
+      }
     }
   }),
   adminVideos: t.withAuth({ isPublisher: true }).prismaField({
@@ -569,24 +602,39 @@ builder.queryFields((t) => ({
     },
     resolve: async (query, _parent, { id, idType }, context) => {
       try {
-        const video =
-          idType === IdTypeShape.slug
-            ? await prisma.video.findFirstOrThrow({
-                ...query,
-                where: {
-                  variants: { some: { slug: id } },
-                  published: true,
-                  availableLanguages: { isEmpty: false }
-                }
-              })
-            : await prisma.video.findUniqueOrThrow({
-                ...query,
-                where: {
-                  id,
-                  published: true,
-                  availableLanguages: { isEmpty: false }
-                }
-              })
+        const publishedFilter = {
+          published: true,
+          availableLanguages: { isEmpty: false }
+        }
+        let video
+        if (idType === IdTypeShape.slug) {
+          try {
+            video = await prisma.video.findFirstOrThrow({
+              ...query,
+              where: { variants: { some: { slug: id } }, ...publishedFilter }
+            })
+          } catch (err) {
+            if (
+              !(
+                err instanceof Prisma.PrismaClientKnownRequestError &&
+                err.code === 'P2025'
+              )
+            ) {
+              throw err
+            }
+            const aliasedVideoId = await resolveVideoIdBySlugAlias(id)
+            if (aliasedVideoId == null) throw err
+            video = await prisma.video.findUniqueOrThrow({
+              ...query,
+              where: { id: aliasedVideoId, ...publishedFilter }
+            })
+          }
+        } else {
+          video = await prisma.video.findUniqueOrThrow({
+            ...query,
+            where: { id, ...publishedFilter }
+          })
+        }
 
         // Check if video viewing is restricted for the current platform
         if (
@@ -925,9 +973,25 @@ builder.mutationFields((t) => ({
           e instanceof Prisma.PrismaClientKnownRequestError &&
           e.code === 'P2002'
         ) {
-          throw new NotUniqueError('Video slug already exists', [
-            { path: ['input', 'slug'], value: input.slug ?? '' }
-          ])
+          // This transaction only ever writes slug-related uniques:
+          // VideoSlug.value, VideoVariant.slug, and Video.slug - Postgres
+          // reports the bare column name, so VideoSlug's is 'value', not
+          // 'slug'. Missing target info is treated as slug-related too, to
+          // keep matching the pre-check's "Video slug already exists" rather
+          // than regressing to a raw 500 for an unmapped P2002.
+          const target = e.meta?.target as string[] | undefined
+          const isSlugConstraint =
+            target == null ||
+            target.some((field) => field === 'slug' || field === 'value')
+          if (isSlugConstraint) {
+            throw new NotUniqueError('Video slug already exists', [
+              { path: ['input', 'slug'], value: input.slug ?? '' }
+            ])
+          }
+          throw new NotUniqueError(
+            'Video with this information already exists',
+            [{ path: ['input'], value: 'duplicate' }]
+          )
         }
         throw e
       }
