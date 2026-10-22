@@ -128,7 +128,7 @@ describe('CampaignList', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
 
-    expect(await screen.findByText('Christmas 2026')).toBeInTheDocument()
+    expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
     expect(
       screen.queryByText('There was an error loading campaigns.')
     ).not.toBeInTheDocument()
