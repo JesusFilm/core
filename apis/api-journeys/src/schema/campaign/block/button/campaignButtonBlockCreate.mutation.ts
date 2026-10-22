@@ -1,5 +1,3 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
 import { CLIENT_ID_ERROR, assertClientId } from '../../validation'
 import { CampaignButtonBlock } from '../campaignButtonBlock'
@@ -7,8 +5,8 @@ import {
   assertPlacement,
   authorizeBlockCreate,
   createChildBlock,
-  validateParentBlock,
-  withClientIds
+  createWithClientIds,
+  validateParentBlock
 } from '../service'
 
 import { CampaignButtonBlockCreateInput } from './inputs'
@@ -40,18 +38,15 @@ builder.mutationField('campaignButtonBlockCreate', (t) =>
       })
       const placement = assertPlacement(input.placement)
 
-      return await withClientIds(
+      return await createWithClientIds(
         { id: [id] },
-        async () =>
-          await prisma.$transaction(
-            async (tx) =>
-              await createChildBlock(tx, parent, {
-                id,
-                typename: 'CampaignButtonBlock',
-                ...data,
-                placement
-              })
-          )
+        async (tx) =>
+          await createChildBlock(tx, parent, {
+            id,
+            typename: 'CampaignButtonBlock',
+            ...data,
+            placement
+          })
       )
     }
   })

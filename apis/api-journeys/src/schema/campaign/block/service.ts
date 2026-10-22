@@ -18,6 +18,10 @@ import {
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
+import {
+  CAMPAIGN_IMAGE_SLOTS,
+  type CampaignImageSlotValue
+} from '../enums/campaignImageSlot'
 import { conflict, forbidden, notFound } from '../errors'
 import {
   CAMPAIGN_BLOCKS_MAX,
@@ -27,6 +31,7 @@ import {
   assertHexOrNull,
   assertNotNull,
   badUserInput,
+  isOneOf,
   isUniqueViolation
 } from '../validation'
 
@@ -50,15 +55,8 @@ export type CampaignBlockWithCampaignAcl = Prisma.CampaignBlockGetPayload<{
   include: typeof INCLUDE_CAMPAIGN_BLOCK_ACL
 }>
 
-/** The two Extra typenames: the only children a section or chrome block takes. */
-export const CAMPAIGN_CHILD_TYPENAMES = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-] as const
-export type CampaignChildTypename = (typeof CAMPAIGN_CHILD_TYPENAMES)[number]
-
-/** Every typename that hosts Extras: the seeded sections and the two chrome blocks. */
-export const CAMPAIGN_HOST_TYPENAMES = [
+/** Every value of the `typename` column: one per concrete CampaignBlock type. */
+export const CAMPAIGN_TYPENAMES = [
   'CampaignHeroBlock',
   'CampaignRegionSwitcherBlock',
   'CampaignVideoCarouselBlock',
@@ -71,14 +69,27 @@ export const CAMPAIGN_HOST_TYPENAMES = [
   'CampaignImageBlock',
   'CampaignFeaturedMediaBlock',
   'CampaignHeaderBlock',
-  'CampaignFooterBlock'
+  'CampaignFooterBlock',
+  'CampaignTypographyBlock',
+  'CampaignButtonBlock',
+  'CampaignColumnBlock',
+  'CampaignVideoBlock',
+  'CampaignJourneyBlock'
 ] as const
+export type CampaignTypename = (typeof CAMPAIGN_TYPENAMES)[number]
+
+/** The two Extra typenames: the only children a section or chrome block takes. */
+export const CAMPAIGN_CHILD_TYPENAMES = [
+  'CampaignTypographyBlock',
+  'CampaignButtonBlock'
+] as const satisfies readonly CampaignTypename[]
+export type CampaignChildTypename = (typeof CAMPAIGN_CHILD_TYPENAMES)[number]
 
 /** Chrome is never deleted, moved or duplicated. */
 export const CAMPAIGN_CHROME_TYPENAMES = [
   'CampaignHeaderBlock',
   'CampaignFooterBlock'
-] as const
+] as const satisfies readonly CampaignTypename[]
 
 /** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
 export const CAMPAIGN_SECTION_TYPENAMES = [
@@ -93,23 +104,55 @@ export const CAMPAIGN_SECTION_TYPENAMES = [
   'CampaignColumnsBlock',
   'CampaignImageBlock',
   'CampaignFeaturedMediaBlock'
-] as const
+] as const satisfies readonly CampaignTypename[]
 export type CampaignSectionTypename =
   (typeof CAMPAIGN_SECTION_TYPENAMES)[number]
+
+/** Every typename that hosts Extras: the sections and the two chrome blocks. */
+export const CAMPAIGN_HOST_TYPENAMES = [
+  ...CAMPAIGN_SECTION_TYPENAMES,
+  ...CAMPAIGN_CHROME_TYPENAMES
+] as const
 
 /** Sections that read the region being rendered: refused on the landing page. */
 export const CAMPAIGN_REGION_ONLY_TYPENAMES = [
   'CampaignRegionHeaderBlock',
   'CampaignRegionShareBlock'
-] as const
+] as const satisfies readonly CampaignTypename[]
 
 /** Column slots are created with their Columns section and never touched on their own. */
-export const CAMPAIGN_SLOT_TYPENAMES = ['CampaignColumnBlock'] as const
+export const CAMPAIGN_SLOT_TYPENAMES = [
+  'CampaignColumnBlock'
+] as const satisfies readonly CampaignTypename[]
 
 /** No nesting, and the share panel reads a whole page: neither sits in a slot. */
 export const CAMPAIGN_SLOT_DISALLOWED_TYPENAMES = [
   'CampaignColumnsBlock',
   'CampaignRegionShareBlock'
+] as const satisfies readonly CampaignTypename[]
+
+/** The section whose ordered items are Campaign Videos. */
+export const CAMPAIGN_CAROUSEL_TYPENAME =
+  'CampaignVideoCarouselBlock' satisfies CampaignTypename
+
+/** The image typename: an Image section, or the owned block in a cover, logo or Media Slot. */
+export const CAMPAIGN_IMAGE_TYPENAME =
+  'CampaignImageBlock' satisfies CampaignTypename
+
+/** The video typename: a carousel item, or the owned block in a Media Slot. */
+export const CAMPAIGN_VIDEO_TYPENAME =
+  'CampaignVideoBlock' satisfies CampaignTypename
+
+/** The sections with a Media Slot (`mediaBlockId`). */
+export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
+  'CampaignHeroBlock',
+  'CampaignFeaturedMediaBlock'
+] as const satisfies readonly CampaignTypename[]
+
+/** What a Media Slot holds: a Campaign Video or a Campaign Image. */
+export const CAMPAIGN_MEDIA_TYPENAMES = [
+  CAMPAIGN_VIDEO_TYPENAME,
+  CAMPAIGN_IMAGE_TYPENAME
 ] as const
 
 /** A Columns section is created with exactly this many slots. */
@@ -117,35 +160,19 @@ export const CAMPAIGN_COLUMN_SLOT_COUNT = 2
 
 export const CAMPAIGN_CHILD_PLACEMENTS = ['above', 'below'] as const
 
-export function isCampaignChildTypename(
-  typename: string
-): typename is CampaignChildTypename {
-  return (CAMPAIGN_CHILD_TYPENAMES as readonly string[]).includes(typename)
-}
-
-export function isCampaignHostTypename(typename: string): boolean {
-  return (CAMPAIGN_HOST_TYPENAMES as readonly string[]).includes(typename)
-}
-
-export function isCampaignChromeTypename(typename: string): boolean {
-  return (CAMPAIGN_CHROME_TYPENAMES as readonly string[]).includes(typename)
-}
-
-export function isCampaignRegionOnlyTypename(typename: string): boolean {
-  return (CAMPAIGN_REGION_ONLY_TYPENAMES as readonly string[]).includes(
-    typename
-  )
-}
-
-export function isCampaignSlotTypename(typename: string): boolean {
-  return (CAMPAIGN_SLOT_TYPENAMES as readonly string[]).includes(typename)
-}
-
-export function isCampaignSlotDisallowedTypename(typename: string): boolean {
-  return (CAMPAIGN_SLOT_DISALLOWED_TYPENAMES as readonly string[]).includes(
-    typename
-  )
-}
+export const isCampaignChildTypename = isOneOf(CAMPAIGN_CHILD_TYPENAMES)
+export const isCampaignHostTypename = isOneOf(CAMPAIGN_HOST_TYPENAMES)
+export const isCampaignChromeTypename = isOneOf(CAMPAIGN_CHROME_TYPENAMES)
+export const isCampaignRegionOnlyTypename = isOneOf(
+  CAMPAIGN_REGION_ONLY_TYPENAMES
+)
+export const isCampaignSlotTypename = isOneOf(CAMPAIGN_SLOT_TYPENAMES)
+export const isCampaignSlotDisallowedTypename = isOneOf(
+  CAMPAIGN_SLOT_DISALLOWED_TYPENAMES
+)
+export const isCampaignMediaOwnerTypename = isOneOf(
+  CAMPAIGN_MEDIA_OWNER_TYPENAMES
+)
 
 /** Block create is campaign Update on the campaign the block will belong to. */
 export async function authorizeBlockCreate(
@@ -230,31 +257,18 @@ export async function authorizeStructuralBlock(
   return block
 }
 
-/** The section whose ordered items are Campaign Videos. */
-export const CAMPAIGN_CAROUSEL_TYPENAME = 'CampaignVideoCarouselBlock'
-
 /**
- * A child block's parent is a section or chrome block of the same campaign,
- * not soft-deleted and not an owned block (`parentOrder: null`: a cover, logo
- * or Media Slot image has a host typename but never hosts) (`BAD_USER_INPUT` /
- * `parentBlockId`). The child is a
- * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
- * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
- * else (`BAD_USER_INPUT` / `typename`). Returns the parent so create can
- * copy its scoping down.
+ * The block a new child or owned block goes under is a section or chrome
+ * block of the same campaign, not soft-deleted and not itself an owned block
+ * (`parentOrder: null`: a cover, logo or Media Slot image has a host typename
+ * but never hosts) (`BAD_USER_INPUT` / `parentBlockId`). Returns it so
+ * create can copy its scoping down.
  */
-export async function validateParentBlock(
+export async function validateSlotOwner(
   parentBlockId: string,
-  campaignId: string,
-  typename: string
+  campaignId: string
 ): Promise<CampaignBlock> {
-  const item = typename === CAMPAIGN_VIDEO_TYPENAME
-  if (!item && !isCampaignChildTypename(typename))
-    throw badUserInput(
-      `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}, or ${CAMPAIGN_VIDEO_TYPENAME} in a video carousel`,
-      'typename'
-    )
-  const parent = await prisma.campaignBlock.findFirst({
+  const owner = await prisma.campaignBlock.findFirst({
     where: {
       id: parentBlockId,
       campaignId,
@@ -262,12 +276,33 @@ export async function validateParentBlock(
       parentOrder: { not: null }
     }
   })
-  if (parent == null || !isCampaignHostTypename(parent.typename))
+  if (owner == null || !isCampaignHostTypename(owner.typename))
     throw badUserInput(
       'parentBlockId must be a section or chrome block of this campaign',
       'parentBlockId'
     )
-  if (item && parent.typename !== CAMPAIGN_CAROUSEL_TYPENAME)
+  return owner
+}
+
+/**
+ * A child block's parent passes `validateSlotOwner`, and the child is a
+ * Typography or Button block (an Extra), or a CampaignVideoBlock item of a
+ * Video Carousel; a carousel's items are CampaignVideoBlocks and nothing
+ * else (`BAD_USER_INPUT` / `typename`). Returns the parent.
+ */
+export async function validateParentBlock(
+  parentBlockId: string,
+  campaignId: string,
+  typename: string
+): Promise<CampaignBlock> {
+  const isCarouselItem = typename === CAMPAIGN_VIDEO_TYPENAME
+  if (!isCarouselItem && !isCampaignChildTypename(typename))
+    throw badUserInput(
+      `typename must be one of ${CAMPAIGN_CHILD_TYPENAMES.join(', ')}, or ${CAMPAIGN_VIDEO_TYPENAME} in a video carousel`,
+      'typename'
+    )
+  const parent = await validateSlotOwner(parentBlockId, campaignId)
+  if (isCarouselItem && parent.typename !== CAMPAIGN_CAROUSEL_TYPENAME)
     throw badUserInput(
       `only a video carousel takes ${CAMPAIGN_VIDEO_TYPENAME} items`,
       'typename'
@@ -477,6 +512,20 @@ export async function withClientIds<T>(
     }
     throw badUserInput(`${taken.field} is already taken`, taken.field)
   }
+}
+
+/**
+ * The shape of every block create: `withClientIds` around one transaction,
+ * so a client-chosen id that is already taken is reported on its field.
+ */
+export async function createWithClientIds<T>(
+  clientIds: Record<string, Array<string | null | undefined>>,
+  create: (tx: Prisma.TransactionClient) => Promise<T>
+): Promise<T> {
+  return await withClientIds(
+    clientIds,
+    async () => await prisma.$transaction(async (tx) => await create(tx))
+  )
 }
 
 export type CampaignChildCreateData = Omit<
@@ -716,7 +765,7 @@ export async function restoreBlock(
 export async function authorizeTypedBlockUpdate(
   blockId: string,
   user: User,
-  typename: string
+  typename: CampaignTypename
 ): Promise<CampaignBlockWithCampaignAcl> {
   const block = await authorizeBlockUpdate(blockId, user)
   if (block.typename !== typename) throw notFound('block not found')
@@ -1002,7 +1051,71 @@ export function collectSubtree(
 
 const SLOT_COLUMNS = ['coverBlockId', 'mediaBlockId', 'logoBlockId'] as const
 
-/** A copied row's columns: everything but identity, timestamps, slots and the action. */
+/**
+ * The columns a duplicate copies from each row. Identity, the tree position,
+ * the timestamps, the slot columns and the action are written by the copy
+ * itself, so they are not listed; nor is any column added since, until it is
+ * listed here (a `@unique` one must never be).
+ */
+const COPIED_COLUMNS = [
+  'typename',
+  'campaignId',
+  'pageId',
+  'regionId',
+  'backgroundKind',
+  'backgroundColor',
+  'backgroundOverlay',
+  'headingColor',
+  'textColor',
+  'buttonColor',
+  'buttonTextColor',
+  'accentColor',
+  'eyebrow',
+  'eyebrowTranslations',
+  'title',
+  'titleTranslations',
+  'bullets',
+  'bulletsTranslations',
+  'content',
+  'contentTranslations',
+  'intro',
+  'introTranslations',
+  'label',
+  'labelTranslations',
+  'alt',
+  'altTranslations',
+  'description',
+  'descriptionTranslations',
+  'align',
+  'mediaSide',
+  'layout',
+  'switcherVariant',
+  'display',
+  'showMap',
+  'ratio',
+  'typographyVariant',
+  'buttonVariant',
+  'buttonSize',
+  'color',
+  'labelColor',
+  'placement',
+  'source',
+  'videoId',
+  'videoVariantLanguageId',
+  'image',
+  'duration',
+  'minHeight',
+  'src',
+  'width',
+  'height',
+  'focalLeft',
+  'focalTop',
+  'scale',
+  'journeyId',
+  'snapshotEdited'
+] as const satisfies ReadonlyArray<keyof CampaignBlock>
+
+/** A copied row's columns: the `COPIED_COLUMNS` of `row`. */
 function copyColumns(
   row: CampaignBlockWithAction
 ): Omit<
@@ -1010,19 +1123,10 @@ function copyColumns(
   'id' | 'parentBlockId' | 'parentOrder'
 > {
   const data: Record<string, unknown> = {}
-  for (const [key, value] of Object.entries(row)) {
-    if (
-      key === 'id' ||
-      key === 'parentBlockId' ||
-      key === 'parentOrder' ||
-      key === 'updatedAt' ||
-      key === 'deletedAt' ||
-      key === 'action' ||
-      (SLOT_COLUMNS as readonly string[]).includes(key)
-    )
-      continue
-    data[key] =
-      key.endsWith('Translations') && value === null ? Prisma.DbNull : value
+  for (const column of COPIED_COLUMNS) {
+    const value = row[column]
+    data[column] =
+      column.endsWith('Translations') && value === null ? Prisma.DbNull : value
   }
   return data as Omit<
     Prisma.CampaignBlockUncheckedCreateInput,
@@ -1264,9 +1368,6 @@ export const SECTION_COLOR_COLUMNS = [
 ] as const
 export type SectionColorColumn = (typeof SECTION_COLOR_COLUMNS)[number]
 
-/** The owned image typename a cover slot points at (the images ticket adds its mutations). */
-export const CAMPAIGN_IMAGE_TYPENAME = 'CampaignImageBlock'
-
 export type SectionStyleInput = Partial<
   Record<SectionColorColumn, string | null | undefined>
 > & {
@@ -1325,63 +1426,15 @@ export function sectionStyleColumns(
 // rather than edited in place.
 // ---------------------------------------------------------------------------
 
-export type CampaignImageSlotName = 'cover' | 'logo' | 'media'
-
 export type CampaignOwnedSlotColumn =
   | 'coverBlockId'
   | 'logoBlockId'
   | 'mediaBlockId'
 
 const IMAGE_SLOT_COLUMN: Record<
-  CampaignImageSlotName,
+  CampaignImageSlotValue,
   CampaignOwnedSlotColumn
 > = { cover: 'coverBlockId', logo: 'logoBlockId', media: 'mediaBlockId' }
-
-/** The owned video typename a Media Slot may point at. */
-export const CAMPAIGN_VIDEO_TYPENAME = 'CampaignVideoBlock'
-
-/** The sections with a Media Slot (`mediaBlockId`). */
-export const CAMPAIGN_MEDIA_OWNER_TYPENAMES = [
-  'CampaignHeroBlock',
-  'CampaignFeaturedMediaBlock'
-] as const
-
-/** What a Media Slot holds: a Campaign Video or a Campaign Image. */
-export const CAMPAIGN_MEDIA_TYPENAMES = [
-  CAMPAIGN_VIDEO_TYPENAME,
-  CAMPAIGN_IMAGE_TYPENAME
-] as const
-
-export function isCampaignMediaOwnerTypename(typename: string): boolean {
-  return (CAMPAIGN_MEDIA_OWNER_TYPENAMES as readonly string[]).includes(
-    typename
-  )
-}
-
-/**
- * An owned block's parent is a live section or chrome block of the same
- * campaign, never itself an owned block (`BAD_USER_INPUT` / `parentBlockId`). Returns it so the owned
- * block can copy its scoping down.
- */
-export async function validateImageOwner(
-  parentBlockId: string,
-  campaignId: string
-): Promise<CampaignBlock> {
-  const owner = await prisma.campaignBlock.findFirst({
-    where: {
-      id: parentBlockId,
-      campaignId,
-      deletedAt: null,
-      parentOrder: { not: null }
-    }
-  })
-  if (owner == null || !isCampaignHostTypename(owner.typename))
-    throw badUserInput(
-      'parentBlockId must be a section or chrome block of this campaign',
-      'parentBlockId'
-    )
-  return owner
-}
 
 /**
  * Only a hero or a Featured Media section has a Media Slot: any other owner
@@ -1404,12 +1457,8 @@ export function assertMediaOwner(owner: Pick<CampaignBlock, 'typename'>): void {
 export function assertImageSlot(
   owner: Pick<CampaignBlock, 'typename'>,
   slot: string | null | undefined
-): CampaignImageSlotName {
-  const name = assertEnum(slot ?? 'cover', 'slot', [
-    'cover',
-    'logo',
-    'media'
-  ] as const)
+): CampaignImageSlotValue {
+  const name = assertEnum(slot ?? 'cover', 'slot', CAMPAIGN_IMAGE_SLOTS)
   if (name === 'logo' && owner.typename !== 'CampaignHeaderBlock')
     throw badUserInput('only the header has a logo', 'logoBlockId')
   if (name === 'media') assertMediaOwner(owner)
@@ -1474,7 +1523,7 @@ export async function createOwnedBlock(
 export async function createOwnedImageBlock(
   tx: Prisma.TransactionClient,
   owner: CampaignBlock,
-  slot: CampaignImageSlotName,
+  slot: CampaignImageSlotValue,
   data: Omit<CampaignChildCreateData, 'typename'>
 ): Promise<CampaignBlockWithAction> {
   return await createOwnedBlock(tx, owner, IMAGE_SLOT_COLUMN[slot], {

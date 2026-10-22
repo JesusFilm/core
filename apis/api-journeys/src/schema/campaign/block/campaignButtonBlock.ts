@@ -6,9 +6,9 @@ import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
 import { builder } from '../../builder'
 import { CampaignActionInterface } from '../action/campaignAction'
 import { CampaignChildPlacement } from '../enums'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignButtonBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignButtonBlock',
@@ -22,11 +22,7 @@ export const CampaignButtonBlock = builder.prismaObject('CampaignBlock', {
       nullable: false,
       resolve: (block) => block.label ?? ''
     }),
-    labelTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.labelTranslations)
-    }),
+    labelTranslations: translationsField(t, 'label'),
     variant: t.field({
       type: ButtonVariant,
       nullable: true,

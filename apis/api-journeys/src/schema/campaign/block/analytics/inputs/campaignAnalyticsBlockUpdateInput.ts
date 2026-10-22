@@ -1,4 +1,5 @@
 import { builder } from '../../../../builder'
+import { TEXT_CAPS } from '../../../validation'
 import { sectionStyleInputFields } from '../../inputs/sectionStyleInput'
 
 export const CampaignAnalyticsBlockUpdateInput = builder.inputType(
@@ -7,11 +8,11 @@ export const CampaignAnalyticsBlockUpdateInput = builder.inputType(
     fields: (t) => ({
       eyebrow: t.string({
         required: false,
-        description: 'At most 80 characters.'
+        description: `At most ${TEXT_CAPS.eyebrow} characters.`
       }),
       title: t.string({
         required: false,
-        description: 'At most 150 characters.'
+        description: `At most ${TEXT_CAPS.title} characters.`
       }),
       showMap: t.boolean({ required: false }),
       ...sectionStyleInputFields(t)

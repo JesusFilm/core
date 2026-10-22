@@ -1,8 +1,9 @@
 import { builder } from '../../../builder'
+import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
 import { assertEnumOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
-import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
-import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
+import { createSection } from '../createSection'
+import { SECTION_CREATE_ERRORS } from '../inputs/sectionCreateInput'
 import { validateSectionText } from '../validateSectionText'
 
 import { CampaignHeroBlockCreateInput } from './inputs'

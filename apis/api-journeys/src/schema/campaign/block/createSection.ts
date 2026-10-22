@@ -1,7 +1,6 @@
-import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { BLOCK_CAP_ERROR, CLIENT_ID_ERROR, assertClientId } from '../validation'
+import { assertClientId } from '../validation'
 
 import {
   CampaignBlockCreateData,
@@ -11,9 +10,9 @@ import {
   createColumnsSection,
   createSectionBlock,
   createSlotChild,
+  createWithClientIds,
   validateSectionPage,
-  validateSlotParent,
-  withClientIds
+  validateSlotParent
 } from './service'
 
 /** The fields every section create input shares. */
@@ -39,7 +38,9 @@ export async function createSection(
   input: SectionCreateInput,
   typename: CampaignSectionTypename,
   user: User,
-  body: () => Omit<CampaignBlockCreateData, 'id' | 'typename'>
+  body: () =>
+    | Omit<CampaignBlockCreateData, 'id' | 'typename'>
+    | Promise<Omit<CampaignBlockCreateData, 'id' | 'typename'>>
 ): Promise<CampaignBlockWithAction> {
   const campaignId = String(input.campaignId)
   await authorizeBlockCreate(campaignId, user)
@@ -62,42 +63,21 @@ export async function createSection(
   const data = {
     id,
     typename,
-    ...body()
+    ...(await body())
   }
-  return await withClientIds(
+  return await createWithClientIds(
     { id: [id], slotIds: slotIds ?? [] },
-    async () =>
-      await prisma.$transaction(async (tx) => {
-        if (slot != null) return await createSlotChild(tx, slot, data)
-        if (typename === 'CampaignColumnsBlock')
-          return await createColumnsSection(
-            tx,
-            page,
-            data,
-            input.parentOrder,
-            slotIds
-          )
-        return await createSectionBlock(tx, page, data, input.parentOrder)
-      })
+    async (tx) => {
+      if (slot != null) return await createSlotChild(tx, slot, data)
+      if (typename === 'CampaignColumnsBlock')
+        return await createColumnsSection(
+          tx,
+          page,
+          data,
+          input.parentOrder,
+          slotIds
+        )
+      return await createSectionBlock(tx, page, data, input.parentOrder)
+    }
   )
 }
-
-/**
- * A section create's `Errors:` description, with `parentBlockIdError` as its
- * one `parentBlockId` line: a column slot for a section, an owner for the
- * image create's owned role.
- */
-export function sectionCreateErrors(parentBlockIdError: string): string {
-  return (
-    'Auth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `pageId`): not a page of this campaign.\n- BAD_USER_INPUT (field: `parentOrder`): negative.\n' +
-    `- BAD_USER_INPUT (field: \`parentBlockId\`): ${parentBlockIdError}\n` +
-    `${CLIENT_ID_ERROR}\n${BLOCK_CAP_ERROR}`
-  )
-}
-
-export const SECTION_CREATE_ERRORS = sectionCreateErrors(
-  'not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.'
-)
-
-export const SECTION_PARENT_BLOCK_ID_DESCRIPTION =
-  'A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.'

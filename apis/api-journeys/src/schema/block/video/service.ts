@@ -5,6 +5,10 @@ import { z } from 'zod'
 import { graphql } from '@core/shared/gql'
 
 import { env } from '../../../env'
+import {
+  YoutubeVideosData,
+  youTubeUrl
+} from '../../../lib/youTube/youTubeRequest'
 
 export const videoBlockYouTubeSchema = z.object({
   videoId: z
@@ -30,22 +34,6 @@ export const videoBlockMuxSchema = z.object({
     })
     .min(1)
 })
-
-export interface YoutubeVideosData {
-  // present instead of items when the request fails (quota exceeded, bad key)
-  error?: { code: number; message: string }
-  items?: Array<{
-    id: string
-    snippet: {
-      title: string
-      description: string
-      thumbnails: { high: { url: string } }
-    }
-    contentDetails: {
-      duration: string
-    }
-  }>
-}
 
 const GET_MUX_VIDEO_QUERY = graphql(`
   query GetMuxVideo($id: ID!) {
@@ -112,13 +100,10 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   image: string
   duration: number
 }> {
-  const query = new URLSearchParams({
-    part: 'snippet,contentDetails',
-    key: env.FIREBASE_API_KEY,
-    id: videoId
-  }).toString()
   const videosData: YoutubeVideosData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
+    await fetch(
+      youTubeUrl('videos', { part: 'snippet,contentDetails', id: videoId })
+    )
   ).json()
   if (videosData.error != null) {
     // quota/auth failures must not read as "video does not exist"

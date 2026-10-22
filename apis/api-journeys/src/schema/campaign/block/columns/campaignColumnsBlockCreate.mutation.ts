@@ -1,10 +1,11 @@
 import { builder } from '../../../builder'
+import { CAMPAIGN_COLUMNS_RATIOS } from '../../enums/campaignColumnsRatio'
 import { assertEnum } from '../../validation'
 import { CampaignColumnsBlock } from '../campaignColumnsBlock'
-import { SECTION_CREATE_ERRORS, createSection } from '../createSection'
+import { createSection } from '../createSection'
+import { SECTION_CREATE_ERRORS } from '../inputs/sectionCreateInput'
 
 import { CampaignColumnsBlockCreateInput } from './inputs'
-import { CAMPAIGN_COLUMNS_RATIOS } from './validateColumnsRatio'
 
 builder.mutationField('campaignColumnsBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

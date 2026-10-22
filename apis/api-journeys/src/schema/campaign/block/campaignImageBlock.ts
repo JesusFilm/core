@@ -1,8 +1,9 @@
 import { builder } from '../../builder'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
+import { TEXT_CAPS } from '../validation'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignImageBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignImageBlock',
@@ -19,13 +20,9 @@ export const CampaignImageBlock = builder.prismaObject('CampaignBlock', {
     }),
     alt: t.exposeString('alt', {
       nullable: true,
-      description: 'Visitor-facing alternative text; at most 500 characters.'
+      description: `Visitor-facing alternative text; at most ${TEXT_CAPS.imageAlt} characters.`
     }),
-    altTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.altTranslations)
-    }),
+    altTranslations: translationsField(t, 'alt'),
     width: t.exposeInt('width', {
       nullable: true,
       description:

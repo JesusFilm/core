@@ -2,6 +2,7 @@ import { TypographyAlign } from '../../../../block/typography/enums/typographyAl
 import { TypographyVariant } from '../../../../block/typography/enums/typographyVariant'
 import { builder } from '../../../../builder'
 import { CampaignChildPlacement } from '../../../enums'
+import { TEXT_CAPS } from '../../../validation'
 
 export const CampaignTypographyBlockCreateInput = builder.inputType(
   'CampaignTypographyBlockCreateInput',
@@ -21,8 +22,7 @@ export const CampaignTypographyBlockCreateInput = builder.inputType(
       }),
       content: t.string({
         required: false,
-        description:
-          'Default-language text; empty when omitted. At most 2000 characters.'
+        description: `Default-language text; empty when omitted. At most ${TEXT_CAPS.typographyContent} characters.`
       }),
       variant: t.field({ type: TypographyVariant, required: false }),
       align: t.field({

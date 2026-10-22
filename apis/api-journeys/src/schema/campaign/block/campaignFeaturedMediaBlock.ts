@@ -1,9 +1,9 @@
 import { builder } from '../../builder'
 import { CampaignFeaturedMediaLayout, CampaignMediaSide } from '../enums'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignFeaturedMediaBlock = builder.prismaObject(
   'CampaignBlock',
@@ -16,32 +16,16 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
       'A section placing one Media Slot beside eyebrow, title, description and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.',
     fields: (t) => ({
       eyebrow: t.exposeString('eyebrow', { nullable: true }),
-      eyebrowTranslations: t.field({
-        type: [TranslatedValueRef],
-        nullable: false,
-        resolve: (block) => toTranslatedValues(block.eyebrowTranslations)
-      }),
+      eyebrowTranslations: translationsField(t, 'eyebrow'),
       title: t.exposeString('title', { nullable: true }),
-      titleTranslations: t.field({
-        type: [TranslatedValueRef],
-        nullable: false,
-        resolve: (block) => toTranslatedValues(block.titleTranslations)
-      }),
+      titleTranslations: translationsField(t, 'title'),
       description: t.exposeString('description', { nullable: true }),
-      descriptionTranslations: t.field({
-        type: [TranslatedValueRef],
-        nullable: false,
-        resolve: (block) => toTranslatedValues(block.descriptionTranslations)
-      }),
+      descriptionTranslations: translationsField(t, 'description'),
       bullets: t.exposeString('bullets', {
         nullable: true,
         description: 'One bullet per line; the viewer splits on line breaks.'
       }),
-      bulletsTranslations: t.field({
-        type: [TranslatedValueRef],
-        nullable: false,
-        resolve: (block) => toTranslatedValues(block.bulletsTranslations)
-      }),
+      bulletsTranslations: translationsField(t, 'bullets'),
       mediaSide: t.field({
         type: CampaignMediaSide,
         nullable: false,

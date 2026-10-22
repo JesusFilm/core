@@ -4,13 +4,13 @@ import {
   CampaignButtonVariant
 } from '@core/prisma/journeys/client'
 
+import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
 import {
   TEXT_CAPS,
   assertEnumOrNull,
   assertHexOrNull,
   assertLengthOrNull
 } from '../../validation'
-import { CAMPAIGN_ALIGNS } from '../typography/validateTypographyInput'
 
 export const BUTTON_VARIANTS = Object.values(CampaignButtonVariant)
 export const BUTTON_SIZES = Object.values(CampaignButtonSize)

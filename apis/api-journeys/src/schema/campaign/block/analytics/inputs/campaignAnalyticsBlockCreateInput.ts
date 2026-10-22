@@ -1,29 +1,19 @@
 import { builder } from '../../../../builder'
-import { SECTION_PARENT_BLOCK_ID_DESCRIPTION } from '../../createSection'
+import { TEXT_CAPS } from '../../../validation'
+import { sectionCreateInputFields } from '../../inputs/sectionCreateInput'
 
 export const CampaignAnalyticsBlockCreateInput = builder.inputType(
   'CampaignAnalyticsBlockCreateInput',
   {
     fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({ required: true, description: 'A page of the campaign.' }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
+      ...sectionCreateInputFields(t),
       eyebrow: t.string({
         required: false,
-        description: 'At most 80 characters.'
+        description: `At most ${TEXT_CAPS.eyebrow} characters.`
       }),
       title: t.string({
         required: false,
-        description: 'At most 150 characters.'
+        description: `At most ${TEXT_CAPS.title} characters.`
       }),
       showMap: t.boolean({ required: false, description: 'Defaults to false.' })
     })
