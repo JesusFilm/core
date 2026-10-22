@@ -1,12 +1,15 @@
 import { type MockedFunction, vi } from 'vitest'
 
-import { Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
 import { authClient, mockUser } from '../../../test/campaignBlockSpec'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { prismaMock } from '../../../test/prismaMock'
+import {
+  UNIQUE_VIOLATION_SHAPES,
+  uniqueViolation
+} from '../../../test/uniqueViolation'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
 import {
@@ -217,25 +220,24 @@ describe('campaignUpdate', () => {
     expect(prismaMock.campaign.update).not.toHaveBeenCalled()
   })
 
-  it('surfaces the unique-constraint race on slug as BAD_USER_INPUT, field slug', async () => {
-    prismaMock.campaign.findUnique.mockResolvedValue(
-      campaignFactory({ role: 'member' }).build()
-    )
-    prismaMock.campaign.update.mockRejectedValue(
-      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
-        code: 'P2002',
-        clientVersion: 'test',
-        meta: { target: ['slug'] }
+  it.each(UNIQUE_VIOLATION_SHAPES)(
+    'surfaces the unique-constraint race on slug as BAD_USER_INPUT, field slug (%s)',
+    async (shape) => {
+      prismaMock.campaign.findUnique.mockResolvedValue(
+        campaignFactory({ role: 'member' }).build()
+      )
+      prismaMock.campaign.update.mockRejectedValue(
+        uniqueViolation(shape, ['slug'])
+      )
+
+      const result = await update({ slug: 'raced' })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'slug'
       })
-    )
-
-    const result = await update({ slug: 'raced' })
-
-    expect(result.errors[0].extensions).toMatchObject({
-      code: 'BAD_USER_INPUT',
-      field: 'slug'
-    })
-  })
+    }
+  )
 
   it('does not regenerate the slug when the title changes', async () => {
     const campaign = campaignFactory({ role: 'member' }).build()

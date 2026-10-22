@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql'
 
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
@@ -15,7 +15,8 @@ import {
   TEXT_CAPS,
   assertLength,
   badUserInput,
-  generateUniqueCampaignSlug
+  generateUniqueCampaignSlug,
+  isUniqueViolation
 } from './validation'
 
 builder.mutationField('campaignCreate', (t) =>
@@ -80,12 +81,7 @@ builder.mutationField('campaignCreate', (t) =>
         } catch (error) {
           // Only the slug-uniqueness race is retried, once, with a fresh slug;
           // losing it twice is the same CONFLICT a region create answers with.
-          if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === 'P2002' &&
-            Array.isArray(error.meta?.target) &&
-            (error.meta.target as string[]).includes('slug')
-          ) {
+          if (isUniqueViolation(error, 'slug')) {
             if (attempt === 0) {
               attempt += 1
               continue
