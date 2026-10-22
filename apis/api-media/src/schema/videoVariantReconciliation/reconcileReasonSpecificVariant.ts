@@ -47,8 +47,10 @@ const CONTAINER_LABELS = new Set(['collection', 'series', 'featureFilm'])
 // produced any media -- FRESH_UPLOAD_REASONS excludes those. A re-request
 // (a publish toggle, a childIds edit on the grandparent) overwrites `reason`
 // in requestVideoVariantReconciliation, but that function keeps a fresh
-// upload's reason sticky until Mux resolves, so this exclusion still holds
-// for a Variant re-requested mid-upload.
+// upload's reason sticky until Mux resolves (recording an explicit toggle in
+// that window as fresh-upload-publication-change, itself a fresh-upload
+// reason), so this exclusion still holds for a Variant re-requested
+// mid-upload.
 export function isGeneratedParentVariant(
   variant: ReconciledVariant,
   reason: VideoVariantReconciliationReason
@@ -77,6 +79,7 @@ type ReasonSpecificReconciliation = {
   videoVariantId: string | null
   published: boolean
   processingStages: unknown
+  createdAt: Date
 }
 
 export type ReasonSpecificReconciliationResult = {
@@ -161,6 +164,7 @@ async function reconcileDeleteVariant({
     await persistReconciliationStatus({
       store,
       reconciliationId,
+      runCreatedAt: reconciliation.createdAt,
       status: 'degraded',
       stages,
       failedStageValue: stages.parentSync
@@ -193,6 +197,7 @@ async function reconcileDeleteVariant({
     await persistReconciliationStatus({
       store,
       reconciliationId,
+      runCreatedAt: reconciliation.createdAt,
       status: 'degraded',
       stages,
       failedStageValue: stages.algoliaVariant
@@ -210,6 +215,7 @@ async function reconcileDeleteVariant({
   const videoRecordFailure = await persistVideoRecordFailure({
     store,
     reconciliationId,
+    runCreatedAt: reconciliation.createdAt,
     stages
   })
   if (videoRecordFailure != null) return videoRecordFailure
@@ -217,6 +223,7 @@ async function reconcileDeleteVariant({
   await persistReconciliationStatus({
     store,
     reconciliationId,
+    runCreatedAt: reconciliation.createdAt,
     status: 'complete',
     stages
   })
@@ -255,6 +262,7 @@ async function reconcileUnpublishVariant({
     await persistReconciliationStatus({
       store,
       reconciliationId,
+      runCreatedAt: reconciliation.createdAt,
       status: 'degraded',
       stages,
       failedStageValue: stages.parentSync
@@ -285,6 +293,7 @@ async function reconcileUnpublishVariant({
     await persistReconciliationStatus({
       store,
       reconciliationId,
+      runCreatedAt: reconciliation.createdAt,
       status: 'degraded',
       stages,
       failedStageValue: stages.algoliaVariant
@@ -302,6 +311,7 @@ async function reconcileUnpublishVariant({
   const videoRecordFailure = await persistVideoRecordFailure({
     store,
     reconciliationId,
+    runCreatedAt: reconciliation.createdAt,
     stages
   })
   if (videoRecordFailure != null) return videoRecordFailure
@@ -309,6 +319,7 @@ async function reconcileUnpublishVariant({
   await persistReconciliationStatus({
     store,
     reconciliationId,
+    runCreatedAt: reconciliation.createdAt,
     status: 'complete',
     stages
   })
@@ -320,10 +331,12 @@ async function reconcileUnpublishVariant({
 async function persistVideoRecordFailure({
   store,
   reconciliationId,
+  runCreatedAt,
   stages
 }: {
   store: ReconciliationStore
   reconciliationId: string
+  runCreatedAt: Date
   stages: ProcessingStages
 }): Promise<ReasonSpecificReconciliationResult | null> {
   if (stages.algoliaVideo.state !== 'failed') return null
@@ -331,6 +344,7 @@ async function persistVideoRecordFailure({
   await persistReconciliationStatus({
     store,
     reconciliationId,
+    runCreatedAt,
     status: 'degraded',
     stages,
     failedStageValue: stages.algoliaVideo
@@ -387,6 +401,7 @@ export async function reconcileGeneratedParentVariant({
     await persistReconciliationStatus({
       store,
       reconciliationId,
+      runCreatedAt: reconciliation.createdAt,
       status: 'degraded',
       stages,
       failedStageValue: stages.algoliaVariant
@@ -404,6 +419,7 @@ export async function reconcileGeneratedParentVariant({
   const videoRecordFailure = await persistVideoRecordFailure({
     store,
     reconciliationId,
+    runCreatedAt: reconciliation.createdAt,
     stages
   })
   if (videoRecordFailure != null) return videoRecordFailure
@@ -411,6 +427,7 @@ export async function reconcileGeneratedParentVariant({
   await persistReconciliationStatus({
     store,
     reconciliationId,
+    runCreatedAt: reconciliation.createdAt,
     status: 'complete',
     stages
   })

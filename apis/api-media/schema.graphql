@@ -2125,6 +2125,7 @@ type VideoVariant {
   """version control for master video file"""
   version: Int!
   video: Video
+  reconciliation: VideoVariantReconciliation
 }
 
 input VideoVariantCreateInput {
