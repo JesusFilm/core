@@ -782,8 +782,7 @@ builder.mutationFields((t) => ({
                 slug: true,
                 restrictTranslations: true,
                 variants: {
-                  where: { published: true },
-                  select: { languageId: true }
+                  select: { id: true, slug: true, languageId: true, published: true }
                 }
               }
             })
@@ -876,16 +875,34 @@ builder.mutationFields((t) => ({
           previousSlug != null &&
           input.slug !== previousSlug
         ) {
-          const [, , updatedVideo] = await prisma.$transaction([
+          // VideoVariant.slug is `${video.slug}/${languageSlug}`, set once at
+          // variant-creation time and never recomputed from the parent. Renaming
+          // the video must resync every variant's slug prefix so the new slug is
+          // actually reachable through the variant-based idType:slug lookup.
+          const variantSlugUpdates = (currentVideo?.variants ?? [])
+            .filter((variant) =>
+              variant.slug.startsWith(`${previousSlug}/`)
+            )
+            .map((variant) =>
+              prisma.videoVariant.update({
+                where: { id: variant.id },
+                data: {
+                  slug: `${input.slug}${variant.slug.slice(previousSlug.length)}`
+                }
+              })
+            )
+          const videoUpdatePromise = prisma.video.update(videoUpdateArgs)
+          await prisma.$transaction([
             prisma.videoSlug.create({
               data: { value: previousSlug, videoId: input.id }
             }),
             prisma.videoSlug.deleteMany({
               where: { value: input.slug, videoId: input.id }
             }),
-            prisma.video.update(videoUpdateArgs)
+            ...variantSlugUpdates,
+            videoUpdatePromise
           ])
-          video = updatedVideo
+          video = await videoUpdatePromise
         } else {
           video = await prisma.video.update(videoUpdateArgs)
         }
@@ -900,6 +917,14 @@ builder.mutationFields((t) => ({
             'Translation restriction cannot be disabled once enabled',
             { cause: e }
           )
+        }
+        if (
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === 'P2002'
+        ) {
+          throw new NotUniqueError('Video slug already exists', [
+            { path: ['input', 'slug'], value: input.slug ?? '' }
+          ])
         }
         throw e
       }
@@ -946,13 +971,12 @@ builder.mutationFields((t) => ({
         input.published !== undefined &&
         currentVideo.published !== input.published
 
-      if (
-        publishedChanged &&
-        currentVideo &&
-        currentVideo.variants.length > 0
-      ) {
+      const publishedVariants =
+        currentVideo?.variants.filter((variant) => variant.published) ?? []
+
+      if (publishedChanged && publishedVariants.length > 0) {
         try {
-          for (const variant of currentVideo.variants) {
+          for (const variant of publishedVariants) {
             if (input.published) {
               // Video was unpublished and is now published - create parent variants for all published variants
               await handleParentVariantCreation(input.id, variant.languageId)

@@ -2978,7 +2978,14 @@ describe('video', () => {
           published: false,
           publishedAt: null,
           slug: 'old-slug',
-          variants: [{ languageId: 'en' }]
+          variants: [
+            {
+              id: 'variantId',
+              slug: 'old-slug/en',
+              languageId: 'en',
+              published: true
+            }
+          ]
         } as any)
         prismaMock.video.findMany.mockResolvedValue([{ id: 'id' }] as any)
         prismaMock.video.update.mockResolvedValue({
@@ -3017,6 +3024,13 @@ describe('video', () => {
         })
         expect(prismaMock.videoSlug.create).toHaveBeenCalledWith({
           data: { value: 'old-slug', videoId: 'id' }
+        })
+        // VideoVariant.slug (`<video-slug>/<language-slug>`) must be resynced
+        // to the new video slug, otherwise the variant keeps resolving under
+        // the stale prefix instead of the renamed one.
+        expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+          where: { id: 'variantId' },
+          data: { slug: 'slug/en' }
         })
         expect(prismaMock.video.update).toHaveBeenCalledWith({
           where: { id: 'id' },
@@ -3124,8 +3138,7 @@ describe('video', () => {
             slug: true,
             restrictTranslations: true,
             variants: {
-              where: { published: true },
-              select: { languageId: true }
+              select: { id: true, slug: true, languageId: true, published: true }
             }
           }
         })
@@ -3593,6 +3606,53 @@ describe('video', () => {
         )
         expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
         expect(result).toHaveProperty('data.videoUpdate', { id: 'id' })
+      })
+
+      it('should map a concurrent slug collision to NotUniqueError instead of a raw 500', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: new Date('2023-01-01'),
+          slug: 'old-slug',
+          variants: []
+        } as any)
+        // Simulates another request winning the race between the
+        // assertSlugNotAliasOfOtherVideo pre-check and this transaction's
+        // VideoSlug insert, so the unique constraint fires inside $transaction.
+        prismaMock.$transaction.mockRejectedValueOnce(
+          new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+            code: 'P2002',
+            clientVersion: 'test',
+            meta: { target: ['value'] }
+          })
+        )
+
+        const result = await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        expect(result).toHaveProperty('data', null)
+        expect(result).toHaveProperty('errors', [
+          expect.objectContaining({
+            message: 'Video slug already exists',
+            extensions: expect.objectContaining({
+              code: 'NOT_UNIQUE_ERROR',
+              location: [expect.objectContaining({ path: ['input', 'slug'] })]
+            })
+          })
+        ])
       })
 
       it('should delete the alias and record the replaced slug when renaming back', async () => {
