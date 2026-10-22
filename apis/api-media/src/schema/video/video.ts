@@ -894,6 +894,7 @@ builder.mutationFields((t) => ({
           : { id: input.id }
 
       let video
+      let renamedVariantIds: string[] = []
       try {
         const videoUpdateArgs = {
           ...query,
@@ -931,16 +932,18 @@ builder.mutationFields((t) => ({
           // variant-creation time and never recomputed from the parent. Renaming
           // the video must resync every variant's slug prefix so the new slug is
           // actually reachable through the variant-based idType:slug lookup.
-          const variantSlugUpdates = (currentVideo?.variants ?? [])
-            .filter((variant) => variant.slug.startsWith(`${previousSlug}/`))
-            .map((variant) =>
-              prisma.videoVariant.update({
-                where: { id: variant.id },
-                data: {
-                  slug: `${input.slug}${variant.slug.slice(previousSlug.length)}`
-                }
-              })
-            )
+          const renamedVariants = (currentVideo?.variants ?? []).filter(
+            (variant) => variant.slug.startsWith(`${previousSlug}/`)
+          )
+          renamedVariantIds = renamedVariants.map((variant) => variant.id)
+          const variantSlugUpdates = renamedVariants.map((variant) =>
+            prisma.videoVariant.update({
+              where: { id: variant.id },
+              data: {
+                slug: `${input.slug}${variant.slug.slice(previousSlug.length)}`
+              }
+            })
+          )
           const videoUpdateQuery = prisma.video.update(videoUpdateArgs)
           const results = await prisma.$transaction([
             prisma.videoSlug.create({
@@ -1072,7 +1075,7 @@ builder.mutationFields((t) => ({
           syncVideoRecord: true,
           syncAllVariants: variantEmbeddedFieldsChanged,
           syncPublishedFlag: publishedChanged,
-          dirtyVariantIds: [],
+          dirtyVariantIds: renamedVariantIds,
           deletedVariantIds: []
         },
         logger

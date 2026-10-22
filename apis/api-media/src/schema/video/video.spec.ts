@@ -3146,14 +3146,16 @@ describe('video', () => {
         })
 
         // label/childIds changed and published flipped false -> true: full
-        // variant re-index plus the published-flag batch update
+        // variant re-index plus the published-flag batch update. The renamed
+        // variant is also flagged dirty so its embedded slug stays correct
+        // even when a later change narrows syncAllVariants back to false.
         expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
           'id',
           {
             syncVideoRecord: true,
             syncAllVariants: true,
             syncPublishedFlag: true,
-            dirtyVariantIds: [],
+            dirtyVariantIds: ['variantId'],
             deletedVariantIds: []
           },
           expect.anything()
@@ -3707,6 +3709,59 @@ describe('video', () => {
         expect(prismaMock.video.update).toHaveBeenCalledTimes(1)
         expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
         expect(result).toHaveProperty('data.videoUpdate', { id: 'id' })
+      })
+
+      it('should flag renamed variants dirty for Algolia even when no other variant-embedded field changed', async () => {
+        prismaMock.userMediaRole.findUnique.mockResolvedValue({
+          id: 'userId',
+          userId: 'userId',
+          roles: ['publisher'],
+          createdAt: new Date(),
+          updatedAt: new Date()
+        })
+        prismaMock.video.findUnique.mockResolvedValue({
+          published: false,
+          publishedAt: new Date('2023-01-01'),
+          slug: 'old-slug',
+          variants: [
+            {
+              id: 'variantId',
+              slug: 'old-slug/en',
+              languageId: 'en',
+              published: true
+            }
+          ]
+        } as any)
+        prismaMock.video.update.mockResolvedValue({
+          id: 'id',
+          slug: 'new-slug'
+        } as unknown as Video)
+
+        await authClient({
+          document: VIDEO_UPDATE_MUTATION,
+          variables: {
+            input: {
+              id: 'id',
+              slug: 'new-slug'
+            }
+          }
+        })
+
+        // A bare slug rename doesn't flip label/childIds/restrictViewPlatforms,
+        // so syncAllVariants stays false - the renamed variant's Algolia record
+        // (which embeds its own slug) must be flagged dirty explicitly, or it
+        // keeps pointing at the stale slug indefinitely.
+        expect(mockedEnqueueVideoAlgoliaSync).toHaveBeenCalledWith(
+          'id',
+          {
+            syncVideoRecord: true,
+            syncAllVariants: false,
+            syncPublishedFlag: false,
+            dirtyVariantIds: ['variantId'],
+            deletedVariantIds: []
+          },
+          expect.anything()
+        )
       })
 
       it('should map a concurrent slug collision to NotUniqueError instead of a raw 500', async () => {
