@@ -67,6 +67,22 @@ describe('SectionWordingSettings', () => {
     await waitFor(() => expect(mock.result).toHaveBeenCalled())
   })
 
+  it('keeps a line break through an edit', async () => {
+    const mock = stringMock('Coming\nsoon')
+    render(
+      <StaticEditor mocks={[mock]} initialState={{ previewLanguageId: '529' }}>
+        <SectionWordingSettings block={journeyList} />
+      </StaticEditor>
+    )
+
+    const input = screen.getByRole('textbox', { name: 'No journeys message' })
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Coming\nsoon' } })
+
+    expect(input).toHaveValue('Coming\nsoon')
+    await waitFor(() => expect(mock.result).toHaveBeenCalled())
+  })
+
   it('renders nothing for a section that reads no wording', () => {
     const hero = campaign.blocks.find((block) => block.id === 'heroId')!
     render(

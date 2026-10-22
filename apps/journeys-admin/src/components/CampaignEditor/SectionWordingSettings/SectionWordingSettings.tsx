@@ -67,7 +67,7 @@ interface WordingFieldProps {
   string: CampaignString
 }
 
-/** One Campaign String, typed into as inline text is: one Command per edit, in the Preview Language. */
+/** One Campaign String, typed into as inline text is: one Command per edit, in the Preview Language. Multi-line, as every Campaign String is. */
 function WordingField({ string }: WordingFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
@@ -91,6 +91,8 @@ function WordingField({ string }: WordingFieldProps): ReactElement {
         formHelperText: error != null ? { role: 'alert' } : undefined
       }}
       size="small"
+      multiline
+      minRows={1}
       fullWidth
     />
   )
