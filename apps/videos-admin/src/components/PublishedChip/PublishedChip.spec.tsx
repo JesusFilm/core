@@ -65,4 +65,13 @@ describe('isPublishPending', () => {
       false
     )
   })
+
+  it('should be pending while reconciliation is degraded but still retrying', () => {
+    expect(
+      isPublishPending({
+        published: false,
+        reconciliation: { status: 'degraded', published: true }
+      })
+    ).toBe(true)
+  })
 })
