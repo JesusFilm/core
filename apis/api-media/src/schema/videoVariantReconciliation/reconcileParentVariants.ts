@@ -1,4 +1,4 @@
-import { prisma } from '@core/prisma/media/client'
+import { type VideoLabel, prisma } from '@core/prisma/media/client'
 
 import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
@@ -8,6 +8,8 @@ import {
   findContainerParentIds,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
+
+import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 
 import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'
 import {
@@ -53,7 +55,7 @@ export async function reconcileParentVariants({
 
   const parentVideos = await prisma.video.findMany({
     where: { id: { in: parentIds } },
-    select: { id: true, slug: true }
+    select: { id: true, slug: true, label: true }
   })
 
   let firstFailure: ParentReconciliationResult | null = null
@@ -76,7 +78,7 @@ async function reconcileParentVariant({
   stages,
   persistStatus
 }: {
-  parentVideo: { id: string; slug: string | null }
+  parentVideo: { id: string; slug: string | null; label: VideoLabel }
   variant: ChildVariant
   stages: ProcessingStages
   persistStatus: (
@@ -95,7 +97,16 @@ async function reconcileParentVariant({
     include: { downloads: { select: { id: true } } }
   })
 
-  if (parentVariant != null && videoVariantContainsMedia(parentVariant)) {
+  // A playable parent (featureFilm) keeps only its real Variants: it never
+  // gets a placeholder, and its own media is expected, not a conflict.
+  const isContainer = canHavePlaceholderVariant(parentVideo.label)
+  const createPlaceholder = isContainer && parentVariant == null
+
+  if (
+    isContainer &&
+    parentVariant != null &&
+    videoVariantContainsMedia(parentVariant)
+  ) {
     stages.parentSync = failedStage(
       `Parent Variant ${parentVariant.id} contains media and requires operator review`,
       stages.parentSync.attempts + 1
@@ -105,7 +116,7 @@ async function reconcileParentVariant({
   }
 
   try {
-    if (parentVariant == null) {
+    if (createPlaceholder) {
       const languageSlug =
         variant.slug?.split('/').filter(Boolean).at(-1) ?? variant.languageId
       await prisma.$transaction(async (transaction) => {
@@ -158,7 +169,7 @@ async function reconcileParentVariant({
     return { publicationReady: false, status: 'degraded' }
   }
 
-  if (parentVariant == null) {
+  if (createPlaceholder) {
     const result = await reconcileGeneratedParentVariant({
       reconciliationId: parentReconciliationId,
       reconciliation: {
@@ -194,6 +205,9 @@ async function reconcileParentVariant({
     await persistStatus('degraded', stages.algoliaVideo)
     return { publicationReady: false, status: 'degraded' }
   }
+
+  // A playable parent without a Variant in this language has nothing to index.
+  if (parentVariant == null) return null
 
   try {
     await updateVideoVariantInAlgolia(parentVariant.id)

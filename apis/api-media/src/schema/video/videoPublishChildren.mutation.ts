@@ -11,6 +11,7 @@ import {
   createEmptyParentVariant,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
+import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 
@@ -266,6 +267,7 @@ async function computeMissingParentLanguages(
     where: { id: parentId },
     select: {
       id: true,
+      label: true,
       variants: { select: { languageId: true } },
       children: {
         where: { published: true },
@@ -283,6 +285,10 @@ async function computeMissingParentLanguages(
   if (parent == null) {
     throw new Error(`Video with id ${parentId} not found`)
   }
+
+  // A playable parent (featureFilm) never gets placeholder Variants, so no
+  // language is ever "missing" from it.
+  if (!canHavePlaceholderVariant(parent.label)) return []
 
   const existingLanguageIds = new Set(
     parent.variants.map(({ languageId }: { languageId: string }) => languageId)

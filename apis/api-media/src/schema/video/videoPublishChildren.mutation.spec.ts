@@ -708,6 +708,7 @@ describe('videoPublishChildren', () => {
     function mockParentAndChildren(): void {
       prismaMock.video.findUnique.mockResolvedValueOnce({
         id: 'parent',
+        label: 'series',
         variants: [{ languageId: 'en' }],
         children: [
           { id: 'c1', variants: [{ languageId: 'en' }] },
@@ -768,6 +769,39 @@ describe('videoPublishChildren', () => {
       expect(prismaMock.$transaction).not.toHaveBeenCalled()
       expect(prismaMock.video.updateMany).not.toHaveBeenCalled()
       expect(prismaMock.videoVariant.updateMany).not.toHaveBeenCalled()
+    })
+
+    it('reports no missing languages for a feature film parent', async () => {
+      prismaMock.userMediaRole.findUnique.mockResolvedValue({
+        id: 'userId',
+        userId: 'userId',
+        roles: ['publisher'],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      })
+      // JESUS is playable itself; a segment-only language must not get a
+      // placeholder film Variant.
+      prismaMock.video.findUnique.mockResolvedValueOnce({
+        id: '1_jf-0-0',
+        label: 'featureFilm',
+        variants: [{ languageId: '529' }],
+        children: [{ id: '1_jf6101-0-0', variants: [{ languageId: '19372' }] }]
+      } as any)
+      mockCreateEmptyParentVariantPrisma()
+
+      const res = await authClient({
+        document: VIDEO_PUBLISH_CHILDREN,
+        variables: {
+          id: '1_jf-0-0',
+          mode: 'parentVariantsOnly',
+          dryRun: false
+        }
+      })
+
+      expect(
+        (res as any).data.videoPublishChildren.missingParentLanguageIds
+      ).toEqual([])
+      expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
     })
 
     it('only considers direct published children and their published variants', async () => {
@@ -898,6 +932,7 @@ describe('videoPublishChildren', () => {
       })
       prismaMock.video.findUnique.mockResolvedValueOnce({
         id: 'parent',
+        label: 'series',
         variants: [],
         children: [
           { id: 'c1', variants: [{ languageId: 'en' }] },
