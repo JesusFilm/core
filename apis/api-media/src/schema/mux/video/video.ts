@@ -5,7 +5,7 @@ import type { MuxVideo as PrismaMuxVideo } from '@core/prisma/media/client'
 
 import {
   assertTeamMembership,
-  maybeResolveTeamId
+  resolveJourneyUploadTeamId
 } from '../../../lib/journeysAccess/journeysAccess'
 import { notifyMediaSlackOfOperationFailure } from '../../../lib/slack'
 import { queue as processVideoDownloadsQueue } from '../../../workers/processVideoDownloads/queue'
@@ -464,7 +464,10 @@ builder.mutationFields((t) => ({
             extensions: { code: 'NOT_FOUND' }
           })
 
-        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+        const teamId = await resolveJourneyUploadTeamId({
+          journeyId,
+          userId: user.id
+        })
 
         const isUserGenerated = !currentRoles.includes('publisher')
           ? true
@@ -536,7 +539,10 @@ builder.mutationFields((t) => ({
           extensions: { code: 'NOT_FOUND' }
         })
 
-      const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+      const teamId = await resolveJourneyUploadTeamId({
+        journeyId,
+        userId: user.id
+      })
 
       const isUserGenerated = !currentRoles.includes('publisher')
         ? true

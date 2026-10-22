@@ -2,7 +2,7 @@ import { Prisma, prisma } from '@core/prisma/media/client'
 
 import {
   assertTeamMembership,
-  maybeResolveTeamId,
+  resolveJourneyUploadTeamId,
   resolveUploadTeamId
 } from '../../../lib/journeysAccess/journeysAccess'
 import { jobName as processImageBlurhashJobName } from '../../../workers/processImageBlurhash/config'
@@ -19,6 +19,9 @@ import {
   deleteImage
 } from './service'
 import { baseUrl } from './utils/baseUrl'
+
+const TEAM_ID_ARG_DESCRIPTION =
+  'The team the upload belongs to when no journey is given; the caller must be a member. Takes precedence over journeyId.'
 
 builder.prismaObject('CloudflareImage', {
   fields: (t) => ({
@@ -188,8 +191,7 @@ builder.mutationFields((t) => ({
         journeyId: t.arg.id({ required: false }),
         teamId: t.arg.id({
           required: false,
-          description:
-            'The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.'
+          description: TEAM_ID_ARG_DESCRIPTION
         })
       },
       resolve: async (
@@ -231,8 +233,7 @@ builder.mutationFields((t) => ({
         journeyId: t.arg.id({ required: false }),
         teamId: t.arg.id({
           required: false,
-          description:
-            'The team the upload belongs to when there is no journey (a campaign edit); the caller must be a member. Takes precedence over journeyId.'
+          description: TEAM_ID_ARG_DESCRIPTION
         })
       },
       resolve: async (
@@ -281,7 +282,10 @@ builder.mutationFields((t) => ({
         journeyId: t.arg.id({ required: false })
       },
       resolve: async (query, _root, { prompt, input, journeyId }, { user }) => {
-        const teamId = await maybeResolveTeamId({ journeyId, userId: user.id })
+        const teamId = await resolveJourneyUploadTeamId({
+          journeyId,
+          userId: user.id
+        })
 
         const image = await createImageFromResponse(
           await createImageFromText(prompt)
