@@ -13,6 +13,10 @@ const optionalString = z.string().trim().min(1).optional()
  * reconfigured between tests; the schema is a handful of strings, so the cost
  * per read is negligible. `index.ts` reads it once at boot so a malformed
  * value fails loudly there instead of on the first request that needs it.
+ *
+ * `SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true` is refused under
+ * `NODE_ENV=production`, which every deployed api-media task runs with: there
+ * the destination health check fetches from inside the VPC.
  */
 export function readShortLinksEnv() {
   return createEnv({
@@ -23,6 +27,9 @@ export function readShortLinksEnv() {
       throw new Error(
         `Invalid short-link environment variables: ${JSON.stringify(issues)}`
       )
+    },
+    shared: {
+      NODE_ENV: optionalString
     },
     server: {
       // edge publishing (Cloudflare KV); CLOUDFLARE_ACCOUNT_ID is shared with
@@ -52,7 +59,20 @@ export function readShortLinksEnv() {
       VERCEL_SHORT_LINKS_PROJECT_ID: optionalString,
       VERCEL_TEAM_ID: optionalString,
       VERCEL_TOKEN: optionalString
-    }
+    },
+    createFinalSchema: (shape) =>
+      z
+        .object(shape)
+        .refine(
+          (env) =>
+            env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS !== 'true' ||
+            env.NODE_ENV !== 'production',
+          {
+            path: ['SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS'],
+            message:
+              'SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true is for local development only and must not be set when NODE_ENV=production'
+          }
+        )
   })
 }
 
