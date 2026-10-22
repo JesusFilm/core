@@ -1,16 +1,21 @@
+import { MockLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
 import { type MockedFunction } from 'vitest'
 
-import { TeamProvider } from '@core/journeys/ui/TeamProvider'
+import {
+  GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS,
+  TeamProvider
+} from '@core/journeys/ui/TeamProvider'
+import { GetLastActiveTeamIdAndTeams } from '@core/journeys/ui/TeamProvider/__generated__/GetLastActiveTeamIdAndTeams'
 import { getLastActiveTeamIdAndTeamsMock } from '@core/journeys/ui/TeamProvider/TeamProvider.mock'
-import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
+import { UPDATE_LAST_ACTIVE_TEAM_ID } from '@core/journeys/ui/useUpdateLastActiveTeamIdMutation'
 
 import { CampaignStatus } from '../../../__generated__/globalTypes'
 import { GET_CAMPAIGNS } from '../../libs/useCampaignsQuery'
-import { NavigationDrawer } from '../PageWrapper/NavigationDrawer/NavigationDrawer'
 
 import { CampaignList } from './CampaignList'
 
@@ -63,32 +68,63 @@ const emptyCampaignsMock = {
   result: { data: { campaigns: [] } }
 }
 
+const noLastActiveTeamMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> =
+  {
+    request: { query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS },
+    result: {
+      data: {
+        teams: [
+          {
+            __typename: 'Team',
+            id: 'teamId',
+            title: 'Team Title',
+            publicTitle: null,
+            userTeams: [],
+            customDomains: []
+          }
+        ],
+        getJourneyProfile: {
+          id: 'someId',
+          __typename: 'JourneyProfile',
+          lastActiveTeamId: null
+        }
+      }
+    }
+  }
+
+const updateLastActiveTeamIdMock = {
+  request: {
+    query: UPDATE_LAST_ACTIVE_TEAM_ID,
+    variables: { input: { lastActiveTeamId: 'teamId' } }
+  },
+  result: {
+    data: {
+      journeyProfileUpdate: { __typename: 'JourneyProfile', id: 'someId' }
+    }
+  }
+}
+
 function renderList(
-  flags: Record<string, boolean>,
-  mocks: unknown[] = [campaignsMock]
+  mocks: unknown[] = [campaignsMock],
+  teamsMock: unknown = getLastActiveTeamIdAndTeamsMock
 ): void {
   render(
-    <FlagsProvider flags={flags}>
-      <MockedProvider
-        mocks={[getLastActiveTeamIdAndTeamsMock, ...mocks] as never}
-      >
-        <SnackbarProvider>
-          <TeamProvider>
-            <CampaignList />
-          </TeamProvider>
-        </SnackbarProvider>
-      </MockedProvider>
-    </FlagsProvider>
+    <MockedProvider mocks={[teamsMock, ...mocks] as never}>
+      <SnackbarProvider>
+        <TeamProvider>
+          <CampaignList />
+        </TeamProvider>
+      </SnackbarProvider>
+    </MockedProvider>
   )
 }
 
 describe('CampaignList', () => {
-  const mockReplace = vi.fn()
-
   beforeEach(() => {
     vi.clearAllMocks()
+    sessionStorage.clear()
     mockUseRouter.mockReturnValue({
-      replace: mockReplace,
+      replace: vi.fn(),
       push: vi.fn(),
       query: {},
       pathname: '/campaigns'
@@ -96,7 +132,7 @@ describe('CampaignList', () => {
   })
 
   it("lists the active team's campaigns with their status and editor links", async () => {
-    renderList({ campaignBuilder: true })
+    renderList()
 
     expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
     expect(screen.getByText('Outreach 2027')).toBeInTheDocument()
@@ -107,19 +143,66 @@ describe('CampaignList', () => {
       '/campaigns/campaignId'
     )
     expect(screen.getByText('/campaign/hope-2027')).toBeInTheDocument()
-    expect(mockReplace).not.toHaveBeenCalled()
+  })
+
+  it("names the active team in the header's team select", async () => {
+    renderList()
+
+    await waitFor(() =>
+      expect(screen.getByRole('combobox')).toHaveTextContent('Team Title')
+    )
+    expect(
+      screen.queryByText('Pick a team to see its campaigns')
+    ).not.toBeInTheDocument()
   })
 
   it('opens the Create dialog', async () => {
-    renderList({ campaignBuilder: true })
+    renderList()
 
     await screen.findByText('Outreach 2026')
     fireEvent.click(screen.getByRole('button', { name: 'Create campaign' }))
     expect(screen.getByTestId('CreateCampaignDialog')).toBeInTheDocument()
   })
 
+  it('asks for a team, skips the campaigns request and disables Create when no team is active', async () => {
+    const campaignsResult = vi.fn(() => campaignsMock.result)
+    renderList(
+      [{ ...campaignsMock, result: campaignsResult }],
+      noLastActiveTeamMock
+    )
+
+    expect(
+      await screen.findByText('Pick a team to see its campaigns')
+    ).toBeInTheDocument()
+    expect(screen.getByRole('combobox')).toHaveTextContent('Shared With Me')
+    expect(
+      screen.getByRole('button', { name: 'Create campaign' })
+    ).toBeDisabled()
+    expect(screen.queryByTestId('CampaignListLoading')).not.toBeInTheDocument()
+    expect(campaignsResult).not.toHaveBeenCalled()
+  })
+
+  it("loads the picked team's campaigns and enables Create", async () => {
+    renderList(
+      [updateLastActiveTeamIdMock, campaignsMock],
+      noLastActiveTeamMock
+    )
+
+    await screen.findByText('Pick a team to see its campaigns')
+    await userEvent.click(screen.getByRole('combobox'))
+    fireEvent.click(await screen.findByRole('option', { name: 'Team Title' }))
+
+    expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
+    expect(
+      screen.queryByText('Pick a team to see its campaigns')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Create campaign' })
+    ).not.toBeDisabled()
+  })
+
   it('shows an error with a retry, not the empty state, when the campaigns fail to load', async () => {
-    renderList({ campaignBuilder: true }, [campaignsErrorMock, campaignsMock])
+    renderList([campaignsErrorMock, campaignsMock])
 
     expect(
       await screen.findByText('There was an error loading campaigns.')
@@ -135,39 +218,11 @@ describe('CampaignList', () => {
   })
 
   it('shows the empty state when the team has no campaigns', async () => {
-    renderList({ campaignBuilder: true }, [emptyCampaignsMock])
+    renderList([emptyCampaignsMock])
 
     expect(await screen.findByText(/No campaigns yet/)).toBeInTheDocument()
     expect(
       screen.queryByText('There was an error loading campaigns.')
-    ).not.toBeInTheDocument()
-  })
-
-  it('renders nothing and redirects home when the flag is off', async () => {
-    renderList({ campaignBuilder: false })
-
-    expect(screen.queryByTestId('CampaignList')).not.toBeInTheDocument()
-    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/'))
-  })
-
-  it('shows the Campaigns nav item only when the flag is on', () => {
-    const { rerender } = render(
-      <FlagsProvider flags={{ campaignBuilder: true }}>
-        <NavigationDrawer selectedPage="campaigns" />
-      </FlagsProvider>
-    )
-    expect(screen.getByTestId('NavigationListItemCampaigns')).toHaveAttribute(
-      'href',
-      '/campaigns'
-    )
-
-    rerender(
-      <FlagsProvider flags={{ campaignBuilder: false }}>
-        <NavigationDrawer selectedPage="campaigns" />
-      </FlagsProvider>
-    )
-    expect(
-      screen.queryByTestId('NavigationListItemCampaigns')
     ).not.toBeInTheDocument()
   })
 })
