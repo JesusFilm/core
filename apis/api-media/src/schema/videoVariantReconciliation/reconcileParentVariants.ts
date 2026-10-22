@@ -8,7 +8,6 @@ import {
   findContainerParentIds,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
-
 import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 
 import { reconcileGeneratedParentVariant } from './reconcileReasonSpecificVariant'

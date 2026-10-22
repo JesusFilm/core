@@ -7,11 +7,11 @@ import {
 import { enqueueVideoAlgoliaSync } from '../../workers/videoAlgoliaSync'
 import { builder } from '../builder'
 import { logger } from '../logger'
+import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 import {
   createEmptyParentVariant,
   handleParentVariantCreation
 } from '../videoVariant/videoVariant'
-import { canHavePlaceholderVariant } from '../videoVariant/canHavePlaceholderVariant'
 
 import { updateVideoAvailableLanguages } from './lib/updateAvailableLanguages'
 

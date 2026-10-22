@@ -2711,8 +2711,9 @@ describe('videoVariant', () => {
           if (args.where.videoId != null) return null
           return { slug: 'jesus/19372-language' }
         }) as any)
-        prismaMock.$transaction.mockImplementation((async (callback: any) =>
-          await callback(prismaMock)) as any)
+        prismaMock.$transaction.mockImplementation(
+          (async (callback: any) => await callback(prismaMock)) as any
+        )
         prismaMock.videoVariant.create.mockResolvedValue({ id: 'x' } as any)
 
         await handleParentVariantCreation('1_jf6101-0-0', '19372')

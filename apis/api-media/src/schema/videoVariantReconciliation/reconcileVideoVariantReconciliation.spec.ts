@@ -334,7 +334,8 @@ describe('reconcileVideoVariantReconciliation', () => {
     it('does not create a placeholder Variant for a language the film lacks', async () => {
       prismaMock.videoVariant.findFirst.mockResolvedValue(null)
 
-      const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
 
       expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
       expect(
@@ -344,7 +345,10 @@ describe('reconcileVideoVariantReconciliation', () => {
         where: { id: '1_19372-jf6101-0-0' },
         data: { published: true }
       })
-      expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
+      expect(result).toMatchObject({
+        publicationReady: true,
+        status: 'complete'
+      })
     })
 
     it('publishes the segment when the film already has a real Variant in that language', async () => {
@@ -354,7 +358,8 @@ describe('reconcileVideoVariantReconciliation', () => {
         downloads: [{ id: 'download-1' }]
       } as never)
 
-      const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
 
       expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
       expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith(
@@ -364,7 +369,10 @@ describe('reconcileVideoVariantReconciliation', () => {
         where: { id: '1_19372-jf6101-0-0' },
         data: { published: true }
       })
-      expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
+      expect(result).toMatchObject({
+        publicationReady: true,
+        status: 'complete'
+      })
     })
   })
 })
