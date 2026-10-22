@@ -208,6 +208,35 @@ DOWNLOAD_SIZE_BACKFILL_RESUME=true nx run api-media:backfill-download-sizes -- -
 - A final summary grouped by provider and outcome (total candidates,
   repairable, applied, already-corrected, skipped, failed) printed to stdout.
 
+## Fix Stuck Draft Variants Script
+
+One-off repair for two hard-coded production VideoVariants stuck in Draft
+(language 529):
+
+- `529_Next_Gen_Media_ASF_Collection` on Collection `Next_Gen_Media_ASF_Collection`:
+  its reconciliation row's stale `createdAt` trips the two-hour Mux timeout,
+  so the publish toggle never completes.
+- `7_529-KnowGodBPFull` on `7_KnowGodBPFull`: blocked by the "parent contains
+  media" guard. The parent `7_529-KnowGodBP` is left untouched.
+
+Publishes both Variants, adds `529` to `7_KnowGodBPFull`'s `availableLanguages`,
+marks both reconciliation rows `complete`, then resets both Videos' caches. It
+does not publish the Videos or touch Algolia.
+
+Before writing, it checks both records are still in exactly that broken state.
+If either differs, it prints what differs and exits non-zero without writing
+anything. With `--apply`, all writes run in one transaction.
+
+### Usage
+
+```bash
+# Dry run (default): prints the before state and intended changes
+nx run api-media:fix-stuck-draft-variants
+
+# Apply the writes
+nx run api-media:fix-stuck-draft-variants -- --apply
+```
+
 ## Mux Videos Script
 
 The mux videos script processes video variants to create and manage Mux video assets, update HLS URLs, and process downloads. This script performs the same functions as the mux-videos worker but can be run on-demand.
