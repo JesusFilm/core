@@ -15,12 +15,12 @@ describe('PublishedChip', () => {
     expect(screen.getByText('Draft')).toBeInTheDocument()
   })
 
-  it('should render a publish waiting on Mux', () => {
+  it('should render a pending publish', () => {
     render(<PublishedChip published={false} pending />)
 
     expect(screen.getByText('Publishing...')).toBeInTheDocument()
     expect(
-      screen.getByText('Waiting for Mux to finish processing')
+      screen.getByText('Finishing publish processing')
     ).toBeInTheDocument()
     expect(screen.queryByText('Draft')).not.toBeInTheDocument()
   })
