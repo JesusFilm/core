@@ -180,7 +180,11 @@ export function CampaignVideo({ block }: CampaignVideoProps): ReactElement {
           themeMode={ThemeMode.dark}
           nested
         >
-          <Video {...playerBlock} subtitleTracks={subtitleTracks} />
+          <Video
+            {...playerBlock}
+            subtitleTracks={subtitleTracks}
+            reapplyServerSource
+          />
         </ThemeProvider>
       </Box>
       <CampaignVideoCaption details={details} />

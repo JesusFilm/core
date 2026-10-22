@@ -64,6 +64,8 @@ interface InitAndPlayProps {
   showGeneratedSubtitles?: boolean | null
   /** Subtitle files added as hidden text tracks beside the stream's own. */
   subtitleTracks?: SubtitleTrack[]
+  /** Re-set a server-rendered source once the player is ready; off for journey videos. */
+  reapplyServerSource?: boolean
 }
 
 export function InitAndPlay({
@@ -89,7 +91,8 @@ export function InitAndPlay({
   videoVariantLanguageId,
   subtitleLanguage,
   showGeneratedSubtitles,
-  subtitleTracks
+  subtitleTracks,
+  reapplyServerSource = false
 }: InitAndPlayProps): ReactElement {
   const { journey, renderMode } = useJourney()
   const { blockHistory } = useBlocks()
@@ -144,7 +147,8 @@ export function InitAndPlay({
       }) as VideoJsPlayer
       // A server-rendered <video> is already on its <source> natively, which
       // makes video.js skip its source handlers; feed them once ready.
-      created.ready(() => reapplyUnhandledSource(created))
+      if (reapplyServerSource)
+        created.ready(() => reapplyUnhandledSource(created))
       setPlayer(created)
       playerInitializedRef.current = true
     }

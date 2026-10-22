@@ -49,6 +49,8 @@ const StyledVideo = styled('video')(() => ({}))
 export type VideoProps = TreeBlock<VideoFields> & {
   /** Subtitle files to offer as text tracks beside the stream's own; none by default. */
   subtitleTracks?: SubtitleTrack[]
+  /** Re-set a server-rendered source once the player is ready (the campaign page); off by default. */
+  reapplyServerSource?: boolean
 }
 
 export function Video({
@@ -71,7 +73,8 @@ export function Video({
   showGeneratedSubtitles,
   eventLabel,
   endEventLabel,
-  subtitleTracks
+  subtitleTracks,
+  reapplyServerSource
 }: VideoProps): ReactElement {
   const theme = useTheme()
   const hundredVh = use100vh()
@@ -210,6 +213,7 @@ export function Video({
         subtitleLanguage={subtitleLanguage}
         showGeneratedSubtitles={showGeneratedSubtitles}
         subtitleTracks={subtitleTracks}
+        reapplyServerSource={reapplyServerSource}
       />
       {activeStep &&
         player != null &&
