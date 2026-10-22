@@ -782,7 +782,12 @@ builder.mutationFields((t) => ({
                 slug: true,
                 restrictTranslations: true,
                 variants: {
-                  select: { id: true, slug: true, languageId: true, published: true }
+                  select: {
+                    id: true,
+                    slug: true,
+                    languageId: true,
+                    published: true
+                  }
                 }
               }
             })
@@ -880,9 +885,7 @@ builder.mutationFields((t) => ({
           // the video must resync every variant's slug prefix so the new slug is
           // actually reachable through the variant-based idType:slug lookup.
           const variantSlugUpdates = (currentVideo?.variants ?? [])
-            .filter((variant) =>
-              variant.slug.startsWith(`${previousSlug}/`)
-            )
+            .filter((variant) => variant.slug.startsWith(`${previousSlug}/`))
             .map((variant) =>
               prisma.videoVariant.update({
                 where: { id: variant.id },

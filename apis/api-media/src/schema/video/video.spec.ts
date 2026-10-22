@@ -3138,7 +3138,12 @@ describe('video', () => {
             slug: true,
             restrictTranslations: true,
             variants: {
-              select: { id: true, slug: true, languageId: true, published: true }
+              select: {
+                id: true,
+                slug: true,
+                languageId: true,
+                published: true
+              }
             }
           }
         })
