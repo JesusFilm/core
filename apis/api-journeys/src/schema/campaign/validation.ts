@@ -298,6 +298,9 @@ export function assertClientId(
 export const CLIENT_ID_ERROR =
   '- BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).'
 
+/** The block cap, as the line each campaign block add's `Errors:` description carries. */
+export const BLOCK_CAP_ERROR = `- BAD_USER_INPUT (field: \`campaignId\`): the add would take the campaign past ${CAMPAIGN_BLOCKS_MAX} blocks.`
+
 /**
  * Whether `error` is a unique violation (P2002) on `column`: the classic
  * engine names the columns in `meta.target`, a driver adapter in its

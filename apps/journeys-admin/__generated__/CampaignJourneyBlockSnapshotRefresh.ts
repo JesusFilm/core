@@ -33,7 +33,7 @@ export interface CampaignJourneyBlockSnapshotRefresh {
    * Errors:
    * - NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `id`): "Journey not found or not published" — the journey is gone or no longer published.
+   * - BAD_USER_INPUT (field: `id`): "Journey not found, or not published or archived" — the journey is gone, or neither published nor archived any more.
    */
   campaignJourneyBlockSnapshotRefresh: CampaignJourneyBlockSnapshotRefresh_campaignJourneyBlockSnapshotRefresh;
 }

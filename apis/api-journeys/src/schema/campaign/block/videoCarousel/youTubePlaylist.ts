@@ -42,12 +42,17 @@ export interface YouTubePlaylistVideo {
   duration: number
 }
 
+interface YoutubeApiError {
+  code: number
+  message: string
+}
+
 interface YoutubePlaylistItemsData {
-  error?: { code: number; message: string }
+  error?: YoutubeApiError
   items?: Array<{ contentDetails: { videoId: string } }>
 }
 
-function youTubeError(error: { code: number; message: string }): GraphQLError {
+function youTubeError(error: YoutubeApiError): GraphQLError {
   if (error.code === 404)
     return badUserInput('playlist cannot be found on YouTube', 'url')
   // quota/auth failures must not read as "playlist does not exist"
@@ -56,7 +61,15 @@ function youTubeError(error: { code: number; message: string }): GraphQLError {
   })
 }
 
-async function youTubeRequest<T>(
+/** How long one Data API request may take before the import gives up. */
+const YOUTUBE_TIMEOUT_MS = 10_000
+
+/**
+ * One Data API request. The error YouTube reports in the body maps through
+ * `youTubeError`; so do a stalled or failed request (aborted after
+ * `YOUTUBE_TIMEOUT_MS`), a non-OK status, and a body that is not JSON.
+ */
+async function youTubeRequest<T extends { error?: YoutubeApiError }>(
   resource: 'playlistItems' | 'videos',
   params: Record<string, string>
 ): Promise<T> {
@@ -64,9 +77,28 @@ async function youTubeRequest<T>(
     ...params,
     key: env.FIREBASE_API_KEY
   }).toString()
-  return (await (
-    await fetch(`https://www.googleapis.com/youtube/v3/${resource}?${query}`)
-  ).json()) as T
+  let response: Response
+  try {
+    response = await fetch(
+      `https://www.googleapis.com/youtube/v3/${resource}?${query}`,
+      { signal: AbortSignal.timeout(YOUTUBE_TIMEOUT_MS) }
+    )
+  } catch (error) {
+    throw youTubeError({
+      code: 0,
+      message: error instanceof Error ? error.message : String(error)
+    })
+  }
+  const body = (await response.json().catch(() => null)) as T | null
+  if (body?.error != null) throw youTubeError(body.error)
+  if (!response.ok || body == null)
+    throw youTubeError({
+      code: response.status,
+      message: response.ok
+        ? 'the response is not JSON'
+        : `status ${response.status}`
+    })
+  return body
 }
 
 /**
@@ -87,7 +119,6 @@ export async function fetchYouTubePlaylistVideos(
       maxResults: String(PLAYLIST_IMPORT_LIMIT)
     }
   )
-  if (playlist.error != null) throw youTubeError(playlist.error)
   const videoIds = (playlist.items ?? [])
     .map((item) => item.contentDetails.videoId)
     .slice(0, PLAYLIST_IMPORT_LIMIT)
@@ -98,7 +129,6 @@ export async function fetchYouTubePlaylistVideos(
     part: 'snippet,contentDetails',
     id: videoIds.join(',')
   })
-  if (videos.error != null) throw youTubeError(videos.error)
   const byId = new Map((videos.items ?? []).map((item) => [item.id, item]))
   return videoIds.flatMap((videoId) => {
     const video = byId.get(videoId)

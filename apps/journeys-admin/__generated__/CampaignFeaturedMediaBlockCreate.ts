@@ -122,6 +122,7 @@ export interface CampaignFeaturedMediaBlockCreate {
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+   * - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
    * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
    * - BAD_USER_INPUT (field: `mediaSide`): not left or right.
    */

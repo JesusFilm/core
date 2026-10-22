@@ -183,7 +183,8 @@ export interface CampaignVideoCarouselBlockPlaylistImport {
    * - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `url`): "That link isn't a YouTube playlist", "playlist cannot be found on YouTube" for a playlist unknown to YouTube, or the playlist has no public videos.
-   * - BAD_USER_INPUT (field: `campaignId`): the videos would take the campaign past 500 blocks.
+   * - INTERNAL_SERVER_ERROR: the YouTube request failed, timed out or answered with no usable body.
+   * - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
    */
   campaignVideoCarouselBlockPlaylistImport: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport[];
 }

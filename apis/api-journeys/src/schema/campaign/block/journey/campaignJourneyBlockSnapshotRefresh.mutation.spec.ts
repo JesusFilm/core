@@ -123,12 +123,14 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
     )
   })
 
-  it('rejects a journey that is gone or unpublished (BAD_USER_INPUT, id) and writes nothing', async () => {
+  it('rejects a journey that is gone, or neither published nor archived (BAD_USER_INPUT, id), and writes nothing', async () => {
     prismaMock.journey.findFirst.mockResolvedValue(null)
 
     const result = await refresh()
 
-    expect(result.errors[0].message).toBe('Journey not found or not published')
+    expect(result.errors[0].message).toBe(
+      'Journey not found, or not published or archived'
+    )
     expect(result.errors[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'id'

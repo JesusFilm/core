@@ -4488,6 +4488,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `align`): the value fails its rule.
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!): CampaignHeroBlock!
@@ -4524,6 +4525,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `title` / `variant`): the value fails its rule.
   """
   campaignRegionSwitcherBlockCreate(input: CampaignRegionSwitcherBlockCreateInput!): CampaignRegionSwitcherBlock!
@@ -4558,6 +4560,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!): CampaignVideoCarouselBlock!
@@ -4591,7 +4594,8 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `url`): "That link isn't a YouTube playlist", "playlist cannot be found on YouTube" for a playlist unknown to YouTube, or the playlist has no public videos.
-  - BAD_USER_INPUT (field: `campaignId`): the videos would take the campaign past 500 blocks.
+  - INTERNAL_SERVER_ERROR: the YouTube request failed, timed out or answered with no usable body.
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   """
   campaignVideoCarouselBlockPlaylistImport(
     id: ID!
@@ -4612,6 +4616,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `display`): the value fails its rule.
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!): CampaignJourneyListBlock!
@@ -4643,7 +4648,7 @@ type Mutation {
   - NOT_FOUND: parentBlockId does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
-  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
+  - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found, or not published or archived" (unknown, deleted or a draft).
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
   """
   campaignJourneyBlockCreate(input: CampaignJourneyBlockCreateInput!): CampaignJourneyBlock!
@@ -4669,7 +4674,7 @@ type Mutation {
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `id`): "Journey not found or not published" — the journey is gone or no longer published.
+  - BAD_USER_INPUT (field: `id`): "Journey not found, or not published or archived" — the journey is gone, or neither published nor archived any more.
   """
   campaignJourneyBlockSnapshotRefresh(id: ID!): CampaignJourneyBlock!
 
@@ -4685,6 +4690,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
   """
   campaignAnalyticsBlockCreate(input: CampaignAnalyticsBlockCreateInput!): CampaignAnalyticsBlock!
@@ -4718,6 +4724,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `pageId`): the landing page.
   - BAD_USER_INPUT (field: `intro`): over 500 characters.
   """
@@ -4752,6 +4759,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `pageId`): the landing page.
   - BAD_USER_INPUT (field: `title` / `intro`): over 150 / 500 characters.
   """
@@ -4786,6 +4794,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `title` / `content`): over 150 / 5000 characters.
   """
   campaignRichTextBlockCreate(input: CampaignRichTextBlockCreateInput!): CampaignRichTextBlock!
@@ -4819,6 +4828,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `ratio`): not equal, wideLeft or wideRight.
   - BAD_USER_INPUT (field: `slotIds`): given with other than two ids, an id that is not a UUID, the same id twice or the section's `id`, or an id that is already a block's (live or deleted).
   """
@@ -4851,10 +4861,10 @@ type Mutation {
   - FORBIDDEN: caller is not in the team.
   - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
   - BAD_USER_INPUT (field: `parentOrder`): negative.
-  - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign (the owned role; an Image section takes none).
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
-  - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
   - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
   - BAD_USER_INPUT (field: `mediaBlockId`): the media slot on a block that is not a hero or Featured Media section.
   - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.
@@ -4924,6 +4934,7 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+  - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
   - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   """
@@ -4991,6 +5002,7 @@ type Mutation {
   - NOT_FOUND: id does not resolve to a live block.
   - FORBIDDEN: caller is not in the team.
   - CONFLICT (field: `id`): the header, the footer, a column slot or a page; protected rows are never deleted.
+  - CONFLICT (field: `id`): an owned block (`parentOrder: null` — a cover, logo or Media Slot image), which its owner replaces and is never deleted on its own.
   """
   campaignBlockDelete(id: ID!): [CampaignBlock!]!
 

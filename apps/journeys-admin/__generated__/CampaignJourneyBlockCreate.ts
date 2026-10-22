@@ -94,7 +94,7 @@ export interface CampaignJourneyBlockCreate {
    * - NOT_FOUND: parentBlockId does not resolve to a live block.
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a journey list.
-   * - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found or not published" (unknown, deleted or a draft).
+   * - BAD_USER_INPUT (field: `url`): not a journey link, or "Journey not found, or not published or archived" (unknown, deleted or a draft).
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
    */
   campaignJourneyBlockCreate: CampaignJourneyBlockCreate_campaignJourneyBlockCreate;

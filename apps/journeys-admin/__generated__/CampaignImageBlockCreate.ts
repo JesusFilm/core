@@ -96,10 +96,10 @@ export interface CampaignImageBlockCreate {
    * - FORBIDDEN: caller is not in the team.
    * - BAD_USER_INPUT (field: `pageId`): not a page of this campaign.
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
-   * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
+   * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign (the owned role; an Image section takes none).
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+   * - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
    * - BAD_USER_INPUT (field: `pageId`): neither or both of pageId and parentBlockId given.
-   * - BAD_USER_INPUT (field: `parentBlockId`): not a live section or chrome block of this campaign.
    * - BAD_USER_INPUT (field: `logoBlockId`): the logo slot on a block that is not the header.
    * - BAD_USER_INPUT (field: `mediaBlockId`): the media slot on a block that is not a hero or Featured Media section.
    * - BAD_USER_INPUT (field: `src`): not an https imagedelivery.net address, or the image could not be read.

@@ -26,6 +26,7 @@ export interface CampaignBlockDelete {
    * - NOT_FOUND: id does not resolve to a live block.
    * - FORBIDDEN: caller is not in the team.
    * - CONFLICT (field: `id`): the header, the footer, a column slot or a page; protected rows are never deleted.
+   * - CONFLICT (field: `id`): an owned block (`parentOrder: null` — a cover, logo or Media Slot image), which its owner replaces and is never deleted on its own.
    */
   campaignBlockDelete: CampaignBlockDelete_campaignBlockDelete[];
 }

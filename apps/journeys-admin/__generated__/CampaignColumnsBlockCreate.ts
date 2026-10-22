@@ -63,6 +63,7 @@ export interface CampaignColumnsBlockCreate {
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
+   * - BAD_USER_INPUT (field: `campaignId`): the add would take the campaign past 500 blocks.
    * - BAD_USER_INPUT (field: `ratio`): not equal, wideLeft or wideRight.
    * - BAD_USER_INPUT (field: `slotIds`): given with other than two ids, an id that is not a UUID, the same id twice or the section's `id`, or an id that is already a block's (live or deleted).
    */
