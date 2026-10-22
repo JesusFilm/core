@@ -3,7 +3,7 @@ import { Prisma } from '@core/prisma/journeys/client'
 import { env } from '../../env'
 
 export const INCLUDE_JOURNEY_PUBLIC_URL = {
-  team: { include: { customDomains: true } },
+  team: { include: { customDomains: { orderBy: { name: 'asc' } } } },
   journeyCollectionJourneys: {
     include: { journeyCollection: { include: { customDomains: true } } }
   }
@@ -16,8 +16,10 @@ export type JourneyWithPublicUrl = Prisma.JourneyGetPayload<{
 /**
  * Where a journey is served, decided by the journey's own team (PRD §6): a
  * route-all custom domain, else a collection domain containing it, else the
- * root domain. The campaign builds no URLs of its own; the viewer receives
- * these resolved.
+ * root domain. A team with several route-all domains is served on the first by
+ * name (`INCLUDE_JOURNEY_PUBLIC_URL` orders them), so the host never flips
+ * between reads and a QR code's short link is not rewritten. The campaign
+ * builds no URLs of its own; the viewer receives these resolved.
  */
 export function getJourneyPublicUrl(journey: JourneyWithPublicUrl): string {
   const routeAllDomain = journey.team.customDomains.find(

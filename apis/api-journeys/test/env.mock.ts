@@ -27,6 +27,9 @@ export const env = {
   get INTEROP_TOKEN(): string {
     return 'test-interop-token'
   },
+  get JOURNEYS_ADMIN_URL(): string {
+    return 'https://admin.example.com'
+  },
   get JOURNEYS_REVALIDATE_ACCESS_TOKEN(): string {
     return 'test-token'
   },

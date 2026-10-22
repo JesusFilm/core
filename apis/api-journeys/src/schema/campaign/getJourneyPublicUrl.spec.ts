@@ -1,4 +1,5 @@
 import {
+  INCLUDE_JOURNEY_PUBLIC_URL,
   JourneyWithPublicUrl,
   getJourneyEmbedUrl,
   getJourneyPublicUrl
@@ -31,6 +32,25 @@ describe('getJourneyPublicUrl', () => {
         } as never)
       )
     ).toBe('https://journeys.example.org/outreach-europe')
+  })
+
+  it('serves a journey on the first route-all domain by name when its team has two', () => {
+    expect(INCLUDE_JOURNEY_PUBLIC_URL.team.include.customDomains).toEqual({
+      orderBy: { name: 'asc' }
+    })
+    expect(
+      getJourneyPublicUrl(
+        journey({
+          team: {
+            id: 'journeyTeamId',
+            customDomains: [
+              { name: 'a.example.org', routeAllTeamJourneys: true },
+              { name: 'b.example.org', routeAllTeamJourneys: true }
+            ]
+          }
+        } as never)
+      )
+    ).toBe('https://a.example.org/outreach-europe')
   })
 
   it('serves a journey on a collection domain containing it when no domain routes all', () => {

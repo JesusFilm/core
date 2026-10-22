@@ -1,8 +1,13 @@
 import { Prisma } from '@core/prisma/journeys/client'
 
+import { env } from '../../../env'
+
 /**
- * The seed tables of PRD §14: every value passes every validation rule. Ids,
- * scoping and ordering are added by `seedCampaign`.
+ * The seed tables of PRD §14: every value passes every validation rule, with
+ * one exception: the header logo's `src` is this deployment's admin app
+ * (`HEADER_LOGO_SEED`), not an imagedelivery.net address, so `assertImageSrc`
+ * would refuse it on an update. Ids, scoping and ordering are added by
+ * `seedCampaign`.
  */
 export type SectionSeed = Omit<
   Prisma.CampaignBlockUncheckedCreateInput,
@@ -100,14 +105,15 @@ export const HEADER_SEED: SectionSeed = {
 }
 
 /**
- * The header's default logo: the NextSteps wordmark served by the admin app,
- * owned by the header (`parentOrder` null) and named by its `logoBlockId`.
- * The one `src` that is not an imagedelivery.net address; the author replaces
- * it through the Logo picker like any other logo.
+ * The header's default logo: the NextSteps wordmark served by this
+ * deployment's admin app (`JOURNEYS_ADMIN_URL`), owned by the header
+ * (`parentOrder` null) and named by its `logoBlockId`. The one `src` that is
+ * not an imagedelivery.net address; the author replaces it through the Logo
+ * picker like any other logo.
  */
 export const HEADER_LOGO_SEED: SectionSeed = {
   typename: 'CampaignImageBlock',
-  src: 'https://admin.nextstep.is/logo.svg',
+  src: `${env.JOURNEYS_ADMIN_URL}/logo.svg`,
   alt: 'NextSteps',
   width: 221,
   height: 41
