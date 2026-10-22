@@ -216,6 +216,10 @@ mediaComponents.openapi(route, async (c) => {
             },
             children: true,
             availableLanguages: true,
+            // Must match the Variant the detail route reports (the
+            // `video.variant` GraphQL field): the published one in English.
+            // An unfiltered `take: 1` returns whichever Variant row Postgres
+            // reads first, which for a Video in many languages is arbitrary.
             variants: {
               select: {
                 hls: true,
@@ -229,6 +233,7 @@ mediaComponents.openapi(route, async (c) => {
                   }
                 }
               },
+              where: { languageId: '529', published: true },
               take: 1
             }
           },
