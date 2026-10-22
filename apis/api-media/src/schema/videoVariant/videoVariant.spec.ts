@@ -2039,7 +2039,8 @@ describe('videoVariant', () => {
             expect.objectContaining({
               videoVariantId: 'id',
               published: true,
-              reason: 'video-variant-publication-change'
+              reason: 'video-variant-publication-change',
+              awaitingMux: true
             })
           )
           expect(mockedAddLanguageToVideo).not.toHaveBeenCalled()
@@ -2117,12 +2118,14 @@ describe('videoVariant', () => {
             'videoId'
           )
           expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
-          // Algolia stays with reconciliation.
+          // Algolia stays with reconciliation, which is told nothing awaits
+          // Mux so a fresh-upload reason on the row stops waiting for it.
           expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
             expect.objectContaining({
               videoVariantId: 'id',
               published: true,
-              reason: 'video-variant-publication-change'
+              reason: 'video-variant-publication-change',
+              awaitingMux: false
             })
           )
         })
@@ -2236,7 +2239,12 @@ describe('videoVariant', () => {
               reason: 'generated-parent',
               status: 'processing',
               published: true,
-              videoVariantId: 'languageId_collectionId'
+              videoVariantId: 'languageId_collectionId',
+              // Nothing is synced yet, so the first sweep counts attempt 1.
+              processingStages: expect.objectContaining({
+                parentSync: { state: 'pending', attempts: 0 },
+                algoliaVideo: { state: 'pending', attempts: 0 }
+              })
             })
           })
           expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(

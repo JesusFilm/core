@@ -127,6 +127,19 @@ export function generatedParentStages(
   }
 }
 
+// A generated parent Variant created outside a sweep run (videoVariantUpdate's
+// inline publish) has had nothing synced yet, so the first sweep that picks
+// up its row counts its parentSync and Video-index sync as attempt 1.
+export function unsyncedGeneratedParentStages(): ProcessingStages {
+  return {
+    mux: notApplicableStage(),
+    parentSync: { state: 'pending', attempts: 0 },
+    downloads: notApplicableStage(),
+    algoliaVideo: { state: 'pending', attempts: 0 },
+    algoliaVariant: { state: 'pending', attempts: 0 }
+  }
+}
+
 export function previousAttempts(
   processingStages: unknown,
   stage: string
