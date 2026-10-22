@@ -28,9 +28,13 @@ vi.mock('../../../../lib/cacheBypass', () => ({
 
 // The detail route mounted under the list router transitively imports the
 // RSC-only Apollo client wiring; it is not exercised here.
-vi.mock('./[mediaComponentId]', async () => ({
-  mediaComponent: new (await import('@hono/zod-openapi')).OpenAPIHono()
-}))
+vi.mock('./[mediaComponentId]', async () => {
+  const { OpenAPIHono: Hono } =
+    await vi.importActual<typeof import('@hono/zod-openapi')>(
+      '@hono/zod-openapi'
+    )
+  return { mediaComponent: new Hono() }
+})
 
 vi.mock('../../../../lib/getLanguageIdsFromTags', async () => ({
   ...(await vi.importActual('../../../../lib/getLanguageIdsFromTags')),
@@ -117,9 +121,10 @@ function jesusVideo(variantsArgs: VariantsArgs | undefined) {
 describe('GET /media-components', () => {
   beforeEach(() => {
     mockReset(mediaPrismaMock)
-    mediaPrismaMock.$transaction.mockImplementation((async (
-      callback: (tx: typeof mediaPrismaMock) => Promise<unknown>
-    ) => await callback(mediaPrismaMock)) as never)
+    mediaPrismaMock.$transaction.mockImplementation(
+      async (callback: (tx: typeof mediaPrismaMock) => Promise<unknown>) =>
+        await callback(mediaPrismaMock)
+    )
     mediaPrismaMock.video.findMany.mockImplementation(((args: {
       select: { variants: VariantsArgs }
     }) => Promise.resolve([jesusVideo(args.select.variants)])) as never)
