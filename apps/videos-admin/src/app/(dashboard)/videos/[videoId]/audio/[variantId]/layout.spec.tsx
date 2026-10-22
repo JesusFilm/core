@@ -3,7 +3,7 @@ import {
   useSuspenseQuery as apolloClientModule_useSuspenseQuery
 } from '@apollo/client/react'
 import { MockedProvider } from '@apollo/client/testing/react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { SnackbarProvider } from 'notistack'
 import { type Mock } from 'vitest'
@@ -219,10 +219,12 @@ vi.mock('@apollo/client/react', async () => {
   }
 })
 
+const mockEnqueueSnackbar = vi.fn()
+
 // Mock notistack
 vi.mock('notistack', () => ({
   useSnackbar: () => ({
-    enqueueSnackbar: vi.fn()
+    enqueueSnackbar: mockEnqueueSnackbar
   }),
   SnackbarProvider: ({ children }) => (
     <div data-testid="mock-snackbar-provider">{children}</div>
@@ -529,5 +531,111 @@ describe('VariantDialog', () => {
     // Check that Cancel button is hidden when form is not dirty
     const cancelButton = screen.getByTestId('mock-cancel-button')
     expect(cancelButton).toHaveStyle('display: none')
+  })
+
+  describe('publishing', () => {
+    const pendingReconciliation = {
+      id: 'status_variant-123',
+      status: 'processing',
+      published: true,
+      reason: 'video-variant-publication-change',
+      retryAt: null,
+      errorMessage: null,
+      updatedAt: '2026-10-22T13:47:41.000Z'
+    }
+
+    function mockDraftVariant(reconciliation: unknown = null): void {
+      vi.mocked(
+        apolloClientModule_useSuspenseQuery as unknown as Mock
+      ).mockReturnValue({
+        data: {
+          videoVariant: {
+            id: mockVariantId,
+            published: false,
+            reconciliation,
+            hls: null,
+            downloads: [],
+            language: { id: 'lang-123', name: [{ value: 'English' }] },
+            videoEdition: null
+          }
+        },
+        refetch: vi.fn()
+      })
+    }
+
+    function renderWithUpdateResponse(videoVariantUpdate: unknown): void {
+      const updateMutation = vi.fn(async ({ onCompleted }) =>
+        onCompleted({ videoVariantUpdate })
+      )
+      vi.mocked(
+        apolloClientModule_useMutation as unknown as Mock
+      ).mockReturnValue([updateMutation, { loading: false }])
+      render(
+        <VariantDialog
+          params={resolvedParams({
+            variantId: mockVariantId,
+            videoId: mockVideoId
+          })}
+        >
+          <div>Child content</div>
+        </VariantDialog>
+      )
+    }
+
+    async function publish(): Promise<void> {
+      fireEvent.change(screen.getByTestId('mock-form-select'), {
+        target: { name: 'published', value: 'published' }
+      })
+      fireEvent.click(screen.getByText('Save'))
+    }
+
+    it('says the publish is waiting on Mux when the response is still pending', async () => {
+      mockDraftVariant()
+      renderWithUpdateResponse({
+        id: mockVariantId,
+        published: false,
+        reconciliation: pendingReconciliation
+      })
+
+      await publish()
+
+      await waitFor(() =>
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
+          'Publishing once Mux finishes processing this audio language',
+          { variant: 'info' }
+        )
+      )
+      expect(mockEnqueueSnackbar).not.toHaveBeenCalledWith(
+        'Variant updated',
+        expect.anything()
+      )
+    })
+
+    it('says the variant was updated when the publish applied on Save', async () => {
+      mockDraftVariant()
+      renderWithUpdateResponse({
+        id: mockVariantId,
+        published: true,
+        reconciliation: { ...pendingReconciliation, published: true }
+      })
+
+      await publish()
+
+      await waitFor(() =>
+        expect(mockEnqueueSnackbar).toHaveBeenCalledWith('Variant updated', {
+          variant: 'success'
+        })
+      )
+    })
+
+    it('shows the Publishing... chip for a publish waiting on Mux', () => {
+      mockDraftVariant(pendingReconciliation)
+      renderWithUpdateResponse(null)
+
+      expect(screen.getByText('Publishing...')).toBeInTheDocument()
+      expect(
+        screen.getByText('Waiting for Mux to finish processing')
+      ).toBeInTheDocument()
+    })
   })
 })
