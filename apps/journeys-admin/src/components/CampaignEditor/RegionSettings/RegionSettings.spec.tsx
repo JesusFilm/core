@@ -339,7 +339,7 @@ describe('RegionSettings', () => {
 
     fireEvent.change(name, { target: { value: 'x'.repeat(61) } })
     fireEvent.blur(name)
-    expect(await screen.findByText(/^Max 60 characters/)).toBeInTheDocument()
+    expect(await screen.findByText('Max 60 characters')).toBeInTheDocument()
     expect(renameMock.result).not.toHaveBeenCalled()
   })
 
