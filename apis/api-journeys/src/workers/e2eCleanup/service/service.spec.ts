@@ -707,16 +707,17 @@ describe('E2E Cleanup Service', () => {
     })
 
     it('sweeps campaigns before the playwright users are deleted', async () => {
-      mockPrismaUsers.user.findMany.mockImplementation(async ({ where }: any) =>
-        where.createdAt == null
-          ? [{ userId: 'playwright-member' }]
-          : [
-              {
-                id: 'user-1',
-                userId: 'playwright-member',
-                email: 'playwright123@example.com'
-              }
-            ]
+      mockPrismaUsers.user.findMany.mockImplementation(
+        async ({ where }: any) =>
+          where.createdAt == null
+            ? [{ userId: 'playwright-member' }]
+            : [
+                {
+                  id: 'user-1',
+                  userId: 'playwright-member',
+                  email: 'playwright123@example.com'
+                }
+              ]
       )
       prismaMock.journey.findMany.mockResolvedValue([])
       mockPrismaUsers.user.delete.mockResolvedValue({})
