@@ -1,54 +1,20 @@
-import { ApolloClient } from '@apollo/client'
 import { Logger } from 'pino'
 import { vi } from 'vitest'
 
 import { prismaMock } from '../../../../test/prismaMock'
+import {
+  journeyRow,
+  mockApolloClient,
+  mockMutate,
+  mockQuery,
+  qrCodeRow
+} from '../../../../test/qrCodeFixtures'
 
 import {
   REWRITE_BATCH_SIZE,
   updateAllShortlinks,
-  updateJourneyShortlink
+  updateJourneyShortLink
 } from './service'
-
-const mockQuery = vi.fn()
-const mockMutate = vi.fn()
-vi.mock('@apollo/client', () => ({
-  ApolloClient: vi.fn(function () {
-    return { query: mockQuery, mutate: mockMutate }
-  }),
-  InMemoryCache: vi.fn(),
-  HttpLink: vi.fn()
-}))
-
-function qrCodeRow(overrides: Record<string, unknown> = {}): never {
-  return {
-    id: 'qrCodeId',
-    teamId: 'teamId',
-    journeyId: 'journeyId',
-    toJourneyId: 'journeyId',
-    toBlockId: null,
-    shortLinkId: 'shortLinkId',
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
-    ...overrides
-  } as never
-}
-
-function journeyRow(
-  overrides: {
-    id?: string
-    slug?: string
-    customDomains?: Array<{ name: string; routeAllTeamJourneys: boolean }>
-  } = {}
-): never {
-  return {
-    id: overrides.id ?? 'journeyId',
-    slug: overrides.slug ?? 'my-journey',
-    teamId: 'teamId',
-    team: { id: 'teamId', customDomains: overrides.customDomains ?? [] },
-    journeyCollectionJourneys: []
-  } as never
-}
 
 function shortLinkResult(to: string) {
   return {
@@ -77,7 +43,7 @@ describe('shortlinkUpdater service', () => {
     mockMutate.mockResolvedValue(updateSuccess)
   })
 
-  describe('updateJourneyShortlink', () => {
+  describe('updateJourneyShortLink', () => {
     it('rewrites every QR code that points at the journey through getTo', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([
         qrCodeRow(),
@@ -92,7 +58,7 @@ describe('shortlinkUpdater service', () => {
         journeyRow({ slug: 'renamed' })
       )
 
-      await updateJourneyShortlink('journeyId', logger)
+      await updateJourneyShortLink('journeyId', logger)
 
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
         where: { toJourneyId: 'journeyId' }
@@ -123,7 +89,7 @@ describe('shortlinkUpdater service', () => {
     it('does nothing when no QR code points at the journey', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([])
 
-      await updateJourneyShortlink('journeyId', logger)
+      await updateJourneyShortLink('journeyId', logger)
 
       expect(mockQuery).not.toHaveBeenCalled()
       expect(mockMutate).not.toHaveBeenCalled()
@@ -141,7 +107,7 @@ describe('shortlinkUpdater service', () => {
       mockMutate.mockRejectedValueOnce(new Error('gateway down'))
 
       await expect(
-        updateJourneyShortlink('journeyId', logger)
+        updateJourneyShortLink('journeyId', logger)
       ).resolves.toBeUndefined()
 
       expect(mockMutate).toHaveBeenCalledTimes(2)
@@ -163,7 +129,7 @@ describe('shortlinkUpdater service', () => {
       })
 
       await expect(
-        updateJourneyShortlink('journeyId', logger)
+        updateJourneyShortLink('journeyId', logger)
       ).resolves.toBeUndefined()
 
       expect(logger.error).toHaveBeenCalledWith(
@@ -280,7 +246,7 @@ describe('shortlinkUpdater service', () => {
       expect(count).toBe(rowCount)
       expect(mockMutate).toHaveBeenCalledTimes(rowCount)
       expect(maxInFlight).toBe(REWRITE_BATCH_SIZE)
-      expect(ApolloClient).toHaveBeenCalledTimes(1)
+      expect(mockApolloClient).toHaveBeenCalledTimes(1)
     })
 
     it('logs and skips a row whose getTo rejects while rewriting the rest', async () => {

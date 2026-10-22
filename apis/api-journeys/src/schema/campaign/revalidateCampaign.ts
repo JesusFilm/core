@@ -101,8 +101,8 @@ export const CAMPAIGN_REVALIDATE_JOB_OPTIONS: JobsOptions = {
  * Queue on-demand revalidation of a campaign's pages: exactly one job per
  * affected path through the revalidate worker's `paths[]` job variant, retried
  * with backoff. Only `campaignPublish`, `campaignUnpublish`, `campaignDelete`
- * of a published campaign, a Campaign Root change or a Custom Domain delete,
- * and — on a published campaign — a campaign slug change, a Page Language add
+ * of a published campaign, and — on a published campaign — a Campaign Root
+ * change or a Custom Domain delete, a campaign slug change, a Page Language add
  * or remove, and a region slug, listing or delete change call this; other
  * content mutations rely on the 60 s ISR window and queue nothing. A queue
  * failure is logged, not thrown: the page still refreshes at the next ISR
@@ -124,6 +124,37 @@ export async function enqueueCampaignRevalidation(
           })
     )
   )
+}
+
+/**
+ * After a Custom Domain starts or stops naming a campaign as Campaign Root,
+ * revalidate every page of each given campaign in the root-domain form and in
+ * the domain form under `hostname`: the domain form starts or stops resolving
+ * and the root-domain form gains or loses its canonical link to the domain. A
+ * draft campaign serves nothing, so nothing is queued for it.
+ */
+export async function enqueueCampaignRootRevalidation(
+  campaigns: Array<{
+    id: string
+    slug: string
+    status: string
+    regions: Array<{ slug: string }>
+  }>,
+  hostname: string
+): Promise<void> {
+  const paths = await Promise.all(
+    campaigns
+      .filter((campaign) => campaign.status === 'published')
+      .map(async (campaign) =>
+        campaignPagePaths({
+          slug: campaign.slug,
+          regions: campaign.regions,
+          hostnames: [hostname],
+          languageTags: await campaignLanguageTags(campaign.id)
+        })
+      )
+  )
+  await enqueueCampaignRevalidation(paths.flat())
 }
 
 interface PublishedCampaignPages {

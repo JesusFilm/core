@@ -4,11 +4,9 @@ import { Logger } from 'pino'
 import { env } from '../env'
 
 import { connection } from './lib/connection'
+import { ONE_DAY, ONE_HOUR } from './lib/jobAge'
 import { runIfLeader } from './lib/leader'
 import { logger } from './lib/logger'
-
-const ONE_HOUR = 3600
-const ONE_DAY = 86_400
 
 interface RunOptions {
   service: (job: Job, logger?: Logger) => Promise<void>

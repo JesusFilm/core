@@ -3,7 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
-import { authClient, mockUser } from '../../../test/campaignBlockSpec'
+import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import {
   CAMPAIGN_FIXTURE_DATE,
   CampaignFixture,

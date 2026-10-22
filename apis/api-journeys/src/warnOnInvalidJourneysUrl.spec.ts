@@ -21,12 +21,6 @@ describe('warnOnInvalidJourneysUrl', () => {
     )
   })
 
-  it('logs one warning when the value is missing', () => {
-    warnOnInvalidJourneysUrl(undefined, log)
-
-    expect(log.warn).toHaveBeenCalledTimes(1)
-  })
-
   it.each(['https://your.nextstep.is', 'http://localhost:4100'])(
     'logs nothing for %s',
     (value) => {

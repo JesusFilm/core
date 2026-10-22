@@ -2,13 +2,12 @@ import type { Logger } from 'pino'
 
 /**
  * Log one warning when JOURNEYS_URL is not an absolute `http(s)://` URL, and
- * carry on. The env schema only requires a non-empty string, but
- * `getJourneyPublicUrl` and `getJourneyEmbedUrl` build `${JOURNEYS_URL}/<slug>`
- * from it, so a relative or scheme-less value (a local `.env` typo) makes the
- * public campaign page's Share section throw on `new URL(embedUrl)`.
+ * carry on. The env schema only requires a non-empty string (see `env.ts`),
+ * but journey and embed links are built as `${JOURNEYS_URL}/<slug>`, so a
+ * relative or scheme-less value (a local `.env` typo) breaks them.
  */
 export function warnOnInvalidJourneysUrl(
-  journeysUrl: string | undefined,
+  journeysUrl: string,
   log: Pick<Logger, 'warn'>
 ): void {
   if (isAbsoluteHttpUrl(journeysUrl)) return
@@ -18,8 +17,7 @@ export function warnOnInvalidJourneysUrl(
   )
 }
 
-function isAbsoluteHttpUrl(value: string | undefined): boolean {
-  if (value == null) return false
+function isAbsoluteHttpUrl(value: string): boolean {
   try {
     const { protocol } = new URL(value)
     return protocol === 'http:' || protocol === 'https:'

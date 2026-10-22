@@ -6,14 +6,14 @@ import { getUserFromPayload } from '@core/yoga/firebaseClient'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
-import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
+import { updateJourneyShortLink } from '../../workers/shortlinkUpdater/service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
 }))
 
 vi.mock('../../workers/shortlinkUpdater/service', () => ({
-  updateJourneyShortlink: vi.fn().mockResolvedValue(undefined)
+  updateJourneyShortLink: vi.fn().mockResolvedValue(undefined)
 }))
 
 const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
@@ -106,8 +106,8 @@ describe('journeyUpdate', () => {
         order.push('transaction returned')
         return result
       })
-      vi.mocked(updateJourneyShortlink).mockImplementation(async () => {
-        order.push('updateJourneyShortlink')
+      vi.mocked(updateJourneyShortLink).mockImplementation(async () => {
+        order.push('updateJourneyShortLink')
       })
 
       const result = (await authClient({
@@ -116,8 +116,8 @@ describe('journeyUpdate', () => {
       })) as any
 
       expect(result.errors).toBeUndefined()
-      expect(updateJourneyShortlink).toHaveBeenCalledWith('journeyId')
-      expect(order).toEqual(['transaction returned', 'updateJourneyShortlink'])
+      expect(updateJourneyShortLink).toHaveBeenCalledWith('journeyId')
+      expect(order).toEqual(['transaction returned', 'updateJourneyShortLink'])
     })
 
     it('does not rewrite the QR short links without a slug change', async () => {
@@ -127,11 +127,11 @@ describe('journeyUpdate', () => {
       })) as any
 
       expect(result.errors).toBeUndefined()
-      expect(updateJourneyShortlink).not.toHaveBeenCalled()
+      expect(updateJourneyShortLink).not.toHaveBeenCalled()
     })
 
     it('does not fail the mutation when the rewrite rejects', async () => {
-      vi.mocked(updateJourneyShortlink).mockRejectedValueOnce(
+      vi.mocked(updateJourneyShortLink).mockRejectedValueOnce(
         new Error('gateway down')
       )
 

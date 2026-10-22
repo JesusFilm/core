@@ -1,7 +1,7 @@
 import {
   authClient,
   setupCampaignBlockSpec
-} from '../../../../test/campaignBlockSpec'
+} from '../../../../test/campaignBlockSetup'
 import {
   CampaignFixture,
   campaignFactory

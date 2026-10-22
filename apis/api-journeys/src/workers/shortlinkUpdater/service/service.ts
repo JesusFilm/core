@@ -72,9 +72,10 @@ const createApolloClient = () => {
 export const REWRITE_BATCH_SIZE = 10
 
 /**
- * Updates a shortlink with a new destination URL
+ * Points a short link at `to`. Returns `null` without a write when it already
+ * points there.
  */
-export async function updateShortLink(
+async function updateShortLinkIfChanged(
   id: string,
   to: string,
   logger?: Logger,
@@ -141,7 +142,12 @@ export async function rewriteQrCodeShortLinks(
           toJourneyId: qrCode.toJourneyId,
           toBlockId: qrCode.toBlockId
         })
-        return await updateShortLink(qrCode.shortLinkId, to, logger, apollo)
+        return await updateShortLinkIfChanged(
+          qrCode.shortLinkId,
+          to,
+          logger,
+          apollo
+        )
       })
     )
 
@@ -165,10 +171,11 @@ export async function rewriteQrCodeShortLinks(
 
 /**
  * Updates the shortlink of every QR code that points at the journey, the
- * journey's own and any campaign's. Never throws: the next sweep repairs a
- * row that failed.
+ * journey's own and any campaign's. A row that fails is logged and left for
+ * the next sweep, but it can still throw on its reads, so callers catch and
+ * log it.
  */
-export async function updateJourneyShortlink(
+export async function updateJourneyShortLink(
   journeyId: string,
   logger?: Logger
 ): Promise<void> {

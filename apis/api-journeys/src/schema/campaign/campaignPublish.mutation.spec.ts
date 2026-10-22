@@ -4,7 +4,7 @@ import { mockQueueAdd } from '../../../test/bullmqMock'
 import {
   authClient,
   setupCampaignBlockSpec
-} from '../../../test/campaignBlockSpec'
+} from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'

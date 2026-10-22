@@ -7,7 +7,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
 import { logger } from '../../logger'
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
-import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
+import { updateJourneyShortLink } from '../../workers/shortlinkUpdater/service'
 import { builder } from '../builder'
 
 import { JourneyUpdateInput } from './inputs'
@@ -105,7 +105,7 @@ builder.mutationField('journeyUpdate', (t) =>
 
           if (input.slug != null) {
             try {
-              await updateJourneyShortlink(result.id)
+              await updateJourneyShortLink(result.id)
             } catch (error) {
               logger.error(
                 { journeyId: result.id, error },

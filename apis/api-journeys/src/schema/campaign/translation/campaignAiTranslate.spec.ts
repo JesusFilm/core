@@ -7,7 +7,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
-import { mockUser } from '../../../../test/campaignBlockSpec'
+import { mockUser } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { promptOf } from '../../../../test/promptOf'
