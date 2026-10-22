@@ -16,8 +16,9 @@ import { Language } from '../language'
 import { logger } from '../logger'
 import { deleteVideo } from '../mux/video/service'
 import { VideoSubtitle } from '../video/videoSubtitle'
+import { applyVariantPublication } from '../videoVariantReconciliation/applyVariantPublication'
 import { requestVideoVariantReconciliation } from '../videoVariantReconciliation/requestVideoVariantReconciliation'
-import { videoVariantHasUsableMedia } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
+import { videoVariantAwaitsMux } from '../videoVariantReconciliation/videoVariantHasUsableMedia'
 
 import { VideoVariantCreateInput } from './inputs/videoVariantCreate'
 import { VideoVariantFilter } from './inputs/videoVariantFilter'
@@ -620,16 +621,16 @@ builder.mutationFields((t) => ({
           })) != null
         : true
 
-      // Unpublishing takes effect immediately. Publishing does too, but only
-      // once viewers would get playable media (see videoVariantHasUsableMedia)
-      // -- otherwise it is left to reconciliation, which publishes the Variant
-      // as soon as Mux is ready. Usability is evaluated against this same
-      // call's own hls/share/muxVideoId, not just the pre-update row, so
-      // publishing and relinking usable media in one request publishes
-      // immediately instead of waiting on reconciliation.
+      // Unpublishing takes effect immediately. Publishing does too, unless a
+      // linked Mux asset is still transcoding with nothing else playable (see
+      // videoVariantAwaitsMux) -- that publish is left to reconciliation,
+      // which publishes the Variant as soon as Mux is ready. This is
+      // evaluated against this same call's own hls/share/muxVideoId, not just
+      // the pre-update row, so publishing and relinking usable media in one
+      // request publishes immediately instead of waiting on reconciliation.
       const nextPublished =
         input.published === true
-          ? videoVariantHasUsableMedia({
+          ? videoVariantAwaitsMux({
               hls: input.hls ?? currentVariant.hls,
               share: input.share ?? currentVariant.share,
               muxVideo:
@@ -640,8 +641,8 @@ builder.mutationFields((t) => ({
                     })
                   : currentVariant.muxVideo
             })
-            ? true
-            : undefined
+            ? undefined
+            : true
           : input.published === false
             ? false
             : undefined
@@ -738,6 +739,25 @@ builder.mutationFields((t) => ({
               reason
             }
           })
+        }
+      }
+
+      // A publish/Draft applied to the column above is applied to the
+      // Video's languages and its parents right away too, even when the
+      // column was already at that value: the editor's explicit toggle is
+      // also how a Video whose language went missing gets it back. It runs
+      // after the reconciliation request so that request's createdAt reset
+      // already makes any sweep run still in flight on this row step aside.
+      // A failure here is not fatal: the requested reconciliation repeats
+      // these same writes on the next sweep, and alerts if they keep failing.
+      if (nextPublished !== undefined) {
+        try {
+          await applyVariantPublication(updated)
+        } catch (error) {
+          logger.error(
+            { error, videoVariantId: updated.id, published: updated.published },
+            'Video variant publication apply failed; left to reconciliation'
+          )
         }
       }
 

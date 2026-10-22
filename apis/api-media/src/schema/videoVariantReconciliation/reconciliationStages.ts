@@ -32,8 +32,8 @@ export type ReconciliationStatus =
 
 export type ReconciliationStore = {
   videoVariantReconciliation: {
-    update: (args: {
-      where: { id: string }
+    updateMany: (args: {
+      where: { id: string; createdAt: Date }
       data: {
         status: ReconciliationStatus
         processingStages: ProcessingStages
@@ -150,21 +150,30 @@ export function retryAtFor(attempts: number): Date | null {
   return new Date(Date.now() + delayMinutes * 60_000)
 }
 
+// A run only records its outcome if nobody re-requested the row while it
+// was in flight. Every re-request (requestVideoVariantReconciliation) resets
+// createdAt along with the fresh intent, so a stale run's write would wipe
+// that intent -- e.g. a Draft run finishing `complete` on top of the
+// editor's publish made seconds earlier. Matching the createdAt this run
+// read lets it step aside instead: the re-requested row stays processing
+// and due, and the next sweep reconciles the newer intent.
 export async function persistReconciliationStatus({
   store,
   reconciliationId,
+  runCreatedAt,
   status,
   stages,
   failedStageValue
 }: {
   store: ReconciliationStore
   reconciliationId: string
+  runCreatedAt: Date
   status: ReconciliationStatus
   stages: ProcessingStages
   failedStageValue?: ProcessingStage
 }): Promise<void> {
-  await store.videoVariantReconciliation.update({
-    where: { id: reconciliationId },
+  await store.videoVariantReconciliation.updateMany({
+    where: { id: reconciliationId, createdAt: runCreatedAt },
     data: {
       status,
       processingStages: stages,
