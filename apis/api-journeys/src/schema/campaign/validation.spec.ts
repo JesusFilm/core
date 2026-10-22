@@ -127,7 +127,7 @@ describe('campaign validation', () => {
       ['CampaignRegion.name', 'name', TEXT_CAPS.regionName, 60, true],
       ['section eyebrow', 'eyebrow', TEXT_CAPS.eyebrow, 80, false],
       ['section title', 'title', TEXT_CAPS.title, 150, false],
-      ['section lede', 'lede', TEXT_CAPS.lede, 500, false],
+      ['section description', 'description', TEXT_CAPS.description, 500, false],
       ['section intro', 'intro', TEXT_CAPS.intro, 500, false],
       ['bullets', 'bullets', TEXT_CAPS.bullets, 1000, false],
       ['rich text content', 'content', TEXT_CAPS.richTextContent, 5000, false],
@@ -400,7 +400,10 @@ describe('campaign validation', () => {
       ['source', Object.values(VideoBlockSource)],
       ['backgroundOverlay', Object.values(CampaignBackgroundOverlay)],
       ['key', Object.values(CampaignStringKey)],
-      ['field', ['eyebrow', 'title', 'lede', 'bullets', 'content', 'intro']]
+      [
+        'field',
+        ['eyebrow', 'title', 'description', 'bullets', 'content', 'intro']
+      ]
     ])(
       "%s takes its enum's values only, else BAD_USER_INPUT with the column as field",
       (column, values) => {
@@ -462,34 +465,34 @@ describe('campaign validation', () => {
     })
 
     it('generates the slug from the title with slugify lower strict', async () => {
-      await expect(generateUniqueCampaignSlug('Christmas 2026!')).resolves.toBe(
-        'christmas-2026'
+      await expect(generateUniqueCampaignSlug('Outreach 2026!')).resolves.toBe(
+        'outreach-2026'
       )
       expect(prismaMock.campaign.findMany).toHaveBeenCalledWith({
-        where: { slug: { startsWith: 'christmas-2026' } },
+        where: { slug: { startsWith: 'outreach-2026' } },
         select: { slug: true }
       })
     })
 
     it('appends -2…-50 on collision', async () => {
       prismaMock.campaign.findMany.mockResolvedValue([
-        { slug: 'christmas' },
-        { slug: 'christmas-2' }
+        { slug: 'outreach' },
+        { slug: 'outreach-2' }
       ] as any)
-      await expect(generateUniqueCampaignSlug('Christmas')).resolves.toBe(
-        'christmas-3'
+      await expect(generateUniqueCampaignSlug('Outreach')).resolves.toBe(
+        'outreach-3'
       )
     })
 
     it('falls back to a nanoid suffix once base-2…base-50 are taken', async () => {
       prismaMock.campaign.findMany.mockResolvedValue([
-        { slug: 'christmas' },
+        { slug: 'outreach' },
         ...Array.from({ length: 49 }, (_, i) => ({
-          slug: `christmas-${i + 2}`
+          slug: `outreach-${i + 2}`
         }))
       ] as any)
-      const slug = await generateUniqueCampaignSlug('Christmas')
-      expect(slug).toMatch(/^christmas-[a-z0-9]{6}$/)
+      const slug = await generateUniqueCampaignSlug('Outreach')
+      expect(slug).toMatch(/^outreach-[a-z0-9]{6}$/)
       expect(SLUG_PATTERN.test(slug)).toBe(true)
     })
 
@@ -524,10 +527,10 @@ describe('campaign validation', () => {
 
     it('is author-editable through the gallery author-slug validation', async () => {
       await expect(
-        validateCampaignSlug(' Christmas 2026 ', 'campaignId')
-      ).resolves.toBe('christmas-2026')
+        validateCampaignSlug(' Outreach 2026 ', 'campaignId')
+      ).resolves.toBe('outreach-2026')
       expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith({
-        where: { slug: 'christmas-2026', NOT: { id: 'campaignId' } },
+        where: { slug: 'outreach-2026', NOT: { id: 'campaignId' } },
         select: { id: true }
       })
       await expectBadUserInputAsync(
@@ -539,7 +542,7 @@ describe('campaign validation', () => {
     it('keeps slug collisions as BAD_USER_INPUT, field slug', async () => {
       prismaMock.campaign.findFirst.mockResolvedValue({ id: 'other' } as any)
       await expectBadUserInputAsync(
-        validateCampaignSlug('christmas', 'campaignId'),
+        validateCampaignSlug('outreach', 'campaignId'),
         'slug'
       )
     })

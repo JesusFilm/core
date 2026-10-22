@@ -34,12 +34,12 @@ import { getLocaleRTL } from '@core/shared/ui/rtl'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { FontLoader } from '../../Editor/FontLoader'
-import { useCampaignEditor } from '../CampaignEditorProvider'
+import { sortedRegions, useCampaignEditor } from '../CampaignEditorProvider'
 import { Hotkeys } from '../Hotkeys'
 import { CanvasHoverReporter } from '../Navigator/NavigatorHover'
-import { PreviewLanguageChip } from '../PreviewLanguageChip'
 import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../utils/useCampaignBlockOrderCommand'
+import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 import { useColumnSwapCommand } from '../utils/useColumnSwapCommand'
 
 import { CanvasInsertPoint } from './CanvasInsertPoint'
@@ -48,6 +48,9 @@ import { CanvasSection } from './CanvasSection'
 import { FrameTheme } from './FrameTheme'
 
 export { PHONE_FRAME_WIDTH } from './canvasScale'
+
+/** The frame's corner radius in theme radius units (`borderRadius: 3`). */
+const FRAME_RADIUS = 3
 export type { CanvasView } from './canvasScale'
 
 export type DropEdge = 'before' | 'after'
@@ -83,10 +86,12 @@ export function dropParentOrder(
   return to === from ? undefined : to
 }
 
-/** The drag data a Column Slot carries, set by `CanvasColumnSlot`. */
+/** The drag data a Column Slot carries, set by `CanvasColumnSlot`, or a region card, set by `RegionCardEdit`. */
 interface SlotDragData {
   slot?: boolean
   columnsId?: string | null
+  /** A region card: it only trades places with the other cards of the campaign. */
+  regionId?: string
 }
 
 function slotDataOf(
@@ -96,14 +101,32 @@ function slotDataOf(
 }
 
 /**
+ * The `order` a region card dropped on another card takes: the target's
+ * place among the campaign's regions in order, or undefined for a drop on
+ * itself or on nothing.
+ */
+export function regionDropOrder(
+  regionIds: string[],
+  activeRegionId: string,
+  overRegionId: string | undefined
+): number | undefined {
+  if (overRegionId == null || overRegionId === activeRegionId) return undefined
+  const to = regionIds.indexOf(overRegionId)
+  return to < 0 || regionIds.indexOf(activeRegionId) < 0 ? undefined : to
+}
+
+/**
  * The section under the pointer, falling back to the nearest centre at the
  * page's edges. A section only collides with sections; a Column Slot only
- * with the other slot of its own Columns section.
+ * with the other slot of its own Columns section; a region card only with
+ * the other region cards.
  */
 const collisionDetection: CollisionDetection = (args) => {
   const active = slotDataOf(args.active?.data)
   const droppableContainers = args.droppableContainers.filter((container) => {
     const candidate = slotDataOf(container.data)
+    if (active.regionId != null) return candidate.regionId != null
+    if (candidate.regionId != null) return false
     if (active.slot !== true) return candidate.slot !== true
     return candidate.slot === true && candidate.columnsId === active.columnsId
   })
@@ -197,8 +220,7 @@ interface CanvasProps {
  * dragged by its handle only; the drop lands before or after the section
  * under the pointer by its midpoint, as one reorder Command. A "+" between
  * sections (and above the first, below the last) opens the Add Panel at that
- * insert point. The Preview Language chip sits at the canvas's bottom-right,
- * outside the frame, in the editor theme.
+ * insert point.
  *
  * The frame has a fixed width (1200 px Desktop, 390 px Phone) and is scaled
  * down to fit the space it is given with a CSS transform on a wrapper outside
@@ -218,6 +240,7 @@ export function Canvas({
   } = useCampaignEditor()
   const { addBlockOrder } = useCampaignBlockOrderCommand()
   const { addColumnSwap } = useColumnSwapCommand()
+  const { reorderRegion } = useCampaignRegionCommand()
   const [dropTarget, setDropTarget] = useState<DropTarget>()
   const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
   const pageId = page?.id
@@ -279,8 +302,27 @@ export function Canvas({
   )
 
   function handleDragMove(event: DragMoveEvent): void {
-    if (slotDataOf(event.active.data).slot === true) return
+    const active = slotDataOf(event.active.data)
+    if (active.slot === true || active.regionId != null) return
     setDropTarget(dropTargetOf(event))
+  }
+
+  /** A region card dropped on another card takes that card's place; the cards between shift. */
+  function handleRegionDragEnd(event: DragEndEvent): void {
+    const activeRegionId = slotDataOf(event.active.data).regionId
+    const overRegionId = slotDataOf(
+      event.collisions?.[0]?.data?.droppableContainer?.data
+    ).regionId
+    if (activeRegionId == null) return
+    const regions = sortedRegions(campaign.regions)
+    const order = regionDropOrder(
+      regions.map((region) => region.id),
+      activeRegionId,
+      overRegionId
+    )
+    const region = regions.find((candidate) => candidate.id === activeRegionId)
+    if (order == null || region == null) return
+    reorderRegion(region, order)
   }
 
   /** A slot dropped on the other slot of its Columns section swaps the two. */
@@ -296,6 +338,10 @@ export function Canvas({
 
   function handleDragEnd(event: DragEndEvent): void {
     setDropTarget(undefined)
+    if (slotDataOf(event.active.data).regionId != null) {
+      handleRegionDragEnd(event)
+      return
+    }
     if (slotDataOf(event.active.data).slot === true) {
       handleSlotDragEnd(event)
       return
@@ -348,7 +394,7 @@ export function Canvas({
             height: '100%',
             flexShrink: 0,
             bgcolor: 'background.paper',
-            borderRadius: 3,
+            borderRadius: FRAME_RADIUS,
             overflow: 'hidden',
             boxShadow: 2
           }}
@@ -382,6 +428,10 @@ export function Canvas({
                       sx={{
                         height: '100%',
                         overflowY: 'auto',
+                        // A column so a short page's footer sits at the frame's bottom edge, as on the public page.
+                        display: 'flex',
+                        flexDirection: 'column',
+                        '& > *': { flexShrink: 0 },
                         bgcolor: 'background.default',
                         color: 'text.primary'
                       }}
@@ -426,7 +476,6 @@ export function Canvas({
           </Box>
         </Box>
       </Box>
-      <PreviewLanguageChip />
     </Box>
   )
 }

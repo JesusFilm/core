@@ -148,6 +148,7 @@ export function RegionSettings({
     try {
       if (field === 'name' && translationLanguageId != null) {
         await writeTranslation({
+          campaignId: region.campaignId,
           row: region,
           target: { regionId: region.id },
           field: CampaignTextField.name,

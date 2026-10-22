@@ -259,7 +259,11 @@ export function CampaignVideoCarousel({
 
   return (
     <CampaignSectionBand block={block}>
-      <CampaignSectionHeading eyebrow={block.eyebrow} title={block.title} />
+      <CampaignSectionHeading
+        eyebrow={block.eyebrow}
+        title={block.title}
+        description={block.description}
+      />
       {cards.length > 0 && (
         <Stack spacing={2}>
           <CampaignCarouselArrows
@@ -275,6 +279,8 @@ export function CampaignVideoCarousel({
             data-testid={`CampaignVideoCarouselCards-${block.id}`}
             sx={{
               overflowX: 'auto',
+              // Reserve the scrollbar's row up front, so the carousel does not grow and shrink as the bar comes and goes.
+              scrollbarGutter: 'stable',
               scrollSnapType: 'x mandatory',
               pb: 1,
               mx: { xs: -2, sm: 0 },

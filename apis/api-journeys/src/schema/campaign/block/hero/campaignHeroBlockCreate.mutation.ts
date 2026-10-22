@@ -11,13 +11,13 @@ builder.mutationField('campaignHeroBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: CampaignHeroBlock,
     nullable: false,
-    description: `Add a hero section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. Text is empty when omitted.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\` / \`lede\` / \`align\`): the value fails its rule.`,
+    description: `Add a hero section to a page, last among its sections or at \`parentOrder\` with the later sections renumbered. Text is empty when omitted.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`eyebrow\` / \`title\` / \`description\` / \`align\`): the value fails its rule.`,
     args: {
       input: t.arg({ type: CampaignHeroBlockCreateInput, required: true })
     },
     resolve: async (_parent, { input }, context) =>
       await createSection(input, 'CampaignHeroBlock', context.user, () => ({
-        ...validateSectionText(input, ['eyebrow', 'title', 'lede']),
+        ...validateSectionText(input, ['eyebrow', 'title', 'description']),
         align: assertEnumOrNull(input.align, 'align', CAMPAIGN_ALIGNS)
       }))
   })

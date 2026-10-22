@@ -95,7 +95,7 @@ describe('CampaignJourneyList', () => {
     ).toHaveTextContent('first description')
     expect(first.getByTestId('CampaignJourneyCardImage')).toHaveAttribute(
       'src',
-      'https://imagedelivery.net/christmas-story/public'
+      'https://imagedelivery.net/outreach-story/public'
     )
     expect(
       within(cards[2]).queryByTestId('CampaignJourneyCardDescription')
@@ -281,7 +281,7 @@ describe('CampaignJourneyList', () => {
       region: null,
       regions: campaignPublic.regions
     }
-    const noText = { eyebrow: null, title: null, lede: null }
+    const noText = { eyebrow: null, title: null, description: null }
 
     it('renders the text when there are no live journeys, else the section is skipped', () => {
       const draftOnly = item('draft', 0, {

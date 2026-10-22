@@ -11,7 +11,7 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
   isTypeOf: (block: unknown) =>
     isCampaignBlockOfType(block, 'CampaignHeroBlock'),
   description:
-    'The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.',
+    'The opening section of a page: eyebrow, title and description over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.',
   fields: (t) => ({
     eyebrow: t.exposeString('eyebrow', { nullable: true }),
     eyebrowTranslations: t.field({
@@ -25,11 +25,11 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
       nullable: false,
       resolve: (block) => toTranslatedValues(block.titleTranslations)
     }),
-    lede: t.exposeString('lede', { nullable: true }),
-    ledeTranslations: t.field({
+    description: t.exposeString('description', { nullable: true }),
+    descriptionTranslations: t.field({
       type: [TranslatedValueRef],
       nullable: false,
-      resolve: (block) => toTranslatedValues(block.ledeTranslations)
+      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
     }),
     align: t.field({
       type: TypographyAlign,
@@ -42,6 +42,11 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
       nullable: true,
       description:
         'The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.'
+    }),
+    minHeight: t.exposeInt('minHeight', {
+      nullable: true,
+      description:
+        'Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.'
     })
   })
 })

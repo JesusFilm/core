@@ -35,6 +35,10 @@ export interface CampaignCarouselVideoInput {
   url?: string
   videoId?: string | null
   videoVariantLanguageId?: string | null
+  /** The carousel's own text, taken from the expanded Watch video. */
+  eyebrow?: string | null
+  title?: string | null
+  description?: string | null
 }
 
 export type CampaignCarouselVideoMutate = (

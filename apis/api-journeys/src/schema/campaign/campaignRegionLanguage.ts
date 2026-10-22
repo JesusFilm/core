@@ -1,6 +1,11 @@
 import { builder } from '../builder'
 import { Language } from '../language'
 
+import {
+  INCLUDE_JOURNEY_PUBLIC_URL,
+  getJourneyPublicUrl
+} from './getJourneyPublicUrl'
+
 export const CampaignRegionLanguageRef = builder.prismaObject(
   'CampaignRegionLanguage',
   {
@@ -20,6 +25,16 @@ export const CampaignRegionLanguageRef = builder.prismaObject(
       }),
       journeyId: t.exposeID('journeyId', { nullable: true }),
       journey: t.relation('journey', { nullable: true }),
+      journeyUrl: t.string({
+        nullable: true,
+        description:
+          "Where the linked journey is served, as the viewer receives it: the journey team's route-all custom domain, else a collection domain holding it, else the root domain. Null for an Unlinked Language.",
+        select: { journey: { include: INCLUDE_JOURNEY_PUBLIC_URL } },
+        resolve: (regionLanguage) =>
+          regionLanguage.journey == null
+            ? null
+            : getJourneyPublicUrl(regionLanguage.journey)
+      }),
       title: t.exposeString('title', {
         nullable: true,
         description:

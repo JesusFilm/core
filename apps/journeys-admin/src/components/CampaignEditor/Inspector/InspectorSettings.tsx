@@ -4,21 +4,22 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import Edit2Icon from '@core/shared/ui/icons/Edit2'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
-import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 
 import {
   GetCampaign_campaign as Campaign,
   GetCampaign_campaign_blocks as CampaignBlock
 } from '../../../../__generated__/GetCampaign'
+import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { isCampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
 import { AnalyticsSettings } from '../AnalyticsSettings'
-import { campaignPermanentAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CarouselCardEdit } from '../CarouselCardEdit'
 import { CarouselEdit } from '../CarouselEdit'
 import { ChromeEdit } from '../ChromeEdit'
+import { HeroSettings } from '../HeroSettings'
 import { ImageSectionEdit } from '../ImageSectionEdit'
 import { JourneyCardSettings } from '../JourneyCardSettings'
 import { JourneyListSettings } from '../JourneyListSettings'
@@ -26,6 +27,7 @@ import { LinkSettings } from '../LinkSettings'
 import { MediaSectionEdit } from '../MediaSectionEdit'
 import { RegionSettings } from '../RegionSettings'
 import { RegionSwitcherSettings } from '../RegionSwitcherSettings'
+import { SectionWordingSettings } from '../SectionWordingSettings'
 import { Settings } from '../Settings'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
 
@@ -42,7 +44,7 @@ interface SectionEditorProps {
   block: CampaignBlock
 }
 
-/** The header, an Image section, a Video Carousel, the sections with a Media Slot, the Analytics section, the Region Switcher and the Journey List have an editor; every other section edits its text in place. */
+/** The header, an Image section, a Video Carousel, the sections with a Media Slot (the hero also its height), the Analytics section, the Region Switcher and the Journey List have an editor; every other section edits its text in place. */
 function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   if (block.__typename === 'CampaignHeaderBlock')
@@ -51,6 +53,13 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
     return <ImageSectionEdit block={block} />
   if (block.__typename === 'CampaignVideoCarouselBlock')
     return <CarouselEdit block={block} />
+  if (block.__typename === 'CampaignHeroBlock')
+    return (
+      <Stack spacing={4}>
+        <MediaSectionEdit block={block} />
+        <HeroSettings block={block} />
+      </Stack>
+    )
   if (isCampaignMediaOwner(block)) return <MediaSectionEdit block={block} />
   if (block.__typename === 'CampaignAnalyticsBlock')
     return <AnalyticsSettings block={block} />
@@ -71,8 +80,9 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement | null {
  * section with the per-type toggles (analytics map, switcher variant,
  * journey-list display, media side), the link settings for a button Extra,
  * title and description for a carousel card, the snapshot text and Refresh
- * from journey for a journey card, the region's
- * settings with list / unlist and Open page for a region card, and the type
+ * from journey for a journey card, the region's settings with list / unlist
+ * and Edit page (the editor switches to that region's page, where its
+ * journeys are linked and previewed) for a region card, and the type
  * controls for a column slot.
  */
 export function InspectorSettings({
@@ -83,6 +93,7 @@ export function InspectorSettings({
   const { t } = useTranslation('apps-journeys-admin')
   const {
     selection,
+    dispatch,
     state: { previewLanguageId }
   } = useCampaignEditor()
   const { setListed } = useCampaignRegionCommand()
@@ -100,7 +111,10 @@ export function InspectorSettings({
     case 'section':
     case 'chrome':
       return block != null ? (
-        <SectionEditor key={block.id} block={block} />
+        <Stack spacing={4}>
+          <SectionEditor key={block.id} block={block} />
+          <SectionWordingSettings block={block} />
+        </Stack>
       ) : (
         <></>
       )
@@ -109,6 +123,7 @@ export function InspectorSettings({
         <Stack spacing={4}>
           <ColumnControls />
           {block != null && <SectionEditor key={block.id} block={block} />}
+          {block != null && <SectionWordingSettings block={block} />}
         </Stack>
       )
     case 'slot':
@@ -144,12 +159,16 @@ export function InspectorSettings({
             <Button
               variant="outlined"
               color="secondary"
-              startIcon={<LinkExternalIcon />}
-              href={`${campaignPermanentAddress(campaign.slug)}/${region.slug}`}
-              target="_blank"
-              rel="noopener"
+              startIcon={<Edit2Icon />}
+              onClick={() =>
+                dispatch({
+                  type: 'SetPageKindAction',
+                  pageKind: CampaignPageKind.regionTemplate,
+                  regionId: region.id
+                })
+              }
             >
-              {t('Open page')}
+              {t('Edit page')}
             </Button>
             <Button
               variant="outlined"

@@ -135,7 +135,7 @@ describe('useCampaignBlockDuplicateCommand', () => {
       id: 'heroCopyId',
       parentBlockId: null,
       parentOrder: 1,
-      title: 'Share the story of Christmas'
+      title: 'Share the story of Outreach'
     })
     expect(buttonCopy).toMatchObject({
       __typename: 'CampaignButtonBlock',

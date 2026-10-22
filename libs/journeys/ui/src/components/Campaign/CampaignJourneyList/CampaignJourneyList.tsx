@@ -239,7 +239,7 @@ export function CampaignJourneyList({
       <CampaignSectionHeading
         eyebrow={block.eyebrow}
         title={block.title}
-        lede={block.lede}
+        description={block.description}
       />
       {cards.length === 0 && hasText(noJourneysLabel) && (
         <Typography

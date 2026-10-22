@@ -69,6 +69,11 @@ function PresetProbe(): ReactElement {
       >
         toggle add
       </button>
+      <button
+        onClick={() => dispatch({ type: 'SetPanelAction', panel: 'pages' })}
+      >
+        show pages
+      </button>
       <button onClick={() => selectBlock('heroId')}>select hero</button>
     </>
   )
@@ -167,7 +172,7 @@ describe('CanvasInsertPoint', () => {
     await waitFor(() => expect(heroFirstMock.result).toHaveBeenCalled())
   })
 
-  it('clears the preset when the panel closes', async () => {
+  it('clears the preset when another panel replaces Add', async () => {
     const { baseElement } = renderCanvas()
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     fireEvent.click(
@@ -177,8 +182,8 @@ describe('CanvasInsertPoint', () => {
     )
     expect(screen.getByTestId('Preset')).toHaveTextContent('landingPageId|1')
 
-    fireEvent.click(screen.getByRole('button', { name: 'toggle add' }))
-    expect(screen.getByTestId('Panel')).toHaveTextContent('none')
+    fireEvent.click(screen.getByRole('button', { name: 'show pages' }))
+    expect(screen.getByTestId('Panel')).toHaveTextContent('pages')
     expect(screen.getByTestId('Preset')).toHaveTextContent('')
 
     fireEvent.click(screen.getByRole('button', { name: 'toggle add' }))

@@ -1727,7 +1727,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
     parentOrder: 5,
     title: null,
     eyebrow: null,
-    lede: null
+    description: null
   }
 
   beforeEach(() => {

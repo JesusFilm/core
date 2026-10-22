@@ -56,9 +56,9 @@ function journeyMock(
 const liveJourney = {
   __typename: 'Journey',
   id: JOURNEY_ID,
-  title: 'Christmas, straight from the journey',
+  title: 'Outreach, straight from the journey',
   description: 'What the journey says now.',
-  slug: 'christmas-story',
+  slug: 'outreach-story',
   status: JourneyStatus.published
 }
 
@@ -232,7 +232,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     const lookup = journeyMock(liveJourney)
     await renderHarness(lookup, [refreshMock, restoreMock])
     expect(screen.getByTestId('CardText')).toHaveTextContent(
-      'The Christmas story|A short journey through the nativity.'
+      'The outreach story|A short journey through the story.'
     )
 
     fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
@@ -250,7 +250,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     // Optimistic: the journey's text shows before the request returns.
     await waitFor(() =>
       expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'Christmas, straight from the journey|What the journey says now.'
+        'Outreach, straight from the journey|What the journey says now.'
       )
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
@@ -266,7 +266,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'The Christmas story|A short journey through the nativity.'
+        'The outreach story|A short journey through the story.'
       )
     )
     await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
@@ -289,7 +289,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     expect(refreshMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
     expect(screen.getByTestId('CardText')).toHaveTextContent(
-      'The Christmas story|A short journey through the nativity.'
+      'The outreach story|A short journey through the story.'
     )
   })
 
@@ -307,7 +307,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     ).not.toBeInTheDocument()
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
     expect(screen.getByTestId('CardText')).toHaveTextContent(
-      'Christmas, straight from the journey|What the journey says now.'
+      'Outreach, straight from the journey|What the journey says now.'
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
 
@@ -316,7 +316,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     await waitFor(() => expect(restoreUneditedMock.result).toHaveBeenCalled())
     await waitFor(() =>
       expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'The Christmas story|A short journey through the nativity.'
+        'The outreach story|A short journey through the story.'
       )
     )
   })
@@ -399,7 +399,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     ).toBeVisible()
     await waitFor(() =>
       expect(screen.getByTestId('CardText')).toHaveTextContent(
-        'The Christmas story|A short journey through the nativity.'
+        'The outreach story|A short journey through the story.'
       )
     )
   })

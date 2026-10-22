@@ -170,7 +170,7 @@ describe('CampaignPage', () => {
         links: ['Terms of Use', 'Your Privacy']
       })
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
       expect(
         screen.queryByTestId('CampaignAllRegionsChip')
@@ -180,11 +180,11 @@ describe('CampaignPage', () => {
       renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
       expect(chromeRows()).toEqual(landing)
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
       expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
         'href',
-        '/campaign/christmas-2026?lang=en'
+        '/campaign/outreach-2026?lang=en'
       )
     })
 
@@ -200,15 +200,15 @@ describe('CampaignPage', () => {
     it('an empty text field renders nothing and editor hints never render', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: '', lede: null }),
+          pick('heroId', { eyebrow: '', description: null }),
           pick('heroButtonId'),
-          pick('landingJourneyListId', { eyebrow: null, lede: '' }),
+          pick('landingJourneyListId', { eyebrow: null, description: '' }),
           pick('journeyListNoteId', { content: '' })
         ])
       )
       const main = within(screen.getByRole('main'))
       expect(main.queryByTestId('CampaignEyebrow')).not.toBeInTheDocument()
-      expect(main.queryByTestId('CampaignLede')).not.toBeInTheDocument()
+      expect(main.queryByTestId('CampaignDescription')).not.toBeInTheDocument()
       expect(main.queryByTestId('CampaignTypography')).not.toBeInTheDocument()
       expect(screen.queryByText(/your text/i)).not.toBeInTheDocument()
       expect(
@@ -219,11 +219,11 @@ describe('CampaignPage', () => {
     it('skips a section with no body content and no extras, band and all', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, lede: null }),
+          pick('heroId', { eyebrow: null, title: null, description: null }),
           pick('landingJourneyListId', {
             eyebrow: null,
             title: null,
-            lede: null
+            description: null
           })
         ])
       )
@@ -233,7 +233,11 @@ describe('CampaignPage', () => {
     it('Hero renders with any text, media or extra', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, lede: 'Only a lede' })
+          pick('heroId', {
+            eyebrow: null,
+            title: null,
+            description: 'Only a description'
+          })
         ])
       )
       expect(bandIds()).toEqual(['heroId'])
@@ -245,7 +249,7 @@ describe('CampaignPage', () => {
           pick('heroId', {
             eyebrow: null,
             title: null,
-            lede: null,
+            description: null,
             mediaBlockId: heroVideoBlock.id
           }),
           heroVideoBlock
@@ -276,7 +280,7 @@ describe('CampaignPage', () => {
             ...featuredMediaSectionBlock,
             eyebrow: null,
             title: '',
-            lede: null,
+            description: null,
             bullets: '',
             mediaBlockId: null
           }
@@ -288,7 +292,7 @@ describe('CampaignPage', () => {
     it('Hero renders with an extra alone', () => {
       renderPage(
         withLanding([
-          pick('heroId', { eyebrow: null, title: null, lede: null }),
+          pick('heroId', { eyebrow: null, title: null, description: null }),
           pick('heroButtonId')
         ])
       )
@@ -337,7 +341,7 @@ describe('CampaignPage', () => {
     it('Journey list with no live-published journeys renders text if any, else is skipped', () => {
       const { unmount } = renderPage(
         withLanding([
-          pick('landingJourneyListId', { eyebrow: null, lede: null })
+          pick('landingJourneyListId', { eyebrow: null, description: null })
         ])
       )
       expect(bandIds()).toEqual(['landingJourneyListId'])
@@ -348,7 +352,7 @@ describe('CampaignPage', () => {
           pick('landingJourneyListId', {
             eyebrow: null,
             title: null,
-            lede: null
+            description: null
           })
         ])
       )
@@ -466,8 +470,9 @@ describe('CampaignPage', () => {
         parentOrder: 0,
         eyebrow: null,
         title: 'In a column',
-        lede: null,
+        description: null,
         align: null,
+        minHeight: null,
         mediaBlockId: null
       })
     ] as CampaignBlock[]
@@ -552,18 +557,18 @@ describe('CampaignPage page language', () => {
     renderPage(campaignPublic, CampaignPageKind.regionTemplate, eurRegion)
     expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
       'href',
-      '/campaign/christmas-2026?lang=en'
+      '/campaign/outreach-2026?lang=en'
     )
     expect(screen.getByTestId('CampaignAllRegionsChip')).toHaveAttribute(
       'href',
-      '/campaign/christmas-2026?lang=en'
+      '/campaign/outreach-2026?lang=en'
     )
     expect(
       screen.queryByTestId('CampaignRegionCard-eurRegionId')
     ).not.toBeInTheDocument()
     expect(
       screen.getByTestId('CampaignRegionCard-afrRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/afr?lang=en')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/afr?lang=en')
   })
 
   it('keeps the chosen language, not the default, across a region switch', () => {
@@ -574,13 +579,13 @@ describe('CampaignPage page language', () => {
     })
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=fr')
     expect(
       screen.getByRole('link', { name: 'Start with Europe' })
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=fr')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=fr')
     expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
       'href',
-      '/campaign/christmas-2026?lang=fr'
+      '/campaign/outreach-2026?lang=fr'
     )
   })
 
@@ -591,7 +596,7 @@ describe('CampaignPage page language', () => {
     })
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur')
   })
 
   it('sets html lang to the resolved bcp47 and dir to ltr when the language is not right-to-left', () => {
@@ -611,6 +616,6 @@ describe('CampaignPage page language', () => {
     expect(document.documentElement).toHaveAttribute('dir', 'rtl')
     expect(
       screen.getByTestId('CampaignRegionCard-eurRegionId')
-    ).toHaveAttribute('href', '/campaign/christmas-2026/eur?lang=ar')
+    ).toHaveAttribute('href', '/campaign/outreach-2026/eur?lang=ar')
   })
 })

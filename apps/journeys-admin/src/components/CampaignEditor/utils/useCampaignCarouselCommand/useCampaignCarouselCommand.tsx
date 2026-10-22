@@ -6,6 +6,7 @@ import { useCommand } from '@core/journeys/ui/CommandProvider'
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
+import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
 import {
   CampaignVideoPick,
   useCampaignCarouselItemCreateMutation
@@ -22,18 +23,44 @@ import { messageOf, useCampaignStyleCommand } from '../useCampaignStyleCommand'
 
 export interface CampaignCarouselCommand {
   /** Watch expansion of a pasted Watch link, as one Command. */
-  setWatchVideo: (carousel: CampaignVideoCarouselBlock, url: string) => void
+  /**
+   * Expand a Watch video (a series or collection) into the carousel; its
+   * label, title and description replace the carousel's eyebrow, title and
+   * description (undo restores them).
+   */
+  setWatchVideo: (
+    carousel: CampaignVideoCarouselBlock,
+    url: string,
+    text?: WatchVideoText
+  ) => void
   /** Explicit mode (`videoId: null`), as one Command; the items stay. */
   clearWatchVideo: (carousel: CampaignVideoCarouselBlock) => void
   /** One explicit item from a YouTube link or a Mux upload, as one Command. */
   addItem: (
     carousel: CampaignVideoCarouselBlock,
-    pick: Exclude<CampaignVideoPick, { url: string }>
+    pick: CampaignVideoPick
   ) => void
   /** The first 12 videos of a YouTube playlist as explicit items, as one Command. */
   importPlaylist: (carousel: CampaignVideoCarouselBlock, url: string) => void
   /** The API's message, verbatim, when the last change failed. */
   error?: string
+}
+
+/** The expanded Watch video's text, written over the carousel's own: its label as the eyebrow, its title and description. */
+export interface WatchVideoText {
+  eyebrow?: string | null
+  title?: string | null
+  description?: string | null
+}
+
+/** Trim text to a cap, as the API counts it (code points), with an ellipsis when cut. */
+export function fitCampaignText(value: string, cap: number): string {
+  const points = [...value.trim()]
+  if (points.length <= cap) return points.join('')
+  return `${points
+    .slice(0, cap - 1)
+    .join('')
+    .trimEnd()}…`
 }
 
 type OrderRow = Pick<CampaignBlock, '__typename' | 'id'> & {
@@ -100,21 +127,28 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
 
   function setWatchVideo(
     carousel: CampaignVideoCarouselBlock,
-    url: string
+    url: string,
+    text?: WatchVideoText
   ): void {
     setItemError(undefined)
+    const input: CampaignCarouselVideoInput = { url }
+    const previous: CampaignCarouselVideoInput = {
+      videoId: carousel.videoId,
+      videoVariantLanguageId: carousel.videoVariantLanguageId
+    }
+    for (const field of ['eyebrow', 'title', 'description'] as const) {
+      const value = text?.[field]
+      if (value == null || value.trim() === '') continue
+      input[field] = fitCampaignText(
+        value,
+        campaignTextCap('CampaignVideoCarouselBlock', field)
+      )
+      previous[field] = carousel[field]
+    }
     styleCommand.addStyle<
       CampaignVideoCarouselBlock,
       CampaignCarouselVideoInput
-    >({
-      block: carousel,
-      input: { url },
-      previous: {
-        videoId: carousel.videoId,
-        videoVariantLanguageId: carousel.videoVariantLanguageId
-      },
-      run: writeVideo
-    })
+    >({ block: carousel, input, previous, run: writeVideo })
   }
 
   function clearWatchVideo(carousel: CampaignVideoCarouselBlock): void {
@@ -202,7 +236,7 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
 
   function addItem(
     carousel: CampaignVideoCarouselBlock,
-    pick: Exclude<CampaignVideoPick, { url: string }>
+    pick: CampaignVideoPick
   ): void {
     const id = uuidv4()
     addItems(carousel, async (target) => {

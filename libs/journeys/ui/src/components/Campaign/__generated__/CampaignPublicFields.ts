@@ -278,11 +278,15 @@ export interface CampaignPublicFields_regions_lines_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
   align: TypographyAlign | null;
+  /**
+   * Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+   */
+  minHeight: number | null;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
@@ -454,12 +458,13 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
   /**
-   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   * The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -505,7 +510,7 @@ export interface CampaignPublicFields_regions_lines_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -745,7 +750,7 @@ export interface CampaignPublicFields_regions_lines_CampaignImageBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   /**
-   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   * The Cloudflare image address (`https: // imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
    */
   src: string | null;
   /**
@@ -760,6 +765,18 @@ export interface CampaignPublicFields_regions_lines_CampaignImageBlock {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  /**
+   * The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.
+   */
+  focalLeft: number | null;
+  /**
+   * The focal point as a percentage from the top edge (0 to 100, 50 by default).
+   */
+  focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
@@ -799,7 +816,7 @@ export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -809,7 +826,7 @@ export interface CampaignPublicFields_regions_lines_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -892,6 +909,25 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVide
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -901,6 +937,7 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVide
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicFields_regions_lines_CampaignVideoBlock_mediaVideo_Video {
@@ -960,7 +997,7 @@ export interface CampaignPublicFields_regions_lines_CampaignVideoBlock {
    */
   videoId: string | null;
   /**
-   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   * For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -1331,11 +1368,15 @@ export interface CampaignPublicFields_chrome_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
   align: TypographyAlign | null;
+  /**
+   * Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+   */
+  minHeight: number | null;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
@@ -1507,12 +1548,13 @@ export interface CampaignPublicFields_chrome_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
   /**
-   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   * The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -1558,7 +1600,7 @@ export interface CampaignPublicFields_chrome_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -1798,7 +1840,7 @@ export interface CampaignPublicFields_chrome_CampaignImageBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   /**
-   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   * The Cloudflare image address (`https: // imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
    */
   src: string | null;
   /**
@@ -1813,6 +1855,18 @@ export interface CampaignPublicFields_chrome_CampaignImageBlock {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  /**
+   * The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.
+   */
+  focalLeft: number | null;
+  /**
+   * The focal point as a percentage from the top edge (0 to 100, 50 by default).
+   */
+  focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
 }
 
 export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
@@ -1852,7 +1906,7 @@ export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -1862,7 +1916,7 @@ export interface CampaignPublicFields_chrome_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -1945,6 +1999,25 @@ export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -1954,6 +2027,7 @@ export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicFields_chrome_CampaignVideoBlock_mediaVideo_Video {
@@ -2013,7 +2087,7 @@ export interface CampaignPublicFields_chrome_CampaignVideoBlock {
    */
   videoId: string | null;
   /**
-   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   * For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -2285,11 +2359,15 @@ export interface CampaignPublicFields_pages_blocks_CampaignHeroBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
   align: TypographyAlign | null;
+  /**
+   * Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+   */
+  minHeight: number | null;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
@@ -2461,12 +2539,13 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoCarouselBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
   /**
-   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   * The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -2512,7 +2591,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignJourneyListBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
 }
 
@@ -2752,7 +2831,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignImageBlock {
   buttonTextColor: string | null;
   accentColor: string | null;
   /**
-   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   * The Cloudflare image address (`https: // imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
    */
   src: string | null;
   /**
@@ -2767,6 +2846,18 @@ export interface CampaignPublicFields_pages_blocks_CampaignImageBlock {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  /**
+   * The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.
+   */
+  focalLeft: number | null;
+  /**
+   * The focal point as a percentage from the top edge (0 to 100, 50 by default).
+   */
+  focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
 }
 
 export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
@@ -2806,7 +2897,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -2816,7 +2907,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignFeaturedMediaBlock {
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -2899,6 +2990,25 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -2908,6 +3018,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock_mediaVideo_Video {
@@ -2967,7 +3078,7 @@ export interface CampaignPublicFields_pages_blocks_CampaignVideoBlock {
    */
   videoId: string | null;
   /**
-   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   * For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
    */
   videoVariantLanguageId: string | null;
   /**

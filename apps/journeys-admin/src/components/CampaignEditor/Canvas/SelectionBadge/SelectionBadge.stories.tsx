@@ -77,7 +77,7 @@ function SelectionBadgeStory({
           placement="inside"
         >
           <Stack spacing={3}>
-            <Typography variant="h4">Christmas 2026</Typography>
+            <Typography variant="h4">Outreach 2026</Typography>
             <BlockStand
               id="button"
               label="Button"
@@ -99,7 +99,7 @@ function SelectionBadgeStory({
               label="Region Line"
               selected={selectedId === 'line'}
             >
-              <Typography>Merry Christmas</Typography>
+              <Typography>Merry Outreach</Typography>
             </BlockStand>
           </Stack>
         </BlockStand>

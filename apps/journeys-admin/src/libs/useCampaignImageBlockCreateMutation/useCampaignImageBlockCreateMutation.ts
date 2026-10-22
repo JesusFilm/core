@@ -74,7 +74,10 @@ export function newOwnedImageBlock(
     alt: null,
     altTranslations: [],
     width: null,
-    height: null
+    height: null,
+    focalLeft: 50,
+    focalTop: 50,
+    scale: null
   }
 }
 

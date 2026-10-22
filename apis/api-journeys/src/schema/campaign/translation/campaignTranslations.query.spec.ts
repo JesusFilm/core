@@ -36,6 +36,7 @@ describe('campaignTranslations', () => {
         defaultValue
         value
         source
+        needsReview
         target {
           typename
           blockId
@@ -72,7 +73,7 @@ describe('campaignTranslations', () => {
     return {
       ...fixture,
       titleTranslations: {
-        [FRENCH]: { value: 'Noël 2026', source: 'human' }
+        [FRENCH]: { value: 'Campagne 2026', source: 'human' }
       },
       blocks: [
         ...fixture.blocks.map((block) => {
@@ -80,10 +81,14 @@ describe('campaignTranslations', () => {
             return {
               ...block,
               titleTranslations: {
-                [FRENCH]: { value: "Partagez l'histoire", source: 'machine' },
+                [FRENCH]: {
+                  value: "Partagez l'histoire",
+                  source: 'machine',
+                  uncertain: true
+                },
                 [SPANISH]: { value: 'Comparte la historia', source: 'human' }
               },
-              ledeTranslations: {
+              descriptionTranslations: {
                 [FRENCH]: { value: 'Choisissez', source: 'human' }
               }
             }
@@ -98,7 +103,7 @@ describe('campaignTranslations', () => {
           parentOrder: 0,
           eyebrow: null,
           title: null,
-          lede: null,
+          description: null,
           content: 'EUR'
         }
       ],
@@ -168,6 +173,7 @@ describe('campaignTranslations', () => {
         (key) =>
           `interface:CampaignString:value:${key === 'copy' ? 'machine' : 'null'}`
       ),
+      'interface:CampaignImageBlock:alt:null',
       'interface:CampaignButtonBlock:label:null',
       'interface:CampaignButtonBlock:label:null',
       'interface:CampaignTypographyBlock:content:null',
@@ -175,14 +181,14 @@ describe('campaignTranslations', () => {
       'interface:CampaignButtonBlock:label:null',
       'landing:CampaignHeroBlock:eyebrow:null',
       'landing:CampaignHeroBlock:title:machine',
-      'landing:CampaignHeroBlock:lede:human',
+      'landing:CampaignHeroBlock:description:human',
       'landing:CampaignButtonBlock:label:null',
       'landing:CampaignRegionSwitcherBlock:title:null',
       'landing:CampaignVideoCarouselBlock:eyebrow:null',
       'landing:CampaignVideoCarouselBlock:title:null',
       'landing:CampaignJourneyListBlock:eyebrow:null',
       'landing:CampaignJourneyListBlock:title:null',
-      'landing:CampaignJourneyListBlock:lede:null',
+      'landing:CampaignJourneyListBlock:description:null',
       'landing:CampaignAnalyticsBlock:eyebrow:null',
       'landing:CampaignAnalyticsBlock:title:null',
       'region:CampaignRegionHeaderBlock:intro:null',
@@ -200,9 +206,10 @@ describe('campaignTranslations', () => {
       group: 'interface',
       field: 'title',
       maxLength: 100,
-      defaultValue: 'Christmas 2026',
-      value: 'Noël 2026',
+      defaultValue: 'Outreach 2026',
+      value: 'Campagne 2026',
       source: 'human',
+      needsReview: false,
       target: {
         typename: 'Campaign',
         blockId: null,
@@ -215,9 +222,10 @@ describe('campaignTranslations', () => {
       group: 'landing',
       field: 'eyebrow',
       maxLength: 80,
-      defaultValue: 'Christmas 2026',
+      defaultValue: 'Your campaign',
       value: null,
       source: null,
+      needsReview: false,
       target: {
         typename: 'CampaignHeroBlock',
         blockId: 'heroId',
@@ -231,7 +239,7 @@ describe('campaignTranslations', () => {
         (row: any) => row.target.blockId === 'heroId' && row.field === 'title'
       )
     ).toMatchObject({
-      defaultValue: 'Share the story of Christmas',
+      defaultValue: 'Share the story',
       value: "Partagez l'histoire",
       source: 'machine'
     })
@@ -258,8 +266,35 @@ describe('campaignTranslations', () => {
     })
   })
 
+  it('flags only the machine lines the model was unsure of as needing review', async () => {
+    const result = await translations()
+    const rows = result.data.campaignTranslations
+    const byKey = Object.fromEntries(
+      rows.map((row: any) => [`${row.target.typename}:${row.field}`, row])
+    )
+    const copyId = fixture.strings.find((string) => string.key === 'copy')?.id
+    const copyRow = rows.find((row: any) => row.target.stringId === copyId)
+
+    expect(byKey['CampaignHeroBlock:title']).toMatchObject({
+      source: 'machine',
+      needsReview: true
+    })
+    expect(copyRow).toMatchObject({
+      source: 'machine',
+      needsReview: false
+    })
+    expect(byKey['Campaign:title']).toMatchObject({
+      source: 'human',
+      needsReview: false
+    })
+    expect(byKey['CampaignHeroBlock:eyebrow']).toMatchObject({
+      source: null,
+      needsReview: false
+    })
+  })
+
   it.each([
-    ['needsReview', 'machine', 3],
+    ['needsReview', 'machine', 1],
     ['edited', 'human', 2],
     ['missing', null, null]
   ])('filters %s to rows whose source is %s', async (filter, source, count) => {
@@ -287,6 +322,71 @@ describe('campaignTranslations', () => {
       value: null,
       source: null
     })
+  })
+
+  it('reads the sections inside a Columns section, and their extras, in place', async () => {
+    const current = build()
+    const landingPageId = hero.pageId
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...current,
+      blocks: [
+        ...current.blocks,
+        {
+          ...hero,
+          id: 'columnsId',
+          typename: 'CampaignColumnsBlock',
+          pageId: landingPageId,
+          parentOrder: 99,
+          eyebrow: null,
+          title: null,
+          description: null
+        },
+        {
+          ...hero,
+          id: 'columnId',
+          typename: 'CampaignColumnBlock',
+          pageId: landingPageId,
+          parentBlockId: 'columnsId',
+          parentOrder: 0,
+          eyebrow: null,
+          title: null,
+          description: null
+        },
+        {
+          ...hero,
+          id: 'nestedMediaId',
+          typename: 'CampaignFeaturedMediaBlock',
+          pageId: landingPageId,
+          parentBlockId: 'columnId',
+          parentOrder: 0,
+          eyebrow: null,
+          title: 'Inside a column',
+          description: null
+        },
+        {
+          ...hero,
+          id: 'nestedExtraId',
+          typename: 'CampaignTypographyBlock',
+          pageId: landingPageId,
+          parentBlockId: 'nestedMediaId',
+          parentOrder: 0,
+          eyebrow: null,
+          title: null,
+          description: null,
+          content: 'An extra inside the column'
+        }
+      ]
+    } as never)
+
+    const result = await translations()
+
+    const landing = result.data.campaignTranslations
+      .filter((row: any) => row.group === 'landing')
+      .map((row: any) => `${row.target.blockId}:${row.field}`)
+    expect(landing.slice(-2)).toEqual([
+      'nestedMediaId:title',
+      'nestedExtraId:content'
+    ])
   })
 
   it('leaves out live blocks whose parent section was deleted', async () => {

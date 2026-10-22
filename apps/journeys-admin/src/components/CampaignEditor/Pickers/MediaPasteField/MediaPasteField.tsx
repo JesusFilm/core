@@ -27,6 +27,7 @@ import { useCampaignWatchVideoQuery } from '../../../../libs/useCampaignWatchVid
 import { AddByFile } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile'
 import { messageOf } from '../../utils/useCampaignStyleCommand'
 import { ImagePicker } from '../ImagePicker'
+import { MuxUploads } from '../MuxUploads'
 
 import {
   ParsedMediaUrl,
@@ -45,9 +46,12 @@ const PLAYLIST_IMPORT_LIMIT = 12
 
 type Candidate = ParsedMediaUrl | ParsedPlaylistUrl
 
-type Translate = (key: string, options?: Record<string, unknown>) => string
+export type Translate = (
+  key: string,
+  options?: Record<string, unknown>
+) => string
 
-function videoLabelName(t: Translate, label: VideoLabel): string {
+export function videoLabelName(t: Translate, label: VideoLabel): string {
   switch (label) {
     case VideoLabel.behindTheScenes:
       return t('Behind the scenes')
@@ -69,11 +73,24 @@ function videoLabelName(t: Translate, label: VideoLabel): string {
 }
 
 /** The resolved target shown before a pasted link is kept. */
-interface ResolvedVideo {
+export interface ResolvedVideo {
   title: string
   image?: string | null
   /** The label (or YouTube), then "<n> videos" or the duration. */
   details: string[]
+  /** A Watch container's published children; 0 for a playable video, a YouTube video or a playlist. */
+  childrenCount: number
+  /** The Watch label; null for a YouTube video or playlist. */
+  label: VideoLabel | null
+  /** The Watch video's own description, for a carousel to open with. */
+  description?: string | null
+}
+
+/** A Watch series or collection: in a carousel it expands into its children rather than becoming one card. */
+export function isWatchContainer(
+  label: VideoLabel | null | undefined
+): boolean {
+  return label === VideoLabel.series || label === VideoLabel.collection
 }
 
 interface Resolution {
@@ -93,7 +110,9 @@ function useResolution(
   t: Translate
 ): Resolution {
   const watch = useCampaignWatchVideoQuery(
-    candidate?.source === VideoBlockSource.internal ? candidate.slug : undefined
+    candidate?.source === VideoBlockSource.internal
+      ? candidate.slugs
+      : undefined
   )
   const youTube = useSWR(
     candidate?.source === VideoBlockSource.youTube ? candidate.videoId : null,
@@ -129,7 +148,9 @@ function useResolution(
                 count: data.itemCount
               })
             : t('{{count}} videos', { count: data.itemCount })
-        ]
+        ],
+        childrenCount: 0,
+        label: null
       },
       loading: false
     }
@@ -139,7 +160,13 @@ function useResolution(
     if (watch.error != null)
       return { error: messageOf(watch.error), loading: false }
     const video = watch.data?.video
-    if (video == null) return { loading: true }
+    if (video == null) {
+      if (watch.loading || watch.data === undefined) return { loading: true }
+      return {
+        error: t('That Watch video could not be found'),
+        loading: false
+      }
+    }
     const details = [videoLabelName(t, video.label)]
     if (video.childrenCount > 0)
       details.push(t('{{count}} videos', { count: video.childrenCount }))
@@ -151,7 +178,10 @@ function useResolution(
       video: {
         title: video.title[0]?.value ?? '',
         image: video.images[0]?.mobileCinematicHigh,
-        details
+        details,
+        childrenCount: video.childrenCount,
+        label: video.label,
+        description: video.description[0]?.value ?? null
       },
       loading: false
     }
@@ -178,7 +208,9 @@ function useResolution(
             trimZeroes: true
           }
         )
-      ]
+      ],
+      childrenCount: 0,
+      label: null
     },
     loading: false
   }
@@ -228,8 +260,8 @@ interface MediaPasteFieldProps {
   teamId: string
   /** Keys the Mux upload task: the section whose Media Slot the upload fills. */
   uploadKey: string
-  /** One call when the author keeps a video or an image. */
-  onPick: (pick: CampaignMediaPick) => void
+  /** One call when the author keeps a video or an image; a kept link comes with what it resolved to. */
+  onPick: (pick: CampaignMediaPick, resolved?: ResolvedVideo) => void
   /** Accept a YouTube playlist link too: one call with the address when it is kept. */
   onPickPlaylist?: (url: string) => void
   /** Offer the Image tab (a carousel takes videos only). */
@@ -282,9 +314,15 @@ export function MediaPasteField({
     if (candidate.source === 'youTubePlaylist') {
       onPickPlaylist?.(candidate.url)
     } else if (candidate.source === VideoBlockSource.internal) {
-      onPick({ source: VideoBlockSource.internal, url: candidate.url })
+      onPick(
+        { source: VideoBlockSource.internal, url: candidate.url },
+        resolution.video
+      )
     } else {
-      onPick({ source: VideoBlockSource.youTube, videoId: candidate.videoId })
+      onPick(
+        { source: VideoBlockSource.youTube, videoId: candidate.videoId },
+        resolution.video
+      )
     }
     setUrl('')
     setCandidate(undefined)
@@ -382,7 +420,11 @@ export function MediaPasteField({
                 >
                   {candidate.source === 'youTubePlaylist'
                     ? t('Add videos')
-                    : t('Use video')}
+                    : resolution.video?.label === VideoLabel.collection
+                      ? t('Use collection')
+                      : resolution.video?.label === VideoLabel.series
+                        ? t('Use series')
+                        : t('Use video')}
                 </Button>
                 <Button
                   variant="text"
@@ -397,9 +439,12 @@ export function MediaPasteField({
         </Stack>
       )}
       {tab === 'upload' && (
-        <EditorProvider initialState={{ selectedBlock: uploadTarget }}>
-          <AddByFile onChange={handleUploadComplete} />
-        </EditorProvider>
+        <>
+          <EditorProvider initialState={{ selectedBlock: uploadTarget }}>
+            <AddByFile onChange={handleUploadComplete} />
+          </EditorProvider>
+          <MuxUploads teamId={teamId} onPick={handleUploadComplete} />
+        </>
       )}
       {allowImage && tab === 'image' && (
         <ImagePicker

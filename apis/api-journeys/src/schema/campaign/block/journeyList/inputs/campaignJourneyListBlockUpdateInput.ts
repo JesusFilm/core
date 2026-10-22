@@ -14,7 +14,7 @@ export const CampaignJourneyListBlockUpdateInput = builder.inputType(
         required: false,
         description: 'At most 150 characters.'
       }),
-      lede: t.string({
+      description: t.string({
         required: false,
         description: 'At most 500 characters.'
       }),

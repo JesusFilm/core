@@ -33,7 +33,7 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
   typeof getUserFromPayload
 >
 
-const STATS_WINDOW_FROM = '2026-10-05'
+const STATS_WINDOW_FROM = '2000-01-01'
 
 interface CountryVisitors {
   countryCode: string
@@ -180,7 +180,7 @@ describe('campaignStats', () => {
       )
   })
 
-  it('starts a draft campaign at its creation date', async () => {
+  it('starts every campaign, draft or published, at the all-time epoch', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...publishedCampaign(),
       status: 'draft',
@@ -194,12 +194,12 @@ describe('campaignStats', () => {
     })) as CampaignStatsResponse
 
     expect(result.errors).toBeUndefined()
-    expect(result.data.campaignStats.from).toBe('2026-09-01T12:00:00.000Z')
+    expect(result.data.campaignStats.from).toBe('2000-01-01T00:00:00.000Z')
     expect(mockAxios.get).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
         params: expect.objectContaining({
-          date: expect.stringMatching(/^2026-09-01,/)
+          date: expect.stringMatching(/^2000-01-01,/)
         })
       })
     )
@@ -215,7 +215,7 @@ describe('campaignStats', () => {
 
     expect(result.errors).toBeUndefined()
     const stats = result.data.campaignStats
-    expect(stats.from).toBe('2026-10-05T00:00:00.000Z')
+    expect(stats.from).toBe('2000-01-01T00:00:00.000Z')
     // Europe = en + fr; unknown-country visitors count in the total only.
     expect(stats.regions[0]).toEqual({
       regionId: 'eurRegionId',
@@ -485,7 +485,7 @@ describe('campaignStats', () => {
         partial: false,
         sweptAt: Date.now(),
         sweep: {
-          from: '2026-10-05T00:00:00.000Z',
+          from: '2000-01-01T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
           journeys: {
             enJourneyId: [{ countryCode: 'NZ', visitors: 4 }],
@@ -520,7 +520,7 @@ describe('campaignStats', () => {
         partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
-          from: '2026-10-05T00:00:00.000Z',
+          from: '2000-01-01T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
           journeys: {
             enJourneyId: [{ countryCode: 'NZ', visitors: 4 }],
@@ -551,7 +551,7 @@ describe('campaignStats', () => {
         partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
-          from: '2026-10-05T00:00:00.000Z',
+          from: '2000-01-01T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
           journeys: {
             enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
@@ -587,7 +587,7 @@ describe('campaignStats', () => {
           partial: false,
           sweptAt: Date.now() - 3600000,
           sweep: {
-            from: '2026-10-05T00:00:00.000Z',
+            from: '2000-01-01T00:00:00.000Z',
             to: '2026-10-06T00:00:00.000Z',
             journeys: {
               enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
@@ -616,7 +616,7 @@ describe('campaignStats', () => {
         partial: false,
         sweptAt: Date.now(),
         sweep: {
-          from: '2026-10-05T00:00:00.000Z',
+          from: '2000-01-01T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
           journeys: {
             enJourneyId: [{ countryCode: 'NZ', visitors: 4 }]
@@ -661,7 +661,7 @@ describe('campaignStats', () => {
       await vi.waitFor(() => {
         expect(mockStatsCache.set).toHaveBeenCalledWith(
           'campaignId',
-          expect.objectContaining({ from: '2026-10-05T00:00:00.000Z' }),
+          expect.objectContaining({ from: '2000-01-01T00:00:00.000Z' }),
           { partial: false }
         )
       })
@@ -754,7 +754,7 @@ describe('campaignStats', () => {
         partial: false,
         sweptAt: Date.now() - 3600000,
         sweep: {
-          from: '2026-10-05T00:00:00.000Z',
+          from: '2000-01-01T00:00:00.000Z',
           to: '2026-10-06T00:00:00.000Z',
           journeys: {
             enJourneyId: [],

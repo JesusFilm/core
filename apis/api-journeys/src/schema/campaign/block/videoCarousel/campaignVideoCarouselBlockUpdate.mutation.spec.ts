@@ -27,7 +27,7 @@ vi.mock('../../gatewayClient', async () => ({
 }))
 
 const WATCH_URL =
-  'https://www.jesusfilm.org/watch/christmas-collection.html/english.html'
+  'https://www.jesusfilm.org/watch/outreach-collection.html/english.html'
 
 describe('campaignVideoCarouselBlockUpdate', () => {
   const UPDATE = graphql(`
@@ -119,19 +119,20 @@ describe('campaignVideoCarouselBlockUpdate', () => {
 
   describe('Watch expansion', () => {
     it.each(['collection', 'series', 'featureFilm', 'shortFilm'])(
-      'sets videoId and the campaign language from a pasted Watch URL, whatever the Video’s label (%s)',
+      'sets videoId and the campaign language from a pasted Watch URL naming no language, whatever the Video’s label (%s)',
       async (label) => {
         vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
           id: 'watchVideoId',
           label,
-          childrenCount: 3
+          childrenCount: 3,
+          variant: null
         })
 
         const result = await update({ url: WATCH_URL })
 
         expect(result.errors).toBeUndefined()
         expect(fetchWatchVideoBySlug).toHaveBeenCalledWith(
-          'christmas-collection/english'
+          'outreach-collection/english'
         )
         expect(result.data.campaignVideoCarouselBlockUpdate).toMatchObject({
           videoId: 'watchVideoId',
@@ -150,11 +151,28 @@ describe('campaignVideoCarouselBlockUpdate', () => {
       }
     )
 
-    it('takes the given variant language with the URL', async () => {
+    it('remembers the language the pasted URL names', async () => {
       vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
         id: 'watchVideoId',
         label: 'collection',
-        childrenCount: 3
+        childrenCount: 3,
+        variant: { language: { id: '21028' } }
+      })
+
+      const result = await update({ url: WATCH_URL })
+
+      expect(result.data.campaignVideoCarouselBlockUpdate).toMatchObject({
+        videoId: 'watchVideoId',
+        videoVariantLanguageId: '21028'
+      })
+    })
+
+    it('takes the given variant language over the URL’s', async () => {
+      vi.mocked(fetchWatchVideoBySlug).mockResolvedValue({
+        id: 'watchVideoId',
+        label: 'collection',
+        childrenCount: 3,
+        variant: { language: { id: '21028' } }
       })
 
       const result = await update({

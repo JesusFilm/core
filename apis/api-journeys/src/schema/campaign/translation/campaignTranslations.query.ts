@@ -59,6 +59,8 @@ export interface CampaignTranslationRowShape {
   defaultValue: string
   value: string | null
   source: 'human' | 'machine' | null
+  /** The machine wrote `value` and flagged it as a guess; a person's rewrite clears it. */
+  needsReview: boolean
 }
 
 const CampaignTranslationTargetRef =
@@ -120,6 +122,11 @@ builder.objectType(CampaignTranslationRowRef, {
       description:
         'Who wrote `value`: a person (`human`) or the machine; null when missing.',
       resolve: (row) => row.source
+    }),
+    needsReview: t.exposeBoolean('needsReview', {
+      nullable: false,
+      description:
+        'The machine wrote `value` and was not sure of it: the line a person should check first. False for a person’s text, a confident machine line and a missing one.'
     })
   })
 })
@@ -140,11 +147,15 @@ type TranslationsCampaign = Prisma.CampaignGetPayload<{
 function entryOf(
   translations: unknown,
   languageId: string
-): { value: string; source: 'human' | 'machine' } | null {
+): { value: string; source: 'human' | 'machine'; uncertain: boolean } | null {
   const entry = parseTranslations(translations)[languageId]
   if (entry == null || typeof entry.value !== 'string' || entry.value === '')
     return null
-  return { value: entry.value, source: entry.source }
+  return {
+    value: entry.value,
+    source: entry.source,
+    uncertain: entry.source === 'machine' && entry.uncertain === true
+  }
 }
 
 interface RowSource {
@@ -175,7 +186,8 @@ function rowsOf(
         maxLength,
         defaultValue,
         value: entry?.value ?? null,
-        source: entry?.source ?? null
+        source: entry?.source ?? null,
+        needsReview: entry?.uncertain ?? false
       }
     })
     .filter((row): row is CampaignTranslationRowShape => row != null)
@@ -330,14 +342,14 @@ export function campaignTranslationRows(
 }
 
 export function matchesTranslationFilter(
-  row: Pick<CampaignTranslationRowShape, 'source'>,
+  row: Pick<CampaignTranslationRowShape, 'source' | 'needsReview'>,
   filter: CampaignTranslationFilterValue
 ): boolean {
   switch (filter) {
     case 'all':
       return true
     case 'needsReview':
-      return row.source === 'machine'
+      return row.needsReview
     case 'edited':
       return row.source === 'human'
     case 'missing':
@@ -348,7 +360,7 @@ export function matchesTranslationFilter(
 builder.queryField('campaignTranslations', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     description:
-      'The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.\n\nAuth: campaign Read — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.',
+      'The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it (`source`) and whether the machine flagged its line as a guess (`needsReview`); the filters are `needsReview` (flagged machine lines), `edited` (a person’s) and `missing` (no entry). Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.\n\nAuth: campaign Read — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language, or the default language, whose text is the field itself.',
     type: [CampaignTranslationRowRef],
     nullable: false,
     args: {

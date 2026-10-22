@@ -14,6 +14,11 @@ export interface GetCampaignWatchVideo_video_title {
   value: string;
 }
 
+export interface GetCampaignWatchVideo_video_description {
+  __typename: "VideoDescription";
+  value: string;
+}
+
 export interface GetCampaignWatchVideo_video_images {
   __typename: "CloudflareImage";
   mobileCinematicHigh: string | null;
@@ -34,6 +39,7 @@ export interface GetCampaignWatchVideo_video {
    */
   childrenCount: number;
   title: GetCampaignWatchVideo_video_title[];
+  description: GetCampaignWatchVideo_video_description[];
   images: GetCampaignWatchVideo_video_images[];
   variant: GetCampaignWatchVideo_video_variant | null;
 }

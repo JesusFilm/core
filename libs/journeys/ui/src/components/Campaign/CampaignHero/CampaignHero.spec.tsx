@@ -82,18 +82,18 @@ function renderHero(block: CampaignTreeOf<'CampaignHeroBlock'>) {
 }
 
 describe('CampaignHero', () => {
-  it('renders eyebrow, title and lede', () => {
+  it('renders eyebrow, title and description', () => {
     renderHero(heroTree())
     expect(screen.getByTestId('CampaignEyebrow')).toHaveTextContent(
-      'Christmas 2026'
+      'Outreach 2026'
     )
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Share the story of Christmas'
+        name: 'Share the story of Outreach'
       })
     ).toBeInTheDocument()
-    expect(screen.getByTestId('CampaignLede')).toHaveTextContent(
+    expect(screen.getByTestId('CampaignDescription')).toHaveTextContent(
       'Pick your region to find a journey in your language, ready to share.'
     )
   })
@@ -107,9 +107,9 @@ describe('CampaignHero', () => {
   })
 
   it('renders nothing for an empty text field', () => {
-    renderHero(heroTree({ eyebrow: null, lede: '' }))
+    renderHero(heroTree({ eyebrow: null, description: '' }))
     expect(screen.queryByTestId('CampaignEyebrow')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('CampaignLede')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignDescription')).not.toBeInTheDocument()
     expect(screen.getByTestId('CampaignTitle')).toBeInTheDocument()
   })
 
@@ -158,7 +158,7 @@ describe('CampaignHero', () => {
       {
         eyebrow: null,
         title: '',
-        lede: null,
+        description: null,
         mediaBlockId: heroVideoBlock.id
       },
       [heroVideoBlock]

@@ -7,10 +7,9 @@ export type CampaignTextField =
   | 'label'
   | 'eyebrow'
   | 'title'
-  | 'lede'
+  | 'description'
   | 'intro'
   | 'richTextContent'
-  | 'description'
   | 'bullets'
 
 /** PRD §15 text caps, mirrored for the editor's pure pre-validation. */
@@ -19,10 +18,9 @@ export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
   label: 60,
   eyebrow: 80,
   title: 150,
-  lede: 500,
+  description: 500,
   intro: 500,
   richTextContent: 5000,
-  description: 1000,
   bullets: 1000
 }
 
@@ -37,13 +35,16 @@ export function campaignTextInputKey(field: CampaignTextField): string {
 
 /**
  * The cap of a field on a given typename where it differs from the field's
- * default: a journey card's title holds 200 characters, a section's 150.
+ * default: a journey card's title holds 200 characters and its description
+ * 1000, a section's 150 and 500.
  */
 export function campaignTextCap(
   typename: CampaignTextTypename,
   field: CampaignTextField
 ): number {
   if (typename === 'CampaignJourneyBlock' && field === 'title') return 200
+  if (typename === 'CampaignJourneyBlock' && field === 'description')
+    return 1000
   return CAMPAIGN_TEXT_CAPS[field]
 }
 
@@ -51,16 +52,16 @@ export function campaignTextCap(
 export const CAMPAIGN_TEXT_FIELDS = {
   CampaignTypographyBlock: ['content'],
   CampaignButtonBlock: ['label'],
-  CampaignHeroBlock: ['eyebrow', 'title', 'lede'],
+  CampaignHeroBlock: ['eyebrow', 'title', 'description'],
   CampaignRegionSwitcherBlock: ['title'],
-  CampaignVideoCarouselBlock: ['eyebrow', 'title'],
-  CampaignJourneyListBlock: ['eyebrow', 'title', 'lede'],
+  CampaignVideoCarouselBlock: ['eyebrow', 'title', 'description'],
+  CampaignJourneyListBlock: ['eyebrow', 'title', 'description'],
   CampaignJourneyBlock: ['title', 'description'],
   CampaignAnalyticsBlock: ['eyebrow', 'title'],
   CampaignRegionHeaderBlock: ['intro'],
   CampaignRegionShareBlock: ['title', 'intro'],
   CampaignRichTextBlock: ['title', 'richTextContent'],
-  CampaignFeaturedMediaBlock: ['eyebrow', 'title', 'lede', 'bullets']
+  CampaignFeaturedMediaBlock: ['eyebrow', 'title', 'description', 'bullets']
 } as const satisfies Partial<
   Record<CampaignBlock['__typename'], readonly CampaignTextField[]>
 >

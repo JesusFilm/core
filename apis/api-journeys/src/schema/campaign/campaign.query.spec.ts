@@ -4,7 +4,7 @@ import {
   authClient,
   setupCampaignBlockSpec
 } from '../../../test/campaignBlockSpec'
-import { campaignFactory } from '../../../test/campaignFactory'
+import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -106,6 +106,83 @@ describe('campaign', () => {
     setupCampaignBlockSpec()
   })
 
+  describe('journeyUrl', () => {
+    const JOURNEY_URL = graphql(`
+      query CampaignJourneyUrl($id: ID!) {
+        campaign(id: $id) {
+          regions {
+            languages {
+              journeyUrl
+            }
+          }
+        }
+      }
+    `)
+
+    function withServedJourney(
+      customDomains: Array<{ name: string; routeAllTeamJourneys: boolean }>
+    ): CampaignFixture {
+      const fixture = campaignFactory()
+        .withRegion('EUR')
+        .withLinkedJourney('eurRegionId', '529', {
+          id: 'journeyId',
+          title: 'Journey',
+          description: null
+        })
+        .build()
+      const language = fixture.regions[0].languages[0] as Record<
+        string,
+        unknown
+      >
+      language.journey = {
+        id: 'journeyId',
+        slug: 'outreach-europe',
+        teamId: 'journeyTeamId',
+        team: { id: 'journeyTeamId', customDomains },
+        journeyCollectionJourneys: []
+      }
+      return fixture
+    }
+
+    it.each([
+      [[], 'https://example.com/outreach-europe'],
+      [
+        [{ name: 'journeys.example.org', routeAllTeamJourneys: true }],
+        'https://journeys.example.org/outreach-europe'
+      ]
+    ])(
+      'is where the linked journey is served, custom domain %j',
+      async (customDomains, expected) => {
+        const fixture = withServedJourney(customDomains)
+        prismaMock.campaign.findUnique.mockResolvedValue(fixture)
+        prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
+
+        const result = (await authClient({
+          document: JOURNEY_URL,
+          variables: { id: 'campaignId' }
+        })) as any
+
+        expect(result.errors).toBeUndefined()
+        expect(result.data.campaign.regions[0].languages[0].journeyUrl).toBe(
+          expected
+        )
+      }
+    )
+
+    it('is null for an Unlinked Language', async () => {
+      const fixture = campaignFactory().withRegion('EUR').build()
+      prismaMock.campaign.findUnique.mockResolvedValue(fixture)
+      prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
+
+      const result = (await authClient({
+        document: JOURNEY_URL,
+        variables: { id: 'campaignId' }
+      })) as any
+
+      expect(result.data.campaign.regions[0].languages[0].journeyUrl).toBeNull()
+    })
+  })
+
   it('returns the full admin shape behind campaign Read', async () => {
     const fixture = campaignFactory()
       .withRegion('EUR')
@@ -128,8 +205,8 @@ describe('campaign', () => {
     expect(campaign).toMatchObject({
       id: 'campaignId',
       teamId: 'teamId',
-      title: 'Christmas 2026',
-      slug: 'christmas-2026',
+      title: 'Outreach 2026',
+      slug: 'outreach-2026',
       status: 'draft',
       defaultLanguageId: '529',
       palette: fixture.palette,
@@ -161,7 +238,7 @@ describe('campaign', () => {
       parentBlockId: null,
       parentOrder: 0,
       backgroundKind: 'none',
-      title: 'Share the story of Christmas',
+      title: 'Share the story',
       align: 'center'
     })
     expect(
@@ -349,7 +426,7 @@ describe('translation lists', () => {
       expect.arrayContaining([
         'eyebrowTranslations',
         'titleTranslations',
-        'ledeTranslations'
+        'descriptionTranslations'
       ])
     )
     expect(await fieldNames('CampaignTypographyBlock')).toContain(

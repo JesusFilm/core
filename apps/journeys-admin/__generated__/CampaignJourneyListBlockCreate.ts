@@ -29,7 +29,7 @@ export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_t
   source: CampaignTextSource;
 }
 
-export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_ledeTranslations {
+export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -76,11 +76,11 @@ export interface CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   display: CampaignJourneyListDisplay;
   eyebrowTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_titleTranslations[];
-  ledeTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignJourneyListBlockCreate {
@@ -96,7 +96,7 @@ export interface CampaignJourneyListBlockCreate {
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
-   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
+   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `display`): the value fails its rule.
    */
   campaignJourneyListBlockCreate: CampaignJourneyListBlockCreate_campaignJourneyListBlockCreate;
 }

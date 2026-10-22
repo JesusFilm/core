@@ -13,6 +13,7 @@ import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignImageBlockUpdateMutation } from '../../../libs/useCampaignImageBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { textLength } from '../Canvas/InlineText'
+import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import {
   previousOf,
@@ -126,6 +127,7 @@ export function ImageSectionEdit({
             }}
           />
         )}
+        {block.src != null && <FocalPointControl image={block} />}
         {block.src != null && (
           <Stack direction="row" spacing={2}>
             {!replacing && (

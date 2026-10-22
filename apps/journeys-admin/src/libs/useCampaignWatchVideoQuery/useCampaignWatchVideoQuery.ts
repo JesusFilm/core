@@ -15,6 +15,9 @@ export const GET_CAMPAIGN_WATCH_VIDEO = gql`
       title(primary: true) {
         value
       }
+      description(primary: true) {
+        value
+      }
       images(aspectRatio: banner) {
         mobileCinematicHigh
       }
@@ -26,21 +29,37 @@ export const GET_CAMPAIGN_WATCH_VIDEO = gql`
   }
 `
 
-/**
- * Resolve a Watch variant slug (`<video>/<language>`) through the gateway's
- * `video(id, idType: slug)`, for the media paste field to show what a pasted
- * Watch address names before it is kept. Skipped while there is no slug.
- */
-export function useCampaignWatchVideoQuery(
-  slug: string | undefined
-): useQuery.Result<
+type WatchVideoResult = useQuery.Result<
   GetCampaignWatchVideo,
   GetCampaignWatchVideoVariables,
   'empty' | 'complete' | 'streaming',
   Partial<GetCampaignWatchVideoVariables>
-> {
-  return useQuery<GetCampaignWatchVideo, GetCampaignWatchVideoVariables>(
+>
+
+/**
+ * Resolve a Watch address's candidate variant slugs (`<video>/<language>`,
+ * in order) through the gateway's `video(id, idType: slug)`, for the media
+ * paste field to show what a pasted Watch address names before it is kept.
+ * The first candidate is tried, and when it resolves to nothing the next
+ * one; the result is the last query run. Skipped while there are no slugs.
+ */
+export function useCampaignWatchVideoQuery(
+  slugs: readonly string[] | undefined
+): WatchVideoResult {
+  const first = useQuery<GetCampaignWatchVideo, GetCampaignWatchVideoVariables>(
     GET_CAMPAIGN_WATCH_VIDEO,
-    slug == null ? skipToken : { variables: { id: slug } }
+    slugs?.[0] == null ? skipToken : { variables: { id: slugs[0] } }
   )
+  const firstSettled =
+    !first.loading && (first.data !== undefined || first.error != null)
+  const firstMissed = firstSettled && first.data?.video == null
+  const fallback = firstMissed ? slugs?.[1] : undefined
+  const second = useQuery<
+    GetCampaignWatchVideo,
+    GetCampaignWatchVideoVariables
+  >(
+    GET_CAMPAIGN_WATCH_VIDEO,
+    fallback == null ? skipToken : { variables: { id: fallback } }
+  )
+  return fallback == null ? first : second
 }

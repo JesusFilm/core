@@ -128,13 +128,13 @@ export function journeyCard(
     regionId: null,
     parentOrder: 0,
     journeyId: `${row.id}-journeyId`,
-    title: 'The Christmas story',
-    description: 'A short journey through the nativity.',
+    title: 'The outreach story',
+    description: 'A short journey through the story.',
     journeyStatus: JourneyStatus.published,
-    journeyUrl: 'https://your.nextstep.is/christmas-story',
+    journeyUrl: 'https://your.nextstep.is/outreach-story',
     journeyImage: {
       __typename: 'CampaignJourneyImage',
-      src: 'https://imagedelivery.net/christmas-story/public',
+      src: 'https://imagedelivery.net/outreach-story/public',
       alt: 'A manger under a star'
     },
     ...row
@@ -273,10 +273,10 @@ export const eurRegion: CampaignPublicFields_regions = {
       languageId: '529',
       order: 0,
       journeyStatus: JourneyStatus.published,
-      title: 'Christmas in Europe',
+      title: 'Outreach in Europe',
       shortLinkUrl: 'https://short.nextstep.is/eur-en',
-      journeyUrl: 'https://your.nextstep.is/christmas-europe',
-      embedUrl: 'https://your.nextstep.is/embed/christmas-europe',
+      journeyUrl: 'https://your.nextstep.is/outreach-europe',
+      embedUrl: 'https://your.nextstep.is/embed/outreach-europe',
       language: english
     }
   ],
@@ -306,7 +306,7 @@ export const afrRegion: CampaignPublicFields_regions = {
       languageId: '496',
       order: 0,
       journeyStatus: JourneyStatus.published,
-      title: 'Noël en Afrique',
+      title: 'Campagne en Afrique',
       shortLinkUrl: 'https://short.nextstep.is/afr-fr',
       journeyUrl: 'https://journeys.example.org/noel-afrique',
       embedUrl: 'https://your.nextstep.is/embed/noel-afrique',
@@ -321,11 +321,13 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     id: 'heroId',
     pageId: LANDING_PAGE_ID,
     parentOrder: 0,
-    eyebrow: 'Christmas 2026',
-    title: 'Share the story of Christmas',
-    lede: 'Pick your region to find a journey in your language, ready to share.',
+    eyebrow: 'Outreach 2026',
+    title: 'Share the story of Outreach',
+    description:
+      'Pick your region to find a journey in your language, ready to share.',
     align: TypographyAlign.center,
-    mediaBlockId: null
+    mediaBlockId: null,
+    minHeight: null
   }),
   button({
     id: 'heroButtonId',
@@ -365,6 +367,7 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 2,
     eyebrow: 'Watch',
     title: 'Films for the season',
+    description: null,
     videoId: null,
     videoVariantLanguageId: null,
     video: null,
@@ -376,7 +379,8 @@ export const landingBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 3,
     eyebrow: 'Journeys',
     title: 'Ready-made journeys',
-    lede: 'Interactive stories your friends can walk through on their phone.',
+    description:
+      'Interactive stories your friends can walk through on their phone.',
     display: CampaignJourneyListDisplay.grid
   }),
   typography({
@@ -421,8 +425,7 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     id: 'regionHeaderId',
     pageId: REGION_PAGE_ID,
     parentOrder: 0,
-    intro:
-      'A Christmas journey chosen and contextualised by your regional team.'
+    intro: 'A Outreach journey chosen and contextualised by your regional team.'
   }),
   section('CampaignRegionShareBlock', {
     id: 'regionShareId',
@@ -438,7 +441,7 @@ export const regionPageBlocks: CampaignPublicBlockFields[] = [
     parentOrder: 2,
     eyebrow: 'More journeys',
     title: 'Other journeys for this region',
-    lede: null,
+    description: null,
     display: CampaignJourneyListDisplay.grid
   }),
   section('CampaignAnalyticsBlock', {
@@ -467,7 +470,10 @@ export const imageSectionBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/imageSection/public',
   alt: 'A family reading together',
   width: 1600,
-  height: 900
+  height: 900,
+  focalLeft: 50,
+  focalTop: 50,
+  scale: null
 })
 
 type VideoBlock = Extract<
@@ -509,7 +515,7 @@ function watchVideo(
     title: [
       {
         __typename: 'VideoTitle',
-        value: 'The Nativity',
+        value: 'The Story',
         primary: true,
         language: { __typename: 'Language', id: '529' }
       },
@@ -523,13 +529,13 @@ function watchVideo(
     description: [
       {
         __typename: 'VideoDescription',
-        value: 'The story of the first Christmas.',
+        value: 'The story of the first Outreach.',
         primary: true,
         language: { __typename: 'Language', id: '529' }
       },
       {
         __typename: 'VideoDescription',
-        value: 'L histoire du premier Noël.',
+        value: 'L histoire du premier Campagne.',
         primary: false,
         language: { __typename: 'Language', id: '496' }
       }
@@ -545,7 +551,8 @@ function watchVideo(
       id: `${id}-529`,
       hls: `https://arc.gt/hls/${id}/529`,
       duration: 180,
-      slug: `${slug}/english`
+      slug: `${slug}/english`,
+      subtitle: []
     }
   }
 }
@@ -559,9 +566,9 @@ export const heroVideoBlock = video({
   id: 'heroVideoId',
   parentBlockId: 'heroId',
   source: VideoBlockSource.internal,
-  videoId: 'nativityVideoId',
+  videoId: 'storyVideoId',
   videoVariantLanguageId: '529',
-  mediaVideo: watchVideo('nativityVideoId', 'the-nativity', 0)
+  mediaVideo: watchVideo('storyVideoId', 'the-story', 0)
 })
 
 /** A Watch video with children, shown as a poster card linking to Watch. */
@@ -580,7 +587,7 @@ export const youTubeVideoBlock = video({
   parentBlockId: 'heroId',
   source: VideoBlockSource.youTube,
   videoId: 'jQaeIJOA6J0',
-  title: 'Christmas around the world',
+  title: 'Outreach around the world',
   description: 'How the story is told in twelve countries.',
   image: 'https://i.ytimg.com/vi/jQaeIJOA6J0/hqdefault.jpg',
   duration: 245,
@@ -593,7 +600,7 @@ export const muxVideoBlock = video({
   parentBlockId: 'heroId',
   source: VideoBlockSource.mux,
   videoId: 'muxAssetVideoId',
-  title: 'Our Christmas outreach',
+  title: 'Our Outreach outreach',
   description: null,
   image: 'https://image.mux.com/muxPlaybackId/thumbnail.png',
   duration: 95,
@@ -614,7 +621,7 @@ export const featuredMediaSectionBlock = section('CampaignFeaturedMediaBlock', {
   parentOrder: 6,
   eyebrow: 'Why it matters',
   title: 'A story for every home',
-  lede: 'Short films in the languages your neighbours speak.',
+  description: 'Short films in the languages your neighbours speak.',
   bullets: 'Free to share\n\nIn over 1,800 languages\nReady for any phone',
   mediaSide: CampaignMediaSide.left,
   layout: CampaignFeaturedMediaLayout.sideBySide,
@@ -630,7 +637,10 @@ export const featuredMediaImageBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/featuredMedia/public',
   alt: 'Children watching a film',
   width: 1200,
-  height: 800
+  height: 800,
+  focalLeft: 50,
+  focalTop: 50,
+  scale: null
 })
 
 /** The hero’s owned background cover (`parentOrder: null`, named by `coverBlockId`). */
@@ -642,7 +652,10 @@ export const heroCoverBlock = section('CampaignImageBlock', {
   src: 'https://imagedelivery.net/accountHash/heroCover/public',
   alt: null,
   width: 1600,
-  height: 400
+  height: 400,
+  focalLeft: 50,
+  focalTop: 50,
+  scale: null
 })
 
 /** The header’s owned logo (`parentOrder: null`, named by `logoBlockId`). */
@@ -651,9 +664,12 @@ export const headerLogoBlock = section('CampaignImageBlock', {
   parentBlockId: 'headerId',
   parentOrder: null,
   src: 'https://imagedelivery.net/accountHash/headerLogo/public',
-  alt: 'Christmas logo',
+  alt: 'Outreach logo',
   width: 320,
-  height: 80
+  height: 80,
+  focalLeft: 50,
+  focalTop: 50,
+  scale: null
 })
 
 export const headerBlock = section('CampaignHeaderBlock', {
@@ -734,8 +750,8 @@ export const campaignPublic: CampaignPublicFields = {
   __typename: 'CampaignPublic',
   id: CAMPAIGN_ID,
   teamId: 'teamId',
-  slug: 'christmas-2026',
-  title: 'Christmas 2026',
+  slug: 'outreach-2026',
+  title: 'Outreach 2026',
   defaultLanguageId: '529',
   languageId: '529',
   customDomainNames: [],

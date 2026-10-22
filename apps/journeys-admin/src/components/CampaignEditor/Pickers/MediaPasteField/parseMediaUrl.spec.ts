@@ -3,32 +3,44 @@ import { VideoBlockSource } from '../../../../../__generated__/globalTypes'
 import { parseMediaUrl, parsePlaylistUrl } from './parseMediaUrl'
 
 describe('parseMediaUrl', () => {
-  it('reads a Watch address to its variant slug', () => {
+  it('reads a Watch address to its variant slug, then its container/child reading', () => {
     expect(
       parseMediaUrl('https://www.jesusfilm.org/watch/jesus.html/english.html')
     ).toEqual({
       source: VideoBlockSource.internal,
       url: 'https://www.jesusfilm.org/watch/jesus.html/english.html',
-      slug: 'jesus/english'
+      slugs: ['jesus/english', 'english/english']
     })
   })
 
-  it('reads a Watch address inside a container to the last two segments', () => {
+  it('reads a one-part Watch address in the default language', () => {
     expect(
       parseMediaUrl(
-        ' https://jesusfilm.org/watch/easter.html/the-resurrection/french.html '
+        'https://www.jesusfilm.org/watch/lumo-acts-of-the-apostles.html'
       )
     ).toEqual({
       source: VideoBlockSource.internal,
-      url: 'https://jesusfilm.org/watch/easter.html/the-resurrection/french.html',
-      slug: 'the-resurrection/french'
+      url: 'https://www.jesusfilm.org/watch/lumo-acts-of-the-apostles.html',
+      slugs: ['lumo-acts-of-the-apostles/english']
+    })
+  })
+
+  it('reads a child inside its container with a language to the last two segments', () => {
+    expect(
+      parseMediaUrl(
+        ' https://jesusfilm.org/watch/hope.html/the-resurrection/french.html '
+      )
+    ).toEqual({
+      source: VideoBlockSource.internal,
+      url: 'https://jesusfilm.org/watch/hope.html/the-resurrection/french.html',
+      slugs: ['the-resurrection/french']
     })
   })
 
   it('refuses addresses that are not Watch video pages', () => {
     expect(parseMediaUrl('https://www.jesusfilm.org/watch')).toBeNull()
     expect(
-      parseMediaUrl('https://www.jesusfilm.org/watch/jesus.html')
+      parseMediaUrl('https://www.jesusfilm.org/watch/english.html/videos')
     ).toBeNull()
     expect(
       parseMediaUrl('http://www.jesusfilm.org/watch/jesus.html/english.html')

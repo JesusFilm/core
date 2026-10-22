@@ -19,6 +19,14 @@ import { useCampaignCreateMutation } from '../../../libs/useCampaignCreateMutati
 
 const TITLE_MAX_LENGTH = 100
 
+/** The dialog opens with English selected; closing without creating goes back to it. */
+const ENGLISH: LanguageOption = {
+  id: '529',
+  localName: 'English',
+  nativeName: 'English',
+  slug: 'english'
+}
+
 interface CreateCampaignFormValues {
   title: string
   defaultLanguageId: string
@@ -52,7 +60,7 @@ export function CreateCampaignDialog({
   const { t } = useTranslation('apps-journeys-admin')
   const router = useRouter()
   const { enqueueSnackbar } = useSnackbar()
-  const [language, setLanguage] = useState<LanguageOption>()
+  const [language, setLanguage] = useState<LanguageOption | undefined>(ENGLISH)
   const { data: languagesData, loading: languagesLoading } = useLanguagesQuery({
     languageId: '529'
   })
@@ -112,7 +120,7 @@ export function CreateCampaignDialog({
 
   return (
     <Formik<CreateCampaignFormValues>
-      initialValues={{ title: '', defaultLanguageId: '' }}
+      initialValues={{ title: '', defaultLanguageId: ENGLISH.id }}
       validationSchema={schema}
       onSubmit={handleSubmit}
     >
@@ -125,11 +133,20 @@ export function CreateCampaignDialog({
         setFieldValue,
         setFieldTouched,
         submitForm,
+        resetForm,
         isSubmitting
       }) => (
         <Dialog
           open={open}
-          onClose={isSubmitting ? undefined : onClose}
+          onClose={
+            isSubmitting
+              ? undefined
+              : () => {
+                  resetForm()
+                  setLanguage(ENGLISH)
+                  onClose()
+                }
+          }
           dialogTitle={{ title: t('Create campaign'), closeButton: true }}
           dialogAction={{
             onSubmit: () => {

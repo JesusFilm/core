@@ -18,12 +18,15 @@ import {
 
 import {
   CAMPAIGN_HEADER_HEIGHT,
+  CAMPAIGN_PICTURE_RATIOS,
   CampaignRegionName,
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
+  focalImageSx,
   isCampaignSection,
   isExtra,
+  minHeightSx,
   overlayAlpha,
   resolveBand
 } from '@core/journeys/ui/Campaign'
@@ -32,10 +35,7 @@ import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-import {
-  GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_strings as CampaignString
-} from '../../../../../__generated__/GetCampaign'
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import {
   CampaignBackgroundKind,
   CampaignChildPlacement,
@@ -63,6 +63,7 @@ import { regionLineColor } from '../../utils/regionLineColor'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
+import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { InlineText } from '../InlineText'
 import { SelectionBadge } from '../SelectionBadge'
@@ -245,8 +246,8 @@ function sectionFieldPlaceholder(
       return t('Eyebrow')
     case 'title':
       return t('Title')
-    case 'lede':
-      return t('Lede')
+    case 'description':
+      return t('Description')
     case 'intro':
       return t('Intro')
     case 'richTextContent':
@@ -281,27 +282,27 @@ function SectionText({
       variant: titleVariant,
       sx: { color: 'var(--campaign-band-heading)' }
     },
-    lede: {
+    description: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+      sx: { color: 'var(--campaign-band-muted)' }
     },
     intro: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-muted)', maxWidth: 720 }
+      sx: { color: 'var(--campaign-band-muted)' }
     },
     richTextContent: {
       variant: 'body1' as const,
-      sx: { maxWidth: 720 }
+      sx: {}
     },
     bullets: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-text)', maxWidth: 720 }
+      sx: { color: 'var(--campaign-band-text)' }
     }
   }[
     field as
       | 'eyebrow'
       | 'title'
-      | 'lede'
+      | 'description'
       | 'intro'
       | 'richTextContent'
       | 'bullets'
@@ -408,52 +409,11 @@ function CanvasRegionHeading({
   )
 }
 
-interface CanvasStringsProps {
-  strings: CampaignString[]
-  editing: boolean
-  onSelect: () => void
-}
-
-/** A section's Campaign Strings, each inline-editable like any other text. */
-function CanvasStrings({
-  strings,
-  editing,
-  onSelect
-}: CanvasStringsProps): ReactElement | null {
-  const { t } = useTranslation('apps-journeys-admin')
-  if (strings.length === 0) return null
-  return (
-    <Stack
-      spacing={1}
-      data-testid="CanvasStrings"
-      sx={{ width: '100%', maxWidth: 720, alignItems: 'inherit' }}
-    >
-      <Typography
-        variant="overline"
-        component="p"
-        sx={{ color: 'var(--campaign-band-muted)' }}
-      >
-        {t('Campaign strings')}
-      </Typography>
-      {strings.map((string) => (
-        <InlineText
-          key={string.id}
-          target={{ string }}
-          placeholder={string.key}
-          editing={editing}
-          onSelect={onSelect}
-          variant="body2"
-          sx={{ color: 'var(--campaign-band-text)' }}
-        />
-      ))}
-    </Stack>
-  )
-}
-
 /**
  * One section on the editor canvas: the band from the shared resolution
- * table, the Extras placed above, the section's typed text, the Campaign
- * Strings its public rendering reads, then the Extras placed below. A hero
+ * table, the Extras placed above, the section's typed text, then the
+ * Extras placed below. The button and label wording a section reads
+ * (its Campaign Strings) shows only in place and is edited in Settings. A hero
  * with media and a Featured Media section put their Media Slot beside that
  * text (Featured Media on its `mediaSide`, with a placeholder while empty),
  * stacked below `md` (Featured Media stacked at every width when its layout
@@ -540,10 +500,6 @@ export function CanvasSection({
   const textFields: readonly CampaignTextField[] = isCampaignTextBlock(block)
     ? CAMPAIGN_TEXT_FIELDS[block.__typename]
     : []
-  const stringKeys = CAMPAIGN_SECTION_STRING_KEYS[block.__typename] ?? []
-  const strings = stringKeys.flatMap((key) =>
-    campaign.strings.filter((string) => string.key === key)
-  )
   /** A Featured Media section always shows its slot (or the placeholder); a hero only once it has media. */
   const showMedia =
     block.__typename === 'CampaignFeaturedMediaBlock' ||
@@ -597,23 +553,22 @@ export function CanvasSection({
         {above.map(renderExtra)}
         {block.__typename === 'CampaignImageBlock' &&
           (picture != null ? (
-            <Box
-              component="img"
-              src={picture.src}
-              alt={picture.alt ?? ''}
-              data-testid="CanvasSectionImage"
-              sx={{
-                display: 'block',
-                width: '100%',
-                height: 'auto',
-                aspectRatio:
-                  picture.width != null && picture.height != null
-                    ? `${picture.width} / ${picture.height}`
-                    : undefined,
-                objectFit: 'cover',
-                borderRadius: 1
-              }}
-            />
+            <Box sx={{ width: '100%', overflow: 'hidden', borderRadius: 1 }}>
+              <Box
+                component="img"
+                src={picture.src}
+                alt={picture.alt ?? ''}
+                data-testid="CanvasSectionImage"
+                sx={{
+                  display: 'block',
+                  width: '100%',
+                  height: 'auto',
+                  aspectRatio: CAMPAIGN_PICTURE_RATIOS.wide,
+                  objectFit: 'cover',
+                  ...focalImageSx(picture)
+                }}
+              />
+            </Box>
           ) : (
             <Box
               data-testid="CanvasSectionImagePlaceholder"
@@ -628,9 +583,7 @@ export function CanvasSection({
                 color: 'var(--campaign-band-muted)'
               }}
             >
-              <Typography variant="body2">
-                {t('Add a picture from Edit')}
-              </Typography>
+              <EditorNote>{t('Add a picture from Edit')}</EditorNote>
             </Box>
           ))}
         {block.__typename === 'CampaignRegionHeaderBlock' &&
@@ -682,14 +635,6 @@ export function CanvasSection({
             onSelectCard={selectChild}
           />
         )}
-        <CanvasStrings
-          strings={strings}
-          editing={sectionSelected}
-          onSelect={() => {
-            setFocusField(undefined)
-            selectBlock(block.id)
-          }}
-        />
         {block.__typename === 'CampaignColumnsBlock' && (
           <Box
             data-testid={`CanvasColumns-${block.id}`}
@@ -716,7 +661,7 @@ export function CanvasSection({
           data-testid="CanvasSectionMedia"
           sx={{ flex: 1, minWidth: 0, width: '100%' }}
         >
-          <CanvasMedia media={block.media} />
+          <CanvasMedia media={block.media} stacked={stacked} />
         </Box>
       )}
     </Stack>
@@ -926,7 +871,9 @@ export function CanvasSection({
         ? {
             minHeight: footerEmpty ? 24 : undefined,
             py: footerEmpty ? 0 : { xs: 4, md: 5 },
-            borderTop: '1px solid var(--campaign-band-border)'
+            borderTop: '1px solid var(--campaign-band-border)',
+            // Pinned to the frame's bottom edge on a short page, as on the public page.
+            mt: 'auto'
           }
         : inSlot
           ? 'backgroundKind' in block &&
@@ -957,6 +904,9 @@ export function CanvasSection({
         scrollMarginTop:
           chrome === 'header' ? undefined : `${CAMPAIGN_HEADER_HEIGHT}px`,
         ...rhythmSx,
+        ...(block.__typename === 'CampaignHeroBlock'
+          ? minHeightSx(block.minHeight, inSlot)
+          : {}),
         // Keeps the badges inside this section from competing with the sticky header.
         ...(chrome !== 'header' && !inSlot
           ? { isolation: 'isolate' as const }
@@ -1003,20 +953,30 @@ export function CanvasSection({
       {cover != null && (
         <>
           <Box
-            component="img"
-            src={cover.src}
-            alt=""
-            aria-hidden
-            data-testid="CanvasSectionCover"
             sx={{
               position: 'absolute',
               inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
+              overflow: 'hidden',
+              borderRadius: 'inherit',
               pointerEvents: 'none'
             }}
-          />
+          >
+            <Box
+              component="img"
+              src={cover.src}
+              alt=""
+              aria-hidden
+              data-testid="CanvasSectionCover"
+              sx={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                ...focalImageSx(cover)
+              }}
+            />
+          </Box>
           <Box
             data-testid="CanvasSectionOverlay"
             sx={{

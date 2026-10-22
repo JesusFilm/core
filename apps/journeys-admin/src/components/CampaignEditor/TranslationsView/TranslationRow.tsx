@@ -1,15 +1,16 @@
 import { CombinedGraphQLErrors } from '@apollo/client'
 import Chip from '@mui/material/Chip'
+import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
+import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import {
-  CampaignTranslations,
   CampaignTranslationsVariables,
   CampaignTranslations_campaignTranslations as TranslationRow
 } from '../../../../__generated__/CampaignTranslations'
@@ -18,18 +19,17 @@ import {
   CampaignTextSource
 } from '../../../../__generated__/globalTypes'
 import { useCampaignTranslationSetMutation } from '../../../libs/useCampaignTranslationSetMutation'
-import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
-import { blockLabel } from '../blockLabel'
-
 import {
   rowKey,
   targetId,
-  targetInput,
-  withWrittenTranslation
-} from './translationRows'
+  writeCachedTranslation
+} from '../../../libs/useCampaignTranslationsQuery'
+import { blockLabel } from '../blockLabel'
+
+import { targetInput } from './translationRows'
 
 const MULTILINE_FIELDS: CampaignTextField[] = [
-  CampaignTextField.lede,
+  CampaignTextField.description,
   CampaignTextField.bullets,
   CampaignTextField.content,
   CampaignTextField.intro,
@@ -43,6 +43,10 @@ interface TranslationRowProps {
   bcp47: string
   /** The variables of the query that lists the rows, so a write can update it in place. */
   queryVariables: CampaignTranslationsVariables
+  /** The editor's selection is where this text lives: the line is marked. */
+  selected?: boolean
+  /** Show the text's place on the canvas. */
+  onReveal?: () => void
 }
 
 function messageOf(error: unknown): string {
@@ -61,8 +65,6 @@ export function useRowLabel(): (row: TranslationRow) => string {
         return t('Eyebrow')
       case CampaignTextField.title:
         return t('Title')
-      case CampaignTextField.lede:
-        return t('Lede')
       case CampaignTextField.bullets:
         return t('Bullets')
       case CampaignTextField.content:
@@ -115,13 +117,19 @@ export function useRowLabel(): (row: TranslationRow) => string {
  * Leaving the field writes a human translation through
  * `campaignTranslationSet` (an emptied field clears it), shown at once, and
  * updates this list and the editor's own copy of the text so the row flips to
- * Edited without a refetch.
+ * Edited without a refetch. Laid out as a small "where it is from" line with
+ * the target button always at the right edge, the default-language text
+ * large, the status on its own line, then the field. The target button
+ * selects the text's place on the canvas, and the line is marked while that
+ * place is selected.
  */
 export function TranslationRowItem({
   row,
   languageId,
   bcp47,
-  queryVariables
+  queryVariables,
+  selected = false,
+  onReveal
 }: TranslationRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const rowLabel = useRowLabel()
@@ -173,23 +181,11 @@ export function TranslationRowItem({
             }),
             fields: { [column]: () => data.campaignTranslationSet }
           })
-          cache.updateQuery<
-            CampaignTranslations,
-            CampaignTranslationsVariables
-          >(
-            { query: CAMPAIGN_TRANSLATIONS, variables: queryVariables },
-            (current) =>
-              current == null
-                ? undefined
-                : {
-                    ...current,
-                    campaignTranslations: withWrittenTranslation(
-                      current.campaignTranslations,
-                      row,
-                      languageId,
-                      data.campaignTranslationSet
-                    )
-                  }
+          writeCachedTranslation(
+            cache,
+            queryVariables,
+            key,
+            data.campaignTranslationSet
           )
         }
       })
@@ -199,35 +195,60 @@ export function TranslationRowItem({
     }
   }
 
-  const statusLabel =
-    row.source === CampaignTextSource.machine
+  const statusLabel = row.needsReview
+    ? t('Needs review')
+    : row.source === CampaignTextSource.machine
       ? t('Machine-translated')
       : row.source === CampaignTextSource.human
         ? t('Edited')
         : t('Missing')
 
   return (
-    <Stack spacing={1} data-testid={`TranslationRow-${key}`} sx={{ py: 2 }}>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-        <Typography variant="subtitle2" sx={{ flexGrow: 1 }}>
+    <Stack
+      spacing={1}
+      data-testid={`TranslationRow-${key}`}
+      data-row-key={key}
+      data-selected={selected ? 'true' : undefined}
+      sx={{
+        py: 2.5,
+        px: 1,
+        mx: -1,
+        bgcolor: selected ? 'action.selected' : undefined
+      }}
+    >
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+      >
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ minWidth: 0 }}
+        >
           {rowLabel(row)}
         </Typography>
-        <Chip
-          size="small"
-          label={statusLabel}
-          color={
-            row.source === CampaignTextSource.machine ? 'warning' : 'default'
-          }
-          variant={row.source == null ? 'outlined' : 'filled'}
-        />
+        {onReveal != null && (
+          <IconButton
+            size="small"
+            aria-label={t('Show on the canvas')}
+            onClick={onReveal}
+            sx={{ ml: 'auto', flexShrink: 0 }}
+          >
+            <LinkExternalIcon fontSize="small" />
+          </IconButton>
+        )}
       </Stack>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ whiteSpace: 'pre-wrap' }}
-      >
+      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
         {row.defaultValue}
       </Typography>
+      <Chip
+        size="small"
+        label={statusLabel}
+        color={row.needsReview ? 'warning' : 'default'}
+        variant={row.source == null ? 'outlined' : 'filled'}
+        sx={{ alignSelf: 'flex-start' }}
+      />
       <TextField
         size="small"
         fullWidth

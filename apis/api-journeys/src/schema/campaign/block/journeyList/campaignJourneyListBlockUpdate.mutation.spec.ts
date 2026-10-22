@@ -24,7 +24,7 @@ describe('campaignJourneyListBlockUpdate', () => {
         id
         eyebrow
         title
-        lede
+        description
         display
       }
     }
@@ -51,7 +51,7 @@ describe('campaignJourneyListBlockUpdate', () => {
   it.each([
     ['eyebrow', 80],
     ['title', 150],
-    ['lede', 500]
+    ['description', 500]
   ])(
     'caps %s at %i characters (BAD_USER_INPUT, the field)',
     async (field, max) => {
@@ -71,7 +71,7 @@ describe('campaignJourneyListBlockUpdate', () => {
   )
 
   it('allows empty text', async () => {
-    const field = 'lede'
+    const field = 'description'
     const result = await update({ [field]: '' })
 
     expect(result.data.campaignJourneyListBlockUpdate[field]).toBe('')
@@ -89,7 +89,7 @@ describe('campaignJourneyListBlockUpdate', () => {
       campaignBlockWithAcl(fixture, 'heroButtonId')
     )
 
-    const result = await update({ lede: 'x' })
+    const result = await update({ description: 'x' })
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'NOT_FOUND' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
@@ -103,7 +103,7 @@ describe('campaignJourneyListBlockUpdate', () => {
       )
     )
 
-    const result = await update({ lede: 'x' })
+    const result = await update({ description: 'x' })
 
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()

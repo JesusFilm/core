@@ -109,7 +109,9 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
 
   return {
     ...fixture,
-    titleTranslations: { [FRENCH]: { value: 'Noël 2026', source: 'human' } },
+    titleTranslations: {
+      [FRENCH]: { value: 'Campagne 2026', source: 'human' }
+    },
     blocks: [
       ...fixture.blocks.map((block) =>
         block.id === 'heroId'
@@ -117,7 +119,7 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
               ...block,
               titleTranslations: {
                 [FRENCH]: {
-                  value: "Partagez l'histoire de Noël",
+                  value: "Partagez l'histoire de Campagne",
                   source: 'machine'
                 }
               }
@@ -135,7 +137,7 @@ function publishedFixture(): CampaignFixture & Record<string, unknown> {
         eyebrow: null,
         title: null,
         titleTranslations: null,
-        lede: null,
+        description: null,
         align: null,
         content: 'Europe',
         contentTranslations: {
@@ -324,7 +326,7 @@ describe('campaignPublic', () => {
             ... on CampaignHeroBlock {
               eyebrow
               title
-              lede
+              description
               titleTranslations {
                 languageId
               }
@@ -355,7 +357,7 @@ describe('campaignPublic', () => {
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026', languageId: FRENCH }
+      variables: { slug: 'outreach-2026', languageId: FRENCH }
     })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
@@ -363,8 +365,8 @@ describe('campaignPublic', () => {
     expect(campaign).toMatchObject({
       id: 'campaignId',
       teamId: 'teamId',
-      slug: 'christmas-2026',
-      title: 'Noël 2026',
+      slug: 'outreach-2026',
+      title: 'Campagne 2026',
       defaultLanguageId: '529',
       defaultLanguage: { id: '529' },
       languageId: FRENCH,
@@ -379,7 +381,11 @@ describe('campaignPublic', () => {
         radius: 'rounded',
         buttonRadius: 'veryRounded'
       },
-      header: { id: 'headerId', logoBlockId: null, backgroundKind: 'none' },
+      header: {
+        id: 'headerId',
+        logoBlockId: 'headerLogoId',
+        backgroundKind: 'none'
+      },
       footer: { id: 'footerId', backgroundKind: 'surface' }
     })
 
@@ -411,9 +417,10 @@ describe('campaignPublic', () => {
       parentBlockId: null,
       parentOrder: 0,
       backgroundKind: 'none',
-      eyebrow: 'Christmas 2026',
-      title: "Partagez l'histoire de Noël",
-      lede: 'Pick your region to find a journey in your language, ready to share.',
+      eyebrow: 'Your campaign',
+      title: "Partagez l'histoire de Campagne",
+      description:
+        'Pick your region to find a journey in your language, ready to share.',
       titleTranslations: []
     })
     expect(landing.blocks[5]).toEqual({
@@ -435,6 +442,7 @@ describe('campaignPublic', () => {
 
     expect(campaign.chrome.map((block) => block.id)).toEqual([
       'headerId',
+      'headerLogoId',
       'navHomeId',
       'navResourcesId',
       'footerId',
@@ -505,7 +513,7 @@ describe('campaignPublic', () => {
 
     expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { slug: 'christmas-2026', status: 'published' }
+        where: { slug: 'outreach-2026', status: 'published' }
       })
     )
     // Each Share Link is the address saved on its Campaign QR Code.
@@ -526,7 +534,7 @@ describe('campaignPublic', () => {
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026' }
+      variables: { slug: 'outreach-2026' }
     })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
@@ -549,7 +557,7 @@ describe('campaignPublic', () => {
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026' }
+      variables: { slug: 'outreach-2026' }
     })) as PublicCampaignResponse
 
     expect(result.errors?.[0]).toMatchObject({
@@ -563,23 +571,23 @@ describe('campaignPublic', () => {
 
     const omitted = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026' }
+      variables: { slug: 'outreach-2026' }
     })) as PublicCampaignResponse
     expect(omitted.data.campaignPublic).toMatchObject({
       languageId: '529',
-      title: 'Christmas 2026'
+      title: 'Outreach 2026'
     })
     expect(omitted.data.campaignPublic.pages[0].blocks[0].title).toBe(
-      'Share the story of Christmas'
+      'Share the story'
     )
 
     const foreign = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026', languageId: '21028' }
+      variables: { slug: 'outreach-2026', languageId: '21028' }
     })) as PublicCampaignResponse
     expect(foreign.data.campaignPublic).toMatchObject({
       languageId: '529',
-      title: 'Christmas 2026'
+      title: 'Outreach 2026'
     })
   })
 
@@ -651,7 +659,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_CAROUSEL,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -679,7 +687,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_CAROUSEL,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -761,7 +769,7 @@ describe('campaignPublic', () => {
         eyebrow: null,
         title: null,
         titleTranslations: null,
-        lede: null,
+        description: null,
         align: null,
         action: null,
         ...row
@@ -841,7 +849,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_VIDEOS,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -904,7 +912,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_VIDEOS,
-        variables: { slug: 'christmas-2026', languageId: FRENCH }
+        variables: { slug: 'outreach-2026', languageId: FRENCH }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -934,7 +942,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_VIDEOS,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -965,7 +973,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       const unlinked = {
@@ -1034,7 +1042,6 @@ describe('campaignPublic', () => {
         titleTranslations: {
           [FRENCH]: { value: `${id} titre`, source: 'human' }
         },
-        lede: null,
         align: null,
         description: `${id} description`,
         journeyId,
@@ -1080,7 +1087,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
-        variables: { slug: 'christmas-2026', languageId: FRENCH }
+        variables: { slug: 'outreach-2026', languageId: FRENCH }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -1128,7 +1135,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -1169,7 +1176,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -1188,7 +1195,7 @@ describe('campaignPublic', () => {
 
       const result = (await publicClient({
         document: CAMPAIGN_PUBLIC_JOURNEYS,
-        variables: { slug: 'christmas-2026' }
+        variables: { slug: 'outreach-2026' }
       })) as PublicCampaignResponse
 
       expect(result.errors).toBeUndefined()
@@ -1231,7 +1238,7 @@ describe('campaignPublic', () => {
 
     const result = await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026' }
+      variables: { slug: 'outreach-2026' }
     })
 
     expect(result).toEqual({
@@ -1245,7 +1252,7 @@ describe('campaignPublic', () => {
     })
     expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { slug: 'christmas-2026', status: 'published' }
+        where: { slug: 'outreach-2026', status: 'published' }
       })
     )
   })
@@ -1264,26 +1271,26 @@ describe('campaignPublic', () => {
     prismaMock.campaign.findFirst.mockResolvedValue({
       ...publishedFixture(),
       customDomains: [
-        { name: 'christmas.example.org' },
+        { name: 'outreach.example.org' },
         { name: 'z.example.org' }
       ]
     } as any)
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { hostname: 'christmas.example.org' }
+      variables: { hostname: 'outreach.example.org' }
     })) as PublicCampaignResponse
 
     expect(result.data.campaignPublic).toMatchObject({
       id: 'campaignId',
-      slug: 'christmas-2026',
-      customDomainNames: ['christmas.example.org', 'z.example.org']
+      slug: 'outreach-2026',
+      customDomainNames: ['outreach.example.org', 'z.example.org']
     })
     expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
           status: 'published',
-          customDomains: { some: { name: 'christmas.example.org' } }
+          customDomains: { some: { name: 'outreach.example.org' } }
         }
       })
     )
@@ -1294,7 +1301,7 @@ describe('campaignPublic', () => {
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { hostname: 'christmas.example.org' }
+      variables: { hostname: 'outreach.example.org' }
     })) as PublicCampaignResponse
 
     expect(result.errors?.[0].extensions.code).toBe('NOT_FOUND')
@@ -1303,7 +1310,7 @@ describe('campaignPublic', () => {
   it('is BAD_USER_INPUT when both or neither of slug and hostname are given', async () => {
     const both = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026', hostname: 'christmas.example.org' }
+      variables: { slug: 'outreach-2026', hostname: 'outreach.example.org' }
     })) as PublicCampaignResponse
     expect(both.errors?.[0].extensions.code).toBe('BAD_USER_INPUT')
 
@@ -1320,7 +1327,7 @@ describe('campaignPublic', () => {
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC,
-      variables: { slug: 'christmas-2026' }
+      variables: { slug: 'outreach-2026' }
     })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()
@@ -1396,7 +1403,7 @@ describe('campaignPublic languages', () => {
 
     const result = (await publicClient({
       document: CAMPAIGN_PUBLIC_LANGUAGES,
-      variables: { slug: 'christmas-2026', languageId: FRENCH }
+      variables: { slug: 'outreach-2026', languageId: FRENCH }
     })) as PublicCampaignResponse
 
     expect(result.errors).toBeUndefined()

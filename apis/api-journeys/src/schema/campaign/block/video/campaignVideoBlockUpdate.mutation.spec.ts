@@ -35,7 +35,6 @@ const WATCH_VIDEO: Partial<CampaignBlockRow> = {
   parentBlockId: 'heroId',
   parentOrder: null,
   eyebrow: null,
-  lede: null,
   source: 'internal',
   videoId: '1_jf-0-0',
   videoVariantLanguageId: '529',

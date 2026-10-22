@@ -119,14 +119,14 @@ describe('campaignBlockDuplicate', () => {
         id: 'heroId',
         parentBlockId: null,
         parentOrder: 0,
-        title: 'Share the story of Christmas',
+        title: 'Share the story',
         mediaBlockId: null
       },
       {
         id: HERO_COPY_ID,
         parentBlockId: null,
         parentOrder: 1,
-        title: 'Share the story of Christmas',
+        title: 'Share the story',
         mediaBlockId: null
       },
       { id: 'landingSwitcherId', parentBlockId: null, parentOrder: 2 },
@@ -152,7 +152,7 @@ describe('campaignBlockDuplicate', () => {
         pageId: 'landingPageId',
         parentBlockId: null,
         parentOrder: 5,
-        eyebrow: 'Christmas 2026',
+        eyebrow: 'Your campaign',
         align: 'center'
       }),
       include: { action: true }

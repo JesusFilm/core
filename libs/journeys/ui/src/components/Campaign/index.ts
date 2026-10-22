@@ -22,7 +22,12 @@ export {
   writeCampaignLanguageCookie
 } from './CampaignHeader'
 export { CampaignHero } from './CampaignHero'
-export { CampaignImage, CampaignPicture } from './CampaignImage'
+export {
+  CAMPAIGN_PICTURE_RATIOS,
+  CampaignImage,
+  CampaignPicture
+} from './CampaignImage'
+export type { CampaignPictureRatio } from './CampaignImage'
 export {
   CampaignJourneyCards,
   CampaignJourneyList,
@@ -78,6 +83,7 @@ export {
   CAMPAIGN_HEADER_HEIGHT,
   CampaignBandCover,
   CampaignSectionBand,
+  minHeightSx,
   CampaignSlotContext,
   useCampaignSection,
   useCampaignSlot
@@ -103,7 +109,11 @@ export {
   campaignFontsHref,
   CAMPAIGN_DEFAULT_FONTS
 } from './libs/campaignFontsHref'
-export { campaignImageSource } from './libs/campaignImageSource'
+export {
+  campaignImageSource,
+  focalImageSx,
+  focalObjectPosition
+} from './libs/campaignImageSource'
 export {
   CAMPAIGN_LANGUAGE_COOKIE,
   CAMPAIGN_LANGUAGE_PARAM,

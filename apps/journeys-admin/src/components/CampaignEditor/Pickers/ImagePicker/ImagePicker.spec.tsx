@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import type { UseImageUploadOptions } from '../../../../libs/useImageUpload'
+import { GET_MY_CLOUDFLARE_IMAGES } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary/MediaLibrary'
 
 import { ImagePicker, isHttpsUrl } from './ImagePicker'
 
@@ -44,6 +45,26 @@ function renderPicker(
     </MockedProvider>
   )
   return { onPick }
+}
+
+const uploadsMock = {
+  request: {
+    query: GET_MY_CLOUDFLARE_IMAGES,
+    variables: { offset: 0, limit: 11, isAi: false, teamId: 'teamId' }
+  },
+  result: {
+    data: {
+      getMyCloudflareImages: [
+        {
+          __typename: 'CloudflareImage',
+          id: 'earlierId',
+          url: 'https://imagedelivery.net/accountHash/earlierId',
+          blurhash: null,
+          userId: 'userId'
+        }
+      ]
+    }
+  }
 }
 
 describe('ImagePicker', () => {
@@ -174,5 +195,35 @@ describe('ImagePicker', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(screen.queryByTestId('CampaignImagePickerPreview')).toBeNull()
     expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('shows the preview under the Preview button, above the earlier uploads', async () => {
+    renderPicker(undefined, [uploadByUrlMock, uploadsMock])
+    const earlier = await screen.findByTestId('media-library-image-earlierId')
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Image URL' }), {
+      target: { value: PASTED }
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Preview' }))
+
+    const preview = screen.getByTestId('CampaignImagePickerPreview')
+    const button = screen.getByRole('button', { name: 'Preview' })
+    expect(
+      button.compareDocumentPosition(preview) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    expect(
+      preview.compareDocumentPosition(earlier) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+  })
+
+  it("lists the team's earlier uploads and picks one at once", async () => {
+    const { onPick } = renderPicker(undefined, [uploadByUrlMock, uploadsMock])
+
+    fireEvent.click(await screen.findByTestId('media-library-image-earlierId'))
+
+    expect(onPick).toHaveBeenCalledWith(
+      'https://imagedelivery.net/accountHash/earlierId/public'
+    )
   })
 })

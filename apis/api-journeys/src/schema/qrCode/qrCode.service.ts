@@ -35,6 +35,7 @@ export async function createShortLink(
   const query = `
     mutation shortLinkCreate($input: MutationShortLinkCreateInput!) {
       shortLinkCreate(input: $input) {
+        __typename
         ... on ZodError { message }
         ... on NotUniqueError { message }
         ... on MutationShortLinkCreateSuccess {
@@ -71,6 +72,7 @@ export async function updateShortLink(
   const query = `
     mutation shortLinkUpdate($input: MutationShortLinkUpdateInput!) {
       shortLinkUpdate(input: $input) {
+        __typename
         ... on ZodError { message }
         ... on NotFoundError { message }
         ... on MutationShortLinkUpdateSuccess {
@@ -96,6 +98,7 @@ export async function deleteShortLink(id: string): Promise<void> {
   const query = `
     mutation shortLinkDelete($id: String!) {
       shortLinkDelete(id: $id) {
+        __typename
         ... on NotFoundError { message }
         ... on MutationShortLinkDeleteSuccess {
           data { id }

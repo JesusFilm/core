@@ -28,6 +28,7 @@ import { Dialog } from '@core/shared/ui/Dialog'
 import CopyToIcon from '@core/shared/ui/icons/CopyTo'
 import Download2Icon from '@core/shared/ui/icons/Download2'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
+import QrCode2Icon from '@core/shared/ui/icons/QrCode2'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import {
   Language as AutocompleteLanguage,
@@ -97,27 +98,15 @@ export function regionLanguageLabel(
 }
 
 /**
- * The languages "Add language" offers: the campaign's Page Languages first,
- * in their order, then the full api-languages catalogue, with the region's
- * existing Share Languages left out.
+ * The languages "Add language" offers: the full api-languages catalogue with
+ * the region's existing Share Languages left out; the language autocomplete
+ * sorts them by name as it does everywhere else.
  */
 export function addLanguageOptions(
-  campaign: Pick<Campaign, 'languages'>,
   catalogue: AutocompleteLanguage[],
   taken: ReadonlySet<string>
 ): AutocompleteLanguage[] {
-  const pageLanguages: AutocompleteLanguage[] = [...campaign.languages]
-    .sort((a, b) => a.order - b.order)
-    .map((campaignLanguage) => ({
-      id: campaignLanguage.languageId,
-      name: campaignLanguage.language.name,
-      slug: null
-    }))
-  const pageIds = new Set(pageLanguages.map((language) => language.id))
-  return [
-    ...pageLanguages,
-    ...catalogue.filter((language) => !pageIds.has(language.id))
-  ].filter((language) => !taken.has(language.id))
+  return catalogue.filter((language) => !taken.has(language.id))
 }
 
 /** The three states a Share Language can be in on the canvas. */
@@ -220,14 +209,17 @@ interface ShareLanguageRowProps {
   onLink: (url: string) => Promise<void>
   onUnlink: () => Promise<void>
   onRefresh: () => void
+  /** Mint the Campaign QR Code and short link for the linked journey when the row has none. */
+  onCreateQrCode: () => Promise<void>
   onCopied: (shortLink: string) => void
 }
 
 /**
  * One Share Language on the canvas, as the visitor will see it: the phone
  * frame, the Share Link, Copy link and Download QR code. A live-published
- * journey previews in the frame with Refresh from journey, Swap and Unlink
- * beside it. An Unlinked Language shows the frame with the "Pick a journey"
+ * journey previews in the frame with Open journey (the public page in a new
+ * tab), Refresh from journey, Swap and Unlink beside it, and Create QR code
+ * when the row has no Campaign QR Code yet. An Unlinked Language shows the frame with the "Pick a journey"
  * call to action that opens the journey picker, copy and download disabled. A
  * journey that is no longer published shows the "Journey unpublished"
  * warning in the frame instead of that call to action.
@@ -241,6 +233,7 @@ function ShareLanguageRow({
   onLink,
   onUnlink,
   onRefresh,
+  onCreateQrCode,
   onCopied
 }: ShareLanguageRowProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -523,6 +516,35 @@ function ShareLanguageRow({
               spacing={1}
               sx={{ alignItems: 'center', flexWrap: 'wrap' }}
             >
+              {regionLanguage.journeyUrl != null && (
+                <Button
+                  size="small"
+                  color="inherit"
+                  component="a"
+                  href={regionLanguage.journeyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  startIcon={<LinkExternalIcon fontSize="small" />}
+                  data-testid="ShareLanguageOpenJourney"
+                  onClick={stop}
+                >
+                  {t('Open journey')}
+                </Button>
+              )}
+              {state === 'live' && regionLanguage.qrCode == null && (
+                <Button
+                  size="small"
+                  color="inherit"
+                  startIcon={<QrCode2Icon fontSize="small" />}
+                  data-testid="ShareLanguageCreateQrCode"
+                  onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                    stop(event)
+                    void onCreateQrCode()
+                  }}
+                >
+                  {t('Create QR code')}
+                </Button>
+              )}
               {state === 'live' && (
                 <Button
                   size="small"
@@ -587,8 +609,8 @@ function ShareLanguageRow({
  * The Share section on the editor canvas: a preview of the public selector
  * (every Share Language, the unlinked ones marked hidden until a journey is
  * linked), then every language of the region being rendered as the visitor
- * will see it, and "Add language" offering the Page Languages first, then
- * the full catalogue through the language autocomplete. Add, remove and
+ * will see it, and "Add language" offering the full catalogue through the
+ * same language autocomplete as everywhere else. Add, remove and
  * unlink are plain saves; linking and swapping a journey are Commands
  * (a swap retargets the same short link, so undo is safe), and so is "Refresh
  * from journey", confirmed only when the author edited the snapshot.
@@ -625,8 +647,8 @@ export function ShareSectionEdit({
     [regionLanguages]
   )
   const options = useMemo(
-    () => addLanguageOptions(campaign, languagesData?.languages ?? [], taken),
-    [campaign, languagesData, taken]
+    () => addLanguageOptions(languagesData?.languages ?? [], taken),
+    [languagesData, taken]
   )
 
   if (currentRegion == null) return null
@@ -679,6 +701,23 @@ export function ShareSectionEdit({
       })
     } catch (error) {
       notify(error, t('Could not unlink journey'))
+    }
+  }
+
+  /** Re-link the same journey: the API mints the missing Campaign QR Code and short link, and keeps the snapshot, an edited one included. */
+  async function handleCreateQrCode(
+    regionLanguage: CampaignRegionLanguage
+  ): Promise<void> {
+    if (regionLanguage.journeyId == null) return
+    try {
+      await languageUpdate({
+        variables: {
+          id: regionLanguage.id,
+          input: { journeyId: regionLanguage.journeyId }
+        }
+      })
+    } catch (error) {
+      notify(error, t('Could not create QR code'))
     }
   }
 
@@ -748,6 +787,7 @@ export function ShareSectionEdit({
             onLink={(url) => link(regionLanguage, url)}
             onUnlink={() => handleUnlink(regionLanguage)}
             onRefresh={() => requestRefresh(regionLanguage)}
+            onCreateQrCode={() => handleCreateQrCode(regionLanguage)}
             onCopied={handleCopied}
           />
         ))}
@@ -755,13 +795,10 @@ export function ShareSectionEdit({
           <LanguageAutocomplete
             languages={options}
             loading={languagesLoading}
-            disableSort
             onChange={(option) => {
               void handleAdd(option)
             }}
-            helperText={t(
-              'Add language: your page languages come first, then every language.'
-            )}
+            helperText={t('Add a language')}
             popper={{
               container: () => containerRef.current?.ownerDocument.body ?? null
             }}

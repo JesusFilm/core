@@ -1,5 +1,5 @@
-import { MockedProvider } from '@apollo/client/testing/react'
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -7,8 +7,7 @@ import {
   within
 } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
-import { SnackbarProvider } from 'notistack'
-import { ComponentProps } from 'react'
+import { ComponentProps, ReactElement } from 'react'
 
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
@@ -20,9 +19,16 @@ import {
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
-import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
+import {
+  CAMPAIGN_TRANSLATIONS,
+  rowKey
+} from '../../../libs/useCampaignTranslationsQuery'
+import {
+  CampaignEditorState,
+  useCampaignEditor
+} from '../CampaignEditorProvider'
 import { campaign } from '../data'
-import { TranslationRunProvider } from '../TranslationRunProvider'
+import { SelectionProbe, StaticEditor } from '../testing'
 
 import { TranslationsView } from './TranslationsView'
 
@@ -36,6 +42,7 @@ function row(overrides: Partial<Row> & Pick<Row, 'group' | 'field'>): Row {
     defaultValue: '',
     value: null,
     source: null,
+    needsReview: false,
     target: {
       __typename: 'CampaignTranslationTarget',
       typename: 'CampaignHeroBlock',
@@ -67,9 +74,10 @@ const copyLink = row({
 const heroTitle = row({
   group: CampaignTranslationGroup.landing,
   field: CampaignTextField.title,
-  defaultValue: 'Share the story of Christmas',
-  value: "Partagez l'histoire de Noël",
+  defaultValue: 'Share the story of Outreach',
+  value: "Partagez l'histoire de Campagne",
   source: CampaignTextSource.machine,
+  needsReview: true,
   target: {
     ...copyLink.target,
     typename: 'CampaignHeroBlock',
@@ -81,15 +89,15 @@ const heroEyebrow = row({
   group: CampaignTranslationGroup.landing,
   field: CampaignTextField.eyebrow,
   maxLength: 80,
-  defaultValue: 'Christmas 2026',
+  defaultValue: 'Outreach 2026',
   target: { ...heroTitle.target }
 })
 const regionIntro = row({
   group: CampaignTranslationGroup.region,
   field: CampaignTextField.intro,
   maxLength: 500,
-  defaultValue: 'A Christmas journey chosen by your regional team.',
-  value: 'Un voyage de Noël.',
+  defaultValue: 'A Outreach journey chosen by your regional team.',
+  value: 'Un voyage de Campagne.',
   source: CampaignTextSource.human,
   target: {
     ...heroTitle.target,
@@ -169,23 +177,32 @@ function setMock(
   }
 }
 
+/** A control that selects a block, as a click on the canvas would. */
+function SelectBlockButton({ id }: { id: string }): ReactElement {
+  const { selectBlock } = useCampaignEditor()
+  return <button onClick={() => selectBlock(id)}>select {id}</button>
+}
+
 function renderView(
   mocks: Array<Record<string, unknown>>,
   campaignProp = campaign,
-  viewProps: Partial<ComponentProps<typeof TranslationsView>> = {}
+  viewProps: Partial<ComponentProps<typeof TranslationsView>> = {},
+  initialState?: Partial<CampaignEditorState>
 ): ReturnType<typeof render> {
   return render(
-    <MockedProvider mocks={mocks as never}>
-      <SnackbarProvider>
-        <TranslationRunProvider>
-          <TranslationsView
-            campaign={campaignProp}
-            initialLanguageId={FRENCH}
-            {...viewProps}
-          />
-        </TranslationRunProvider>
-      </SnackbarProvider>
-    </MockedProvider>
+    <StaticEditor
+      mocks={mocks}
+      campaignProp={campaignProp}
+      initialState={initialState}
+    >
+      <SelectionProbe />
+      <SelectBlockButton id="regionHeaderId" />
+      <TranslationsView
+        campaign={campaignProp}
+        initialLanguageId={FRENCH}
+        {...viewProps}
+      />
+    </StaticEditor>
   )
 }
 
@@ -196,6 +213,178 @@ function visibleRows(): string[] {
 }
 
 describe('TranslationsView', () => {
+  beforeEach(() => {
+    Element.prototype.scrollIntoView = vi.fn()
+  })
+
+  describe('the canvas and the list point at each other', () => {
+    it('selects the line’s block on the canvas from its target button', async () => {
+      renderView([listMock(FRENCH)])
+      await screen.findByTestId('TranslationGroup-landing')
+
+      fireEvent.click(
+        within(
+          screen.getByTestId(`TranslationRow-${rowKey(heroTitle)}`)
+        ).getByRole('button', { name: 'Show on the canvas' })
+      )
+
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+      expect(screen.getByTestId('PageKind')).toHaveTextContent('landing')
+    })
+
+    it('selects the section that shows an interface phrase, and a region card', async () => {
+      renderView([listMock(FRENCH)])
+      await screen.findByTestId('TranslationGroup-interface')
+
+      fireEvent.click(
+        within(
+          screen.getByTestId(`TranslationRow-${rowKey(copyLink)}`)
+        ).getByRole('button', { name: 'Show on the canvas' })
+      )
+      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+        'regionShareId'
+      )
+
+      fireEvent.click(
+        within(
+          screen.getByTestId(`TranslationRow-${rowKey(europe)}`)
+        ).getByRole('button', { name: 'Show on the canvas' })
+      )
+      expect(screen.getByTestId('SelectedRegionId')).toHaveTextContent(
+        'europeRegionId'
+      )
+    })
+
+    it('marks the lines of the selected block and scrolls to the first', async () => {
+      renderView(
+        [listMock(FRENCH)],
+        campaign,
+        {},
+        {
+          selectedBlockId: 'heroId'
+        }
+      )
+      await screen.findByTestId('TranslationGroup-landing')
+
+      expect(
+        screen.getByTestId(`TranslationRow-${rowKey(heroEyebrow)}`)
+      ).toHaveAttribute('data-selected', 'true')
+      expect(
+        screen.getByTestId(`TranslationRow-${rowKey(heroTitle)}`)
+      ).toHaveAttribute('data-selected', 'true')
+      expect(
+        screen.getByTestId(`TranslationRow-${rowKey(copyLink)}`)
+      ).not.toHaveAttribute('data-selected')
+      await waitFor(() =>
+        expect(Element.prototype.scrollIntoView).toHaveBeenCalled()
+      )
+    })
+
+    it('widens the filter to All when it hid the lines of what was just selected', async () => {
+      renderView([listMock(FRENCH)])
+      await screen.findByTestId('TranslationGroup-region')
+      fireEvent.click(screen.getByRole('button', { name: 'Missing' }))
+      expect(
+        screen.queryByTestId(`TranslationRow-${rowKey(regionIntro)}`)
+      ).toBeNull()
+
+      fireEvent.click(
+        screen.getByRole('button', { name: 'select regionHeaderId' })
+      )
+
+      expect(
+        await screen.findByTestId(`TranslationRow-${rowKey(regionIntro)}`)
+      ).toHaveAttribute('data-selected', 'true')
+      expect(screen.getByRole('button', { name: 'All' })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    })
+  })
+
+  it('reads the list again once default-language text changes, so new text lands in its place', async () => {
+    const newExtra = row({
+      group: CampaignTranslationGroup.landing,
+      field: CampaignTextField.content,
+      maxLength: 500,
+      defaultValue: 'A new line of text',
+      target: {
+        ...heroTitle.target,
+        typename: 'CampaignTypographyBlock',
+        blockId: 'newTextId'
+      }
+    })
+    const mocks = [listMock(FRENCH), listMock(FRENCH, [...rows, newExtra])]
+    const { rerender } = renderView(mocks)
+    await screen.findByTestId('TranslationGroup-landing')
+    expect(
+      screen.queryByTestId(`TranslationRow-${rowKey(newExtra)}`)
+    ).toBeNull()
+
+    const changed = {
+      ...campaign,
+      blocks: campaign.blocks.map((block) =>
+        block.id === 'heroId' ? { ...block, title: 'A new hero title' } : block
+      )
+    }
+    rerender(
+      <StaticEditor mocks={mocks} campaignProp={changed}>
+        <SelectionProbe />
+        <SelectBlockButton id="regionHeaderId" />
+        <TranslationsView campaign={changed} initialLanguageId={FRENCH} />
+      </StaticEditor>
+    )
+
+    expect(
+      await screen.findByTestId(
+        `TranslationRow-${rowKey(newExtra)}`,
+        {},
+        {
+          timeout: 4000
+        }
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('does not read the list again for a translation edit, which the row writes itself', async () => {
+    const mocks = [listMock(FRENCH)]
+    const { rerender } = renderView(mocks)
+    await screen.findByTestId('TranslationGroup-landing')
+
+    const translated = {
+      ...campaign,
+      blocks: campaign.blocks.map((block) =>
+        block.id === 'heroId'
+          ? {
+              ...block,
+              titleTranslations: [
+                {
+                  __typename: 'TranslatedValue' as const,
+                  languageId: FRENCH,
+                  value: 'Un titre écrit',
+                  source: CampaignTextSource.human
+                }
+              ]
+            }
+          : block
+      )
+    }
+    rerender(
+      <StaticEditor mocks={mocks} campaignProp={translated}>
+        <SelectionProbe />
+        <SelectBlockButton id="regionHeaderId" />
+        <TranslationsView campaign={translated} initialLanguageId={FRENCH} />
+      </StaticEditor>
+    )
+    await act(() => new Promise((resolve) => setTimeout(resolve, 2000)))
+
+    // A second read would have no mock and would surface as an error.
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(
+      screen.getByTestId(`TranslationRow-${rowKey(heroTitle)}`)
+    ).toBeInTheDocument()
+  })
+
   it('shows the one-time notice that promoted machine values lost their flag, and closes it', async () => {
     const onPromotionNoticeClose = vi.fn()
     renderView([listMock(FRENCH)], campaign, {
@@ -231,9 +420,9 @@ describe('TranslationsView', () => {
         /^TranslationRow-/
       )
     ).toHaveLength(2)
-    expect(screen.getByText('Share the story of Christmas')).toBeInTheDocument()
+    expect(screen.getByText('Share the story of Outreach')).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: 'Hero · Title' })).toHaveValue(
-      "Partagez l'histoire de Noël"
+      "Partagez l'histoire de Campagne"
     )
     expect(
       screen.getByRole('textbox', { name: 'Interface phrase · Wording' })
@@ -245,7 +434,7 @@ describe('TranslationsView', () => {
 
   it.each([
     ['All', 5],
-    ['Needs review', 2],
+    ['Needs review', 1],
     ['Machine-translated', 2],
     ['Missing', 2],
     ['Edited', 1]
@@ -273,38 +462,38 @@ describe('TranslationsView', () => {
   })
 
   it('writes a human translation on leaving the field and flips the line to Edited live', async () => {
-    const write = setMock(heroTitle, FRENCH, 'Partagez Noël', [
-      { languageId: FRENCH, value: 'Partagez Noël' }
+    const write = setMock(heroTitle, FRENCH, 'Partagez Campagne', [
+      { languageId: FRENCH, value: 'Partagez Campagne' }
     ])
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
     fireEvent.click(screen.getByRole('button', { name: 'Needs review' }))
-    expect(visibleRows()).toHaveLength(2)
+    expect(visibleRows()).toHaveLength(1)
 
     const field = screen.getByRole('textbox', { name: 'Hero · Title' })
-    fireEvent.change(field, { target: { value: '  Partagez Noël ' } })
+    fireEvent.change(field, { target: { value: '  Partagez Campagne ' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(write.result).toHaveBeenCalled())
-    await waitFor(() => expect(visibleRows()).toHaveLength(1))
+    await waitFor(() => expect(visibleRows()).toHaveLength(0))
     fireEvent.click(screen.getByRole('button', { name: 'Edited' }))
     const edited = screen.getByTestId(
       'TranslationRow-CampaignHeroBlock:heroId:title'
     )
     expect(within(edited).getByText('Edited')).toBeInTheDocument()
-    expect(within(edited).getByRole('textbox')).toHaveValue('Partagez Noël')
+    expect(within(edited).getByRole('textbox')).toHaveValue('Partagez Campagne')
   })
 
   it('moves a missing line to Edited once it is written', async () => {
-    const write = setMock(heroEyebrow, FRENCH, 'Noël 2026', [
-      { languageId: FRENCH, value: 'Noël 2026' }
+    const write = setMock(heroEyebrow, FRENCH, 'Campagne 2026', [
+      { languageId: FRENCH, value: 'Campagne 2026' }
     ])
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
     fireEvent.click(screen.getByRole('button', { name: 'Missing' }))
 
     const field = screen.getByRole('textbox', { name: 'Hero · Eyebrow' })
-    fireEvent.change(field, { target: { value: 'Noël 2026' } })
+    fireEvent.change(field, { target: { value: 'Campagne 2026' } })
     fireEvent.blur(field)
 
     await waitFor(() => expect(write.result).toHaveBeenCalled())
@@ -327,7 +516,12 @@ describe('TranslationsView', () => {
   })
 
   it('does not write when the text is unchanged', async () => {
-    const write = setMock(heroTitle, FRENCH, "Partagez l'histoire de Noël", [])
+    const write = setMock(
+      heroTitle,
+      FRENCH,
+      "Partagez l'histoire de Campagne",
+      []
+    )
     renderView([listMock(FRENCH), write])
     await screen.findByTestId('TranslationGroup-landing')
 
@@ -353,7 +547,7 @@ describe('TranslationsView', () => {
     expect(
       await screen.findByText('title must be at most 150 characters')
     ).toBeInTheDocument()
-    expect(field).toHaveValue("Partagez l'histoire de Noël")
+    expect(field).toHaveValue("Partagez l'histoire de Campagne")
   })
 
   it('reads another language when it is picked', async () => {
@@ -467,7 +661,7 @@ describe('TranslationsView', () => {
       const sweep = sweepMock(FRENCH)
       const translated = {
         ...heroEyebrow,
-        value: 'Noël 2026',
+        value: 'Campagne 2026',
         source: CampaignTextSource.machine
       }
       renderView([listMock(FRENCH), sweep, listMock(FRENCH, [translated])])
@@ -491,7 +685,7 @@ describe('TranslationsView', () => {
       await waitFor(() =>
         expect(
           screen.getByRole('textbox', { name: 'Hero · Eyebrow' })
-        ).toHaveValue('Noël 2026')
+        ).toHaveValue('Campagne 2026')
       )
       expect(
         screen.getByRole('button', { name: 'Machine-translate missing' })
@@ -500,8 +694,8 @@ describe('TranslationsView', () => {
 
     it('does not run again after an edit', async () => {
       const sweep = sweepMock(FRENCH)
-      const write = setMock(heroTitle, FRENCH, 'Partagez Noël', [
-        { languageId: FRENCH, value: 'Partagez Noël' }
+      const write = setMock(heroTitle, FRENCH, 'Partagez Campagne', [
+        { languageId: FRENCH, value: 'Partagez Campagne' }
       ])
       renderView([listMock(FRENCH), sweep, listMock(FRENCH), write])
       await screen.findByTestId('TranslationGroup-interface')
@@ -514,7 +708,7 @@ describe('TranslationsView', () => {
       )
 
       const field = await screen.findByRole('textbox', { name: 'Hero · Title' })
-      fireEvent.change(field, { target: { value: 'Partagez Noël' } })
+      fireEvent.change(field, { target: { value: 'Partagez Campagne' } })
       fireEvent.blur(field)
 
       await waitFor(() => expect(write.result).toHaveBeenCalled())

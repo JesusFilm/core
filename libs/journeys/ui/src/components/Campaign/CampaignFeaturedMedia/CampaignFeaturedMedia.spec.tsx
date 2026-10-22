@@ -31,7 +31,7 @@ const theme = createCampaignTheme(campaignPublic.theme, false)
 const NO_TEXT = {
   eyebrow: null,
   title: '',
-  lede: null,
+  description: null,
   bullets: ' \n '
 } as Partial<CampaignBlock>
 
@@ -102,7 +102,7 @@ const context = {
 }
 
 describe('CampaignFeaturedMedia', () => {
-  it('renders eyebrow, title, lede and its media inside its band', () => {
+  it('renders eyebrow, title, description and its media inside its band', () => {
     renderFeatured(featuredTree())
     const band = screen.getByTestId('CampaignSectionBand-featuredMediaId')
     expect(within(band).getByTestId('CampaignEyebrow')).toHaveTextContent(
@@ -111,7 +111,7 @@ describe('CampaignFeaturedMedia', () => {
     expect(
       within(band).getByRole('heading', { name: 'A story for every home' })
     ).toBeInTheDocument()
-    expect(within(band).getByTestId('CampaignLede')).toHaveTextContent(
+    expect(within(band).getByTestId('CampaignDescription')).toHaveTextContent(
       'Short films in the languages your neighbours speak.'
     )
     expect(
@@ -171,7 +171,7 @@ describe('CampaignFeaturedMedia', () => {
   describe('stacked layout', () => {
     const stacked = { layout: CampaignFeaturedMediaLayout.stacked }
 
-    it('renders the title and lede, then the media, in one column at every width', () => {
+    it('renders the title and description, then the media, in one column at every width', () => {
       renderFeatured(featuredTree(stacked))
       const split = screen.getByTestId('CampaignMediaSplit')
       expect(split).toHaveAttribute('data-stacked', 'true')
@@ -182,7 +182,7 @@ describe('CampaignFeaturedMedia', () => {
         screen.getByRole('heading', { name: 'A story for every home' })
       )
       expect(split.firstElementChild).toContainElement(
-        screen.getByTestId('CampaignLede')
+        screen.getByTestId('CampaignDescription')
       )
       expect(split.lastElementChild).toHaveAttribute(
         'data-testid',
@@ -207,9 +207,11 @@ describe('CampaignFeaturedMedia', () => {
       )
     })
 
-    it('omits the lede when it is empty', () => {
-      renderFeatured(featuredTree({ ...stacked, lede: null }))
-      expect(screen.queryByTestId('CampaignLede')).not.toBeInTheDocument()
+    it('omits the description when it is empty', () => {
+      renderFeatured(featuredTree({ ...stacked, description: null }))
+      expect(
+        screen.queryByTestId('CampaignDescription')
+      ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignMediaSlot')).toBeInTheDocument()
     })
   })

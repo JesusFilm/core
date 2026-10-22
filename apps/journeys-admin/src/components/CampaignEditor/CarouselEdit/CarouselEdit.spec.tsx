@@ -48,8 +48,8 @@ vi.mock(
 )
 
 const WATCH_URL =
-  'https://www.jesusfilm.org/watch/christmas.html/the-nativity/english.html'
-const WATCH_SLUG = 'the-nativity/english'
+  'https://www.jesusfilm.org/watch/outreach.html/the-story/english.html'
+const WATCH_SLUG = 'the-story/english'
 const YOUTUBE_URL = 'https://youtu.be/jQaeIJOA6J0'
 const PLAYLIST_URL =
   'https://www.youtube.com/playlist?list=PLx0sYbCqOb8TBPRdmBHs5Iftvv9TPboYG'
@@ -66,12 +66,12 @@ const expandedCarousel: CarouselBlock = {
     __typename: 'Video',
     id: 'collectionId',
     label: VideoLabel.collection,
-    slug: 'christmas',
+    slug: 'outreach',
     childrenCount: 8,
     title: [
       {
         __typename: 'VideoTitle',
-        value: 'Christmas films',
+        value: 'Outreach films',
         primary: true,
         language: { __typename: 'Language', id: '529' }
       }
@@ -91,7 +91,8 @@ const watchMock = {
         id: 'collectionId',
         label: VideoLabel.collection,
         childrenCount: 8,
-        title: [{ __typename: 'VideoTitle', value: 'Christmas films' }],
+        title: [{ __typename: 'VideoTitle', value: 'Outreach films' }],
+        description: [],
         images: [],
         variant: null
       }
@@ -102,7 +103,10 @@ const watchMock = {
 const setWatchMock = {
   request: {
     query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO,
-    variables: { id: 'carouselId', input: { url: WATCH_URL } }
+    variables: {
+      id: 'carouselId',
+      input: { url: WATCH_URL, eyebrow: 'Collection', title: 'Outreach films' }
+    }
   },
   result: vi.fn(() => ({
     data: { campaignVideoCarouselBlockUpdate: expandedCarousel }
@@ -129,6 +133,113 @@ function item(
     parentOrder: 0,
     ...overrides
   } as GetCampaign_campaign_blocks
+}
+
+const WATCH_EPISODE_URL =
+  'https://www.jesusfilm.org/watch/outreach.html/the-episode.html'
+
+const watchEpisodeMock = {
+  request: {
+    query: GET_CAMPAIGN_WATCH_VIDEO,
+    variables: { id: 'outreach/the-episode' }
+  },
+  error: new Error('Video not found with id slug:outreach/the-episode')
+}
+
+const watchEpisodeFallbackMock = {
+  request: {
+    query: GET_CAMPAIGN_WATCH_VIDEO,
+    variables: { id: 'the-episode/english' }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: 'episodeId',
+        label: VideoLabel.episode,
+        childrenCount: 0,
+        title: [{ __typename: 'VideoTitle', value: 'The episode' }],
+        description: [],
+        images: [],
+        variant: { __typename: 'VideoVariant', id: 'variantId', duration: 363 }
+      }
+    }
+  }
+}
+
+const watchItemMock = {
+  request: {
+    query: CAMPAIGN_VIDEO_BLOCK_CREATE,
+    variables: {
+      input: {
+        id: 'newItemId',
+        campaignId: 'campaignId',
+        parentBlockId: 'carouselId',
+        source: VideoBlockSource.internal,
+        url: WATCH_EPISODE_URL
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignVideoBlockCreate: item({
+        source: VideoBlockSource.internal,
+        videoId: 'episodeId'
+      })
+    }
+  }))
+}
+
+const WATCH_SERIES_URL = 'https://www.jesusfilm.org/watch/outreach-films.html'
+
+const watchSeriesMock = {
+  request: {
+    query: GET_CAMPAIGN_WATCH_VIDEO,
+    variables: { id: 'outreach-films/english' }
+  },
+  result: {
+    data: {
+      video: {
+        __typename: 'Video',
+        id: 'seriesId',
+        label: VideoLabel.series,
+        childrenCount: 4,
+        title: [{ __typename: 'VideoTitle', value: 'Outreach films' }],
+        description: [
+          {
+            __typename: 'VideoDescription',
+            value: 'Four short films about outreach.'
+          }
+        ],
+        images: [],
+        variant: null
+      }
+    }
+  }
+}
+
+const setWatchWithTextMock = {
+  request: {
+    query: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_UPDATE_VIDEO,
+    variables: {
+      id: 'carouselId',
+      input: {
+        url: WATCH_SERIES_URL,
+        eyebrow: 'Series',
+        title: 'Outreach films',
+        description: 'Four short films about outreach.'
+      }
+    }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignVideoCarouselBlockUpdate: {
+        ...expandedCarousel,
+        title: 'Outreach films',
+        description: 'Four short films about outreach.'
+      }
+    }
+  }))
 }
 
 const youTubeItemMock = {
@@ -217,6 +328,11 @@ function renderEdit(block: CarouselBlock = carousel): void {
         }}
         mocks={[
           watchMock,
+          watchSeriesMock,
+          setWatchWithTextMock,
+          watchEpisodeMock,
+          watchEpisodeFallbackMock,
+          watchItemMock,
           setWatchMock,
           clearWatchMock,
           youTubeItemMock,
@@ -262,13 +378,49 @@ describe('CarouselEdit', () => {
     const resolved = await screen.findByTestId(
       'CampaignCarouselPasteFieldResolved'
     )
-    expect(resolved).toHaveTextContent('Christmas films')
+    expect(resolved).toHaveTextContent('Outreach films')
     expect(resolved).toHaveTextContent('Collection · 8 videos')
     expect(setWatchMock.result).not.toHaveBeenCalled()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Use collection' }))
 
     await waitFor(() => expect(setWatchMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('writes the expanded series’ label, title and description over the carousel’s text', async () => {
+    renderEdit({
+      ...carousel,
+      title: 'Films for the season',
+      description: 'Old'
+    })
+
+    paste(WATCH_SERIES_URL)
+    const resolved = await screen.findByTestId(
+      'CampaignCarouselPasteFieldResolved'
+    )
+    expect(resolved).toHaveTextContent('Series · 4 videos')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use series' }))
+
+    await waitFor(() => expect(setWatchWithTextMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+  })
+
+  it('adds a pasted Watch video without children as one explicit item', async () => {
+    renderEdit()
+
+    paste(WATCH_EPISODE_URL)
+    const resolved = await screen.findByTestId(
+      'CampaignCarouselPasteFieldResolved'
+    )
+    expect(resolved).toHaveTextContent('The episode')
+    expect(resolved).toHaveTextContent('Episode · 6:03')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Use video' }))
+
+    await waitFor(() => expect(watchItemMock.result).toHaveBeenCalled())
+    expect(setWatchMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
   })
 
@@ -336,7 +488,7 @@ describe('CarouselEdit', () => {
     renderEdit(expandedCarousel)
 
     expect(screen.getByTestId('CampaignCarouselEditWatch')).toHaveTextContent(
-      'Showing the videos of Christmas films from Watch'
+      'Showing the videos of Outreach films from Watch'
     )
     expect(screen.getByTestId('CampaignCarouselEditWatch')).toHaveTextContent(
       '8 videos'

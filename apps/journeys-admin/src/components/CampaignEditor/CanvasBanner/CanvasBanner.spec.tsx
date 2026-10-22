@@ -11,14 +11,13 @@ import { CanvasBanner } from './CanvasBanner'
 
 function renderBanner(
   campaignProp = campaign,
-  initialState = {},
-  inset?: number
+  initialState = {}
 ): ReturnType<typeof render> {
   return render(
     <MockedProvider>
       <SnackbarProvider>
         <StaticEditor campaignProp={campaignProp} initialState={initialState}>
-          <CanvasBanner inset={inset} />
+          <CanvasBanner />
         </StaticEditor>
       </SnackbarProvider>
     </MockedProvider>
@@ -36,14 +35,6 @@ describe('CanvasBanner', () => {
     expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
       position: 'absolute',
       top: '16px'
-    })
-  })
-
-  it('starts after an open left panel', () => {
-    renderBanner(campaign, {}, 300)
-
-    expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
-      left: '300px'
     })
   })
 

@@ -92,8 +92,6 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   eyebrowTranslations: null,
   title: null,
   titleTranslations: null,
-  lede: null,
-  ledeTranslations: null,
   bullets: null,
   bulletsTranslations: null,
   content: null,
@@ -129,6 +127,10 @@ const EMPTY_BLOCK: Omit<CampaignBlock, 'id' | 'typename' | 'campaignId'> = {
   src: null,
   width: null,
   height: null,
+  minHeight: null,
+  focalLeft: 50,
+  focalTop: 50,
+  scale: null,
   journeyId: null,
   snapshotEdited: false
 }
@@ -175,9 +177,10 @@ export function seededBlocks(
       typename: 'CampaignHeroBlock',
       pageId: 'landingPageId',
       parentOrder: 0,
-      eyebrow: 'Christmas 2026',
-      title: 'Share the story of Christmas',
-      lede: 'Pick your region to find a journey in your language, ready to share.',
+      eyebrow: 'Your campaign',
+      title: 'Share the story',
+      description:
+        'Pick your region to find a journey in your language, ready to share.',
       align: 'center',
       backgroundKind: 'none'
     }),
@@ -196,7 +199,7 @@ export function seededBlocks(
       pageId: 'landingPageId',
       parentOrder: 2,
       eyebrow: 'Watch',
-      title: 'Films for the season',
+      title: 'Films to watch',
       backgroundKind: 'surface'
     }),
     block(campaignId, {
@@ -206,7 +209,8 @@ export function seededBlocks(
       parentOrder: 3,
       eyebrow: 'Journeys',
       title: 'Ready-made journeys',
-      lede: 'Interactive stories your friends can walk through on their phone.',
+      description:
+        'Interactive stories your friends can walk through on their phone.',
       display: 'grid',
       backgroundKind: 'none'
     }),
@@ -238,8 +242,7 @@ export function seededBlocks(
       typename: 'CampaignRegionHeaderBlock',
       pageId: 'regionPageId',
       parentOrder: 0,
-      intro:
-        'A Christmas journey chosen and contextualised by your regional team.',
+      intro: 'A journey chosen and contextualised by your regional team.',
       backgroundKind: 'none'
     }),
     block(campaignId, {
@@ -284,7 +287,18 @@ export function seededBlocks(
       id: 'headerId',
       typename: 'CampaignHeaderBlock',
       parentOrder: 0,
-      backgroundKind: 'none'
+      backgroundKind: 'none',
+      logoBlockId: 'headerLogoId'
+    }),
+    block(campaignId, {
+      id: 'headerLogoId',
+      typename: 'CampaignImageBlock',
+      parentBlockId: 'headerId',
+      parentOrder: null,
+      src: 'https://admin.nextstep.is/logo.svg',
+      alt: 'NextSteps',
+      width: 221,
+      height: 41
     }),
     block(
       campaignId,
@@ -556,9 +570,9 @@ export function campaignFactory(
   const fixture: CampaignFixture = {
     id,
     teamId,
-    title: options.title ?? 'Christmas 2026',
+    title: options.title ?? 'Outreach 2026',
     titleTranslations: {},
-    slug: options.slug ?? 'christmas-2026',
+    slug: options.slug ?? 'outreach-2026',
     status: 'draft',
     defaultLanguageId,
     palette: LIGHT_PALETTE,

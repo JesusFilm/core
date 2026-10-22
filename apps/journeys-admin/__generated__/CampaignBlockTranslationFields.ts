@@ -33,7 +33,7 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslati
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslations {
+export interface CampaignBlockTranslationFields_CampaignHeroBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -47,7 +47,7 @@ export interface CampaignBlockTranslationFields_CampaignHeroBlock {
   __typename: "CampaignHeroBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_titleTranslations[];
-  ledeTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignHeroBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockTranslationFields_CampaignRegionSwitcherBlock_titleTranslations {
@@ -85,10 +85,21 @@ export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_title
   source: CampaignTextSource;
 }
 
+export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignBlockTranslationFields_CampaignVideoCarouselBlock {
   __typename: "CampaignVideoCarouselBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_titleTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignVideoCarouselBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_eyebrowTranslations {
@@ -111,7 +122,7 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTr
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTranslations {
+export interface CampaignBlockTranslationFields_CampaignJourneyListBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -125,7 +136,7 @@ export interface CampaignBlockTranslationFields_CampaignJourneyListBlock {
   __typename: "CampaignJourneyListBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_titleTranslations[];
-  ledeTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignJourneyListBlock_descriptionTranslations[];
 }
 
 export interface CampaignBlockTranslationFields_CampaignAnalyticsBlock_eyebrowTranslations {
@@ -305,7 +316,7 @@ export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_title
   source: CampaignTextSource;
 }
 
-export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_ledeTranslations {
+export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -329,7 +340,7 @@ export interface CampaignBlockTranslationFields_CampaignFeaturedMediaBlock {
   __typename: "CampaignFeaturedMediaBlock";
   eyebrowTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_eyebrowTranslations[];
   titleTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_titleTranslations[];
-  ledeTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_ledeTranslations[];
+  descriptionTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_descriptionTranslations[];
   bulletsTranslations: CampaignBlockTranslationFields_CampaignFeaturedMediaBlock_bulletsTranslations[];
 }
 

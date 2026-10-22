@@ -10,7 +10,11 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
-import { campaignImageSource, resolveBand } from '@core/journeys/ui/Campaign'
+import {
+  campaignImageSource,
+  focalImageSx,
+  resolveBand
+} from '@core/journeys/ui/Campaign'
 
 import {
   CampaignBackgroundKind,
@@ -26,6 +30,7 @@ import {
 } from '../../../libs/useCampaignSectionStyleMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
+import { FocalPointControl } from '../FocalPointControl'
 import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
@@ -227,18 +232,24 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
             <Stack spacing={3} data-testid="StyleBackgroundImage">
               {cover != null && !choosingCover && (
                 <>
-                  <Box
-                    component="img"
-                    src={cover.src}
-                    alt={cover.alt ?? ''}
-                    data-testid="StyleBackgroundCover"
-                    sx={{
-                      width: '100%',
-                      maxHeight: 140,
-                      objectFit: 'cover',
-                      borderRadius: 1
-                    }}
-                  />
+                  <Box sx={{ overflow: 'hidden', borderRadius: 1 }}>
+                    <Box
+                      component="img"
+                      src={cover.src}
+                      alt={cover.alt ?? ''}
+                      data-testid="StyleBackgroundCover"
+                      sx={{
+                        display: 'block',
+                        width: '100%',
+                        maxHeight: 140,
+                        objectFit: 'cover',
+                        ...focalImageSx(cover)
+                      }}
+                    />
+                  </Box>
+                  {coverBlock?.__typename === 'CampaignImageBlock' && (
+                    <FocalPointControl image={coverBlock} />
+                  )}
                   <ToggleButtonGroup
                     exclusive
                     fullWidth

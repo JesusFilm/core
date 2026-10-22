@@ -29,7 +29,7 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
   source: CampaignTextSource;
 }
 
-export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_ledeTranslations {
+export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -86,7 +86,7 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * One bullet per line; the viewer splits on line breaks.
    */
@@ -96,7 +96,7 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
    */
   mediaSide: CampaignMediaSide;
   /**
-   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+   * `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
    */
   layout: CampaignFeaturedMediaLayout;
   /**
@@ -105,7 +105,7 @@ export interface CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCrea
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_titleTranslations[];
-  ledeTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_descriptionTranslations[];
   bulletsTranslations: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate_bulletsTranslations[];
 }
 
@@ -122,7 +122,7 @@ export interface CampaignFeaturedMediaBlockCreate {
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
-   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
    * - BAD_USER_INPUT (field: `mediaSide`): not left or right.
    */
   campaignFeaturedMediaBlockCreate: CampaignFeaturedMediaBlockCreate_campaignFeaturedMediaBlockCreate;

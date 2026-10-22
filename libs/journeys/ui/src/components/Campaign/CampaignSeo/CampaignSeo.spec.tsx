@@ -27,9 +27,9 @@ vi.mock('next-seo', () => ({
 
 const ROOT = {
   origin: 'https://your.nextstep.is',
-  basePath: '/campaign/christmas-2026'
+  basePath: '/campaign/outreach-2026'
 }
-const CAMPAIGN_ROOT = { origin: 'https://christmas.example.org', basePath: '' }
+const CAMPAIGN_ROOT = { origin: 'https://outreach.example.org', basePath: '' }
 
 const landingPoster = {
   __typename: 'CampaignVideoBlock',
@@ -47,7 +47,7 @@ const regionHero = {
   id: 'regionHeroId',
   pageId: REGION_PAGE_ID,
   parentOrder: -1,
-  lede: 'Region lede',
+  description: 'Region description',
   mediaBlockId: 'regionMediaId'
 } as CampaignBlock
 
@@ -74,7 +74,7 @@ const logoBlock = {
   parentBlockId: 'headerId',
   parentOrder: null,
   src: 'https://images.example.org/logo.png',
-  alt: 'Christmas logo',
+  alt: 'Outreach logo',
   width: 320,
   height: 80
 } as unknown as CampaignBlock
@@ -118,19 +118,19 @@ function landingHero(overrides: Partial<CampaignBlock>): CampaignBlock[] {
 
 describe('campaignSeoProps', () => {
   describe('title, description and canonical', () => {
-    it('uses the translated campaign title and the hero lede on the landing page', () => {
+    it('uses the translated campaign title and the hero description on the landing page', () => {
       const props = campaignSeoProps(
         campaignPublic,
         CampaignPageKind.landing,
         null,
         ROOT
       )
-      expect(props.title).toBe('Christmas 2026')
+      expect(props.title).toBe('Outreach 2026')
       expect(props.description).toBe(
         'Pick your region to find a journey in your language, ready to share.'
       )
       expect(props.canonical).toBe(
-        'https://your.nextstep.is/campaign/christmas-2026'
+        'https://your.nextstep.is/campaign/outreach-2026'
       )
       expect(props.noindex).toBeUndefined()
       expect(props.nofollow).toBeUndefined()
@@ -143,25 +143,25 @@ describe('campaignSeoProps', () => {
         eurRegion,
         ROOT
       )
-      expect(props.title).toBe('Europe · Christmas 2026')
+      expect(props.title).toBe('Europe · Outreach 2026')
       expect(props.canonical).toBe(
-        'https://your.nextstep.is/campaign/christmas-2026/eur'
+        'https://your.nextstep.is/campaign/outreach-2026/eur'
       )
       expect(props.noindex).toBeUndefined()
     })
 
-    it("describes with the page's hero lede, else its title, else nothing", () => {
+    it("describes with the page's hero description, else its title, else nothing", () => {
       expect(
         campaignSeoProps(
-          withPages(landingHero({ lede: '' })),
+          withPages(landingHero({ description: '' })),
           CampaignPageKind.landing,
           null,
           ROOT
         ).description
-      ).toBe('Share the story of Christmas')
+      ).toBe('Share the story of Outreach')
       expect(
         campaignSeoProps(
-          withPages(landingHero({ lede: null, title: null })),
+          withPages(landingHero({ description: null, title: null })),
           CampaignPageKind.landing,
           null,
           ROOT
@@ -185,7 +185,7 @@ describe('campaignSeoProps', () => {
           null,
           CAMPAIGN_ROOT
         ).canonical
-      ).toBe('https://christmas.example.org/')
+      ).toBe('https://outreach.example.org/')
       expect(
         campaignSeoProps(
           campaignPublic,
@@ -193,7 +193,7 @@ describe('campaignSeoProps', () => {
           eurRegion,
           CAMPAIGN_ROOT
         ).canonical
-      ).toBe('https://christmas.example.org/eur')
+      ).toBe('https://outreach.example.org/eur')
     })
   })
 
@@ -211,15 +211,15 @@ describe('campaignSeoProps', () => {
       ).toEqual([
         {
           hrefLang: 'en',
-          href: 'https://your.nextstep.is/campaign/christmas-2026'
+          href: 'https://your.nextstep.is/campaign/outreach-2026'
         },
         {
           hrefLang: 'fr',
-          href: 'https://your.nextstep.is/campaign/christmas-2026?lang=fr'
+          href: 'https://your.nextstep.is/campaign/outreach-2026?lang=fr'
         },
         {
           hrefLang: 'x-default',
-          href: 'https://your.nextstep.is/campaign/christmas-2026'
+          href: 'https://your.nextstep.is/campaign/outreach-2026'
         }
       ])
     })
@@ -233,9 +233,9 @@ describe('campaignSeoProps', () => {
           CAMPAIGN_ROOT
         ).languageAlternates
       ).toEqual([
-        { hrefLang: 'en', href: 'https://christmas.example.org/eur' },
-        { hrefLang: 'fr', href: 'https://christmas.example.org/eur?lang=fr' },
-        { hrefLang: 'x-default', href: 'https://christmas.example.org/eur' }
+        { hrefLang: 'en', href: 'https://outreach.example.org/eur' },
+        { hrefLang: 'fr', href: 'https://outreach.example.org/eur?lang=fr' },
+        { hrefLang: 'x-default', href: 'https://outreach.example.org/eur' }
       ])
     })
 
@@ -277,11 +277,11 @@ describe('campaignSeoProps', () => {
       ).toEqual([
         {
           hrefLang: 'en',
-          href: 'https://your.nextstep.is/campaign/christmas-2026'
+          href: 'https://your.nextstep.is/campaign/outreach-2026'
         },
         {
           hrefLang: 'x-default',
-          href: 'https://your.nextstep.is/campaign/christmas-2026'
+          href: 'https://your.nextstep.is/campaign/outreach-2026'
         }
       ])
     })
@@ -294,7 +294,7 @@ describe('campaignSeoProps', () => {
         ROOT
       )
       expect(props.canonical).toBe(
-        'https://your.nextstep.is/campaign/christmas-2026?lang=fr'
+        'https://your.nextstep.is/campaign/outreach-2026?lang=fr'
       )
       expect(props.openGraph?.url).toBe(props.canonical)
       expect(props.languageAlternates).toContainEqual({
@@ -307,7 +307,7 @@ describe('campaignSeoProps', () => {
       expect(
         campaignSeoProps(campaignPublic, CampaignPageKind.landing, null, ROOT)
           .canonical
-      ).toBe('https://your.nextstep.is/campaign/christmas-2026')
+      ).toBe('https://your.nextstep.is/campaign/outreach-2026')
     })
   })
 
@@ -321,11 +321,11 @@ describe('campaignSeoProps', () => {
       )
       expect(props.openGraph).toEqual({
         type: 'website',
-        title: 'Christmas 2026',
+        title: 'Outreach 2026',
         description:
           'Pick your region to find a journey in your language, ready to share.',
-        url: 'https://your.nextstep.is/campaign/christmas-2026',
-        site_name: 'Christmas 2026',
+        url: 'https://your.nextstep.is/campaign/outreach-2026',
+        site_name: 'Outreach 2026',
         images: []
       })
       expect(props.twitter).toEqual({
@@ -350,7 +350,7 @@ describe('campaignSeoProps', () => {
           url: 'https://images.example.org/landing-poster.jpg',
           width: undefined,
           height: undefined,
-          alt: 'Christmas 2026'
+          alt: 'Outreach 2026'
         }
       ])
     })
@@ -368,10 +368,10 @@ describe('campaignSeoProps', () => {
       )
       expect(props.openGraph?.images).toEqual([
         {
-          url: 'https://imagedelivery.net/accountHash/nativityVideoId/mobileCinematicHigh',
+          url: 'https://imagedelivery.net/accountHash/storyVideoId/mobileCinematicHigh',
           width: undefined,
           height: undefined,
-          alt: 'Christmas 2026'
+          alt: 'Outreach 2026'
         }
       ])
     })
@@ -395,7 +395,7 @@ describe('campaignSeoProps', () => {
           alt: 'Region image'
         }
       ])
-      expect(props.description).toBe('Region lede')
+      expect(props.description).toBe('Region description')
     })
 
     it('inherits the landing hero image on a region page whose hero has none', () => {
@@ -423,7 +423,7 @@ describe('campaignSeoProps', () => {
           url: 'https://images.example.org/logo.png',
           width: 320,
           height: 80,
-          alt: 'Christmas logo'
+          alt: 'Outreach logo'
         }
       ])
       expect(
@@ -461,7 +461,7 @@ describe('CampaignSeo', () => {
         ROOT
       )
     )
-    expect(seoCalls[0].title).toBe('Europe · Christmas 2026')
+    expect(seoCalls[0].title).toBe('Europe · Outreach 2026')
   })
 
   it('canonicalises to the domain-root form when a Campaign Root is attached', () => {
@@ -469,14 +469,14 @@ describe('CampaignSeo', () => {
       <CampaignSeo
         campaign={{
           ...campaignPublic,
-          customDomainNames: ['christmas.example.org', 'other.example.org']
+          customDomainNames: ['outreach.example.org', 'other.example.org']
         }}
         pageKind={CampaignPageKind.regionTemplate}
         region={eurRegion}
         rootDomain="your.nextstep.is"
       />
     )
-    expect(seoCalls[0].canonical).toBe('https://christmas.example.org/eur')
+    expect(seoCalls[0].canonical).toBe('https://outreach.example.org/eur')
   })
 })
 
@@ -494,7 +494,7 @@ describe('campaignPreferredLocation', () => {
       campaignPreferredLocation({
         campaign: {
           ...campaignPublic,
-          customDomainNames: ['christmas.example.org', 'other.example.org']
+          customDomainNames: ['outreach.example.org', 'other.example.org']
         },
         rootDomain
       })

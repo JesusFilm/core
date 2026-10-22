@@ -29,6 +29,12 @@ export const CampaignVideoCarouselBlock = builder.prismaObject(
         nullable: false,
         resolve: (block) => toTranslatedValues(block.titleTranslations)
       }),
+      description: t.exposeString('description', { nullable: true }),
+      descriptionTranslations: t.field({
+        type: [TranslatedValueRef],
+        nullable: false,
+        resolve: (block) => toTranslatedValues(block.descriptionTranslations)
+      }),
       videoId: t.exposeID('videoId', {
         nullable: true,
         description: 'The Watch Video to expand; null for explicit children.'
@@ -36,7 +42,7 @@ export const CampaignVideoCarouselBlock = builder.prismaObject(
       videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
         nullable: true,
         description:
-          'The campaign language when the Watch Video was linked; the language the expansion resolves in.'
+          'The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.'
       }),
       video: t.field({
         type: Video,

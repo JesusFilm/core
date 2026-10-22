@@ -38,6 +38,25 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -47,6 +66,7 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselBlockPlaylistImport_mediaVideo_Video {
@@ -126,7 +146,7 @@ export interface CampaignVideoCarouselBlockPlaylistImport_campaignVideoCarouselB
    */
   videoId: string | null;
   /**
-   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   * For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
    */
   videoVariantLanguageId: string | null;
   /**

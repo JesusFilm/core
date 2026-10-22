@@ -96,9 +96,9 @@ describe('campaignPublish', () => {
     })
 
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/home/campaign/christmas-2026/afr'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/afr'
     ])
   })
 
@@ -106,7 +106,7 @@ describe('campaignPublish', () => {
     const draft = campaignFactory({ role: 'manager' }).withRegion('EUR').build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...draft,
-      customDomains: [{ name: 'christmas.example.org' }]
+      customDomains: [{ name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue({
@@ -120,10 +120,10 @@ describe('campaignPublish', () => {
     })
 
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/christmas.example.org',
-      '/christmas.example.org/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur'
     ])
   })
 
@@ -163,27 +163,22 @@ describe('campaignPublish', () => {
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
-  it('throws FORBIDDEN for a member', async () => {
+  it('publishes for a member too: publishing is editing', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(
       campaignFactory({ role: 'member' }).build()
     )
+    prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(
+      campaignFactory({ role: 'member' }).published().build()
+    )
 
-    const result = await authClient({
+    const result = (await authClient({
       document: CAMPAIGN_PUBLISH,
       variables: { id: 'campaignId' }
-    })
+    })) as any
 
-    expect(result).toEqual({
-      data: null,
-      errors: [
-        expect.objectContaining({
-          message: 'user is not allowed to publish campaign',
-          extensions: expect.objectContaining({ code: 'FORBIDDEN' })
-        })
-      ]
-    })
-    expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
-    expect(mockQueueAdd).not.toHaveBeenCalled()
+    expect(result.errors).toBeUndefined()
+    expect(result.data.campaignPublish.status).toBe('published')
   })
 
   it('throws NOT_FOUND for an unknown id', async () => {

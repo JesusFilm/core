@@ -2,43 +2,60 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { CampaignSectionBand } from '../CampaignSectionBand'
-import { campaignImageSource } from '../libs/campaignImageSource'
-import type { CampaignImageSource } from '../libs/campaignImageSource'
+import {
+  CampaignImageSource,
+  campaignImageSource,
+  focalImageSx
+} from '../libs/campaignImageSource'
 import type { CampaignTreeOf } from '../types'
+
+/** The frames a campaign picture is cropped to: a wide banner for an Image section or a stacked slot, 4:3 beside text. */
+export type CampaignPictureRatio = 'wide' | 'standard'
+
+export const CAMPAIGN_PICTURE_RATIOS: Record<CampaignPictureRatio, string> = {
+  wide: '16 / 9',
+  standard: '4 / 3'
+}
 
 interface CampaignPictureProps {
   image: CampaignImageSource
+  /** The frame the picture fills; `wide` by default. */
+  ratio?: CampaignPictureRatio
 }
 
 /**
- * One full-width picture with its space reserved from the stored width and
- * height, so the page never shifts as it loads, and its translated alt text.
- * The Image section's body, and an image in a Media Slot.
+ * One full-width picture cropped to a fixed frame (16:9, or 4:3 beside
+ * text) with its focal point kept in view and any zoom applied around it, so
+ * the page never shifts as it loads, and its translated alt text. The Image
+ * section's body, and an image in a Media Slot. The frame clips the zoom.
  */
-export function CampaignPicture({ image }: CampaignPictureProps): ReactElement {
-  const aspectRatio =
-    image.width != null && image.height != null && image.height > 0
-      ? `${image.width} / ${image.height}`
-      : undefined
+export function CampaignPicture({
+  image,
+  ratio = 'wide'
+}: CampaignPictureProps): ReactElement {
+  const aspectRatio = CAMPAIGN_PICTURE_RATIOS[ratio]
 
   return (
-    <Box
-      component="img"
-      src={image.src}
-      alt={image.alt ?? ''}
-      width={image.width ?? undefined}
-      height={image.height ?? undefined}
-      loading="lazy"
-      data-testid="CampaignImage"
-      sx={{
-        display: 'block',
-        width: '100%',
-        height: 'auto',
-        aspectRatio,
-        objectFit: 'cover',
-        borderRadius: 1
-      }}
-    />
+    <Box sx={{ overflow: 'hidden', borderRadius: 1 }}>
+      <Box
+        component="img"
+        src={image.src}
+        alt={image.alt ?? ''}
+        width={image.width ?? undefined}
+        height={image.height ?? undefined}
+        loading="lazy"
+        data-testid="CampaignImage"
+        data-ratio={ratio}
+        sx={{
+          display: 'block',
+          width: '100%',
+          height: 'auto',
+          aspectRatio,
+          objectFit: 'cover',
+          ...focalImageSx(image)
+        }}
+      />
+    </Box>
   )
 }
 

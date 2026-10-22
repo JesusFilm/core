@@ -13,7 +13,7 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
     isTypeOf: (block: unknown) =>
       isCampaignBlockOfType(block, 'CampaignFeaturedMediaBlock'),
     description:
-      'A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.',
+      'A section placing one Media Slot beside eyebrow, title, description and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.',
     fields: (t) => ({
       eyebrow: t.exposeString('eyebrow', { nullable: true }),
       eyebrowTranslations: t.field({
@@ -27,11 +27,11 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
         nullable: false,
         resolve: (block) => toTranslatedValues(block.titleTranslations)
       }),
-      lede: t.exposeString('lede', { nullable: true }),
-      ledeTranslations: t.field({
+      description: t.exposeString('description', { nullable: true }),
+      descriptionTranslations: t.field({
         type: [TranslatedValueRef],
         nullable: false,
-        resolve: (block) => toTranslatedValues(block.ledeTranslations)
+        resolve: (block) => toTranslatedValues(block.descriptionTranslations)
       }),
       bullets: t.exposeString('bullets', {
         nullable: true,
@@ -52,7 +52,7 @@ export const CampaignFeaturedMediaBlock = builder.prismaObject(
         type: CampaignFeaturedMediaLayout,
         nullable: false,
         description:
-          '`sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.',
+          '`sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.',
         resolve: (block) => block.layout ?? 'sideBySide'
       }),
       mediaBlockId: t.exposeID('mediaBlockId', {

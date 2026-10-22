@@ -24,11 +24,6 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignStatusCopy } from './statusCopy'
 import { UnpublishDialog } from './UnpublishDialog'
 
-interface PublishButtonProps {
-  /** Publish and Unpublish are campaign Manage: a manager of the team only. */
-  isManager: boolean
-}
-
 /**
  * The rail's Publish button: an icon with a status dot (grey draft, green
  * published) whose popover holds the status copy, Publish (no confirmation)
@@ -36,7 +31,7 @@ interface PublishButtonProps {
  * QR codes keep working) and Open page. Publish and unpublish are explicit
  * actions, never Commands; nothing here replaces Save.
  */
-export function PublishButton({ isManager }: PublishButtonProps): ReactElement {
+export function PublishButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const {
@@ -139,7 +134,7 @@ export function PublishButton({ isManager }: PublishButtonProps): ReactElement {
               variant="outlined"
               color="secondary"
               onClick={handleUnpublishClick}
-              disabled={!isManager || unpublishing}
+              disabled={unpublishing}
             >
               {t('Unpublish')}
             </Button>
@@ -147,7 +142,7 @@ export function PublishButton({ isManager }: PublishButtonProps): ReactElement {
             <Button
               variant="contained"
               onClick={handlePublish}
-              disabled={!isManager || publishing}
+              disabled={publishing}
             >
               {t('Publish')}
             </Button>

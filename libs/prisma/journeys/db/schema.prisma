@@ -1091,8 +1091,6 @@ model CampaignBlock {
   eyebrowTranslations     Json?
   title                   String?
   titleTranslations       Json?
-  lede                    String?
-  ledeTranslations        Json?
   bullets                 String?
   bulletsTranslations     Json?
   content                 String?
@@ -1127,10 +1125,18 @@ model CampaignBlock {
   videoVariantLanguageId  String?
   image                   String?
   duration                Int?
+  // CampaignHeroBlock
+  /// Minimum height as a share of the viewport height (0–100); null leaves the hero as tall as its content.
+  minHeight               Int?
   // CampaignImageBlock
   src                     String?
   width                   Int?
   height                  Int?
+  /// Focal point of the picture, a percentage from the left and from the top, driving the crop wherever the picture is scaled to fill.
+  focalLeft               Int?                         @default(50)
+  focalTop                Int?                         @default(50)
+  /// Zoom around the focal point as a percentage, 100 (none) to 200; null means none.
+  scale                   Int?
   // CampaignJourneyBlock snapshot
   journeyId               String?
   /// CampaignJourneyBlock: true once an author changed the snapshot title or description by hand; cleared when the snapshot is re-read from the journey.

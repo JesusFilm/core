@@ -102,12 +102,12 @@ describe('campaignLanguageRemove', () => {
 
     expect(prismaMock.campaignLanguage.delete).toHaveBeenCalled()
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/home/campaign/christmas-2026/_lang/en',
-      '/home/campaign/christmas-2026/_lang/en/eur',
-      '/home/campaign/christmas-2026/_lang/fr',
-      '/home/campaign/christmas-2026/_lang/fr/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/_lang/en',
+      '/home/campaign/outreach-2026/_lang/en/eur',
+      '/home/campaign/outreach-2026/_lang/fr',
+      '/home/campaign/outreach-2026/_lang/fr/eur'
     ])
   })
 

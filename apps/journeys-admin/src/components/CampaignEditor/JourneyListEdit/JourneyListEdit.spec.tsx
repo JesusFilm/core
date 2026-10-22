@@ -36,9 +36,9 @@ const ADMIN_LINK = 'https://admin.nextstep.is/journeys/newJourneyId'
 const resolvedJourney = {
   __typename: 'Journey',
   id: 'newJourneyId',
-  title: 'The Christmas story',
-  description: 'A short journey through the nativity.',
-  slug: 'christmas-story',
+  title: 'The outreach story',
+  description: 'A short journey through the story.',
+  slug: 'outreach-story',
   status: JourneyStatus.published
 }
 
@@ -54,9 +54,9 @@ const accessibleJourneysMock = {
         {
           __typename: 'Journey',
           id: 'archivedJourneyId',
-          title: 'Easter, retold',
+          title: 'Hope, retold',
           description: null,
-          slug: 'easter-retold',
+          slug: 'hope-retold',
           status: JourneyStatus.archived,
           team: { __typename: 'Team', id: 'teamId', title: 'Ministry team' }
         }
@@ -94,8 +94,8 @@ const createMock = {
           parentBlockId: 'landingJourneyListId',
           parentOrder: 3,
           journeyId: 'newJourneyId',
-          title: 'The Christmas story',
-          description: 'A short journey through the nativity.'
+          title: 'The outreach story',
+          description: 'A short journey through the story.'
         }),
         titleTranslations: [],
         descriptionTranslations: []
@@ -143,7 +143,7 @@ const titleUpdateMock = {
     query: CAMPAIGN_JOURNEY_BLOCK_UPDATE_TEXT,
     variables: {
       id: 'landingJourneyId',
-      input: { title: 'Christmas, retold' }
+      input: { title: 'Outreach, retold' }
     }
   },
   result: vi.fn(() => ({
@@ -151,8 +151,8 @@ const titleUpdateMock = {
       campaignJourneyBlockUpdate: {
         __typename: 'CampaignJourneyBlock',
         id: 'landingJourneyId',
-        title: 'Christmas, retold',
-        description: 'A short journey through the nativity.',
+        title: 'Outreach, retold',
+        description: 'A short journey through the story.',
         snapshotEdited: true
       }
     }
@@ -231,14 +231,14 @@ describe('JourneyListEdit', () => {
     ])
     const live = within(cards[0])
     expect(live.getByTestId('InlineText-title')).toHaveTextContent(
-      'The Christmas story'
+      'The outreach story'
     )
     expect(live.getByTestId('InlineText-description')).toHaveTextContent(
-      'A short journey through the nativity.'
+      'A short journey through the story.'
     )
     expect(live.getByTestId('JourneyCardImage')).toHaveAttribute(
       'src',
-      'https://imagedelivery.net/christmas-story/public'
+      'https://imagedelivery.net/outreach-story/public'
     )
     expect(live.queryByTestId('JourneyCardUnpublished')).not.toBeInTheDocument()
     expect(
@@ -260,12 +260,12 @@ describe('JourneyListEdit', () => {
       'landingJourneyId'
     )
     const title = screen.getByRole('textbox', { name: 'Journey title' })
-    expect(title).toHaveValue('The Christmas story')
+    expect(title).toHaveValue('The outreach story')
     expect(
       screen.getByRole('textbox', { name: 'Journey description' })
-    ).toHaveValue('A short journey through the nativity.')
+    ).toHaveValue('A short journey through the story.')
 
-    fireEvent.change(title, { target: { value: 'Christmas, retold' } })
+    fireEvent.change(title, { target: { value: 'Outreach, retold' } })
 
     await waitFor(() => expect(titleUpdateMock.result).toHaveBeenCalled())
   })
@@ -280,7 +280,7 @@ describe('JourneyListEdit', () => {
       'Max 200 characters'
     )
     expect(screen.getByRole('textbox', { name: 'Journey title' })).toHaveValue(
-      'The Christmas story'
+      'The outreach story'
     )
 
     fireEvent.change(
@@ -335,7 +335,7 @@ describe('JourneyListEdit', () => {
       screen.getByTestId('JourneyPickerOption-archivedJourneyId')
     ).toHaveTextContent('Archived')
 
-    await userEvent.type(picker, 'Christmas')
+    await userEvent.type(picker, 'Outreach')
     expect(
       screen.queryByTestId('JourneyPickerOption-archivedJourneyId')
     ).toBeNull()
@@ -343,7 +343,7 @@ describe('JourneyListEdit', () => {
 
     expect(
       await screen.findByTestId('JourneyCard-newJourneyItemId')
-    ).toHaveTextContent('The Christmas story')
+    ).toHaveTextContent('The outreach story')
     await waitFor(() => expect(createMock.result).toHaveBeenCalled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
@@ -362,7 +362,7 @@ describe('JourneyListEdit', () => {
       `${ADMIN_LINK}{enter}`
     )
     expect(await screen.findByTestId('JourneyPasteResolved')).toHaveTextContent(
-      'The Christmas story'
+      'The outreach story'
     )
     expect(createMock.result).not.toHaveBeenCalled()
 
@@ -397,7 +397,7 @@ describe('JourneyListEdit', () => {
 
     expect(
       await screen.findByTestId('JourneyCard-newJourneyItemId')
-    ).toHaveTextContent('The Christmas story')
+    ).toHaveTextContent('The outreach story')
     expect(createMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'newJourneyItemId'

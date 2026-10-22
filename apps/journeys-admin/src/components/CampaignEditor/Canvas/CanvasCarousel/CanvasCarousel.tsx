@@ -17,6 +17,7 @@ import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import type { CanvasBlock } from '../CanvasSection'
+import { EditorNote } from '../EditorNote'
 import { HOVER_OUTLINE_SX } from '../hoverOutline'
 import { SelectionBadge } from '../SelectionBadge'
 
@@ -57,7 +58,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           color: 'var(--campaign-band-muted)'
         }}
       >
-        <Typography variant="body2">{t('Add videos from Edit')}</Typography>
+        <EditorNote>{t('Add videos from Edit')}</EditorNote>
       </Box>
     )
 
@@ -195,7 +196,13 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
         direction="row"
         spacing={2}
         data-testid={`CanvasCarousel-${block.id}`}
-        sx={{ width: '100%', overflowX: 'auto', pb: 1 }}
+        sx={{
+          width: '100%',
+          overflowX: 'auto',
+          // Reserve the scrollbar's row up front, so the carousel does not grow and shrink as the bar comes and goes.
+          scrollbarGutter: 'stable',
+          pb: 1
+        }}
       >
         {cards.map(renderCard)}
       </Stack>

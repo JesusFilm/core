@@ -84,6 +84,10 @@ export function InlineText({
     useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  // The click on the static text that selects its block also asks for the
+  // caret, whatever the host's `autoFocus` says, so every inline text shows
+  // where typing goes as soon as it opens.
+  const focusOnEdit = useRef(false)
   const length = textLength(value)
   const testId = inlineTextTestId(target)
   const showingFallback = value === '' && fallback !== ''
@@ -92,7 +96,9 @@ export function InlineText({
   // scrolls every ancestor to centre the input, including the editor page that
   // holds the scaled frame.
   useEffect(() => {
-    if (!editing || !autoFocus) return
+    const wanted = autoFocus || focusOnEdit.current
+    focusOnEdit.current = false
+    if (!editing || !wanted) return
     inputRef.current?.focus({ preventScroll: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing])
@@ -109,6 +115,7 @@ export function InlineText({
 
   function handleClick(event: MouseEvent<HTMLElement>): void {
     event.stopPropagation()
+    focusOnEdit.current = true
     onSelect?.()
   }
 
@@ -143,6 +150,13 @@ export function InlineText({
         ? t('{{length}} / {{max}}', { length, max })
         : undefined)
 
+  // What the textarea shows: the text, or its placeholder while empty. A
+  // trailing newline is an empty last line in a textarea, so the copy gets a
+  // zero-width character after it to measure that line too.
+  const shown =
+    value === '' ? (fallback !== '' ? fallback : placeholder) : value
+  const sizerText = shown.endsWith('\n') ? `${shown}\u200b` : shown
+
   const input = (
     <InlineEditInput
       name={target.string != null ? target.string.key : target.field}
@@ -164,62 +178,77 @@ export function InlineText({
         // The shared input paints its caret in the admin red, which vanishes
         // on a red campaign button; the text colour always contrasts.
         caretColor: 'currentColor',
+        minWidth: 0,
         ...(autoWidth
           ? {
               gridArea: '1 / 1',
-              minWidth: 0,
               width: '100%',
               '& .MuiInputBase-input': { minWidth: 0, width: '100%' }
             }
-          : {})
+          : {
+              // Laid over the hidden copy, which alone sizes the cell: the
+              // textarea fills it instead of the whole-pixel height its
+              // autosize measures, so editing text is exactly as tall as the
+              // static text it replaces.
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              '& textarea:not([aria-hidden])': {
+                height: '100% !important',
+                overflow: 'hidden !important',
+                wordBreak: 'break-word'
+              }
+            })
       }}
     />
   )
 
-  return (
+  // A hidden copy of the text sets the cell's size; the input fills the same
+  // cell, so it is exactly as wide (a button label) or as tall as what is
+  // typed, and the editing text measures like the static text.
+  const sizer = (
     <Box
+      component="span"
+      aria-hidden
+      data-testid="InlineTextSizer"
+      sx={{
+        gridArea: '1 / 1',
+        visibility: 'hidden',
+        overflow: 'hidden',
+        ...(autoWidth
+          ? { whiteSpace: 'pre' }
+          : { whiteSpace: 'pre-wrap', wordBreak: 'break-word' })
+      }}
+    >
+      {sizerText}
+    </Box>
+  )
+
+  // The editing text is the same Typography element as the static text, so
+  // it carries the same variant margins and its container treats it the same.
+  return (
+    <Typography
+      variant={variant}
+      component="div"
+      align={align}
+      variantMapping={variantMapping}
+      data-testid={testId}
+      onClick={(event) => event.stopPropagation()}
       sx={{
         ...(autoWidth ? { maxWidth: '100%', minWidth: 0 } : { width: '100%' }),
         ...sx
       }}
-      data-testid={testId}
-      onClick={(event) => event.stopPropagation()}
     >
-      <Typography
-        variant={variant}
-        component="div"
-        align={align}
-        variantMapping={variantMapping}
-        sx={{ color: 'inherit' }}
+      <Box
+        sx={
+          autoWidth
+            ? { display: 'inline-grid', maxWidth: '100%' }
+            : { display: 'grid', position: 'relative' }
+        }
       >
-        {autoWidth ? (
-          // A hidden copy of the text sets the cell's width (its longest
-          // line); the input fills the same cell, so it is exactly as wide as
-          // what is typed.
-          <Box sx={{ display: 'inline-grid', maxWidth: '100%' }}>
-            <Box
-              component="span"
-              aria-hidden
-              data-testid="InlineTextSizer"
-              sx={{
-                gridArea: '1 / 1',
-                visibility: 'hidden',
-                whiteSpace: 'pre',
-                overflow: 'hidden'
-              }}
-            >
-              {value === ''
-                ? fallback !== ''
-                  ? fallback
-                  : placeholder
-                : value}
-            </Box>
-            {input}
-          </Box>
-        ) : (
-          input
-        )}
-      </Typography>
+        {sizer}
+        {input}
+      </Box>
       {helper != null && (
         <Typography
           variant="caption"
@@ -234,6 +263,6 @@ export function InlineText({
           {helper}
         </Typography>
       )}
-    </Box>
+    </Typography>
   )
 }

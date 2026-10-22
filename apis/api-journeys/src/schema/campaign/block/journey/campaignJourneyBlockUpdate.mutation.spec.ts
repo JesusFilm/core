@@ -45,7 +45,7 @@ describe('campaignJourneyBlockUpdate', () => {
       parentBlockId: 'landingJourneyListId',
       parentOrder: 0,
       journeyId: 'journeyId',
-      title: 'The Christmas story',
+      title: 'The outreach story',
       titleTranslations: { '496': { value: 'Histoire', source: 'human' } },
       description: 'A short journey.'
     })
@@ -82,12 +82,12 @@ describe('campaignJourneyBlockUpdate', () => {
   )
 
   it('writes only the given default-language fields and leaves translations and the link alone', async () => {
-    const result = await update({ title: '  Christmas, retold  ' })
+    const result = await update({ title: '  Outreach, retold  ' })
 
     expect(result.data.campaignJourneyBlockUpdate).toMatchObject({
       id: 'journeyItemId',
       journeyId: 'journeyId',
-      title: 'Christmas, retold',
+      title: 'Outreach, retold',
       description: 'A short journey.',
       snapshotEdited: true,
       titleTranslations: [
@@ -96,7 +96,7 @@ describe('campaignJourneyBlockUpdate', () => {
     })
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'journeyItemId' },
-      data: { title: 'Christmas, retold', snapshotEdited: true },
+      data: { title: 'Outreach, retold', snapshotEdited: true },
       include: { action: true }
     })
     expect(prismaMock.campaign.update).toHaveBeenCalledWith({
@@ -107,14 +107,14 @@ describe('campaignJourneyBlockUpdate', () => {
 
   it('writes the edited flag outright, for an undo', async () => {
     const result = await update({
-      title: 'The Christmas story',
+      title: 'The outreach story',
       snapshotEdited: false
     })
 
     expect(result.data.campaignJourneyBlockUpdate.snapshotEdited).toBe(false)
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'journeyItemId' },
-      data: { title: 'The Christmas story', snapshotEdited: false },
+      data: { title: 'The outreach story', snapshotEdited: false },
       include: { action: true }
     })
   })

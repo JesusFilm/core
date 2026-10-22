@@ -57,6 +57,14 @@ export interface CampaignStatsSubject {
   }>
 }
 
+/**
+ * The stats window is all time: every visit Plausible holds for a linked
+ * journey counts, however long before the campaign the journey ran. The
+ * fixed start keeps every sweep's window identical so cached sweeps stay
+ * comparable and reusable.
+ */
+export const CAMPAIGN_STATS_FROM = new Date('2000-01-01T00:00:00.000Z')
+
 function toDateString(date: Date): string {
   return date.toISOString().slice(0, 10)
 }
@@ -134,8 +142,7 @@ async function sweepCampaign(
   now: Date,
   previous: CampaignStatsSweep | null
 ): Promise<{ sweep: CampaignStatsSweep; partial: boolean }> {
-  const start = campaign.publishedAt ?? campaign.createdAt
-  const from = start.getTime() > now.getTime() ? now : start
+  const from = CAMPAIGN_STATS_FROM
   const journeyIds = linkedJourneyIds(
     campaign.regions.flatMap((region) => region.languages)
   )
@@ -318,12 +325,7 @@ function sweepMatchesCampaign(
   campaign: CampaignStatsSubject,
   sweep: CampaignStatsSweep
 ): boolean {
-  const start = campaign.publishedAt ?? campaign.createdAt
-  const expectedFrom =
-    start.getTime() > new Date(sweep.to).getTime()
-      ? sweep.to
-      : start.toISOString()
-  if (sweep.from !== expectedFrom) return false
+  if (sweep.from !== CAMPAIGN_STATS_FROM.toISOString()) return false
   return linkedJourneyIds(
     campaign.regions.flatMap((region) => region.languages)
   ).every((journeyId) => sweep.journeys[journeyId] != null)

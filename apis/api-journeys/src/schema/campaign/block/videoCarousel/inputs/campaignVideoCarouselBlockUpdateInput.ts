@@ -13,6 +13,10 @@ export const CampaignVideoCarouselBlockUpdateInput = builder.inputType(
         required: false,
         description: 'At most 150 characters.'
       }),
+      description: t.string({
+        required: false,
+        description: 'At most 500 characters.'
+      }),
       url: t.string({
         required: false,
         description:
@@ -26,7 +30,7 @@ export const CampaignVideoCarouselBlockUpdateInput = builder.inputType(
       videoVariantLanguageId: t.id({
         required: false,
         description:
-          'With `url` or `videoId`: the language the expansion resolves in; defaults to the campaign language.'
+          'With `url` or `videoId`: the language the expansion resolves in; defaults to the language the pasted address named, else the campaign language.'
       }),
       ...sectionStyleInputFields(t)
     })

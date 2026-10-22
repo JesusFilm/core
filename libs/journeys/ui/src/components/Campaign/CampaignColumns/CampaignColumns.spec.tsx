@@ -83,9 +83,10 @@ function blocksFor({
             parentOrder: 0,
             eyebrow: null,
             title: 'Right title',
-            lede: null,
+            description: null,
             align: null,
-            mediaBlockId: null
+            mediaBlockId: null,
+            minHeight: null
           })
         ]
       : [])

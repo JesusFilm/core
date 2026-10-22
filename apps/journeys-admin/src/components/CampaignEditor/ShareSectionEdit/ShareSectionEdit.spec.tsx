@@ -117,7 +117,7 @@ const deleteMock = {
 const journey = {
   __typename: 'Journey',
   id: 'frJourneyId',
-  title: 'Noël en Europe',
+  title: 'Campagne en Europe',
   description: null,
   slug: 'noel-europe',
   status: JourneyStatus.published
@@ -135,7 +135,7 @@ const accessibleJourneysMock = {
         {
           ...journey,
           id: 'archivedJourneyId',
-          title: 'Ancien Noël',
+          title: 'Ancien Campagne',
           status: JourneyStatus.archived,
           team: { __typename: 'Team', id: 'teamId', title: 'Équipe Europe' }
         }
@@ -181,7 +181,7 @@ const linkMock = {
       campaignRegionLanguageUpdate: {
         ...eurFrench,
         journeyId: 'frJourneyId',
-        title: 'Noël en Europe',
+        title: 'Campagne en Europe',
         description: null,
         snapshotEdited: false,
         qrCodeId: 'frQrCodeId',
@@ -217,7 +217,7 @@ const swapMock = {
       campaignRegionLanguageUpdate: {
         ...eurEnglish,
         journeyId: 'frJourneyId',
-        title: 'Noël en Europe',
+        title: 'Campagne en Europe',
         description: null,
         journey
       }
@@ -235,7 +235,7 @@ const swapRelinkMock = {
       campaignRegionLanguageUpdate: {
         ...eurEnglish,
         journeyId: 'frJourneyId',
-        title: 'Noël en Europe',
+        title: 'Campagne en Europe',
         description: null,
         journey
       }
@@ -260,7 +260,7 @@ const restoreSnapshotMock = {
     variables: {
       id: 'eurRegionId-529',
       input: {
-        title: 'My Christmas title',
+        title: 'My Outreach title',
         description: 'A journey for Europe.',
         snapshotEdited: true
       }
@@ -270,7 +270,7 @@ const restoreSnapshotMock = {
     data: {
       campaignRegionLanguageUpdate: {
         ...eurEnglish,
-        title: 'My Christmas title',
+        title: 'My Outreach title',
         snapshotEdited: true
       }
     }
@@ -325,11 +325,11 @@ const unlinkMock = {
 /** The English snapshot reworded by the author; the journey reads differently now. */
 const editedEnglish = {
   ...eurEnglish,
-  title: 'My Christmas title',
+  title: 'My Outreach title',
   snapshotEdited: true,
   journey: {
     ...eurEnglish.journey!,
-    title: 'Christmas in Europe 2026',
+    title: 'Outreach in Europe 2026',
     description: 'A journey for Europe.'
   }
 }
@@ -343,7 +343,7 @@ const refreshMock = {
     data: {
       campaignRegionLanguageSnapshotRefresh: {
         ...editedEnglish,
-        title: 'Christmas in Europe 2026',
+        title: 'Outreach in Europe 2026',
         snapshotEdited: false
       }
     }
@@ -409,9 +409,8 @@ function renderShare(
 }
 
 describe('addLanguageOptions', () => {
-  it('offers the page languages first, then the full catalogue, minus the languages already on the region', () => {
+  it('offers the full catalogue minus the languages already on the region, leaving the order to the autocomplete', () => {
     const options = addLanguageOptions(
-      campaignWithRegions,
       languagesMock.result.data.languages,
       new Set(['496'])
     )
@@ -466,7 +465,7 @@ describe('ShareSectionEdit', () => {
     )
     expect(
       within(english).getByTestId('ShareLanguageJourney')
-    ).toHaveTextContent('Christmas in Europe')
+    ).toHaveTextContent('Outreach in Europe')
     expect(
       within(english).queryByTestId('ShareLanguageHidden')
     ).not.toBeInTheDocument()
@@ -563,7 +562,7 @@ describe('ShareSectionEdit', () => {
     })
   })
 
-  it('offers the page languages first, then the full catalogue, and adds the chosen one', async () => {
+  it('offers every language in name order, like the other pickers, and adds the chosen one', async () => {
     renderShare()
 
     const picker = within(
@@ -577,8 +576,8 @@ describe('ShareSectionEdit', () => {
     // English (page language, already a share language) and Français
     // (already a share language) are left out; the catalogue follows.
     expect(options.map((option) => option.textContent)).toEqual([
-      'Español',
-      'Deutsch'
+      'Deutsch',
+      'Español'
     ])
 
     fireEvent.click(screen.getByRole('option', { name: 'Español' }))
@@ -643,7 +642,7 @@ describe('ShareSectionEdit', () => {
 
     expect(
       await within(french).findByTestId('JourneyPasteResolved')
-    ).toHaveTextContent('Noël en Europe')
+    ).toHaveTextContent('Campagne en Europe')
     expect(linkMock.result).not.toHaveBeenCalled()
 
     fireEvent.click(
@@ -656,7 +655,7 @@ describe('ShareSectionEdit', () => {
         within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
           'ShareLanguageJourney'
         )
-      ).toHaveTextContent('Noël en Europe')
+      ).toHaveTextContent('Campagne en Europe')
     )
     const linked = screen.getByTestId('ShareLanguageRow-496')
     expect(
@@ -682,7 +681,7 @@ describe('ShareSectionEdit', () => {
       within(french).getByRole('combobox', { name: 'Search your journeys' })
     )
     const option = await screen.findByTestId('JourneyPickerOption-frJourneyId')
-    expect(option).toHaveTextContent('Noël en Europe')
+    expect(option).toHaveTextContent('Campagne en Europe')
     expect(option).toHaveTextContent('Équipe Europe')
     fireEvent.click(option)
 
@@ -692,7 +691,7 @@ describe('ShareSectionEdit', () => {
         within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
           'ShareLanguageJourney'
         )
-      ).toHaveTextContent('Noël en Europe')
+      ).toHaveTextContent('Campagne en Europe')
     )
   })
 
@@ -734,7 +733,7 @@ describe('ShareSectionEdit', () => {
         within(screen.getByTestId('ShareLanguageRow-496')).getByTestId(
           'ShareLanguageJourney'
         )
-      ).toHaveTextContent('Noël en Europe')
+      ).toHaveTextContent('Campagne en Europe')
     )
     expect(linkMock.result).toHaveBeenCalledTimes(1)
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
@@ -830,6 +829,54 @@ describe('ShareSectionEdit', () => {
     ).toBeInTheDocument()
   })
 
+  it('opens the linked journey’s public page in a new tab', async () => {
+    renderShare()
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    const open = within(english).getByRole('link', { name: 'Open journey' })
+    expect(open).toHaveAttribute('href', eurEnglish.journeyUrl)
+    expect(open).toHaveAttribute('target', '_blank')
+    expect(
+      within(english).queryByRole('button', { name: 'Create QR code' })
+    ).toBeNull()
+  })
+
+  it('offers Create QR code to a linked row without one, and re-links the same journey to mint it', async () => {
+    renderShare(withEnglish({ ...eurEnglish, qrCodeId: null, qrCode: null }))
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    expect(within(english).queryByTestId('ShareLanguageShortLink')).toBeNull()
+    fireEvent.click(
+      within(english).getByRole('button', { name: 'Create QR code' })
+    )
+
+    // Re-linking the same journey is the swap-back request; the API mints the missing QR code.
+    await waitFor(() => expect(swapBackMock.result).toHaveBeenCalled())
+    await waitFor(() =>
+      expect(
+        within(screen.getByTestId('ShareLanguageRow-529')).getByTestId(
+          'ShareLanguageShortLink'
+        )
+      ).toBeInTheDocument()
+    )
+  })
+
+  it('offers no Create QR code while the linked journey is unpublished', async () => {
+    renderShare(
+      withEnglish({
+        ...eurEnglish,
+        qrCodeId: null,
+        qrCode: null,
+        journey: { ...eurEnglish.journey!, status: JourneyStatus.draft }
+      })
+    )
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    expect(
+      within(english).queryByRole('button', { name: 'Create QR code' })
+    ).toBeNull()
+  })
+
   it('unlinks a journey with no dialog, keeping the QR code so the bin stays disabled', async () => {
     renderShare()
 
@@ -903,7 +950,7 @@ describe('ShareSectionEdit', () => {
     const iframe = within(english).getByTestId('ShareLanguagePhoneIframe')
     expect(iframe).toHaveAttribute(
       'src',
-      'https://your.nextstep.is/embed/christmas-europe?expand=false'
+      'https://your.nextstep.is/embed/outreach-europe?expand=false'
     )
     expect(iframe).toHaveAttribute(
       'sandbox',
@@ -911,7 +958,7 @@ describe('ShareSectionEdit', () => {
     )
     expect(iframe).toHaveAttribute('allow', 'autoplay')
     expect(iframe).toHaveAttribute('loading', 'lazy')
-    expect(iframe).toHaveAttribute('title', 'Christmas in Europe')
+    expect(iframe).toHaveAttribute('title', 'Outreach in Europe')
     expect(
       within(english).getByTestId('ShareLanguageShortLink')
     ).toHaveTextContent('short.nextstep.is/eur-en')
@@ -936,7 +983,7 @@ describe('ShareSectionEdit', () => {
     fireEvent.click(within(english).getByTestId('ShareLanguageDownload'))
     expect(toDataURL).toHaveBeenCalledWith('image/png')
     const clicked = click.mock.contexts[0] as HTMLAnchorElement
-    expect(clicked.download).toBe('christmas-2026-eur-en.png')
+    expect(clicked.download).toBe('outreach-2026-eur-en.png')
     toDataURL.mockRestore()
     click.mockRestore()
   })
@@ -981,7 +1028,7 @@ describe('ShareSectionEdit', () => {
     const english = await screen.findByTestId('ShareLanguageRow-529')
     expect(
       within(english).getByTestId('ShareLanguageJourney')
-    ).toHaveTextContent('My Christmas title')
+    ).toHaveTextContent('My Outreach title')
     fireEvent.click(within(english).getByTestId('ShareLanguageRefresh'))
 
     const dialog = await screen.findByTestId('ShareSnapshotRefreshDialog')
@@ -994,7 +1041,7 @@ describe('ShareSectionEdit', () => {
         within(screen.getByTestId('ShareLanguageRow-529')).getByTestId(
           'ShareLanguageJourney'
         )
-      ).toHaveTextContent('Christmas in Europe 2026')
+      ).toHaveTextContent('Outreach in Europe 2026')
     )
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
   })

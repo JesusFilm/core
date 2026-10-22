@@ -55,7 +55,7 @@ export interface CampaignImageBlockCreate_campaignImageBlockCreate {
   buttonTextColor: string | null;
   accentColor: string | null;
   /**
-   * The Cloudflare image address (`https: // imagedelivery.net/…`); null until an image is chosen.
+   * The Cloudflare image address (`https: // imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
    */
   src: string | null;
   /**
@@ -70,6 +70,18 @@ export interface CampaignImageBlockCreate_campaignImageBlockCreate {
    * Measured by the server from the image; never client-supplied.
    */
   height: number | null;
+  /**
+   * The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.
+   */
+  focalLeft: number | null;
+  /**
+   * The focal point as a percentage from the top edge (0 to 100, 50 by default).
+   */
+  focalTop: number | null;
+  /**
+   * Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+   */
+  scale: number | null;
   altTranslations: CampaignImageBlockCreate_campaignImageBlockCreate_altTranslations[];
 }
 

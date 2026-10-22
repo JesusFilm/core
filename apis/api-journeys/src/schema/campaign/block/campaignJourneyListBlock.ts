@@ -25,11 +25,11 @@ export const CampaignJourneyListBlock = builder.prismaObject('CampaignBlock', {
       nullable: false,
       resolve: (block) => toTranslatedValues(block.titleTranslations)
     }),
-    lede: t.exposeString('lede', { nullable: true }),
-    ledeTranslations: t.field({
+    description: t.exposeString('description', { nullable: true }),
+    descriptionTranslations: t.field({
       type: [TranslatedValueRef],
       nullable: false,
-      resolve: (block) => toTranslatedValues(block.ledeTranslations)
+      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
     }),
     display: t.field({
       type: CampaignJourneyListDisplay,

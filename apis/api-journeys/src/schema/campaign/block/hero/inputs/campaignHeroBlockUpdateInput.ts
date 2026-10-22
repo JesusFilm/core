@@ -15,11 +15,16 @@ export const CampaignHeroBlockUpdateInput = builder.inputType(
         required: false,
         description: 'At most 150 characters.'
       }),
-      lede: t.string({
+      description: t.string({
         required: false,
         description: 'At most 500 characters.'
       }),
       align: t.field({ type: TypographyAlign, required: false }),
+      minHeight: t.int({
+        required: false,
+        description:
+          'Minimum height as a percentage of the viewport height, 0 to 100; null for content height.'
+      }),
       mediaBlockId: mediaSlotInputField(t),
       ...sectionStyleInputFields(t)
     })

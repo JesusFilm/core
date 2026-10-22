@@ -30,9 +30,10 @@ function heroMock(title: string, errors?: GraphQLError[]) {
               campaignHeroBlockUpdate: {
                 __typename: 'CampaignHeroBlock',
                 id: 'heroId',
-                eyebrow: 'Christmas 2026',
+                eyebrow: 'Outreach 2026',
                 title,
-                lede: 'Pick your region to find a journey in your language, ready to share.'
+                description:
+                  'Pick your region to find a journey in your language, ready to share.'
               }
             }
           }
@@ -70,7 +71,7 @@ describe('InlineText', () => {
     renderText({ editing: false, onSelect })
 
     const text = screen.getByTestId('InlineText-title')
-    expect(text).toHaveTextContent('Share the story of Christmas')
+    expect(text).toHaveTextContent('Share the story of Outreach')
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
 
     fireEvent.click(text)
@@ -126,6 +127,43 @@ describe('InlineText', () => {
     expect(screen.getByRole('textbox', { name: 'Title' })).toHaveFocus()
   })
 
+  it('takes focus when the click on its text is what opened it, without autoFocus', () => {
+    const onSelect = vi.fn()
+    const { rerender } = renderText({ editing: false, onSelect })
+
+    fireEvent.click(screen.getByTestId('InlineText-title'))
+    rerender(
+      <StaticEditor>
+        <InlineText
+          target={{ block: hero, field: 'title' }}
+          placeholder="Title"
+          editing
+          variant="h1"
+          onSelect={onSelect}
+        />
+      </StaticEditor>
+    )
+
+    expect(screen.getByRole('textbox', { name: 'Title' })).toHaveFocus()
+  })
+
+  it('does not take focus when something else opened it', () => {
+    const { rerender } = renderText({ editing: false })
+
+    rerender(
+      <StaticEditor>
+        <InlineText
+          target={{ block: hero, field: 'title' }}
+          placeholder="Title"
+          editing
+          variant="h1"
+        />
+      </StaticEditor>
+    )
+
+    expect(screen.getByRole('textbox', { name: 'Title' })).not.toHaveFocus()
+  })
+
   describe('autoWidth', () => {
     it('sizes the input from a hidden copy of the text and keeps it multi-line', () => {
       renderText({ autoWidth: true })
@@ -133,7 +171,7 @@ describe('InlineText', () => {
       const input = screen.getByRole('textbox', { name: 'Title' })
       expect(input.tagName).toBe('TEXTAREA')
       expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent(
-        'Share the story of Christmas'
+        'Share the story of Outreach'
       )
     })
 
@@ -159,13 +197,15 @@ describe('InlineText', () => {
       expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent('Short')
     })
 
-    it('renders a full-width multiline field without it', () => {
+    it('renders a full-width multiline field, sized by the hidden copy, without it', () => {
       renderText()
 
       expect(screen.getByRole('textbox', { name: 'Title' }).tagName).toBe(
         'TEXTAREA'
       )
-      expect(screen.queryByTestId('InlineTextSizer')).not.toBeInTheDocument()
+      expect(screen.getByTestId('InlineTextSizer')).toHaveTextContent(
+        'Share the story of Outreach'
+      )
     })
   })
 
@@ -191,7 +231,7 @@ describe('InlineText', () => {
         {
           __typename: 'TranslatedValue' as const,
           languageId: '496',
-          value: "Partagez l'histoire de Noël",
+          value: "Partagez l'histoire de Campagne",
           source: 'human' as const
         }
       ]
@@ -204,14 +244,14 @@ describe('InlineText', () => {
         { previewLanguageId: '496' }
       )
       const text = screen.getByTestId('InlineText-title')
-      expect(text).toHaveTextContent("Partagez l'histoire de Noël")
+      expect(text).toHaveTextContent("Partagez l'histoire de Campagne")
       expect(text).not.toHaveAttribute('data-fallback')
     })
 
     it('shows the default-language text as a marked fallback when the translation is missing, and as the input placeholder', () => {
       renderText({ editing: false }, [], { previewLanguageId: '496' })
       const text = screen.getByTestId('InlineText-title')
-      expect(text).toHaveTextContent('Share the story of Christmas')
+      expect(text).toHaveTextContent('Share the story of Outreach')
       expect(text).toHaveAttribute('data-fallback', 'true')
 
       renderText({}, [], { previewLanguageId: '496' })
@@ -219,7 +259,7 @@ describe('InlineText', () => {
       expect(input).toHaveValue('')
       expect(input).toHaveAttribute(
         'placeholder',
-        'Share the story of Christmas'
+        'Share the story of Outreach'
       )
     })
   })

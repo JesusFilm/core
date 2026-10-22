@@ -155,7 +155,7 @@ describe('customDomainDelete', () => {
     const campaign = campaignFactory().withRegion('EUR').published().build()
     const attached = {
       ...mockCustomDomain,
-      name: 'christmas.example.org',
+      name: 'outreach.example.org',
       campaignId: campaign.id,
       campaign
     }
@@ -176,10 +176,10 @@ describe('customDomainDelete', () => {
       })
     )
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/christmas.example.org',
-      '/christmas.example.org/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur'
     ])
   })
 

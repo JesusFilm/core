@@ -719,7 +719,7 @@ input CampaignCreateInput {
 }
 
 """
-A section placing one Media Slot beside eyebrow, title, lede and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
+A section placing one Media Slot beside eyebrow, title, description and bullets (one per line, split at render), the media on `mediaSide`, or stacked with the media full width under the text. Media empty renders the text full width; text empty renders the media alone; both empty skips the section.
 """
 type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -759,8 +759,8 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
 
   """One bullet per line; the viewer splits on line breaks."""
   bullets: String
@@ -770,7 +770,7 @@ type CampaignFeaturedMediaBlock implements CampaignBlock & CampaignSectionBlock 
   mediaSide: CampaignMediaSide!
 
   """
-  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, lede and bullets above the media at full width, and `mediaSide` has no effect.
+  `sideBySide` puts the text and the media beside each other; `stacked` puts the title, description and bullets above the media at full width, and `mediaSide` has no effect.
   """
   layout: CampaignFeaturedMediaLayout!
 
@@ -802,7 +802,7 @@ input CampaignFeaturedMediaBlockCreateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
 
   """One bullet per line; at most 1000 characters."""
   bullets: String
@@ -819,7 +819,7 @@ input CampaignFeaturedMediaBlockUpdateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
 
   """One bullet per line; at most 1000 characters."""
   bullets: String
@@ -1036,7 +1036,7 @@ input CampaignHeaderBlockUpdateInput {
 }
 
 """
-The opening section of a page: eyebrow, title and lede over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
+The opening section of a page: eyebrow, title and description over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.
 """
 type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -1076,14 +1076,19 @@ type CampaignHeroBlock implements CampaignBlock & CampaignSectionBlock {
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
 
   """Alignment of the Section Body; the editor offers left and center."""
   align: TypographyAlign
 
   """The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot."""
   mediaBlockId: ID
+
+  """
+  Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+  """
+  minHeight: Int
 }
 
 input CampaignHeroBlockCreateInput {
@@ -1110,7 +1115,7 @@ input CampaignHeroBlockCreateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
   align: TypographyAlign
 }
 
@@ -1122,8 +1127,13 @@ input CampaignHeroBlockUpdateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
   align: TypographyAlign
+
+  """
+  Minimum height as a percentage of the viewport height, 0 to 100; null for content height.
+  """
+  minHeight: Int
 
   """
   The owned CampaignVideoBlock or CampaignImageBlock to show in the Media Slot (one this section owns, even if an earlier swap soft-deleted it), or null to empty the slot. The block the slot held is soft-deleted; the new one is restored. Fill the slot with `campaignVideoBlockCreate` or `campaignImageBlockCreate` (`slot: media`); this field swaps between blocks the section already owns, which is how undo works.
@@ -1165,7 +1175,7 @@ input CampaignHeroBlockUpdateInput {
 }
 
 """
-The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is always an https imagedelivery.net address; width and height are measured by the server.
+The campaign image: one block in two roles. As an Image section (parentOrder set) it renders the picture full width with its space reserved from width and height; as an owned block (parentOrder null) it is a section’s background cover or the header logo, named by the parent’s coverBlockId or logoBlockId. `src` is an https imagedelivery.net address (the seeded default header logo is the one exception, served by the admin app); width and height are measured by the server.
 """
 type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
   id: ID!
@@ -1203,7 +1213,7 @@ type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
   accentColor: String
 
   """
-  The Cloudflare image address (`https://imagedelivery.net/…`); null until an image is chosen.
+  The Cloudflare image address (`https://imagedelivery.net/…`), or the admin-hosted default header logo; null until an image is chosen.
   """
   src: String
 
@@ -1216,6 +1226,21 @@ type CampaignImageBlock implements CampaignBlock & CampaignSectionBlock {
 
   """Measured by the server from the image; never client-supplied."""
   height: Int
+
+  """
+  The focal point as a percentage from the left edge (0 to 100, 50 by default): the part of the picture kept in view wherever it is scaled to fill.
+  """
+  focalLeft: Int
+
+  """
+  The focal point as a percentage from the top edge (0 to 100, 50 by default).
+  """
+  focalTop: Int
+
+  """
+  Zoom around the focal point as a percentage, 100 (none) to 200; null means none. Applied wherever the picture is scaled to fill.
+  """
+  scale: Int
 }
 
 """
@@ -1248,6 +1273,17 @@ input CampaignImageBlockCreateInput {
 
   """At most 500 characters."""
   alt: String
+
+  """The focal point as a percentage from the left edge, 0 to 100."""
+  focalLeft: Int
+
+  """The focal point as a percentage from the top edge, 0 to 100."""
+  focalTop: Int
+
+  """
+  Zoom around the focal point as a percentage, 100 to 200; null means none.
+  """
+  scale: Int
 }
 
 input CampaignImageBlockUpdateInput {
@@ -1258,6 +1294,17 @@ input CampaignImageBlockUpdateInput {
 
   """Default-language alternative text. At most 500 characters."""
   alt: String
+
+  """The focal point as a percentage from the left edge, 0 to 100."""
+  focalLeft: Int
+
+  """The focal point as a percentage from the top edge, 0 to 100."""
+  focalTop: Int
+
+  """
+  Zoom around the focal point as a percentage, 100 to 200; null means none.
+  """
+  scale: Int
 
   """
   The Section Background kind. Explicit: switching kind leaves backgroundColor and the cover in place.
@@ -1430,8 +1477,8 @@ type CampaignJourneyListBlock implements CampaignBlock & CampaignSectionBlock {
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
-  lede: String
-  ledeTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
   display: CampaignJourneyListDisplay!
 }
 
@@ -1459,7 +1506,7 @@ input CampaignJourneyListBlockCreateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
 
   """Defaults to grid."""
   display: CampaignJourneyListDisplay
@@ -1473,7 +1520,7 @@ input CampaignJourneyListBlockUpdateInput {
   title: String
 
   """At most 500 characters."""
-  lede: String
+  description: String
   display: CampaignJourneyListDisplay
 
   """
@@ -1821,6 +1868,11 @@ type CampaignRegionLanguage {
   language: Language!
   journeyId: ID
   journey: Journey
+
+  """
+  Where the linked journey is served, as the viewer receives it: the journey team's route-all custom domain, else a collection domain holding it, else the root domain. Null for an Unlinked Language.
+  """
+  journeyUrl: String
 
   """
   Snapshot of the linked journey's title; the journey's own language, not translated.
@@ -2331,11 +2383,11 @@ interface CampaignSectionBlock {
 }
 
 """
-The visitor numbers a Campaign shows: each linked journey's unique visitors by country from the campaign's first publish to now, summed by the campaign's region and language structure.
+The visitor numbers a Campaign shows: each linked journey's unique visitors by country over all time, summed by the campaign's region and language structure.
 """
 type CampaignStats {
   """
-  The start of the stats window: the first publish (creation for a draft).
+  The start of the stats window. The window is all time, so this is a fixed early date; the viewer shows the numbers as all-time rather than since it.
   """
   from: DateTimeISO!
 
@@ -2413,12 +2465,11 @@ enum CampaignSwitcherVariant {
 }
 
 """
-Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
 """
 enum CampaignTextField {
   eyebrow
   title
-  lede
   bullets
   content
   intro
@@ -2541,10 +2592,15 @@ type CampaignTranslation {
   Who wrote `value`: a person (`human`) or the machine; null when missing.
   """
   source: CampaignTextSource
+
+  """
+  The machine wrote `value` and was not sure of it: the line a person should check first. False for a person’s text, a confident machine line and a missing one.
+  """
+  needsReview: Boolean!
 }
 
 """
-Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, which flagged the line as a guess a person should check); `missing` (no entry in the language); `edited` (written by a person).
 """
 enum CampaignTranslationFilter {
   all
@@ -2729,7 +2785,7 @@ type CampaignVideoBlock implements CampaignBlock {
   videoId: ID
 
   """
-  For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+  For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
   """
   videoVariantLanguageId: ID
 
@@ -2847,12 +2903,14 @@ type CampaignVideoCarouselBlock implements CampaignBlock & CampaignSectionBlock 
   eyebrowTranslations: [TranslatedValue!]!
   title: String
   titleTranslations: [TranslatedValue!]!
+  description: String
+  descriptionTranslations: [TranslatedValue!]!
 
   """The Watch Video to expand; null for explicit children."""
   videoId: ID
 
   """
-  The campaign language when the Watch Video was linked; the language the expansion resolves in.
+  The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
   """
   videoVariantLanguageId: ID
 
@@ -2893,6 +2951,9 @@ input CampaignVideoCarouselBlockUpdateInput {
   """At most 150 characters."""
   title: String
 
+  """At most 500 characters."""
+  description: String
+
   """
   A pasted Watch address: resolved by the server through its variant slug to a Video of any label, which becomes `videoId` (Watch expansion). Not together with `videoId`.
   """
@@ -2904,7 +2965,7 @@ input CampaignVideoCarouselBlockUpdateInput {
   videoId: ID
 
   """
-  With `url` or `videoId`: the language the expansion resolves in; defaults to the campaign language.
+  With `url` or `videoId`: the language the expansion resolves in; defaults to the language the pasted address named, else the campaign language.
   """
   videoVariantLanguageId: ID
 
@@ -4427,20 +4488,21 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `align`): the value fails its rule.
   """
   campaignHeroBlockCreate(input: CampaignHeroBlockCreateInput!): CampaignHeroBlock!
 
   """
-  Update the hero’s default-language eyebrow, title, lede or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update the hero’s default-language eyebrow, title, description or alignment, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignHeroBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `align`): not left, center or right.
+  - BAD_USER_INPUT (field: `minHeight`): not a whole number from 0 to 100.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -4501,14 +4563,14 @@ type Mutation {
   campaignVideoCarouselBlockCreate(input: CampaignVideoCarouselBlockCreateInput!): CampaignVideoCarouselBlock!
 
   """
-  Update the video carousel’s default-language eyebrow or title, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
+  Update the video carousel’s default-language eyebrow, title or description, its Watch expansion, or its Section Background and colour overrides. Only the given fields change. The nullable `videoId` is the mode: set ⇒ the Video’s children are the cards (any label; the gateway joins them through `video`), null ⇒ the explicit CampaignVideoBlock children are.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignVideoCarouselBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title`): over 80 / 150 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `url`): "That link isn't a Watch video", or given together with `videoId`.
   - BAD_USER_INPUT (field: `videoId`): not a published Watch video.
   - BAD_USER_INPUT (field: `videoVariantLanguageId`): given without `url` or `videoId`, or not an api-languages language.
@@ -4550,19 +4612,19 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `display`): the value fails its rule.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `display`): the value fails its rule.
   """
   campaignJourneyListBlockCreate(input: CampaignJourneyListBlockCreateInput!): CampaignJourneyListBlock!
 
   """
-  Update the journey list’s default-language eyebrow, title or lede, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
+  Update the journey list’s default-language eyebrow, title or description, its display (grid, list), or its Section Background and colour overrides. Only the given fields change.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignJourneyListBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede`): over 80 / 150 / 500 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description`): over 80 / 150 / 500 characters.
   - BAD_USER_INPUT (field: `display`): not grid or list.
   - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
   - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
@@ -4819,7 +4881,7 @@ type Mutation {
   campaignImageBlockUpdate(id: ID!, input: CampaignImageBlockUpdateInput!): CampaignImageBlock!
 
   """
-  Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once, the text cut to the override caps (200 / 1000 characters); a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, a Watch `videoId` must be a published Watch Video; only its ids are stored (the variant language is the campaign language). Title and description overrides win over the source text.
+  Add a Campaign Video. Under a hero or Featured Media section it fills the Media Slot, replacing (soft-deleting) the block the slot held (`parentOrder: null`); under a Video Carousel it is the last explicit item (`parentOrder` = the number of the carousel's children). YouTube and Mux ids are validated by the VideoBlock zod schemas and their title, description, poster and duration fetched once, the text cut to the override caps (200 / 1000 characters); a Watch `url` is stripped of its `.html` parts to a variant slug and resolved through the gateway, a Watch `videoId` must be a published Watch Video; only its ids are stored (the variant language is the one the address named, else the campaign language). Title and description overrides win over the source text.
   
   Auth: campaign Update — any member or manager of the campaign's team.
   
@@ -4862,20 +4924,20 @@ type Mutation {
   - BAD_USER_INPUT (field: `parentOrder`): negative.
   - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
   - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   """
   campaignFeaturedMediaBlockCreate(input: CampaignFeaturedMediaBlockCreateInput!): CampaignFeaturedMediaBlock!
 
   """
-  Update a Featured Media section’s default-language eyebrow, title, lede or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+  Update a Featured Media section’s default-language eyebrow, title, description or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
   Errors:
   - NOT_FOUND: id does not resolve to a live CampaignFeaturedMediaBlock.
   - FORBIDDEN: caller is not in the team.
-  - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `bullets`): over 80 / 150 / 500 / 1000 characters.
+  - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
   - BAD_USER_INPUT (field: `mediaSide`): not left or right.
   - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
   - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
@@ -5126,7 +5188,7 @@ type Mutation {
   campaignRegionLanguageCreate(regionId: ID!, languageId: ID!): CampaignRegionLanguage!
 
   """
-  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking or unlinking clears the mark.
+  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Re-linking the journey already linked keeps the snapshot and only creates a missing Campaign QR Code. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking another journey or unlinking clears the mark.
   
   Auth: campaign Update — any member or manager of the campaign’s team.
   
@@ -5232,7 +5294,7 @@ type Mutation {
   """
   Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
   
-  Auth: campaign Manage — a manager of the campaign’s team.
+  Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
   
   Errors:
   - NOT_FOUND: id does not resolve.
@@ -5243,7 +5305,7 @@ type Mutation {
   """
   Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
   
-  Auth: campaign Manage — a manager of the campaign’s team.
+  Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
   
   Errors:
   - NOT_FOUND: id does not resolve.
@@ -5923,7 +5985,7 @@ type Query {
   campaignStats(id: ID!): CampaignStats!
 
   """
-  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it: `needsReview` is the machine’s, `edited` is a person’s, `missing` has no entry. Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
+  The Translations view of one campaign language: every Translated Field that has default-language text, with its text in `languageId`. Each row says who wrote it (`source`) and whether the machine flagged its line as a guess (`needsReview`); the filters are `needsReview` (flagged machine lines), `edited` (a person’s) and `missing` (no entry). Rows come in the view’s order (Interface, Landing page, Region page, Regions); `group` names the section.
   
   Auth: campaign Read — any member or manager of the campaign’s team.
   

@@ -17,13 +17,12 @@ describe('CampaignTextField', () => {
       [
         'eyebrow',
         'title',
-        'lede',
+        'description',
         'bullets',
         'content',
         'intro',
         'label',
         'alt',
-        'description',
         'name',
         'value'
       ].sort()
@@ -35,19 +34,19 @@ describe('CampaignTextField', () => {
 
   it('pairs every target with its translatable fields and PRD §15 caps', () => {
     expect(CAMPAIGN_BLOCK_TEXT_FIELDS).toEqual({
-      CampaignHeroBlock: { eyebrow: 80, title: 150, lede: 500 },
+      CampaignHeroBlock: { eyebrow: 80, title: 150, description: 500 },
       CampaignFeaturedMediaBlock: {
         eyebrow: 80,
         title: 150,
-        lede: 500,
+        description: 500,
         bullets: 1000
       },
       CampaignRichTextBlock: { title: 150, content: 5000 },
       CampaignRegionSwitcherBlock: { title: 150 },
       CampaignRegionHeaderBlock: { intro: 500 },
       CampaignRegionShareBlock: { title: 150, intro: 500 },
-      CampaignJourneyListBlock: { eyebrow: 80, title: 150, lede: 500 },
-      CampaignVideoCarouselBlock: { eyebrow: 80, title: 150 },
+      CampaignJourneyListBlock: { eyebrow: 80, title: 150, description: 500 },
+      CampaignVideoCarouselBlock: { eyebrow: 80, title: 150, description: 500 },
       CampaignAnalyticsBlock: { eyebrow: 80, title: 150 },
       CampaignTypographyBlock: { content: 2000 },
       CampaignButtonBlock: { label: 60 },
@@ -79,16 +78,15 @@ describe('CampaignTextField', () => {
       expect.arrayContaining([
         ['eyebrow', 'eyebrowTranslations'],
         ['title', 'titleTranslations'],
-        ['lede', 'ledeTranslations'],
+        ['description', 'descriptionTranslations'],
         ['bullets', 'bulletsTranslations'],
         ['content', 'contentTranslations'],
         ['intro', 'introTranslations'],
         ['label', 'labelTranslations'],
-        ['alt', 'altTranslations'],
-        ['description', 'descriptionTranslations']
+        ['alt', 'altTranslations']
       ])
     )
-    expect(CAMPAIGN_BLOCK_TEXT_COLUMNS).toHaveLength(9)
+    expect(CAMPAIGN_BLOCK_TEXT_COLUMNS).toHaveLength(8)
     expect(translationsColumn('name')).toBe('nameTranslations')
   })
 

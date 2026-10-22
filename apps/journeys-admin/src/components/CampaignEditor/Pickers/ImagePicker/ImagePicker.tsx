@@ -2,6 +2,7 @@ import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -12,6 +13,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 
 import { useCloudflareUploadByUrlMutation } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
+import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
 import { messageOf } from '../../utils/useCampaignStyleCommand'
 
 /** The editor's pure URL rule for a pasted image: an absolute https address. The server checks the rest. */
@@ -41,12 +43,15 @@ interface ImagePickerProps {
 }
 
 /**
- * The only two ways an image enters a campaign (PRD §5): upload a file, or
- * paste an image URL — no library browsing. A paste is checked for the https
- * shape here and shown resolved before it is kept; keeping it fetches the
- * picture into Cloudflare under the team, so what `onPick` receives is always
- * an imagedelivery.net address. An upload goes through `useImageUpload` with
- * the team and is shown the same way before it is kept.
+ * How an image enters a campaign (PRD §5): upload a file, paste an image
+ * URL, or pick one of the team's earlier uploads. A paste is checked for the
+ * https shape here and shown resolved before it is kept; keeping it fetches
+ * the picture into Cloudflare under the team, so what `onPick` receives is
+ * always an imagedelivery.net address. An upload goes through
+ * `useImageUpload` with the team and is shown the same way before it is
+ * kept. The preview sits right under the Preview button, apart from the
+ * uploads grid below it: the journey editor's media library, scoped to the
+ * team, which picks at once.
  */
 export function ImagePicker({
   teamId,
@@ -168,11 +173,6 @@ export function ImagePicker({
           {t('Preview')}
         </Button>
       </Stack>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
       {candidate != null && (
         <Stack spacing={2} data-testid={`${testId}Preview`}>
           <Box
@@ -212,6 +212,21 @@ export function ImagePicker({
           </Stack>
         </Stack>
       )}
+      {error != null && (
+        <Alert severity="error" role="alert">
+          {error}
+        </Alert>
+      )}
+      <Divider />
+      <MediaLibrary
+        title={t('Your uploads')}
+        isAi={false}
+        teamId={teamId}
+        dense
+        onSelect={(input) => {
+          if (input.src != null) onPick(input.src)
+        }}
+      />
     </Stack>
   )
 }

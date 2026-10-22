@@ -208,7 +208,7 @@ describe('campaignLanguageAdd', () => {
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...campaign,
-      customDomains: [{ name: 'christmas.example.org' }]
+      customDomains: [{ name: 'outreach.example.org' }]
     } as any)
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(
       campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()
@@ -224,18 +224,18 @@ describe('campaignLanguageAdd', () => {
     await add(FRENCH)
 
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
-      '/home/campaign/christmas-2026/_lang/en',
-      '/home/campaign/christmas-2026/_lang/en/eur',
-      '/home/campaign/christmas-2026/_lang/fr',
-      '/home/campaign/christmas-2026/_lang/fr/eur',
-      '/christmas.example.org',
-      '/christmas.example.org/eur',
-      '/christmas.example.org/_lang/en',
-      '/christmas.example.org/_lang/en/eur',
-      '/christmas.example.org/_lang/fr',
-      '/christmas.example.org/_lang/fr/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/_lang/en',
+      '/home/campaign/outreach-2026/_lang/en/eur',
+      '/home/campaign/outreach-2026/_lang/fr',
+      '/home/campaign/outreach-2026/_lang/fr/eur',
+      '/outreach.example.org',
+      '/outreach.example.org/eur',
+      '/outreach.example.org/_lang/en',
+      '/outreach.example.org/_lang/en/eur',
+      '/outreach.example.org/_lang/fr',
+      '/outreach.example.org/_lang/fr/eur'
     ])
   })
 

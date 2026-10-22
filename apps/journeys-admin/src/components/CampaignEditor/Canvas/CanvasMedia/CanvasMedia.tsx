@@ -4,10 +4,15 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { campaignImageSource } from '@core/journeys/ui/Campaign'
+import {
+  CAMPAIGN_PICTURE_RATIOS,
+  campaignImageSource,
+  focalImageSx
+} from '@core/journeys/ui/Campaign'
 import Play3Icon from '@core/shared/ui/icons/Play3'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
+import { EditorNote } from '../EditorNote'
 
 /** The title a Media Slot video shows: the override (or text captured at pick), else the Watch video's own. */
 export function campaignVideoTitle(
@@ -21,6 +26,8 @@ export function campaignVideoTitle(
 interface CanvasMediaProps {
   /** The block in the Media Slot; null shows the empty-slot placeholder. */
   media: CampaignBlock | null
+  /** The slot sits under the text, so a picture takes the wide frame rather than 4:3. */
+  stacked?: boolean
 }
 
 /**
@@ -28,26 +35,33 @@ interface CanvasMediaProps {
  * its title (and "<n> videos" for a Watch video with children), or a dashed
  * placeholder pointing at Edit when the slot is empty.
  */
-export function CanvasMedia({ media }: CanvasMediaProps): ReactElement {
+export function CanvasMedia({
+  media,
+  stacked = false
+}: CanvasMediaProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
   if (media?.__typename === 'CampaignImageBlock') {
     const picture = campaignImageSource(media)
     if (picture != null)
       return (
-        <Box
-          component="img"
-          src={picture.src}
-          alt={picture.alt ?? ''}
-          data-testid="CanvasMediaImage"
-          sx={{
-            display: 'block',
-            width: '100%',
-            height: 'auto',
-            objectFit: 'cover',
-            borderRadius: 1
-          }}
-        />
+        <Box sx={{ overflow: 'hidden', borderRadius: 1 }}>
+          <Box
+            component="img"
+            src={picture.src}
+            alt={picture.alt ?? ''}
+            data-testid="CanvasMediaImage"
+            sx={{
+              display: 'block',
+              width: '100%',
+              height: 'auto',
+              aspectRatio:
+                CAMPAIGN_PICTURE_RATIOS[stacked ? 'wide' : 'standard'],
+              objectFit: 'cover',
+              ...focalImageSx(picture)
+            }}
+          />
+        </Box>
       )
   }
 
@@ -127,7 +141,7 @@ export function CanvasMedia({ media }: CanvasMediaProps): ReactElement {
         color: 'var(--campaign-band-muted)'
       }}
     >
-      <Typography variant="body2">{t('Add media from Edit')}</Typography>
+      <EditorNote>{t('Add media from Edit')}</EditorNote>
     </Box>
   )
 }

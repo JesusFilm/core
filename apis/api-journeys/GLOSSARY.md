@@ -206,7 +206,7 @@ A top-level Campaign Block on a Campaign Page: one full-width band of one of ele
 _Avoid_: block (for a section), row, band, panel, module
 
 **Section Body**:
-The typed, fixed part of a Campaign Section that lives on the section's own row (its eyebrow, title, lede, media slot, and so on) rather than as child blocks. Extras render above or below it.
+The typed, fixed part of a Campaign Section that lives on the section's own row (its eyebrow, title, description, media slot, and so on) rather than as child blocks. Extras render above or below it.
 _Avoid_: content, fields, inner blocks
 
 **Section Background**:

@@ -33,7 +33,7 @@ const logoBlock = {
   parentBlockId: 'headerId',
   parentOrder: null,
   src: 'https://images.example.org/logo.png',
-  alt: 'Christmas logo',
+  alt: 'Outreach logo',
   width: 320,
   height: 80
 } as unknown as CampaignBlock
@@ -124,17 +124,33 @@ function mediaRule(element: Element, minWidth: number): string {
 
 describe('CampaignHeader', () => {
   describe('brand mark', () => {
+    it('keeps square corners whatever the theme radius, since an AppBar is a rounded Paper', () => {
+      renderHeader()
+      const header = screen.getByTestId('CampaignHeader')
+      const rule = Array.from(document.querySelectorAll('style'))
+        .map((node) => node.textContent ?? '')
+        .join('')
+        .match(
+          new RegExp(
+            `\\.${Array.from(header.classList)
+              .find((name) => name.startsWith('css-'))
+              ?.replace(/-/g, '\\-')}\\{([^}]*)\\}`
+          )
+        )?.[1]
+      expect(rule).toContain('border-radius:0')
+    })
+
     it('renders the campaign title as text when no logo is set, linking to the landing page in the page language', () => {
       renderHeader()
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
       expect(
         screen.queryByTestId('CampaignBrandMarkLogo')
       ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
-        '/campaign/christmas-2026?lang=en'
+        '/campaign/outreach-2026?lang=en'
       )
     })
 
@@ -144,20 +160,20 @@ describe('CampaignHeader', () => {
       )
       const logo = screen.getByTestId('CampaignBrandMarkLogo')
       expect(logo).toHaveAttribute('src', 'https://images.example.org/logo.png')
-      expect(logo).toHaveAttribute('alt', 'Christmas logo')
+      expect(logo).toHaveAttribute('alt', 'Outreach logo')
       expect(
         screen.queryByTestId('CampaignBrandMarkTitle')
       ).not.toBeInTheDocument()
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
-        '/campaign/christmas-2026?lang=en'
+        '/campaign/outreach-2026?lang=en'
       )
     })
 
     it('falls back to the title when logoBlockId names no block in the chrome', () => {
       renderHeader(withHeader({ logoBlockId: 'missingId' }))
       expect(screen.getByTestId('CampaignBrandMarkTitle')).toHaveTextContent(
-        'Christmas 2026'
+        'Outreach 2026'
       )
     })
 
@@ -168,7 +184,7 @@ describe('CampaignHeader', () => {
       })
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
-        '/campaign/christmas-2026'
+        '/campaign/outreach-2026'
       )
     })
 
@@ -188,7 +204,7 @@ describe('CampaignHeader', () => {
       })
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
-        '/campaign/christmas-2026?lang=fr'
+        '/campaign/outreach-2026?lang=fr'
       )
     })
   })
@@ -205,7 +221,7 @@ describe('CampaignHeader', () => {
           'All regions'
         )
       ).toBeInTheDocument()
-      expect(chip).toHaveAttribute('href', '/campaign/christmas-2026?lang=en')
+      expect(chip).toHaveAttribute('href', '/campaign/outreach-2026?lang=en')
     })
 
     it('leaves a blank allRegions string blank, keeping All regions as the accessible name', () => {
@@ -307,7 +323,7 @@ describe('CampaignHeader', () => {
         configurable: true,
         value: {
           ...location,
-          href: 'http://localhost/campaign/christmas-2026?lang=en#heroId',
+          href: 'http://localhost/campaign/outreach-2026?lang=en#heroId',
           assign
         }
       })
@@ -315,7 +331,7 @@ describe('CampaignHeader', () => {
       fireEvent.mouseDown(screen.getByRole('combobox', { name: 'Language' }))
       fireEvent.click(screen.getByRole('option', { name: 'Français' }))
       expect(assign).toHaveBeenCalledWith(
-        'http://localhost/campaign/christmas-2026?lang=fr#heroId'
+        'http://localhost/campaign/outreach-2026?lang=fr#heroId'
       )
       expect(document.cookie).toContain('campaign-lang=fr')
       Object.defineProperty(window, 'location', {

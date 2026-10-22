@@ -173,8 +173,8 @@ describe('campaignRegionDelete', () => {
 
     const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
     expect(paths).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur'
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur'
     ])
   })
 
@@ -196,8 +196,8 @@ describe('campaignRegionDelete', () => {
 
     const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
     expect(paths).toEqual([
-      '/home/campaign/christmas-2026',
-      '/home/campaign/christmas-2026/eur',
+      '/home/campaign/outreach-2026',
+      '/home/campaign/outreach-2026/eur',
       '/gifts.org',
       '/gifts.org/eur'
     ])

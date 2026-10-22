@@ -16,12 +16,12 @@ import { useSnapshotRefreshCommand } from './useSnapshotRefreshCommand'
 /** English, reworded by the author since it was linked; the journey itself says something newer. */
 const edited: CampaignRegionLanguage = {
   ...eurEnglish,
-  title: 'My Christmas title',
+  title: 'My Outreach title',
   description: 'My own description.',
   snapshotEdited: true,
   journey: {
     ...eurEnglish.journey!,
-    title: 'Christmas in Europe 2026',
+    title: 'Outreach in Europe 2026',
     description: 'The journey as it reads now.'
   }
 }
@@ -36,7 +36,7 @@ const refreshMock = {
     data: {
       campaignRegionLanguageSnapshotRefresh: {
         ...edited,
-        title: 'Christmas in Europe 2026',
+        title: 'Outreach in Europe 2026',
         description: 'The journey as it reads now.',
         snapshotEdited: false
       }
@@ -50,7 +50,7 @@ const undoMock = {
     variables: {
       id: 'eurRegionId-529',
       input: {
-        title: 'My Christmas title',
+        title: 'My Outreach title',
         description: 'My own description.',
         snapshotEdited: true
       }
@@ -160,7 +160,7 @@ describe('useSnapshotRefreshCommand', () => {
     expect(screen.getByTestId('Pending')).toHaveTextContent('')
     await waitFor(() =>
       expect(screen.getByTestId('Snapshot')).toHaveTextContent(
-        'Christmas in Europe 2026|The journey as it reads now.'
+        'Outreach in Europe 2026|The journey as it reads now.'
       )
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
@@ -204,7 +204,7 @@ describe('useSnapshotRefreshCommand', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('Snapshot')).toHaveTextContent(
-        'My Christmas title|My own description.'
+        'My Outreach title|My own description.'
       )
     )
     await waitFor(() => expect(undoMock.result).toHaveBeenCalledTimes(1))
@@ -213,7 +213,7 @@ describe('useSnapshotRefreshCommand', () => {
 
     await waitFor(() =>
       expect(screen.getByTestId('Snapshot')).toHaveTextContent(
-        'Christmas in Europe 2026|The journey as it reads now.'
+        'Outreach in Europe 2026|The journey as it reads now.'
       )
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalledTimes(2))

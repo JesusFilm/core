@@ -26,7 +26,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
-      ledeTranslations {
+      descriptionTranslations {
         ...TranslatedValueFields
       }
     }
@@ -42,6 +42,9 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
+      descriptionTranslations {
+        ...TranslatedValueFields
+      }
     }
     ... on CampaignJourneyListBlock {
       eyebrowTranslations {
@@ -50,7 +53,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
-      ledeTranslations {
+      descriptionTranslations {
         ...TranslatedValueFields
       }
     }
@@ -110,7 +113,7 @@ export const CAMPAIGN_BLOCK_TRANSLATION_FIELDS = gql`
       titleTranslations {
         ...TranslatedValueFields
       }
-      ledeTranslations {
+      descriptionTranslations {
         ...TranslatedValueFields
       }
       bulletsTranslations {
@@ -145,6 +148,7 @@ export const CAMPAIGN_REGION_LANGUAGE_FIELDS = gql`
     regionId
     languageId
     journeyId
+    journeyUrl
     title
     description
     snapshotEdited

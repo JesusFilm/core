@@ -44,7 +44,9 @@ const TIMESTAMP_FIELDS = new Set(['createdAt', 'updatedAt', 'deletedAt'])
 // Column defaults the seed leaves to Prisma but a stored row always carries.
 const COLUMN_DEFAULTS: Record<string, unknown> = {
   backgroundKind: 'none',
-  snapshotEdited: false
+  snapshotEdited: false,
+  focalLeft: 50,
+  focalTop: 50
 }
 
 /**
@@ -127,7 +129,7 @@ describe('campaignCreate', () => {
           ... on CampaignHeroBlock {
             eyebrow
             title
-            lede
+            description
             align
             mediaBlockId
           }
@@ -143,7 +145,7 @@ describe('campaignCreate', () => {
           ... on CampaignJourneyListBlock {
             eyebrow
             title
-            lede
+            description
             display
           }
           ... on CampaignAnalyticsBlock {
@@ -195,7 +197,7 @@ describe('campaignCreate', () => {
 
   const input = {
     teamId: 'teamId',
-    title: 'Christmas 2026',
+    title: 'Outreach 2026',
     defaultLanguageId: '529'
   }
 
@@ -283,8 +285,8 @@ describe('campaignCreate', () => {
         data: {
           id: 'id-1',
           teamId: 'teamId',
-          title: 'Christmas 2026',
-          slug: 'christmas-2026',
+          title: 'Outreach 2026',
+          slug: 'outreach-2026',
           status: 'draft',
           defaultLanguageId: '529',
           palette: LIGHT_PALETTE,
@@ -348,7 +350,7 @@ describe('campaignCreate', () => {
   })
 
   describe('landing page seed', () => {
-    it('seeds the Hero with eyebrow, title, lede, align center, no media and one button extra below scrolling to section 2', async () => {
+    it('seeds the Hero with eyebrow, title, description, align center, no media and one button extra below scrolling to section 2', async () => {
       await create()
       const hero = createdBlock('CampaignHeroBlock')
       expect(hero).toEqual({
@@ -359,9 +361,10 @@ describe('campaignCreate', () => {
         regionId: null,
         parentBlockId: null,
         parentOrder: 0,
-        eyebrow: 'Christmas 2026',
-        title: 'Share the story of Christmas',
-        lede: 'Pick your region to find a journey in your language, ready to share.',
+        eyebrow: 'Your campaign',
+        title: 'Share the story',
+        description:
+          'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         backgroundKind: 'none'
       })
@@ -400,7 +403,7 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('seeds the Video carousel with eyebrow "Watch", title "Films for the season", no video and backgroundKind surface', async () => {
+    it('seeds the Video carousel with eyebrow "Watch", title "Films to watch", no video and backgroundKind surface', async () => {
       await create()
       const carousel = createdBlock('CampaignVideoCarouselBlock')
       expect(carousel).toMatchObject({
@@ -408,13 +411,13 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 2,
         eyebrow: 'Watch',
-        title: 'Films for the season',
+        title: 'Films to watch',
         backgroundKind: 'surface'
       })
       expect(carousel.videoId).toBeUndefined()
     })
 
-    it('seeds the Journey list with eyebrow "Journeys", title, lede, display grid and no items', async () => {
+    it('seeds the Journey list with eyebrow "Journeys", title, description, display grid and no items', async () => {
       await create()
       const list = createdBlock(
         'CampaignJourneyListBlock',
@@ -425,7 +428,8 @@ describe('campaignCreate', () => {
         parentOrder: 3,
         eyebrow: 'Journeys',
         title: 'Ready-made journeys',
-        lede: 'Interactive stories your friends can walk through on their phone.',
+        description:
+          'Interactive stories your friends can walk through on their phone.',
         display: 'grid',
         backgroundKind: 'none'
       })
@@ -459,8 +463,7 @@ describe('campaignCreate', () => {
         pageId: regionPageId(),
         parentBlockId: null,
         parentOrder: 0,
-        intro:
-          'A Christmas journey chosen and contextualised by your regional team.'
+        intro: 'A journey chosen and contextualised by your regional team.'
       })
     })
 
@@ -489,7 +492,7 @@ describe('campaignCreate', () => {
         title: 'Other journeys for this region',
         display: 'grid'
       })
-      expect(list.lede).toBeUndefined()
+      expect(list.description).toBeUndefined()
       expect(
         createdBlocks().filter((block) => block.parentBlockId === list.id)
       ).toHaveLength(0)
@@ -527,9 +530,13 @@ describe('campaignCreate', () => {
       })
     })
 
-    it('does not seed Featured media, Rich text, Columns or Image', async () => {
+    it('does not seed Featured media, Rich text, Columns or an Image section', async () => {
       await create()
-      const typenames = new Set(createdBlocks().map((block) => block.typename))
+      const typenames = new Set(
+        createdBlocks()
+          .filter((block) => block.parentOrder != null)
+          .map((block) => block.typename)
+      )
       for (const absent of [
         'CampaignFeaturedMediaBlock',
         'CampaignRichTextBlock',
@@ -543,7 +550,7 @@ describe('campaignCreate', () => {
   })
 
   describe('chrome seed', () => {
-    it('seeds the header with backgroundKind none, no logo, null pageId and regionId, and nav buttons Home → hero and Resources → video carousel', async () => {
+    it('seeds the header with backgroundKind none, null pageId and regionId, and nav buttons Home → hero and Resources → video carousel', async () => {
       await create()
       const header = createdBlock('CampaignHeaderBlock')
       expect(header).toEqual({
@@ -557,7 +564,9 @@ describe('campaignCreate', () => {
         backgroundKind: 'none'
       })
       const nav = createdBlocks().filter(
-        (block) => block.parentBlockId === header.id
+        (block) =>
+          block.parentBlockId === header.id &&
+          block.typename === 'CampaignButtonBlock'
       )
       expect(nav.map((block) => block.label)).toEqual(['Home', 'Resources'])
       expect(nav.map((block) => block.parentOrder)).toEqual([0, 1])
@@ -576,6 +585,29 @@ describe('campaignCreate', () => {
       expect(actionOf(nav[1])).toEqual({
         campaignBlockId: nav[1].id,
         blockId: createdBlock('CampaignVideoCarouselBlock').id
+      })
+    })
+
+    it('seeds the NextSteps wordmark as the header logo, owned by the header and named by its logoBlockId', async () => {
+      await create()
+      const header = createdBlock('CampaignHeaderBlock')
+      const logo = createdBlock('CampaignImageBlock')
+      expect(logo).toEqual({
+        id: expect.any(String),
+        typename: 'CampaignImageBlock',
+        campaignId: 'id-1',
+        pageId: null,
+        regionId: null,
+        parentBlockId: header.id,
+        parentOrder: null,
+        src: 'https://admin.nextstep.is/logo.svg',
+        alt: 'NextSteps',
+        width: 221,
+        height: 41
+      })
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
+        where: { id: header.id },
+        data: { logoBlockId: logo.id }
       })
     })
 
@@ -813,8 +845,8 @@ describe('campaignCreate', () => {
       const campaign = result.data.campaignCreate
       expect(campaign).toMatchObject({
         id: 'campaignId',
-        title: 'Christmas 2026',
-        slug: 'christmas-2026',
+        title: 'Outreach 2026',
+        slug: 'outreach-2026',
         status: 'draft',
         defaultLanguageId: '529',
         palette: LIGHT_PALETTE,
@@ -840,7 +872,7 @@ describe('campaignCreate', () => {
         regions: []
       })
       expect(campaign.strings).toHaveLength(18)
-      expect(campaign.blocks).toHaveLength(18)
+      expect(campaign.blocks).toHaveLength(19)
       expect(campaign.blocks.map((block: any) => block.__typename)).toEqual(
         fixture.blocks.map((block) => block.typename)
       )
@@ -854,9 +886,10 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 0,
         backgroundKind: 'none',
-        eyebrow: 'Christmas 2026',
-        title: 'Share the story of Christmas',
-        lede: 'Pick your region to find a journey in your language, ready to share.',
+        eyebrow: 'Your campaign',
+        title: 'Share the story',
+        description:
+          'Pick your region to find a journey in your language, ready to share.',
         align: 'center',
         mediaBlockId: null
       })
@@ -888,7 +921,7 @@ describe('campaignCreate', () => {
         parentBlockId: null,
         parentOrder: 0,
         backgroundKind: 'none',
-        logoBlockId: null
+        logoBlockId: 'headerLogoId'
       })
       expect(
         campaign.blocks.find((block: any) => block.id === 'footerCopyrightId')
@@ -941,8 +974,22 @@ describe('campaignCreate', () => {
         ])
       ])
 
+      // The header's logoBlockId is set by an update once the logo row exists.
+      const updates = prismaMock.campaignBlock.update.mock.calls.map(
+        ([args]) =>
+          args as { where: { id: string }; data: Record<string, unknown> }
+      )
+      const createdRows = createdBlocks().map((block) => ({
+        ...block,
+        ...Object.assign(
+          {},
+          ...updates
+            .filter((update) => update.where.id === block.id)
+            .map((update) => update.data)
+        )
+      }))
       expect(
-        createdBlocks().map((block) => normalize(block, mutationLabels))
+        createdRows.map((block) => normalize(block, mutationLabels))
       ).toEqual(
         fixture.blocks.map(({ action: _action, ...block }) =>
           normalize(block, factoryLabels)

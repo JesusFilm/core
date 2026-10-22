@@ -85,12 +85,13 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         align: null,
         mediaBlockId: null,
+        minHeight: null,
         eyebrowTranslations: [],
         titleTranslations: [],
-        ledeTranslations: []
+        descriptionTranslations: []
       }
     case 'CampaignRegionSwitcherBlock':
       return {
@@ -106,11 +107,13 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
+        description: null,
         videoId: null,
         videoVariantLanguageId: null,
         video: null,
         eyebrowTranslations: [],
-        titleTranslations: []
+        titleTranslations: [],
+        descriptionTranslations: []
       }
     case 'CampaignJourneyListBlock':
       return {
@@ -118,11 +121,11 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         display: CampaignJourneyListDisplay.grid,
         eyebrowTranslations: [],
         titleTranslations: [],
-        ledeTranslations: []
+        descriptionTranslations: []
       }
     case 'CampaignAnalyticsBlock':
       return {
@@ -173,7 +176,10 @@ export function newSectionBlock(
         alt: null,
         altTranslations: [],
         width: null,
-        height: null
+        height: null,
+        focalLeft: 50,
+        focalTop: 50,
+        scale: null
       }
     case 'CampaignFeaturedMediaBlock':
       return {
@@ -181,14 +187,14 @@ export function newSectionBlock(
         ...shared,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         bullets: null,
         mediaSide: CampaignMediaSide.right,
         layout: CampaignFeaturedMediaLayout.sideBySide,
         mediaBlockId: null,
         eyebrowTranslations: [],
         titleTranslations: [],
-        ledeTranslations: [],
+        descriptionTranslations: [],
         bulletsTranslations: []
       }
   }

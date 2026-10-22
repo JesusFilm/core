@@ -58,11 +58,15 @@ describe('LeftRail', () => {
     ).toHaveAttribute('href', '/campaigns')
   })
 
-  it('toggles the Pages, Add and Localize panels, one open at a time', () => {
+  it('switches between the Pages, Add and Localize panels, one open at a time, starting on Add', () => {
     render(<Harness />)
     const pages = screen.getByRole('button', { name: 'Pages' })
     const localize = screen.getByRole('button', { name: 'Localize' })
-    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('none')
+    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('add')
+    expect(screen.getByRole('button', { name: 'Add' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
 
     fireEvent.click(pages)
     expect(screen.getByTestId('OpenPanel')).toHaveTextContent('pages')
@@ -78,22 +82,23 @@ describe('LeftRail', () => {
     expect(localize).toHaveAttribute('aria-pressed', 'true')
 
     fireEvent.click(localize)
-    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('none')
+    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('localize')
+    expect(localize).toHaveAttribute('aria-pressed', 'true')
   })
 
-  it('lists the panel toggles as Pages, Navigator, Add, Localize', () => {
+  it('lists the panel toggles as Add, Pages, Navigator, Localize', () => {
     render(<Harness />)
 
-    const panels = ['Pages', 'Navigator', 'Add', 'Localize']
+    const panels = ['Add', 'Pages', 'Navigator', 'Localize']
     const toggles = screen
       .getAllByRole('button')
       .map((button) => button.getAttribute('aria-label') ?? '')
       .filter((label) => panels.includes(label))
 
-    expect(toggles).toEqual(['Pages', 'Navigator', 'Add', 'Localize'])
+    expect(toggles).toEqual(['Add', 'Pages', 'Navigator', 'Localize'])
   })
 
-  it('toggles the Navigator panel', () => {
+  it('keeps the Navigator panel open when its toggle is pressed again', () => {
     render(<Harness />)
     const navigator = screen.getByRole('button', { name: 'Navigator' })
 
@@ -102,7 +107,8 @@ describe('LeftRail', () => {
     expect(navigator).toHaveAttribute('aria-pressed', 'true')
 
     fireEvent.click(navigator)
-    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('none')
+    expect(screen.getByTestId('OpenPanel')).toHaveTextContent('navigator')
+    expect(navigator).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('undoes and redoes through the one Command history', () => {

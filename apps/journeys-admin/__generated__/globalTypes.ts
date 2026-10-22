@@ -200,7 +200,7 @@ export enum CampaignSwitcherVariant {
 }
 
 /**
- * Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `lede`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
+ * Every translatable text field of a Campaign, its regions, strings and blocks. The target names which fields apply: section text (`eyebrow`, `title`, `description`, `bullets`, `content`, `intro`), `CampaignTypographyBlock.content`, `CampaignButtonBlock.label`, `CampaignImageBlock.alt`, `CampaignVideoBlock` / `CampaignJourneyBlock` `title` and `description`, `CampaignRegion.name`, `CampaignString.value` and `Campaign.title`.
  */
 export enum CampaignTextField {
   alt = "alt",
@@ -210,7 +210,6 @@ export enum CampaignTextField {
   eyebrow = "eyebrow",
   intro = "intro",
   label = "label",
-  lede = "lede",
   name = "name",
   title = "title",
   value = "value",
@@ -225,7 +224,7 @@ export enum CampaignTextSource {
 }
 
 /**
- * Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, not yet touched by a person); `missing` (no entry in the language); `edited` (written by a person).
+ * Which rows `campaignTranslations` returns: `all`; `needsReview` (written by the machine, which flagged the line as a guess a person should check); `missing` (no entry in the language); `edited` (written by a person).
  */
 export enum CampaignTranslationFilter {
   all = "all",
@@ -740,7 +739,7 @@ export interface CampaignFeaturedMediaBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   bullets?: string | null;
   mediaSide?: CampaignMediaSide | null;
 }
@@ -748,7 +747,7 @@ export interface CampaignFeaturedMediaBlockCreateInput {
 export interface CampaignFeaturedMediaBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   bullets?: string | null;
   mediaSide?: CampaignMediaSide | null;
   layout?: CampaignFeaturedMediaLayout | null;
@@ -803,15 +802,16 @@ export interface CampaignHeroBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   align?: TypographyAlign | null;
 }
 
 export interface CampaignHeroBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   align?: TypographyAlign | null;
+  minHeight?: number | null;
   mediaBlockId?: string | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
@@ -836,11 +836,17 @@ export interface CampaignImageBlockCreateInput {
   slot?: CampaignImageSlot | null;
   src?: string | null;
   alt?: string | null;
+  focalLeft?: number | null;
+  focalTop?: number | null;
+  scale?: number | null;
 }
 
 export interface CampaignImageBlockUpdateInput {
   src?: string | null;
   alt?: string | null;
+  focalLeft?: number | null;
+  focalTop?: number | null;
+  scale?: number | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
   coverBlockId?: string | null;
@@ -872,14 +878,14 @@ export interface CampaignJourneyListBlockCreateInput {
   parentOrder?: number | null;
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   display?: CampaignJourneyListDisplay | null;
 }
 
 export interface CampaignJourneyListBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
-  lede?: string | null;
+  description?: string | null;
   display?: CampaignJourneyListDisplay | null;
   backgroundKind?: CampaignBackgroundKind | null;
   backgroundColor?: string | null;
@@ -1118,6 +1124,7 @@ export interface CampaignVideoCarouselBlockCreateInput {
 export interface CampaignVideoCarouselBlockUpdateInput {
   eyebrow?: string | null;
   title?: string | null;
+  description?: string | null;
   url?: string | null;
   videoId?: string | null;
   videoVariantLanguageId?: string | null;

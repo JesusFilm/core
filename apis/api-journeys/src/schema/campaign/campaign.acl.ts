@@ -36,6 +36,8 @@ export function campaignAcl(
     case Action.Update:
       return isManager || isMember
     case Action.Manage:
+      // Publishing is editing: whoever can see and change the page can put it live.
+      return isManager || isMember
     case Action.Delete:
       return isManager
     default:

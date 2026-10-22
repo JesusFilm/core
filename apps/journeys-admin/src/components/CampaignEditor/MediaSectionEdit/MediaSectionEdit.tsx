@@ -20,6 +20,7 @@ import {
 import { CampaignMediaOwner } from '../../../libs/useCampaignMediaSlotMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
+import { FocalPointControl } from '../FocalPointControl'
 import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
 import { useCampaignMediaCommand } from '../utils/useCampaignMediaCommand'
 
@@ -95,7 +96,13 @@ export function MediaSectionEdit({
         <Typography variant="subtitle2">{t('Media')}</Typography>
         {media != null ? (
           <Box data-testid="CampaignMediaSectionEditMedia">
-            <CanvasMedia media={media} />
+            <CanvasMedia
+              media={media}
+              stacked={
+                block.__typename === 'CampaignFeaturedMediaBlock' &&
+                block.layout === CampaignFeaturedMediaLayout.stacked
+              }
+            />
           </Box>
         ) : (
           <Typography variant="body2" color="text.secondary">
@@ -103,6 +110,9 @@ export function MediaSectionEdit({
               'No media: paste a Watch or YouTube link, upload a video or pick an image.'
             )}
           </Typography>
+        )}
+        {media?.__typename === 'CampaignImageBlock' && (
+          <FocalPointControl image={media} />
         )}
         {media != null && (
           <Stack direction="row" spacing={2}>

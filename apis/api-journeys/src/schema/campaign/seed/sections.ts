@@ -16,9 +16,10 @@ export const LANDING_VIDEO_CAROUSEL = 2
 export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignHeroBlock',
-    eyebrow: 'Christmas 2026',
-    title: 'Share the story of Christmas',
-    lede: 'Pick your region to find a journey in your language, ready to share.',
+    eyebrow: 'Your campaign',
+    title: 'Share the story',
+    description:
+      'Pick your region to find a journey in your language, ready to share.',
     align: 'center',
     backgroundKind: 'none'
   },
@@ -31,14 +32,15 @@ export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignVideoCarouselBlock',
     eyebrow: 'Watch',
-    title: 'Films for the season',
+    title: 'Films to watch',
     backgroundKind: 'surface'
   },
   {
     typename: 'CampaignJourneyListBlock',
     eyebrow: 'Journeys',
     title: 'Ready-made journeys',
-    lede: 'Interactive stories your friends can walk through on their phone.',
+    description:
+      'Interactive stories your friends can walk through on their phone.',
     display: 'grid',
     backgroundKind: 'none'
   },
@@ -61,8 +63,7 @@ export const LANDING_HERO_BUTTON_SEED: SectionSeed = {
 export const REGION_SECTION_SEED: readonly SectionSeed[] = [
   {
     typename: 'CampaignRegionHeaderBlock',
-    intro:
-      'A Christmas journey chosen and contextualised by your regional team.',
+    intro: 'A journey chosen and contextualised by your regional team.',
     backgroundKind: 'none'
   },
   {
@@ -96,6 +97,20 @@ export const REGION_SECTION_SEED: readonly SectionSeed[] = [
 export const HEADER_SEED: SectionSeed = {
   typename: 'CampaignHeaderBlock',
   backgroundKind: 'none'
+}
+
+/**
+ * The header's default logo: the NextSteps wordmark served by the admin app,
+ * owned by the header (`parentOrder` null) and named by its `logoBlockId`.
+ * The one `src` that is not an imagedelivery.net address; the author replaces
+ * it through the Logo picker like any other logo.
+ */
+export const HEADER_LOGO_SEED: SectionSeed = {
+  typename: 'CampaignImageBlock',
+  src: 'https://admin.nextstep.is/logo.svg',
+  alt: 'NextSteps',
+  width: 221,
+  height: 41
 }
 
 /** Header nav buttons, each a ScrollToBlockAction to a landing section index. */

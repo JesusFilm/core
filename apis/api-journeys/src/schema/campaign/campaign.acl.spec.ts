@@ -31,7 +31,7 @@ describe('campaignAcl', () => {
     ['member', UserTeamRole.member],
     ['manager', UserTeamRole.manager]
   ] as const)('a %s of the team', (_label, role) => {
-    it.each([Action.Create, Action.Read, Action.Update])(
+    it.each([Action.Create, Action.Read, Action.Update, Action.Manage])(
       'passes %s',
       (action) => {
         expect(campaignAcl(action, campaignFor(role), user)).toBe(true)
@@ -39,17 +39,14 @@ describe('campaignAcl', () => {
     )
   })
 
-  it.each([Action.Manage, Action.Delete])(
-    '%s passes for a manager only',
-    (action) => {
-      expect(campaignAcl(action, campaignFor(UserTeamRole.manager), user)).toBe(
-        true
-      )
-      expect(campaignAcl(action, campaignFor(UserTeamRole.member), user)).toBe(
-        false
-      )
-    }
-  )
+  it.each([Action.Delete])('%s passes for a manager only', (action) => {
+    expect(campaignAcl(action, campaignFor(UserTeamRole.manager), user)).toBe(
+      true
+    )
+    expect(campaignAcl(action, campaignFor(UserTeamRole.member), user)).toBe(
+      false
+    )
+  })
 
   it.each(everyAction)('denies %s to a user outside the team', (action) => {
     expect(

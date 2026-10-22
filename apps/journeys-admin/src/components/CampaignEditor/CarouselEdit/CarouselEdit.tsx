@@ -9,7 +9,13 @@ import { ReactElement } from 'react'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
 import { CampaignVideoCarouselBlock } from '../../../libs/useCampaignVideoCarouselBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { CampaignMediaPick, MediaPasteField } from '../Pickers/MediaPasteField'
+import {
+  CampaignMediaPick,
+  MediaPasteField,
+  ResolvedVideo,
+  isWatchContainer,
+  videoLabelName
+} from '../Pickers/MediaPasteField'
 import { useCampaignCarouselCommand } from '../utils/useCampaignCarouselCommand'
 
 interface CarouselEditProps {
@@ -40,10 +46,19 @@ export function CarouselEdit({ block }: CarouselEditProps): ReactElement {
     block.video?.title.find((title) => title.primary)?.value ??
     block.video?.title[0]?.value
 
-  function handlePick(pick: CampaignMediaPick): void {
+  /** A Watch series or collection expands live into its children and writes its label, title and description over the carousel's text; a single video of any source is one explicit item. */
+  function handlePick(pick: CampaignMediaPick, resolved?: ResolvedVideo): void {
     if ('src' in pick) return
-    if (pick.source === VideoBlockSource.internal) {
-      setWatchVideo(block, pick.url)
+    if (
+      pick.source === VideoBlockSource.internal &&
+      resolved?.label != null &&
+      isWatchContainer(resolved.label)
+    ) {
+      setWatchVideo(block, pick.url, {
+        eyebrow: videoLabelName(t, resolved.label),
+        title: resolved.title,
+        description: resolved.description
+      })
       return
     }
     addItem(block, pick)

@@ -23,6 +23,7 @@ export const CAMPAIGN_TRANSLATIONS = gql`
       defaultValue
       value
       source
+      needsReview
       target {
         typename
         blockId

@@ -6,6 +6,8 @@ import {
   TEXT_CAPS,
   assertHttpsUrl,
   assertLengthOrNull,
+  assertPercentOrNull,
+  assertScaleOrNull,
   badUserInput
 } from '../../validation'
 
@@ -15,6 +17,9 @@ export const CAMPAIGN_IMAGE_HOST = 'imagedelivery.net'
 export interface ImageInput {
   src?: string | null
   alt?: string | null
+  focalLeft?: number | null
+  focalTop?: number | null
+  scale?: number | null
 }
 
 export interface ImageColumns {
@@ -22,6 +27,9 @@ export interface ImageColumns {
   alt?: string | null
   width?: number | null
   height?: number | null
+  focalLeft?: number | null
+  focalTop?: number | null
+  scale?: number | null
 }
 
 /**
@@ -75,7 +83,9 @@ export async function measureImage(
 
 /**
  * The image body: `src` validated and measured when given (null clears the
- * image and its size); `alt` trimmed and capped at 500 (null allowed).
+ * image and its size); `alt` trimmed and capped at 500 (null allowed);
+ * `focalLeft` and `focalTop` whole percentages (null falls back to the
+ * centre); `scale` a whole percentage from 100 to 200 (null means no zoom).
  * Omitted fields are left untouched.
  */
 export async function validateImageInput(
@@ -94,5 +104,11 @@ export async function validateImageInput(
   }
   if (input.alt !== undefined)
     data.alt = assertLengthOrNull(input.alt, 'alt', TEXT_CAPS.imageAlt)
+  if (input.focalLeft !== undefined)
+    data.focalLeft = assertPercentOrNull(input.focalLeft, 'focalLeft')
+  if (input.focalTop !== undefined)
+    data.focalTop = assertPercentOrNull(input.focalTop, 'focalTop')
+  if (input.scale !== undefined)
+    data.scale = assertScaleOrNull(input.scale, 'scale')
   return data
 }

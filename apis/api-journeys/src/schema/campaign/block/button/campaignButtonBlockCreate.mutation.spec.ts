@@ -61,8 +61,12 @@ describe('campaignButtonBlockCreate', () => {
     fixture = setupCampaignBlockSpec()
     const header = fixture.blocks.find((block) => block.id === 'headerId')!
     prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
+    // The siblings query excludes owned blocks (the header logo has parentOrder null).
     prismaMock.campaignBlock.findMany.mockResolvedValue(
-      fixture.blocks.filter((block) => block.parentBlockId === 'headerId')
+      fixture.blocks.filter(
+        (block) =>
+          block.parentBlockId === 'headerId' && block.parentOrder != null
+      )
     )
     prismaMock.campaignBlock.create.mockImplementation((async ({
       data

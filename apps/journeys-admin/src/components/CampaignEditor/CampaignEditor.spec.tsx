@@ -153,9 +153,13 @@ describe('CampaignEditor', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('opens one panel at a time', () => {
+  it('opens on the Add panel and shows one panel at a time', () => {
     renderEditor()
-    expect(screen.queryByTestId('CampaignLeftPanel')).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('CampaignLeftPanel')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Add' })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
 
     fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
     expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
@@ -167,24 +171,27 @@ describe('CampaignEditor', () => {
   })
 
   it.each([EDITOR_MIN_WIDTH, 1440, 1920])(
-    'overlays the canvas at %i px, so the frame never moves when a panel opens',
+    'docks the panel beside the rail at %i px, so the canvas never moves when the rail switches panels',
     (width) => {
       setViewport(width)
       renderEditor()
+      const rail = screen.getByTestId('CampaignLeftRail')
       const canvas = screen.getByTestId('CampaignCanvas')
-      const frameParent = canvas.parentElement
+      const panel = screen.getByTestId('CampaignLeftPanel')
+      expect(panel.parentElement).toBe(rail.parentElement)
+      expect(panel.previousElementSibling).toBe(rail)
+      expect(panel).not.toHaveStyle({ position: 'absolute' })
 
       fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
 
-      const panel = screen.getByTestId('CampaignLeftPanel')
-      expect(panel.parentElement).toBe(frameParent)
-      expect(screen.getByTestId('CampaignCanvas').parentElement).toBe(
-        frameParent
+      expect(screen.getByTestId('CampaignLeftPanel').parentElement).toBe(
+        rail.parentElement
       )
+      expect(screen.getByTestId('CampaignCanvas')).toBe(canvas)
     }
   )
 
-  it('starts the canvas banner after the open panel', () => {
+  it('keeps the canvas banner at the canvas edge whichever panel is open', () => {
     renderEditor()
     expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
       left: '0px'
@@ -193,7 +200,7 @@ describe('CampaignEditor', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
 
     expect(screen.getByTestId('CampaignCanvasBanner')).toHaveStyle({
-      left: '300px'
+      left: '0px'
     })
   })
 
@@ -243,31 +250,37 @@ describe('CampaignEditor', () => {
     ).toHaveTextContent('Français')
   })
 
-  it('toggles the Pages panel with P, never while typing', () => {
+  it('shows the Pages panel with P and keeps it on a second P, never while typing', () => {
     renderEditor()
 
     fireEvent.keyDown(document.body, { key: 'p', code: 'KeyP' })
     expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
     fireEvent.keyDown(document.body, { key: 'p', code: 'KeyP' })
-    expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
+    expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     const title = screen.getByLabelText('Title')
     title.focus()
-    fireEvent.keyDown(title, { key: 'p', code: 'KeyP' })
-    expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
+    fireEvent.keyDown(title, { key: 'a', code: 'KeyA' })
+    expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignAddPanel')).not.toBeInTheDocument()
   })
 
-  it('toggles the Add panel with A in the shell and inside the frame, never while typing', async () => {
+  it('shows the Add panel with A in the shell and inside the frame, never while typing', async () => {
     const { baseElement } = renderEditor()
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     const frameDocument = body.ownerDocument
 
+    fireEvent.keyDown(document.body, { key: 'p', code: 'KeyP' })
+    expect(screen.queryByTestId('CampaignAddPanel')).not.toBeInTheDocument()
     fireEvent.keyDown(document.body, { key: 'a', code: 'KeyA' })
     expect(screen.getByTestId('CampaignAddPanel')).toBeInTheDocument()
-    fireEvent.keyDown(frameDocument.body, { key: 'a', code: 'KeyA' })
+    fireEvent.keyDown(frameDocument.body, { key: 'p', code: 'KeyP' })
     expect(screen.queryByTestId('CampaignAddPanel')).not.toBeInTheDocument()
+    fireEvent.keyDown(frameDocument.body, { key: 'a', code: 'KeyA' })
+    expect(screen.getByTestId('CampaignAddPanel')).toBeInTheDocument()
 
+    fireEvent.keyDown(document.body, { key: 'p', code: 'KeyP' })
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     const title = screen.getByLabelText('Title')
     title.focus()
@@ -275,23 +288,26 @@ describe('CampaignEditor', () => {
     expect(screen.queryByTestId('CampaignAddPanel')).not.toBeInTheDocument()
   })
 
-  it('toggles the Navigator panel with Z in the shell and inside the frame, never while typing', async () => {
+  it('shows the Navigator panel with Z in the shell and inside the frame, never while typing', async () => {
     const { baseElement } = renderEditor()
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
 
     fireEvent.keyDown(document.body, { key: 'z', code: 'KeyZ' })
     expect(screen.getByTestId('Navigator')).toBeInTheDocument()
     fireEvent.keyDown(body.ownerDocument.body, { key: 'z', code: 'KeyZ' })
+    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+    fireEvent.keyDown(body.ownerDocument.body, { key: 'p', code: 'KeyP' })
     expect(screen.queryByTestId('Navigator')).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Navigator' }))
+    fireEvent.keyDown(body.ownerDocument.body, { key: 'z', code: 'KeyZ' })
     expect(screen.getByTestId('Navigator')).toBeInTheDocument()
 
+    fireEvent.click(screen.getByRole('button', { name: 'Pages' }))
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     const title = screen.getByLabelText('Title')
     title.focus()
     fireEvent.keyDown(title, { key: 'z', code: 'KeyZ' })
-    expect(screen.getByTestId('Navigator')).toBeInTheDocument()
+    expect(screen.queryByTestId('Navigator')).not.toBeInTheDocument()
+    expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
   })
 
   it('shows the picked row in the Inspector and expands the tree to a block picked on the canvas', async () => {
@@ -318,7 +334,7 @@ describe('CampaignEditor', () => {
     expect(screen.getByTestId('NavigatorRow-heroButtonId')).toBeInTheDocument()
   })
 
-  it('closes an open panel on Escape before it steps the selection up', async () => {
+  it('steps the selection up on Escape and leaves the open panel alone', async () => {
     const { baseElement } = renderEditor()
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     fireEvent.click(body.querySelector('[data-testid="CanvasSection-heroId"]')!)
@@ -328,12 +344,7 @@ describe('CampaignEditor', () => {
     )
 
     await userEvent.keyboard('{Escape}')
-    expect(screen.queryByTestId('CampaignPagesPanel')).not.toBeInTheDocument()
-    expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
-      'Hero'
-    )
-
-    await userEvent.keyboard('{Escape}')
+    expect(screen.getByTestId('CampaignPagesPanel')).toBeInTheDocument()
     expect(screen.getByTestId('CampaignInspectorLabel')).toHaveTextContent(
       'Campaign'
     )
@@ -363,8 +374,8 @@ describe('CampaignEditor', () => {
         campaignUpdate: {
           __typename: 'Campaign',
           id: 'campaignId',
-          title: 'Christmas 2026',
-          slug: 'christmas-2026'
+          title: 'Outreach 2026',
+          slug: 'outreach-2026'
         }
       }
     }))
@@ -435,7 +446,7 @@ describe('CampaignEditor', () => {
       {
         request: {
           query: CAMPAIGN_UPDATE,
-          variables: { id: 'campaignId', input: { title: 'Easter 2027' } }
+          variables: { id: 'campaignId', input: { title: 'Outreach 2027' } }
         },
         result: {
           errors: [
@@ -449,8 +460,8 @@ describe('CampaignEditor', () => {
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
     const title = screen.getByLabelText('Title')
-    fireEvent.change(title, { target: { value: 'Easter 2027' } })
-    expect(title).toHaveValue('Easter 2027')
+    fireEvent.change(title, { target: { value: 'Outreach 2027' } })
+    expect(title).toHaveValue('Outreach 2027')
     fireEvent.blur(title)
 
     expect(await screen.findByText('campaign not found')).toBeInTheDocument()

@@ -103,14 +103,14 @@ describe('campaignRegionLanguageUpdate', () => {
       return { ...fixture.regions[0].languages[0], ...row, ...data }
     }) as never)
     prismaMock.journey.findFirst.mockResolvedValue(
-      journeyRow('journeyId', 'christmas-europe') as never
+      journeyRow('journeyId', 'outreach-europe') as never
     )
     prismaMock.journey.findUniqueOrThrow.mockImplementation((async ({
       where
     }: any) =>
       journeyRow(
         where.id,
-        where.id === 'journeyId' ? 'christmas-europe' : 'noel-europe'
+        where.id === 'journeyId' ? 'outreach-europe' : 'noel-europe'
       )) as never)
     prismaMock.qrCode.create.mockImplementation((async ({ data }: any) => ({
       ...QR_CODE,
@@ -149,8 +149,8 @@ describe('campaignRegionLanguageUpdate', () => {
       expect(result.data.campaignRegionLanguageUpdate).toEqual({
         id: 'eurRegionId-529',
         journeyId: 'journeyId',
-        title: 'christmas-europe title',
-        description: 'christmas-europe description',
+        title: 'outreach-europe title',
+        description: 'outreach-europe description',
         qrCodeId: 'qrCodeId'
       })
       expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
@@ -191,12 +191,12 @@ describe('campaignRegionLanguageUpdate', () => {
     })
 
     it('resolves a public URL on any domain by slug', async () => {
-      await update({ url: 'https://journeys.example.org/christmas-europe' })
+      await update({ url: 'https://journeys.example.org/outreach-europe' })
 
       expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
         expect.objectContaining({
           where: {
-            slug: 'christmas-europe',
+            slug: 'outreach-europe',
             status: { in: ['published'] },
             deletedAt: null
           }
@@ -243,7 +243,7 @@ describe('campaignRegionLanguageUpdate', () => {
       const { id: shortLinkId, to } =
         vi.mocked(createShortLink).mock.calls[0][0]
       expect(to).toBe(
-        `https://example.com/christmas-europe?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
+        `https://example.com/outreach-europe?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
       )
       expect(prismaMock.qrCode.create).toHaveBeenCalledWith({
         data: {
@@ -258,8 +258,8 @@ describe('campaignRegionLanguageUpdate', () => {
           where: { id: 'eurRegionId-529' },
           data: {
             journeyId: 'journeyId',
-            title: 'christmas-europe title',
-            description: 'christmas-europe description',
+            title: 'outreach-europe title',
+            description: 'outreach-europe description',
             snapshotEdited: false,
             qrCodeId: 'qrCodeId'
           }
@@ -274,7 +274,7 @@ describe('campaignRegionLanguageUpdate', () => {
 
     it("builds the short-link target on the journey's own team domain", async () => {
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
-        journeyRow('journeyId', 'christmas-europe', {
+        journeyRow('journeyId', 'outreach-europe', {
           team: {
             id: 'otherTeamId',
             customDomains: [
@@ -287,7 +287,7 @@ describe('campaignRegionLanguageUpdate', () => {
       await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
 
       expect(vi.mocked(createShortLink).mock.calls[0][0].to).toMatch(
-        /^https:\/\/journeys\.example\.org\/christmas-europe\?utm_source=ns-qr-code&utm_campaign=/
+        /^https:\/\/journeys\.example\.org\/outreach-europe\?utm_source=ns-qr-code&utm_campaign=/
       )
     })
 
@@ -504,7 +504,7 @@ describe('campaignRegionLanguageUpdate', () => {
         expect(updateShortLink).toHaveBeenCalledTimes(2)
         expect(updateShortLink).toHaveBeenLastCalledWith({
           id: 'shortLinkId',
-          to: 'https://example.com/christmas-europe?utm_source=ns-qr-code&utm_campaign=shortLinkId'
+          to: 'https://example.com/outreach-europe?utm_source=ns-qr-code&utm_campaign=shortLinkId'
         })
       })
     })
@@ -522,6 +522,34 @@ describe('campaignRegionLanguageUpdate', () => {
         })
       )
       expect(createShortLink).toHaveBeenCalledTimes(1)
+    })
+
+    it('re-linking the journey already linked mints the missing QR code and keeps an edited snapshot', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+        campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529', {
+          journeyId: 'journeyId',
+          title: 'Our title',
+          description: 'Our description',
+          snapshotEdited: true,
+          qrCodeId: null,
+          qrCode: null
+        })
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.data.campaignRegionLanguageUpdate).toEqual({
+        id: 'eurRegionId-529',
+        journeyId: 'journeyId',
+        title: 'Our title',
+        description: 'Our description',
+        qrCodeId: 'qrCodeId'
+      })
+      expect(createShortLink).toHaveBeenCalledTimes(1)
+      expect(
+        vi.mocked(prismaMock.campaignRegionLanguage.update).mock.calls[0][0]
+          .data
+      ).toEqual({ qrCodeId: 'qrCodeId' })
     })
   })
 

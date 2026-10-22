@@ -58,6 +58,46 @@ const HEX_PATTERN = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i
  * uppercase. Named colours, `rgb()` and 8-digit alpha are rejected. An empty
  * string is never a colour — nullable columns take `null`, never `""`.
  */
+/**
+ * A whole-number percentage (0 to 100) or null; undefined passes through so
+ * an omitted field is left untouched. `BAD_USER_INPUT` / `field` otherwise.
+ */
+export function assertPercentOrNull<T extends number | null | undefined>(
+  value: T,
+  field: string
+): T {
+  if (value == null) return value
+  if (!Number.isInteger(value) || value < 0 || value > 100)
+    throw badUserInput(`${field} must be a whole number from 0 to 100`, field)
+  return value
+}
+
+/** An image zoom is a whole percentage from no zoom to double. */
+export const IMAGE_SCALE_MIN = 100
+export const IMAGE_SCALE_MAX = 200
+
+/**
+ * A whole-number zoom percentage (100 to 200) or null (none); undefined
+ * passes through so an omitted field is left untouched. `BAD_USER_INPUT` /
+ * `field` otherwise.
+ */
+export function assertScaleOrNull<T extends number | null | undefined>(
+  value: T,
+  field: string
+): T {
+  if (value == null) return value
+  if (
+    !Number.isInteger(value) ||
+    value < IMAGE_SCALE_MIN ||
+    value > IMAGE_SCALE_MAX
+  )
+    throw badUserInput(
+      `${field} must be a whole number from ${IMAGE_SCALE_MIN} to ${IMAGE_SCALE_MAX}`,
+      field
+    )
+  return value
+}
+
 export function assertHex(value: string, field: string): string {
   const trimmed = value.trim()
   if (!HEX_PATTERN.test(trimmed))
@@ -104,7 +144,7 @@ export const TEXT_CAPS = {
   regionName: 60,
   eyebrow: 80,
   title: 150,
-  lede: 500,
+  description: 500,
   intro: 500,
   bullets: 1000,
   richTextContent: 5000,

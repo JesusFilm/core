@@ -29,7 +29,7 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslatio
   source: CampaignTextSource;
 }
 
-export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations {
+export interface CampaignHeroBlockCreate_campaignHeroBlockCreate_descriptionTranslations {
   __typename: "TranslatedValue";
   /**
    * api-languages Language id.
@@ -76,18 +76,22 @@ export interface CampaignHeroBlockCreate_campaignHeroBlockCreate {
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
-  lede: string | null;
+  description: string | null;
   /**
    * Alignment of the Section Body; the editor offers left and center.
    */
   align: TypographyAlign | null;
+  /**
+   * Minimum height as a percentage of the viewport height (0 to 100), the text centred within it; null leaves the hero as tall as its content.
+   */
+  minHeight: number | null;
   /**
    * The owned CampaignVideoBlock or CampaignImageBlock in the Media Slot.
    */
   mediaBlockId: string | null;
   eyebrowTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_titleTranslations[];
-  ledeTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_ledeTranslations[];
+  descriptionTranslations: CampaignHeroBlockCreate_campaignHeroBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignHeroBlockCreate {
@@ -103,7 +107,7 @@ export interface CampaignHeroBlockCreate {
    * - BAD_USER_INPUT (field: `parentOrder`): negative.
    * - BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.
    * - BAD_USER_INPUT (field: `id`): not a UUID, or already the id of a block (live or deleted).
-   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `lede` / `align`): the value fails its rule.
+   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `align`): the value fails its rule.
    */
   campaignHeroBlockCreate: CampaignHeroBlockCreate_campaignHeroBlockCreate;
 }

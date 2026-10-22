@@ -123,8 +123,8 @@ async function resolveWatchVideoId(
  * fetched once by the existing fetchers, the text cut to the override caps;
  * an id its service does not know is `BAD_USER_INPUT` / `videoId`.
  * A Watch video is a pasted `url` or a `videoId`, either resolved through
- * the gateway, and stores only its ids, the variant language being the
- * campaign language at link time.
+ * the gateway, and stores only its ids, the variant language being the one
+ * the pasted address named, else the campaign language at link time.
  */
 export async function pickVideo(
   input: VideoPickInput,
@@ -160,16 +160,19 @@ export async function pickVideo(
       )
     }
     case 'internal': {
-      const videoId =
+      const watch =
         input.url != null
           ? await resolveWatchUrl(input.url)
-          : await resolveWatchVideoId(input.videoId)
-      if (videoId == null)
+          : {
+              videoId: await resolveWatchVideoId(input.videoId),
+              languageId: null
+            }
+      if (watch.videoId == null)
         throw badUserInput('a Watch video needs its url', 'url')
       return {
         source,
-        videoId,
-        videoVariantLanguageId: campaignLanguageId,
+        videoId: watch.videoId,
+        videoVariantLanguageId: watch.languageId ?? campaignLanguageId,
         title: null,
         description: null,
         image: null,

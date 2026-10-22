@@ -91,7 +91,8 @@ You are a professional translator for campaign landing pages: headings, short pa
 - Never exceed the maximum length shown for a line
 - Preserve all {{variable}} template syntax exactly as-is — never translate content inside {{ }}
 - For Bible passages, use an established translation in the target language — never translate scripture yourself. If none is identified, use the most popular English Bible translation.
-- DO NOT translate proper nouns`
+- DO NOT translate proper nouns
+- Set uncertain to true only when you had to guess: the source is ambiguous without more context, an idiom or term has several reasonable renderings, or a proper noun might be a word. Otherwise false. Most lines should be false.`
 
 const CampaignTextTranslationSchema = z.object({
   targetId: z
@@ -100,8 +101,19 @@ const CampaignTextTranslationSchema = z.object({
   field: z
     .enum(CAMPAIGN_TEXT_FIELD_VALUES)
     .describe('The field name shown for the line, unchanged'),
-  value: z.string().describe('The line translated into the target language')
+  value: z.string().describe('The line translated into the target language'),
+  uncertain: z
+    .boolean()
+    .describe(
+      'true only when the translation is a guess a person should check; false when confident'
+    )
 })
+
+/** What the model gave for one line. */
+interface MachineTranslation {
+  value: string
+  uncertain: boolean
+}
 
 interface TranslationBatch {
   label: string
@@ -205,7 +217,8 @@ async function lockBatchTargets(
 }
 
 /**
- * Write the batch's machine translations as `{ value, source: machine }` into
+ * Write the batch's machine translations as `{ value, source: machine }`
+ * (`uncertain: true` on a line the model flagged as a guess) into
  * `<field>Translations[languageId]`. The targets and the campaign are locked
  * and each target re-read under the lock, so nothing a person wrote, or
  * another language's entry, since the run began is lost: `missing` only
@@ -224,7 +237,7 @@ async function writeBatch({
   languageId: string
   mode: CampaignAiTranslateMode
   batch: TranslationBatch
-  translated: Map<string, string>
+  translated: Map<string, MachineTranslation>
 }): Promise<number> {
   const rowsByTarget = new Map<string, CampaignTranslationRowShape[]>()
   for (const row of batch.rows) {
@@ -271,13 +284,16 @@ async function writeBatch({
         const hasEntry = existing != null && existing.value !== ''
         if (hasEntry && (mode === 'missing' || existing.source === 'human'))
           continue
+        const machine = translated.get(
+          rowKey(targetId, row.field)
+        ) as MachineTranslation
         json[languageId] = {
-          value: withinCap(
-            translated.get(rowKey(targetId, row.field)) as string,
-            row.maxLength,
-            { targetId, field: row.field }
-          ),
-          source: 'machine'
+          value: withinCap(machine.value, row.maxLength, {
+            targetId,
+            field: row.field
+          }),
+          source: 'machine',
+          ...(machine.uncertain ? { uncertain: true } : {})
         }
         data[column] = json
         written++
@@ -303,11 +319,11 @@ async function translateBatch({
   campaignTitle: string
   session: ReturnType<typeof createOpenrouterFallbackSession>
   cancelSignal?: AbortSignal
-}): Promise<Map<string, string>> {
+}): Promise<Map<string, MachineTranslation>> {
   const requested = new Set(
     batch.rows.map((row) => rowKey(targetIdOf(row), row.field))
   )
-  const translated = new Map<string, string>()
+  const translated = new Map<string, MachineTranslation>()
   const prompt = `Campaign: ${hardenPrompt(campaignTitle)}
 
 Translate from ${hardenPrompt(sourceLanguageName)} to ${hardenPrompt(targetLanguageName)}.
@@ -342,7 +358,10 @@ Return exactly one entry for every line listed above — do not skip, merge, or 
       const targetId = item.targetId.replace(/^\[|\]$/g, '')
       const key = rowKey(targetId, item.field)
       if (!requested.has(key) || item.value.trim() === '') continue
-      translated.set(key, item.value.trim())
+      translated.set(key, {
+        value: item.value.trim(),
+        uncertain: item.uncertain === true
+      })
     }
 
     // The AI SDK reports stream failures to onError and ends the stream, which

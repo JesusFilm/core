@@ -10,22 +10,22 @@ import { JourneyPicker, journeyAdminLink } from './JourneyPicker'
 
 const team = { __typename: 'Team', id: 'teamId', title: 'Ministry team' }
 
-const christmas = {
+const outreach = {
   __typename: 'Journey',
-  id: 'christmasId',
-  title: 'The Christmas story',
-  description: 'A short journey through the nativity.',
-  slug: 'christmas-story',
+  id: 'outreachId',
+  title: 'The outreach story',
+  description: 'A short journey through the story.',
+  slug: 'outreach-story',
   status: JourneyStatus.published,
   team
 }
 
-const easter = {
+const hope = {
   __typename: 'Journey',
-  id: 'easterId',
-  title: 'Easter, retold',
+  id: 'hopeId',
+  title: 'Hope, retold',
   description: null,
-  slug: 'easter-retold',
+  slug: 'hope-retold',
   status: JourneyStatus.archived,
   team: { __typename: 'Team', id: 'otherTeamId', title: 'Shared team' }
 }
@@ -33,12 +33,12 @@ const easter = {
 function accessibleMock() {
   return {
     request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
-    result: vi.fn(() => ({ data: { journeys: [christmas, easter] } }))
+    result: vi.fn(() => ({ data: { journeys: [outreach, hope] } }))
   }
 }
 
 function renderPicker(
-  onLink = vi.fn(async () => undefined),
+  onLink = vi.fn<(url: string) => Promise<void>>(async () => undefined),
   mock = accessibleMock()
 ) {
   render(
@@ -51,8 +51,8 @@ function renderPicker(
 
 describe('journeyAdminLink', () => {
   it('builds the admin link the create takes from a journey id', () => {
-    expect(journeyAdminLink('christmasId')).toBe(
-      'https://admin.nextstep.is/journeys/christmasId'
+    expect(journeyAdminLink('outreachId')).toBe(
+      'https://admin.nextstep.is/journeys/outreachId'
     )
   })
 })
@@ -66,7 +66,7 @@ describe('JourneyPicker', () => {
       screen.getByRole('combobox', { name: 'Search your journeys' })
     )
 
-    await screen.findByTestId('JourneyPickerOption-christmasId')
+    await screen.findByTestId('JourneyPickerOption-outreachId')
     expect(mock.result).toHaveBeenCalledTimes(1)
   })
 
@@ -77,14 +77,47 @@ describe('JourneyPicker', () => {
     )
 
     const published = await screen.findByTestId(
-      'JourneyPickerOption-christmasId'
+      'JourneyPickerOption-outreachId'
     )
-    expect(published).toHaveTextContent('The Christmas story')
+    expect(published).toHaveTextContent('The outreach story')
     expect(published).toHaveTextContent('Ministry team')
     expect(published).toHaveTextContent('Published')
-    const archived = screen.getByTestId('JourneyPickerOption-easterId')
+    const archived = screen.getByTestId('JourneyPickerOption-hopeId')
     expect(archived).toHaveTextContent('Shared team')
     expect(archived).toHaveTextContent('Archived')
+  })
+
+  it('lists two journeys with the same title as separate options, keyed by id', async () => {
+    const twin = { ...hope, id: 'twinId', title: 'Untitled journey' }
+    const other = { ...outreach, id: 'otherId', title: 'Untitled journey' }
+    const errors = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined)
+    const onLink = vi.fn<(url: string) => Promise<void>>(async () => undefined)
+    renderPicker(onLink, {
+      request: { query: GET_CAMPAIGN_ACCESSIBLE_JOURNEYS },
+      result: vi.fn(() => ({ data: { journeys: [twin, other] } }))
+    })
+    await userEvent.click(
+      screen.getByRole('combobox', { name: 'Search your journeys' })
+    )
+
+    expect(
+      await screen.findByTestId('JourneyPickerOption-twinId')
+    ).toBeInTheDocument()
+    expect(
+      screen.getByTestId('JourneyPickerOption-otherId')
+    ).toBeInTheDocument()
+    expect(errors).not.toHaveBeenCalledWith(
+      expect.stringContaining('two children with the same key'),
+      expect.anything(),
+      expect.anything()
+    )
+
+    await userEvent.click(screen.getByTestId('JourneyPickerOption-otherId'))
+    await waitFor(() => expect(onLink).toHaveBeenCalled())
+    expect(onLink.mock.calls[0][0]).toContain('otherId')
+    errors.mockRestore()
   })
 
   it('offers only the journeys in the given statuses', async () => {
@@ -100,36 +133,32 @@ describe('JourneyPicker', () => {
       screen.getByRole('combobox', { name: 'Search your journeys' })
     )
 
-    await screen.findByTestId('JourneyPickerOption-christmasId')
-    expect(screen.queryByTestId('JourneyPickerOption-easterId')).toBeNull()
+    await screen.findByTestId('JourneyPickerOption-outreachId')
+    expect(screen.queryByTestId('JourneyPickerOption-hopeId')).toBeNull()
   })
 
   it('filters the journeys by title as the author types', async () => {
     renderPicker()
     const field = screen.getByRole('combobox', { name: 'Search your journeys' })
     await userEvent.click(field)
-    await screen.findByTestId('JourneyPickerOption-christmasId')
+    await screen.findByTestId('JourneyPickerOption-outreachId')
 
-    await userEvent.type(field, 'easter')
+    await userEvent.type(field, 'hope')
 
-    expect(screen.queryByTestId('JourneyPickerOption-christmasId')).toBeNull()
-    expect(
-      screen.getByTestId('JourneyPickerOption-easterId')
-    ).toBeInTheDocument()
+    expect(screen.queryByTestId('JourneyPickerOption-outreachId')).toBeNull()
+    expect(screen.getByTestId('JourneyPickerOption-hopeId')).toBeInTheDocument()
   })
 
   it('links the picked journey by the admin link built from its id, then clears the search', async () => {
     const { onLink } = renderPicker()
     const field = screen.getByRole('combobox', { name: 'Search your journeys' })
     await userEvent.click(field)
-    fireEvent.click(
-      await screen.findByTestId('JourneyPickerOption-christmasId')
-    )
+    fireEvent.click(await screen.findByTestId('JourneyPickerOption-outreachId'))
 
     await waitFor(() =>
       expect(onLink).toHaveBeenCalledWith(
-        'https://admin.nextstep.is/journeys/christmasId',
-        expect.objectContaining({ id: 'christmasId' })
+        'https://admin.nextstep.is/journeys/outreachId',
+        expect.objectContaining({ id: 'outreachId' })
       )
     )
     await waitFor(() => expect(field).toHaveValue(''))
@@ -143,9 +172,7 @@ describe('JourneyPicker', () => {
     await userEvent.click(
       screen.getByRole('combobox', { name: 'Search your journeys' })
     )
-    fireEvent.click(
-      await screen.findByTestId('JourneyPickerOption-christmasId')
-    )
+    fireEvent.click(await screen.findByTestId('JourneyPickerOption-outreachId'))
 
     expect(
       await screen.findByText('Journey not found or not published')
@@ -156,7 +183,7 @@ describe('JourneyPicker', () => {
     renderPicker()
     const field = screen.getByRole('combobox', { name: 'Search your journeys' })
     await userEvent.click(field)
-    await screen.findByTestId('JourneyPickerOption-christmasId')
+    await screen.findByTestId('JourneyPickerOption-outreachId')
 
     await userEvent.type(field, 'zzz')
 

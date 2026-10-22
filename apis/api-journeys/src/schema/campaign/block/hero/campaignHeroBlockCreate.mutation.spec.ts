@@ -28,7 +28,7 @@ describe('campaignHeroBlockCreate', () => {
         backgroundKind
         eyebrow
         title
-        lede
+        description
         align
       }
     }
@@ -55,7 +55,7 @@ describe('campaignHeroBlockCreate', () => {
         ...hero,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         align: null,
         action: null,
         ...data,
@@ -97,7 +97,7 @@ describe('campaignHeroBlockCreate', () => {
           backgroundKind: 'none',
           eyebrow: null,
           title: null,
-          lede: null,
+          description: null,
           align: null
         }
       }
@@ -131,7 +131,7 @@ describe('campaignHeroBlockCreate', () => {
       parentOrder: 1,
       eyebrow: ' Advent ',
       title: 'A second hero',
-      lede: '',
+      description: '',
       align: 'left'
     })
 
@@ -140,7 +140,7 @@ describe('campaignHeroBlockCreate', () => {
       parentOrder: 1,
       eyebrow: 'Advent',
       title: 'A second hero',
-      lede: '',
+      description: '',
       align: 'left'
     })
     expect(
@@ -178,7 +178,7 @@ describe('campaignHeroBlockCreate', () => {
   it.each([
     ['eyebrow', 80],
     ['title', 150],
-    ['lede', 500]
+    ['description', 500]
   ])(
     'caps %s at %i characters (BAD_USER_INPUT, the field)',
     async (field, max) => {

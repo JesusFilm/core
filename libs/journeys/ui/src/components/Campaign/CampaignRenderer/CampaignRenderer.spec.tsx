@@ -56,7 +56,7 @@ describe('CampaignRenderer', () => {
     expect(
       screen.getByRole('heading', {
         level: 1,
-        name: 'Share the story of Christmas'
+        name: 'Share the story of Outreach'
       })
     ).toBeInTheDocument()
   })

@@ -38,6 +38,25 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Vi
   mobileCinematicHigh: string | null;
 }
 
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant_subtitle_language_name {
+  __typename: "LanguageName";
+  value: string;
+}
+
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant_subtitle_language {
+  __typename: "Language";
+  id: string;
+  bcp47: string | null;
+  name: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant_subtitle_language_name[];
+}
+
+export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant_subtitle {
+  __typename: "VideoSubtitle";
+  id: string;
+  vttSrc: string | null;
+  language: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant_subtitle_language;
+}
+
 export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant {
   __typename: "VideoVariant";
   id: string;
@@ -47,6 +66,7 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Vi
    * slug is a permanent link to the video variant.
    */
   slug: string;
+  subtitle: CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video_variant_subtitle[];
 }
 
 export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate_mediaVideo_Video {
@@ -106,7 +126,7 @@ export interface CampaignVideoBlockUpdate_campaignVideoBlockUpdate {
    */
   videoId: string | null;
   /**
-   * For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.
+   * For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.
    */
   videoVariantLanguageId: string | null;
   /**

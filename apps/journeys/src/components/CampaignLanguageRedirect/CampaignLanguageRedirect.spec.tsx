@@ -36,30 +36,30 @@ describe('CampaignLanguageRedirect', () => {
   })
 
   it('stays when the browser languages resolve to the page language', () => {
-    visit('https://example.org/campaign/christmas-2026')
+    visit('https://example.org/campaign/outreach-2026')
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).not.toHaveBeenCalled()
   })
 
   it('goes to the Accept-Language match when it is another campaign language', () => {
-    visit('https://example.org/campaign/christmas-2026', ['fr-CA', 'en'])
+    visit('https://example.org/campaign/outreach-2026', ['fr-CA', 'en'])
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).toHaveBeenCalledWith(
-      'https://example.org/campaign/christmas-2026?lang=fr'
+      'https://example.org/campaign/outreach-2026?lang=fr'
     )
   })
 
   it('prefers the language cookie to Accept-Language', () => {
     document.cookie = `${CAMPAIGN_LANGUAGE_COOKIE}=fr`
-    visit('https://example.org/campaign/christmas-2026/eur', ['en'])
+    visit('https://example.org/campaign/outreach-2026/eur', ['en'])
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).toHaveBeenCalledWith(
-      'https://example.org/campaign/christmas-2026/eur?lang=fr'
+      'https://example.org/campaign/outreach-2026/eur?lang=fr'
     )
   })
 
   it('stays when the URL names a language', () => {
-    visit('https://example.org/campaign/christmas-2026?lang=en', ['fr'])
+    visit('https://example.org/campaign/outreach-2026?lang=en', ['fr'])
     render(<CampaignLanguageRedirect campaign={campaignPublic} />)
     expect(replace).not.toHaveBeenCalled()
   })
@@ -72,7 +72,7 @@ describe('CampaignLanguageRedirect', () => {
   })
 
   it('stays on a single-language campaign', () => {
-    visit('https://example.org/campaign/christmas-2026', ['fr'])
+    visit('https://example.org/campaign/outreach-2026', ['fr'])
     render(
       <CampaignLanguageRedirect
         campaign={{

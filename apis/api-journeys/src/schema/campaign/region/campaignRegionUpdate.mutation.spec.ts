@@ -164,13 +164,13 @@ describe('campaignRegionUpdate', () => {
   it('rejects the slug of a journey in the campaign’s team, naming the journey', async () => {
     prismaMock.journey.findFirst.mockResolvedValue({
       id: 'journeyId',
-      title: 'Christmas Europe'
+      title: 'Outreach Europe'
     } as never)
 
-    const result = await update({ slug: 'christmas-europe' })
+    const result = await update({ slug: 'outreach-europe' })
 
     expect(result.errors[0]).toMatchObject({
-      message: expect.stringContaining('Christmas Europe'),
+      message: expect.stringContaining('Outreach Europe'),
       extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
     })
     expect(prismaMock.campaignRegion.update).not.toHaveBeenCalled()
@@ -243,9 +243,9 @@ describe('campaignRegionUpdate', () => {
       const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
       expect(paths).toEqual(
         expect.arrayContaining([
-          '/home/campaign/christmas-2026',
-          '/home/campaign/christmas-2026/eur',
-          '/home/campaign/christmas-2026/afr'
+          '/home/campaign/outreach-2026',
+          '/home/campaign/outreach-2026/eur',
+          '/home/campaign/outreach-2026/afr'
         ])
       )
     })

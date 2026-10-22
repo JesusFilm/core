@@ -17,8 +17,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 /** The linked journey as the public read serves it, after its author reworded it. */
 const JOURNEY = {
   id: 'journeyId',
-  slug: 'christmas-europe',
-  title: 'Christmas in Europe, 2026',
+  slug: 'outreach-europe',
+  title: 'Outreach in Europe, 2026',
   description: 'The reworded description.',
   status: 'published',
   deletedAt: null,
@@ -74,7 +74,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
     expect(result.data.campaignRegionLanguageSnapshotRefresh).toEqual({
       id: 'eurRegionId-529',
       journeyId: 'journeyId',
-      title: 'Christmas in Europe, 2026',
+      title: 'Outreach in Europe, 2026',
       description: 'The reworded description.'
     })
     expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
@@ -90,7 +90,7 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
       expect.objectContaining({
         where: { id: 'eurRegionId-529' },
         data: {
-          title: 'Christmas in Europe, 2026',
+          title: 'Outreach in Europe, 2026',
           description: 'The reworded description.',
           snapshotEdited: false
         }

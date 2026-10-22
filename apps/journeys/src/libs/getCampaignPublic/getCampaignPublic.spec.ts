@@ -11,7 +11,7 @@ const french = {
   ...campaignPublic,
   languageId: '496',
   language: { __typename: 'Language' as const, id: '496', bcp47: 'fr' },
-  title: 'Noël 2026'
+  title: 'Campagne 2026'
 }
 
 function client(): { query: ReturnType<typeof vi.fn> } & ApolloClient {
@@ -32,7 +32,7 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
-      'christmas-2026',
+      'outreach-2026',
       'en'
     )
     expect(result?.campaign).toBe(campaignPublic)
@@ -48,7 +48,7 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
-      'christmas-2026'
+      'outreach-2026'
     )
     expect(result?.language).toEqual({
       languageId: '529',
@@ -62,10 +62,10 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
-      'christmas-2026',
+      'outreach-2026',
       'fr'
     )
-    expect(result?.campaign.title).toBe('Noël 2026')
+    expect(result?.campaign.title).toBe('Campagne 2026')
     expect(result?.language).toEqual({
       languageId: '496',
       bcp47: 'fr',
@@ -73,7 +73,7 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     })
     expect(apollo.query).toHaveBeenCalledTimes(2)
     expect(apollo.query.mock.calls[1][0].variables).toEqual({
-      slug: 'christmas-2026',
+      slug: 'outreach-2026',
       languageId: '496'
     })
   })
@@ -87,14 +87,14 @@ describe('fetchCampaignPublicInPageLanguage', () => {
 
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
-      'christmas-2026'
+      'outreach-2026'
     )
 
     expect(result?.language.languageId).toBe('496')
     expect(query).toHaveBeenCalledTimes(2)
     expect(query.mock.calls[1]).toEqual([
       expect.objectContaining({
-        variables: { slug: 'christmas-2026', languageId: '496' }
+        variables: { slug: 'outreach-2026', languageId: '496' }
       })
     ])
   })
@@ -103,7 +103,7 @@ describe('fetchCampaignPublicInPageLanguage', () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguage(
       apollo,
-      'christmas-2026',
+      'outreach-2026',
       'de'
     )
     expect(result?.language).toEqual({
@@ -149,21 +149,21 @@ describe('fetchCampaignPublicInPageLanguageByHostname', () => {
     const apollo = client()
     const result = await fetchCampaignPublicInPageLanguageByHostname(
       apollo,
-      'christmas.example.org',
+      'outreach.example.org',
       'fr'
     )
-    expect(result?.campaign.title).toBe('Noël 2026')
+    expect(result?.campaign.title).toBe('Campagne 2026')
     expect(result?.language).toEqual({
       languageId: '496',
       bcp47: 'fr',
       source: 'param'
     })
     expect(apollo.query.mock.calls[0][0].variables).toEqual({
-      hostname: 'christmas.example.org',
+      hostname: 'outreach.example.org',
       languageId: null
     })
     expect(apollo.query.mock.calls[1][0].variables).toEqual({
-      hostname: 'christmas.example.org',
+      hostname: 'outreach.example.org',
       languageId: '496'
     })
   })
@@ -174,7 +174,7 @@ describe('fetchCampaignPublicInPageLanguageByHostname', () => {
     expect(
       await fetchCampaignPublicInPageLanguageByHostname(
         apollo,
-        'christmas.example.org',
+        'outreach.example.org',
         'fr',
         wanted
       )
@@ -189,7 +189,7 @@ describe('fetchCampaignPublicInPageLanguageByHostname', () => {
     expect(
       await fetchCampaignPublicInPageLanguageByHostname(
         apollo,
-        'christmas.example.org'
+        'outreach.example.org'
       )
     ).toBeNull()
     expect(

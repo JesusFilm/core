@@ -294,6 +294,31 @@ describe('qrCode.service', () => {
       expect(body.query).toContain('data { id shortUrl }')
     })
 
+    it('throws BAD_USER_INPUT when api-media refuses the link, so the caller rolls back instead of keeping a QR code without one', async () => {
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+        gatewayResponse({
+          data: {
+            shortLinkCreate: {
+              __typename: 'ZodError',
+              message: 'must be a public http(s) URL'
+            }
+          }
+        })
+      )
+
+      await expect(
+        createShortLink({
+          id: 'shortLinkId',
+          hostname: 'short.example.org',
+          to: 'http://localhost:4100/journey',
+          service: 'apiJourneys'
+        })
+      ).rejects.toMatchObject({
+        message: 'must be a public http(s) URL',
+        extensions: { code: 'BAD_USER_INPUT' }
+      })
+    })
+
     it('returns a null shortUrl when api-media returns no link', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValue(
         gatewayResponse({ data: { shortLinkCreate: {} } })

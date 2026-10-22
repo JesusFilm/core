@@ -118,6 +118,16 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   source: CampaignTextSource;
 }
 
+export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_descriptionTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
 export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate {
   __typename: "CampaignVideoCarouselBlock";
   id: string;
@@ -155,12 +165,13 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   accentColor: string | null;
   eyebrow: string | null;
   title: string | null;
+  description: string | null;
   /**
    * The Watch Video to expand; null for explicit children.
    */
   videoId: string | null;
   /**
-   * The campaign language when the Watch Video was linked; the language the expansion resolves in.
+   * The language of the variant the pasted Watch address named, else the campaign language when it was linked; the language the expansion resolves in.
    */
   videoVariantLanguageId: string | null;
   /**
@@ -169,6 +180,7 @@ export interface CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCrea
   video: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_video | null;
   eyebrowTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_eyebrowTranslations[];
   titleTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_titleTranslations[];
+  descriptionTranslations: CampaignVideoCarouselBlockCreate_campaignVideoCarouselBlockCreate_descriptionTranslations[];
 }
 
 export interface CampaignVideoCarouselBlockCreate {

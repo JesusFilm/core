@@ -64,13 +64,13 @@ export const CampaignStatsRef =
 
 builder.objectType(CampaignStatsRef, {
   description:
-    "The visitor numbers a Campaign shows: each linked journey's unique visitors by country from the campaign's first publish to now, summed by the campaign's region and language structure.",
+    "The visitor numbers a Campaign shows: each linked journey's unique visitors by country over all time, summed by the campaign's region and language structure.",
   fields: (t) => ({
     from: t.expose('from', {
       type: 'DateTimeISO',
       nullable: false,
       description:
-        'The start of the stats window: the first publish (creation for a draft).'
+        'The start of the stats window. The window is all time, so this is a fixed early date; the viewer shows the numbers as all-time rather than since it.'
     }),
     to: t.expose('to', {
       type: 'DateTimeISO',

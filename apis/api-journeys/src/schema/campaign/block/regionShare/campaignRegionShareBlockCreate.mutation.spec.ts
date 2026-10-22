@@ -48,7 +48,7 @@ describe('campaignRegionShareBlockCreate', () => {
       ...hero,
       eyebrow: null,
       title: null,
-      lede: null,
+      description: null,
       intro: null,
       align: null,
       action: null,

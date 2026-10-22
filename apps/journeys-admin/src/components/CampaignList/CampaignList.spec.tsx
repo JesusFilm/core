@@ -30,8 +30,8 @@ const campaignsMock = {
           __typename: 'Campaign',
           id: 'campaignId',
           teamId: 'teamId',
-          title: 'Christmas 2026',
-          slug: 'christmas-2026',
+          title: 'Outreach 2026',
+          slug: 'outreach-2026',
           status: CampaignStatus.published,
           publishedAt: '2026-10-05T00:00:00.000Z',
           createdAt: '2026-10-05T00:00:00.000Z',
@@ -39,10 +39,10 @@ const campaignsMock = {
         },
         {
           __typename: 'Campaign',
-          id: 'easterId',
+          id: 'hopeId',
           teamId: 'teamId',
-          title: 'Easter 2027',
-          slug: 'easter-2027',
+          title: 'Outreach 2027',
+          slug: 'hope-2027',
           status: CampaignStatus.draft,
           publishedAt: null,
           createdAt: '2026-10-05T00:00:00.000Z',
@@ -98,22 +98,22 @@ describe('CampaignList', () => {
   it("lists the active team's campaigns with their status and editor links", async () => {
     renderList({ campaignBuilder: true })
 
-    expect(await screen.findByText('Christmas 2026')).toBeInTheDocument()
-    expect(screen.getByText('Easter 2027')).toBeInTheDocument()
+    expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
+    expect(screen.getByText('Outreach 2027')).toBeInTheDocument()
     expect(screen.getByText('Published')).toBeInTheDocument()
     expect(screen.getByText('Draft')).toBeInTheDocument()
     expect(screen.getByTestId('CampaignListItem-campaignId')).toHaveAttribute(
       'href',
       '/campaigns/campaignId'
     )
-    expect(screen.getByText('/campaign/easter-2027')).toBeInTheDocument()
+    expect(screen.getByText('/campaign/hope-2027')).toBeInTheDocument()
     expect(mockReplace).not.toHaveBeenCalled()
   })
 
   it('opens the Create dialog', async () => {
     renderList({ campaignBuilder: true })
 
-    await screen.findByText('Christmas 2026')
+    await screen.findByText('Outreach 2026')
     fireEvent.click(screen.getByRole('button', { name: 'Create campaign' }))
     expect(screen.getByTestId('CreateCampaignDialog')).toBeInTheDocument()
   })
@@ -128,7 +128,7 @@ describe('CampaignList', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
 
-    expect(await screen.findByText('Christmas 2026')).toBeInTheDocument()
+    expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
     expect(
       screen.queryByText('There was an error loading campaigns.')
     ).not.toBeInTheDocument()

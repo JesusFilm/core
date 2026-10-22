@@ -33,7 +33,7 @@ export const CampaignVideoBlock = builder.prismaObject('CampaignBlock', {
     videoVariantLanguageId: t.exposeID('videoVariantLanguageId', {
       nullable: true,
       description:
-        'For `internal`: the campaign language at link time; the language `mediaVideo` resolves in.'
+        'For `internal`: the language of the variant the pasted Watch address named, else the campaign language at link time; the language `mediaVideo` resolves in.'
     }),
     title: t.exposeString('title', {
       nullable: true,

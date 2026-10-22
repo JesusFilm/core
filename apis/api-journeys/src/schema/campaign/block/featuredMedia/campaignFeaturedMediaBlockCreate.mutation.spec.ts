@@ -30,7 +30,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
         backgroundKind
         eyebrow
         title
-        lede
+        description
         bullets
         mediaSide
         mediaBlockId
@@ -59,7 +59,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
         ...hero,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         align: null,
         action: null,
         mediaSide: 'right',
@@ -102,7 +102,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
           backgroundKind: 'none',
           eyebrow: null,
           title: null,
-          lede: null,
+          description: null,
           bullets: null,
           mediaSide: 'right',
           mediaBlockId: null
@@ -137,7 +137,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
       parentOrder: 1,
       eyebrow: ' Watch ',
       title: 'The story of Jesus',
-      lede: '',
+      description: '',
       bullets: 'Two hours long\nIn 2000 languages\nFree to share',
       mediaSide: 'left'
     })
@@ -147,7 +147,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
       parentOrder: 1,
       eyebrow: 'Watch',
       title: 'The story of Jesus',
-      lede: '',
+      description: '',
       bullets: 'Two hours long\nIn 2000 languages\nFree to share',
       mediaSide: 'left'
     })
@@ -198,7 +198,7 @@ describe('campaignFeaturedMediaBlockCreate', () => {
   it.each([
     ['eyebrow', 80],
     ['title', 150],
-    ['lede', 500],
+    ['description', 500],
     ['bullets', 1000]
   ])(
     'caps %s at %i characters (BAD_USER_INPUT, the field)',

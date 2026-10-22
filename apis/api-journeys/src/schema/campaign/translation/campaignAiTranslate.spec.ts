@@ -82,6 +82,7 @@ interface ScriptedItem {
   targetId: string
   field: string
   value: string
+  uncertain?: boolean
 }
 
 function createMockAsyncIterator<T>(items: T[]): AsyncIterable<T> {
@@ -107,14 +108,18 @@ function requestedLines(options: unknown): Array<[string, string]> {
   )
 }
 
-/** The model fake: answers every requested line with `FR <id> <field>`, unless overridden. */
-function scriptModel(overrides: Record<string, string> = {}): void {
+/** The model fake: answers every requested line with `FR <id> <field>`, unless overridden; sure of every line unless listed as uncertain. */
+function scriptModel(
+  overrides: Record<string, string> = {},
+  uncertain: string[] = []
+): void {
   mockStreamText.mockImplementation(((options: unknown) => ({
     elementStream: createMockAsyncIterator<ScriptedItem>(
       requestedLines(options).map(([targetId, field]) => ({
         targetId,
         field,
-        value: overrides[`${targetId}:${field}`] ?? `FR ${targetId} ${field}`
+        value: overrides[`${targetId}:${field}`] ?? `FR ${targetId} ${field}`,
+        uncertain: uncertain.includes(`${targetId}:${field}`)
       }))
     )
   })) as unknown as typeof streamText)
@@ -139,7 +144,7 @@ describe('campaignAiTranslate', () => {
             [FRENCH]: { value: 'Titre de la personne', source: 'human' },
             [SPANISH]: { value: 'Título', source: 'machine' }
           },
-          ledeTranslations: {
+          descriptionTranslations: {
             [FRENCH]: { value: 'Ancienne version', source: 'machine' }
           }
         }
@@ -214,6 +219,28 @@ describe('campaignAiTranslate', () => {
   })
 
   describe('mode missing', () => {
+    it('keeps the model’s doubt on a line it was unsure of, and nothing on the rest', async () => {
+      scriptModel({}, ['heroId:eyebrow'])
+
+      await run({ mode: 'missing' })
+
+      expect(blockWrites().heroId.eyebrowTranslations).toEqual({
+        [FRENCH]: {
+          value: 'FR heroId eyebrow',
+          source: 'machine',
+          uncertain: true
+        }
+      })
+      expect(prismaMock.campaignString.update).toHaveBeenCalledWith({
+        where: { id: 'string-copy' },
+        data: {
+          valueTranslations: {
+            [FRENCH]: { value: 'FR string-copy value', source: 'machine' }
+          }
+        }
+      })
+    })
+
     it('writes machine entries only where the language has no entry', async () => {
       await run({ mode: 'missing' })
 
@@ -222,7 +249,7 @@ describe('campaignAiTranslate', () => {
         [FRENCH]: { value: 'FR heroId eyebrow', source: 'machine' }
       })
       expect(hero$.titleTranslations).toBeUndefined()
-      expect(hero$.ledeTranslations).toBeUndefined()
+      expect(hero$.descriptionTranslations).toBeUndefined()
       expect(prismaMock.campaignString.update).toHaveBeenCalledWith({
         where: { id: 'string-copy' },
         data: {
@@ -257,7 +284,7 @@ describe('campaignAiTranslate', () => {
       )
       expect(asked).toContain('heroId:eyebrow')
       expect(asked).not.toContain('heroId:title')
-      expect(asked).not.toContain('heroId:lede')
+      expect(asked).not.toContain('heroId:description')
     })
 
     it('keeps other languages’ entries in the same column', async () => {
@@ -278,8 +305,8 @@ describe('campaignAiTranslate', () => {
       await run({ mode: 'all' })
 
       const written = blockWrites().heroId
-      expect(written.ledeTranslations).toEqual({
-        [FRENCH]: { value: 'FR heroId lede', source: 'machine' }
+      expect(written.descriptionTranslations).toEqual({
+        [FRENCH]: { value: 'FR heroId description', source: 'machine' }
       })
       expect(written.titleTranslations).toBeUndefined()
       const asked = mockStreamText.mock.calls.flatMap(([options]) =>
@@ -296,7 +323,7 @@ describe('campaignAiTranslate', () => {
         return where.id === 'heroId'
           ? {
               ...block,
-              ledeTranslations: {
+              descriptionTranslations: {
                 [FRENCH]: { value: 'Écrit à la main', source: 'human' }
               }
             }
@@ -305,7 +332,7 @@ describe('campaignAiTranslate', () => {
 
       await run({ mode: 'all' })
 
-      expect(blockWrites().heroId?.ledeTranslations).toBeUndefined()
+      expect(blockWrites().heroId?.descriptionTranslations).toBeUndefined()
     })
   })
 
@@ -352,7 +379,7 @@ describe('campaignAiTranslate', () => {
         parentOrder: 0,
         eyebrow: null,
         title: null,
-        lede: null,
+        description: null,
         content: 'EUR'
       }
       const withLine = { ...campaign, blocks: [...campaign.blocks, regionLine] }

@@ -3,6 +3,7 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import type { TreeBlock } from '../../../libs/block'
+import type { SubtitleTrack } from '../../Video'
 import type {
   VideoFields,
   VideoFields_mediaVideo
@@ -114,6 +115,29 @@ function playerMediaVideo(
     default:
       return null
   }
+}
+
+/**
+ * The subtitle files of a Watch video's variant as player text tracks: each
+ * one with a file, named in the Page Language. Empty for YouTube and Mux,
+ * whose captions come with the stream.
+ */
+export function campaignSubtitleTracks(
+  block: CampaignVideoBlock
+): SubtitleTrack[] {
+  const subtitles = watchVideo(block)?.variant?.subtitle ?? []
+  return subtitles.flatMap((subtitle) => {
+    if (!hasText(subtitle.vttSrc)) return []
+    const language = subtitle.language.bcp47 ?? subtitle.language.id
+    return [
+      {
+        id: subtitle.id,
+        src: subtitle.vttSrc,
+        language,
+        label: subtitle.language.name[0]?.value ?? language
+      }
+    ]
+  })
 }
 
 /**

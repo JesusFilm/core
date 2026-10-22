@@ -21,19 +21,23 @@ export function hasCampaignMedia(
 
 interface CampaignMediaSlotProps {
   media: CampaignTree | null
+  /** The slot sits under the text at every width, so a picture takes the wide frame rather than 4:3. */
+  stacked?: boolean
 }
 
 /**
  * The single owned video or image of a Hero or Featured Media section,
  * found through the section's `mediaBlockId`. An empty slot renders nothing.
+ * A picture is cropped 4:3 beside the text and 16:9 when stacked.
  */
 export function CampaignMediaSlot({
-  media
+  media,
+  stacked = false
 }: CampaignMediaSlotProps): ReactElement | null {
   if (!hasCampaignMedia(media)) return null
   if (media.__typename === 'CampaignVideoBlock')
     return <CampaignVideo block={media} />
   const image = campaignImageSource(media)
   if (image == null) return null
-  return <CampaignPicture image={image} />
+  return <CampaignPicture image={image} ratio={stacked ? 'wide' : 'standard'} />
 }

@@ -13,8 +13,9 @@ import {
   VideoBlockSource
 } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
+import { CAMPAIGN_REGION_ORDER_UPDATE } from '../../../libs/useCampaignRegionOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import { campaign, campaignWithColumns } from '../data'
+import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
 import { newSectionBlock } from '../sectionTypes'
 import {
   CommandProbe,
@@ -23,7 +24,7 @@ import {
   frameBody
 } from '../testing'
 
-import { Canvas, dropEdgeFor, dropParentOrder } from './Canvas'
+import { Canvas, dropEdgeFor, dropParentOrder, regionDropOrder } from './Canvas'
 import type { CanvasView } from './Canvas'
 
 const mockWebFontLoader = { load: vi.fn() }
@@ -101,13 +102,32 @@ function ViewHarness(): ReactElement {
   )
 }
 
+/** Europe dragged onto Africa takes its place: Africa first, Europe second. */
+const regionOrderMock = {
+  request: {
+    query: CAMPAIGN_REGION_ORDER_UPDATE,
+    variables: { id: 'eurRegionId', order: 1 }
+  },
+  result: vi.fn(() => ({
+    data: {
+      campaignRegionOrderUpdate: [
+        { __typename: 'CampaignRegion', id: 'afrRegionId', order: 0 },
+        { __typename: 'CampaignRegion', id: 'eurRegionId', order: 1 }
+      ]
+    }
+  }))
+}
+
 function renderCanvas(
   pageKind = CampaignPageKind.landing,
   view: CanvasView = 'desktop',
   canvasCampaign: Campaign = campaign
 ): ReturnType<typeof render> {
   return render(
-    <StaticEditor mocks={[orderMock]} campaignProp={canvasCampaign}>
+    <StaticEditor
+      mocks={[orderMock, regionOrderMock]}
+      campaignProp={canvasCampaign}
+    >
       <SelectionProbe />
       <CommandProbe />
       <Canvas campaign={canvasCampaign} pageKind={pageKind} view={view} />
@@ -183,6 +203,65 @@ describe('Canvas', () => {
     })
   })
 
+  describe('regionDropOrder', () => {
+    const ids = ['eur', 'afr', 'nao']
+
+    it('takes the place of the card the drop lands on, in either direction', () => {
+      expect(regionDropOrder(ids, 'eur', 'nao')).toBe(2)
+      expect(regionDropOrder(ids, 'nao', 'eur')).toBe(0)
+    })
+
+    it('is a no-op on itself, on nothing, or on an unknown card', () => {
+      expect(regionDropOrder(ids, 'eur', 'eur')).toBeUndefined()
+      expect(regionDropOrder(ids, 'eur', undefined)).toBeUndefined()
+      expect(regionDropOrder(ids, 'eur', 'x')).toBeUndefined()
+      expect(regionDropOrder(ids, 'x', 'eur')).toBeUndefined()
+    })
+  })
+
+  it('reorders a region card dragged by its handle onto another card, as one Command', async () => {
+    const { baseElement } = renderCanvas(
+      CampaignPageKind.landing,
+      'desktop',
+      campaignWithRegions
+    )
+    const body = await frameBody(baseElement, 'RegionCardEdit-afrRegionId')
+    const frameDocument = body.ownerDocument
+    // Side by side, 100 px wide each, since jsdom lays nothing out.
+    ;[
+      ['eurRegionId', 0],
+      ['afrRegionId', 200]
+    ].forEach(([id, left]) => {
+      const card = body.querySelector(
+        `[data-testid="RegionCardEdit-${id}"]`
+      ) as HTMLElement
+      card.getBoundingClientRect = () => ({
+        top: 0,
+        bottom: 100,
+        left: Number(left),
+        right: Number(left) + 100,
+        width: 100,
+        height: 100,
+        x: Number(left),
+        y: 0,
+        toJSON: () => ({})
+      })
+    })
+    const handle = body.querySelector(
+      '[data-testid="RegionCardDragHandle-eurRegionId"]'
+    )!
+    expect(handle).toHaveAttribute('aria-label', 'Drag region')
+
+    fireEvent.mouseDown(handle, { clientX: 90, clientY: 10, button: 0 })
+    fireEvent.mouseMove(frameDocument, { clientX: 100, clientY: 10 })
+    fireEvent.mouseMove(frameDocument, { clientX: 250, clientY: 50 })
+    fireEvent.mouseUp(frameDocument, { clientX: 250, clientY: 50 })
+
+    await waitFor(() => expect(regionOrderMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    expect(orderMock.result).not.toHaveBeenCalled()
+  })
+
   it('renders the page inside a FramePortal iframe with the editor components', async () => {
     const { baseElement } = renderCanvas()
 
@@ -190,7 +269,7 @@ describe('Canvas', () => {
     expect(iframe).toBeInTheDocument()
     expect(iframe).toHaveAttribute('width', '1200')
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
-    expect(body.textContent).toContain('Share the story of Christmas')
+    expect(body.textContent).toContain('Share the story of Outreach')
     expect(body.textContent).toContain('Choose your region')
     expect(body.textContent).toContain('Where the story is spreading')
     // The region page's sections stay on the region page.
@@ -338,19 +417,6 @@ describe('Canvas', () => {
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 
-  it.each<CanvasView>(['desktop', 'phone'])(
-    'shows the Preview Language chip over the canvas, outside the frame, in %s view',
-    (view) => {
-      const { baseElement } = renderCanvas(CampaignPageKind.landing, view)
-
-      const chip = screen.getByTestId('PreviewLanguageChip')
-      expect(screen.getByTestId('CampaignCanvas')).toContainElement(chip)
-      expect(baseElement.getElementsByTagName('iframe')[0].contains(chip)).toBe(
-        false
-      )
-    }
-  )
-
   it('shows the hero’s media slot beside its text, and a Featured Media section’s placeholder and bullets', async () => {
     const hero = campaign.blocks.find((block) => block.id === 'heroId')
     if (hero?.__typename !== 'CampaignHeroBlock') throw new Error('no hero')
@@ -392,7 +458,7 @@ describe('Canvas', () => {
       heroSection.querySelector('[data-testid="CanvasMediaVideoPoster"]')
     ).toHaveAttribute('src', 'https://i.ytimg.com/vi/jQaeIJOA6J0/high.jpg')
     expect(heroSection.textContent).toContain('Blessing and Curse')
-    expect(heroSection.textContent).toContain('Share the story of Christmas')
+    expect(heroSection.textContent).toContain('Share the story of Outreach')
 
     const featuredSection = body.querySelector(
       '[data-testid="CanvasSection-featuredId"]'
@@ -458,13 +524,13 @@ describe('Canvas', () => {
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
     await waitFor(() =>
       expect(body.querySelector('textarea[name="title"]')).toHaveValue(
-        'Share the story of Christmas'
+        'Share the story of Outreach'
       )
     )
     expect(body.querySelector('textarea[name="eyebrow"]')).toHaveValue(
-      'Christmas 2026'
+      'Outreach 2026'
     )
-    expect(body.querySelector('textarea[name="lede"]')).toHaveValue(
+    expect(body.querySelector('textarea[name="description"]')).toHaveValue(
       'Pick your region to find a journey in your language, ready to share.'
     )
   })
@@ -926,7 +992,7 @@ describe('Canvas preview language', () => {
               {
                 __typename: 'TranslatedValue',
                 languageId: '496',
-                value: "Partagez l'histoire de Noël",
+                value: "Partagez l'histoire de Campagne",
                 source: CampaignTextSource.human
               }
             ]
@@ -951,11 +1017,11 @@ describe('Canvas preview language', () => {
 
     const body = await frameBody(baseElement, 'CanvasSection-heroId')
     const hero = body.querySelector('[data-testid="CanvasSection-heroId"]')
-    expect(hero?.textContent).toContain("Partagez l'histoire de Noël")
-    expect(hero?.textContent).not.toContain('Share the story of Christmas')
+    expect(hero?.textContent).toContain("Partagez l'histoire de Campagne")
+    expect(hero?.textContent).not.toContain('Share the story of Outreach')
     // The untranslated eyebrow shows the default-language fallback, marked.
     const eyebrow = hero?.querySelector('[data-testid="InlineText-eyebrow"]')
-    expect(eyebrow).toHaveTextContent('Christmas 2026')
+    expect(eyebrow).toHaveTextContent('Outreach 2026')
     expect(eyebrow).toHaveAttribute('data-fallback', 'true')
   })
 
