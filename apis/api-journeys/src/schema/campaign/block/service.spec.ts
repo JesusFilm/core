@@ -527,7 +527,7 @@ describe('campaign block service', () => {
       const result = await removeBlock({ ...heroButton, parentOrder: 1 })
 
       expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
-        where: { id: { in: ['heroButtonId'] } },
+        where: { id: { in: ['heroButtonId'] }, deletedAt: null },
         data: { deletedAt: expect.any(Date) }
       })
       expect(result.map((block) => [block.id, block.parentOrder])).toEqual([
@@ -561,6 +561,7 @@ describe('campaign block service', () => {
         'heroId',
         'ownedId'
       ])
+      expect(where!.deletedAt).toBeNull()
     })
   })
 
@@ -1654,7 +1655,7 @@ describe('owned images (cover and logo)', () => {
         data
       }: any) => ({ ...hero, ...data, action: null })) as never)
       prismaMock.campaignBlock.update.mockResolvedValue(hero)
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
+      prismaMock.campaignBlock.findFirst.mockResolvedValue({
         ...hero,
         coverBlockId: 'oldCoverId'
       })
@@ -1695,7 +1696,7 @@ describe('owned images (cover and logo)', () => {
         data
       }: any) => ({ ...header, ...data, action: null })) as never)
       prismaMock.campaignBlock.update.mockResolvedValue(header)
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(header)
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
 
       const image = await createOwnedImageBlock(prismaMock, header, 'logo', {
         id: 'logoId'
@@ -1766,7 +1767,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
         data
       }: any) => ({ ...hero, ...data, action: null })) as never)
       prismaMock.campaignBlock.update.mockResolvedValue(hero)
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
+      prismaMock.campaignBlock.findFirst.mockResolvedValue({
         ...featuredMedia,
         mediaBlockId: 'oldImageId'
       })
@@ -1828,7 +1829,7 @@ describe('the Media Slot (hero and Featured Media)', () => {
         data
       }: any) => ({ ...hero, ...data, action: null })) as never)
       prismaMock.campaignBlock.update.mockResolvedValue(hero)
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
 
       const image = await createOwnedImageBlock(prismaMock, hero, 'media', {
         id: 'imageId'
@@ -2075,15 +2076,17 @@ describe('the slot contract (cover, logo and media)', () => {
   })
 
   describe('swapSlot', () => {
+    const deletedAt = new Date('2026-10-22T00:00:00.000Z')
+
     it('soft-deletes the block the slot held and restores the new one', async () => {
-      await swapSlot(prismaMock, owner, 'coverBlockId', 'newId')
+      await swapSlot(prismaMock, owner, 'coverBlockId', 'newId', deletedAt)
 
       expect(
         prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
       ).toEqual([
         {
           where: { id: 'heldCoverId' },
-          data: { deletedAt: expect.any(Date) }
+          data: { deletedAt }
         },
         { where: { id: 'newId' }, data: { deletedAt: null } }
       ])
@@ -2094,7 +2097,8 @@ describe('the slot contract (cover, logo and media)', () => {
         prismaMock,
         { ...owner, logoBlockId: null },
         'logoBlockId',
-        'newId'
+        'newId',
+        deletedAt
       )
 
       expect(
@@ -2103,17 +2107,21 @@ describe('the slot contract (cover, logo and media)', () => {
     })
 
     it('empties the slot by soft-deleting the block it held', async () => {
-      await swapSlot(prismaMock, owner, 'logoBlockId', null)
+      await swapSlot(prismaMock, owner, 'logoBlockId', null, deletedAt)
 
       expect(
         prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
-      ).toEqual([
-        { where: { id: 'heldLogoId' }, data: { deletedAt: expect.any(Date) } }
-      ])
+      ).toEqual([{ where: { id: 'heldLogoId' }, data: { deletedAt } }])
     })
 
     it('never deletes the block when it is already in the slot', async () => {
-      await swapSlot(prismaMock, owner, 'mediaBlockId', 'heldMediaId')
+      await swapSlot(
+        prismaMock,
+        owner,
+        'mediaBlockId',
+        'heldMediaId',
+        deletedAt
+      )
 
       expect(
         prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
@@ -2125,7 +2133,7 @@ describe('the slot contract (cover, logo and media)', () => {
     const ownerRef = { id: 'ownerId', campaignId: 'campaignId' }
 
     beforeEach(() => {
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(owner)
+      prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(owner)
     })
 
     it.each(columns)(
@@ -2160,7 +2168,7 @@ describe('the slot contract (cover, logo and media)', () => {
       async (column) => {
         await updateBlock(ownerRef, { [column]: null })
 
-        expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
+        expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledTimes(1)
         expect(
           prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
         ).toEqual([
@@ -2198,11 +2206,37 @@ describe('the slot contract (cover, logo and media)', () => {
       }
     )
 
+    it('stamps every block one update swaps out with one timestamp, so restore never splits or joins them', async () => {
+      prismaMock.campaignBlock.findFirst.mockImplementation((async ({
+        where
+      }: any) => ({
+        id: where.id,
+        typename:
+          where.id === 'newMediaId'
+            ? 'CampaignVideoBlock'
+            : 'CampaignImageBlock'
+      })) as never)
+
+      await updateBlock(ownerRef, {
+        coverBlockId: 'newCoverId',
+        mediaBlockId: 'newMediaId'
+      })
+
+      const stamped = prismaMock.campaignBlock.update.mock.calls
+        .map(([call]: any) => call)
+        .filter((call) => call.data.deletedAt instanceof Date)
+      expect(stamped.map((call) => call.where.id)).toEqual([
+        'heldCoverId',
+        'heldMediaId'
+      ])
+      expect(stamped[1].data.deletedAt).toBe(stamped[0].data.deletedAt)
+    })
+
     it('leaves the structure alone for columns that are not slots', async () => {
       await updateBlock(ownerRef, { backgroundKind: 'surface' })
 
       expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
-      expect(prismaMock.campaignBlock.findUniqueOrThrow).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
     })
   })
 })
@@ -2233,7 +2267,6 @@ describe('the structure lock', () => {
     for (const mock of [
       prismaMock.campaignBlock.findMany,
       prismaMock.campaignBlock.findFirst,
-      prismaMock.campaignBlock.findUniqueOrThrow,
       prismaMock.campaignBlock.count,
       prismaMock.campaignBlock.create,
       prismaMock.campaignBlock.update,
@@ -2250,7 +2283,6 @@ describe('the structure lock', () => {
     )
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
     prismaMock.campaignBlock.create.mockImplementation((async ({
       data
     }: any) => ({ ...hero, ...data, action: null })) as never)
@@ -2293,6 +2325,7 @@ describe('the structure lock', () => {
   })
 
   it('createOwnedBlock locks before it reads the slot occupant', async () => {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
     await createOwnedBlock(prismaMock, hero, 'coverBlockId', {
       typename: 'CampaignImageBlock'
     })
@@ -2302,16 +2335,18 @@ describe('the structure lock', () => {
   it.each(['coverBlockId', 'logoBlockId', 'mediaBlockId'] as const)(
     'a %s update locks before it re-reads the owner',
     async (column) => {
-      prismaMock.campaignBlock.findFirst.mockResolvedValue({
-        id: 'newId',
-        typename: 'CampaignImageBlock'
-      } as never)
+      prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(hero)
+        .mockResolvedValue({
+          id: 'newId',
+          typename: 'CampaignImageBlock'
+        } as never)
 
       await updateBlock(hero, { [column]: 'newId' })
 
       expectLockedFirst()
       expect(firstCall(prismaMock.$queryRaw)).toBeLessThan(
-        firstCall(prismaMock.campaignBlock.findUniqueOrThrow)
+        firstCall(prismaMock.campaignBlock.findFirst)
       )
     }
   )
@@ -2337,6 +2372,101 @@ describe('the structure lock', () => {
     prismaMock.campaignBlock.findMany.mockResolvedValue([hero] as never)
     await duplicateBlock(hero)
     expectLockedFirst()
+  })
+
+  describe('a block deleted between the resolver’s read and the lock', () => {
+    async function expectParentRefused(
+      promise: Promise<unknown>
+    ): Promise<void> {
+      const error = await errorOf(promise)
+      expect(error.message).toBe(
+        'parentBlockId must be a live section or chrome block of this campaign'
+      )
+      expect(error.extensions).toEqual({
+        code: 'BAD_USER_INPUT',
+        field: 'parentBlockId'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    }
+
+    async function expectNotFound(promise: Promise<unknown>): Promise<void> {
+      const error = await errorOf(promise)
+      expect(error.extensions).toEqual({ code: 'NOT_FOUND' })
+    }
+
+    it('refuses a child of a section binned since it was validated, without a create', async () => {
+      prismaMock.campaignBlock.count.mockResolvedValue(0)
+
+      await expectParentRefused(
+        createChildBlock(prismaMock, hero, { typename: 'CampaignButtonBlock' })
+      )
+      expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+        where: { id: 'heroId', deletedAt: null }
+      })
+    })
+
+    it('refuses a section in a slot binned since with its Columns section, without a create', async () => {
+      prismaMock.campaignBlock.count.mockResolvedValue(0)
+
+      await expectParentRefused(
+        createSlotChild(
+          prismaMock,
+          { ...hero, id: 'slotId', typename: 'CampaignColumnBlock' },
+          { typename: 'CampaignHeroBlock' }
+        )
+      )
+      expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+        where: { id: 'slotId', deletedAt: null }
+      })
+    })
+
+    it('refuses an owned block under an owner binned since, without a create or a slot write', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      await expectParentRefused(
+        createOwnedBlock(prismaMock, hero, 'coverBlockId', {
+          typename: 'CampaignImageBlock'
+        })
+      )
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: { id: 'heroId', deletedAt: null }
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
+    })
+
+    it('refuses a slot swap on an owner binned since (NOT_FOUND), reviving nothing', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
+
+      await expectNotFound(updateBlock(hero, { mediaBlockId: 'oldMediaId' }))
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
+        where: { id: 'heroId', deletedAt: null }
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('keeps one timestamp when two deletes of a section race: the second is NOT_FOUND and restamps nothing', async () => {
+      // The first delete has committed: the section is gone from the live read.
+      prismaMock.campaignBlock.findMany.mockResolvedValue([] as never)
+
+      await expectNotFound(removeBlock(hero))
+      expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+    })
+
+    it('refuses a reorder of a block binned since (NOT_FOUND), without a write', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([] as never)
+
+      await expectNotFound(reorderBlock(heroButton, 0, 'above'))
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it('refuses a duplicate of a block binned since (NOT_FOUND), without a create', async () => {
+      prismaMock.campaignBlock.findMany.mockResolvedValue([heroButton] as never)
+
+      await expectNotFound(duplicateBlock(hero))
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
+    })
   })
 })
 
@@ -2368,18 +2498,34 @@ describe('restoreBlock under a deleted parent', () => {
     expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
   })
 
+  it('refuses an owned block (CONFLICT, id): it comes back through its slot', async () => {
+    const error = await errorOf(
+      restoreBlock({
+        ...heroButton,
+        id: 'oldCoverId',
+        typename: 'CampaignImageBlock',
+        parentOrder: null,
+        deletedAt: new Date()
+      })
+    )
+
+    expect(error.message).toBe('an owned block comes back through its slot')
+    expect(error.extensions).toEqual({ code: 'CONFLICT', field: 'id' })
+    expect(prismaMock.$transaction).not.toHaveBeenCalled()
+  })
+
   it('does not look for a parent on a top-level block', async () => {
     prismaMock.campaignBlock.update.mockResolvedValue({
       ...heroButton,
       parentBlockId: null,
-      parentOrder: null
+      parentOrder: 0
     })
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
 
     await restoreBlock({
       ...heroButton,
       parentBlockId: null,
-      parentOrder: null,
+      parentOrder: 0,
       deletedAt: new Date()
     })
 
@@ -2398,16 +2544,18 @@ describe('the block cap', () => {
   const page = fixture.pages[0]
   const region = campaignFactory().withRegion('EUR').build().regions[0]
 
-  /** `live` blocks in the campaign; `restoring` rows share the restored block's `deletedAt`. */
+  /**
+   * `live` blocks in the campaign; `restoring` rows share the restored
+   * block's `deletedAt`. A count by id is a parent's liveness: always live.
+   */
   function countBlocks(live: number, restoring = 0): void {
     prismaMock.campaignBlock.count.mockImplementation((async ({
       where
-    }: any) =>
-      where.deletedAt === null
-        ? live
-        : where.deletedAt instanceof Date
-          ? restoring
-          : 0) as never)
+    }: any) => {
+      if (where.id != null) return where.deletedAt === null ? 1 : 0
+      if (where.deletedAt === null) return live
+      return where.deletedAt instanceof Date ? restoring : 0
+    }) as never)
   }
 
   async function expectRefused(promise: Promise<unknown>): Promise<void> {
@@ -2535,6 +2683,39 @@ describe('the block cap', () => {
     })
   })
 
+  describe('an owned block', () => {
+    function holding(coverBlockId: string | null): void {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue({
+        ...hero,
+        coverBlockId
+      })
+    }
+
+    beforeEach(() => {
+      prismaMock.campaignBlock.update.mockResolvedValue(hero)
+    })
+
+    it(`is refused at ${CAMPAIGN_BLOCKS_MAX} live blocks when the slot is empty`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX)
+      holding(null)
+      await expectRefused(
+        createOwnedBlock(prismaMock, hero, 'coverBlockId', {
+          typename: 'CampaignImageBlock'
+        })
+      )
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+    })
+
+    it(`is allowed at ${CAMPAIGN_BLOCKS_MAX} live blocks when it replaces the block the slot held`, async () => {
+      countBlocks(CAMPAIGN_BLOCKS_MAX)
+      holding('oldCoverId')
+      await createOwnedBlock(prismaMock, hero, 'coverBlockId', {
+        typename: 'CampaignImageBlock'
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledTimes(1)
+    })
+  })
+
   describe('a duplicate', () => {
     beforeEach(() => {
       prismaMock.campaignBlock.findMany.mockResolvedValue([
@@ -2558,7 +2739,7 @@ describe('the block cap', () => {
   describe('a restore', () => {
     const deleted = {
       ...hero,
-      parentOrder: null,
+      parentOrder: 0,
       deletedAt: new Date('2026-10-01T00:00:00.000Z')
     }
 

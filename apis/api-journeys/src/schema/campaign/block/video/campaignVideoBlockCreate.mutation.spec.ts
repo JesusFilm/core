@@ -83,7 +83,6 @@ describe('campaignVideoBlockCreate', () => {
     fixture = setupCampaignBlockSpec()
     hero = fixture.blocks.find((block) => block.id === 'heroId')!
     prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
     vi.mocked(fetchFieldsFromYouTube).mockResolvedValue({
       title: 'YouTube title',
       description: 'YouTube description',
@@ -140,10 +139,6 @@ describe('campaignVideoBlockCreate', () => {
   describe('the owned row', () => {
     it('creates the video with parentOrder null and the owner’s scoping, points mediaBlockId at it and soft-deletes the previous media', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
-        ...hero,
-        mediaBlockId: 'oldMediaId'
-      })
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue({
         ...hero,
         mediaBlockId: 'oldMediaId'
       })

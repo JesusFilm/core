@@ -498,12 +498,32 @@ export async function createChildBlock(
   return await insertChildBlock(tx, parent, data)
 }
 
+/**
+ * The parent or owner a create validated before the transaction is still
+ * live once the structure lock is held: a concurrent delete may have binned
+ * it in between (`BAD_USER_INPUT` / `parentBlockId`).
+ */
+async function assertParentStillLive(
+  tx: Prisma.TransactionClient,
+  parentBlockId: string
+): Promise<void> {
+  const live = await tx.campaignBlock.count({
+    where: { id: parentBlockId, deletedAt: null }
+  })
+  if (live === 0)
+    throw badUserInput(
+      'parentBlockId must be a live section or chrome block of this campaign',
+      'parentBlockId'
+    )
+}
+
 /** `createChildBlock` for a caller that already holds the structure lock. */
 async function insertChildBlock(
   tx: Prisma.TransactionClient,
   parent: CampaignBlock,
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
+  await assertParentStillLive(tx, parent.id)
   await assertCampaignBlockRoom(tx, parent.campaignId, 1)
   const siblings = await getSiblings(
     { ...parent, parentBlockId: parent.id },
@@ -552,8 +572,9 @@ export async function updateBlock(
  * Soft-delete a block: stamp `deletedAt` on it and on everything it owns
  * (live descendants and owned blocks) with one shared timestamp, then
  * renumber the remaining siblings contiguously. Restore matches that
- * timestamp, so rows deleted earlier stay deleted. Returns the renumbered
- * siblings.
+ * timestamp, so rows deleted earlier stay deleted. A block a concurrent
+ * delete binned first is `NOT_FOUND`, never restamped. Returns the
+ * renumbered siblings.
  */
 export async function removeBlock(
   block: CampaignBlock
@@ -564,12 +585,10 @@ export async function removeBlock(
       where: { campaignId: block.campaignId, deletedAt: null },
       include: { action: true }
     })
-    const subtreeIds = [
-      block.id,
-      ...collectSubtree(block.id, live).map((row) => row.id)
-    ]
+    const subtree = collectSubtree(block.id, live)
+    if (subtree.length === 0) throw notFound('block not found')
     await tx.campaignBlock.updateMany({
-      where: { id: { in: [...new Set(subtreeIds)] } },
+      where: { id: { in: subtree.map((row) => row.id) }, deletedAt: null },
       data: { deletedAt: new Date() }
     })
     const siblings =
@@ -634,11 +653,15 @@ async function assertSlotFreeForRestore(
  * deleted with it (same timestamp), and re-insert it among its siblings at
  * its own `parentOrder`, renumbering again. Returns the restored block with
  * its siblings and its live descendants, so the editor cache can take the
- * whole subtree back in one write.
+ * whole subtree back in one write. An owned block (`parentOrder: null`) is
+ * refused (`CONFLICT` / `id`), as delete refuses it: its owner's slot points
+ * elsewhere, so it comes back through a slot update, which swaps it in.
  */
 export async function restoreBlock(
   block: CampaignBlock
 ): Promise<CampaignBlockWithAction[]> {
+  if (block.parentOrder == null)
+    throw conflict('an owned block comes back through its slot', 'id')
   return await prisma.$transaction(async (tx) => {
     await lockCampaignStructure(tx, block.campaignId)
     await assertParentLiveForRestore(block, tx)
@@ -916,13 +939,14 @@ export async function reorderBlock(
     )
   return await prisma.$transaction(async (tx) => {
     await lockCampaignStructure(tx, block.campaignId)
+    const all = await getSiblings(block, tx)
+    const self = all.find((candidate) => candidate.id === block.id)
+    if (self == null) throw notFound('block not found')
     if (nextPlacement != null && nextPlacement !== block.placement)
       await tx.campaignBlock.update({
         where: { id: block.id },
         data: { placement: nextPlacement }
       })
-    const all = await getSiblings(block, tx)
-    const self = all.find((candidate) => candidate.id === block.id)
     const others = all.filter((candidate) => candidate.id !== block.id)
     const slotCount = all.filter((candidate) =>
       isCampaignSlotTypename(candidate.typename)
@@ -934,7 +958,7 @@ export async function reorderBlock(
       others.length
     )
     others.splice(position, 0, {
-      ...(self ?? { ...block, action: null }),
+      ...self,
       placement: nextPlacement ?? block.placement
     })
     const siblings = await reorderSiblings(others, tx)
@@ -1041,10 +1065,11 @@ async function duplicateSubtree(
       orderBy: { parentOrder: 'asc' },
       include: { action: true }
     })
+    const subtree = collectSubtree(block.id, live)
+    if (subtree.length === 0) throw notFound('block not found')
     const parent = live.find((row) => row.id === block.parentBlockId)
     if (parent != null && isCampaignSlotTypename(parent.typename))
       throw conflict('a column slot holds at most one section', 'id')
-    const subtree = collectSubtree(block.id, live)
     await assertCampaignBlockRoom(tx, block.campaignId, subtree.length)
     const ids = new Map<string, string>()
     for (const row of subtree)
@@ -1394,9 +1419,11 @@ export function assertImageSlot(
 /**
  * Create an owned block inside `tx`: `parentOrder: null`, the owner's
  * scoping copied down, the owner's slot column pointed at the new row, and
- * the block the slot held before soft-deleted (block restore brings it back
- * as a row; a Media Slot update brings it back as the slot's block). Returns
- * the new block.
+ * the block the slot held before soft-deleted (a slot update pointing the
+ * column back at it restores it). The owner is re-read live under the
+ * structure lock (`BAD_USER_INPUT` / `parentBlockId` if a concurrent delete
+ * binned it), and a create into an empty slot counts toward the block cap.
+ * Returns the new block.
  */
 export async function createOwnedBlock(
   tx: Prisma.TransactionClient,
@@ -1405,9 +1432,20 @@ export async function createOwnedBlock(
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
   await lockCampaignStructure(tx, owner.campaignId)
-  const previousId = (
-    await tx.campaignBlock.findUniqueOrThrow({ where: { id: owner.id } })
-  )[column]
+  const current = await tx.campaignBlock.findFirst({
+    where: { id: owner.id, deletedAt: null }
+  })
+  if (current == null)
+    throw badUserInput(
+      'parentBlockId must be a live section or chrome block of this campaign',
+      'parentBlockId'
+    )
+  const previousId = current[column]
+  await assertCampaignBlockRoom(
+    tx,
+    owner.campaignId,
+    previousId == null ? 1 : 0
+  )
   if (previousId != null)
     await tx.campaignBlock.updateMany({
       where: { id: previousId, parentBlockId: owner.id },
@@ -1497,21 +1535,22 @@ export async function validateSlotTarget(
 
 /**
  * Point a slot at `target`, or empty it, inside `tx`, keeping 0 or 1 live
- * block in the slot: the block it held is soft-deleted and the new one
- * restored if an earlier swap deleted it. The owner's column itself is
- * written by the caller's update.
+ * block in the slot: the block it held is soft-deleted at `deletedAt` and
+ * the new one restored if an earlier swap deleted it. The owner's column
+ * itself is written by the caller's update.
  */
 export async function swapSlot(
   tx: Prisma.TransactionClient,
   owner: Pick<CampaignBlock, CampaignOwnedSlotColumn>,
   column: CampaignOwnedSlotColumn,
-  target: string | null
+  target: string | null,
+  deletedAt: Date
 ): Promise<void> {
   const outgoing = owner[column]
   if (outgoing != null && outgoing !== target)
     await tx.campaignBlock.update({
       where: { id: outgoing },
-      data: { deletedAt: new Date() }
+      data: { deletedAt }
     })
   if (target != null)
     await tx.campaignBlock.update({
@@ -1537,8 +1576,9 @@ function slotTargets(
 
 /**
  * Validate and swap each slot an update writes, under the structure lock and
- * on the owner as it is now, not as the resolver read it. Later slots see the
- * earlier ones already moved.
+ * on the owner as it is now, not as the resolver read it: an owner a
+ * concurrent delete binned is `NOT_FOUND`. Later slots see the earlier ones
+ * already moved, and every outgoing block shares one timestamp.
  */
 async function swapSlots(
   tx: Prisma.TransactionClient,
@@ -1546,12 +1586,15 @@ async function swapSlots(
   targets: SlotTarget[]
 ): Promise<void> {
   await lockCampaignStructure(tx, block.campaignId)
-  const owner = {
-    ...(await tx.campaignBlock.findUniqueOrThrow({ where: { id: block.id } }))
-  }
+  const current = await tx.campaignBlock.findFirst({
+    where: { id: block.id, deletedAt: null }
+  })
+  if (current == null) throw notFound('block not found')
+  const owner = { ...current }
+  const deletedAt = new Date()
   for (const [column, requested] of targets) {
     const target = await validateSlotTarget(tx, column, requested, owner)
-    await swapSlot(tx, owner, column, target)
+    await swapSlot(tx, owner, column, target, deletedAt)
     owner[column] = target
   }
 }

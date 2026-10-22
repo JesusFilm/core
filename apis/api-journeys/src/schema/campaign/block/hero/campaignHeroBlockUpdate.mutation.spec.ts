@@ -190,8 +190,8 @@ describe('campaignHeroBlockUpdate', () => {
       const hero = campaignBlockWithAcl(fixture, 'heroId', {
         mediaBlockId: 'heroImageId'
       })
-      prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(hero)
       prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(hero)
         .mockResolvedValueOnce(hero)
         .mockResolvedValueOnce({
           id: 'heroVideoId',
@@ -226,6 +226,7 @@ describe('campaignHeroBlockUpdate', () => {
 
     it('rejects a block that is not a video or image the hero owns (BAD_USER_INPUT, mediaBlockId)', async () => {
       prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'heroId'))
         .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'heroId'))
         .mockResolvedValueOnce({
           id: 'heroButtonId',

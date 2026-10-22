@@ -223,23 +223,8 @@ describe('ChromeEdit replace', () => {
     vi.mocked(uuidv4).mockImplementation(() => 'newId')
   })
 
-  it('undoing a replace restores the soft-deleted previous logo before pointing logoBlockId back at it', async () => {
-    const calls: string[] = []
-    const restoreOrdered = {
-      ...restoreMock,
-      result: vi.fn(() => {
-        calls.push('restore')
-        return restoreMock.result()
-      })
-    }
+  it('undoing a replace points logoBlockId back at the previous logo with the header write alone, never campaignBlockRestore', async () => {
     const undoLogo = logoMock('oldLogoId')
-    const undoLogoOrdered = {
-      ...undoLogo,
-      result: vi.fn(() => {
-        calls.push('write oldLogoId')
-        return undoLogo.result()
-      })
-    }
     render(
       <QueriedEditor
         campaignProp={campaignWithLogo}
@@ -247,8 +232,8 @@ describe('ChromeEdit replace', () => {
           uploadByUrlMock,
           imageCreateMock,
           logoMock('newId'),
-          restoreOrdered,
-          undoLogoOrdered
+          restoreMock,
+          undoLogo
         ]}
         initialState={{ selectedBlockId: 'headerId' }}
       >
@@ -270,8 +255,8 @@ describe('ChromeEdit replace', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    await waitFor(() => expect(undoLogoOrdered.result).toHaveBeenCalled())
-    expect(calls).toEqual(['restore', 'write oldLogoId'])
+    await waitFor(() => expect(undoLogo.result).toHaveBeenCalled())
+    expect(restoreMock.result).not.toHaveBeenCalled()
     await waitFor(() =>
       expect(screen.getByTestId('CampaignChromeEditLogo')).toHaveAttribute(
         'src',

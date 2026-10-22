@@ -65,7 +65,7 @@ describe('campaignBlockDelete', () => {
       }
     })
     expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: ['footerTermsId'] } },
+      where: { id: { in: ['footerTermsId'] }, deletedAt: null },
       data: { deletedAt: expect.any(Date) }
     })
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
@@ -145,7 +145,10 @@ describe('campaignBlockDelete', () => {
       { id: 'landingAnalyticsId', parentOrder: 3 }
     ])
     expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: expect.arrayContaining(['landingSwitcherId']) } },
+      where: {
+        id: { in: expect.arrayContaining(['landingSwitcherId']) },
+        deletedAt: null
+      },
       data: { deletedAt: expect.any(Date) }
     })
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(
@@ -166,14 +169,22 @@ describe('campaignBlockDelete', () => {
         parentOrder: 0
       })
     )
-    prismaMock.campaignBlock.findMany.mockResolvedValue([])
+    prismaMock.campaignBlock.findMany
+      .mockResolvedValueOnce([
+        {
+          ...fixture.blocks.find((block) => block.id === 'heroId')!,
+          parentBlockId: 'slotId',
+          parentOrder: 0
+        }
+      ])
+      .mockResolvedValueOnce([])
 
     const result = await remove('heroId')
 
     expect(result).toEqual({ data: { campaignBlockDelete: [] } })
     expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledTimes(1)
     expect(prismaMock.campaignBlock.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: ['heroId'] } },
+      where: { id: { in: ['heroId'] }, deletedAt: null },
       data: { deletedAt: expect.any(Date) }
     })
     expect(prismaMock.campaignBlock.findMany).toHaveBeenCalledWith(

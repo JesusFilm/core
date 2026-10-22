@@ -170,6 +170,34 @@ describe('campaignBlockRestore', () => {
     })
   })
 
+  it.each([
+    ['cover', 'heroId', 'CampaignImageBlock'],
+    ['logo', 'headerId', 'CampaignImageBlock'],
+    ['media', 'heroId', 'CampaignVideoBlock']
+  ])(
+    'refuses a soft-deleted %s block (CONFLICT, id): it comes back through its owner’s slot',
+    async (_slot, ownerId, typename) => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(
+        campaignBlockWithAcl(fixture, ownerId, {
+          id: 'oldOwnedId',
+          typename,
+          parentBlockId: ownerId,
+          parentOrder: null,
+          deletedAt: new Date()
+        })
+      )
+
+      const result = await restore('oldOwnedId')
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'an owned block comes back through its slot',
+        extensions: { code: 'CONFLICT', field: 'id' }
+      })
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignBlock.updateMany).not.toHaveBeenCalled()
+    }
+  )
+
   it('throws NOT_FOUND for an unknown id', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 

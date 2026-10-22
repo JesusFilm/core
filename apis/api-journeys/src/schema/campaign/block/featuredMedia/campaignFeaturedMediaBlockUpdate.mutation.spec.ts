@@ -64,7 +64,6 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     featuredMedia = campaignBlockWithAcl(fixture, 'heroId', FEATURED_MEDIA)
     prismaMock.campaignBlock.findFirst.mockResolvedValue(featuredMedia)
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(featuredMedia)
     prismaMock.campaignBlock.update.mockImplementation((async ({
       data
     }: any) => ({ ...featuredMedia, ...data })) as never)
@@ -157,7 +156,6 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       mediaSide: null
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(featuredMedia)
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(featuredMedia)
 
     const result = await update({ title: 'x' })
 
@@ -218,6 +216,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     it('swaps the Media Slot to a block the section owns: the held block soft-deleted, the new one restored, in one transaction', async () => {
       prismaMock.campaignBlock.findFirst
         .mockResolvedValueOnce(featuredMedia)
+        .mockResolvedValueOnce(featuredMedia)
         .mockResolvedValueOnce({
           id: 'previousMediaId',
           typename: 'CampaignImageBlock'
@@ -259,7 +258,9 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       expect(
         result.data.campaignFeaturedMediaBlockUpdate.mediaBlockId
       ).toBeNull()
-      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalledWith(
+        expect.objectContaining({ select: { id: true, typename: true } })
+      )
       expect(
         prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => call)
       ).toEqual([
@@ -278,6 +279,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
     it('rejects a block the section does not own or that is not a video or image (BAD_USER_INPUT, mediaBlockId)', async () => {
       prismaMock.campaignBlock.findFirst
         .mockResolvedValueOnce(featuredMedia)
+        .mockResolvedValueOnce(featuredMedia)
         .mockResolvedValueOnce({
           id: 'buttonId',
           typename: 'CampaignButtonBlock'
@@ -289,6 +291,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
       })
 
       prismaMock.campaignBlock.findFirst
+        .mockResolvedValueOnce(featuredMedia)
         .mockResolvedValueOnce(featuredMedia)
         .mockResolvedValueOnce(null)
       const elsewhere = await update({ mediaBlockId: 'otherSectionMediaId' })
@@ -316,6 +319,7 @@ describe('campaignFeaturedMediaBlockUpdate', () => {
 
   it('rejects a cover that is not a live image block (BAD_USER_INPUT, coverBlockId)', async () => {
     prismaMock.campaignBlock.findFirst
+      .mockResolvedValueOnce(featuredMedia)
       .mockResolvedValueOnce(featuredMedia)
       .mockResolvedValueOnce(null)
 
