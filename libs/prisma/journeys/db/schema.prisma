@@ -817,6 +817,10 @@ model QrCode {
   team                    Team                     @relation(fields: [teamId], references: [id])
   journey                 Journey                  @relation(fields: [journeyId], references: [id], onDelete: Cascade)
   campaignRegionLanguages CampaignRegionLanguage[]
+
+  @@index([toJourneyId])
+  @@index([teamId])
+  @@index([journeyId])
 }
 
 model JourneyEventsExportLog {

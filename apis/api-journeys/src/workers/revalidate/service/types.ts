@@ -9,8 +9,12 @@ export interface RevalidateSlugJob {
 
 /**
  * Revalidate explicit Next.js page paths (`/home/campaign/<slug>`, …), one
- * `/api/revalidate` call per path. Queued by the campaign publish and
- * unpublish mutations and by a Campaign Root change.
+ * `/api/revalidate` call per path. Queued, for a published campaign, by
+ * `campaignPublish`, `campaignUnpublish` and `campaignDelete`; by a slug
+ * change in `campaignUpdate`; by `campaignLanguageAdd` and
+ * `campaignLanguageRemove`; by `campaignRegionUpdate` and
+ * `campaignRegionDelete`; by a Campaign Root change in `customDomainUpdate`;
+ * and by `customDomainDelete` releasing a Campaign Root.
  */
 export interface RevalidatePathsJob {
   paths: string[]

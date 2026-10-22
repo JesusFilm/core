@@ -162,7 +162,7 @@ export async function deleteVercelDomain({
  */
 export async function updateTeamShortLinks(teamId: string): Promise<void> {
   const teamJourneys = await prisma.journey.findMany({
-    where: { teamId },
+    where: { teamId, deletedAt: null },
     select: { id: true }
   })
 

@@ -8,6 +8,11 @@ import {
   collectMediaFromJourneys,
   deleteUnusedMedia
 } from '../../../lib/mediaCleanup/mediaCleanup'
+import {
+  deleteQrCodes,
+  deleteShortLinks,
+  findRegionQrCodes
+} from '../../../schema/campaign/regionLanguage/service'
 import { findJourneyShortLinkIds } from '../../shortlinkDelete/findJourneyShortLinkIds'
 import { enqueueShortLinkDeletes } from '../../shortlinkDelete/queue'
 
@@ -29,6 +34,8 @@ const DEFAULT_CLEANUP_HOURS = 24
  * - Invitations with test email patterns like "playwright123@example.com"
  * - Data older than specified hours (default: 24 hours)
  * - Journeys created by users with playwright*@example.com email addresses
+ * - Campaigns titled "Playwright campaign" or "Playwright editor v2 campaign"
+ *   + a timestamp, with their Campaign QR Codes and short links
  */
 export async function service(
   job: Job<E2eCleanupJob>,
@@ -147,9 +154,76 @@ export async function service(
     }
 
     logger?.info(`Successfully deleted ${deletedCount} test journeys`)
+
+    const deletedCampaignCount = await deleteLeftoverCampaigns(
+      cutoffDate,
+      dryRun,
+      logger
+    )
+    logger?.info(`Successfully deleted ${deletedCampaignCount} test campaigns`)
     logger?.info('E2E cleanup completed successfully')
   } catch (error) {
     logger?.error({ error }, 'E2E cleanup failed')
     throw error
   }
+}
+
+const PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES = [
+  'Playwright campaign',
+  'Playwright editor v2 campaign'
+]
+
+/**
+ * Delete the campaigns the campaign builder e2e specs leave behind when a run
+ * fails before its own cleanup, in the order of `campaignDelete`: the Campaign
+ * QR Codes go inside the transaction with the campaign, and their short links
+ * are queued for delete once it has committed. Returns the number deleted.
+ */
+async function deleteLeftoverCampaigns(
+  cutoffDate: Date,
+  dryRun: boolean,
+  logger?: Logger
+): Promise<number> {
+  const campaigns = await prisma.campaign.findMany({
+    where: {
+      createdAt: { lt: cutoffDate },
+      OR: PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES.map((prefix) => ({
+        title: { startsWith: prefix }
+      }))
+    },
+    select: { id: true, title: true }
+  })
+
+  logger?.info(`Found ${campaigns.length} test campaigns`)
+
+  if (dryRun) {
+    logger?.info('DRY RUN: Would delete the following campaigns:')
+    campaigns.forEach((campaign) => {
+      logger?.info(`Campaign: "${campaign.title}" (${campaign.id})`)
+    })
+    return 0
+  }
+
+  let deletedCount = 0
+  for (const campaign of campaigns) {
+    try {
+      let shortLinkIds: string[] = []
+      await prisma.$transaction(async (tx) => {
+        shortLinkIds = await deleteQrCodes(
+          tx,
+          await findRegionQrCodes(tx, { region: { campaignId: campaign.id } })
+        )
+        await tx.campaign.delete({ where: { id: campaign.id } })
+      })
+      await deleteShortLinks(shortLinkIds)
+      deletedCount++
+      logger?.info(`Deleted campaign "${campaign.title}" (${campaign.id})`)
+    } catch (error) {
+      logger?.warn(
+        { campaignId: campaign.id, error },
+        `Failed to delete campaign "${campaign.title}"`
+      )
+    }
+  }
+  return deletedCount
 }
