@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { touchCampaign } from '../block/service'
+import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
 import { notFound } from '../errors'
 import { renumber } from '../order'
@@ -27,6 +27,7 @@ builder.mutationField('campaignRegionCountryRemove', (t) =>
       const region = await authorizeRegionUpdate(row.regionId, context.user)
 
       return await prisma.$transaction(async (tx) => {
+        await lockCampaignStructure(tx, region.campaignId)
         const deleted = await tx.campaignRegionCountry.delete({
           where: { id }
         })

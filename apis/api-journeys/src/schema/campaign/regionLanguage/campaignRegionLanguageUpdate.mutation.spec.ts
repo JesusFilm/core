@@ -9,6 +9,7 @@ import {
 } from '../../../../test/campaignFactory'
 import { campaignRegionLanguageWithAcl } from '../../../../test/campaignRegionFactory'
 import { prismaMock } from '../../../../test/prismaMock'
+import { GATEWAY_TIMEOUT_MS } from '../../../lib/gateway/graphqlRequest'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import {
   createShortLink,
@@ -467,7 +468,16 @@ describe('campaignRegionLanguageUpdate', () => {
         expect(deleteShortLink).not.toHaveBeenCalled()
       })
 
-      it('deletes the new short link when the commit fails after the create', async () => {
+      it('gives the transaction a timeout that outlasts the short-link gateway call', async () => {
+        await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
+
+        expect(prismaMock.$transaction).toHaveBeenCalledWith(
+          expect.any(Function),
+          { timeout: GATEWAY_TIMEOUT_MS + 5_000 }
+        )
+      })
+
+      it('queues the delete of the new short link when the commit fails after the create', async () => {
         prismaMock.$transaction.mockImplementationOnce((async (
           callback: any
         ) => {
@@ -481,7 +491,12 @@ describe('campaignRegionLanguageUpdate', () => {
 
         expect(result.errors[0].message).toBe('transaction timed out')
         const createdId = vi.mocked(createShortLink).mock.calls[0][0].id
-        expect(deleteShortLink).toHaveBeenCalledWith(createdId)
+        expect(
+          mockQueueAdd.mock.calls
+            .filter(([name]) => name === 'api-journeys-shortlink-delete-job')
+            .map(([, data]) => data.shortLinkId)
+        ).toEqual([createdId])
+        expect(deleteShortLink).not.toHaveBeenCalled()
       })
 
       it('points a retargeted short link back at the previous journey when the commit fails after the retarget', async () => {
