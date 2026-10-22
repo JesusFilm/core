@@ -269,14 +269,13 @@ export const Video = builder.prismaObject('Video', {
       type: ['String'],
       nullable: false,
       description: 'Former slugs of this video. Redirect them to `slug`.',
-      resolve: async ({ id }) => {
-        const previousSlugs = await prisma.videoSlug.findMany({
-          where: { videoId: id },
-          orderBy: { createdAt: 'desc' },
-          select: { value: true }
-        })
-        return previousSlugs.map(({ value }) => value)
-      }
+      select: () => ({
+        previousSlugs: {
+          select: { value: true },
+          orderBy: { createdAt: 'desc' }
+        }
+      }),
+      resolve: (video) => video.previousSlugs.map(({ value }) => value)
     }),
     noIndex: t.exposeBoolean('noIndex'),
     childrenCount: t.relationCount('children', {
@@ -942,8 +941,8 @@ builder.mutationFields((t) => ({
                 }
               })
             )
-          const videoUpdatePromise = prisma.video.update(videoUpdateArgs)
-          await prisma.$transaction([
+          const videoUpdateQuery = prisma.video.update(videoUpdateArgs)
+          const results = await prisma.$transaction([
             prisma.videoSlug.create({
               data: { value: previousSlug, videoId: input.id }
             }),
@@ -951,9 +950,11 @@ builder.mutationFields((t) => ({
               where: { value: input.slug, videoId: input.id }
             }),
             ...variantSlugUpdates,
-            videoUpdatePromise
+            videoUpdateQuery
           ])
-          video = await videoUpdatePromise
+          video = results[results.length - 1] as Awaited<
+            typeof videoUpdateQuery
+          >
         } else {
           video = await prisma.video.update(videoUpdateArgs)
         }

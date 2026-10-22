@@ -1800,11 +1800,13 @@ describe('video', () => {
     })
 
     it('should query previousSlugs newest first', async () => {
-      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce(video)
-      prismaMock.videoSlug.findMany.mockResolvedValueOnce([
-        { value: 'newer-old-slug' },
-        { value: 'older-old-slug' }
-      ] as any)
+      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce({
+        ...video,
+        previousSlugs: [
+          { value: 'newer-old-slug' },
+          { value: 'older-old-slug' }
+        ]
+      } as unknown as Video)
       const PREVIOUS_SLUGS_QUERY = graphql(`
         query VideoPreviousSlugs($id: ID!) {
           video(id: $id) {
@@ -1816,11 +1818,16 @@ describe('video', () => {
         document: PREVIOUS_SLUGS_QUERY,
         variables: { id: 'videoId' }
       })
-      expect(prismaMock.videoSlug.findMany).toHaveBeenCalledWith({
-        where: { videoId: 'videoId' },
-        orderBy: { createdAt: 'desc' },
-        select: { value: true }
-      })
+      expect(prismaMock.video.findUniqueOrThrow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: {
+            previousSlugs: {
+              select: { value: true },
+              orderBy: { createdAt: 'desc' }
+            }
+          }
+        })
+      )
       expect(data).toHaveProperty('data.video.previousSlugs', [
         'newer-old-slug',
         'older-old-slug'
@@ -1828,8 +1835,10 @@ describe('video', () => {
     })
 
     it('should return empty previousSlugs when there are none', async () => {
-      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce(video)
-      prismaMock.videoSlug.findMany.mockResolvedValueOnce([])
+      prismaMock.video.findUniqueOrThrow.mockResolvedValueOnce({
+        ...video,
+        previousSlugs: []
+      } as unknown as Video)
       const data = await client({
         document: graphql(`
           query VideoNoPreviousSlugs($id: ID!) {
@@ -3693,6 +3702,9 @@ describe('video', () => {
             data: expect.objectContaining({ slug: 'new-slug' })
           })
         )
+        // Guards against reintroducing the double-write bug where the same
+        // update promise was passed into $transaction and then awaited again.
+        expect(prismaMock.video.update).toHaveBeenCalledTimes(1)
         expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
         expect(result).toHaveProperty('data.videoUpdate', { id: 'id' })
       })
