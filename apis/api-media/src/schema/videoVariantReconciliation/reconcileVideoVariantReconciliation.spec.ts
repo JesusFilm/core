@@ -26,6 +26,18 @@ vi.mock('../video/lib/updateAvailableLanguages', () => ({
   removeLanguageFromVideoIfUnused: vi.fn()
 }))
 
+// The child Variant is published by a single conditional UPDATE gated on the
+// reconciliation row's live `published` (see reconcileVideoVariantReconciliation),
+// not by prisma.videoVariant.update.
+function expectAtomicPublish(videoVariantId: string): void {
+  expect(
+    prismaMock.$executeRaw.mock.calls.some(
+      ([, ...values]) =>
+        values.length === 2 && values.every((value) => value === videoVariantId)
+    )
+  ).toBe(true)
+}
+
 describe('reconcileVideoVariantReconciliation', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -35,6 +47,9 @@ describe('reconcileVideoVariantReconciliation', () => {
     // Default to "no parent containers" so tests that don't exercise the
     // parent-sync path don't need to know about findContainerParentIds.
     vi.mocked(findContainerParentIds).mockResolvedValue([])
+    // Default to the atomic publish check succeeding so tests that don't
+    // exercise the race condition it guards against don't need to know about it.
+    prismaMock.$executeRaw.mockResolvedValue(1)
   })
 
   it('publishes a Variant only after its generated parent Variant and indexes are ready', async () => {
@@ -102,12 +117,111 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('episode-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
-    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-      where: { id: 'variant-1' },
-      data: { published: true }
-    })
+    // Regression guard: the publish write must be a single atomic conditional
+    // UPDATE gated on the reconciliation row's current state, not a blind
+    // write based on the (possibly stale) snapshot read at the top of the sweep.
+    const [sqlParts, ...values] = prismaMock.$executeRaw.mock.calls[0] as [
+      readonly string[],
+      ...unknown[]
+    ]
+    expect(sqlParts.join(' ')).toContain('EXISTS')
+    expect(values).toEqual(['variant-1', 'variant-1'])
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
     expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
+  })
+
+  it('does not publish when a concurrent Draft request wins before the write', async () => {
+    // Simulates an editor's explicit unpublish landing between this sweep's
+    // initial read (at the top of the function) and its publish write: the
+    // reconciliation row's published column is no longer true by the time
+    // the atomic UPDATE runs, so it must affect zero rows.
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: false,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+    prismaMock.video.findMany.mockResolvedValue([])
+    prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+    prismaMock.$executeRaw.mockResolvedValue(0)
+
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+
+    expect(prismaMock.$executeRaw).toHaveBeenCalled()
+    expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+    expect(result).toMatchObject({ publicationReady: true, status: 'complete' })
+  })
+
+  it('does not roll back published when the Algolia variant update fails after publishing', async () => {
+    // Regression guard: a rollback here used to be unconditional, so it could
+    // stomp a fresh explicit republish that landed between this sweep's
+    // publish write and the (failing) Algolia call.
+    const reconciliation: ReconciliationRecord = {
+      reason: 'video-variant-publication-change',
+      videoId: 'episode-1',
+      languageId: '20770',
+      published: true,
+      videoVariantId: 'variant-1',
+      processingStages: {},
+      createdAt: new Date(),
+      videoVariant: {
+        id: 'variant-1',
+        videoId: 'episode-1',
+        languageId: '20770',
+        slug: 'episode-1/20770',
+        published: false,
+        downloadable: false,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: true }
+      }
+    }
+    prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+      reconciliation as never
+    )
+    prismaMock.video.findMany.mockResolvedValue([])
+    prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+    vi.mocked(updateVideoVariantInAlgolia).mockRejectedValueOnce(
+      new Error('Algolia unavailable')
+    )
+
+    const result = await reconcileVideoVariantReconciliation('reconciliation-1')
+
+    expect(prismaMock.$executeRaw).toHaveBeenCalled()
+    expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
+    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1' },
+      data: expect.objectContaining({
+        status: 'degraded',
+        processingStages: expect.objectContaining({
+          algoliaVariant: expect.objectContaining({
+            state: 'failed',
+            error: 'Algolia unavailable'
+          })
+        })
+      })
+    })
+    expect(result).toMatchObject({
+      publicationReady: false,
+      status: 'degraded'
+    })
   })
 
   it('still publishes the child Variant, and the generated parent Variant, when a newly-created parent Video record fails to index', async () => {
@@ -158,10 +272,7 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
     // Nor does the parent's Video-index failure block the real child
     // Variant -- it must still publish and index.
-    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-      where: { id: 'variant-1' },
-      data: { published: true }
-    })
+    expectAtomicPublish('variant-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
     // The parent's failure stays recorded even though the child's own
     // (successful) Video record sync runs afterward on the same shared
@@ -250,10 +361,7 @@ describe('reconcileVideoVariantReconciliation', () => {
     // (series-1) failing to index.
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
     // The parent's Video-index failure must not block the real child Variant.
-    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-      where: { id: 'variant-1' },
-      data: { published: true }
-    })
+    expectAtomicPublish('variant-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('variant-1')
     // The parent's failure stays recorded even though the child's own
     // (successful) Video record sync runs afterward on the same shared
@@ -373,10 +481,7 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
-    expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-      where: { id: 'variant-1' },
-      data: { published: true }
-    })
+    expect(prismaMock.$executeRaw).toHaveBeenCalled()
     expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
       where: { id: 'reconciliation-1' },
       data: expect.objectContaining({
@@ -716,10 +821,7 @@ describe('reconcileVideoVariantReconciliation', () => {
       const result =
         await reconcileVideoVariantReconciliation('reconciliation-1')
 
-      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
-        where: { id: '2_20899-0-La-Liberte' },
-        data: { published: true }
-      })
+      expectAtomicPublish('2_20899-0-La-Liberte')
       expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
         '2_20899-0-La-Liberte'
       )
