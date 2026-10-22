@@ -1,6 +1,5 @@
 import { prisma } from '@core/prisma/media/client'
 
-import { updateVideoInAlgolia } from '../../lib/algolia/algoliaVideoUpdate'
 import { updateVideoVariantInAlgolia } from '../../lib/algolia/algoliaVideoVariantUpdate'
 import { videoCacheReset } from '../../lib/videoCacheReset'
 import {
@@ -16,7 +15,8 @@ import {
   ReconciliationStatus,
   completedStage,
   failedStage,
-  generatedParentStages
+  generatedParentStages,
+  syncVideoRecordStage
 } from './reconciliationStages'
 import { videoVariantContainsMedia } from './videoVariantContainsMedia'
 
@@ -167,7 +167,11 @@ async function reconcileParentVariant({
         languageId: variant.languageId,
         videoVariantId: parentVariantId,
         published: true,
-        processingStages: generatedParentProcessingStages
+        // This parent row was just created, so it has no previous attempts.
+        // reconcileGeneratedParentVariant seeds its own stages from what it is
+        // given; handing it the already-seeded stages would count this first
+        // sync as a second attempt.
+        processingStages: {}
       },
       variant: {
         id: parentVariantId,
@@ -181,19 +185,21 @@ async function reconcileParentVariant({
     if (result.failure != null) {
       stages[result.failure.stageName] = result.failure.stage
       await persistStatus('degraded', result.failure.stage)
-      return { publicationReady: false, status: 'degraded' }
+      // A generated parent Video-record failure never blocks: the parent
+      // Variant itself is already published and indexed by this point, and
+      // the real child Variant (not yet processed) must not get stuck behind
+      // its container's search-index sync.
+      if (result.failure.stageName !== 'algoliaVideo') {
+        return { publicationReady: false, status: 'degraded' }
+      }
     }
     return null
   }
 
-  try {
-    await updateVideoInAlgolia(parentVideo.id)
-    stages.algoliaVideo = completedStage(stages.algoliaVideo.attempts + 1)
-  } catch (error) {
-    stages.algoliaVideo = failedStage(error, stages.algoliaVideo.attempts + 1)
-    await persistStatus('degraded', stages.algoliaVideo)
-    return { publicationReady: false, status: 'degraded' }
-  }
+  stages.algoliaVideo = await syncVideoRecordStage(
+    parentVideo.id,
+    stages.algoliaVideo
+  )
 
   try {
     await updateVideoVariantInAlgolia(parentVariant.id)
@@ -204,6 +210,14 @@ async function reconcileParentVariant({
     )
     await persistStatus('degraded', stages.algoliaVariant)
     return { publicationReady: false, status: 'degraded' }
+  }
+
+  // Record the parent Video-record failure, but don't block on it: the
+  // parent Variant's own publish/index above already ran, and the real child
+  // Variant (not yet processed by the caller) must not get stuck behind its
+  // container's search-index sync.
+  if (stages.algoliaVideo.state === 'failed') {
+    await persistStatus('degraded', stages.algoliaVideo)
   }
 
   return null

@@ -10,6 +10,18 @@ export type VideoVariantReconciliationReason =
   | 'generated-parent'
   | 'backfill-generated-parent'
 
+// A fresh upload's Variant is shape-identical to a generated parent (no
+// muxVideo, no hls/share) until Mux settles its media state -- see
+// isGeneratedParentVariant in reconcileReasonSpecificVariant.ts, which
+// excludes these reasons from the shape heuristic. That exclusion only
+// holds if a re-request (a publish toggle, a language edit) made before
+// Mux resolves doesn't overwrite the reason out from under it, which is
+// what the stickiness below prevents.
+export const FRESH_UPLOAD_REASONS = new Set<VideoVariantReconciliationReason>([
+  'video-variant-create',
+  'process-video-upload'
+])
+
 type ReconciliationIntent = {
   videoVariantId: string
   videoId: string
@@ -27,16 +39,46 @@ const pendingStages = {
   algoliaVariant: { state: 'pending', attempts: 0 }
 }
 
+function isMuxUnresolved(processingStages: unknown): boolean {
+  if (processingStages == null || typeof processingStages !== 'object') {
+    return true
+  }
+  const mux = (processingStages as Record<string, unknown>).mux
+  if (mux == null || typeof mux !== 'object') return true
+  const state = (mux as Record<string, unknown>).state
+  // A timed-out upload ('failed') is still "not resolved" for stickiness
+  // purposes: it never produced media, so it must keep being treated as a
+  // genuinely failed upload rather than falling through to the shape
+  // heuristic that would misclassify it as a media-less generated parent.
+  // Only 'complete' (media produced) or 'notApplicable' (reconciled via a
+  // different path, e.g. unpublish) count as resolved.
+  return state !== 'complete' && state !== 'notApplicable'
+}
+
 export async function requestVideoVariantReconciliation(
   intent: ReconciliationIntent
 ): Promise<void> {
   const existingReconciliation =
     await prisma.videoVariantReconciliation.findUnique({
       where: { videoVariantId: intent.videoVariantId },
-      select: { id: true }
+      select: { id: true, reason: true, processingStages: true }
     })
+
+  // Keep a fresh upload's original reason until Mux actually produces media
+  // (or the Variant is reconciled via a different path), so a re-request in
+  // between -- including after a timeout, which still leaves no media --
+  // can't make a media-less Variant look like a generated parent.
+  const reason =
+    existingReconciliation != null &&
+    FRESH_UPLOAD_REASONS.has(
+      existingReconciliation.reason as VideoVariantReconciliationReason
+    ) &&
+    isMuxUnresolved(existingReconciliation.processingStages)
+      ? (existingReconciliation.reason as VideoVariantReconciliationReason)
+      : intent.reason
+
   const data = {
-    reason: intent.reason,
+    reason,
     status: 'processing' as const,
     videoId: intent.videoId,
     languageId: intent.languageId,
@@ -48,9 +90,13 @@ export async function requestVideoVariantReconciliation(
   }
 
   if (existingReconciliation != null) {
+    // A re-request is a fresh intent. createdAt is what the reconciler's
+    // time windows (the two-hour Mux wait, the 24-hour Downloads retry) count
+    // from, so leaving the original value would let a record that has sat
+    // around for days fail its "two hours" on the very first sweep.
     await prisma.videoVariantReconciliation.update({
       where: { id: existingReconciliation.id },
-      data
+      data: { ...data, createdAt: new Date() }
     })
     return
   }
