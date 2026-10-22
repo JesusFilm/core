@@ -250,6 +250,19 @@ export const Video = builder.prismaObject('Video', {
       resolve: ({ slug }) => slug ?? '',
       description: 'slug is a permanent link to the video.'
     }),
+    previousSlugs: t.field({
+      type: ['String'],
+      nullable: false,
+      description: 'Former slugs of this video. Redirect them to `slug`.',
+      resolve: async ({ id }) => {
+        const previousSlugs = await prisma.videoSlug.findMany({
+          where: { videoId: id },
+          orderBy: { createdAt: 'desc' },
+          select: { value: true }
+        })
+        return previousSlugs.map(({ value }) => value)
+      }
+    }),
     noIndex: t.exposeBoolean('noIndex'),
     childrenCount: t.relationCount('children', {
       nullable: false,
@@ -351,11 +364,11 @@ export const Video = builder.prismaObject('Video', {
           !isEmpty(variableValueId) &&
           !isEmpty(requestedLanguage)
         ) {
-          const slug = `${video.slug as string}/${requestedLanguage}`
-          return await prisma.videoVariant.findUnique({
+          return await prisma.videoVariant.findFirst({
             ...query,
             where: {
-              slug,
+              videoId: video.id,
+              slug: { endsWith: `/${requestedLanguage}` },
               published: input?.onlyPublished === false ? undefined : true
             }
           })
@@ -654,6 +667,21 @@ builder.queryFields((t) => ({
   })
 }))
 
+async function assertSlugNotAliasOfOtherVideo(
+  slug: string | null | undefined,
+  videoId: string
+): Promise<void> {
+  if (slug == null) return
+  const alias = await prisma.videoSlug.findUnique({
+    where: { value: slug },
+    select: { videoId: true }
+  })
+  if (alias == null || alias.videoId === videoId) return
+  throw new NotUniqueError('Video slug already exists', [
+    { path: ['input', 'slug'], value: slug }
+  ])
+}
+
 builder.mutationFields((t) => ({
   videoCreate: t.withAuth({ isPublisher: true }).prismaField({
     type: 'Video',
@@ -662,6 +690,8 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoCreateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
+      await assertSlugNotAliasOfOtherVideo(input.slug, input.id)
+
       // Handle child relation synchronization if childIds is provided
       let childRelationData = {}
       if (input.childIds && input.childIds.length > 0) {
@@ -737,7 +767,9 @@ builder.mutationFields((t) => ({
       input: t.arg({ type: VideoUpdateInput, required: true })
     },
     resolve: async (query, _parent, { input }) => {
-      // Get current video data to check if published status is changing and to prevent slug change after publish
+      await assertSlugNotAliasOfOtherVideo(input.slug, input.id)
+
+      // Get current video data to check if published status is changing and to record the previous slug
       const currentVideo =
         input.published !== undefined ||
         input.slug !== undefined ||
@@ -756,15 +788,6 @@ builder.mutationFields((t) => ({
               }
             })
           : null
-
-      // Prevent changing slug after video has been published
-      if (
-        input.slug != null &&
-        input.slug !== currentVideo?.slug &&
-        currentVideo?.publishedAt != null
-      ) {
-        throw new Error('Cannot change slug after video has been published')
-      }
 
       if (
         input.restrictTranslations === false &&
@@ -821,7 +844,7 @@ builder.mutationFields((t) => ({
 
       let video
       try {
-        video = await prisma.video.update({
+        const videoUpdateArgs = {
           ...query,
           where: videoWhere,
           data: {
@@ -846,7 +869,26 @@ builder.mutationFields((t) => ({
             ...query.include,
             children: true
           }
-        })
+        } satisfies Prisma.VideoUpdateArgs
+        const previousSlug = currentVideo?.slug
+        if (
+          input.slug != null &&
+          previousSlug != null &&
+          input.slug !== previousSlug
+        ) {
+          const [, , updatedVideo] = await prisma.$transaction([
+            prisma.videoSlug.create({
+              data: { value: previousSlug, videoId: input.id }
+            }),
+            prisma.videoSlug.deleteMany({
+              where: { value: input.slug, videoId: input.id }
+            }),
+            prisma.video.update(videoUpdateArgs)
+          ])
+          video = updatedVideo
+        } else {
+          video = await prisma.video.update(videoUpdateArgs)
+        }
       } catch (e) {
         if (
           input.restrictTranslations === false &&

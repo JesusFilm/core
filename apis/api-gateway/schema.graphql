@@ -2342,6 +2342,10 @@ type Video @join__type(graph: API_JOURNEYS_MODERN, key: "id primaryLanguageId", 
   slug is a permanent link to the video.
   """
   slug: String! @join__field(graph: API_MEDIA) 
+  """
+  Former slugs of this video. Redirect them to `slug`.
+  """
+  previousSlugs: [String!]! @join__field(graph: API_MEDIA) 
   noIndex: Boolean @join__field(graph: API_MEDIA) 
   """
   The number of published child videos associated with this video
