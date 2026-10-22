@@ -176,7 +176,7 @@ One of the two pages a Campaign has: the landing page, or the **Region Page** th
 _Avoid_: screen, view, region's page (a region has no page of its own)
 
 **Campaign Status**:
-Whether a Campaign is `draft` or `published`, the only public gate: a draft is never served, and nothing on a Campaign is locked by its status. `publishedAt` records the first publish and unpublishing never clears it, so it means "first went live"; publish and unpublish are explicit, manager-only actions, never undo steps.
+Whether a Campaign is `draft` or `published`, the only public gate: a draft is never served, and nothing on a Campaign is locked by its status. `publishedAt` records the first publish and unpublishing never clears it, so it means "first went live"; publish and unpublish are explicit actions any member or manager of the Team takes, never undo steps.
 _Avoid_: live/offline (use published/draft), visibility, state
 
 **Live Editing**:
@@ -188,7 +188,7 @@ The two fields of a Campaign that are not content: the default-language title an
 _Avoid_: metadata, properties, campaign info
 
 **Campaign access**:
-Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads and edits everything inside it, while only a manager publishes, unpublishes, deletes it or makes it a Custom Domain's root. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
+Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or makes it a Custom Domain's root. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
 _Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
 
 **Campaign Seed**:

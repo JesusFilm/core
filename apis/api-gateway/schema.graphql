@@ -1091,7 +1091,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   
   Errors:
   - NOT_FOUND: id does not resolve.
-  - FORBIDDEN: caller is not a manager of the team.
+  - FORBIDDEN: caller is not in the team.
   """
   campaignPublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """
@@ -1101,7 +1101,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   
   Errors:
   - NOT_FOUND: id does not resolve.
-  - FORBIDDEN: caller is not a manager of the team.
+  - FORBIDDEN: caller is not in the team.
   """
   campaignUnpublish(id: ID!) : Campaign! @join__field(graph: API_JOURNEYS_MODERN) 
   """

@@ -34,7 +34,7 @@ function AddCommandButton(): ReactElement {
   )
 }
 
-function Harness({ isManager = true }: { isManager?: boolean }): ReactElement {
+function Harness(): ReactElement {
   const [view, setView] = useState<CanvasView>('desktop')
   return (
     <SnackbarProvider>
@@ -43,7 +43,7 @@ function Harness({ isManager = true }: { isManager?: boolean }): ReactElement {
         <CommandProbe />
         <PanelProbe />
         <span data-testid="View">{view}</span>
-        <LeftRail view={view} onViewChange={setView} isManager={isManager} />
+        <LeftRail view={view} onViewChange={setView} />
       </StaticEditor>
     </SnackbarProvider>
   )

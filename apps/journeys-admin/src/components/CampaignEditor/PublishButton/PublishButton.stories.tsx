@@ -16,12 +16,10 @@ import { PublishButton } from '.'
 
 interface PublishButtonStoryProps {
   campaignProp?: Campaign
-  isManager?: boolean
 }
 
 function PublishButtonStory({
-  campaignProp = campaign,
-  isManager = true
+  campaignProp = campaign
 }: PublishButtonStoryProps): ReactElement {
   return (
     <MockedProvider>
@@ -29,7 +27,7 @@ function PublishButtonStory({
         <CommandProvider>
           <CampaignEditorProvider campaign={campaignProp}>
             <Box sx={{ p: 2, height: 360, width: 360 }}>
-              <PublishButton isManager={isManager} />
+              <PublishButton />
             </Box>
           </CampaignEditorProvider>
         </CommandProvider>
@@ -62,12 +60,6 @@ export const DraftPopover: Story = { play: openPopover }
 /** A published campaign: the popover offers Unpublish behind a confirmation. */
 export const PublishedPopover: Story = {
   args: { campaignProp: publishedCampaign },
-  play: openPopover
-}
-
-/** A member who is not a manager: Publish is disabled, Open page still works. */
-export const NonManagerPopover: Story = {
-  args: { isManager: false },
   play: openPopover
 }
 

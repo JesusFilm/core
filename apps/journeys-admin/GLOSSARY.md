@@ -113,7 +113,7 @@ The Pages Panel select that sets which Campaign language the Campaign Canvas ren
 _Avoid_: canvas language, view language, locale
 
 **Publish button**:
-The Left Rail's status-dot button (grey draft, green published) whose popover offers Publish, Unpublish (confirmed) and Open page. Publish and Unpublish are explicit team-manager actions, never Commands.
+The Left Rail's status-dot button (grey draft, green published) whose popover offers Publish, Unpublish (confirmed) and Open page. Publish and Unpublish are explicit actions open to any member or manager of the Team, never Commands; Delete campaign and the Campaign Root stay with managers.
 _Avoid_: status chip
 
 **Canvas banner**:

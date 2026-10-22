@@ -96,7 +96,7 @@ function CampaignEditorShell({
       sx={{ height: '100vh' }}
     >
       <Hotkeys />
-      <LeftRail view={view} onViewChange={setView} isManager={isManager} />
+      <LeftRail view={view} onViewChange={setView} />
       {leftPanel}
       <Stack sx={{ flexGrow: 1, minWidth: 0 }}>
         <Box

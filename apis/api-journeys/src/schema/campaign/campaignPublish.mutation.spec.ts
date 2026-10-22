@@ -181,6 +181,29 @@ describe('campaignPublish', () => {
     expect(result.data.campaignPublish.status).toBe('published')
   })
 
+  it('throws FORBIDDEN for a caller outside the team', async () => {
+    prismaMock.campaign.findUnique.mockResolvedValue(
+      campaignFactory({ userId: 'someoneElse' }).build()
+    )
+
+    const result = await authClient({
+      document: CAMPAIGN_PUBLISH,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(result).toEqual({
+      data: null,
+      errors: [
+        expect.objectContaining({
+          message: 'user is not allowed to publish campaign',
+          extensions: expect.objectContaining({ code: 'FORBIDDEN' })
+        })
+      ]
+    })
+    expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
+  })
+
   it('throws NOT_FOUND for an unknown id', async () => {
     prismaMock.campaign.findUnique.mockResolvedValue(null)
 
