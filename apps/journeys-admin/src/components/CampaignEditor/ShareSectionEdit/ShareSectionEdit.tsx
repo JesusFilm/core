@@ -531,21 +531,20 @@ function ShareLanguageRow({
                   {t('Open journey')}
                 </Button>
               )}
-              {regionLanguage.journeyId != null &&
-                regionLanguage.qrCode == null && (
-                  <Button
-                    size="small"
-                    color="inherit"
-                    startIcon={<QrCode2Icon fontSize="small" />}
-                    data-testid="ShareLanguageCreateQrCode"
-                    onClick={(event: MouseEvent<HTMLButtonElement>) => {
-                      stop(event)
-                      void onCreateQrCode()
-                    }}
-                  >
-                    {t('Create QR code')}
-                  </Button>
-                )}
+              {state === 'live' && regionLanguage.qrCode == null && (
+                <Button
+                  size="small"
+                  color="inherit"
+                  startIcon={<QrCode2Icon fontSize="small" />}
+                  data-testid="ShareLanguageCreateQrCode"
+                  onClick={(event: MouseEvent<HTMLButtonElement>) => {
+                    stop(event)
+                    void onCreateQrCode()
+                  }}
+                >
+                  {t('Create QR code')}
+                </Button>
+              )}
               {state === 'live' && (
                 <Button
                   size="small"
@@ -705,7 +704,7 @@ export function ShareSectionEdit({
     }
   }
 
-  /** Re-link the same journey: the API mints the missing Campaign QR Code and short link, and leaves an existing one alone. */
+  /** Re-link the same journey: the API mints the missing Campaign QR Code and short link, and keeps the snapshot, an edited one included. */
   async function handleCreateQrCode(
     regionLanguage: CampaignRegionLanguage
   ): Promise<void> {

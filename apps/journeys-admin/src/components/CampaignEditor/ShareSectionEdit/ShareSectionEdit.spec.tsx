@@ -861,6 +861,22 @@ describe('ShareSectionEdit', () => {
     )
   })
 
+  it('offers no Create QR code while the linked journey is unpublished', async () => {
+    renderShare(
+      withEnglish({
+        ...eurEnglish,
+        qrCodeId: null,
+        qrCode: null,
+        journey: { ...eurEnglish.journey!, status: JourneyStatus.draft }
+      })
+    )
+
+    const english = await screen.findByTestId('ShareLanguageRow-529')
+    expect(
+      within(english).queryByRole('button', { name: 'Create QR code' })
+    ).toBeNull()
+  })
+
   it('unlinks a journey with no dialog, keeping the QR code so the bin stays disabled', async () => {
     renderShare()
 

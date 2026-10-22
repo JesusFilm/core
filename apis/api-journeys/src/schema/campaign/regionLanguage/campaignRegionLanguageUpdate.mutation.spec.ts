@@ -523,6 +523,34 @@ describe('campaignRegionLanguageUpdate', () => {
       )
       expect(createShortLink).toHaveBeenCalledTimes(1)
     })
+
+    it('re-linking the journey already linked mints the missing QR code and keeps an edited snapshot', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+        campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529', {
+          journeyId: 'journeyId',
+          title: 'Our title',
+          description: 'Our description',
+          snapshotEdited: true,
+          qrCodeId: null,
+          qrCode: null
+        })
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.data.campaignRegionLanguageUpdate).toEqual({
+        id: 'eurRegionId-529',
+        journeyId: 'journeyId',
+        title: 'Our title',
+        description: 'Our description',
+        qrCodeId: 'qrCodeId'
+      })
+      expect(createShortLink).toHaveBeenCalledTimes(1)
+      expect(
+        vi.mocked(prismaMock.campaignRegionLanguage.update).mock.calls[0][0]
+          .data
+      ).toEqual({ qrCodeId: 'qrCodeId' })
+    })
   })
 
   it("linking another team's journey needs only campaign Update: no membership of its team and no UserJourney row", async () => {
