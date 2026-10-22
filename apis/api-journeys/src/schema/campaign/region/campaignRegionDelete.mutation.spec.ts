@@ -134,28 +134,40 @@ describe('campaignRegionDelete', () => {
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
   })
 
-  it('takes the structure lock and the row lock, then re-reads listed before it deletes', async () => {
+  it('takes the structure lock, then every block, region and string row of the campaign in id order, then re-reads listed before it deletes', async () => {
     await remove()
 
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain(
-      'pg_advisory_xact_lock(hashtext('
+    const statements = prismaMock.$queryRaw.mock.calls.map(
+      ([strings, ...values]) => ({
+        sql: (strings as unknown as string[]).join('?'),
+        values
+      })
     )
-    expect(lock[1]).toBe('campaign:campaignId')
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
-      prismaMock.campaignRegion.delete.mock.invocationCallOrder[0]
-    )
-    const rowLock = prismaMock.$queryRaw.mock.calls[1]
-    expect((rowLock[0] as unknown as string[]).join('?')).toContain(
-      'FOR UPDATE'
-    )
-    expect(rowLock[1]).toBe('eurRegionId')
+    expect(statements[0].sql).toContain('pg_advisory_xact_lock(hashtext(')
+    expect(statements[0].values).toEqual(['campaign:campaignId'])
+    expect(statements.slice(1, 4)).toEqual([
+      {
+        sql: 'SELECT 1 FROM "CampaignBlock" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
+        values: ['campaignId']
+      },
+      {
+        sql: 'SELECT 1 FROM "CampaignRegion" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
+        values: ['campaignId']
+      },
+      {
+        sql: 'SELECT 1 FROM "CampaignString" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
+        values: ['campaignId']
+      }
+    ])
     expect(prismaMock.campaignRegion.findUnique).toHaveBeenLastCalledWith({
       where: { id: 'eurRegionId' },
       select: { listed: true }
     })
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[1]).toBeLessThan(
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[3]).toBeLessThan(
       prismaMock.campaignRegion.findUnique.mock.invocationCallOrder[1]
+    )
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[3]).toBeLessThan(
+      prismaMock.campaignRegion.delete.mock.invocationCallOrder[0]
     )
   })
 

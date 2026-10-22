@@ -1,7 +1,11 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { lockCampaignStructure, touchCampaign } from '../block/service'
+import {
+  lockCampaignStructure,
+  lockCampaignTextRows,
+  touchCampaign
+} from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
 import { conflict, notFound } from '../errors'
 import {
@@ -27,9 +31,12 @@ builder.mutationField('campaignRegionDelete', (t) =>
       let shortLinkIds: string[] = []
       const deleted = await prisma.$transaction(async (tx) => {
         // Decide from the row as locked, not as authorised: a concurrent
-        // update may have listed it since.
+        // update may have listed it since. Lock every block and region in
+        // the default-language swap's order, not this row alone: the delete
+        // cascades into the region's Region Lines and the renumber writes the
+        // other regions, so a lone row lock could deadlock with the swap.
         await lockCampaignStructure(tx, region.campaignId)
-        await tx.$queryRaw`SELECT 1 FROM "CampaignRegion" WHERE id = ${region.id} FOR UPDATE`
+        await lockCampaignTextRows(tx, region.campaignId)
         const current = await tx.campaignRegion.findUnique({
           where: { id: region.id },
           select: { listed: true }
