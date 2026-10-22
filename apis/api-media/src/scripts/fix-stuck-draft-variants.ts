@@ -233,15 +233,14 @@ export async function fixStuckDraftVariants(apply: boolean): Promise<boolean> {
         assertSingleRowUpdated(videoUpdate.count, `Video ${fix.videoId}`)
       }
 
-      const reconciliationUpdate = await tx.videoVariantReconciliation.updateMany(
-        {
+      const reconciliationUpdate =
+        await tx.videoVariantReconciliation.updateMany({
           where: {
             videoVariantId: fix.videoVariantId,
             status: { not: 'complete' }
           },
           data: COMPLETED_RECONCILIATION
-        }
-      )
+        })
       assertSingleRowUpdated(
         reconciliationUpdate.count,
         `VideoVariantReconciliation for ${fix.videoVariantId}`
