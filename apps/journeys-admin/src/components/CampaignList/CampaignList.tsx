@@ -7,42 +7,35 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import NextLink from 'next/link'
-import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 
 import { useTeam } from '@core/journeys/ui/TeamProvider'
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { CampaignStatus } from '../../../__generated__/globalTypes'
 import { useCampaignsQuery } from '../../libs/useCampaignsQuery'
 import { LabelChip } from '../LabelChip'
+import { TeamSelect } from '../Team/TeamSelect'
 
 import { CreateCampaignDialog } from './CreateCampaignDialog'
 
 /**
- * The active team's campaigns, newest first, behind the `campaignBuilder`
- * flag: with the flag off the page sends the visitor home. Each row opens
- * the editor; Create campaign opens the dialog.
+ * The active team's campaigns, newest first. The team select beside the
+ * heading names the team and switches it, as on Journeys; with no team
+ * picked ("Shared With Me") the list asks for one and Create stays
+ * disabled. Each row opens the editor; Create campaign opens the dialog.
  */
-export function CampaignList(): ReactElement | null {
+export function CampaignList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const router = useRouter()
-  const { campaignBuilder } = useFlags()
-  const { activeTeam } = useTeam()
-  const enabled = campaignBuilder === true
+  const { query: teamQuery, activeTeam } = useTeam()
   const [createOpen, setCreateOpen] = useState(false)
   const { data, loading, error, refetch } = useCampaignsQuery(
-    enabled && activeTeam?.id != null ? { teamId: activeTeam.id } : undefined
+    activeTeam?.id != null ? { teamId: activeTeam.id } : undefined
   )
 
-  useEffect(() => {
-    if (!enabled) void router.replace('/')
-  }, [enabled, router])
-
-  if (!enabled) return null
-
+  const teamLoading = activeTeam == null && teamQuery.loading
+  const noTeam = activeTeam == null && !teamQuery.loading
   const campaigns = data?.campaigns ?? []
 
   return (
@@ -51,7 +44,10 @@ export function CampaignList(): ReactElement | null {
         direction="row"
         sx={{ alignItems: 'center', justifyContent: 'space-between' }}
       >
-        <Typography variant="h4">{t('Campaigns')}</Typography>
+        <Stack direction="row" spacing={4} sx={{ alignItems: 'center' }}>
+          <Typography variant="h4">{t('Campaigns')}</Typography>
+          <TeamSelect />
+        </Stack>
         <Button
           variant="contained"
           startIcon={<Plus2Icon />}
@@ -61,7 +57,14 @@ export function CampaignList(): ReactElement | null {
           {t('Create campaign')}
         </Button>
       </Stack>
-      {loading && <CircularProgress data-testid="CampaignListLoading" />}
+      {(teamLoading || loading) && (
+        <CircularProgress data-testid="CampaignListLoading" />
+      )}
+      {noTeam && (
+        <Typography color="text.secondary">
+          {t('Pick a team to see its campaigns')}
+        </Typography>
+      )}
       {!loading && error != null && data == null && (
         <Alert
           severity="error"
