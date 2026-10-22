@@ -113,8 +113,7 @@ export function Settings({
     if (value === '')
       return field === 'title' ? t('Title is required') : t('Slug is required')
     const max = field === 'title' ? TITLE_MAX_LENGTH : SLUG_MAX_LENGTH
-    if ([...value].length > max)
-      return t('Max {{count}} characters', { count: max })
+    if ([...value].length > max) return t('Max {{max}} characters', { max })
     return undefined
   }
 

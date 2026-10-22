@@ -145,7 +145,7 @@ export function InlineText({
   const helper =
     error ??
     (overLength
-      ? t('Max {{count}} characters', { count: max })
+      ? t('Max {{max}} characters', { max })
       : length >= max * COUNTER_THRESHOLD
         ? t('{{length}} / {{max}}', { length, max })
         : undefined)

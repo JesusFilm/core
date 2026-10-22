@@ -569,9 +569,11 @@ describe('Settings', () => {
       const conflict = await screen.findByTestId(
         'CampaignDefaultLanguageConflict'
       )
-      expect(conflict).toHaveTextContent(
-        '3 texts have no translation in Français yet'
-      )
+      expect(
+        within(conflict).getByText(
+          '3 texts have no translation in Français yet, so it cannot become the default.'
+        )
+      ).toBeInTheDocument()
       expect(onDefaultLanguageChanged).not.toHaveBeenCalled()
 
       fireEvent.click(

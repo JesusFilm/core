@@ -277,7 +277,7 @@ describe('JourneyListEdit', () => {
       target: { value: 'a'.repeat(201) }
     })
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Max 200 characters'
+      /^Max 200 characters$/
     )
     expect(screen.getByRole('textbox', { name: 'Journey title' })).toHaveValue(
       'The outreach story'
@@ -290,7 +290,7 @@ describe('JourneyListEdit', () => {
     await waitFor(() =>
       expect(
         screen.getAllByRole('alert').map((alert) => alert.textContent)
-      ).toContain('Max 1000 characters_other')
+      ).toContain('Max 1000 characters')
     )
   })
 
