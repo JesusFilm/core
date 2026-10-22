@@ -73,28 +73,61 @@ function Probe(): ReactElement {
   )
 }
 
+const createdMock = {
+  ...createRefusedMock,
+  result: vi.fn(() => ({
+    data: {
+      campaignImageBlockCreate: newOwnedImageBlock(
+        'newCoverId',
+        campaign.blocks.find((block) => block.id === 'heroId')!,
+        createInput.input.src
+      )
+    }
+  }))
+}
+
 describe('useCampaignOwnedImageCommand', () => {
   beforeEach(() => vi.clearAllMocks())
+
+  it('undoes a pick with the owner write alone, never campaignBlockRestore, and redoes it without a second create', async () => {
+    render(
+      <QueriedEditor mocks={[createdMock, restoreOldCoverMock]}>
+        <CommandUndoItem variant="button" />
+        <CommandRedoItem variant="button" />
+        <Probe />
+      </QueriedEditor>
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Pick cover' }))
+    await waitFor(() => expect(write).toHaveBeenCalledTimes(1))
+    expect(write).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: 'heroId' }),
+      { coverBlockId: 'newCoverId' }
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    await waitFor(() => expect(write).toHaveBeenCalledTimes(2))
+    expect(write).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: 'heroId' }),
+      { coverBlockId: 'oldCoverId' }
+    )
+    expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Redo' }))
+
+    await waitFor(() => expect(write).toHaveBeenCalledTimes(3))
+    expect(write).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: 'heroId' }),
+      { coverBlockId: 'newCoverId' }
+    )
+    expect(createdMock.result).toHaveBeenCalledTimes(1)
+    expect(restoreOldCoverMock.result).not.toHaveBeenCalled()
+  })
 
   it('restores nothing and writes no cover on undo after a refused create, and retries the create on redo', async () => {
     render(
       <QueriedEditor
-        mocks={[
-          createRefusedMock,
-          {
-            ...createRefusedMock,
-            result: vi.fn(() => ({
-              data: {
-                campaignImageBlockCreate: newOwnedImageBlock(
-                  'newCoverId',
-                  campaign.blocks.find((block) => block.id === 'heroId')!,
-                  createInput.input.src
-                )
-              }
-            }))
-          },
-          restoreOldCoverMock
-        ]}
+        mocks={[createRefusedMock, createdMock, restoreOldCoverMock]}
       >
         <CommandUndoItem variant="button" />
         <CommandRedoItem variant="button" />

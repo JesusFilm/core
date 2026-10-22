@@ -812,7 +812,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   Errors:
   - NOT_FOUND: id does not resolve.
   - FORBIDDEN: caller is not in the team.
-  - CONFLICT (field: `id`): the block sat in a column slot that now holds another section.
+  - CONFLICT (field: `id`): an owned block (a cover, logo or Media Slot block), which comes back through its owner’s slot update instead; a block whose section is still deleted (restore the section first); or a block that sat in a column slot that now holds another section.
   """
   campaignBlockRestore(id: ID!) : [CampaignBlock!]! @join__field(graph: API_JOURNEYS_MODERN) 
   """

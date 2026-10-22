@@ -89,11 +89,11 @@ describe('campaignHeaderBlockUpdate', () => {
   })
 
   it('sets logoBlockId to an image block owned by the header, soft-deleting the logo it held', async () => {
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(
-      campaignBlockWithAcl(fixture, 'headerId', { logoBlockId: 'oldLogoId' })
-    )
     prismaMock.campaignBlock.findFirst
       .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
+      .mockResolvedValueOnce(
+        campaignBlockWithAcl(fixture, 'headerId', { logoBlockId: 'oldLogoId' })
+      )
       .mockResolvedValueOnce({
         id: 'logoId',
         typename: 'CampaignImageBlock'
@@ -131,12 +131,13 @@ describe('campaignHeaderBlockUpdate', () => {
       logoBlockId: 'logoId'
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(header)
 
     const result = await update({ logoBlockId: null })
 
     expect(result.data.campaignHeaderBlockUpdate.logoBlockId).toBeNull()
-    expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledTimes(1)
+    expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalledWith(
+      expect.objectContaining({ select: { id: true, typename: true } })
+    )
     expect(prismaMock.campaignBlock.update).toHaveBeenCalledWith({
       where: { id: 'logoId' },
       data: { deletedAt: expect.any(Date) }
@@ -149,10 +150,8 @@ describe('campaignHeaderBlockUpdate', () => {
   })
 
   it('rejects a logo that is not a CampaignImageBlock owned by the header (BAD_USER_INPUT, logoBlockId)', async () => {
-    prismaMock.campaignBlock.findUniqueOrThrow.mockResolvedValue(
-      campaignBlockWithAcl(fixture, 'headerId')
-    )
     prismaMock.campaignBlock.findFirst
+      .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
       .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'headerId'))
       .mockResolvedValueOnce(null)
 
