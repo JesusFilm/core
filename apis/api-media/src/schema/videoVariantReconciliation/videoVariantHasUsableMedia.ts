@@ -5,9 +5,8 @@ export type VideoVariantUsableMedia = {
 }
 
 // A Variant is publishable once viewers would actually get playable media for
-// it. Both the reconciliation sweep and videoVariantUpdate gate publication on
-// this, so an editor publishing a Variant whose Mux asset is still transcoding
-// waits for the sweep instead of putting a dead Variant on the watch site.
+// it. The reconciliation sweep gates publication on this; videoVariantUpdate
+// gates on videoVariantAwaitsMux below instead.
 export function videoVariantHasUsableMedia(
   variant: VideoVariantUsableMedia | null | undefined
 ): boolean {
@@ -18,4 +17,17 @@ export function videoVariantHasUsableMedia(
     Boolean(variant.hls) ||
     Boolean(variant.share)
   )
+}
+
+// The only publish worth deferring: a linked Mux asset still transcoding and
+// nothing else playable yet, so publishing now would put a dead Variant on
+// the watch site. Everything else -- including a Variant with no media and no
+// Mux asset at all, such as a collection's own Variant -- has nothing left to
+// wait for, and videoVariantUpdate publishes it inline.
+export function videoVariantAwaitsMux(
+  variant: VideoVariantUsableMedia | null | undefined
+): boolean {
+  if (variant?.muxVideo == null) return false
+
+  return !videoVariantHasUsableMedia(variant)
 }

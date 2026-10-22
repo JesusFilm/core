@@ -206,8 +206,10 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     expect(prismaMock.$executeRaw).toHaveBeenCalled()
     expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
-      where: { id: 'reconciliation-1' },
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'degraded',
         processingStages: expect.objectContaining({
@@ -278,9 +280,9 @@ describe('reconcileVideoVariantReconciliation', () => {
     // (successful) Video record sync runs afterward on the same shared
     // algoliaVideo stage -- a later success must not erase it.
     expect(
-      prismaMock.videoVariantReconciliation.update
+      prismaMock.videoVariantReconciliation.updateMany
     ).toHaveBeenLastCalledWith({
-      where: { id: 'reconciliation-1' },
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'degraded',
         errorMessage: 'Algolia unavailable',
@@ -294,8 +296,10 @@ describe('reconcileVideoVariantReconciliation', () => {
     })
     // The brand-new parent row records this as its first attempt, not its
     // second -- otherwise its retry backoff starts one step ahead.
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
-      where: { id: 'status_20770_series-1' },
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'status_20770_series-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         processingStages: expect.objectContaining({
           parentSync: expect.objectContaining({ attempts: 1 }),
@@ -367,9 +371,9 @@ describe('reconcileVideoVariantReconciliation', () => {
     // (successful) Video record sync runs afterward on the same shared
     // algoliaVideo stage -- a later success must not erase it.
     expect(
-      prismaMock.videoVariantReconciliation.update
+      prismaMock.videoVariantReconciliation.updateMany
     ).toHaveBeenLastCalledWith({
-      where: { id: 'reconciliation-1' },
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'degraded',
         errorMessage: 'Algolia unavailable',
@@ -438,9 +442,9 @@ describe('reconcileVideoVariantReconciliation', () => {
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('episode-1')
     expect(
-      prismaMock.videoVariantReconciliation.update
+      prismaMock.videoVariantReconciliation.updateMany
     ).toHaveBeenLastCalledWith({
-      where: { id: 'reconciliation-1' },
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         processingStages: expect.objectContaining({
           algoliaVideo: expect.objectContaining({
@@ -565,8 +569,10 @@ describe('reconcileVideoVariantReconciliation', () => {
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
     expect(prismaMock.$executeRaw).toHaveBeenCalled()
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
-      where: { id: 'reconciliation-1' },
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'degraded',
         processingStages: expect.objectContaining({
@@ -611,8 +617,10 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
-      where: { id: 'reconciliation-1' },
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'degraded',
         // Downloads' own 24h-bounded retry wins out over algoliaVideo's
@@ -661,8 +669,10 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     const result = await reconcileVideoVariantReconciliation('reconciliation-1')
 
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
-      where: { id: 'reconciliation-1' },
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'failed',
         processingStages: expect.objectContaining({
@@ -703,8 +713,10 @@ describe('reconcileVideoVariantReconciliation', () => {
 
     expect(updateVideoInAlgolia).toHaveBeenCalledWith('series-1')
     expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('20770_series-1')
-    expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith({
-      where: { id: 'status-1' },
+    expect(
+      prismaMock.videoVariantReconciliation.updateMany
+    ).toHaveBeenCalledWith({
+      where: { id: 'status-1', createdAt: expect.any(Date) },
       data: expect.objectContaining({
         status: 'complete',
         processingStages: expect.objectContaining({
@@ -749,22 +761,22 @@ describe('reconcileVideoVariantReconciliation', () => {
         await reconcileVideoVariantReconciliation('reconciliation-1')
 
       expect(updateVideoVariantInAlgolia).not.toHaveBeenCalled()
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'reconciliation-1' },
-          data: expect.objectContaining({
-            status: 'degraded',
-            processingStages: expect.objectContaining({
-              parentSync: expect.objectContaining({
-                state: 'failed',
-                error: 'database unavailable',
-                attempts: 1
-              }),
-              algoliaVideo: expect.not.objectContaining({ state: 'failed' })
-            })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'degraded',
+          processingStages: expect.objectContaining({
+            parentSync: expect.objectContaining({
+              state: 'failed',
+              error: 'database unavailable',
+              attempts: 1
+            }),
+            algoliaVideo: expect.not.objectContaining({ state: 'failed' })
           })
-        }
-      )
+        })
+      })
       expect(result).toEqual({ publicationReady: false, status: 'degraded' })
     })
 
@@ -789,20 +801,20 @@ describe('reconcileVideoVariantReconciliation', () => {
       const result =
         await reconcileVideoVariantReconciliation('reconciliation-1')
 
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'reconciliation-1' },
-          data: expect.objectContaining({
-            status: 'degraded',
-            processingStages: expect.objectContaining({
-              parentSync: expect.objectContaining({
-                state: 'failed',
-                attempts: 1
-              })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'degraded',
+          processingStages: expect.objectContaining({
+            parentSync: expect.objectContaining({
+              state: 'failed',
+              attempts: 1
             })
           })
-        }
-      )
+        })
+      })
       expect(result).toMatchObject({
         publicationReady: false,
         status: 'degraded',
@@ -845,20 +857,20 @@ describe('reconcileVideoVariantReconciliation', () => {
         where: { id: 'variant-1' },
         data: { published: false }
       })
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'reconciliation-1' },
-          data: expect.objectContaining({
-            status: 'degraded',
-            processingStages: expect.objectContaining({
-              parentSync: expect.objectContaining({
-                state: 'failed',
-                attempts: 1
-              })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'degraded',
+          processingStages: expect.objectContaining({
+            parentSync: expect.objectContaining({
+              state: 'failed',
+              attempts: 1
             })
           })
-        }
-      )
+        })
+      })
       expect(result).toMatchObject({
         publicationReady: false,
         status: 'degraded',
@@ -908,23 +920,23 @@ describe('reconcileVideoVariantReconciliation', () => {
       expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
         '2_20899-0-La-Liberte'
       )
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'reconciliation-1' },
-          data: expect.objectContaining({
-            status: 'degraded',
-            retryAt: null,
-            errorMessage: recordTooBig.message,
-            processingStages: expect.objectContaining({
-              algoliaVideo: expect.objectContaining({
-                state: 'failed',
-                retryable: false
-              }),
-              algoliaVariant: expect.objectContaining({ state: 'complete' })
-            })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'degraded',
+          retryAt: null,
+          errorMessage: recordTooBig.message,
+          processingStages: expect.objectContaining({
+            algoliaVideo: expect.objectContaining({
+              state: 'failed',
+              retryable: false
+            }),
+            algoliaVariant: expect.objectContaining({ state: 'complete' })
           })
-        }
-      )
+        })
+      })
       expect(result).toEqual({ publicationReady: false, status: 'degraded' })
     })
 
@@ -941,18 +953,18 @@ describe('reconcileVideoVariantReconciliation', () => {
       expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith(
         '2_20899-0-La-Liberte'
       )
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'reconciliation-1' },
-          data: expect.objectContaining({
-            status: 'degraded',
-            retryAt: expect.any(Date),
-            processingStages: expect.objectContaining({
-              algoliaVideo: expect.not.objectContaining({ retryable: false })
-            })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'reconciliation-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'degraded',
+          retryAt: expect.any(Date),
+          processingStages: expect.objectContaining({
+            algoliaVideo: expect.not.objectContaining({ retryable: false })
           })
-        }
-      )
+        })
+      })
     })
 
     it('still removes an unpublished Variant from the variants index', async () => {
@@ -1023,17 +1035,17 @@ describe('reconcileVideoVariantReconciliation', () => {
 
       expect(updateVideoInAlgolia).toHaveBeenCalledWith('Rescue')
       expect(updateVideoVariantInAlgolia).toHaveBeenCalledWith('53424_Rescue')
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'status-1' },
-          data: expect.objectContaining({
-            status: 'complete',
-            processingStages: expect.objectContaining({
-              mux: { state: 'notApplicable', attempts: 0 }
-            })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'status-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'complete',
+          processingStages: expect.objectContaining({
+            mux: { state: 'notApplicable', attempts: 0 }
           })
-        }
-      )
+        })
+      })
       expect(result).toEqual({ publicationReady: true, status: 'complete' })
     })
 
@@ -1091,18 +1103,179 @@ describe('reconcileVideoVariantReconciliation', () => {
 
       expect(updateVideoInAlgolia).not.toHaveBeenCalled()
       expect(prismaMock.videoVariant.update).not.toHaveBeenCalled()
-      expect(prismaMock.videoVariantReconciliation.update).toHaveBeenCalledWith(
-        {
-          where: { id: 'status-1' },
-          data: expect.objectContaining({
-            status: 'processing',
-            processingStages: expect.objectContaining({
-              mux: expect.objectContaining({ state: 'processing' })
-            })
+      expect(
+        prismaMock.videoVariantReconciliation.updateMany
+      ).toHaveBeenCalledWith({
+        where: { id: 'status-1', createdAt: expect.any(Date) },
+        data: expect.objectContaining({
+          status: 'processing',
+          processingStages: expect.objectContaining({
+            mux: expect.objectContaining({ state: 'processing' })
           })
-        }
-      )
+        })
+      })
       expect(result).toEqual({ publicationReady: false, status: 'processing' })
+    })
+  })
+
+  // The sweep reads its row once, then spends seconds on parent sync and
+  // Algolia before writing the outcome. An editor's publish/Draft in that
+  // window re-requests the row (fresh `published`, status processing,
+  // createdAt reset). Stage, 2_529-0-HarshVibe: a Draft run's final
+  // `complete` landed on top of the editor's publish request and wiped it.
+  describe('when the row is re-requested while this run is in flight', () => {
+    const runCreatedAt = new Date('2026-10-22T13:45:00.000Z')
+    type LiveRow = {
+      id: string
+      createdAt: Date
+      status: string
+      published: boolean
+      retryAt: Date | null
+    }
+    let liveRow: LiveRow
+
+    function matches(where: { id: string; createdAt?: Date }): boolean {
+      return (
+        where.id === liveRow.id &&
+        (where.createdAt == null ||
+          where.createdAt.getTime() === liveRow.createdAt.getTime())
+      )
+    }
+
+    // What requestVideoVariantReconciliation does to the row on an explicit
+    // toggle.
+    function editorRerequests(published: boolean): void {
+      liveRow = {
+        ...liveRow,
+        createdAt: new Date('2026-10-22T13:47:41.000Z'),
+        status: 'processing',
+        published,
+        retryAt: new Date('2026-10-22T13:47:41.000Z')
+      }
+    }
+
+    beforeEach(() => {
+      vi.mocked(updateVideoVariantInAlgolia).mockResolvedValue(true)
+      liveRow = {
+        id: 'reconciliation-1',
+        createdAt: runCreatedAt,
+        status: 'processing',
+        published: false,
+        retryAt: null
+      }
+      prismaMock.videoVariantReconciliation.update.mockImplementation((async ({
+        where,
+        data
+      }: {
+        where: { id: string; createdAt?: Date }
+        data: Partial<LiveRow>
+      }) => {
+        if (matches(where)) liveRow = { ...liveRow, ...data }
+        return liveRow
+      }) as never)
+      prismaMock.videoVariantReconciliation.updateMany.mockImplementation(
+        (async ({
+          where,
+          data
+        }: {
+          where: { id: string; createdAt?: Date }
+          data: Partial<LiveRow>
+        }) => {
+          if (!matches(where)) return { count: 0 }
+          liveRow = { ...liveRow, ...data }
+          return { count: 1 }
+        }) as never
+      )
+    })
+
+    function record(published: boolean): ReconciliationRecord {
+      return {
+        reason: 'video-variant-publication-change',
+        videoId: '2_0-HarshVibe',
+        languageId: '529',
+        published,
+        videoVariantId: '2_529-0-HarshVibe',
+        processingStages: {},
+        createdAt: runCreatedAt,
+        videoVariant: {
+          id: '2_529-0-HarshVibe',
+          videoId: '2_0-HarshVibe',
+          languageId: '529',
+          slug: 'harsh-vibe/english',
+          published: !published,
+          downloadable: false,
+          hls: 'hls',
+          share: 'share',
+          muxVideo: { readyToStream: true }
+        }
+      }
+    }
+
+    it('leaves a publish requested during a Draft run for the next sweep', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        record(false) as never
+      )
+      vi.mocked(updateVideoVariantInAlgolia).mockImplementation(async () => {
+        editorRerequests(true)
+        return true
+      })
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(liveRow).toMatchObject({
+        status: 'processing',
+        published: true,
+        retryAt: new Date('2026-10-22T13:47:41.000Z')
+      })
+    })
+
+    it('leaves a Draft requested during a publish run for the next sweep', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        record(true) as never
+      )
+      prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+      vi.mocked(updateVideoVariantInAlgolia).mockImplementation(async () => {
+        editorRerequests(false)
+        return true
+      })
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(liveRow).toMatchObject({ status: 'processing', published: false })
+    })
+
+    it('leaves a request made while waiting on Mux due now', async () => {
+      const waiting = record(true)
+      waiting.videoVariant = {
+        ...waiting.videoVariant!,
+        hls: '',
+        share: '',
+        muxVideo: { readyToStream: false }
+      }
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockImplementation(
+        (async () => {
+          editorRerequests(false)
+          return waiting
+        }) as never
+      )
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(liveRow).toMatchObject({
+        status: 'processing',
+        published: false,
+        retryAt: new Date('2026-10-22T13:47:41.000Z')
+      })
+    })
+
+    it('still records the outcome when nothing re-requested the row', async () => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        record(false) as never
+      )
+
+      await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(liveRow).toMatchObject({ status: 'complete', published: false })
     })
   })
 })

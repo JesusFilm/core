@@ -54,8 +54,8 @@ type ReconciliationPrisma = {
       where: { id: string }
       include: { videoVariant: { include: { muxVideo: true; video: true } } }
     }) => Promise<ReconciliationRecord>
-    update: (args: {
-      where: { id: string }
+    updateMany: (args: {
+      where: { id: string; createdAt: Date }
       data: {
         status: ReconciliationStatus
         processingStages: ProcessingStages
@@ -112,8 +112,11 @@ export async function reconcileVideoVariantReconciliation(
       algoliaVariant: { state: 'pending', attempts: 0 }
     }
     const status: ReconciliationStatus = muxTimedOut ? 'failed' : 'processing'
-    await reconciliationPrisma.videoVariantReconciliation.update({
-      where: { id: reconciliationId },
+    // Same re-request guard as persistReconciliationStatus: a toggle made
+    // while this run was reading must keep its own retryAt (now), not be
+    // pushed back a whole sweep.
+    await reconciliationPrisma.videoVariantReconciliation.updateMany({
+      where: { id: reconciliationId, createdAt: reconciliation.createdAt },
       data: {
         status,
         processingStages,
@@ -158,6 +161,7 @@ export async function reconcileVideoVariantReconciliation(
     await persistReconciliationStatus({
       store: reconciliationPrisma,
       reconciliationId,
+      runCreatedAt: reconciliation.createdAt,
       status,
       stages,
       failedStageValue

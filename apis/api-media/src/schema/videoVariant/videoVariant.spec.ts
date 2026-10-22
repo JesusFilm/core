@@ -22,6 +22,7 @@ import { deleteR2File } from '../cloudflare/r2/asset'
 import { deleteVideo } from '../mux/video/service'
 import {
   addLanguageToVideo,
+  findContainerParentIds,
   removeLanguageFromVideoIfUnused,
   updateParentCollectionLanguages
 } from '../video/lib/updateAvailableLanguages'
@@ -64,6 +65,7 @@ vi.mock('../../workers/videoAlgoliaSync', () => ({
 // Mock the video available languages functions
 vi.mock('../video/lib/updateAvailableLanguages', () => ({
   addLanguageToVideo: vi.fn(),
+  findContainerParentIds: vi.fn(),
   removeLanguageFromVideoIfUnused: vi.fn(),
   updateParentCollectionLanguages: vi.fn()
 }))
@@ -122,6 +124,7 @@ describe('videoVariant', () => {
     mockedAddLanguageToVideo.mockResolvedValue(undefined)
     mockedRemoveLanguageFromVideoIfUnused.mockResolvedValue(undefined)
     mockedUpdateParentCollectionLanguages.mockResolvedValue(undefined)
+    vi.mocked(findContainerParentIds).mockResolvedValue([])
   })
 
   describe('videoVariants', () => {
@@ -2030,6 +2033,179 @@ describe('videoVariant', () => {
               reason: 'video-variant-publication-change'
             })
           )
+          expect(mockedAddLanguageToVideo).not.toHaveBeenCalled()
+          expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
+        })
+
+        it('should publish a media-less Variant inline when nothing is pending on Mux', async () => {
+          // CS1 English on stage: a Variant with no media of its own and no
+          // Mux asset has nothing to wait for, so deferring it to the sweep
+          // only left the editor looking at a Draft chip for 15 minutes.
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: '',
+            share: '',
+            muxVideo: null
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            hls: '',
+            share: '',
+            published: true
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(prismaMock.videoVariant.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+              data: expect.objectContaining({ published: true })
+            })
+          )
+          expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+            'videoId',
+            'languageId'
+          )
+          expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+            'videoId'
+          )
+          expect(mockedVideoCacheReset).toHaveBeenCalledWith('videoId')
+          // Algolia stays with reconciliation.
+          expect(mockedRequestVideoVariantReconciliation).toHaveBeenCalledWith(
+            expect.objectContaining({
+              videoVariantId: 'id',
+              published: true,
+              reason: 'video-variant-publication-change'
+            })
+          )
+        })
+
+        it('should put the language back on the Video when re-publishing an already published Variant', async () => {
+          // HarshVibe English on stage: the Variant column says published but
+          // a stale sweep run removed its language from the Video. A fresh
+          // publish has to repair availableLanguages, not skip it because the
+          // column did not change.
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: true,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: 'hls',
+            share: 'share',
+            muxVideo: { readyToStream: true }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: true
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+            'videoId',
+            'languageId'
+          )
+          expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+            'videoId'
+          )
+        })
+
+        it('should take the language off the Video inline on an explicit switch to draft', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: true,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: 'hls',
+            share: 'share',
+            muxVideo: { readyToStream: true }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: false
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: false } }
+          })
+
+          expect(mockedRemoveLanguageFromVideoIfUnused).toHaveBeenCalledWith(
+            'videoId',
+            'languageId'
+          )
+          expect(mockedUpdateParentCollectionLanguages).toHaveBeenCalledWith(
+            'videoId'
+          )
+          expect(mockedAddLanguageToVideo).not.toHaveBeenCalled()
+        })
+
+        it('should create and publish a missing generated parent Variant inline when publishing', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: 'hls',
+            share: 'share',
+            muxVideo: { readyToStream: true }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            slug: 'videoSlug/english',
+            published: true
+          })
+          vi.mocked(findContainerParentIds).mockResolvedValue(['collectionId'])
+          prismaMock.video.findMany.mockResolvedValue([
+            { id: 'collectionId', slug: 'collection-slug' }
+          ] as any)
+          prismaMock.videoVariant.findFirst.mockResolvedValue(null)
+          prismaMock.$transaction.mockImplementation(
+            async (transaction: any) => await transaction(prismaMock)
+          )
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(prismaMock.videoVariant.create).toHaveBeenCalledWith({
+            data: expect.objectContaining({
+              id: 'languageId_collectionId',
+              videoId: 'collectionId',
+              languageId: 'languageId',
+              slug: 'collection-slug/english',
+              published: true
+            })
+          })
+          // The parent's own Algolia record still goes through the sweep.
+          expect(
+            prismaMock.videoVariantReconciliation.create
+          ).toHaveBeenCalledWith({
+            data: expect.objectContaining({
+              reason: 'generated-parent',
+              status: 'processing',
+              published: true,
+              videoVariantId: 'languageId_collectionId'
+            })
+          })
+          expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+            'collectionId',
+            'languageId'
+          )
+          expect(mockedAddLanguageToVideo).toHaveBeenCalledWith(
+            'videoId',
+            'languageId'
+          )
+          expect(mockedVideoCacheReset).toHaveBeenCalledWith('collectionId')
         })
 
         it('should request reconciliation for an explicit unpublish even when the published column is already false', async () => {
