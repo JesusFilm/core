@@ -794,7 +794,14 @@ builder.mutationFields((t) => ({
         // Log the error but don't throw it
         console.error('Cache reset error:', error)
       }
-      return updated
+      // `updated` was read before reconciliation was requested, so re-read
+      // to return the request just made: videos-admin reads the response's
+      // `reconciliation` to tell a publish waiting on Mux from one that
+      // already applied.
+      return await prisma.videoVariant.findUniqueOrThrow({
+        ...query,
+        where: { id: updated.id }
+      })
     }
   }),
   videoVariantDelete: t.withAuth({ isPublisher: true }).prismaField({

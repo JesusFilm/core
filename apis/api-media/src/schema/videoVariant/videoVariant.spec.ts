@@ -1635,6 +1635,15 @@ describe('videoVariant', () => {
         }
       `)
 
+      beforeEach(() => {
+        // The mutation re-reads the Variant after requesting reconciliation.
+        prismaMock.videoVariant.findUniqueOrThrow.mockImplementation(
+          (async () =>
+            await prismaMock.videoVariant.update.mock.results.at(-1)
+              ?.value) as never
+        )
+      })
+
       it('should update a video variant and reset cache', async () => {
         prismaMock.userMediaRole.findUnique.mockResolvedValue({
           id: 'userId',
@@ -2035,6 +2044,39 @@ describe('videoVariant', () => {
           )
           expect(mockedAddLanguageToVideo).not.toHaveBeenCalled()
           expect(mockedUpdateParentCollectionLanguages).not.toHaveBeenCalled()
+        })
+
+        it('should return the Variant as read after requesting reconciliation', async () => {
+          prismaMock.videoVariant.findUnique.mockResolvedValue({
+            published: false,
+            videoId: 'videoId',
+            languageId: 'languageId',
+            edition: 'base',
+            hls: null,
+            share: null,
+            muxVideo: { readyToStream: false }
+          } as any)
+          prismaMock.videoVariant.update.mockResolvedValue({
+            ...variantRow,
+            published: false
+          })
+
+          await authClient({
+            document: VIDEO_VARIANT_UPDATE_MUTATION,
+            variables: { input: { id: 'id', published: true } }
+          })
+
+          expect(
+            prismaMock.videoVariant.findUniqueOrThrow
+          ).toHaveBeenCalledWith(
+            expect.objectContaining({ where: { id: 'id' } })
+          )
+          expect(
+            prismaMock.videoVariant.findUniqueOrThrow.mock
+              .invocationCallOrder[0]
+          ).toBeGreaterThan(
+            mockedRequestVideoVariantReconciliation.mock.invocationCallOrder[0]
+          )
         })
 
         it('should publish a media-less Variant inline when nothing is pending on Mux', async () => {
