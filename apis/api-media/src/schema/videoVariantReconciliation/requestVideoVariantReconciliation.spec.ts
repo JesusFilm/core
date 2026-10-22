@@ -96,6 +96,31 @@ describe('requestVideoVariantReconciliation', () => {
     )
   })
 
+  it('drops fresh-upload stickiness for a toggle on a Variant with nothing awaiting Mux', async () => {
+    // A collection's own Variant from the videos-admin create form: created
+    // with no media and no Mux asset, so its video-variant-create reason
+    // would otherwise stay "fresh" forever and the sweep would wait two
+    // hours on a Mux asset that does not exist, then fail and alert.
+    prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
+      id: 'status-1',
+      reason: 'video-variant-create',
+      processingStages: { mux: { state: 'processing', attempts: 1 } }
+    } as never)
+
+    await requestVideoVariantReconciliation({
+      ...intent,
+      reason: 'video-variant-publication-change',
+      awaitingMux: false
+    })
+
+    const { data } =
+      prismaMock.videoVariantReconciliation.update.mock.calls[0][0]
+    expect(data).toMatchObject({
+      reason: 'video-variant-publication-change',
+      published: true
+    })
+  })
+
   it('keeps treating a fresh upload as fresh when toggled after Mux times out', async () => {
     prismaMock.videoVariantReconciliation.findUnique.mockResolvedValue({
       id: 'status-1',

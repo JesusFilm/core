@@ -51,6 +51,10 @@ type ReconciliationIntent = {
   edition: string
   published: boolean
   reason: VideoVariantReconciliationReason
+  // Set by a caller that knows the Variant's media state. `false` means no
+  // Mux asset is still transcoding for it (see videoVariantAwaitsMux), so a
+  // fresh-upload reason on the row has nothing left to wait for.
+  awaitingMux?: boolean
 }
 
 const pendingStages = {
@@ -91,11 +95,16 @@ export async function requestVideoVariantReconciliation(
   // between -- including after a timeout, which still leaves no media --
   // can't make a media-less Variant look like a generated parent. An
   // explicit toggle in that window is recorded as
-  // fresh-upload-publication-change, which is itself a fresh-upload reason. A
-  // delete is never inherited over: the Variant is gone, and only the delete
-  // reason runs the cleanup in reconcileReasonSpecificVariant.
+  // fresh-upload-publication-change, which is itself a fresh-upload reason.
+  // A caller that knows nothing awaits Mux ends that: a Variant created with
+  // no media and no Mux asset (a collection's own Variant from the
+  // videos-admin create form) would otherwise stay "fresh" forever, and the
+  // sweep would wait two hours on a Mux asset that does not exist. A delete is
+  // never inherited over: the Variant is gone, and only the delete reason runs
+  // the cleanup in reconcileReasonSpecificVariant.
   const freshUploadPending =
     intent.reason !== 'video-variant-delete' &&
+    intent.awaitingMux !== false &&
     existingReconciliation != null &&
     FRESH_UPLOAD_REASONS.has(
       existingReconciliation.reason as VideoVariantReconciliationReason
