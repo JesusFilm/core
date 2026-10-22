@@ -9,6 +9,12 @@ export const PHONE_FRAME_WIDTH = 390
 /** The frame is never scaled below this, so text stays legible and the campaign's `md` breakpoint (600 px) is never crossed. */
 export const MIN_CANVAS_SCALE = 0.5
 
+/** The narrowest stage the Desktop frame fits at the floor scale. */
+export const MIN_STAGE_WIDTH = DESKTOP_FRAME_WIDTH * MIN_CANVAS_SCALE
+
+/** The canvas's padding, in px, either side of the stage. */
+export const CANVAS_GUTTER = 32
+
 export function frameWidthOf(view: CanvasView): number {
   return view === 'phone' ? PHONE_FRAME_WIDTH : DESKTOP_FRAME_WIDTH
 }

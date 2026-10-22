@@ -1749,5 +1749,6 @@
   "That Watch video could not be found": "That Watch video could not be found",
   "Use collection": "Use collection",
   "Use series": "Use series",
-  "Editor only": "Editor only"
+  "Editor only": "Editor only",
+  "The campaign editor needs a window at least {{width}} pixels wide.": "The campaign editor needs a window at least {{width}} pixels wide."
 }

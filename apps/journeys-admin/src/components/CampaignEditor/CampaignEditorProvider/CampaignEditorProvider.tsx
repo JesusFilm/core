@@ -21,7 +21,6 @@ import {
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { isInColumnSlot } from '../sectionTypes'
 
-/** The left rail panel that is open; `none` while all are closed. */
 /** The rail panel docked beside the Left Rail; one is always open. */
 export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize'
 
