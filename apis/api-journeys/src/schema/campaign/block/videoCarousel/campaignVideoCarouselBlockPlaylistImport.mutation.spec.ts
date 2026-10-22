@@ -25,7 +25,22 @@ function youTubeId(index: number): string {
 }
 
 function jsonResponse(body: unknown): Response {
-  return { json: async () => body } as unknown as Response
+  return {
+    ok: true,
+    status: 200,
+    json: async () => body
+  } as unknown as Response
+}
+
+/** A response whose body is not JSON, as a proxy's HTML error page. */
+function htmlResponse(status: number): Response {
+  return {
+    ok: status < 400,
+    status,
+    json: async () => {
+      throw new SyntaxError('Unexpected token < in JSON at position 0')
+    }
+  } as unknown as Response
 }
 
 describe('parsePlaylistUrl', () => {
@@ -305,6 +320,58 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     expect(result.errors[0]).toMatchObject({
       message: 'YouTube API request failed: quotaExceeded',
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it('gives up on a YouTube request after a timeout', async () => {
+    mockYouTube(1)
+
+    await importPlaylist()
+
+    expect(fetchSpy.mock.calls[0][1]).toMatchObject({
+      signal: expect.any(AbortSignal)
+    })
+  })
+
+  it('passes on INTERNAL_SERVER_ERROR, writing nothing, when the YouTube request is aborted', async () => {
+    fetchSpy.mockRejectedValue(
+      new DOMException(
+        'The operation was aborted due to timeout',
+        'TimeoutError'
+      )
+    )
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message:
+        'YouTube API request failed: The operation was aborted due to timeout',
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it('passes on INTERNAL_SERVER_ERROR, writing nothing, for a non-OK response that is not JSON', async () => {
+    fetchSpy.mockResolvedValue(htmlResponse(503))
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'YouTube API request failed: status 503',
+      extensions: { code: 'INTERNAL_SERVER_ERROR' }
+    })
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+  })
+
+  it('passes on INTERNAL_SERVER_ERROR, writing nothing, for an OK response that is not JSON', async () => {
+    fetchSpy.mockResolvedValue(htmlResponse(200))
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'YouTube API request failed: the response is not JSON',
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()

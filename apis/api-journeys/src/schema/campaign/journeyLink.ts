@@ -8,6 +8,10 @@ import { badUserInput } from './validation'
 
 export const JOURNEY_NOT_FOUND_MESSAGE = 'Journey not found or not published'
 
+/** The refusal where an archived journey is accepted too: a journey card. */
+export const CARD_JOURNEY_NOT_FOUND_MESSAGE =
+  'Journey not found, or not published or archived'
+
 /** How a pasted journey link addresses the journey: an admin link by id, a public URL by slug. */
 export type JourneyLink = { id: string } | { slug: string }
 
@@ -15,6 +19,12 @@ type LinkableStatus = 'published' | 'archived'
 
 /** What a journey card may point at: the statuses the public page shows (published or archived). */
 export const CARD_JOURNEY_STATUSES: LinkableStatus[] = ['published', 'archived']
+
+function notFoundMessage(statuses: LinkableStatus[]): string {
+  return statuses.includes('archived')
+    ? CARD_JOURNEY_NOT_FOUND_MESSAGE
+    : JOURNEY_NOT_FOUND_MESSAGE
+}
 
 /**
  * Parse a pasted journey link: an admin link (`/journeys/<id>`), the embed
@@ -59,7 +69,7 @@ export async function resolveJourneyLink(
     },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
-  if (journey == null) throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, 'url')
+  if (journey == null) throw badUserInput(notFoundMessage(statuses), 'url')
   return journey
 }
 
@@ -77,6 +87,6 @@ export async function resolveJourneyId(
     },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
-  if (journey == null) throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, field)
+  if (journey == null) throw badUserInput(notFoundMessage(statuses), field)
   return journey
 }

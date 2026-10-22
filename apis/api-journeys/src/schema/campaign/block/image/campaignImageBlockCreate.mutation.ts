@@ -3,7 +3,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../../builder'
 import { assertClientId, badUserInput } from '../../validation'
 import { CampaignImageBlock } from '../campaignImageBlock'
-import { SECTION_CREATE_ERRORS } from '../createSection'
+import { sectionCreateErrors } from '../createSection'
 import {
   assertImageSlot,
   authorizeBlockCreate,
@@ -21,7 +21,7 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     type: CampaignImageBlock,
     nullable: false,
-    description: `Add an image in one of two roles. With \`pageId\`: an Image section, last among the page’s sections or at \`parentOrder\`. With \`parentBlockId\` and \`slot\`: an owned image with \`parentOrder: null\` that becomes the parent’s background cover (any section or chrome block), the header logo, or the Media Slot of a hero or Featured Media section, replacing (soft-deleting) the block that slot held. \`width\` and \`height\` are measured by the server from \`src\`; the editor never supplies them.\n\n${SECTION_CREATE_ERRORS}\n- BAD_USER_INPUT (field: \`pageId\`): neither or both of pageId and parentBlockId given.\n- BAD_USER_INPUT (field: \`parentBlockId\`): not a live section or chrome block of this campaign.\n- BAD_USER_INPUT (field: \`logoBlockId\`): the logo slot on a block that is not the header.\n- BAD_USER_INPUT (field: \`mediaBlockId\`): the media slot on a block that is not a hero or Featured Media section.\n- BAD_USER_INPUT (field: \`src\`): not an https imagedelivery.net address, or the image could not be read.\n- BAD_USER_INPUT (field: \`alt\`): over 500 characters.`,
+    description: `Add an image in one of two roles. With \`pageId\`: an Image section, last among the page’s sections or at \`parentOrder\`. With \`parentBlockId\` and \`slot\`: an owned image with \`parentOrder: null\` that becomes the parent’s background cover (any section or chrome block), the header logo, or the Media Slot of a hero or Featured Media section, replacing (soft-deleting) the block that slot held. \`width\` and \`height\` are measured by the server from \`src\`; the editor never supplies them.\n\n${sectionCreateErrors('not a live section or chrome block of this campaign (the owned role; an Image section takes none).')}\n- BAD_USER_INPUT (field: \`pageId\`): neither or both of pageId and parentBlockId given.\n- BAD_USER_INPUT (field: \`logoBlockId\`): the logo slot on a block that is not the header.\n- BAD_USER_INPUT (field: \`mediaBlockId\`): the media slot on a block that is not a hero or Featured Media section.\n- BAD_USER_INPUT (field: \`src\`): not an https imagedelivery.net address, or the image could not be read.\n- BAD_USER_INPUT (field: \`alt\`): over 500 characters.`,
     args: {
       input: t.arg({ type: CampaignImageBlockCreateInput, required: true })
     },

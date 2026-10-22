@@ -182,12 +182,14 @@ describe('campaignJourneyBlockCreate', () => {
     )
   })
 
-  it('rejects an unpublished or unknown journey (BAD_USER_INPUT, url)', async () => {
+  it('rejects a journey that is unknown, or neither published nor archived (BAD_USER_INPUT, url)', async () => {
     prismaMock.journey.findFirst.mockResolvedValue(null)
 
     const result = await create('https://admin.nextstep.is/journeys/draftId')
 
-    expect(result.errors[0].message).toBe('Journey not found or not published')
+    expect(result.errors[0].message).toBe(
+      'Journey not found, or not published or archived'
+    )
     expect(result.errors[0].extensions).toMatchObject({
       code: 'BAD_USER_INPUT',
       field: 'url'

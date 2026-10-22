@@ -10,7 +10,7 @@ builder.mutationField('campaignJourneyBlockSnapshotRefresh', (t) =>
     type: CampaignJourneyBlock,
     nullable: false,
     description:
-      'Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made, and clear `snapshotEdited`. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `id`): "Journey not found or not published" — the journey is gone or no longer published.',
+      'Re-read the journey’s title and description and replace the card’s default-language values with them, including any edit the author made, and clear `snapshotEdited`. Translations are kept. The refresh is manual; nothing re-reads a snapshot on its own.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignJourneyBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `id`): "Journey not found, or not published or archived" — the journey is gone, or neither published nor archived any more.',
     args: {
       id: t.arg({ type: 'ID', required: true })
     },

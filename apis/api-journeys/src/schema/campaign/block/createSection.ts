@@ -1,7 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { CLIENT_ID_ERROR, assertClientId } from '../validation'
+import { BLOCK_CAP_ERROR, CLIENT_ID_ERROR, assertClientId } from '../validation'
 
 import {
   CampaignBlockCreateData,
@@ -82,9 +82,22 @@ export async function createSection(
   )
 }
 
-export const SECTION_CREATE_ERRORS =
-  'Auth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `pageId`): not a page of this campaign.\n- BAD_USER_INPUT (field: `parentOrder`): negative.\n- BAD_USER_INPUT (field: `parentBlockId`): not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.\n' +
-  CLIENT_ID_ERROR
+/**
+ * A section create's `Errors:` description, with `parentBlockIdError` as its
+ * one `parentBlockId` line: a column slot for a section, an owner for the
+ * image create's owned role.
+ */
+export function sectionCreateErrors(parentBlockIdError: string): string {
+  return (
+    'Auth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `pageId`): not a page of this campaign.\n- BAD_USER_INPUT (field: `parentOrder`): negative.\n' +
+    `- BAD_USER_INPUT (field: \`parentBlockId\`): ${parentBlockIdError}\n` +
+    `${CLIENT_ID_ERROR}\n${BLOCK_CAP_ERROR}`
+  )
+}
+
+export const SECTION_CREATE_ERRORS = sectionCreateErrors(
+  'not a live column slot on the page, already holding a section, or the section is a Columns or Region Share section.'
+)
 
 export const SECTION_PARENT_BLOCK_ID_DESCRIPTION =
   'A Column Slot to create the section in, instead of at the page’s top level; `parentOrder` is then ignored. The slot must be empty on the same page.'
