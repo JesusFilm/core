@@ -545,28 +545,63 @@ describe('E2E Cleanup Service', () => {
   })
 
   describe('leftover campaigns', () => {
+    const e2eTeamMembers = ['playwright-member']
     const playwrightCampaign = {
       id: 'campaign-1',
-      title: 'Playwright campaign 1761000000000'
+      title: 'Playwright campaign 1761000000000',
+      memberIds: e2eTeamMembers
     }
     const editorCampaign = {
       id: 'campaign-2',
-      title: 'Playwright editor v2 campaign 1761000000000'
+      title: 'Playwright editor v2 campaign 1761000000000',
+      memberIds: e2eTeamMembers
     }
-    const realCampaign = { id: 'campaign-3', title: 'Christmas campaign' }
+    const realCampaign = {
+      id: 'campaign-3',
+      title: 'Christmas campaign',
+      memberIds: e2eTeamMembers
+    }
+    const lookalikeCampaign = {
+      id: 'campaign-4',
+      title: 'Playwright campaign launch',
+      memberIds: e2eTeamMembers
+    }
+    const realTeamCampaign = {
+      id: 'campaign-5',
+      title: 'Playwright campaign 1761000000000',
+      memberIds: ['real-member']
+    }
 
     beforeEach(() => {
-      mockPrismaUsers.user.findMany.mockResolvedValue([])
+      // The journeys' query (with a cutoff) finds no one to delete; the
+      // campaigns' member query (no cutoff) finds the long-lived e2e account.
+      mockPrismaUsers.user.findMany.mockImplementation(
+        async ({ where }: any) =>
+          where.createdAt == null ? [{ userId: 'playwright-member' }] : []
+      )
       prismaMock.$transaction.mockImplementation(
         async (callback: any) => await callback(prismaMock)
       )
-      // Apply the title filter to the rows as the database would.
+      // Apply the title and team filters to the rows as the database would.
       prismaMock.campaign.findMany.mockImplementation((async ({ where }: any) =>
-        [playwrightCampaign, editorCampaign, realCampaign].filter((campaign) =>
-          where.OR.some(({ title }: any) =>
-            campaign.title.startsWith(title.startsWith)
+        [
+          playwrightCampaign,
+          editorCampaign,
+          realCampaign,
+          lookalikeCampaign,
+          realTeamCampaign
+        ]
+          .filter((campaign) =>
+            where.OR.some(({ title }: any) =>
+              campaign.title.startsWith(title.startsWith)
+            )
           )
-        )) as never)
+          .filter((campaign) =>
+            campaign.memberIds.some((memberId) =>
+              where.team.userTeams.some.userId.in.includes(memberId)
+            )
+          )
+          .map(({ id, title }) => ({ id, title }))) as never)
       prismaMock.campaignRegionLanguage.findMany.mockImplementation((async ({
         where
       }: any) =>
@@ -582,13 +617,25 @@ describe('E2E Cleanup Service', () => {
         mockLogger
       )
 
+      expect(mockPrismaUsers.user.findMany).toHaveBeenCalledWith({
+        where: {
+          AND: [
+            { email: { startsWith: 'playwright', mode: 'insensitive' } },
+            { email: { endsWith: '@example.com' } }
+          ]
+        },
+        select: { userId: true }
+      })
       expect(prismaMock.campaign.findMany).toHaveBeenCalledWith({
         where: {
           createdAt: { lt: expect.any(Date) },
           OR: [
-            { title: { startsWith: 'Playwright campaign' } },
-            { title: { startsWith: 'Playwright editor v2 campaign' } }
-          ]
+            { title: { startsWith: 'Playwright campaign ' } },
+            { title: { startsWith: 'Playwright editor v2 campaign ' } }
+          ],
+          team: {
+            userTeams: { some: { userId: { in: ['playwright-member'] } } }
+          }
         },
         select: { id: true, title: true }
       })
@@ -623,6 +670,66 @@ describe('E2E Cleanup Service', () => {
       expect(prismaMock.campaign.delete).not.toHaveBeenCalledWith({
         where: { id: 'campaign-3' }
       })
+    })
+
+    it('leaves a real campaign whose title only starts like an e2e one untouched', async () => {
+      await service(
+        { data: { __typename: 'e2eCleanup', dryRun: false } } as Job,
+        mockLogger
+      )
+
+      expect(prismaMock.campaign.delete).not.toHaveBeenCalledWith({
+        where: { id: 'campaign-4' }
+      })
+    })
+
+    it('leaves an e2e-titled campaign in a team without a playwright member untouched', async () => {
+      await service(
+        { data: { __typename: 'e2eCleanup', dryRun: false } } as Job,
+        mockLogger
+      )
+
+      expect(prismaMock.campaign.delete).not.toHaveBeenCalledWith({
+        where: { id: 'campaign-5' }
+      })
+    })
+
+    it('deletes no campaign when there is no playwright user', async () => {
+      mockPrismaUsers.user.findMany.mockResolvedValue([])
+
+      await service(
+        { data: { __typename: 'e2eCleanup', dryRun: false } } as Job,
+        mockLogger
+      )
+
+      expect(prismaMock.campaign.findMany).not.toHaveBeenCalled()
+      expect(prismaMock.campaign.delete).not.toHaveBeenCalled()
+    })
+
+    it('sweeps campaigns before the playwright users are deleted', async () => {
+      mockPrismaUsers.user.findMany.mockImplementation(async ({ where }: any) =>
+        where.createdAt == null
+          ? [{ userId: 'playwright-member' }]
+          : [
+              {
+                id: 'user-1',
+                userId: 'playwright-member',
+                email: 'playwright123@example.com'
+              }
+            ]
+      )
+      prismaMock.journey.findMany.mockResolvedValue([])
+      mockPrismaUsers.user.delete.mockResolvedValue({})
+
+      await service(
+        { data: { __typename: 'e2eCleanup', dryRun: false } } as Job,
+        mockLogger
+      )
+
+      expect(prismaMock.campaign.delete).toHaveBeenCalled()
+      expect(
+        prismaMock.campaign.findMany.mock.invocationCallOrder[0]
+      ).toBeLessThan(mockPrismaUsers.user.delete.mock.invocationCallOrder[0])
     })
 
     it('uses the same cutoff as the journeys', async () => {
