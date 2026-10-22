@@ -589,7 +589,7 @@ describe('VariantDialog', () => {
       fireEvent.click(screen.getByText('Save'))
     }
 
-    it('says the publish is waiting on Mux when the response is still pending', async () => {
+    it('says processing is still pending when the response is still pending', async () => {
       mockDraftVariant()
       renderWithUpdateResponse({
         id: mockVariantId,
@@ -601,7 +601,7 @@ describe('VariantDialog', () => {
 
       await waitFor(() =>
         expect(mockEnqueueSnackbar).toHaveBeenCalledWith(
-          'Publishing once Mux finishes processing this audio language',
+          'Publishing once background processing finishes for this audio language',
           { variant: 'info' }
         )
       )
@@ -628,13 +628,13 @@ describe('VariantDialog', () => {
       )
     })
 
-    it('shows the Publishing... chip for a publish waiting on Mux', () => {
+    it('shows the Publishing... chip for a pending publish', () => {
       mockDraftVariant(pendingReconciliation)
       renderWithUpdateResponse(null)
 
       expect(screen.getByText('Publishing...')).toBeInTheDocument()
       expect(
-        screen.getByText('Waiting for Mux to finish processing')
+        screen.getByText('Finishing publish processing')
       ).toBeInTheDocument()
     })
   })

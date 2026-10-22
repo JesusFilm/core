@@ -138,7 +138,7 @@ function VariantDialogContent({
       onCompleted: ({ videoVariantUpdate }) => {
         if (isPublishPending(videoVariantUpdate)) {
           enqueueSnackbar(
-            'Publishing once Mux finishes processing this audio language',
+            'Publishing once background processing finishes for this audio language',
             { variant: 'info' }
           )
         } else {

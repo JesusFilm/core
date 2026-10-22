@@ -1727,7 +1727,7 @@ describe('ClientLayout', () => {
     expect(mockRefetch).not.toHaveBeenCalled()
   })
 
-  describe('a publish waiting on Mux', () => {
+  describe('a pending publish', () => {
     const pendingReconciliation = {
       id: 'status_variant2',
       status: 'processing',
@@ -1785,7 +1785,7 @@ describe('ClientLayout', () => {
 
       expect(screen.getByText('Publishing...')).toBeInTheDocument()
       expect(
-        screen.getByText('Waiting for Mux to finish processing')
+        screen.getByText('Finishing publish processing')
       ).toBeInTheDocument()
       expect(screen.getByText('Published')).toBeInTheDocument()
       expect(start).toHaveBeenCalledWith(3000)

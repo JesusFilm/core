@@ -5,8 +5,8 @@ import { ReactElement } from 'react'
 
 interface PublishedChipProps {
   published: boolean
-  // A publish that is waiting for Mux before the Variant goes live (see
-  // isPublishPending).
+  // A publish still unlanded on the reconciliation row (see isPublishPending)
+  // -- Mux transcoding, a parent-sync retry, or an Algolia retry.
   pending?: boolean
 }
 
@@ -19,7 +19,7 @@ export function PublishedChip({
       <Stack sx={{ alignItems: 'flex-start' }}>
         <Chip data-testid="PublishedChip" label="Publishing..." color="info" />
         <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-          Waiting for Mux to finish processing
+          Finishing publish processing
         </Typography>
       </Stack>
     )
