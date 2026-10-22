@@ -1,5 +1,3 @@
-import { Prisma } from '@core/prisma/journeys/client'
-
 import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
   authClient,
@@ -11,6 +9,10 @@ import {
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
 import { prismaMock } from '../../../../test/prismaMock'
+import {
+  UNIQUE_VIOLATION_SHAPES,
+  uniqueViolation
+} from '../../../../test/uniqueViolation'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
@@ -176,22 +178,21 @@ describe('campaignRegionUpdate', () => {
     expect(prismaMock.campaignRegion.update).not.toHaveBeenCalled()
   })
 
-  it('maps the unique-constraint race on the slug to BAD_USER_INPUT, field slug', async () => {
-    prismaMock.campaignRegion.update.mockRejectedValue(
-      new Prisma.PrismaClientKnownRequestError('unique', {
-        code: 'P2002',
-        clientVersion: 'test',
-        meta: { target: ['campaignId', 'slug'] }
+  it.each(UNIQUE_VIOLATION_SHAPES)(
+    'maps the unique-constraint race on the slug to BAD_USER_INPUT, field slug (%s)',
+    async (shape) => {
+      prismaMock.campaignRegion.update.mockRejectedValue(
+        uniqueViolation(shape, ['campaignId', 'slug'])
+      )
+
+      const result = await update({ slug: 'lac' })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'slug'
       })
-    )
-
-    const result = await update({ slug: 'lac' })
-
-    expect(result.errors[0].extensions).toMatchObject({
-      code: 'BAD_USER_INPUT',
-      field: 'slug'
-    })
-  })
+    }
+  )
 
   it('lists and unlists as a one-field change', async () => {
     const result = await update({ listed: false })

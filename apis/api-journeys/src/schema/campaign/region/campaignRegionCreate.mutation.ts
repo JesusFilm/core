@@ -1,4 +1,4 @@
-import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { lockCampaignStructure, touchCampaign } from '../block/service'
@@ -6,8 +6,10 @@ import { CampaignRegionRef } from '../campaignRegion'
 import { conflict } from '../errors'
 import {
   CAMPAIGN_REGIONS_MAX,
+  assertClientId,
   badUserInput,
-  generateUniqueRegionSlug
+  generateUniqueRegionSlug,
+  isUniqueViolation
 } from '../validation'
 
 import { NEW_REGION_NAME, authorizeRegionCreate } from './service'
@@ -15,7 +17,7 @@ import { NEW_REGION_NAME, authorizeRegionCreate } from './service'
 builder.mutationField('campaignRegionCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …, skipping the slugs of the team’s live journeys), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nIdempotent per id: a retry with the id of an existing region of the same campaign returns that region.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `campaignId`): the campaign already has 100 regions.\n- CONFLICT: a concurrent create took the id or the derived slug; retry.',
+      'Add a Campaign Region from the Region Switcher’s "+ Add": born named "New region" in the campaign default language, slugged from that name (`new-region`, `new-region-2`, …, skipping the slugs of the team’s live journeys), appended last, listed, with no lines or countries and one Share Language row for the campaign default language with no journey yet. Nothing is copied: every region renders the shared Region Page.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nIdempotent per id: a retry with the id of an existing region of the same campaign returns that region.\n\nErrors:\n- NOT_FOUND: campaignId does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `id`): not a UUID.\n- BAD_USER_INPUT (field: `campaignId`): the campaign already has 100 regions.\n- CONFLICT: a concurrent create took the id or the derived slug; retry.',
     type: CampaignRegionRef,
     nullable: false,
     args: {
@@ -34,6 +36,7 @@ builder.mutationField('campaignRegionCreate', (t) =>
     ) => {
       const campaignId = String(rawCampaignId)
       const campaign = await authorizeRegionCreate(campaignId, context.user)
+      const clientId = assertClientId(id)
 
       try {
         return await prisma.$transaction(async (tx) => {
@@ -52,7 +55,7 @@ builder.mutationField('campaignRegionCreate', (t) =>
           const region = await tx.campaignRegion.create({
             ...query,
             data: {
-              id: id != null ? String(id) : undefined,
+              id: clientId,
               campaignId,
               name: NEW_REGION_NAME,
               slug,
@@ -67,23 +70,20 @@ builder.mutationField('campaignRegionCreate', (t) =>
           return region
         })
       } catch (error) {
-        if (
-          !(error instanceof Prisma.PrismaClientKnownRequestError) ||
-          error.code !== 'P2002'
-        )
-          throw error
+        const idTaken = clientId != null && isUniqueViolation(error, 'id')
+        if (!idTaken && !isUniqueViolation(error, 'slug')) throw error
         // A redo whose undo was skipped asks for a row that already exists:
         // answer with it, so the call is idempotent per id and campaign.
-        if (id != null) {
+        if (idTaken) {
           const existing = await prisma.campaignRegion.findUnique({
             ...query,
-            where: { id: String(id) }
+            where: { id: clientId }
           })
           if (existing?.campaignId === campaignId) return existing
         }
         throw conflict(
           'another region was just added; try again',
-          id != null ? 'id' : 'slug'
+          idTaken ? 'id' : 'slug'
         )
       }
     }

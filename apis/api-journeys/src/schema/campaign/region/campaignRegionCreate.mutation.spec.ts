@@ -1,5 +1,3 @@
-import { Prisma } from '@core/prisma/journeys/client'
-
 import {
   authClient,
   setupCampaignBlockSpec
@@ -9,6 +7,10 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
+import {
+  UNIQUE_VIOLATION_SHAPES,
+  uniqueViolation
+} from '../../../../test/uniqueViolation'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { CAMPAIGN_REGIONS_MAX } from '../validation'
 
@@ -17,6 +19,8 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 }))
 
 describe('campaignRegionCreate', () => {
+  const CLIENT_ID = '0b8f3e5c-6d2a-4f1e-9c7b-3a5d8e2f1c40'
+
   const CREATE = graphql(`
     mutation CampaignRegionCreate($campaignId: ID!, $id: ID) {
       campaignRegionCreate(campaignId: $campaignId, id: $id) {
@@ -99,10 +103,10 @@ describe('campaignRegionCreate', () => {
     ] as never)
     prismaMock.campaignRegion.count.mockResolvedValue(2)
 
-    const result = await create('clientId')
+    const result = await create(CLIENT_ID)
 
     expect(result.data.campaignRegionCreate).toMatchObject({
-      id: 'clientId',
+      id: CLIENT_ID,
       slug: 'new-region-3',
       order: 2
     })
@@ -171,46 +175,83 @@ describe('campaignRegionCreate', () => {
     )
   })
 
-  describe('unique violation', () => {
-    const duplicate = new Prisma.PrismaClientKnownRequestError('unique', {
-      code: 'P2002',
-      clientVersion: 'test'
-    })
+  it.each(['', 'not-a-uuid'])(
+    'refuses a client id that is not a UUID (%j) (BAD_USER_INPUT)',
+    async (id) => {
+      const result = await create(id)
 
+      expect(result.errors[0]).toMatchObject({
+        message: 'id must be a UUID',
+        extensions: { code: 'BAD_USER_INPUT', field: 'id' }
+      })
+      expect(prismaMock.campaignRegion.create).not.toHaveBeenCalled()
+    }
+  )
+
+  describe.each(UNIQUE_VIOLATION_SHAPES)('unique violation (%s)', (shape) => {
     it('returns the existing region of the same campaign when the id is already taken', async () => {
-      prismaMock.campaignRegion.create.mockRejectedValue(duplicate)
+      prismaMock.campaignRegion.create.mockRejectedValue(
+        uniqueViolation(shape, ['id'])
+      )
       prismaMock.campaignRegion.findUnique.mockResolvedValue({
         ...campaignFactory().withRegion('New region').build().regions[0],
-        id: 'clientId',
+        id: CLIENT_ID,
         campaignId: 'campaignId'
       })
 
-      const result = await create('clientId')
+      const result = await create(CLIENT_ID)
 
       expect(result.data.campaignRegionCreate).toMatchObject({
-        id: 'clientId',
+        id: CLIENT_ID,
         campaignId: 'campaignId'
       })
     })
 
-    it('answers CONFLICT when the id belongs to another campaign or the slug raced', async () => {
-      prismaMock.campaignRegion.create.mockRejectedValue(duplicate)
+    it('answers CONFLICT (field id) when the id belongs to another campaign', async () => {
+      prismaMock.campaignRegion.create.mockRejectedValue(
+        uniqueViolation(shape, ['id'])
+      )
       prismaMock.campaignRegion.findUnique.mockResolvedValue({
-        id: 'clientId',
+        id: CLIENT_ID,
         campaignId: 'otherCampaignId'
       } as never)
 
-      const taken = await create('clientId')
-      const raced = await create()
+      const result = await create(CLIENT_ID)
 
-      expect(taken.errors[0].extensions).toMatchObject({
+      expect(result.errors[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'id'
       })
-      expect(raced.errors[0].extensions).toMatchObject({
+    })
+
+    it('answers CONFLICT (field slug) when the derived slug raced', async () => {
+      prismaMock.campaignRegion.create.mockRejectedValue(
+        uniqueViolation(shape, ['campaignId', 'slug'])
+      )
+
+      const withoutId = await create()
+      const withId = await create(CLIENT_ID)
+
+      expect(withoutId.errors[0].extensions).toMatchObject({
         code: 'CONFLICT',
         field: 'slug'
       })
+      expect(withId.errors[0].extensions).toMatchObject({
+        code: 'CONFLICT',
+        field: 'slug'
+      })
+      expect(prismaMock.campaignRegion.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('rethrows a unique violation on another column', async () => {
+      prismaMock.campaignRegion.create.mockRejectedValue(
+        uniqueViolation(shape, ['regionId', 'languageId'])
+      )
+
+      const result = await create(CLIENT_ID)
+
+      expect(result.errors[0].extensions).toEqual({})
+      expect(prismaMock.campaignRegion.findUnique).not.toHaveBeenCalled()
     })
   })
 
