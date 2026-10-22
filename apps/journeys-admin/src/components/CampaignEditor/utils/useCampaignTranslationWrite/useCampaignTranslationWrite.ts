@@ -4,8 +4,14 @@ import {
   withTranslationValue
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignTranslationSetMutation } from '../../../../libs/useCampaignTranslationSetMutation'
+import {
+  campaignTranslationsVariables,
+  translationRowKey,
+  writeCachedTranslation
+} from '../../../../libs/useCampaignTranslationsQuery'
 
 export interface CampaignTranslationWrite {
+  campaignId: string
   /** The cached row the translation belongs to. */
   row: { __typename: string; id: string }
   target: { blockId: string } | { regionId: string } | { stringId: string }
@@ -22,7 +28,8 @@ export interface CampaignTranslationWrite {
 /**
  * Write one human translation of a field through `campaignTranslationSet`,
  * shown at once and rolled back if the save fails; the result replaces the
- * row's `<field>Translations` list in the cache.
+ * row's `<field>Translations` list in the cache, and the line in a cached
+ * Translations list of that language, so an open list keeps up.
  */
 export function useCampaignTranslationWrite(): (
   write: CampaignTranslationWrite
@@ -30,6 +37,7 @@ export function useCampaignTranslationWrite(): (
   const [translationSet] = useCampaignTranslationSetMutation()
 
   return async function writeTranslation({
+    campaignId,
     row,
     target,
     field,
@@ -56,6 +64,12 @@ export function useCampaignTranslationWrite(): (
             [`${field}Translations`]: () => data.campaignTranslationSet
           }
         })
+        writeCachedTranslation(
+          cache,
+          campaignTranslationsVariables(campaignId, languageId),
+          translationRowKey(row.__typename, row.id, field),
+          data.campaignTranslationSet
+        )
       }
     })
   }

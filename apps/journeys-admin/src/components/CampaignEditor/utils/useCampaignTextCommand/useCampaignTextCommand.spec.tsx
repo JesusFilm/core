@@ -10,7 +10,16 @@ import {
   journeyCard
 } from '@core/journeys/ui/Campaign/testData'
 
-import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
+import {
+  CampaignTranslations,
+  CampaignTranslationsVariables
+} from '../../../../../__generated__/CampaignTranslations'
+import {
+  CampaignPageKind,
+  CampaignTextSource,
+  CampaignTranslationGroup,
+  CampaignTextField as TranslationField
+} from '../../../../../__generated__/globalTypes'
 import { DebounceLink } from '../../../../libs/apolloClient/DebounceLink'
 import {
   CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
@@ -23,6 +32,10 @@ import {
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { CAMPAIGN_STRING_UPDATE } from '../../../../libs/useCampaignStringUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../../libs/useCampaignTranslationSetMutation'
+import {
+  CAMPAIGN_TRANSLATIONS,
+  campaignTranslationsVariables
+} from '../../../../libs/useCampaignTranslationsQuery'
 import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import {
@@ -547,6 +560,73 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     expect(screen.getByTestId('PreviewLanguage')).toHaveTextContent('496')
     await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
     expect(input).toHaveValue('')
+  })
+
+  it('writes an inline translation into the cached Translations list of that language', async () => {
+    const mocks = [
+      translationMock({ blockId: 'heroId' }, 'title', 'Campagne', [
+        { languageId: '496', value: 'Campagne' }
+      ])
+    ]
+    const cache = campaignCache()
+    const variables = campaignTranslationsVariables(campaign.id, '496')
+    cache.writeQuery<CampaignTranslations, CampaignTranslationsVariables>({
+      query: CAMPAIGN_TRANSLATIONS,
+      variables,
+      data: {
+        campaignTranslations: [
+          {
+            __typename: 'CampaignTranslation',
+            group: CampaignTranslationGroup.landing,
+            field: TranslationField.title,
+            maxLength: 150,
+            defaultValue: 'Share the story of Outreach',
+            value: "Partagez l'histoire",
+            source: CampaignTextSource.machine,
+            needsReview: true,
+            target: {
+              __typename: 'CampaignTranslationTarget',
+              typename: 'CampaignHeroBlock',
+              blockId: 'heroId',
+              regionId: null,
+              stringId: null,
+              campaignId: null
+            }
+          }
+        ]
+      }
+    })
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([getCampaignMock, ...mocks] as never)
+    ])
+    render(
+      <QueriedEditor
+        link={link}
+        cache={cache}
+        initialState={{ previewLanguageId: '496' }}
+      >
+        <Field blockId="heroId" field="title" />
+      </QueriedEditor>
+    )
+    const input = await screen.findByRole('textbox', { name: 'title' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Campagne' } })
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+
+    await waitFor(() =>
+      expect(
+        cache.readQuery<CampaignTranslations, CampaignTranslationsVariables>({
+          query: CAMPAIGN_TRANSLATIONS,
+          variables
+        })?.campaignTranslations[0]
+      ).toMatchObject({
+        value: 'Campagne',
+        source: CampaignTextSource.human,
+        needsReview: false
+      })
+    )
   })
 
   it('translates a Campaign String by stringId while previewing a non-default language', async () => {

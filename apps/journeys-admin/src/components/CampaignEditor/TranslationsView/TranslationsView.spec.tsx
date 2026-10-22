@@ -27,7 +27,7 @@ import {
 import { campaign } from '../data'
 import { SelectionProbe, StaticEditor } from '../testing'
 
-import { rowKey } from './translationRows'
+import { rowKey } from '../../../libs/useCampaignTranslationsQuery'
 import { TranslationsView } from './TranslationsView'
 
 const FRENCH = '496'

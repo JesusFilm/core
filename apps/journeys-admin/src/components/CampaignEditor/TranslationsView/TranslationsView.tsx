@@ -14,11 +14,12 @@ import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateS
 
 import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { CampaignTranslationGroup } from '../../../../__generated__/globalTypes'
 import {
-  CampaignTranslationFilter,
-  CampaignTranslationGroup
-} from '../../../../__generated__/globalTypes'
-import { useCampaignTranslationsQuery } from '../../../libs/useCampaignTranslationsQuery'
+  campaignTranslationsVariables,
+  rowKey,
+  useCampaignTranslationsQuery
+} from '../../../libs/useCampaignTranslationsQuery'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { TranslationRunProgress } from '../TranslationRunProgress'
@@ -31,7 +32,6 @@ import {
   TranslationFilter,
   campaignTextSignature,
   matchesFilter,
-  rowKey,
   rowMatchesSelection,
   rowPlace
 } from './translationRows'
@@ -108,18 +108,15 @@ export function TranslationsView({
   const queryVariables =
     languageId == null
       ? undefined
-      : {
-          campaignId: campaign.id,
-          languageId,
-          filter: CampaignTranslationFilter.all
-        }
+      : campaignTranslationsVariables(campaign.id, languageId)
   const { data, loading, error, refetch } =
     useCampaignTranslationsQuery(queryVariables)
 
   // New or changed default-language text while the view is open: the list
   // is read again once the canvas's save has had time to land, so a new line
   // lands in its place without a reload. A translation edit changes no line
-  // and is written into the list by the row itself, so it never re-reads:
+  // and its write puts it into the list, wherever it was typed, so it never
+  // re-reads:
   // a re-read could race the write and show the old value. The first read
   // is the mount's own.
   const textSignature = useMemo(

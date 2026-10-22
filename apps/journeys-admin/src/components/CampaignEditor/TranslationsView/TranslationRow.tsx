@@ -11,7 +11,6 @@ import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
 import {
-  CampaignTranslations,
   CampaignTranslationsVariables,
   CampaignTranslations_campaignTranslations as TranslationRow
 } from '../../../../__generated__/CampaignTranslations'
@@ -20,15 +19,14 @@ import {
   CampaignTextSource
 } from '../../../../__generated__/globalTypes'
 import { useCampaignTranslationSetMutation } from '../../../libs/useCampaignTranslationSetMutation'
-import { CAMPAIGN_TRANSLATIONS } from '../../../libs/useCampaignTranslationsQuery'
-import { blockLabel } from '../blockLabel'
-
 import {
   rowKey,
   targetId,
-  targetInput,
-  withWrittenTranslation
-} from './translationRows'
+  writeCachedTranslation
+} from '../../../libs/useCampaignTranslationsQuery'
+import { blockLabel } from '../blockLabel'
+
+import { targetInput } from './translationRows'
 
 const MULTILINE_FIELDS: CampaignTextField[] = [
   CampaignTextField.description,
@@ -183,23 +181,11 @@ export function TranslationRowItem({
             }),
             fields: { [column]: () => data.campaignTranslationSet }
           })
-          cache.updateQuery<
-            CampaignTranslations,
-            CampaignTranslationsVariables
-          >(
-            { query: CAMPAIGN_TRANSLATIONS, variables: queryVariables },
-            (current) =>
-              current == null
-                ? undefined
-                : {
-                    ...current,
-                    campaignTranslations: withWrittenTranslation(
-                      current.campaignTranslations,
-                      row,
-                      languageId,
-                      data.campaignTranslationSet
-                    )
-                  }
+          writeCachedTranslation(
+            cache,
+            queryVariables,
+            key,
+            data.campaignTranslationSet
           )
         }
       })

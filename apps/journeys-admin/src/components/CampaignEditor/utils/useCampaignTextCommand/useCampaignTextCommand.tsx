@@ -187,6 +187,7 @@ export function useCampaignTextCommand(
           ? resolved.field
           : campaignTextInputKey(resolved.field)
       return await writeTranslation({
+        campaignId: campaign.id,
         row: resolved,
         target: resolved.translationTarget,
         field: CampaignTextFieldEnum[apiField as CampaignTextFieldEnum],

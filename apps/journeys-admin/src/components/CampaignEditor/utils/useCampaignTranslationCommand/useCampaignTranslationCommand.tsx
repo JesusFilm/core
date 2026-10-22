@@ -92,6 +92,7 @@ export function useCampaignTranslationCommand(): CampaignTranslationCommand {
           `${field}Translations`
         ]
         void writeTranslation({
+          campaignId: campaign.id,
           row: current,
           target: { blockId: block.id },
           field,

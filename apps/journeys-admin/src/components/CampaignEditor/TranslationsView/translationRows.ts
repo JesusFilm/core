@@ -60,21 +60,6 @@ export function matchesFilter(
   }
 }
 
-/** The id of the one row the target names. */
-export function targetId(target: TranslationTarget): string {
-  return (
-    target.blockId ??
-    target.regionId ??
-    target.stringId ??
-    target.campaignId ??
-    ''
-  )
-}
-
-export function rowKey(row: TranslationRow): string {
-  return `${row.target.typename}:${targetId(row.target)}:${row.field}`
-}
-
 type SectionTypename = keyof typeof CAMPAIGN_SECTION_STRING_KEYS
 
 /** The section kind whose canvas body shows a Campaign String; undefined for an unknown string. */
@@ -137,12 +122,30 @@ export function rowMatchesSelection(
   return selection.kind === 'campaign'
 }
 
+type CampaignBlock = Campaign['blocks'][number]
+
+/** Translated text a block carries beyond inline text: a carousel card's title and description, an image's alt text. */
+const MEDIA_TEXT_FIELDS: Partial<
+  Record<CampaignBlock['__typename'], readonly string[]>
+> = {
+  CampaignVideoBlock: ['title', 'description'],
+  CampaignImageBlock: ['alt']
+}
+
+/** Every translated default-language text field of a block, as the API lists them. */
+function translatedFields(block: CampaignBlock): readonly string[] {
+  if (isCampaignTextBlock(block)) return CAMPAIGN_TEXT_FIELDS[block.__typename]
+  return MEDIA_TEXT_FIELDS[block.__typename] ?? []
+}
+
 /**
  * Everything that decides which lines the Translations list has and what
- * they translate: each block's place and default-language text, the
- * strings, the regions' names and the campaign title. Translations are left
- * out on purpose, so a translation edit (already written into the list by
- * its own hand) never triggers a re-read that could race the write.
+ * they translate: each block's place and every translated default-language
+ * text the API lists (a video card's title and description and an image's
+ * alt text included), the strings, the regions' names and the campaign
+ * title. Translations are left out on purpose, so a translation edit (which
+ * the write itself puts into the list, from the list or the canvas) never
+ * triggers a re-read that could race the write.
  */
 export function campaignTextSignature(
   campaign: Pick<Campaign, 'title' | 'blocks' | 'strings' | 'regions'>
@@ -156,11 +159,9 @@ export function campaignTextSignature(
       block.parentOrder,
       block.pageId,
       block.regionId,
-      isCampaignTextBlock(block)
-        ? CAMPAIGN_TEXT_FIELDS[block.__typename].map(
-            (field) => (block as unknown as Record<string, unknown>)[field]
-          )
-        : []
+      translatedFields(block).map(
+        (field) => (block as unknown as Record<string, unknown>)[field]
+      )
     ]),
     campaign.strings.map((string) => [string.id, string.key, string.value]),
     campaign.regions.map((region) => [region.id, region.name])
@@ -178,35 +179,4 @@ export function targetInput(target: TranslationTarget): {
   if (target.regionId != null) return { regionId: target.regionId }
   if (target.stringId != null) return { stringId: target.stringId }
   return { campaignId: target.campaignId ?? undefined }
-}
-
-interface WrittenTranslation {
-  languageId: string
-  value: string
-  source: CampaignTextSource
-}
-
-/**
- * The row after a write: its value and source follow the field's translations
- * the API returned for `languageId`, missing when the entry was cleared.
- */
-export function withWrittenTranslation(
-  rows: TranslationRow[],
-  written: TranslationRow,
-  languageId: string,
-  translations: WrittenTranslation[]
-): TranslationRow[] {
-  const entry = translations.find(
-    (translation) => translation.languageId === languageId
-  )
-  return rows.map((row) =>
-    rowKey(row) === rowKey(written)
-      ? {
-          ...row,
-          value: entry?.value ?? null,
-          source: entry?.source ?? null,
-          needsReview: false
-        }
-      : row
-  )
 }
