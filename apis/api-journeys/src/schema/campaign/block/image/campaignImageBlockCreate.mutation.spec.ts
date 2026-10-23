@@ -1,3 +1,5 @@
+import sortBy from 'lodash/sortBy'
+
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
   CampaignSpecResult,
@@ -148,10 +150,13 @@ describe('campaignImageBlockCreate', () => {
       })
       expect(transformInput).not.toHaveBeenCalled()
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => [
-          call.where.id,
-          call.data.parentOrder
-        ])
+        sortBy(
+          prismaMock.campaignBlock.update.mock.calls.map(([call]: any) => [
+            call.where.id,
+            call.data.parentOrder
+          ]),
+          ([, parentOrder]) => parentOrder
+        )
       ).toEqual([
         ['heroId', 0],
         [CLIENT_ID, 1],

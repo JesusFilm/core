@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql'
 import { v4 as uuidv4 } from 'uuid'
 
 import {
@@ -23,6 +24,7 @@ import {
   type CampaignImageSlotValue
 } from '../enums/campaignImageSlot'
 import { badUserInput, conflict, forbidden, notFound } from '../errors'
+import { renumber } from '../order'
 import {
   CAMPAIGN_BLOCKS_MAX,
   assertClientIds,
@@ -370,20 +372,23 @@ export async function getSiblings(
   })
 }
 
-/** Renumber siblings contiguously from zero in the order given. */
+/**
+ * Renumber siblings contiguously from zero in the order given, one update at
+ * a time in id order (`renumber`). Returns the updated siblings in the order
+ * given.
+ */
 export async function reorderSiblings(
   siblings: CampaignBlockWithAction[],
   tx: Prisma.TransactionClient = prisma
 ): Promise<CampaignBlockWithAction[]> {
-  return await Promise.all(
-    siblings.map(
-      async (block, parentOrder) =>
-        await tx.campaignBlock.update({
-          where: { id: block.id },
-          data: { parentOrder },
-          include: { action: true }
-        })
-    )
+  return await renumber(
+    siblings,
+    async (block, parentOrder) =>
+      await tx.campaignBlock.update({
+        where: { id: block.id },
+        data: { parentOrder },
+        include: { action: true }
+      })
   )
 }
 
@@ -549,20 +554,24 @@ export async function createChildBlock(
 /**
  * The parent or owner a create validated before the transaction is still
  * live once the structure lock is held: a concurrent delete may have binned
- * it in between (`BAD_USER_INPUT` / `parentBlockId`).
+ * it in between (`BAD_USER_INPUT` / `parentBlockId`, or `refusal` for a
+ * mutation that addresses the parent by its own `id`). Returns the row as it
+ * is now.
  */
-async function assertParentStillLive(
+export async function assertParentStillLive(
   tx: Prisma.TransactionClient,
-  parentBlockId: string
-): Promise<void> {
-  const live = await tx.campaignBlock.count({
-    where: { id: parentBlockId, deletedAt: null }
-  })
-  if (live === 0)
-    throw badUserInput(
+  parentBlockId: string,
+  refusal: () => GraphQLError = () =>
+    badUserInput(
       'parentBlockId must be a live section or chrome block of this campaign',
       'parentBlockId'
     )
+): Promise<CampaignBlock> {
+  const current = await tx.campaignBlock.findFirst({
+    where: { id: parentBlockId, deletedAt: null }
+  })
+  if (current == null) throw refusal()
+  return current
 }
 
 /** `createChildBlock` for a caller that already holds the structure lock. */
@@ -1480,14 +1489,7 @@ export async function createOwnedBlock(
   data: CampaignChildCreateData
 ): Promise<CampaignBlockWithAction> {
   await lockCampaignStructure(tx, owner.campaignId)
-  const current = await tx.campaignBlock.findFirst({
-    where: { id: owner.id, deletedAt: null }
-  })
-  if (current == null)
-    throw badUserInput(
-      'parentBlockId must be a live section or chrome block of this campaign',
-      'parentBlockId'
-    )
+  const current = await assertParentStillLive(tx, owner.id)
   const previousId = current[column]
   await assertCampaignBlockRoom(
     tx,
@@ -1634,10 +1636,9 @@ async function swapSlots(
   targets: SlotTarget[]
 ): Promise<void> {
   await lockCampaignStructure(tx, block.campaignId)
-  const current = await tx.campaignBlock.findFirst({
-    where: { id: block.id, deletedAt: null }
-  })
-  if (current == null) throw notFound('block not found')
+  const current = await assertParentStillLive(tx, block.id, () =>
+    notFound('block not found')
+  )
   const owner = { ...current }
   const deletedAt = new Date()
   for (const [column, requested] of targets) {

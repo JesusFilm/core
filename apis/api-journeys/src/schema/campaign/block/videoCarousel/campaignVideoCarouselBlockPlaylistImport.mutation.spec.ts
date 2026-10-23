@@ -216,6 +216,28 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     )
   })
 
+  it('refuses a carousel deleted during the YouTube fetch (NOT_FOUND) and creates nothing', async () => {
+    mockYouTube(3)
+    prismaMock.campaignBlock.findFirst
+      .mockResolvedValueOnce(campaignBlockWithAcl(fixture, 'carouselId'))
+      .mockResolvedValueOnce(null)
+
+    const result = await importPlaylist()
+
+    expect(result.errors[0]).toMatchObject({
+      message: 'block not found',
+      extensions: { code: 'NOT_FOUND' }
+    })
+    expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
+      where: { id: 'carouselId', deletedAt: null }
+    })
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.campaignBlock.findFirst.mock.invocationCallOrder[1]
+    )
+    expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
+    expect(prismaMock.campaign.update).not.toHaveBeenCalled()
+  })
+
   it('asks the Data API for 12 playlist items, then their videos in one request', async () => {
     mockYouTube(3)
 

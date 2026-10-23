@@ -3,6 +3,9 @@ import { z } from 'zod'
 
 const optionalString = z.string().trim().min(1).optional()
 
+const LOCAL_DESTINATIONS_IN_PRODUCTION =
+  'SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true is for local development only and must not be set when NODE_ENV=production'
+
 /**
  * The short-link settings api-media reads from the environment. Every one is
  * optional: a missing group switches its feature off (edge publishing, scan
@@ -16,9 +19,16 @@ const optionalString = z.string().trim().min(1).optional()
  *
  * `SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true` is refused under
  * `NODE_ENV=production`, which every deployed api-media task runs with: there
- * the destination health check fetches from inside the VPC.
+ * the destination health check fetches from inside the VPC. That rule is
+ * checked before `createEnv` too, so `SKIP_ENV_VALIDATION=1` cannot switch it
+ * off.
  */
 export function readShortLinksEnv() {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    process.env.SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS === 'true'
+  )
+    throw new Error(LOCAL_DESTINATIONS_IN_PRODUCTION)
   return createEnv({
     runtimeEnv: process.env,
     emptyStringAsUndefined: true,
@@ -69,8 +79,7 @@ export function readShortLinksEnv() {
             env.NODE_ENV !== 'production',
           {
             path: ['SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS'],
-            message:
-              'SHORT_LINKS_ALLOW_LOCAL_DESTINATIONS=true is for local development only and must not be set when NODE_ENV=production'
+            message: LOCAL_DESTINATIONS_IN_PRODUCTION
           }
         )
   })
