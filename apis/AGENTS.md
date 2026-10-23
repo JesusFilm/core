@@ -172,6 +172,17 @@ The frontend codegen targets that use the legacy `apollo client:codegen` CLI (`j
 
 See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field-2026-06-08.md`.
 
+##### `codegen` fails at schema load: `Syntax Error: Unexpected Name "implements"`
+
+The same legacy `apollo client:codegen` consumers bundle graphql-js 14, whose parser does not know `interface X implements Y`. Codegen prints:
+
+```text
+Error: Error initializing Apollo GraphQL project "...": Error:
+Error in "Loading schema for ...": Syntax Error: Unexpected Name "implements"
+```
+
+with a caret under the `implements` of an `interface … implements …` line in `apis/api-gateway/schema.graphql`. As with the directive error above, Steps 5–6 pass and only Step 7 fails, after `nx run-many -t codegen` has already deleted those projects' `__generated__` folders. Remove `interfaces: [...]` from the Pothos interface type and repeat the parent's fields on it instead; object types may still implement both interfaces (`CampaignSectionBlock` is the worked example).
+
 #### Common Mistakes to Avoid
 
 - **Do NOT edit `schema.graphql` directly** in any API — it is auto-generated. Edit the Pothos schema code instead. The `graphql-schema-check` CI job regenerates every schema and fails on any diff, so stale or hand-edited schema files fail CI rather than merging silently.
@@ -180,6 +191,7 @@ See `docs/solutions/build-errors/apollo-codegen-deprecated-directive-input-field
 - **Do NOT skip generating for all APIs that share a prisma domain** — when multiple APIs share one Prisma schema, regenerate GraphQL for each of them.
 - **Do NOT trust a `codegen` cache hit after a gateway-schema change** — `nx run-many -t codegen` can replay stale output; run with `--skip-nx-cache` or grep the generated artifacts for the new field.
 - **Do NOT add `deprecationReason` to Pothos input fields** — the legacy apollo CLI codegen consumers fail at schema load; put the deprecation in the field description instead (see Troubleshooting).
+- **Do NOT declare a GraphQL interface that `implements` another interface** (Pothos `interfaces: [...]` on an interface type) — the same legacy apollo CLI consumers fail at schema load on `interface X implements Y` (graphql-js 14 syntax; see Troubleshooting), and `nx run-many -t codegen` then deletes their `__generated__` folders before failing. Repeat the parent's fields on the child interface instead; object types may still implement both (`CampaignSectionBlock` is the worked example).
 
 ### GraphQL Federation
 

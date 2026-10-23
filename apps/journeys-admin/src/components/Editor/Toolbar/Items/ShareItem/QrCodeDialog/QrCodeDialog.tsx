@@ -6,6 +6,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { QrCodeCanvas } from '@core/journeys/ui/QrCodeCanvas'
 import { isDevHost } from '@core/shared/dev-hosts'
 import { Dialog } from '@core/shared/ui/Dialog'
 
@@ -22,7 +23,6 @@ import {
 import { QrCodeFields as QrCode } from '../../../../../../../__generated__/QrCodeFields'
 
 import { CodeActionButton } from './CodeActionButton'
-import { CodeCanvas } from './CodeCanvas'
 import { QR_CODE_FIELDS } from './qrCodeFields'
 import { ScanCount } from './ScanCount'
 
@@ -182,7 +182,11 @@ export function QrCodeDialog({
           alignItems: 'center'
         }}
       >
-        <CodeCanvas shortLink={shortLink} loading={loading} />
+        <QrCodeCanvas
+          id="qr-code-download"
+          value={shortLink}
+          loading={loading}
+        />
         <Stack
           spacing={3}
           sx={{

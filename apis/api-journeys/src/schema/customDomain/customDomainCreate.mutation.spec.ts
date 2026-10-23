@@ -69,7 +69,8 @@ describe('customDomainCreate', () => {
     apexName: 'example.com',
     teamId: 'teamId',
     routeAllTeamJourneys: true,
-    journeyCollectionId: null
+    journeyCollectionId: null,
+    campaignId: null
   }
 
   beforeEach(() => {
@@ -122,10 +123,30 @@ describe('customDomainCreate', () => {
     })
     expect(mockIsDomainValid).toHaveBeenCalledWith('www.example.com')
     expect(mockCreateVercelDomain).toHaveBeenCalledWith('www.example.com')
-    expect(mockUpdateTeamShortLinks).toHaveBeenCalledWith(
-      'teamId',
-      'www.example.com'
-    )
+    expect(mockUpdateTeamShortLinks).toHaveBeenCalledWith('teamId')
+  })
+
+  it('should not fail when the short link rewrite rejects after the domain is committed', async () => {
+    mockIsDomainValid.mockReturnValue(true)
+    mockCreateVercelDomain.mockResolvedValue({
+      name: 'www.example.com',
+      apexName: 'example.com'
+    })
+    prismaMock.customDomain.create.mockResolvedValue(mockCustomDomain)
+    mockUpdateTeamShortLinks.mockRejectedValue(new Error('gateway down'))
+
+    const result = (await authClient({
+      document: MUTATION,
+      variables: { input: { name: 'www.example.com', teamId: 'teamId' } }
+    })) as ExecutionResult<{
+      customDomainCreate: typeof mockCustomDomain
+    }>
+
+    expect(result.errors).toBeUndefined()
+    expect(result.data?.customDomainCreate).toMatchObject({
+      id: 'customDomainId'
+    })
+    expect(mockUpdateTeamShortLinks).toHaveBeenCalledWith('teamId')
   })
 
   it('should create a custom domain with all optional fields', async () => {
@@ -232,6 +253,25 @@ describe('customDomainCreate', () => {
 
     expect(result.errors).toBeDefined()
     expect(result.errors?.[0]?.message).toBe('custom domain already exists')
+    expect(mockUpdateTeamShortLinks).not.toHaveBeenCalled()
+  })
+
+  it('should map a P2002 from the transaction to custom domain already exists', async () => {
+    mockIsDomainValid.mockReturnValue(true)
+    prismaMock.$transaction.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('', {
+        code: 'P2002',
+        clientVersion: ''
+      })
+    )
+
+    const result = (await authClient({
+      document: MUTATION,
+      variables: { input: { name: 'www.example.com', teamId: 'teamId' } }
+    })) as ExecutionResult
+
+    expect(result.errors?.[0]?.message).toBe('custom domain already exists')
+    expect(mockUpdateTeamShortLinks).not.toHaveBeenCalled()
   })
 
   it('should reject unauthenticated users', async () => {

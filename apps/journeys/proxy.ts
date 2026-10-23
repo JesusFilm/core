@@ -16,6 +16,21 @@ export const config = {
   ]
 }
 
+// A `lang` value worth a page of its own: a bcp47-shaped tag. Anything else
+// is served the plain page, so a junk value cannot mint cache entries.
+const LANGUAGE_TAG_PATTERN = /^[a-z]{2,3}(-[a-z0-9]{2,8}){0,3}$/
+
+/**
+ * The campaign pages are statically generated, so the Page Language the URL
+ * names (`?lang=`) is part of the path they are generated at: `_lang/<tag>`
+ * ahead of the optional region. `segments` are the public path's segments
+ * after the campaign prefix; the route answers a tag that is not one of the
+ * campaign's languages with a redirect to the plain page.
+ */
+function languagePath(prefix: string, segments: string[], tag: string): string {
+  return [prefix, '_lang', tag, ...segments].join('/')
+}
+
 export default async function proxy(
   req: NextRequest
 ): Promise<NextResponse | undefined> {
@@ -71,6 +86,25 @@ export default async function proxy(
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
+  // Campaign pages resolve on every host (PRD §8): a campaign is always
+  // reachable at its root-domain address `/campaign/<slug>…`, on a custom
+  // domain and on a dev host alike, so the same prefix rewrite applies.
+  const lang = url.searchParams.get('lang')?.toLowerCase() ?? ''
+  const language = LANGUAGE_TAG_PATTERN.test(lang) ? lang : null
+  const segments = url.pathname.split('/').filter((segment) => segment !== '')
+
+  if (url.pathname.startsWith('/campaign/')) {
+    const [, slug, ...region] = segments
+    if (language != null && slug != null && region.length <= 1)
+      return NextResponse.rewrite(
+        new URL(
+          `${languagePath(`/home/campaign/${slug}`, region, language)}${url.search}`,
+          req.url
+        )
+      )
+    return NextResponse.rewrite(new URL(`/home${path}`, req.url))
+  }
+
   // rewrite root application to `/home` folder
   if (
     process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
@@ -80,6 +114,16 @@ export default async function proxy(
       new URL(`/home${path === '/' ? '' : path}`, req.url)
     )
   }
+
+  // a Campaign Root's landing page or region (or a journey slug, which the
+  // route sends back to the plain path) in the Page Language the URL names
+  if (language != null && segments.length <= 1)
+    return NextResponse.rewrite(
+      new URL(
+        `${languagePath(`/${hostname}`, segments, language)}${url.search}`,
+        req.url
+      )
+    )
 
   // rewrite everything else to `/[hostname]/[slug] dynamic route
   return NextResponse.rewrite(new URL(`/${hostname}${path}`, req.url))

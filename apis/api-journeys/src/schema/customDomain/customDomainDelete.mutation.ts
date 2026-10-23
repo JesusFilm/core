@@ -3,14 +3,13 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
+import { enqueueCampaignRootRevalidation } from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
-import {
-  deleteVercelDomain,
-  updateTeamShortLinks
-} from './customDomain.service'
+import { deleteVercelDomain, updateTeamShortLinks } from './service'
 
 builder.mutationField('customDomainDelete', (t) =>
   t.withAuth({ $any: { isAuthenticated: true, isAnonymous: true } }).field({
@@ -24,7 +23,10 @@ builder.mutationField('customDomainDelete', (t) =>
 
       const customDomain = await prisma.customDomain.findUnique({
         where: { id },
-        include: { team: { include: { userTeams: true } } }
+        include: {
+          team: { include: { userTeams: true } },
+          campaign: { include: { regions: true } }
+        }
       })
 
       if (customDomain == null) {
@@ -40,10 +42,26 @@ builder.mutationField('customDomainDelete', (t) =>
       }
 
       await prisma.$transaction(async (tx) => {
-        await updateTeamShortLinks(customDomain.teamId, customDomain.name)
         await tx.customDomain.delete({ where: { id } })
-        await deleteVercelDomain(customDomain)
+        await deleteVercelDomain(customDomain.name)
       })
+
+      // The domain form of the Campaign Root it released stops resolving, and
+      // the root-domain form loses its canonical link to the domain.
+      if (customDomain.campaign != null)
+        await enqueueCampaignRootRevalidation(
+          [customDomain.campaign],
+          customDomain.name
+        )
+
+      try {
+        await updateTeamShortLinks(customDomain.teamId)
+      } catch (error) {
+        logger.error(
+          { teamId: customDomain.teamId, error },
+          'Failed to update team QR code short links'
+        )
+      }
 
       return customDomain
     }

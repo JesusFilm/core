@@ -3,11 +3,32 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { logger } from '../../logger'
 import { builder } from '../builder'
+import { enqueueCampaignRootRevalidation } from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
 import { CustomDomainUpdateInput } from './inputs'
+import { updateTeamShortLinks } from './service'
+
+/**
+ * A Campaign Root change moves the domain form of the old and new campaign
+ * and flips the canonical link on their root-domain form, so every page of
+ * each published one is revalidated in both forms.
+ */
+async function revalidateCampaignRootChange(
+  campaignIds: Array<string | null>,
+  hostname: string
+): Promise<void> {
+  const ids = campaignIds.filter((campaignId) => campaignId != null)
+  if (ids.length === 0) return
+  const campaigns = await prisma.campaign.findMany({
+    where: { id: { in: ids } },
+    include: { regions: true }
+  })
+  await enqueueCampaignRootRevalidation(campaigns, hostname)
+}
 
 builder.mutationField('customDomainUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -66,14 +87,67 @@ builder.mutationField('customDomainUpdate', (t) =>
         }
       }
 
-      return await prisma.customDomain.update({
+      let campaignUpdate:
+        | { connect: { id: string } }
+        | { disconnect: true }
+        | undefined
+
+      if ('campaignId' in input) {
+        if (input.campaignId == null) {
+          campaignUpdate = { disconnect: true }
+        } else {
+          const campaign = await prisma.campaign.findFirst({
+            where: { id: String(input.campaignId), teamId: customDomain.teamId }
+          })
+
+          if (campaign == null)
+            throw new GraphQLError(
+              'campaign not found for this custom domain team',
+              { extensions: { code: 'FORBIDDEN' } }
+            )
+
+          campaignUpdate = { connect: { id: campaign.id } }
+        }
+      }
+
+      const updated = await prisma.customDomain.update({
         ...query,
         where: { id },
         data: {
           routeAllTeamJourneys: input.routeAllTeamJourneys ?? undefined,
-          journeyCollection: journeyCollectionUpdate
+          journeyCollection: journeyCollectionUpdate,
+          campaign: campaignUpdate
         }
       })
+
+      if (campaignUpdate != null) {
+        const nextCampaignId =
+          'connect' in campaignUpdate ? campaignUpdate.connect.id : null
+        if (nextCampaignId !== customDomain.campaignId)
+          await revalidateCampaignRootChange(
+            [customDomain.campaignId, nextCampaignId],
+            customDomain.name
+          )
+      }
+
+      const routeAllChanged =
+        input.routeAllTeamJourneys != null &&
+        input.routeAllTeamJourneys !== customDomain.routeAllTeamJourneys
+      const journeyCollectionChanged =
+        'journeyCollectionId' in input &&
+        (input.journeyCollectionId ?? null) !== customDomain.journeyCollectionId
+      if (routeAllChanged || journeyCollectionChanged) {
+        try {
+          await updateTeamShortLinks(customDomain.teamId)
+        } catch (error) {
+          logger.error(
+            { teamId: customDomain.teamId, error },
+            'Failed to update team QR code short links'
+          )
+        }
+      }
+
+      return updated
     }
   })
 )

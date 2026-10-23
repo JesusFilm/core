@@ -4,6 +4,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { Suspense } from 'react'
 
 import { GET_USER_ROLE } from '@core/journeys/ui/useUserRoleQuery'
+import { FlagsProvider } from '@core/shared/ui/FlagsProvider'
 
 import {
   GetAdminJourneys,
@@ -70,6 +71,27 @@ describe('NavigationDrawer', () => {
       'href',
       '/templates'
     )
+  })
+
+  it('should show the campaigns link only when the campaignBuilder flag is on', () => {
+    const { rerender } = render(
+      <FlagsProvider flags={{ campaignBuilder: true }}>
+        <NavigationDrawer selectedPage="campaigns" />
+      </FlagsProvider>
+    )
+    expect(screen.getByTestId('NavigationListItemCampaigns')).toHaveAttribute(
+      'href',
+      '/campaigns'
+    )
+
+    rerender(
+      <FlagsProvider flags={{ campaignBuilder: false }}>
+        <NavigationDrawer selectedPage="campaigns" />
+      </FlagsProvider>
+    )
+    expect(
+      screen.queryByTestId('NavigationListItemCampaigns')
+    ).not.toBeInTheDocument()
   })
 
   describe('UserNavigation', () => {

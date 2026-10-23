@@ -5,8 +5,9 @@ import { logger } from '../../logger'
 
 import {
   assertTeamMembership,
-  maybeResolveTeamId,
-  resolveAuthorizedTeamId
+  resolveAuthorizedTeamId,
+  resolveJourneyUploadTeamId,
+  resolveUploadTeamId
 } from './journeysAccess'
 
 describe('journeysAccess', () => {
@@ -92,9 +93,66 @@ describe('journeysAccess', () => {
     })
   })
 
-  describe('maybeResolveTeamId', () => {
+  describe('resolveUploadTeamId', () => {
+    it('should return the given teamId once membership is asserted, ignoring journeyId', async () => {
+      journeysPrismaMock.userTeam.findUnique.mockResolvedValue({
+        id: 'userTeamId'
+      } as never)
+
+      const teamId = await resolveUploadTeamId({
+        journeyId: 'journeyId',
+        teamId: 'teamId',
+        userId: 'userId'
+      })
+
+      expect(teamId).toBe('teamId')
+      expect(journeysPrismaMock.userTeam.findUnique).toHaveBeenCalledWith({
+        where: { teamId_userId: { teamId: 'teamId', userId: 'userId' } }
+      })
+      expect(journeysPrismaMock.journey.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should throw FORBIDDEN (not drop the team) when the caller is not a member', async () => {
+      journeysPrismaMock.userTeam.findUnique.mockResolvedValue(null)
+
+      await expect(
+        resolveUploadTeamId({ teamId: 'teamId', userId: 'userId' })
+      ).rejects.toThrow(
+        new GraphQLError('Not a member of this team', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      )
+    })
+
+    it('should throw FORBIDDEN when teamId is given without a user', async () => {
+      await expect(
+        resolveUploadTeamId({ teamId: 'teamId', userId: null })
+      ).rejects.toThrow(
+        new GraphQLError('teamId requires an authenticated user', {
+          extensions: { code: 'FORBIDDEN' }
+        })
+      )
+      expect(journeysPrismaMock.userTeam.findUnique).not.toHaveBeenCalled()
+    })
+
+    it('should fall back to the journey path without a teamId', async () => {
+      journeysPrismaMock.journey.findUnique.mockResolvedValue({
+        teamId: 'journeyTeamId',
+        team: { userTeams: [{ id: 'userTeamId' }] }
+      } as never)
+
+      await expect(
+        resolveUploadTeamId({ journeyId: 'journeyId', userId: 'userId' })
+      ).resolves.toBe('journeyTeamId')
+      await expect(
+        resolveUploadTeamId({ userId: 'userId' })
+      ).resolves.toBeNull()
+    })
+  })
+
+  describe('resolveJourneyUploadTeamId', () => {
     it('should return null when no journeyId is provided', async () => {
-      const teamId = await maybeResolveTeamId({ userId: 'userId' })
+      const teamId = await resolveJourneyUploadTeamId({ userId: 'userId' })
 
       expect(teamId).toBeNull()
       expect(journeysPrismaMock.journey.findUnique).not.toHaveBeenCalled()
@@ -102,7 +160,7 @@ describe('journeysAccess', () => {
 
     it('should throw FORBIDDEN when journeyId is provided without a user', async () => {
       await expect(
-        maybeResolveTeamId({ journeyId: 'journeyId', userId: null })
+        resolveJourneyUploadTeamId({ journeyId: 'journeyId', userId: null })
       ).rejects.toThrow(
         new GraphQLError('journeyId requires an authenticated user', {
           extensions: { code: 'FORBIDDEN' }
@@ -117,7 +175,7 @@ describe('journeysAccess', () => {
         team: { userTeams: [{ id: 'userTeamId' }] }
       } as never)
 
-      const teamId = await maybeResolveTeamId({
+      const teamId = await resolveJourneyUploadTeamId({
         journeyId: 'journeyId',
         userId: 'userId'
       })
@@ -131,7 +189,7 @@ describe('journeysAccess', () => {
         team: { userTeams: [] }
       } as never)
 
-      const teamId = await maybeResolveTeamId({
+      const teamId = await resolveJourneyUploadTeamId({
         journeyId: 'journeyId',
         userId: 'userId'
       })
@@ -145,7 +203,7 @@ describe('journeysAccess', () => {
         new Error('journeys database unreachable')
       )
 
-      const teamId = await maybeResolveTeamId({
+      const teamId = await resolveJourneyUploadTeamId({
         journeyId: 'journeyId',
         userId: 'userId'
       })

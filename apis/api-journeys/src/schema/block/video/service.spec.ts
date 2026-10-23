@@ -112,6 +112,7 @@ describe('video service', () => {
 
     it('throws NOT_FOUND when YouTube video missing', async () => {
       globalAny.fetch.mockResolvedValue({
+        ok: true,
         json: async () => ({ items: [] })
       })
 
@@ -124,11 +125,48 @@ describe('video service', () => {
     it('throws a non-NOT_FOUND error when YouTube returns an error body', async () => {
       // quota exceeded / invalid API key must not read as "video missing"
       globalAny.fetch.mockResolvedValue({
+        ok: true,
         json: async () => ({ error: { code: 403, message: 'quotaExceeded' } })
       })
 
       await expect(fetchFieldsFromYouTube('abc')).rejects.toMatchObject({
         message: 'YouTube API request failed: quotaExceeded',
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+    })
+
+    it('gives up on a stalled request with the same error', async () => {
+      globalAny.fetch.mockRejectedValue(
+        new DOMException(
+          'The operation was aborted due to timeout',
+          'TimeoutError'
+        )
+      )
+
+      await expect(fetchFieldsFromYouTube('abc')).rejects.toMatchObject({
+        message:
+          'YouTube API request failed: The operation was aborted due to timeout',
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+      expect(globalAny.fetch).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'https://www.googleapis.com/youtube/v3/videos?'
+        ),
+        { signal: expect.any(AbortSignal) }
+      )
+    })
+
+    it('throws a non-NOT_FOUND error on a non-OK status without an error body', async () => {
+      globalAny.fetch.mockResolvedValue({
+        ok: false,
+        status: 503,
+        json: async () => {
+          throw new SyntaxError('Unexpected token <')
+        }
+      })
+
+      await expect(fetchFieldsFromYouTube('abc')).rejects.toMatchObject({
+        message: 'YouTube API request failed: status 503',
         extensions: { code: 'INTERNAL_SERVER_ERROR' }
       })
     })
@@ -143,6 +181,7 @@ describe('video service', () => {
       'parses ISO8601 duration $duration as $expected seconds',
       async ({ duration, expected }) => {
         globalAny.fetch.mockResolvedValue({
+          ok: true,
           json: async () => ({
             items: [
               {
@@ -166,6 +205,7 @@ describe('video service', () => {
 
     it('returns fields and parses ISO8601 duration', async () => {
       globalAny.fetch.mockResolvedValue({
+        ok: true,
         json: async () => ({
           items: [
             {
