@@ -1,5 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
+import { findJourneyShortLinkIds } from '../../../workers/shortlinkDelete/findJourneyShortLinkIds'
+import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
+
 import { classifyJourney, classifyTeam } from './classifyJourneys'
 import { LogEntry, createLog } from './types'
 
@@ -26,6 +29,9 @@ export async function deleteJourneysData(
         const deletedUserTeamIds: string[] = []
         const journeyIdsToDelete: string[] = []
         const teamIdsToDelete: string[] = []
+        // The QR rows the deletes below take with them; their api-media short
+        // links are queued for delete once the transaction has committed.
+        const shortLinkIds: string[] = []
 
         // Phase 1: Analyze and transfer ownership
         // Logs are buffered inside the transaction and only merged after commit so
@@ -187,6 +193,12 @@ export async function deleteJourneysData(
           if (blockCount.count > 0)
             txLogs.push(createLog(`🗑️ Deleted ${blockCount.count} blocks`))
 
+          // QR rows of these journeys cascade with them, whichever team owns
+          // them
+          shortLinkIds.push(
+            ...(await findJourneyShortLinkIds(journeyIdsToDelete, tx))
+          )
+
           // Now delete the journeys (cascades are already cleared)
           await tx.journey.deleteMany({
             where: { id: { in: journeyIdsToDelete } }
@@ -198,6 +210,20 @@ export async function deleteJourneysData(
 
         // Phase 4: Delete sole-member teams
         if (teamIdsToDelete.length > 0) {
+          // QR rows do not cascade with their team: a Campaign QR Code whose
+          // journey belongs to another team would block the team delete
+          const teamQrCodes = await tx.qrCode.findMany({
+            where: { teamId: { in: teamIdsToDelete } },
+            select: { shortLinkId: true }
+          })
+          shortLinkIds.push(
+            ...teamQrCodes.map(({ shortLinkId }) => shortLinkId)
+          )
+          const qrCodeCount = await tx.qrCode.deleteMany({
+            where: { teamId: { in: teamIdsToDelete } }
+          })
+          if (qrCodeCount.count > 0)
+            txLogs.push(createLog(`🗑️ Deleted ${qrCodeCount.count} QR codes`))
           await tx.team.deleteMany({
             where: { id: { in: teamIdsToDelete } }
           })
@@ -263,6 +289,7 @@ export async function deleteJourneysData(
           deletedTeamIds: teamIdsToDelete,
           deletedUserJourneyIds,
           deletedUserTeamIds,
+          shortLinkIds: [...new Set(shortLinkIds)],
           logs: txLogs
         }
       },
@@ -272,6 +299,7 @@ export async function deleteJourneysData(
       { maxWait: 10000, timeout: 120000 }
     )
 
+    await enqueueShortLinkDeletes(result.shortLinkIds)
     logs.push(...result.logs)
     logs.push(createLog('✅ Journeys database cleanup completed'))
 

@@ -1,0 +1,172 @@
+import { Prisma } from '@core/prisma/journeys/client'
+
+import { env } from '../../../env'
+
+/**
+ * The seed tables of the Campaign Seed (GLOSSARY.md): every value passes
+ * every validation rule, with one exception: the header logo's `src` is this
+ * deployment's admin app (`HEADER_LOGO_SEED`), not an imagedelivery.net
+ * address, so `assertImageSrc` would refuse it on an update. Ids, scoping and ordering are added by
+ * `seedCampaign`.
+ */
+export type SectionSeed = Omit<
+  Prisma.CampaignBlockUncheckedCreateInput,
+  'id' | 'campaignId' | 'pageId' | 'regionId' | 'parentBlockId' | 'parentOrder'
+> & { typename: string }
+
+export const LANDING_HERO = 0
+export const LANDING_REGION_SWITCHER = 1
+export const LANDING_VIDEO_CAROUSEL = 2
+
+export const LANDING_SECTION_SEED: readonly SectionSeed[] = [
+  {
+    typename: 'CampaignHeroBlock',
+    eyebrow: 'Your campaign',
+    title: 'Share the story',
+    description:
+      'Pick your region to find a journey in your language, ready to share.',
+    align: 'center',
+    backgroundKind: 'none'
+  },
+  {
+    typename: 'CampaignRegionSwitcherBlock',
+    title: 'Choose your region',
+    switcherVariant: 'cards',
+    backgroundKind: 'none'
+  },
+  {
+    typename: 'CampaignVideoCarouselBlock',
+    eyebrow: 'Watch',
+    title: 'Films to watch',
+    backgroundKind: 'surface'
+  },
+  {
+    typename: 'CampaignJourneyListBlock',
+    eyebrow: 'Journeys',
+    title: 'Ready-made journeys',
+    description:
+      'Interactive stories your friends can walk through on their phone.',
+    display: 'grid',
+    backgroundKind: 'none'
+  },
+  {
+    typename: 'CampaignAnalyticsBlock',
+    eyebrow: 'Around the world',
+    title: 'Where the story is spreading',
+    showMap: true,
+    backgroundKind: 'contrast'
+  }
+]
+
+/** The hero's one button Extra, scrolling to the landing Region Switcher. */
+export const LANDING_HERO_BUTTON_SEED: SectionSeed = {
+  typename: 'CampaignButtonBlock',
+  label: 'Choose your region',
+  placement: 'below'
+}
+
+export const REGION_SECTION_SEED: readonly SectionSeed[] = [
+  {
+    typename: 'CampaignRegionHeaderBlock',
+    intro: 'A journey chosen and contextualised by your regional team.',
+    backgroundKind: 'none'
+  },
+  {
+    typename: 'CampaignRegionShareBlock',
+    title: 'Share this journey',
+    intro: 'Pick a language, preview it, and share the link or QR code.',
+    backgroundKind: 'surface'
+  },
+  {
+    typename: 'CampaignJourneyListBlock',
+    eyebrow: 'More journeys',
+    title: 'Other journeys for this region',
+    display: 'grid',
+    backgroundKind: 'none'
+  },
+  {
+    typename: 'CampaignAnalyticsBlock',
+    eyebrow: 'In this region',
+    title: 'Where the story is spreading',
+    showMap: true,
+    backgroundKind: 'contrast'
+  },
+  {
+    typename: 'CampaignRegionSwitcherBlock',
+    title: 'Other regions',
+    switcherVariant: 'cards',
+    backgroundKind: 'none'
+  }
+]
+
+export const HEADER_SEED: SectionSeed = {
+  typename: 'CampaignHeaderBlock',
+  backgroundKind: 'none'
+}
+
+/**
+ * The header's default logo: the NextSteps wordmark served by this
+ * deployment's admin app (`JOURNEYS_ADMIN_URL`), owned by the header
+ * (`parentOrder` null) and named by its `logoBlockId`. The one `src` that is
+ * not an imagedelivery.net address; the author replaces it through the Logo
+ * picker like any other logo.
+ */
+export const HEADER_LOGO_SEED: SectionSeed = {
+  typename: 'CampaignImageBlock',
+  src: `${env.JOURNEYS_ADMIN_URL}/logo.svg`,
+  alt: 'NextSteps',
+  width: 221,
+  height: 41
+}
+
+/** Header nav buttons, each a ScrollToBlockAction to a landing section index. */
+export const HEADER_NAV_SEED: ReadonlyArray<
+  SectionSeed & { scrollToLandingSection: number }
+> = [
+  {
+    typename: 'CampaignButtonBlock',
+    label: 'Home',
+    placement: 'below',
+    scrollToLandingSection: LANDING_HERO
+  },
+  {
+    typename: 'CampaignButtonBlock',
+    label: 'Resources',
+    placement: 'below',
+    scrollToLandingSection: LANDING_VIDEO_CAROUSEL
+  }
+]
+
+export const FOOTER_SEED: SectionSeed = {
+  typename: 'CampaignFooterBlock',
+  backgroundKind: 'surface'
+}
+
+export function footerCopyrightSeed(year: number): SectionSeed {
+  return {
+    typename: 'CampaignTypographyBlock',
+    content: `© ${year} Jesus Film Project`,
+    typographyVariant: 'caption',
+    placement: 'below'
+  }
+}
+
+/** Footer links, each a LinkAction. */
+export const FOOTER_LINK_SEED: ReadonlyArray<SectionSeed & { url: string }> = [
+  {
+    typename: 'CampaignButtonBlock',
+    label: 'Terms of Use',
+    buttonVariant: 'text',
+    buttonSize: 'small',
+    placement: 'below',
+    url: 'https://www.cru.org/us/en/about/terms-of-use.html'
+  },
+  {
+    typename: 'CampaignButtonBlock',
+    label: 'Your Privacy',
+    buttonVariant: 'text',
+    buttonSize: 'small',
+    placement: 'below',
+    url: 'https://www.cru.org/us/en/about/privacy.html'
+  }
+]

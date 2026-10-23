@@ -21,7 +21,12 @@ builder.queryField('adminJourneys', (t) =>
       status: t.arg({ type: [JourneyStatus], required: false }),
       template: t.arg.boolean({ required: false }),
       teamId: t.arg.id({ required: false }),
-      useLastActiveTeamId: t.arg.boolean({ required: false })
+      useLastActiveTeamId: t.arg.boolean({ required: false }),
+      allAccessible: t.arg.boolean({
+        required: false,
+        description:
+          'Return every journey the caller can read, across all of their teams and those shared with them, in one list. Skips the default shared-with-me branch and leaves the read-access filter to decide.'
+      })
     },
     resolve: async (query, _parent, args, context) => {
       const userId = context.user.id
@@ -49,6 +54,7 @@ builder.queryField('adminJourneys', (t) =>
         filter.teamId = args.teamId
       } else if (
         args.template !== true &&
+        args.allAccessible !== true &&
         filter.teamId == null &&
         !lastActiveApplied
       ) {
