@@ -1,3 +1,4 @@
+export { CAMPAIGN_ALIGNS } from './campaignAlign'
 export { CampaignStatus } from './campaignStatus'
 export { CampaignPageKind } from './campaignPageKind'
 export { CampaignBackgroundKind } from './campaignBackgroundKind'
@@ -12,7 +13,10 @@ export {
   CAMPAIGN_JOURNEY_LIST_DISPLAYS,
   CampaignJourneyListDisplay
 } from './campaignJourneyListDisplay'
-export { CampaignColumnsRatio } from './campaignColumnsRatio'
+export {
+  CAMPAIGN_COLUMNS_RATIOS,
+  CampaignColumnsRatio
+} from './campaignColumnsRatio'
 export { CampaignRadius } from './campaignRadius'
 export { CampaignChildPlacement } from './campaignChildPlacement'
 export { CampaignStringKey } from './campaignStringKey'
@@ -20,7 +24,11 @@ export {
   CampaignTextSource,
   type CampaignTextSourceValue
 } from './campaignTextSource'
-export { CampaignImageSlot } from './campaignImageSlot'
+export {
+  CAMPAIGN_IMAGE_SLOTS,
+  CampaignImageSlot,
+  type CampaignImageSlotValue
+} from './campaignImageSlot'
 export { CampaignTextField } from './campaignTextField'
 export {
   CAMPAIGN_TRANSLATION_FILTERS,

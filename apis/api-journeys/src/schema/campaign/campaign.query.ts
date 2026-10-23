@@ -2,8 +2,8 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
+import { authorizeCampaign } from './authorizeCampaign'
 import { CampaignRef } from './campaign'
-import { authorizeCampaign } from './campaign.acl'
 
 builder.queryField('campaign', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({

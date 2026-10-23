@@ -1,4 +1,5 @@
 import { builder } from '../../builder'
+import { TEXT_CAPS } from '../validation'
 
 export const CampaignCreateInput = builder.inputType('CampaignCreateInput', {
   description:
@@ -10,8 +11,7 @@ export const CampaignCreateInput = builder.inputType('CampaignCreateInput', {
     }),
     title: t.string({
       required: true,
-      description:
-        'Default-language title, required, at most 100 characters. Drives slug generation.'
+      description: `Default-language title, required, at most ${TEXT_CAPS.campaignTitle} characters. Drives slug generation.`
     }),
     defaultLanguageId: t.id({
       required: true,

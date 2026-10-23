@@ -3,7 +3,6 @@ import { TEXT_CAPS } from '../../validation'
 import { CampaignImageBlock } from '../campaignImageBlock'
 import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
-  CAMPAIGN_IMAGE_TYPENAME,
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
   updateBlock
@@ -25,7 +24,7 @@ builder.mutationField('campaignImageBlockUpdate', (t) =>
       const block = await authorizeTypedBlockUpdate(
         String(id),
         context.user,
-        CAMPAIGN_IMAGE_TYPENAME
+        'CampaignImageBlock'
       )
       const style = sectionStyleColumns(input)
       const data = await validateImageInput(input)

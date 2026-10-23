@@ -53,7 +53,7 @@ const INCLUDE_JOURNEY_LIVE = {
  * deleted), public address (visible journeys only) and primary image. A journey that
  * no longer exists has no entry.
  */
-export async function loadCampaignJourneyLives(
+export async function loadJourneyLivesByIds(
   journeyIds: string[]
 ): Promise<Map<string, CampaignJourneyLive>> {
   const lives = new Map<string, CampaignJourneyLive>()
@@ -79,7 +79,7 @@ async function resolveLive(
 ): Promise<CampaignJourneyLive | null> {
   if (block.journeyLive !== undefined) return block.journeyLive
   if (block.journeyId == null) return null
-  const lives = await loadCampaignJourneyLives([block.journeyId])
+  const lives = await loadJourneyLivesByIds([block.journeyId])
   return lives.get(block.journeyId) ?? null
 }
 

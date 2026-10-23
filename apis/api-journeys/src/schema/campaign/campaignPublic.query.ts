@@ -16,7 +16,11 @@ import {
   getJourneyEmbedUrl,
   getJourneyPublicUrl
 } from './getJourneyPublicUrl'
-import { JourneyLives, loadJourneyLives, withJourneyLive } from './journeyLives'
+import {
+  JourneyLives,
+  loadJourneyLivesOfBlocks,
+  withJourneyLive
+} from './journeyLives'
 import { resolveText } from './resolveText'
 import { SLUG_MAX_LENGTH, SLUG_PATTERN } from './slug'
 import { CAMPAIGN_BLOCK_TEXT_COLUMNS } from './translation/textFields'
@@ -105,7 +109,7 @@ function toRegionLanguage(
 /**
  * Project one published campaign row into the public payload: text resolved
  * to `languageId`, blocks partitioned by page / chrome / region, each
- * region language carrying its saved Share Link.
+ * Share Language carrying its saved Share Link.
  */
 export function toCampaignPublic(
   campaign: CampaignPublicRow,
@@ -217,8 +221,7 @@ builder.queryField('campaignPublic', (t) =>
     args: {
       slug: t.arg.string({
         required: false,
-        description:
-          'The campaign slug; must match `^[a-z0-9]+(-[a-z0-9]+)*$` and be at most 200 characters.'
+        description: `The campaign slug; must match \`${SLUG_PATTERN.source}\` and be at most ${SLUG_MAX_LENGTH} characters.`
       }),
       hostname: t.arg.string({
         required: false,
@@ -260,7 +263,7 @@ builder.queryField('campaignPublic', (t) =>
       if (campaign == null) throw notFound('campaign not found')
       // Cards whose journey is not visible are left out of the public payload
       // by this read at request time.
-      const journeyLives = await loadJourneyLives(campaign.blocks)
+      const journeyLives = await loadJourneyLivesOfBlocks(campaign.blocks)
       return toCampaignPublic(
         campaign,
         args.languageId == null ? null : String(args.languageId),

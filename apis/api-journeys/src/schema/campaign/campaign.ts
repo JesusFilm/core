@@ -3,8 +3,9 @@ import { Language } from '../language'
 
 import { CampaignBlock } from './block'
 import { CampaignStatus } from './enums'
-import { loadJourneyLives, withJourneyLive } from './journeyLives'
+import { loadJourneyLivesOfBlocks, withJourneyLive } from './journeyLives'
 import { TranslatedValueRef, toTranslatedValues } from './translatedValue'
+import { TEXT_CAPS } from './validation'
 
 /**
  * The full admin shape of a Campaign, returned to team members by `campaign`,
@@ -23,8 +24,7 @@ export const CampaignRef = builder.prismaObject('Campaign', {
     }),
     title: t.exposeString('title', {
       nullable: false,
-      description:
-        'Default-language title; also the public page title. Required, at most 100 characters.'
+      description: `Default-language title; also the public page title. Required, at most ${TEXT_CAPS.campaignTitle} characters.`
     }),
     titleTranslations: t.field({
       type: [TranslatedValueRef],
@@ -88,7 +88,7 @@ export const CampaignRef = builder.prismaObject('Campaign', {
         }
       },
       resolve: async (campaign) => {
-        const lives = await loadJourneyLives(campaign.blocks)
+        const lives = await loadJourneyLivesOfBlocks(campaign.blocks)
         return campaign.blocks.map((block) => withJourneyLive(block, lives))
       }
     }),

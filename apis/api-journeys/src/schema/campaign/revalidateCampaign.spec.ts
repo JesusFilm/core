@@ -7,7 +7,8 @@ import { fetchLanguage } from './gatewayClient'
 import {
   campaignLanguageTags,
   campaignPagePaths,
-  enqueueCampaignRevalidation
+  enqueueCampaignRevalidation,
+  enqueueLanguageRevalidation
 } from './revalidateCampaign'
 
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
@@ -117,5 +118,55 @@ describe('campaignLanguageTags', () => {
     prismaMock.campaignLanguage.findMany.mockRejectedValue(new Error('db down'))
 
     expect(await campaignLanguageTags('campaignId')).toEqual([])
+  })
+})
+
+describe('enqueueLanguageRevalidation', () => {
+  const campaign = {
+    id: 'campaignId',
+    status: 'published',
+    slug: 'outreach',
+    regions: [{ slug: 'eur' }],
+    customDomains: []
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('resolves the changed language alongside the campaign languages, then queues every page under both tags', async () => {
+    prismaMock.campaignLanguage.findMany.mockResolvedValue([
+      { languageId: '529' }
+    ] as any)
+    const releases: Array<() => void> = []
+    mockFetchLanguage.mockImplementation(
+      async (id) =>
+        await new Promise((resolve) => {
+          releases.push(() =>
+            resolve({ id, bcp47: id === '529' ? 'en' : 'fr-CA' })
+          )
+        })
+    )
+
+    const queued = enqueueLanguageRevalidation(campaign, '496')
+    await vi.waitFor(() => expect(mockFetchLanguage).toHaveBeenCalledTimes(2))
+    releases.forEach((release) => release())
+    await queued
+
+    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths)).toEqual([
+      ['/home/campaign/outreach'],
+      ['/home/campaign/outreach/eur'],
+      ['/home/campaign/outreach/_lang/en'],
+      ['/home/campaign/outreach/_lang/en/eur'],
+      ['/home/campaign/outreach/_lang/fr-ca'],
+      ['/home/campaign/outreach/_lang/fr-ca/eur']
+    ])
+  })
+
+  it('queues nothing for a draft campaign', async () => {
+    await enqueueLanguageRevalidation({ ...campaign, status: 'draft' }, '496')
+
+    expect(mockFetchLanguage).not.toHaveBeenCalled()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 })

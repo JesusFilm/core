@@ -3,7 +3,7 @@ import {
   CampaignTypographyVariant
 } from '@core/prisma/journeys/client'
 
-import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
+import { CAMPAIGN_ALIGNS } from '../../enums'
 import {
   TEXT_CAPS,
   assertEnumOrNull,

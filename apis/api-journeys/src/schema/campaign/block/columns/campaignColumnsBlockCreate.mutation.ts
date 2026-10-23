@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { CAMPAIGN_COLUMNS_RATIOS } from '../../enums/campaignColumnsRatio'
+import { CAMPAIGN_COLUMNS_RATIOS } from '../../enums'
 import { assertEnum } from '../../validation'
 import { CampaignColumnsBlock } from '../campaignColumnsBlock'
 import { createSection } from '../createSection'

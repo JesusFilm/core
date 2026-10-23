@@ -1,6 +1,7 @@
 import { builder } from '../builder'
 
 import { TranslatedValueRef, toTranslatedValues } from './translatedValue'
+import { TEXT_CAPS } from './validation'
 
 export const CampaignRegionRef = builder.prismaObject('CampaignRegion', {
   description:
@@ -10,7 +11,7 @@ export const CampaignRegionRef = builder.prismaObject('CampaignRegion', {
     campaignId: t.exposeID('campaignId', { nullable: false }),
     name: t.exposeString('name', {
       nullable: false,
-      description: 'Required, at most 60 characters.'
+      description: `Required, at most ${TEXT_CAPS.regionName} characters.`
     }),
     nameTranslations: t.field({
       type: [TranslatedValueRef],

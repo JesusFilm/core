@@ -2,6 +2,7 @@ import { builder } from '../builder'
 
 import { CampaignStringKey } from './enums'
 import { TranslatedValueRef, toTranslatedValues } from './translatedValue'
+import { TEXT_CAPS } from './validation'
 
 export const CampaignStringRef = builder.prismaObject('CampaignString', {
   description:
@@ -12,7 +13,7 @@ export const CampaignStringRef = builder.prismaObject('CampaignString', {
     key: t.expose('key', { type: CampaignStringKey, nullable: false }),
     value: t.exposeString('value', {
       nullable: false,
-      description: 'Default-language wording, at most 200 characters.'
+      description: `Default-language wording, at most ${TEXT_CAPS.stringValue} characters.`
     }),
     valueTranslations: t.field({
       type: [TranslatedValueRef],

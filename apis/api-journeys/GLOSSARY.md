@@ -226,7 +226,7 @@ A **Campaign Typography** or **Campaign Button** block added as a child of a Cam
 _Avoid_: addon, child block (too broad), inline block
 
 **Owned block**:
-A Campaign Block held by a slot on its host rather than placed among its children: a **Section Background** cover, the header's logo, or a **Media Slot** block. It has `parentOrder: null`, is replaced by filling its slot again, and is never deleted on its own.
+A Campaign Block held by a slot on its host rather than placed among its children: a **Section Background** cover, the header's logo, or a **Media Slot** block. It has `parentOrder: null`, is replaced or brought back only through its owner's slot, and is never deleted, restored, reordered or duplicated on its own.
 _Avoid_: child block, Extra, attachment
 
 **Journey card**:

@@ -3,8 +3,8 @@ import { prisma } from '@core/prisma/journeys/client'
 import { enqueueShortLinkDeletes } from '../../workers/shortlinkDelete/queue'
 import { builder } from '../builder'
 
+import { authorizeCampaign } from './authorizeCampaign'
 import { CampaignRef } from './campaign'
-import { authorizeCampaign } from './campaign.acl'
 import { deleteQrCodes, findRegionQrCodes } from './regionLanguage/service'
 import {
   enqueueCampaignRevalidation,

@@ -16,6 +16,8 @@ import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 import { CAMPAIGN_BLOCKS_MAX } from '../validation'
 
 import {
+  COPIED_COLUMNS,
+  type CampaignTypename,
   assertImageSlot,
   assertMediaOwner,
   assertPlacement,
@@ -41,10 +43,10 @@ import {
   sectionStyleColumns,
   swapSlot,
   updateBlock,
+  validateHostBlock,
   validateParentBlock,
   validateRegion,
   validateSectionPage,
-  validateSlotOwner,
   validateSlotParent,
   validateSlotTarget
 } from './service'
@@ -411,11 +413,11 @@ describe('typename predicates and validators', () => {
     })
   })
 
-  describe('validateSlotOwner', () => {
+  describe('validateHostBlock', () => {
     it('returns a live section or chrome block of the campaign', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
 
-      await expect(validateSlotOwner('headerId', 'campaignId')).resolves.toBe(
+      await expect(validateHostBlock('headerId', 'campaignId')).resolves.toBe(
         header
       )
       expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
@@ -431,7 +433,7 @@ describe('typename predicates and validators', () => {
     it('refuses an owned image (parentOrder null) as a cover owner: the lookup excludes it (BAD_USER_INPUT, parentBlockId)', async () => {
       prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
-      const error = await errorOf(validateSlotOwner('coverId', 'campaignId'))
+      const error = await errorOf(validateHostBlock('coverId', 'campaignId'))
 
       expect(error.extensions).toEqual({
         code: 'BAD_USER_INPUT',
@@ -450,7 +452,7 @@ describe('typename predicates and validators', () => {
         fixture.blocks.find((block) => block.id === 'heroButtonId')!
       )
       const extra = await errorOf(
-        validateSlotOwner('heroButtonId', 'campaignId')
+        validateHostBlock('heroButtonId', 'campaignId')
       )
       expect(extra.extensions).toEqual({
         code: 'BAD_USER_INPUT',
@@ -458,7 +460,7 @@ describe('typename predicates and validators', () => {
       })
 
       prismaMock.campaignBlock.findFirst.mockResolvedValueOnce(null)
-      const missing = await errorOf(validateSlotOwner('nope', 'campaignId'))
+      const missing = await errorOf(validateHostBlock('nope', 'campaignId'))
       expect(missing.extensions).toEqual({
         code: 'BAD_USER_INPUT',
         field: 'parentBlockId'
@@ -482,7 +484,10 @@ describe('typename predicates and validators', () => {
       })
     })
 
-    it.each(['CampaignRegionHeaderBlock', 'CampaignRegionShareBlock'])(
+    it.each<CampaignTypename>([
+      'CampaignRegionHeaderBlock',
+      'CampaignRegionShareBlock'
+    ])(
       'rejects %s on the landing page (BAD_USER_INPUT, pageId)',
       async (typename) => {
         prismaMock.campaignPage.findFirst.mockResolvedValue(fixture.pages[0])
@@ -582,7 +587,10 @@ describe('typename predicates and validators', () => {
       })
     })
 
-    it.each(['CampaignColumnsBlock', 'CampaignRegionShareBlock'])(
+    it.each<CampaignTypename>([
+      'CampaignColumnsBlock',
+      'CampaignRegionShareBlock'
+    ])(
       'never takes a %s in a slot (BAD_USER_INPUT, parentBlockId)',
       async (typename) => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
@@ -598,7 +606,7 @@ describe('typename predicates and validators', () => {
       }
     )
 
-    it.each([
+    it.each<CampaignTypename>([
       'CampaignHeroBlock',
       'CampaignRegionSwitcherBlock',
       'CampaignVideoCarouselBlock',
@@ -692,7 +700,7 @@ describe('typename predicates and validators', () => {
       )
     })
 
-    it.each(['CampaignHeaderBlock', 'CampaignFooterBlock'])(
+    it.each<CampaignTypename>(['CampaignHeaderBlock', 'CampaignFooterBlock'])(
       'rejects %s scoped to a page or region (BAD_USER_INPUT, pageId)',
       (typename) => {
         expect(() =>
@@ -872,7 +880,7 @@ describe('tree order and creates', () => {
   })
 
   describe('createTopLevelBlock', () => {
-    it.each(['CampaignHeaderBlock', 'CampaignFooterBlock'])(
+    it.each<CampaignTypename>(['CampaignHeaderBlock', 'CampaignFooterBlock'])(
       'refuses a second %s (CONFLICT, typename)',
       async (typename) => {
         prismaMock.campaignBlock.findFirst.mockResolvedValue({
@@ -1137,7 +1145,7 @@ describe('tree order and creates', () => {
       ).resolves.toBe(carousel)
     })
 
-    it.each([
+    it.each<CampaignTypename>([
       'CampaignImageBlock',
       'CampaignJourneyBlock',
       'CampaignHeroBlock'
@@ -1425,6 +1433,36 @@ describe('delete, restore and duplicate', () => {
           where: expect.objectContaining({ deletedAt: { not: null } })
         })
       })
+    })
+  })
+
+  describe('COPIED_COLUMNS', () => {
+    // What the duplicate writes itself: identity, tree position, timestamps
+    // and the three slot columns it remaps.
+    const WRITTEN_COLUMNS: string[] = [
+      'id',
+      'parentBlockId',
+      'parentOrder',
+      'updatedAt',
+      'deletedAt',
+      'coverBlockId',
+      'mediaBlockId',
+      'logoBlockId'
+    ]
+
+    it('lists every other CampaignBlock column, so a new column is copied or refused here', () => {
+      const scalarColumns = Object.values(Prisma.CampaignBlockScalarFieldEnum)
+
+      expect([...COPIED_COLUMNS].sort()).toEqual(
+        scalarColumns
+          .filter((column) => !WRITTEN_COLUMNS.includes(column))
+          .sort()
+      )
+      expect(
+        WRITTEN_COLUMNS.filter(
+          (column) => !(scalarColumns as string[]).includes(column)
+        )
+      ).toEqual([])
     })
   })
 

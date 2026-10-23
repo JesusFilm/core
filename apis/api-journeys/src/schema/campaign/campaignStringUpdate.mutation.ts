@@ -2,8 +2,8 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
 
+import { authorizeCampaign } from './authorizeCampaign'
 import { touchCampaign } from './block/service'
-import { authorizeCampaign } from './campaign.acl'
 import { CampaignStringRef } from './campaignString'
 import { CampaignStringKey } from './enums'
 import {
@@ -14,8 +14,7 @@ import {
 
 builder.mutationField('campaignStringUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
-    description:
-      'Update the default-language wording of one Campaign String. The eighteen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through `campaignTranslationSet` with `stringId`. A Command in the editor.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `value`): over 200 characters.',
+    description: `Update the default-language wording of one Campaign String. The eighteen rows are seeded with the campaign and never deleted while it exists, so the string is addressed by its key. Translations are untouched; they go through \`campaignTranslationSet\` with \`stringId\`. A Command in the editor.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: \`value\`): over ${TEXT_CAPS.stringValue} characters.`,
     type: CampaignStringRef,
     nullable: false,
     args: {

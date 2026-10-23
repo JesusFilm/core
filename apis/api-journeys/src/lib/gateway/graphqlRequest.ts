@@ -43,7 +43,9 @@ function gatewayUnavailable(): GatewayError {
  * Run a query or mutation against other subgraphs through the gateway as
  * this service. Avoid calling it inside a transaction: it is a network round
  * trip of up to `GATEWAY_TIMEOUT_MS`, held with the transaction open. The
- * three `qrCode` mutations still do, as on `main`.
+ * three `qrCode` mutations still do, as on `main`, and so does
+ * `campaignRegionLanguageUpdate`, whose short-link step runs last in its
+ * transaction under a timeout raised to outlast the call.
  */
 export async function graphqlRequest(
   query: string,

@@ -5,6 +5,7 @@ export const CAMPAIGN_MACHINE_TRANSLATE_MODES = ['all', 'missing'] as const
 export type CampaignMachineTranslateModeValue =
   (typeof CAMPAIGN_MACHINE_TRANSLATE_MODES)[number]
 
+// Machine translation in code; the schema name `CampaignAiTranslateMode` is frozen for journeys-admin.
 export const CampaignMachineTranslateMode = builder.enumType(
   'CampaignAiTranslateMode',
   {

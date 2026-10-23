@@ -214,7 +214,7 @@ export async function parseAndVerifyTo(
 
 export function getShortLinkDomain(): string {
   if (JOURNEYS_SHORTLINK_DOMAIN == null)
-    throw new GraphQLError('Shortlink domain not added', {
+    throw new GraphQLError('Short-link domain not added', {
       extensions: { code: 'INTERNAL_SERVER_ERROR' }
     })
   return JOURNEYS_SHORTLINK_DOMAIN

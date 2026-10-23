@@ -8,8 +8,6 @@ import { badUserInput, notFound } from '../../errors'
 import { BLOCK_CAP_ERROR } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
 import {
-  CAMPAIGN_CAROUSEL_TYPENAME,
-  CAMPAIGN_VIDEO_TYPENAME,
   assertCampaignBlockRoom,
   assertParentStillLive,
   authorizeTypedBlockUpdate,
@@ -43,7 +41,7 @@ builder.mutationField('campaignVideoCarouselBlockPlaylistImport', (t) =>
       const carousel = await authorizeTypedBlockUpdate(
         String(id),
         context.user,
-        CAMPAIGN_CAROUSEL_TYPENAME
+        'CampaignVideoCarouselBlock'
       )
       const playlistId = parsePlaylistUrl(url)
       if (playlistId == null) throw badUserInput(PLAYLIST_URL_ERROR, 'url')
@@ -63,7 +61,7 @@ builder.mutationField('campaignVideoCarouselBlockPlaylistImport', (t) =>
         const created = await tx.campaignBlock.createManyAndReturn({
           data: videos.map((video, index) => ({
             id: uuidv4(),
-            typename: CAMPAIGN_VIDEO_TYPENAME,
+            typename: 'CampaignVideoBlock',
             campaignId: carousel.campaignId,
             pageId: carousel.pageId,
             regionId: carousel.regionId,

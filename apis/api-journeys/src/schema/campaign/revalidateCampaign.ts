@@ -141,21 +141,18 @@ interface PublishedCampaignPages extends CampaignPages {
 /**
  * Every page path of a campaign as it stands: `campaignPagePaths` in the
  * root-domain form and the form of each Custom Domain naming it as Campaign
- * Root, under the tag of each of its Page Languages and `extraLanguageTag`.
+ * Root, under the tag of each of its Page Languages, or of `languageTags`
+ * when the caller has already resolved them.
  */
 export async function listCampaignPagePaths(
   campaign: CampaignPages,
-  extraLanguageTag?: string | null
+  languageTags?: string[]
 ): Promise<string[]> {
-  const languageTags = await campaignLanguageTags(campaign.id)
   return campaignPagePaths({
     slug: campaign.slug,
     regions: campaign.regions,
     hostnames: campaign.customDomains.map(({ name }) => name),
-    languageTags:
-      extraLanguageTag == null
-        ? languageTags
-        : [...new Set([...languageTags, extraLanguageTag])]
+    languageTags: languageTags ?? (await campaignLanguageTags(campaign.id))
   })
 }
 
@@ -204,9 +201,18 @@ export async function enqueueLanguageRevalidation(
   languageId: string
 ): Promise<void> {
   if (campaign.status !== 'published') return
-  const changedTag = await resolveLanguageTag(campaign.id, languageId)
+  // One gateway round-trip for both: the changed language and the campaign's.
+  const [languageTags, changedTag] = await Promise.all([
+    campaignLanguageTags(campaign.id),
+    resolveLanguageTag(campaign.id, languageId)
+  ])
   await enqueueCampaignRevalidation(
-    await listCampaignPagePaths(campaign, changedTag)
+    await listCampaignPagePaths(
+      campaign,
+      changedTag == null
+        ? languageTags
+        : [...new Set([...languageTags, changedTag])]
+    )
   )
 }
 

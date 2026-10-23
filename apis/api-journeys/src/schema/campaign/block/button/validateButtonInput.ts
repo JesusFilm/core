@@ -4,7 +4,7 @@ import {
   CampaignButtonVariant
 } from '@core/prisma/journeys/client'
 
-import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
+import { CAMPAIGN_ALIGNS } from '../../enums'
 import {
   TEXT_CAPS,
   assertEnumOrNull,
@@ -15,7 +15,7 @@ import {
 export const BUTTON_VARIANTS = Object.values(CampaignButtonVariant)
 export const BUTTON_SIZES = Object.values(CampaignButtonSize)
 
-/** The label a new button Extra is born with (PRD §14). */
+/** The label a new button Extra is born with (GLOSSARY.md: Extra, Campaign Button). */
 export const NEW_BUTTON_LABEL = 'Button'
 
 export interface ButtonInput {
