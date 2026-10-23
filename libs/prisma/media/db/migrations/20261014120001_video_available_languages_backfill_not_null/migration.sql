@@ -1,0 +1,11 @@
+-- Runs after the preceding migration has already added the NOT VALID check
+-- constraint (20261014120000_video_available_languages_not_null_check) and
+-- committed, so that constraint is already rejecting any new NULL write by
+-- the time this backfill starts — closing the race where a concurrent
+-- insert could otherwise commit a NULL row after this backfill's snapshot
+-- but before a constraint existed to reject it. This UPDATE only needs to
+-- clean up rows that were already NULL before that constraint existed, and
+-- running it in its own transaction (rather than appended to the prior
+-- migration) keeps it off the ACCESS EXCLUSIVE lock that migration's
+-- SET DEFAULT/ADD CONSTRAINT held for the rest of its own transaction.
+UPDATE "Video" SET "availableLanguages" = ARRAY[]::TEXT[] WHERE "availableLanguages" IS NULL;
