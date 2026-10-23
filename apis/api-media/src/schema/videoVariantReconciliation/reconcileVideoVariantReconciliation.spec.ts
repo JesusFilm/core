@@ -61,7 +61,7 @@ describe('reconcileVideoVariantReconciliation', () => {
     )
     vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
     prismaMock.video.findMany.mockResolvedValue([
-      { id: 'series-1', slug: 'do-you-ever-wonder' }
+      { id: 'series-1', slug: 'do-you-ever-wonder', label: 'series' }
     ] as never)
     prismaMock.videoVariant.findFirst.mockResolvedValue(null)
     prismaMock.videoVariant.create.mockResolvedValue({
@@ -134,7 +134,7 @@ describe('reconcileVideoVariantReconciliation', () => {
     )
     vi.mocked(findContainerParentIds).mockResolvedValue(['series-1'])
     prismaMock.video.findMany.mockResolvedValue([
-      { id: 'series-1', slug: 'do-you-ever-wonder' }
+      { id: 'series-1', slug: 'do-you-ever-wonder', label: 'series' }
     ] as never)
     prismaMock.videoVariant.findFirst.mockResolvedValue(null)
     prismaMock.videoVariant.create.mockResolvedValue({
@@ -292,5 +292,87 @@ describe('reconcileVideoVariantReconciliation', () => {
       })
     })
     expect(result).toEqual({ publicationReady: true, status: 'complete' })
+  })
+
+  describe('when the parent is a feature film', () => {
+    // JESUS (1_jf-0-0) is playable in its own right and is also the parent of
+    // its segments. Its Variants must only ever be real uploads.
+    function segmentReconciliation(): ReconciliationRecord {
+      return {
+        reason: 'video-variant-publication-change',
+        videoId: '1_jf6101-0-0',
+        languageId: '19372',
+        published: true,
+        videoVariantId: '1_19372-jf6101-0-0',
+        processingStages: {},
+        createdAt: new Date(),
+        videoVariant: {
+          id: '1_19372-jf6101-0-0',
+          videoId: '1_jf6101-0-0',
+          languageId: '19372',
+          slug: 'jesus-chapter-1/19372',
+          published: false,
+          downloadable: false,
+          hls: 'https://stream.example/segment.m3u8',
+          share: '',
+          muxVideo: { readyToStream: true }
+        }
+      }
+    }
+
+    beforeEach(() => {
+      prismaMock.videoVariantReconciliation.findUniqueOrThrow.mockResolvedValue(
+        segmentReconciliation() as never
+      )
+      vi.mocked(findContainerParentIds).mockResolvedValue(['1_jf-0-0'])
+      prismaMock.video.findMany.mockResolvedValue([
+        { id: '1_jf-0-0', slug: 'jesus', label: 'featureFilm' }
+      ] as never)
+      prismaMock.videoVariantDownload.count.mockResolvedValue(0)
+    })
+
+    it('does not create a placeholder Variant for a language the film lacks', async () => {
+      prismaMock.videoVariant.findFirst.mockResolvedValue(null)
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+      expect(
+        prismaMock.videoVariantReconciliation.create
+      ).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: '1_19372-jf6101-0-0' },
+        data: { published: true }
+      })
+      expect(result).toMatchObject({
+        publicationReady: true,
+        status: 'complete'
+      })
+    })
+
+    it('publishes the segment when the film already has a real Variant in that language', async () => {
+      prismaMock.videoVariant.findFirst.mockResolvedValue({
+        id: '1_19372-jf-0-0',
+        hls: 'https://stream.example/jesus.m3u8',
+        downloads: [{ id: 'download-1' }]
+      } as never)
+
+      const result =
+        await reconcileVideoVariantReconciliation('reconciliation-1')
+
+      expect(prismaMock.videoVariant.create).not.toHaveBeenCalled()
+      expect(prismaMock.videoVariant.update).not.toHaveBeenCalledWith(
+        expect.objectContaining({ where: { id: '1_19372-jf-0-0' } })
+      )
+      expect(prismaMock.videoVariant.update).toHaveBeenCalledWith({
+        where: { id: '1_19372-jf6101-0-0' },
+        data: { published: true }
+      })
+      expect(result).toMatchObject({
+        publicationReady: true,
+        status: 'complete'
+      })
+    })
   })
 })
