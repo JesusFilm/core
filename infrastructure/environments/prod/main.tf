@@ -169,12 +169,20 @@ module "redis" {
   vpc_id            = module.prod.vpc.id
 }
 
-# Short-link scan events (ClickHouse Cloud, always on; stage idles).
-module "short_links_clickhouse" {
+# The shared ClickHouse Cloud service: short-link scan events (`redirects`)
+# and Plausible's event store (`plausible_events_db`). Always on; stage idles.
+module "clickhouse" {
   source        = "../../modules/clickhouse/service"
   env           = "prod"
   idle_scaling  = false
   doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
+}
+
+# Renamed from the short-links-only days; the service itself is renamed in
+# place (jfp-short-links-prod -> jfp-clickhouse-prod), not replaced.
+moved {
+  from = module.short_links_clickhouse
+  to   = module.clickhouse
 }
 
 module "postgresql" {

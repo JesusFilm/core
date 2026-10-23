@@ -206,14 +206,24 @@ module "redis" {
   vpc_id            = module.stage.vpc.id
 }
 
-# ClickHouse Cloud service for short-link scan events (the redirect Worker
-# inserts, api-media reads). # Idles when stage is quiet; only storage is billed while paused.
-module "short_links_clickhouse" {
+# The shared ClickHouse Cloud service: short-link scan events (`redirects`)
+# and Plausible's event store (`plausible_events_db`). Idles when stage is
+# quiet; only storage is billed while paused. Plausible's periodic jobs may
+# keep it awake; if so, or if a wake-up loses an ingest flush, switch it to
+# always on (plan U6).
+module "clickhouse" {
   source               = "../../modules/clickhouse/service"
   env                  = "stage"
   idle_scaling         = true
   idle_timeout_minutes = 15
   doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
+}
+
+# Renamed from the short-links-only days; the service itself is renamed in
+# place (jfp-short-links-stage -> jfp-clickhouse-stage), not replaced.
+moved {
+  from = module.short_links_clickhouse
+  to   = module.clickhouse
 }
 
 module "postgresql" {
