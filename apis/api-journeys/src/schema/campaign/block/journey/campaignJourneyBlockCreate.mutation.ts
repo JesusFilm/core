@@ -1,5 +1,3 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
 import { CARD_JOURNEY_STATUSES, resolveJourneyLink } from '../../journeyLink'
 import { CLIENT_ID_ERROR, assertClientId, badUserInput } from '../../validation'
@@ -7,7 +5,7 @@ import { CampaignJourneyBlock } from '../campaignJourneyBlock'
 import {
   authorizeBlockUpdate,
   createChildBlock,
-  withClientIds
+  createWithClientIds
 } from '../service'
 
 import { CampaignJourneyBlockCreateInput } from './inputs'
@@ -37,18 +35,15 @@ builder.mutationField('campaignJourneyBlockCreate', (t) =>
         )
       const clientId = assertClientId(id)
       const journey = await resolveJourneyLink(url, CARD_JOURNEY_STATUSES)
-      return await withClientIds(
+      return await createWithClientIds(
         { id: [clientId] },
-        async () =>
-          await prisma.$transaction(
-            async (tx) =>
-              await createChildBlock(tx, parent, {
-                id: clientId,
-                typename: 'CampaignJourneyBlock',
-                journeyId: journey.id,
-                ...snapshotOf(journey)
-              })
-          )
+        async (tx) =>
+          await createChildBlock(tx, parent, {
+            id: clientId,
+            typename: 'CampaignJourneyBlock',
+            journeyId: journey.id,
+            ...snapshotOf(journey)
+          })
       )
     }
   })

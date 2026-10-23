@@ -1,8 +1,8 @@
 import { builder } from '../../builder'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignRegionShareBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignRegionShareBlock',
@@ -13,16 +13,8 @@ export const CampaignRegionShareBlock = builder.prismaObject('CampaignBlock', {
     "Region Page only. The share panel: the region's Share Languages, the linked journey preview, the Share Link and QR Code, read live from CampaignRegionLanguage.",
   fields: (t) => ({
     title: t.exposeString('title', { nullable: true }),
-    titleTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.titleTranslations)
-    }),
+    titleTranslations: translationsField(t, 'title'),
     intro: t.exposeString('intro', { nullable: true }),
-    introTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.introTranslations)
-    })
+    introTranslations: translationsField(t, 'intro')
   })
 })

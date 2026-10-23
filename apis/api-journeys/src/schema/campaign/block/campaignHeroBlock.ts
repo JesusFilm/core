@@ -1,9 +1,9 @@
 import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
 import { builder } from '../../builder'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignHeroBlock',
@@ -14,23 +14,11 @@ export const CampaignHeroBlock = builder.prismaObject('CampaignBlock', {
     'The opening section of a page: eyebrow, title and description over an optional Media Slot. A call to action is always a CampaignButtonBlock Extra.',
   fields: (t) => ({
     eyebrow: t.exposeString('eyebrow', { nullable: true }),
-    eyebrowTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.eyebrowTranslations)
-    }),
+    eyebrowTranslations: translationsField(t, 'eyebrow'),
     title: t.exposeString('title', { nullable: true }),
-    titleTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.titleTranslations)
-    }),
+    titleTranslations: translationsField(t, 'title'),
     description: t.exposeString('description', { nullable: true }),
-    descriptionTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
-    }),
+    descriptionTranslations: translationsField(t, 'description'),
     align: t.field({
       type: TypographyAlign,
       nullable: true,

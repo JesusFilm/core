@@ -1,4 +1,5 @@
 import { builder } from '../../../../builder'
+import { TEXT_CAPS } from '../../../validation'
 
 export const CampaignJourneyBlockUpdateInput = builder.inputType(
   'CampaignJourneyBlockUpdateInput',
@@ -6,11 +7,11 @@ export const CampaignJourneyBlockUpdateInput = builder.inputType(
     fields: (t) => ({
       title: t.string({
         required: false,
-        description: 'Default-language title. At most 200 characters.'
+        description: `Default-language title. At most ${TEXT_CAPS.journeyTitle} characters.`
       }),
       description: t.string({
         required: false,
-        description: 'Default-language description. At most 1000 characters.'
+        description: `Default-language description. At most ${TEXT_CAPS.journeyDescription} characters.`
       }),
       snapshotEdited: t.boolean({
         required: false,

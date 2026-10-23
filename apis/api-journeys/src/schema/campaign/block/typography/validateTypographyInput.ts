@@ -3,6 +3,7 @@ import {
   CampaignTypographyVariant
 } from '@core/prisma/journeys/client'
 
+import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
 import {
   TEXT_CAPS,
   assertEnumOrNull,
@@ -11,7 +12,6 @@ import {
 } from '../../validation'
 
 export const TYPOGRAPHY_VARIANTS = Object.values(CampaignTypographyVariant)
-export const CAMPAIGN_ALIGNS = Object.values(CampaignAlign)
 
 export interface TypographyInput {
   content?: string | null

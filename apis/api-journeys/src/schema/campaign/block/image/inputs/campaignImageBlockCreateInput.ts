@@ -1,5 +1,6 @@
 import { builder } from '../../../../builder'
 import { CampaignImageSlot } from '../../../enums'
+import { TEXT_CAPS } from '../../../validation'
 
 export const CampaignImageBlockCreateInput = builder.inputType(
   'CampaignImageBlockCreateInput',
@@ -36,7 +37,7 @@ export const CampaignImageBlockCreateInput = builder.inputType(
       }),
       alt: t.string({
         required: false,
-        description: 'At most 500 characters.'
+        description: `At most ${TEXT_CAPS.imageAlt} characters.`
       }),
       focalLeft: t.int({
         required: false,

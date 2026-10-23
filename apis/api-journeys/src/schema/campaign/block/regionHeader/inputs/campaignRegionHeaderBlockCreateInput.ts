@@ -1,28 +1,18 @@
 import { builder } from '../../../../builder'
-import { SECTION_PARENT_BLOCK_ID_DESCRIPTION } from '../../createSection'
+import { TEXT_CAPS } from '../../../validation'
+import {
+  REGION_PAGE_ID_DESCRIPTION,
+  sectionCreateInputFields
+} from '../../inputs/sectionCreateInput'
 
 export const CampaignRegionHeaderBlockCreateInput = builder.inputType(
   'CampaignRegionHeaderBlockCreateInput',
   {
     fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({
-        required: true,
-        description: 'The Region Page; refused on the landing page.'
-      }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
+      ...sectionCreateInputFields(t, { pageId: REGION_PAGE_ID_DESCRIPTION }),
       intro: t.string({
         required: false,
-        description: 'At most 500 characters.'
+        description: `At most ${TEXT_CAPS.intro} characters.`
       })
     })
   }

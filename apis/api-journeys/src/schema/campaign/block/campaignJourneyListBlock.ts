@@ -1,9 +1,9 @@
 import { builder } from '../../builder'
 import { CampaignJourneyListDisplay } from '../enums'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignJourneyListBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignJourneyListBlock',
@@ -14,23 +14,11 @@ export const CampaignJourneyListBlock = builder.prismaObject('CampaignBlock', {
     'Ready-made journeys as cards. Items are the ordered CampaignJourneyBlock children.',
   fields: (t) => ({
     eyebrow: t.exposeString('eyebrow', { nullable: true }),
-    eyebrowTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.eyebrowTranslations)
-    }),
+    eyebrowTranslations: translationsField(t, 'eyebrow'),
     title: t.exposeString('title', { nullable: true }),
-    titleTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.titleTranslations)
-    }),
+    titleTranslations: translationsField(t, 'title'),
     description: t.exposeString('description', { nullable: true }),
-    descriptionTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
-    }),
+    descriptionTranslations: translationsField(t, 'description'),
     display: t.field({
       type: CampaignJourneyListDisplay,
       nullable: false,

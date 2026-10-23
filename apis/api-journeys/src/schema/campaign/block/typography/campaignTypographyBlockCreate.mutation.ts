@@ -1,5 +1,3 @@
-import { prisma } from '@core/prisma/journeys/client'
-
 import { builder } from '../../../builder'
 import { CLIENT_ID_ERROR, assertClientId, badUserInput } from '../../validation'
 import { CampaignTypographyBlock } from '../campaignTypographyBlock'
@@ -8,9 +6,9 @@ import {
   authorizeBlockCreate,
   createChildBlock,
   createRegionLine,
+  createWithClientIds,
   validateParentBlock,
-  validateRegion,
-  withClientIds
+  validateRegion
 } from '../service'
 
 import { CampaignTypographyBlockCreateInput } from './inputs'
@@ -48,17 +46,14 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
             'placement'
           )
         const region = await validateRegion(String(input.regionId), campaignId)
-        return await withClientIds(
+        return await createWithClientIds(
           { id: [id] },
-          async () =>
-            await prisma.$transaction(
-              async (tx) =>
-                await createRegionLine(tx, region, {
-                  id,
-                  typename: 'CampaignTypographyBlock',
-                  ...data
-                })
-            )
+          async (tx) =>
+            await createRegionLine(tx, region, {
+              id,
+              typename: 'CampaignTypographyBlock',
+              ...data
+            })
         )
       }
 
@@ -69,18 +64,15 @@ builder.mutationField('campaignTypographyBlockCreate', (t) =>
       )
       const placement = assertPlacement(input.placement)
 
-      return await withClientIds(
+      return await createWithClientIds(
         { id: [id] },
-        async () =>
-          await prisma.$transaction(
-            async (tx) =>
-              await createChildBlock(tx, parent, {
-                id,
-                typename: 'CampaignTypographyBlock',
-                ...data,
-                placement
-              })
-          )
+        async (tx) =>
+          await createChildBlock(tx, parent, {
+            id,
+            typename: 'CampaignTypographyBlock',
+            ...data,
+            placement
+          })
       )
     }
   })

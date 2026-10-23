@@ -1,38 +1,28 @@
 import { builder } from '../../../../builder'
 import { CampaignMediaSide } from '../../../enums'
-import { SECTION_PARENT_BLOCK_ID_DESCRIPTION } from '../../createSection'
+import { TEXT_CAPS } from '../../../validation'
+import { sectionCreateInputFields } from '../../inputs/sectionCreateInput'
 
 export const CampaignFeaturedMediaBlockCreateInput = builder.inputType(
   'CampaignFeaturedMediaBlockCreateInput',
   {
     fields: (t) => ({
-      id: t.id({ required: false }),
-      campaignId: t.id({ required: true }),
-      pageId: t.id({ required: true, description: 'A page of the campaign.' }),
-      parentBlockId: t.id({
-        required: false,
-        description: SECTION_PARENT_BLOCK_ID_DESCRIPTION
-      }),
-      parentOrder: t.int({
-        required: false,
-        description:
-          'Position among the page’s sections; appended when omitted or past the end.'
-      }),
+      ...sectionCreateInputFields(t),
       eyebrow: t.string({
         required: false,
-        description: 'At most 80 characters.'
+        description: `At most ${TEXT_CAPS.eyebrow} characters.`
       }),
       title: t.string({
         required: false,
-        description: 'At most 150 characters.'
+        description: `At most ${TEXT_CAPS.title} characters.`
       }),
       description: t.string({
         required: false,
-        description: 'At most 500 characters.'
+        description: `At most ${TEXT_CAPS.description} characters.`
       }),
       bullets: t.string({
         required: false,
-        description: 'One bullet per line; at most 1000 characters.'
+        description: `One bullet per line; at most ${TEXT_CAPS.bullets} characters.`
       }),
       mediaSide: t.field({
         type: CampaignMediaSide,

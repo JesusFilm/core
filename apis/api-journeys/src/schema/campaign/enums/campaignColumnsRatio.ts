@@ -9,3 +9,6 @@ export const CampaignColumnsRatio = builder.enumType(
     description: 'The width ratio of the two Column Slots of a Columns section.'
   }
 )
+
+/** Every `CampaignColumnsRatio` value, for `assertEnum`. */
+export const CAMPAIGN_COLUMNS_RATIOS = Object.values(PrismaCampaignColumnsRatio)
