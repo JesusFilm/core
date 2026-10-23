@@ -5,13 +5,15 @@ import slugify from 'slugify'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { recalculateJourneyCustomizable } from '../../lib/recalculateJourneyCustomizable/recalculateJourneyCustomizable'
+import { logger } from '../../logger'
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
-import { updateJourneyShortlink } from '../../workers/shortlinkUpdater/service'
+import { updateJourneyShortLink } from '../../workers/shortlinkUpdater/service'
 import { builder } from '../builder'
 
 import { JourneyUpdateInput } from './inputs'
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
+import { isReservedJourneySlug } from './reservedJourneySlugs/reservedJourneySlugs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -47,6 +49,10 @@ builder.mutationField('journeyUpdate', (t) =>
         const input = { ...args.input }
         if (input.slug != null)
           input.slug = slugify(input.slug, { lower: true, strict: true })
+        if (input.slug != null && isReservedJourneySlug(input.slug))
+          throw new GraphQLError('slug is reserved', {
+            extensions: { code: 'BAD_USER_INPUT', field: 'slug' }
+          })
 
         if (input.hostId != null) {
           const host = await prisma.host.findUnique({
@@ -94,12 +100,19 @@ builder.mutationField('journeyUpdate', (t) =>
               }
             })
 
-            if (input.slug != null) {
-              await updateJourneyShortlink(updated.id, input.slug)
-            }
-
             return updated
           })
+
+          if (input.slug != null) {
+            try {
+              await updateJourneyShortLink(result.id)
+            } catch (error) {
+              logger.error(
+                { journeyId: result.id, error },
+                'Failed to update journey QR code short links'
+              )
+            }
+          }
 
           if (
             input.seoTitle != null ||
