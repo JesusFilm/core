@@ -2,9 +2,11 @@ import { Prisma } from '@core/prisma/journeys/client'
 
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -61,18 +63,15 @@ describe('campaignColumnsBlockCreate', () => {
           block.pageId === 'landingPageId' && block.parentBlockId == null
       )
     )
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({
-      ...hero,
-      action: null,
-      ratio: 'equal',
-      ...data,
-      id: data.id ?? 'newColumnsId'
-    })) as never)
+    mockCampaignBlockWrites(
+      { ...hero, ratio: 'equal' },
+      { createdId: 'newColumnsId' }
+    )
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: {

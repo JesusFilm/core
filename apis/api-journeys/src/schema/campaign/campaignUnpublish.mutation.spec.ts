@@ -152,10 +152,10 @@ describe('campaignUnpublish', () => {
       campaignFactory({ role: 'member' }).build()
     )
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_UNPUBLISH,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignUnpublish.status).toBe('draft')

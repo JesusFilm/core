@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -68,15 +70,13 @@ describe('campaignImageBlockUpdate', () => {
       height: 900
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(image)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...image, ...data })) as never)
+    mockCampaignBlockWrites(image)
   })
 
   async function update(
     input: Record<string, unknown>,
     blockId = 'heroId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({
       document: UPDATE,
       variables: { id: blockId, input }

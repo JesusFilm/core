@@ -1,11 +1,14 @@
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
-  campaignFactory
+  campaignFactory,
+  campaignRow
 } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -43,26 +46,14 @@ describe('campaignBlockOrderUpdate', () => {
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
     // Updates persist across calls, as rows do: a placement write is seen by the renumber.
-    const written = new Map<string, Record<string, unknown>>()
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => {
-      const row = {
-        ...(written.get(where.id) ??
-          fixture.blocks.find((block) => block.id === where.id)),
-        ...data
-      }
-      written.set(where.id, row)
-      return row
-    }) as never)
+    mockCampaignBlockWrites({}, { blocks: fixture.blocks })
   })
 
   async function move(
     id: string,
     parentOrder: number,
     placement?: string
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof ORDER_UPDATE>> {
     return await authClient({
       document: ORDER_UPDATE,
       variables: { id, parentOrder, placement }
@@ -349,11 +340,9 @@ describe('campaignBlockOrderUpdate', () => {
 
   it('refuses to move a page (CONFLICT, id)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
-    const { team, languages, theme, pages, blocks, regions, strings, ...row } =
-      fixture
     prismaMock.campaignPage.findUnique.mockResolvedValue({
-      ...pages[0],
-      campaign: { ...row, team }
+      ...fixture.pages[0],
+      campaign: campaignRow(fixture)
     } as never)
 
     const result = await move('landingPageId', 1)

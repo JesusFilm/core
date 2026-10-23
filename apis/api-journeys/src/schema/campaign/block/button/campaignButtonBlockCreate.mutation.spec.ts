@@ -2,9 +2,11 @@ import { Prisma } from '@core/prisma/journeys/client'
 
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -68,18 +70,14 @@ describe('campaignButtonBlockCreate', () => {
           block.parentBlockId === 'headerId' && block.parentOrder != null
       )
     )
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({
-      ...campaignBlockWithAcl(fixture, 'navHomeId'),
-      action: null,
-      ...data,
-      placement: data.placement === undefined ? 'below' : data.placement,
-      id: data.id ?? 'newButtonId'
-    })) as never)
+    mockCampaignBlockWrites(campaignBlockWithAcl(fixture, 'navHomeId'), {
+      createdId: 'newButtonId'
+    })
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: {

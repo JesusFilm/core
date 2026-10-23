@@ -1,6 +1,10 @@
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
-import { authClient, mockUser } from '../../../test/campaignBlockSetup'
+import {
+  CampaignSpecResult,
+  authClient,
+  mockUser
+} from '../../../test/campaignBlockSetup'
 import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -68,7 +72,7 @@ describe('campaignThemeUpdate', () => {
   async function update(
     input: Record<string, unknown>,
     id = 'campaignThemeId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

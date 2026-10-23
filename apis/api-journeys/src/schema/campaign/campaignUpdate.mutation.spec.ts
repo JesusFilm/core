@@ -3,7 +3,11 @@ import { type MockedFunction, vi } from 'vitest'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../test/bullmqMock'
-import { authClient, mockUser } from '../../../test/campaignBlockSetup'
+import {
+  CampaignSpecResult,
+  authClient,
+  mockUser
+} from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { prismaMock } from '../../../test/prismaMock'
 import {
@@ -43,7 +47,7 @@ describe('campaignUpdate', () => {
     title?: string
     slug?: string
     palette?: string[]
-  }): Promise<any> {
+  }): Promise<CampaignSpecResult<typeof CAMPAIGN_UPDATE>> {
     return await authClient({
       document: CAMPAIGN_UPDATE,
       variables: { id: 'campaignId', input }
@@ -359,7 +363,9 @@ describe('campaignUpdate', () => {
       }
     `)
 
-    async function setDefault(defaultLanguageId: string): Promise<any> {
+    async function setDefault(
+      defaultLanguageId: string
+    ): Promise<CampaignSpecResult<typeof CAMPAIGN_SET_DEFAULT>> {
       return await authClient({
         document: CAMPAIGN_SET_DEFAULT,
         variables: { id: 'campaignId', input: { defaultLanguageId } }
@@ -660,7 +666,7 @@ describe('campaignUpdate', () => {
         campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()
       )
 
-      const result: any = await authClient({
+      const result = await authClient({
         document: CAMPAIGN_SET_DEFAULT,
         variables: {
           id: 'campaignId',

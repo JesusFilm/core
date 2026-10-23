@@ -1,4 +1,5 @@
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -7,6 +8,7 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -46,7 +48,10 @@ describe('campaignRegionOrderUpdate', () => {
     })) as never)
   })
 
-  async function move(order: number, id = 'eurRegionId'): Promise<any> {
+  async function move(
+    order: number,
+    id = 'eurRegionId'
+  ): Promise<CampaignSpecResult<typeof ORDER_UPDATE>> {
     return await authClient({
       document: ORDER_UPDATE,
       variables: { id, order }
@@ -78,11 +83,7 @@ describe('campaignRegionOrderUpdate', () => {
   it('takes the structure lock before it reads the regions', async () => {
     await move(2)
 
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain(
-      'pg_advisory_xact_lock(hashtext('
-    )
-    expect(lock[1]).toBe('campaign:campaignId')
+    expectStructureLockFirst()
     expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegion.findMany.mock.invocationCallOrder[0]
     )

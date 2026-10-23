@@ -1,5 +1,6 @@
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -37,7 +38,9 @@ describe('campaignBlockDeleteAction', () => {
     prismaMock.campaignAction.deleteMany.mockResolvedValue({ count: 1 })
   })
 
-  async function remove(id = 'heroButtonId'): Promise<any> {
+  async function remove(
+    id = 'heroButtonId'
+  ): Promise<CampaignSpecResult<typeof DELETE>> {
     return await authClient({ document: DELETE, variables: { id } })
   }
 

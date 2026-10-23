@@ -233,10 +233,10 @@ describe('campaignCreate', () => {
   })
 
   async function create(overrides: Partial<typeof input> = {}) {
-    return (await authClient({
+    return await authClient({
       document: CAMPAIGN_CREATE,
       variables: { input: { ...input, ...overrides } }
-    })) as any
+    })
   }
 
   function createdBlocks(): Array<Record<string, unknown>> {

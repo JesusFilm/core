@@ -1,6 +1,7 @@
 import { mockActionUpsert } from '../../../../test/campaignActionMock'
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -39,7 +40,10 @@ describe('campaignBlockUpdateNavigateToRegionAction', () => {
     mockActionUpsert()
   })
 
-  async function update(regionId: string, id = 'heroButtonId'): Promise<any> {
+  async function update(
+    regionId: string,
+    id = 'heroButtonId'
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({
       document: UPDATE,
       variables: { id, input: { regionId } }

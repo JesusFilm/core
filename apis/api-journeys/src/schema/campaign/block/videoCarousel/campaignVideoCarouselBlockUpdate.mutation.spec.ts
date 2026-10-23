@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -52,12 +54,12 @@ describe('campaignVideoCarouselBlockUpdate', () => {
     vi.mocked(fetchLanguage).mockResolvedValue({ id: '529', bcp47: 'en' })
     const block = campaignBlockWithAcl(fixture, 'carouselId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(block)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...block, ...data })) as never)
+    mockCampaignBlockWrites(block)
   })
 
-  async function update(input: Record<string, unknown>): Promise<any> {
+  async function update(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({
       document: UPDATE,
       variables: { id: 'carouselId', input }

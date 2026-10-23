@@ -3,7 +3,11 @@ import { type MockedFunction, vi } from 'vitest'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../../test/bullmqMock'
-import { authClient, mockUser } from '../../../../test/campaignBlockSetup'
+import {
+  CampaignSpecResult,
+  authClient,
+  mockUser
+} from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -46,7 +50,9 @@ describe('campaignLanguageAdd', () => {
     }
   `)
 
-  async function add(languageId: string): Promise<any> {
+  async function add(
+    languageId: string
+  ): Promise<CampaignSpecResult<typeof CAMPAIGN_LANGUAGE_ADD>> {
     return await authClient({
       document: CAMPAIGN_LANGUAGE_ADD,
       variables: { campaignId: 'campaignId', languageId }

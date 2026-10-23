@@ -137,10 +137,10 @@ describe('campaignPublish', () => {
     })
     mockQueueAdd.mockRejectedValue(new Error('redis down'))
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_PUBLISH,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.data.campaignPublish.status).toBe('published')
   })
@@ -154,10 +154,10 @@ describe('campaignPublish', () => {
       status: 'published'
     })
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_PUBLISH,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.data.campaignPublish.status).toBe('published')
     expect(mockQueueAdd).not.toHaveBeenCalled()
@@ -172,10 +172,10 @@ describe('campaignPublish', () => {
       campaignFactory({ role: 'member' }).published().build()
     )
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_PUBLISH,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors).toBeUndefined()
     expect(result.data.campaignPublish.status).toBe('published')

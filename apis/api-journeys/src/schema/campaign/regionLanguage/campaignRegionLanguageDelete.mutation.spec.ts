@@ -1,5 +1,6 @@
 import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -8,6 +9,7 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionLanguageWithAcl } from '../../../../test/campaignRegionFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../../qrCode/qrCode.service'
@@ -64,7 +66,9 @@ describe('campaignRegionLanguageDelete', () => {
     })) as never)
   })
 
-  async function remove(id = 'eurRegionId-529'): Promise<any> {
+  async function remove(
+    id = 'eurRegionId-529'
+  ): Promise<CampaignSpecResult<typeof DELETE>> {
     return await authClient({ document: DELETE, variables: { id } })
   }
 
@@ -98,11 +102,7 @@ describe('campaignRegionLanguageDelete', () => {
   it('takes the structure lock before the row lock and any read or delete', async () => {
     await remove()
 
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain(
-      'pg_advisory_xact_lock(hashtext('
-    )
-    expect(lock[1]).toBe('campaign:campaignId')
+    expectStructureLockFirst()
     expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegionLanguage.findUniqueOrThrow.mock
         .invocationCallOrder[0]

@@ -2,9 +2,11 @@ import { CombinedGraphQLErrors } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignBlockRow,
   CampaignFixture,
@@ -106,24 +108,15 @@ describe('campaignVideoBlockCreate', () => {
       label: 'featureFilm',
       childrenCount: 61
     })
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({
-      ...hero,
-      action: null,
-      ...data,
-      id: data.id ?? 'newVideoId'
-    })) as never)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => ({
-      ...fixture.blocks.find((block) => block.id === where.id),
-      ...data
-    })) as never)
+    mockCampaignBlockWrites(hero, {
+      createdId: 'newVideoId',
+      blocks: fixture.blocks
+    })
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: {

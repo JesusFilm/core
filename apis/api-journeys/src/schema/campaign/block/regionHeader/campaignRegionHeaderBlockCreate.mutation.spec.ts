@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -41,22 +43,22 @@ describe('campaignRegionHeaderBlockCreate', () => {
           block.pageId === 'regionPageId' && block.parentBlockId == null
       )
     )
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({
-      ...hero,
-      eyebrow: null,
-      title: null,
-      description: null,
-      intro: null,
-      align: null,
-      action: null,
-      ...data,
-      id: data.id ?? 'newSectionId'
-    })) as never)
+    mockCampaignBlockWrites(
+      {
+        ...hero,
+        eyebrow: null,
+        title: null,
+        description: null,
+        intro: null,
+        align: null
+      },
+      { createdId: 'newSectionId' }
+    )
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: {

@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -41,15 +43,13 @@ describe('campaignFooterBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     const chrome = campaignBlockWithAcl(fixture, 'footerId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(chrome)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...chrome, ...data })) as never)
+    mockCampaignBlockWrites(chrome)
   })
 
   async function update(
     input: Record<string, unknown>,
     blockId = 'footerId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({
       document: UPDATE,
       variables: { id: blockId, input }

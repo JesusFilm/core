@@ -1,5 +1,6 @@
 import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -57,7 +58,7 @@ describe('campaignRegionUpdate', () => {
   async function update(
     input: { name?: string; slug?: string; listed?: boolean },
     id = 'eurRegionId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

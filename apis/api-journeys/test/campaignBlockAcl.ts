@@ -1,6 +1,10 @@
 import { CampaignBlockWithCampaignAcl } from '../src/schema/campaign/block/service'
 
-import { CampaignBlockRow, CampaignFixture } from './campaignFactory'
+import {
+  CampaignBlockRow,
+  CampaignFixture,
+  campaignRow
+} from './campaignFactory'
 
 /** One seeded block as `authorizeBlockUpdate` loads it: with its action and its campaign's ACL. */
 export function campaignBlockWithAcl(
@@ -10,7 +14,5 @@ export function campaignBlockWithAcl(
 ): CampaignBlockWithCampaignAcl {
   const block = fixture.blocks.find((candidate) => candidate.id === blockId)
   if (block == null) throw new Error(`no seeded block ${blockId}`)
-  const { team, languages, theme, pages, blocks, regions, strings, ...row } =
-    fixture
-  return { ...block, ...overrides, campaign: { ...row, team } }
+  return { ...block, ...overrides, campaign: campaignRow(fixture) }
 }

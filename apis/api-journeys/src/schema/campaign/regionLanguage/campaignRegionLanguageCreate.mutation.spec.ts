@@ -1,4 +1,5 @@
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -7,6 +8,7 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchLanguage } from '../gatewayClient'
@@ -65,7 +67,9 @@ describe('campaignRegionLanguageCreate', () => {
     vi.mocked(fetchLanguage).mockResolvedValue({ id: FRENCH, bcp47: 'fr' })
   })
 
-  async function create(languageId = FRENCH): Promise<any> {
+  async function create(
+    languageId = FRENCH
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: { regionId: 'eurRegionId', languageId }
@@ -148,11 +152,7 @@ describe('campaignRegionLanguageCreate', () => {
       const result = await create()
 
       expect(result.data.campaignRegionLanguageCreate.order).toBe(2)
-      const lock = prismaMock.$queryRaw.mock.calls[0]
-      expect((lock[0] as unknown as string[]).join('?')).toContain(
-        'pg_advisory_xact_lock(hashtext('
-      )
-      expect(lock[1]).toBe('campaign:campaignId')
+      expectStructureLockFirst()
       expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
         prismaMock.campaignRegionLanguage.findMany.mock.invocationCallOrder[1]
       )

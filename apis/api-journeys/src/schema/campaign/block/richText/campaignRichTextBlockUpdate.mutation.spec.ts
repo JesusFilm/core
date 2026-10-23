@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -52,15 +54,13 @@ describe('campaignRichTextBlockUpdate', () => {
       content: 'First.\n\nSecond.'
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(block)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...block, ...data })) as never)
+    mockCampaignBlockWrites(block)
   })
 
   async function update(
     input: Record<string, unknown>,
     document: typeof UPDATE | typeof UPDATE_STYLE = UPDATE
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE | typeof UPDATE_STYLE>> {
     return await authClient({
       document,
       variables: { id: 'richTextId', input }

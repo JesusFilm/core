@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -45,15 +47,13 @@ describe('campaignButtonBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     const button = campaignBlockWithAcl(fixture, 'heroButtonId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(button)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...button, ...data })) as never)
+    mockCampaignBlockWrites(button)
   })
 
   async function update(
     input: Record<string, unknown>,
     id = 'heroButtonId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

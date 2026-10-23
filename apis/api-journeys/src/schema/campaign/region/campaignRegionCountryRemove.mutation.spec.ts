@@ -1,9 +1,11 @@
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 
@@ -42,7 +44,9 @@ describe('campaignRegionCountryRemove', () => {
     prismaMock.campaignRegionCountry.update.mockResolvedValue(row)
   })
 
-  async function remove(id = 'eurCountry-FR'): Promise<any> {
+  async function remove(
+    id = 'eurCountry-FR'
+  ): Promise<CampaignSpecResult<typeof REMOVE>> {
     return await authClient({ document: REMOVE, variables: { id } })
   }
 
@@ -70,11 +74,7 @@ describe('campaignRegionCountryRemove', () => {
   it('takes the structure lock before it deletes and renumbers the chips', async () => {
     await remove()
 
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain(
-      'pg_advisory_xact_lock(hashtext('
-    )
-    expect(lock[1]).toBe('campaign:campaignId')
+    expectStructureLockFirst()
     expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegionCountry.delete.mock.invocationCallOrder[0]
     )

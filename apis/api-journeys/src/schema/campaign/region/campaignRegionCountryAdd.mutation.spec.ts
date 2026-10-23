@@ -1,6 +1,7 @@
 import { type MockedFunction, vi } from 'vitest'
 
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -9,6 +10,7 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { fetchCountry } from '../gatewayClient'
@@ -62,7 +64,9 @@ describe('campaignRegionCountryAdd', () => {
     }: any) => ({ id: 'newCountryRowId', ...data })) as never)
   })
 
-  async function add(countryId: string): Promise<any> {
+  async function add(
+    countryId: string
+  ): Promise<CampaignSpecResult<typeof ADD>> {
     return await authClient({
       document: ADD,
       variables: { regionId: 'eurRegionId', countryId }
@@ -147,11 +151,7 @@ describe('campaignRegionCountryAdd', () => {
       const result = await add('FR')
 
       expect(result.data.campaignRegionCountryAdd.order).toBe(2)
-      const lock = prismaMock.$queryRaw.mock.calls[0]
-      expect((lock[0] as unknown as string[]).join('?')).toContain(
-        'pg_advisory_xact_lock(hashtext('
-      )
-      expect(lock[1]).toBe('campaign:campaignId')
+      expectStructureLockFirst()
       expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
         prismaMock.campaignRegionCountry.findMany.mock.invocationCallOrder[1]
       )

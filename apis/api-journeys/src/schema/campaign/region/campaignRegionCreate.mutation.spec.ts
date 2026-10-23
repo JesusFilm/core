@@ -1,4 +1,5 @@
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -6,6 +7,7 @@ import {
   CampaignFixture,
   campaignFactory
 } from '../../../../test/campaignFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import {
   UNIQUE_VIOLATION_SHAPES,
@@ -51,7 +53,9 @@ describe('campaignRegionCreate', () => {
     })) as never)
   })
 
-  async function create(id?: string): Promise<any> {
+  async function create(
+    id?: string
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: { campaignId: 'campaignId', id }
@@ -140,11 +144,7 @@ describe('campaignRegionCreate', () => {
     const result = await create()
 
     expect(result.data.campaignRegionCreate.order).toBe(3)
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain(
-      'pg_advisory_xact_lock(hashtext('
-    )
-    expect(lock[1]).toBe('campaign:campaignId')
+    expectStructureLockFirst()
     expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegion.count.mock.invocationCallOrder[0]
     )

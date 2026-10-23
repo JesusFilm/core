@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -59,21 +61,14 @@ describe('campaignJourneyBlockCreate', () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(list)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     prismaMock.journey.findFirst.mockResolvedValue(journeyRow() as never)
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({
-      ...list,
-      action: null,
-      ...data,
-      id: data.id ?? 'newJourneyItemId'
-    })) as never)
+    mockCampaignBlockWrites(list, { createdId: 'newJourneyItemId' })
   })
 
   async function create(
     url: string,
     parentBlockId = 'landingJourneyListId',
     id?: string
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: { input: { id, parentBlockId, url } }

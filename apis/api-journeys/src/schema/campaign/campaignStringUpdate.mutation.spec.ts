@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../test/campaignBlockSetup'
@@ -32,7 +33,10 @@ describe('campaignStringUpdate', () => {
     }
   `)
 
-  async function update(key: string, value: string): Promise<any> {
+  async function update(
+    key: string,
+    value: string
+  ): Promise<CampaignSpecResult<typeof CAMPAIGN_STRING_UPDATE>> {
     return await authClient({
       document: CAMPAIGN_STRING_UPDATE,
       variables: { campaignId: 'campaignId', key, value }

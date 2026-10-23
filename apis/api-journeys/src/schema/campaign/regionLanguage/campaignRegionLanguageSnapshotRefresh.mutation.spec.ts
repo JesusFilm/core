@@ -1,4 +1,5 @@
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -67,7 +68,9 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
     } as never)
   })
 
-  async function refresh(id = 'eurRegionId-529'): Promise<any> {
+  async function refresh(
+    id = 'eurRegionId-529'
+  ): Promise<CampaignSpecResult<typeof REFRESH>> {
     return await authClient({ document: REFRESH, variables: { id } })
   }
 

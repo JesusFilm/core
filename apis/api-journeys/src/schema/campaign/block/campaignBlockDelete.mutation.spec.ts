@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -28,16 +30,12 @@ describe('campaignBlockDelete', () => {
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => ({
-      ...fixture.blocks.find((block) => block.id === where.id),
-      ...data
-    })) as never)
+    mockCampaignBlockWrites({}, { blocks: fixture.blocks })
   })
 
-  async function remove(id: string): Promise<any> {
+  async function remove(
+    id: string
+  ): Promise<CampaignSpecResult<typeof DELETE>> {
     return await authClient({ document: DELETE, variables: { id } })
   }
 

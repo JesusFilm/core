@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { GraphQLError } from 'graphql'
+import { GraphQLError, GraphQLFormattedError } from 'graphql'
 import { type Mocked, type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
@@ -53,7 +53,7 @@ interface CampaignStatsResponse {
       }>
     }
   }
-  errors?: undefined
+  errors?: readonly GraphQLFormattedError[]
 }
 
 /** What `campaignStats` answers with when it errors: no data, the GraphQL errors. */
@@ -408,7 +408,16 @@ describe('campaignStats', () => {
       expect(result.data.campaignStats.all.totalVisitors).toBe(48)
     })
 
-    it.each([
+    it.each<
+      [
+        string,
+        (request: {
+          document: typeof CAMPAIGN_STATS
+          variables: { id: string }
+        }) => unknown,
+        typeof mockUser | null
+      ]
+    >([
       ['an anonymous caller', publicClient, null],
       [
         'a caller outside the team',
