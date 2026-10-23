@@ -2,7 +2,7 @@ import { builder } from '../../../builder'
 import { CampaignBackgroundKind, CampaignBackgroundOverlay } from '../../enums'
 import { NULL_FIELD_ERROR } from '../../validation'
 
-type InputFieldBuilder = Parameters<
+export type InputFieldBuilder = Parameters<
   Parameters<typeof builder.inputType>[1]['fields']
 >[0]
 

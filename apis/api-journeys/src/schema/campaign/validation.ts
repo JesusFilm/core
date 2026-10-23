@@ -212,15 +212,22 @@ export function assertLinkUrl(url: string, field = 'url'): string {
   return trimmed
 }
 
+/** A type guard for membership of `values`: narrows a string to their union. */
+export function isOneOf<const T extends string>(
+  values: readonly T[]
+): (value: string) => value is T {
+  return (value): value is T => (values as readonly string[]).includes(value)
+}
+
 /** Enum columns take their enum's values only. */
 export function assertEnum<const T extends string>(
   value: string,
   field: string,
   values: readonly T[]
 ): T {
-  if (!(values as readonly string[]).includes(value))
+  if (!isOneOf(values)(value))
     throw badUserInput(`${field} must be one of ${values.join(', ')}`, field)
-  return value as T
+  return value
 }
 
 /** `assertEnum` for a nullable column: `null`/`undefined` pass through. */

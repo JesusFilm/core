@@ -5,6 +5,7 @@ import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   JourneyWithPublicUrl
 } from './getJourneyPublicUrl'
+import { isOneOf } from './validation'
 
 export const JOURNEY_NOT_FOUND_MESSAGE = 'Journey not found or not published'
 
@@ -19,6 +20,9 @@ type LinkableStatus = 'published' | 'archived'
 
 /** What a journey card may point at: the statuses the public page shows (published or archived). */
 export const CARD_JOURNEY_STATUSES: LinkableStatus[] = ['published', 'archived']
+
+/** Whether a journey status is one a card may point at and visitors may reach. */
+export const isCardJourneyStatus = isOneOf(CARD_JOURNEY_STATUSES)
 
 function notFoundMessage(statuses: LinkableStatus[]): string {
   return statuses.includes('archived')

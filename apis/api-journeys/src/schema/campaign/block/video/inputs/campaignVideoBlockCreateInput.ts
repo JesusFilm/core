@@ -1,5 +1,6 @@
 import { builder } from '../../../../builder'
 import { VideoBlockSource } from '../../../../enums'
+import { TEXT_CAPS } from '../../../validation'
 
 export const CampaignVideoBlockCreateInput = builder.inputType(
   'CampaignVideoBlockCreateInput',
@@ -31,13 +32,11 @@ export const CampaignVideoBlockCreateInput = builder.inputType(
       }),
       title: t.string({
         required: false,
-        description:
-          'Title override, at most 200 characters; omitted or null shows the source title.'
+        description: `Title override, at most ${TEXT_CAPS.videoTitle} characters; omitted or null shows the source title.`
       }),
       description: t.string({
         required: false,
-        description:
-          'Description override, at most 1000 characters; omitted or null shows the source text.'
+        description: `Description override, at most ${TEXT_CAPS.videoDescription} characters; omitted or null shows the source text.`
       })
     })
   }

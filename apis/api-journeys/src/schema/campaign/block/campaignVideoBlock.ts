@@ -1,9 +1,10 @@
 import { builder } from '../../builder'
 import { VideoBlockSource } from '../../enums'
 import { MediaVideo } from '../../mediaVideo/mediaVideo'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
+import { TEXT_CAPS } from '../validation'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
+import { translationsField } from './translationsField'
 
 function isMediaVideoSource(
   source: string
@@ -37,24 +38,14 @@ export const CampaignVideoBlock = builder.prismaObject('CampaignBlock', {
     }),
     title: t.exposeString('title', {
       nullable: true,
-      description:
-        'The author’s override (at most 200 characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.'
+      description: `The author’s override (at most ${TEXT_CAPS.videoTitle} characters), or for YouTube and Mux the title captured at pick. Null on a Watch video means the Video’s own title.`
     }),
-    titleTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.titleTranslations)
-    }),
+    titleTranslations: translationsField(t, 'title'),
     description: t.exposeString('description', {
       nullable: true,
-      description:
-        'The author’s override (at most 1000 characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.'
+      description: `The author’s override (at most ${TEXT_CAPS.videoDescription} characters), or for YouTube the description captured at pick. Null on a Watch video means the Video’s own text.`
     }),
-    descriptionTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
-    }),
+    descriptionTranslations: translationsField(t, 'description'),
     image: t.exposeString('image', {
       nullable: true,
       description:

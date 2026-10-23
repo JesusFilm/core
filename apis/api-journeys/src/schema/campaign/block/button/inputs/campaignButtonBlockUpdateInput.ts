@@ -3,6 +3,7 @@ import { ButtonVariant } from '../../../../block/button/enums/buttonVariant'
 import { TypographyAlign } from '../../../../block/typography/enums/typographyAlign'
 import { builder } from '../../../../builder'
 import { CampaignChildPlacement } from '../../../enums'
+import { TEXT_CAPS } from '../../../validation'
 
 export const CampaignButtonBlockUpdateInput = builder.inputType(
   'CampaignButtonBlockUpdateInput',
@@ -10,7 +11,7 @@ export const CampaignButtonBlockUpdateInput = builder.inputType(
     fields: (t) => ({
       label: t.string({
         required: false,
-        description: 'Default-language label. At most 60 characters.'
+        description: `Default-language label. At most ${TEXT_CAPS.buttonLabel} characters.`
       }),
       variant: t.field({ type: ButtonVariant, required: false }),
       size: t.field({ type: ButtonSize, required: false }),

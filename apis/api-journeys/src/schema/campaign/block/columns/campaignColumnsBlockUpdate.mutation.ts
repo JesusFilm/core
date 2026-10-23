@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { CAMPAIGN_COLUMNS_RATIOS } from '../../enums/campaignColumnsRatio'
 import { assertEnum, assertNotNull } from '../../validation'
 import { CampaignColumnsBlock } from '../campaignColumnsBlock'
 import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
@@ -9,7 +10,6 @@ import {
 } from '../service'
 
 import { CampaignColumnsBlockUpdateInput } from './inputs'
-import { CAMPAIGN_COLUMNS_RATIOS } from './validateColumnsRatio'
 
 builder.mutationField('campaignColumnsBlockUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).field({

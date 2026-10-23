@@ -1,8 +1,8 @@
 import { builder } from '../../builder'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignRegionHeaderBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignRegionHeaderBlock',
@@ -13,10 +13,6 @@ export const CampaignRegionHeaderBlock = builder.prismaObject('CampaignBlock', {
     "Region Page only. Renders the rendered region's name, its Region Lines and this intro.",
   fields: (t) => ({
     intro: t.exposeString('intro', { nullable: true }),
-    introTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.introTranslations)
-    })
+    introTranslations: translationsField(t, 'intro')
   })
 })

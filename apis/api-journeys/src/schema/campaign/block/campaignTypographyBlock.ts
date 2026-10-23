@@ -2,9 +2,9 @@ import { TypographyAlign } from '../../block/typography/enums/typographyAlign'
 import { TypographyVariant } from '../../block/typography/enums/typographyVariant'
 import { builder } from '../../builder'
 import { CampaignChildPlacement } from '../enums'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignTypographyBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignTypographyBlock',
@@ -18,11 +18,7 @@ export const CampaignTypographyBlock = builder.prismaObject('CampaignBlock', {
       nullable: false,
       resolve: (block) => block.content ?? ''
     }),
-    contentTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.contentTranslations)
-    }),
+    contentTranslations: translationsField(t, 'content'),
     variant: t.field({
       type: TypographyVariant,
       nullable: true,

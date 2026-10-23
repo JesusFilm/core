@@ -1,4 +1,5 @@
 import { builder } from '../../../../builder'
+import { TEXT_CAPS } from '../../../validation'
 import { sectionStyleInputFields } from '../../inputs/sectionStyleInput'
 
 export const CampaignImageBlockUpdateInput = builder.inputType(
@@ -12,8 +13,7 @@ export const CampaignImageBlockUpdateInput = builder.inputType(
       }),
       alt: t.string({
         required: false,
-        description:
-          'Default-language alternative text. At most 500 characters.'
+        description: `Default-language alternative text. At most ${TEXT_CAPS.imageAlt} characters.`
       }),
       focalLeft: t.int({
         required: false,

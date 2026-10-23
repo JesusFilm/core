@@ -1,8 +1,8 @@
 import { builder } from '../../builder'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
 import { CampaignSectionBlock } from './campaignSectionBlock'
+import { translationsField } from './translationsField'
 
 export const CampaignRichTextBlock = builder.prismaObject('CampaignBlock', {
   variant: 'CampaignRichTextBlock',
@@ -13,19 +13,11 @@ export const CampaignRichTextBlock = builder.prismaObject('CampaignBlock', {
     'A title and one content column. `content` is one text column; the viewer splits it on blank lines into paragraphs.',
   fields: (t) => ({
     title: t.exposeString('title', { nullable: true }),
-    titleTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.titleTranslations)
-    }),
+    titleTranslations: translationsField(t, 'title'),
     content: t.exposeString('content', {
       nullable: true,
       description: 'Paragraphs separated by blank lines.'
     }),
-    contentTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.contentTranslations)
-    })
+    contentTranslations: translationsField(t, 'content')
   })
 })

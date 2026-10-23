@@ -10,9 +10,10 @@ import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyPublicUrl
 } from '../getJourneyPublicUrl'
-import { TranslatedValueRef, toTranslatedValues } from '../translatedValue'
+import { isCardJourneyStatus } from '../journeyLink'
 
 import { CampaignBlock, isCampaignBlockOfType } from './campaignBlock'
+import { translationsField } from './translationsField'
 
 export interface CampaignJourneyImagePayload {
   src: string
@@ -39,7 +40,7 @@ export type CampaignJourneyBlockRow = CampaignBlockRow & {
  * trashed or deleted one.
  */
 export function isJourneyVisible(status: PrismaJourneyStatus | null): boolean {
-  return status === 'published' || status === 'archived'
+  return status != null && isCardJourneyStatus(status)
 }
 
 const INCLUDE_JOURNEY_LIVE = {
@@ -117,21 +118,13 @@ export const CampaignJourneyBlock = builder.prismaObject('CampaignBlock', {
       description:
         'True once an author changed the snapshot title or description by hand, so "Refresh from journey" asks before replacing them. Refreshing from the journey clears it.'
     }),
-    titleTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.titleTranslations)
-    }),
+    titleTranslations: translationsField(t, 'title'),
     description: t.exposeString('description', {
       nullable: true,
       description:
         "Snapshot of the journey's description, editable; the default-language value."
     }),
-    descriptionTranslations: t.field({
-      type: [TranslatedValueRef],
-      nullable: false,
-      resolve: (block) => toTranslatedValues(block.descriptionTranslations)
-    }),
+    descriptionTranslations: translationsField(t, 'description'),
     journeyStatus: t.field({
       type: JourneyStatus,
       nullable: true,

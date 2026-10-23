@@ -1,4 +1,5 @@
 import { builder } from '../../../../builder'
+import { TEXT_CAPS } from '../../../validation'
 
 export const CampaignVideoBlockUpdateInput = builder.inputType(
   'CampaignVideoBlockUpdateInput',
@@ -8,11 +9,11 @@ export const CampaignVideoBlockUpdateInput = builder.inputType(
     fields: (t) => ({
       title: t.string({
         required: false,
-        description: 'At most 200 characters.'
+        description: `At most ${TEXT_CAPS.videoTitle} characters.`
       }),
       description: t.string({
         required: false,
-        description: 'At most 1000 characters.'
+        description: `At most ${TEXT_CAPS.videoDescription} characters.`
       })
     })
   }
