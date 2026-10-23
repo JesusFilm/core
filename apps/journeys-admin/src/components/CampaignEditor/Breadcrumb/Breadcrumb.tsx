@@ -1,0 +1,110 @@
+import Breadcrumbs from '@mui/material/Breadcrumbs'
+import Link from '@mui/material/Link'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
+import { ReactElement } from 'react'
+
+import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
+import { blockLabel, regionLineLabel } from '../blockLabel'
+import { useCampaignEditor } from '../CampaignEditorProvider'
+import { regionDisplayName } from '../utils/regionDisplayName'
+
+/** A block and everything above it, outermost first. */
+function trailOf(
+  blocks: CampaignBlock[],
+  block: CampaignBlock | undefined
+): CampaignBlock[] {
+  const trail: CampaignBlock[] = []
+  let current = block
+  while (current != null && trail.length < blocks.length) {
+    trail.unshift(current)
+    const parentId: string | null = current.parentBlockId
+    current = blocks.find((candidate) => candidate.id === parentId)
+  }
+  return trail
+}
+
+/**
+ * Campaign › Section › Extra, and inside a Columns section Campaign ›
+ * Columns › Column › Section › Extra. Each earlier crumb selects that level,
+ * so the breadcrumb replaces back buttons; the last crumb is the selection
+ * itself.
+ */
+export function Breadcrumb(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    campaign,
+    state: { previewLanguageId },
+    selection,
+    selectBlock,
+    selectRegion
+  } = useCampaignEditor()
+  const crumbs: Array<{ label: string; onClick?: () => void }> = [
+    { label: t('Campaign') }
+  ]
+  if (selection.region != null) {
+    // A region card sits in its switcher; a Region Line sits in its region.
+    if (selection.host != null) {
+      const hostId = selection.host.id
+      crumbs.push({
+        label: blockLabel(t, selection.host.__typename),
+        onClick: () => selectBlock(hostId)
+      })
+    }
+    const regionId = selection.region.id
+    const hostId = selection.regionHost?.id
+    crumbs.push({
+      label: regionDisplayName(
+        selection.region,
+        previewLanguageId,
+        campaign.defaultLanguageId
+      ),
+      onClick: () => selectRegion(regionId, hostId)
+    })
+    if (selection.block != null && selection.block.id !== selection.host?.id) {
+      const blockId = selection.block.id
+      crumbs.push({
+        label:
+          selection.block.__typename === 'CampaignTypographyBlock'
+            ? regionLineLabel(t)
+            : blockLabel(t, selection.block.__typename),
+        onClick: () => selectBlock(blockId)
+      })
+    }
+  } else {
+    trailOf(campaign.blocks, selection.block).forEach((block) =>
+      crumbs.push({
+        label: blockLabel(t, block.__typename),
+        onClick: () => selectBlock(block.id)
+      })
+    )
+  }
+
+  return (
+    <Breadcrumbs
+      aria-label={t('Selection')}
+      data-testid="CampaignBreadcrumb"
+      separator="›"
+      sx={{ '& .MuiBreadcrumbs-li': { minWidth: 0, overflowWrap: 'anywhere' } }}
+    >
+      {crumbs.map((crumb, index) =>
+        index === crumbs.length - 1 ? (
+          <Typography key={index} color="text.primary" aria-current="page">
+            {crumb.label}
+          </Typography>
+        ) : (
+          <Link
+            key={index}
+            component="button"
+            type="button"
+            underline="hover"
+            color="inherit"
+            onClick={crumb.onClick ?? (() => selectBlock(undefined))}
+          >
+            {crumb.label}
+          </Link>
+        )
+      )}
+    </Breadcrumbs>
+  )
+}
