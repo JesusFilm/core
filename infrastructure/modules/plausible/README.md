@@ -124,27 +124,28 @@ coordinated through PostgreSQL.
 
 ## Stage cutover
 
-`analytics.stage.central.jesusfilm.org` is a CNAME to the EKS ingress,
-created and owned by external-dns (TXT registry, `upsert-only`). external-dns
-rewrites any record it still desires, so the Ingress has to go first. Argo CD
-self-heals the stage app, so remove it through the chart, not with kubectl.
+`analytics.stage.central.jesusfilm.org` was a CNAME to the EKS ingress NLB.
+external-dns created it but no longer manages it: each pass it logs "no hosted
+zone matching record DNS Name was detected" and skips the record, and the zone
+holds no `external-dns-` ownership TXT records. So Terraform takes the record
+without the Ingress going first, and the Ingress stays through the soak so the
+rollback is DNS alone.
 
-1. In `infrastructure/kube/plausible-analytics/values-stage.yaml` set
-   `ingress.enabled: false` and get it onto the `stage` branch, which Argo
-   syncs. Watch external-dns for one reconcile: it must log nothing about the
-   record (under `upsert-only` it does not delete it).
+1. Note the record's current value; it is the rollback. Before the cutover it
+   was `k8s-ingressn-ingressn-c4435aa5e1-224931e8a90032ef.elb.us-east-2.amazonaws.com`.
 2. Terraform: the `aws_route53_record` for `analytics` in the stage zone,
-   CNAME to the stage public ALB, `allow_overwrite = true`. Apply.
-3. Delete the orphaned registry records `external-dns-analytics.stage.central.jesusfilm.org`
-   (TXT, and the `cname-` prefixed one if present) from the zone.
-4. Verify: dashboard login, a stats query through the stage gateway, realtime
+   CNAME to the stage public ALB, `allow_overwrite = true`. Apply it alone:
+   `tofu apply -target=module.stage.aws_route53_record.plausible_analytics`.
+3. Verify: dashboard login, a stats query through the stage gateway, realtime
    ingest from a stage journey.
-5. Scale the EKS Deployment to 0 after the soak. Its ClickHouse keeps running;
-   the ECS task needs it.
+4. After the soak, in `infrastructure/kube/plausible-analytics/values-stage.yaml`
+   set `ingress.enabled: false` and `replicaCount: 0`, and get it onto the
+   `stage` branch. Argo CD self-heals the stage app, so do it through the
+   chart, not with kubectl. Its ClickHouse keeps running; the ECS task needs it.
 
-**Rollback:** set the record back to the ingress NLB name
-(`k8s-ingressn-ingressn-...elb.us-east-2.amazonaws.com`, the current value;
-note it before step 2) and revert step 1. Rehearse once.
+**Rollback:** set the record back to the NLB name. If external-dns has started
+managing the zone again by then, check its log first: it would want the record
+on the NLB too.
 
 ## Prod cutover
 
