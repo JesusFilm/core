@@ -1,0 +1,1 @@
+export { FrameTheme } from './FrameTheme'

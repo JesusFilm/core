@@ -74,6 +74,12 @@ export function resolveGatewayUrl(
   return 'http://localhost:4000'
 }
 
+// Subscriptions graphql-sse must not re-send after a dropped connection: the
+// server treats each request as a new run, so a retried campaign translation
+// would restart (or be refused while the first run still holds its lock).
+// The drop surfaces as the subscription's error instead.
+const NO_RETRY_OPERATIONS = new Set(['CampaignAiTranslateSubscription'])
+
 // Custom Apollo Link for Server-Sent Events using graphql-sse.
 // A new graphql-sse Client is created per request so each subscription
 // captures its own auth headers in a closure, avoiding race conditions
@@ -93,6 +99,9 @@ export class SSELink extends ApolloLink {
     const headers = operation.getContext().headers ?? {}
     const client = createClient({
       url: this.url,
+      ...(NO_RETRY_OPERATIONS.has(operation.operationName ?? '')
+        ? { retryAttempts: 0 }
+        : {}),
       headers: () => ({
         ...headers,
         'Content-Type': 'application/json',

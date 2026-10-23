@@ -1,0 +1,255 @@
+import { CombinedGraphQLErrors } from '@apollo/client'
+import Alert from '@mui/material/Alert'
+import IconButton from '@mui/material/IconButton'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Stack from '@mui/material/Stack'
+import Tooltip from '@mui/material/Tooltip'
+import Typography from '@mui/material/Typography'
+import { useTranslation } from 'next-i18next/pages'
+import { ReactElement, useMemo, useState } from 'react'
+
+import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
+import { useLanguagesQuery } from '@core/journeys/ui/useLanguagesQuery'
+import { Dialog } from '@core/shared/ui/Dialog'
+import EyeOpenIcon from '@core/shared/ui/icons/EyeOpen'
+import Trash2Icon from '@core/shared/ui/icons/Trash2'
+import { LanguageAutocomplete } from '@core/shared/ui/LanguageAutocomplete'
+import type { LanguageOption } from '@core/shared/ui/LanguageAutocomplete'
+
+import {
+  GetCampaign_campaign as Campaign,
+  GetCampaign_campaign_languages as CampaignLanguage
+} from '../../../../__generated__/GetCampaign'
+import { useCampaignLanguageAddMutation } from '../../../libs/useCampaignLanguageAddMutation'
+import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLanguageRemoveMutation'
+import { useCampaignEditor } from '../CampaignEditorProvider'
+import { TranslationRunProgress } from '../TranslationRunProgress'
+import { useTranslationRun } from '../TranslationRunProvider'
+
+interface LanguagesPanelProps {
+  campaign: Campaign
+}
+
+/** Autonym first, the English name beside it when it differs. */
+export function languageNames(language: CampaignLanguage): {
+  autonym: string
+  localName?: string
+} {
+  const names = language.language.name
+  const autonym =
+    names.find((name) => name.primary)?.value ??
+    names[0]?.value ??
+    language.languageId
+  const localName = names.find((name) => !name.primary)?.value
+  return {
+    autonym,
+    localName:
+      localName != null && localName !== autonym ? localName : undefined
+  }
+}
+
+function messageOf(error: unknown): string {
+  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
+    return error.errors[0].message
+  return error instanceof Error ? error.message : String(error)
+}
+
+/**
+ * Preview (sets the Preview Language, a view choice, and the previewed row is
+ * marked) and Remove on each (confirmed first, since every translation into
+ * the language goes with it; the default language cannot be removed; the
+ * API's `CONFLICT` message is shown verbatim when a removal is refused), and the
+ * shared language autocomplete (autonym plus English name) to add one
+ * through `campaignLanguageAdd`. Neither is a Command. Adding a language
+ * starts the editor's background machine-translation run into it, shown here
+ * with progress and Cancel; a language the model does not support is marked
+ * "manual only" and is added without that run.
+ */
+export function LanguagesPanel({
+  campaign
+}: LanguagesPanelProps): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  const {
+    state: { previewLanguageId },
+    dispatch
+  } = useCampaignEditor()
+  const [error, setError] = useState<string>()
+  const [removeTarget, setRemoveTarget] = useState<CampaignLanguage>()
+  const [removeOpen, setRemoveOpen] = useState(false)
+  const { run, error: runError, start } = useTranslationRun()
+  const [languageAdd, { loading: adding }] = useCampaignLanguageAddMutation()
+  const [languageRemove, { loading: removing }] =
+    useCampaignLanguageRemoveMutation()
+  const { data, loading } = useLanguagesQuery({ languageId: '529' })
+
+  const languages = useMemo(
+    () => [...campaign.languages].sort((a, b) => a.order - b.order),
+    [campaign.languages]
+  )
+  const options = useMemo(() => {
+    const taken = new Set(languages.map((language) => language.languageId))
+    return data?.languages.filter((language) => !taken.has(language.id)) ?? []
+  }, [data, languages])
+
+  async function handleAdd(option?: LanguageOption): Promise<void> {
+    if (option == null) return
+    setError(undefined)
+    try {
+      await languageAdd({
+        variables: { campaignId: campaign.id, languageId: option.id }
+      })
+      if (isMachineTranslatable(option.id))
+        start(
+          { campaignId: campaign.id, languageId: option.id, mode: 'missing' },
+          option.nativeName ?? option.localName ?? option.id
+        )
+    } catch (addError) {
+      setError(messageOf(addError))
+    }
+  }
+
+  async function handleRemove(language: CampaignLanguage): Promise<void> {
+    setError(undefined)
+    try {
+      await languageRemove({
+        variables: { campaignId: campaign.id, languageId: language.languageId }
+      })
+    } catch (removeError) {
+      setError(messageOf(removeError))
+    }
+    setRemoveOpen(false)
+  }
+
+  const removeTargetName =
+    removeTarget != null ? languageNames(removeTarget).autonym : ''
+
+  function handlePreview(language: CampaignLanguage): void {
+    dispatch({
+      type: 'SetPreviewLanguageAction',
+      previewLanguageId: language.languageId
+    })
+  }
+
+  return (
+    <Stack
+      spacing={3}
+      data-testid="CampaignLanguagesPanel"
+      sx={{ width: '100%' }}
+    >
+      <Stack spacing={1}>
+        <Typography variant="h6">{t('Languages')}</Typography>
+        <Typography variant="body2" color="text.secondary">
+          {t(
+            'Visitors read the campaign in one of these languages. The default language is the one you write in; every other language is a translation of it.'
+          )}
+        </Typography>
+      </Stack>
+      <List disablePadding data-testid="CampaignLanguagesList">
+        {languages.map((language) => {
+          const isDefault = language.languageId === campaign.defaultLanguageId
+          const { autonym, localName } = languageNames(language)
+          const manualOnly =
+            !isDefault && !isMachineTranslatable(language.languageId)
+          const removeButton = (
+            <IconButton
+              edge="end"
+              aria-label={t('Remove {{language}}', { language: autonym })}
+              disabled={isDefault || removing}
+              onClick={() => {
+                setRemoveTarget(language)
+                setRemoveOpen(true)
+              }}
+            >
+              <Trash2Icon />
+            </IconButton>
+          )
+          const previewing = language.languageId === previewLanguageId
+          const previewButton = (
+            <IconButton
+              aria-label={t('Preview {{language}}', { language: autonym })}
+              aria-pressed={previewing}
+              color={previewing ? 'primary' : 'default'}
+              onClick={() => handlePreview(language)}
+            >
+              <EyeOpenIcon />
+            </IconButton>
+          )
+          return (
+            <ListItem
+              key={language.id}
+              disableGutters
+              data-testid={`CampaignLanguage-${language.languageId}`}
+              sx={{ pr: 12 }}
+              secondaryAction={
+                <Stack direction="row">
+                  {previewButton}
+                  {isDefault ? (
+                    <Tooltip
+                      title={t('The default language cannot be removed')}
+                    >
+                      <span>{removeButton}</span>
+                    </Tooltip>
+                  ) : (
+                    removeButton
+                  )}
+                </Stack>
+              }
+            >
+              <ListItemText
+                primary={autonym}
+                secondary={[
+                  localName,
+                  isDefault ? t('Default') : undefined,
+                  previewing ? t('Previewing') : undefined,
+                  manualOnly ? t('Manual only') : undefined
+                ]
+                  .filter((part) => part != null)
+                  .join(' · ')}
+              />
+            </ListItem>
+          )
+        })}
+      </List>
+      <LanguageAutocomplete
+        onChange={async (option) => await handleAdd(option)}
+        value={undefined}
+        languages={options}
+        loading={loading || adding}
+        disabled={adding || run != null}
+        helperText={t('Add a language')}
+      />
+      <TranslationRunProgress data-testid="CampaignLanguageSweep" />
+      {(error ?? runError) != null && (
+        <Alert severity="error" data-testid="CampaignLanguagesError">
+          {error ?? runError}
+        </Alert>
+      )}
+      <Dialog
+        open={removeOpen}
+        onClose={() => setRemoveOpen(false)}
+        dialogTitle={{
+          title: t('Remove {{language}}?', { language: removeTargetName }),
+          closeButton: true
+        }}
+        dialogAction={{
+          onSubmit: () => {
+            if (removeTarget != null) void handleRemove(removeTarget)
+          },
+          submitLabel: t('Remove'),
+          closeLabel: t('Cancel')
+        }}
+        loading={removing}
+        testId="LanguageRemoveDialog"
+      >
+        <Typography gutterBottom>
+          {t('Every translation into {{language}} is deleted.', {
+            language: removeTargetName
+          })}
+        </Typography>
+        <Typography>{t('This cannot be undone.')}</Typography>
+      </Dialog>
+    </Stack>
+  )
+}
