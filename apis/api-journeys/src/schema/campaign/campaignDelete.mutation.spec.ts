@@ -88,10 +88,10 @@ describe('campaignDelete', () => {
       { qrCode: { id: 'qrCodeB', shortLinkId: 'shortLinkB' } }
     ] as never)
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_DELETE,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors).toBeUndefined()
     expect(prismaMock.campaignRegionLanguage.findMany).toHaveBeenCalledWith({
@@ -150,10 +150,10 @@ describe('campaignDelete', () => {
       .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
       .mockResolvedValueOnce({ id: '21028', bcp47: 'es' })
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_DELETE,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors).toBeUndefined()
     expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
@@ -196,10 +196,10 @@ describe('campaignDelete', () => {
     prismaMock.campaign.findUnique.mockResolvedValue(published)
     prismaMock.campaign.delete.mockRejectedValue(new Error('delete failed'))
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_DELETE,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors[0].message).toBe('delete failed')
     expect(mockQueueAdd).not.toHaveBeenCalled()

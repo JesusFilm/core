@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -40,6 +42,9 @@ describe('campaignImageBlockCreate', () => {
         alt
         width
         height
+        focalLeft
+        focalTop
+        scale
       }
     }
   `)
@@ -62,34 +67,15 @@ describe('campaignImageBlockCreate', () => {
           block.pageId === 'landingPageId' && block.parentBlockId == null
       )
     )
-    const written = new Map<string, Record<string, unknown>>()
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => {
-      const row = {
-        ...hero,
-        eyebrow: null,
-        title: null,
-        description: null,
-        align: null,
-        action: null,
-        ...data,
-        id: data.id ?? 'newImageId'
-      }
-      written.set(row.id, row)
-      return row
-    }) as never)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => ({
-      ...(written.get(where.id) ??
-        fixture.blocks.find((block) => block.id === where.id)),
-      ...data
-    })) as never)
+    mockCampaignBlockWrites(
+      { ...hero, eyebrow: null, title: null, description: null, align: null },
+      { createdId: 'newImageId', blocks: fixture.blocks }
+    )
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: { input: { campaignId: 'campaignId', ...input } }
@@ -116,7 +102,10 @@ describe('campaignImageBlockCreate', () => {
             src: SRC,
             alt: 'A picture',
             width: 1600,
-            height: 900
+            height: 900,
+            focalLeft: 50,
+            focalTop: 50,
+            scale: null
           }
         }
       })
@@ -171,6 +160,45 @@ describe('campaignImageBlockCreate', () => {
         ['landingJourneyListId', 4],
         ['landingAnalyticsId', 5]
       ])
+    })
+
+    it('stores the focal point and the zoom it is given', async () => {
+      const result = await create({
+        pageId: 'landingPageId',
+        src: SRC,
+        focalLeft: 20,
+        focalTop: 80,
+        scale: 150
+      })
+
+      expect(result.data.campaignImageBlockCreate).toMatchObject({
+        focalLeft: 20,
+        focalTop: 80,
+        scale: 150
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            focalLeft: 20,
+            focalTop: 80,
+            scale: 150
+          })
+        })
+      )
+    })
+
+    it('rejects a zoom of 250, outside 100 to 200 (BAD_USER_INPUT, scale)', async () => {
+      const result = await create({
+        pageId: 'landingPageId',
+        src: SRC,
+        scale: 250
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'scale'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
     })
 
     it('rejects a page of another campaign (BAD_USER_INPUT, pageId)', async () => {
@@ -308,6 +336,58 @@ describe('campaignImageBlockCreate', () => {
       })
       // Siblings are never read for an owned block.
       expect(prismaMock.campaignBlock.findMany).not.toHaveBeenCalled()
+    })
+
+    it('stores the cover’s focal point and zoom', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(
+        fixture.blocks.find((block) => block.id === 'heroId')!
+      )
+
+      const result = await create({
+        id: NEW_COVER_ID,
+        parentBlockId: 'heroId',
+        slot: 'cover',
+        src: SRC,
+        focalLeft: 0,
+        focalTop: 100,
+        scale: 200
+      })
+
+      expect(result.data.campaignImageBlockCreate).toMatchObject({
+        id: NEW_COVER_ID,
+        focalLeft: 0,
+        focalTop: 100,
+        scale: 200
+      })
+      expect(prismaMock.campaignBlock.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            id: NEW_COVER_ID,
+            focalLeft: 0,
+            focalTop: 100,
+            scale: 200
+          })
+        })
+      )
+    })
+
+    it('rejects a cover zoom of 250, outside 100 to 200 (BAD_USER_INPUT, scale)', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(
+        fixture.blocks.find((block) => block.id === 'heroId')!
+      )
+
+      const result = await create({
+        parentBlockId: 'heroId',
+        slot: 'cover',
+        src: SRC,
+        scale: 250
+      })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'BAD_USER_INPUT',
+        field: 'scale'
+      })
+      expect(prismaMock.campaignBlock.create).not.toHaveBeenCalled()
     })
 
     it('defaults the slot to cover', async () => {

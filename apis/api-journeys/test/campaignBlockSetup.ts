@@ -1,3 +1,5 @@
+import type { ResultOf } from 'gql.tada'
+import type { DocumentNode, GraphQLFormattedError } from 'graphql'
 import { vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
@@ -16,11 +18,38 @@ export const mockUser = {
   roles: []
 }
 
-/** An authenticated client for the campaign block mutation specs. */
-export const authClient = getClient({
+const authExecutor = getClient({
   headers: { authorization: 'token' },
   context: { currentUser: mockUser }
 })
+
+/**
+ * The data `TDocument` selects. The subgraph's `graphql()` has no
+ * introspection yet, so its documents yield `never` and this falls back to
+ * `any`; it narrows by itself once the introspection is wired in.
+ */
+type DataOf<TDocument> = [ResultOf<TDocument>] extends [never]
+  ? any
+  : ResultOf<TDocument>
+
+/**
+ * The response to `TDocument` as the campaign specs read it: `data` typed by
+ * the document, `errors` read only by the cases that expect one.
+ */
+export interface CampaignSpecResult<TDocument> {
+  data: DataOf<TDocument>
+  errors: GraphQLFormattedError[]
+}
+
+/** Runs `document` as the authenticated member of the campaign specs. */
+export async function authClient<TDocument extends DocumentNode>(request: {
+  document: TDocument
+  variables?: Record<string, unknown>
+}): Promise<CampaignSpecResult<TDocument>> {
+  return (await authExecutor(
+    request
+  )) as unknown as CampaignSpecResult<TDocument>
+}
 
 /**
  * The shared `beforeEach` of every campaign block mutation spec: the

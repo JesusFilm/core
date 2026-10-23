@@ -4,10 +4,12 @@ import { CampaignAction, Prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
+import { mockCampaignBlockWrites } from '../../../../test/campaignBlockWrites'
 import {
   CampaignBlockRow,
   campaignFactory
 } from '../../../../test/campaignFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 import { CAMPAIGN_BLOCKS_MAX } from '../validation'
@@ -771,9 +773,7 @@ describe('tree order and creates', () => {
         { ...heroButton, placement: 'above', parentOrder: 0 },
         { ...heroButton, id: 'otherId', placement: 'below', parentOrder: 1 }
       ])
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...heroButton, ...data })) as never)
+      mockCampaignBlockWrites(heroButton)
 
       const created = await createChildBlock(prismaMock, hero, {
         typename: 'CampaignTypographyBlock',
@@ -858,9 +858,7 @@ describe('tree order and creates', () => {
       prismaMock.campaignBlock.findMany.mockResolvedValue([
         fixture.blocks.find((block) => block.id === 'headerId')!
       ])
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...hero, ...data, action: null })) as never)
+      mockCampaignBlockWrites(hero)
 
       const created = await createTopLevelBlock(
         prismaMock,
@@ -883,13 +881,7 @@ describe('tree order and creates', () => {
           block.pageId === 'landingPageId' && block.parentBlockId == null
       )
       prismaMock.campaignBlock.findMany.mockResolvedValue(sections)
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...hero, ...data, id: 'newId', action: null })) as never)
-      prismaMock.campaignBlock.update.mockImplementation((async ({
-        where,
-        data
-      }: any) => ({ ...hero, id: where.id, ...data })) as never)
+      mockCampaignBlockWrites(hero, { createdId: 'newId' })
 
       const created = await createTopLevelBlock(
         prismaMock,
@@ -927,14 +919,7 @@ describe('tree order and creates', () => {
         parentOrder: 0
       }
       prismaMock.campaignBlock.findMany.mockResolvedValue([existingLine])
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({
-        ...hero,
-        ...data,
-        id: 'newLineId',
-        action: null
-      })) as never)
+      mockCampaignBlockWrites(hero, { createdId: 'newLineId' })
 
       const line = await createRegionLine(prismaMock, region, {
         typename: 'CampaignTypographyBlock',
@@ -1140,9 +1125,7 @@ describe('tree order and creates', () => {
         item('firstId', 0),
         item('secondId', 1)
       ])
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...data, action: null })) as never)
+      mockCampaignBlockWrites({})
 
       const created = await createChildBlock(prismaMock, carousel, {
         typename: 'CampaignVideoBlock',
@@ -1164,13 +1147,7 @@ describe('tree order and creates', () => {
         item('thirdId', 2)
       ]
       prismaMock.campaignBlock.findMany.mockResolvedValue(items)
-      prismaMock.campaignBlock.update.mockImplementation((async ({
-        where,
-        data
-      }: any) => ({
-        ...items.find((candidate) => candidate.id === where.id),
-        ...data
-      })) as never)
+      mockCampaignBlockWrites({}, { blocks: items })
 
       const siblings = await reorderBlock(items[2], 1)
 
@@ -1218,14 +1195,7 @@ describe('delete, restore and duplicate', () => {
     it('stamps deletedAt and renumbers the remaining siblings contiguously', async () => {
       const first = { ...heroButton, id: 'firstId', parentOrder: 0 }
       const third = { ...heroButton, id: 'thirdId', parentOrder: 2 }
-      prismaMock.campaignBlock.update.mockImplementation((async ({
-        where,
-        data
-      }: any) => ({
-        ...heroButton,
-        id: where.id,
-        ...data
-      })) as never)
+      mockCampaignBlockWrites(heroButton)
       prismaMock.campaignBlock.findMany
         .mockResolvedValueOnce([first, heroButton, third])
         .mockResolvedValueOnce([first, third])
@@ -1316,14 +1286,7 @@ describe('delete, restore and duplicate', () => {
 
       it('clears deletedAt on the rows deleted with the block, matched by timestamp', async () => {
         const deletedAt = new Date('2026-10-01T00:00:00.000Z')
-        prismaMock.campaignBlock.update.mockImplementation((async ({
-          where,
-          data
-        }: any) => ({
-          ...hero,
-          id: where.id,
-          ...data
-        })) as never)
+        mockCampaignBlockWrites(hero)
         prismaMock.campaignBlock.findMany
           .mockResolvedValueOnce([])
           .mockResolvedValueOnce([])
@@ -1342,14 +1305,7 @@ describe('delete, restore and duplicate', () => {
 
       it('returns the restored block’s live descendants after its siblings', async () => {
         const child = { ...heroButton, id: 'childId', parentBlockId: 'heroId' }
-        prismaMock.campaignBlock.update.mockImplementation((async ({
-          where,
-          data
-        }: any) => ({
-          ...hero,
-          id: where.id,
-          ...data
-        })) as never)
+        mockCampaignBlockWrites(hero)
         prismaMock.campaignBlock.findMany
           .mockResolvedValueOnce([])
           .mockResolvedValueOnce([child])
@@ -1475,11 +1431,8 @@ describe('delete, restore and duplicate', () => {
             (block) => block.parentBlockId == null && block.parentOrder != null
           )
         )
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: {
-        data: Prisma.CampaignBlockUncheckedCreateInput
-      }) => ({ ...hero, ...data, action: null })) as never)
+      mockCampaignBlockWrites(hero)
+      // A copied action is written with its row (`action: { create }`) and read back with it.
       prismaMock.campaignBlock.update.mockImplementation((async ({
         where,
         data
@@ -1889,9 +1842,7 @@ describe('owned blocks (cover, logo and media)', () => {
 
   describe('createOwnedImageBlock', () => {
     it('creates the image with parentOrder null and the owner’s scoping, points the slot column at it and soft-deletes the previous one', async () => {
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...hero, ...data, action: null })) as never)
+      mockCampaignBlockWrites(hero)
       prismaMock.campaignBlock.update.mockResolvedValue(hero)
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         ...hero,
@@ -1930,9 +1881,7 @@ describe('owned blocks (cover, logo and media)', () => {
     })
 
     it('writes logoBlockId on the header and deletes nothing when the slot was empty', async () => {
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...header, ...data, action: null })) as never)
+      mockCampaignBlockWrites(header)
       prismaMock.campaignBlock.update.mockResolvedValue(header)
       prismaMock.campaignBlock.findFirst.mockResolvedValue(header)
 
@@ -1955,9 +1904,7 @@ describe('owned blocks (cover, logo and media)', () => {
     })
 
     it('fills an empty Media Slot with an image through createOwnedImageBlock without deleting anything', async () => {
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...hero, ...data, action: null })) as never)
+      mockCampaignBlockWrites(hero)
       prismaMock.campaignBlock.update.mockResolvedValue(hero)
       prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
 
@@ -1981,9 +1928,7 @@ describe('owned blocks (cover, logo and media)', () => {
 
   describe('createOwnedBlock', () => {
     it('creates a unique owned video with parentOrder null, points mediaBlockId at it and soft-deletes the block the slot held', async () => {
-      prismaMock.campaignBlock.create.mockImplementation((async ({
-        data
-      }: any) => ({ ...hero, ...data, action: null })) as never)
+      mockCampaignBlockWrites(hero)
       prismaMock.campaignBlock.update.mockResolvedValue(hero)
       prismaMock.campaignBlock.findFirst.mockResolvedValue({
         ...featuredMedia,
@@ -2068,10 +2013,7 @@ describe('the slot contract (cover, logo and media)', () => {
       async (callback: any) => await callback(prismaMock)
     )
     prismaMock.campaign.update.mockResolvedValue(fixture)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => ({ ...owner, id: where.id, ...data })) as never)
+    mockCampaignBlockWrites(owner)
   })
 
   describe('validateSlotTarget', () => {
@@ -2369,13 +2311,8 @@ describe('the structure lock', () => {
     return Math.min(...mock.mock.invocationCallOrder)
   }
 
-  /** `$queryRaw` took `pg_advisory_xact_lock` and ran before every read and write. */
-  function expectLockedFirst(): void {
-    const lock = prismaMock.$queryRaw.mock.calls[0]
-    expect((lock[0] as unknown as string[]).join('?')).toContain(
-      'pg_advisory_xact_lock(hashtext('
-    )
-    expect(lock[1]).toBe('campaign:campaignId')
+  /** The first `$queryRaw` ran before every read and write of the transaction. */
+  function expectLockedBeforeEveryRead(): void {
     const lockedAt = firstCall(prismaMock.$queryRaw)
     for (const mock of [
       prismaMock.campaignBlock.findMany,
@@ -2387,7 +2324,6 @@ describe('the structure lock', () => {
       prismaMock.campaign.update
     ])
       expect(firstCall(mock)).toBeGreaterThan(lockedAt)
-    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
   }
 
   beforeEach(() => {
@@ -2396,96 +2332,127 @@ describe('the structure lock', () => {
     )
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({ ...hero, ...data, action: null })) as never)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => ({ ...hero, id: where.id, ...data })) as never)
+    mockCampaignBlockWrites(hero)
   })
 
-  it('createChildBlock locks before it counts the siblings', async () => {
-    await createChildBlock(prismaMock, hero, {
-      typename: 'CampaignButtonBlock'
-    })
-    expectLockedFirst()
-  })
-
-  it('createTopLevelBlock locks before the chrome singleton and the sibling reads', async () => {
-    await createTopLevelBlock(
-      prismaMock,
-      { campaignId: 'campaignId', pageId: null, regionId: null },
-      { typename: 'CampaignFooterBlock' }
-    )
-    expectLockedFirst()
-  })
-
-  it('createSlotChild locks before it reads the occupant', async () => {
-    await createSlotChild(
-      prismaMock,
-      { ...hero, id: 'slotId', typename: 'CampaignColumnBlock' },
-      { typename: 'CampaignHeroBlock' }
-    )
-    expectLockedFirst()
-  })
-
-  it('createColumnsSection locks before the section and its slots', async () => {
-    await createColumnsSection(prismaMock, page, {
-      typename: 'CampaignColumnsBlock'
-    })
-    expectLockedFirst()
-  })
-
-  it('createOwnedBlock locks before it reads the slot occupant', async () => {
-    prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
-    await createOwnedBlock(prismaMock, hero, 'coverBlockId', {
-      typename: 'CampaignImageBlock'
-    })
-    expectLockedFirst()
-  })
-
-  it.each(['coverBlockId', 'logoBlockId', 'mediaBlockId'] as const)(
-    'a %s update locks before it re-reads the owner',
-    async (column) => {
-      prismaMock.campaignBlock.findFirst
-        .mockResolvedValueOnce(hero)
-        .mockResolvedValue({
-          id: 'newId',
+  /** Each structural transaction: what it must lock before, and a run of it. */
+  const transactions: Array<
+    [name: string, lockedBefore: string, run: () => Promise<unknown>]
+  > = [
+    [
+      'createChildBlock',
+      'it counts the siblings',
+      async () =>
+        await createChildBlock(prismaMock, hero, {
+          typename: 'CampaignButtonBlock'
+        })
+    ],
+    [
+      'createTopLevelBlock',
+      'the chrome singleton and the sibling reads',
+      async () =>
+        await createTopLevelBlock(
+          prismaMock,
+          { campaignId: 'campaignId', pageId: null, regionId: null },
+          { typename: 'CampaignFooterBlock' }
+        )
+    ],
+    [
+      'createSlotChild',
+      'it reads the occupant',
+      async () =>
+        await createSlotChild(
+          prismaMock,
+          { ...hero, id: 'slotId', typename: 'CampaignColumnBlock' },
+          { typename: 'CampaignHeroBlock' }
+        )
+    ],
+    [
+      'createColumnsSection',
+      'the section and its slots',
+      async () =>
+        await createColumnsSection(prismaMock, page, {
+          typename: 'CampaignColumnsBlock'
+        })
+    ],
+    [
+      'createOwnedBlock',
+      'it reads the slot occupant',
+      async () => {
+        prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+        return await createOwnedBlock(prismaMock, hero, 'coverBlockId', {
           typename: 'CampaignImageBlock'
-        } as never)
+        })
+      }
+    ],
+    ...(['coverBlockId', 'logoBlockId', 'mediaBlockId'] as const).map(
+      (column): [string, string, () => Promise<unknown>] => [
+        `a ${column} update`,
+        'it re-reads the owner',
+        async () => {
+          prismaMock.campaignBlock.findFirst
+            .mockResolvedValueOnce(hero)
+            .mockResolvedValue({
+              id: 'newId',
+              typename: 'CampaignImageBlock'
+            } as never)
+          return await updateBlock(hero, { [column]: 'newId' })
+        }
+      ]
+    ),
+    [
+      'reorderBlock',
+      'it reads the siblings',
+      async () => {
+        prismaMock.campaignBlock.findMany.mockResolvedValue([
+          heroButton
+        ] as never)
+        return await reorderBlock(heroButton, 0)
+      }
+    ],
+    [
+      'removeBlock',
+      'it reads the live blocks',
+      async () => {
+        prismaMock.campaignBlock.findMany.mockResolvedValue([
+          heroButton
+        ] as never)
+        return await removeBlock(heroButton)
+      }
+    ],
+    [
+      'restoreBlock',
+      'it reads the parent and the siblings',
+      async () => await restoreBlock({ ...heroButton, deletedAt: new Date() })
+    ],
+    [
+      'duplicateBlock',
+      'it reads the live blocks',
+      async () => {
+        prismaMock.campaignBlock.findMany.mockResolvedValue([hero] as never)
+        return await duplicateBlock(hero)
+      }
+    ]
+  ]
 
-      await updateBlock(hero, { [column]: 'newId' })
+  it.each(transactions)(
+    '%s takes the structure lock as its first statement',
+    async (_name, _lockedBefore, run) => {
+      await run()
 
-      expectLockedFirst()
-      expect(firstCall(prismaMock.$queryRaw)).toBeLessThan(
-        firstCall(prismaMock.campaignBlock.findFirst)
-      )
+      expectStructureLockFirst()
+      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
     }
   )
 
-  it('reorderBlock locks before it reads the siblings', async () => {
-    prismaMock.campaignBlock.findMany.mockResolvedValue([heroButton] as never)
-    await reorderBlock(heroButton, 0)
-    expectLockedFirst()
-  })
+  it.each(transactions)(
+    '%s locks before %s',
+    async (_name, _lockedBefore, run) => {
+      await run()
 
-  it('removeBlock locks before it reads the live blocks', async () => {
-    prismaMock.campaignBlock.findMany.mockResolvedValue([heroButton] as never)
-    await removeBlock(heroButton)
-    expectLockedFirst()
-  })
-
-  it('restoreBlock locks before it reads the parent and the siblings', async () => {
-    await restoreBlock({ ...heroButton, deletedAt: new Date() })
-    expectLockedFirst()
-  })
-
-  it('duplicateBlock locks before it reads the live blocks', async () => {
-    prismaMock.campaignBlock.findMany.mockResolvedValue([hero] as never)
-    await duplicateBlock(hero)
-    expectLockedFirst()
-  })
+      expectLockedBeforeEveryRead()
+    }
+  )
 
   describe('a block deleted between the resolver’s read and the lock', () => {
     async function expectParentRefused(
@@ -2624,9 +2591,7 @@ describe('the block cap', () => {
     )
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({ ...hero, ...data, id: data.id ?? 'newId' })) as never)
+    mockCampaignBlockWrites(hero, { createdId: 'newId' })
   })
 
   it('counts the live blocks inside the transaction, after the structure lock', async () => {
@@ -2639,6 +2604,7 @@ describe('the block cap', () => {
     expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
       where: { campaignId: 'campaignId', deletedAt: null }
     })
+    expectStructureLockFirst()
     expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignBlock.count.mock.invocationCallOrder[0]
     )

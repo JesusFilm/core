@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -51,35 +53,22 @@ describe('campaignFeaturedMediaBlockCreate', () => {
       )
     )
     // Created rows persist, as rows do, so the renumber returns the new section's own columns.
-    const written = new Map<string, Record<string, unknown>>()
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => {
-      const row = {
+    mockCampaignBlockWrites(
+      {
         ...hero,
         eyebrow: null,
         title: null,
         description: null,
         align: null,
-        action: null,
-        mediaSide: 'right',
-        ...data,
-        id: data.id ?? 'newFeaturedId'
-      }
-      written.set(row.id, row)
-      return row
-    }) as never)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      where,
-      data
-    }: any) => ({
-      ...(written.get(where.id) ??
-        fixture.blocks.find((block) => block.id === where.id)),
-      ...data
-    })) as never)
+        mediaSide: 'right'
+      },
+      { createdId: 'newFeaturedId', blocks: fixture.blocks }
+    )
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: {

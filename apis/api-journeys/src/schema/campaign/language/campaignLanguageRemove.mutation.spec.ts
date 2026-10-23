@@ -2,6 +2,7 @@ import { vi } from 'vitest'
 
 import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -32,7 +33,9 @@ describe('campaignLanguageRemove', () => {
     }
   `)
 
-  async function remove(languageId: string): Promise<any> {
+  async function remove(
+    languageId: string
+  ): Promise<CampaignSpecResult<typeof CAMPAIGN_LANGUAGE_REMOVE>> {
     return await authClient({
       document: CAMPAIGN_LANGUAGE_REMOVE,
       variables: { campaignId: 'campaignId', languageId }

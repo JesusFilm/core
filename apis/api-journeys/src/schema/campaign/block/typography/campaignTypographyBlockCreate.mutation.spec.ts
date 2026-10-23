@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -45,18 +47,12 @@ describe('campaignTypographyBlockCreate', () => {
     const heroButton = campaignBlockWithAcl(fixture, 'heroButtonId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
     prismaMock.campaignBlock.findMany.mockResolvedValue([heroButton])
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => ({
-      ...heroButton,
-      action: null,
-      ...data,
-      placement: data.placement === undefined ? 'below' : data.placement,
-      id: data.id ?? 'newTextId'
-    })) as never)
+    mockCampaignBlockWrites(heroButton, { createdId: 'newTextId' })
   })
 
-  async function create(input: Record<string, unknown>): Promise<any> {
+  async function create(
+    input: Record<string, unknown>
+  ): Promise<CampaignSpecResult<typeof CREATE>> {
     return await authClient({
       document: CREATE,
       variables: {
@@ -170,7 +166,9 @@ describe('campaignTypographyBlockCreate', () => {
   describe('Region Lines', () => {
     const region = campaignFactory().withRegion('EUR').build().regions[0]
 
-    async function createLine(input: Record<string, unknown>): Promise<any> {
+    async function createLine(
+      input: Record<string, unknown>
+    ): Promise<CampaignSpecResult<typeof CREATE>> {
       return await authClient({
         document: CREATE,
         variables: { input: { campaignId: 'campaignId', ...input } }

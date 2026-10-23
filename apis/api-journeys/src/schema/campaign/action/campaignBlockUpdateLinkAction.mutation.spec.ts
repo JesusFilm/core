@@ -1,6 +1,7 @@
 import { mockActionUpsert } from '../../../../test/campaignActionMock'
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -44,7 +45,7 @@ describe('campaignBlockUpdateLinkAction', () => {
   async function update(
     input: Record<string, unknown>,
     id = 'heroButtonId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -50,15 +52,13 @@ describe('campaignJourneyBlockUpdate', () => {
       description: 'A short journey.'
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(item)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...item, ...data })) as never)
+    mockCampaignBlockWrites(item)
   })
 
   async function update(
     input: Record<string, unknown>,
     id = 'journeyItemId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

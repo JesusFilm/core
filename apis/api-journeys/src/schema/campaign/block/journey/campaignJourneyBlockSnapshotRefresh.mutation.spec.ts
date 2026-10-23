@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -54,9 +56,7 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
       }
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(item)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...item, ...data })) as never)
+    mockCampaignBlockWrites(item)
     prismaMock.journey.findFirst.mockResolvedValue({
       id: 'journeyId',
       slug: 'outreach-story',
@@ -69,7 +69,9 @@ describe('campaignJourneyBlockSnapshotRefresh', () => {
     } as never)
   })
 
-  async function refresh(id = 'journeyItemId'): Promise<any> {
+  async function refresh(
+    id = 'journeyItemId'
+  ): Promise<CampaignSpecResult<typeof REFRESH>> {
     return await authClient({ document: REFRESH, variables: { id } })
   }
 

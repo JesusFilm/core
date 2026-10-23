@@ -1,12 +1,15 @@
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../test/campaignBlockWrites'
 import {
   CampaignBlockRow,
   CampaignFixture,
-  campaignFactory
+  campaignFactory,
+  campaignRow
 } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -51,8 +54,6 @@ describe('campaignBlockDuplicate', () => {
   `)
 
   let fixture: CampaignFixture
-  /** Rows the mocked create and update wrote, by id. */
-  let written: Map<string, CampaignBlockRow>
 
   function setLive(blocks: CampaignBlockRow[]): void {
     prismaMock.campaignBlock.findMany
@@ -67,17 +68,13 @@ describe('campaignBlockDuplicate', () => {
 
   beforeEach(() => {
     fixture = setupCampaignBlockSpec()
-    written = new Map()
     prismaMock.campaignBlock.findFirst.mockResolvedValue(
       campaignBlockWithAcl(fixture, 'heroId')
     )
-    prismaMock.campaignBlock.create.mockImplementation((async ({
-      data
-    }: any) => {
-      const row = { ...fixture.blocks[0], ...data, action: null }
-      written.set(row.id, row)
-      return row
-    }) as never)
+    const written = mockCampaignBlockWrites(fixture.blocks[0], {
+      blocks: fixture.blocks
+    })
+    // A copied action is written with its row (`action: { create }`) and read back with it.
     prismaMock.campaignBlock.update.mockImplementation((async ({
       where,
       data
@@ -102,7 +99,7 @@ describe('campaignBlockDuplicate', () => {
   async function duplicate(
     id: string,
     idMap?: Array<{ oldId: string; newId: string }>
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof DUPLICATE>> {
     return await authClient({ document: DUPLICATE, variables: { id, idMap } })
   }
 
@@ -439,11 +436,9 @@ describe('campaignBlockDuplicate', () => {
 
   it('refuses to duplicate a page (CONFLICT, id)', async () => {
     prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
-    const { team, languages, theme, pages, blocks, regions, strings, ...row } =
-      fixture
     prismaMock.campaignPage.findUnique.mockResolvedValue({
-      ...pages[1],
-      campaign: { ...row, team }
+      ...fixture.pages[1],
+      campaign: campaignRow(fixture)
     } as never)
 
     const result = await duplicate('regionPageId')

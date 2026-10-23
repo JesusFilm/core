@@ -1,8 +1,10 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignFixture,
   campaignFactory
@@ -39,15 +41,13 @@ describe('campaignTypographyBlockUpdate', () => {
     fixture = setupCampaignBlockSpec()
     const copyright = campaignBlockWithAcl(fixture, 'footerCopyrightId')
     prismaMock.campaignBlock.findFirst.mockResolvedValue(copyright)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...copyright, ...data })) as never)
+    mockCampaignBlockWrites(copyright)
   })
 
   async function update(
     input: Record<string, unknown>,
     id = 'footerCopyrightId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

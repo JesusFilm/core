@@ -1,6 +1,7 @@
 import { mockActionUpsert } from '../../../../test/campaignActionMock'
 import { campaignBlockWithAcl } from '../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -42,7 +43,10 @@ describe('campaignBlockUpdateScrollToBlockAction', () => {
       .mockResolvedValueOnce(target as never)
   }
 
-  async function update(blockId: string, id = 'footerTermsId'): Promise<any> {
+  async function update(
+    blockId: string,
+    id = 'footerTermsId'
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({
       document: UPDATE,
       variables: { id, input: { blockId } }

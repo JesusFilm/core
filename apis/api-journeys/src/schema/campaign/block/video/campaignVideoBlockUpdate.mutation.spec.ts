@@ -2,9 +2,11 @@ import { GraphQLError } from 'graphql'
 
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
+import { mockCampaignBlockWrites } from '../../../../../test/campaignBlockWrites'
 import {
   CampaignBlockRow,
   CampaignFixture,
@@ -73,9 +75,7 @@ describe('campaignVideoBlockUpdate', () => {
       ...overrides
     })
     prismaMock.campaignBlock.findFirst.mockResolvedValue(video)
-    prismaMock.campaignBlock.update.mockImplementation((async ({
-      data
-    }: any) => ({ ...video, ...data })) as never)
+    mockCampaignBlockWrites(video)
   }
 
   beforeEach(() => {
@@ -98,7 +98,7 @@ describe('campaignVideoBlockUpdate', () => {
   async function update(
     input: Record<string, unknown>,
     id = 'heroMediaId'
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof UPDATE>> {
     return await authClient({ document: UPDATE, variables: { id, input } })
   }
 

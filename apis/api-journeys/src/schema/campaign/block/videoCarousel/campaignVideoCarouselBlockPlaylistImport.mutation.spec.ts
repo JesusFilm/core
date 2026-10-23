@@ -1,5 +1,6 @@
 import { campaignBlockWithAcl } from '../../../../../test/campaignBlockAcl'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../../test/campaignBlockSetup'
@@ -7,6 +8,7 @@ import {
   CampaignFixture,
   campaignFactory
 } from '../../../../../test/campaignFactory'
+import { expectStructureLockFirst } from '../../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../../test/prismaMock'
 import { graphql } from '../../../../lib/graphql/subgraphGraphql'
 import { CAMPAIGN_BLOCKS_MAX } from '../../validation'
@@ -135,7 +137,9 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     fetchSpy.mockRestore()
   })
 
-  async function importPlaylist(url = PLAYLIST_URL): Promise<any> {
+  async function importPlaylist(
+    url = PLAYLIST_URL
+  ): Promise<CampaignSpecResult<typeof IMPORT>> {
     return await authClient({
       document: IMPORT,
       variables: { id: 'carouselId', url }
@@ -188,18 +192,22 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     expect(prismaMock.campaign.update).toHaveBeenCalled()
   })
 
-  it('takes the structure lock before it counts the carousel’s children', async () => {
+  it('takes the structure lock as its first statement', async () => {
     mockYouTube(3)
 
     const result = await importPlaylist()
 
     expect(result.errors).toBeUndefined()
-    const [strings, key] = prismaMock.$queryRaw.mock.calls[0] as unknown as [
-      string[],
-      string
-    ]
-    expect(strings.join('?')).toContain('pg_advisory_xact_lock(hashtext(')
-    expect(key).toBe('campaign:campaignId')
+    expectStructureLockFirst()
+    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+  })
+
+  it('locks before it reads the carousel’s children and creates the videos', async () => {
+    mockYouTube(3)
+
+    const result = await importPlaylist()
+
+    expect(result.errors).toBeUndefined()
     expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignBlock.findMany.mock.invocationCallOrder[0]
     )

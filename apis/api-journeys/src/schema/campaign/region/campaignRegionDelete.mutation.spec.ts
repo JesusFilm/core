@@ -1,5 +1,6 @@
 import { mockQueueAdd } from '../../../../test/bullmqMock'
 import {
+  CampaignSpecResult,
   authClient,
   setupCampaignBlockSpec
 } from '../../../../test/campaignBlockSetup'
@@ -51,7 +52,9 @@ describe('campaignRegionDelete', () => {
     })) as never)
   })
 
-  async function remove(id = 'eurRegionId'): Promise<any> {
+  async function remove(
+    id = 'eurRegionId'
+  ): Promise<CampaignSpecResult<typeof DELETE>> {
     return await authClient({ document: DELETE, variables: { id } })
   }
 

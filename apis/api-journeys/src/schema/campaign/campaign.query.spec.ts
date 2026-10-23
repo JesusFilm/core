@@ -157,10 +157,10 @@ describe('campaign', () => {
         prismaMock.campaign.findUnique.mockResolvedValue(fixture)
         prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
 
-        const result = (await authClient({
+        const result = await authClient({
           document: JOURNEY_URL,
           variables: { id: 'campaignId' }
-        })) as any
+        })
 
         expect(result.errors).toBeUndefined()
         expect(result.data.campaign.regions[0].languages[0].journeyUrl).toBe(
@@ -174,10 +174,10 @@ describe('campaign', () => {
       prismaMock.campaign.findUnique.mockResolvedValue(fixture)
       prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
 
-      const result = (await authClient({
+      const result = await authClient({
         document: JOURNEY_URL,
         variables: { id: 'campaignId' }
-      })) as any
+      })
 
       expect(result.data.campaign.regions[0].languages[0].journeyUrl).toBeNull()
     })
@@ -195,10 +195,10 @@ describe('campaign', () => {
     prismaMock.campaign.findUnique.mockResolvedValue(fixture)
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(fixture)
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors).toBeUndefined()
     const campaign = result.data.campaign
@@ -298,10 +298,10 @@ describe('campaign', () => {
       journey('journeyThree', 'archived')
     ])
 
-    const result = (await authClient({
+    const result = await authClient({
       document: CAMPAIGN_JOURNEY_CARDS,
       variables: { id: 'campaignId' }
-    })) as any
+    })
 
     expect(result.errors).toBeUndefined()
     expect(

@@ -42,6 +42,20 @@ export interface CampaignFixture extends Campaign {
   customDomains: CustomDomain[]
 }
 
+/**
+ * The fixture's campaign as an ACL read includes it: the `Campaign` row with
+ * its team and custom domains, without the content the campaign owns.
+ */
+export function campaignRow(
+  fixture: CampaignFixture
+): Omit<
+  CampaignFixture,
+  'languages' | 'theme' | 'pages' | 'blocks' | 'regions' | 'strings'
+> {
+  const { languages, theme, pages, blocks, regions, strings, ...row } = fixture
+  return row
+}
+
 export const CAMPAIGN_FIXTURE_DATE = new Date('2026-10-05T00:00:00.000Z')
 
 export const LIGHT_PALETTE = [

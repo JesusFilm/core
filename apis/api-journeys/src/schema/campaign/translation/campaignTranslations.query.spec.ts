@@ -2,7 +2,11 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
-import { authClient, mockUser } from '../../../../test/campaignBlockSetup'
+import {
+  CampaignSpecResult,
+  authClient,
+  mockUser
+} from '../../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../../test/campaignFactory'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
@@ -54,7 +58,7 @@ describe('campaignTranslations', () => {
       filter?: string
       campaignId?: string
     } = {}
-  ): Promise<any> {
+  ): Promise<CampaignSpecResult<typeof CAMPAIGN_TRANSLATIONS>> {
     return await authClient({
       document: CAMPAIGN_TRANSLATIONS,
       variables: { campaignId: 'campaignId', languageId: FRENCH, ...variables }
