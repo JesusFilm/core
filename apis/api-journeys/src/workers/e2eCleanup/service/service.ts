@@ -1,4 +1,5 @@
 import { Job } from 'bullmq'
+import escapeRegExp from 'lodash/escapeRegExp'
 import { Logger } from 'pino'
 
 import { UserJourneyRole, prisma } from '@core/prisma/journeys/client'
@@ -171,13 +172,22 @@ export async function service(
   }
 }
 
-const PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES = [
+/**
+ * The title prefixes the campaign builder e2e specs give their campaigns, each
+ * followed by `Date.now()`: `CAMPAIGN_TITLE` in
+ * apps/journeys-admin-e2e/src/e2e/campaign-builder/campaign-builder.spec.ts
+ * and in apps/journeys-admin-e2e/src/e2e/campaign-builder/campaign-editor-v2.spec.ts.
+ * A title changed there must change here, or the sweep stops finding it.
+ */
+export const PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES = [
   'Playwright campaign ',
   'Playwright editor v2 campaign '
-]
+] as const
 
-// The exact title the campaign builder e2e specs give: prefix + Date.now().
-const PLAYWRIGHT_CAMPAIGN_TITLE = /^Playwright (editor v2 )?campaign \d{13}$/
+// The exact title: one of the prefixes, then a 13-digit Date.now().
+const PLAYWRIGHT_CAMPAIGN_TITLE = new RegExp(
+  `^(${PLAYWRIGHT_CAMPAIGN_TITLE_PREFIXES.map(escapeRegExp).join('|')})\\d{13}$`
+)
 
 /**
  * Delete the campaigns the campaign builder e2e specs leave behind when a run

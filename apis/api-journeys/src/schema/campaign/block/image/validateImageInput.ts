@@ -11,7 +11,7 @@ import {
   assertScaleOrNull
 } from '../../validation'
 
-/** Every stored campaign image lives on Cloudflare Images (PRD §15). */
+/** Every stored campaign image lives on Cloudflare Images (GLOSSARY.md: Campaign Image). */
 export const CAMPAIGN_IMAGE_HOST = 'imagedelivery.net'
 
 export interface ImageInput {

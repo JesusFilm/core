@@ -195,7 +195,7 @@ export async function updateJourneyShortLink(
 /**
  * Updates the shortlink of every QR code
  */
-export async function updateAllShortlinks(logger?: Logger): Promise<number> {
+export async function updateAllShortLinks(logger?: Logger): Promise<number> {
   const qrCodes = await prisma.qrCode.findMany()
 
   logger?.info(`Found ${qrCodes.length} QR codes to check`)
@@ -209,7 +209,7 @@ export async function updateAllShortlinks(logger?: Logger): Promise<number> {
 export async function service(job: Job, logger?: Logger): Promise<void> {
   switch (job.data.__typename) {
     case 'updateAllShortlinks':
-      await updateAllShortlinks(logger)
+      await updateAllShortLinks(logger)
       break
   }
 }

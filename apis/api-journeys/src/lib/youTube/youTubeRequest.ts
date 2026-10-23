@@ -7,7 +7,7 @@ export interface YouTubeApiError {
 }
 
 /** A `videos` response with `part=snippet,contentDetails`. */
-export interface YoutubeVideosData {
+export interface YouTubeVideosData {
   error?: YouTubeApiError
   items?: Array<{
     id: string
@@ -26,7 +26,7 @@ export interface YoutubeVideosData {
 export type YouTubeResource = 'playlistItems' | 'videos'
 
 /** The address of one Data API v3 request, carrying the API key. */
-export function youTubeUrl(
+function youTubeUrl(
   resource: YouTubeResource,
   params: Record<string, string>
 ): string {

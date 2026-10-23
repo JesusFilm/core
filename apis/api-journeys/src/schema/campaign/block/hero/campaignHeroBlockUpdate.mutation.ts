@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
+import { CAMPAIGN_ALIGNS } from '../../enums'
 import {
   TEXT_CAPS,
   assertEnumOrNull,

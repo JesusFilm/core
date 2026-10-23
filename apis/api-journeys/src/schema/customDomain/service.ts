@@ -154,7 +154,9 @@ export async function deleteVercelDomain(name: string): Promise<boolean> {
  * journey and campaign alike, through `getTo`, so each lands where its
  * journey's team now serves it. The host comes from the target journey's team,
  * so that is the QR codes the team owns plus the ones another team points at
- * the team's journeys. Call it once the custom domain row is committed, so
+ * the team's journeys, live journeys only on both sides: a QR code whose
+ * journey is trashed is left for the 3-hourly `updateAllShortLinks` sweep,
+ * which rewrites every row. Call it once the custom domain row is committed, so
  * `getTo` sees the new state and no gateway call holds a transaction open.
  * A row that fails is logged and left for the next sweep, but it can still
  * throw on its own reads, so callers catch and log it.
@@ -168,7 +170,7 @@ export async function updateTeamShortLinks(teamId: string): Promise<void> {
   const qrCodes = await prisma.qrCode.findMany({
     where: {
       OR: [
-        { teamId },
+        { teamId, journey: { deletedAt: null } },
         { toJourneyId: { in: teamJourneys.map((journey) => journey.id) } }
       ]
     }

@@ -1,5 +1,7 @@
 import { builder } from '../../builder'
 
+import type { CampaignTypename } from './service'
+
 /**
  * The Campaign counterpart of Block: every node of a Campaign's content tree,
  * resolved to its concrete typename by the `typename` column.
@@ -36,7 +38,7 @@ export const CampaignBlock = builder.prismaInterface('CampaignBlock', {
  */
 export function isCampaignBlockOfType(
   block: unknown,
-  typename: string
+  typename: CampaignTypename
 ): boolean {
   return (
     typeof block === 'object' &&

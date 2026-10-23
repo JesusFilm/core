@@ -1,6 +1,6 @@
 import {
   CampaignJourneyLive,
-  loadCampaignJourneyLives
+  loadJourneyLivesByIds
 } from './block/campaignJourneyBlock'
 
 /** The live journey read of every journey card, by journey id. */
@@ -16,10 +16,10 @@ interface JourneyCardColumns {
  * Read the live status, address and image of every journey the blocks'
  * journey cards link, in one query.
  */
-export async function loadJourneyLives(
+export async function loadJourneyLivesOfBlocks(
   blocks: JourneyCardColumns[]
 ): Promise<JourneyLives> {
-  return await loadCampaignJourneyLives(
+  return await loadJourneyLivesByIds(
     blocks.flatMap((block) =>
       block.typename === 'CampaignJourneyBlock' && block.journeyId != null
         ? [block.journeyId]

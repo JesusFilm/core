@@ -6,7 +6,7 @@ import {
 } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { authorizeCampaign } from './campaign.acl'
+import { authorizeCampaign } from './authorizeCampaign'
 import { notFound } from './errors'
 import { enqueueCampaignPagesRevalidation } from './revalidateCampaign'
 
@@ -29,7 +29,7 @@ const TRANSITIONS = {
 >
 
 /**
- * Publish or unpublish a campaign, as the caller with campaign Manage may.
+ * Publish or unpublish a campaign, as the caller with campaign Update may.
  * Atomic transition + canonical re-read, as the Template Gallery Page pair
  * does: the `from` predicate makes updateMany a no-op for a caller that lost
  * the race, so `publishedAt` is set on the winning publish only, and a

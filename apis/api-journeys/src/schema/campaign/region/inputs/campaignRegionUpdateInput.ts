@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { TEXT_CAPS } from '../../validation'
 
 export const CampaignRegionUpdateInput = builder.inputType(
   'CampaignRegionUpdateInput',
@@ -6,8 +7,7 @@ export const CampaignRegionUpdateInput = builder.inputType(
     fields: (t) => ({
       name: t.string({
         required: false,
-        description:
-          'Default-language name. Required, at most 60 characters. Does not move the slug.'
+        description: `Default-language name. Required, at most ${TEXT_CAPS.regionName} characters. Does not move the slug.`
       }),
       slug: t.string({
         required: false,

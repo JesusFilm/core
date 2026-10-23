@@ -32,6 +32,3 @@ import './translation/textFields'
 import './translation/campaignTranslationSet.mutation'
 import './translation/campaignTranslations.query'
 import './translation/campaignMachineTranslate'
-
-export { CampaignRef } from './campaign'
-export { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'

@@ -31,12 +31,16 @@ describe('campaignAcl', () => {
     ['member', UserTeamRole.member],
     ['manager', UserTeamRole.manager]
   ] as const)('a %s of the team', (_label, role) => {
-    it.each([Action.Create, Action.Read, Action.Update, Action.Manage])(
+    it.each([Action.Create, Action.Read, Action.Update])(
       'passes %s',
       (action) => {
         expect(campaignAcl(action, campaignFor(role), user)).toBe(true)
       }
     )
+
+    it('denies Manage, which campaigns do not use (publish is Update)', () => {
+      expect(campaignAcl(Action.Manage, campaignFor(role), user)).toBe(false)
+    })
   })
 
   it.each([Action.Delete])('%s passes for a manager only', (action) => {

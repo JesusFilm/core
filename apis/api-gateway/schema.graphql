@@ -1101,7 +1101,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   Move a `draft` Campaign to `published`, stamping `publishedAt` on the first publish only. Idempotent: an already-published campaign is a no-op (no state change, no re-stamp). Queues on-demand revalidation of the landing page and every region page; nothing on a campaign is locked by its status.
   
-  Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
+  Auth: campaign Update — any member or manager of the campaign’s team, the same as editing.
   
   Errors:
   - NOT_FOUND: id does not resolve.
@@ -1111,7 +1111,7 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   Move a `published` Campaign back to `draft`. `publishedAt` is kept: it means "first went live", not "currently live". Idempotent: an already-draft campaign is a no-op. Queues on-demand revalidation so the public pages stop serving within the publish bound; the linked journeys and their QR codes keep working at their own addresses.
   
-  Auth: campaign Manage — any member or manager of the campaign’s team, the same as editing.
+  Auth: campaign Update — any member or manager of the campaign’s team, the same as editing.
   
   Errors:
   - NOT_FOUND: id does not resolve.

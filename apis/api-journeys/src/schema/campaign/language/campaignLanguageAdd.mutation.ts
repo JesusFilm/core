@@ -3,13 +3,13 @@ import { GraphQLError } from 'graphql'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
+import { authorizeCampaign } from '../authorizeCampaign'
 import {
   lockCampaign,
   lockCampaignLanguageRows,
   touchCampaign
 } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { authorizeCampaign } from '../campaign.acl'
 import { badUserInput } from '../errors'
 import { fetchLanguage } from '../gatewayClient'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'

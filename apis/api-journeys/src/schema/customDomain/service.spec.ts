@@ -33,12 +33,17 @@ describe('customDomain service', () => {
       await updateTeamShortLinks('teamId')
 
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
-        where: { OR: [{ teamId: 'teamId' }, { toJourneyId: { in: [] } }] }
+        where: {
+          OR: [
+            { teamId: 'teamId', journey: { deletedAt: null } },
+            { toJourneyId: { in: [] } }
+          ]
+        }
       })
       expect(mockMutate).not.toHaveBeenCalled()
     })
 
-    it("selects the QR codes of the team and those pointing at the team's live journeys", async () => {
+    it("selects the team's QR codes whose journey is live and those pointing at the team's live journeys", async () => {
       prismaMock.journey.findMany.mockResolvedValue([
         { id: 'journeyId' },
         { id: 'otherJourneyId' }
@@ -54,7 +59,7 @@ describe('customDomain service', () => {
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith({
         where: {
           OR: [
-            { teamId: 'teamId' },
+            { teamId: 'teamId', journey: { deletedAt: null } },
             { toJourneyId: { in: ['journeyId', 'otherJourneyId'] } }
           ]
         }

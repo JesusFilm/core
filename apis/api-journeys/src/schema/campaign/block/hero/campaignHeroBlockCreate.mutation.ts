@@ -1,5 +1,5 @@
 import { builder } from '../../../builder'
-import { CAMPAIGN_ALIGNS } from '../../enums/campaignAlign'
+import { CAMPAIGN_ALIGNS } from '../../enums'
 import { assertEnumOrNull } from '../../validation'
 import { CampaignHeroBlock } from '../campaignHeroBlock'
 import { createSection } from '../createSection'

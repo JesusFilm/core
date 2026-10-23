@@ -3,7 +3,6 @@ import { TEXT_CAPS } from '../../validation'
 import { CampaignVideoCarouselBlock } from '../campaignVideoCarouselBlock'
 import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
 import {
-  CAMPAIGN_CAROUSEL_TYPENAME,
   authorizeTypedBlockUpdate,
   sectionStyleColumns,
   updateBlock
@@ -29,7 +28,7 @@ builder.mutationField('campaignVideoCarouselBlockUpdate', (t) =>
       const block = await authorizeTypedBlockUpdate(
         String(id),
         context.user,
-        CAMPAIGN_CAROUSEL_TYPENAME
+        'CampaignVideoCarouselBlock'
       )
       const text = validateSectionText(input, [
         'eyebrow',

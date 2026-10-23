@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { LINK_URL_MAX_LENGTH } from '../../validation'
 
 export const CampaignLinkActionInput = builder.inputType(
   'CampaignLinkActionInput',
@@ -6,7 +7,7 @@ export const CampaignLinkActionInput = builder.inputType(
     fields: (t) => ({
       url: t.string({
         required: true,
-        description: 'An https address of at most 2048 characters.'
+        description: `An https address of at most ${LINK_URL_MAX_LENGTH} characters.`
       }),
       target: t.string({
         required: false,

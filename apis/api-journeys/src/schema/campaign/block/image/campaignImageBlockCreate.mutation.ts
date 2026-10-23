@@ -5,12 +5,11 @@ import { CampaignImageBlock } from '../campaignImageBlock'
 import { createSection } from '../createSection'
 import { sectionCreateErrors } from '../inputs/sectionCreateInput'
 import {
-  CAMPAIGN_IMAGE_TYPENAME,
   assertImageSlot,
   authorizeBlockCreate,
   createOwnedImageBlock,
   createWithClientIds,
-  validateSlotOwner
+  validateHostBlock
 } from '../service'
 
 import { CampaignImageBlockCreateInput } from './inputs'
@@ -33,7 +32,7 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
       if (input.pageId != null)
         return await createSection(
           { ...input, pageId: input.pageId },
-          CAMPAIGN_IMAGE_TYPENAME,
+          'CampaignImageBlock',
           context.user,
           async () => await validateImageInput(input)
         )
@@ -41,7 +40,7 @@ builder.mutationField('campaignImageBlockCreate', (t) =>
       const campaignId = String(input.campaignId)
       await authorizeBlockCreate(campaignId, context.user)
       const id = assertClientId(input.id)
-      const owner = await validateSlotOwner(
+      const owner = await validateHostBlock(
         String(input.parentBlockId),
         campaignId
       )

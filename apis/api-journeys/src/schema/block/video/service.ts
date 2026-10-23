@@ -6,8 +6,8 @@ import { graphql } from '@core/shared/gql'
 
 import { env } from '../../../env'
 import {
-  YoutubeVideosData,
-  youTubeUrl
+  YouTubeVideosData,
+  youTubeRequest
 } from '../../../lib/youTube/youTubeRequest'
 
 export const videoBlockYouTubeSchema = z.object({
@@ -100,18 +100,16 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   image: string
   duration: number
 }> {
-  const videosData: YoutubeVideosData = await (
-    await fetch(
-      youTubeUrl('videos', { part: 'snippet,contentDetails', id: videoId })
-    )
-  ).json()
-  if (videosData.error != null) {
-    // quota/auth failures must not read as "video does not exist"
-    throw new GraphQLError(
-      `YouTube API request failed: ${videosData.error.message}`,
-      { extensions: { code: 'INTERNAL_SERVER_ERROR' } }
-    )
-  }
+  // A quota or auth failure, a timeout or a non-OK status must not read as
+  // "video does not exist".
+  const videosData = await youTubeRequest<YouTubeVideosData>(
+    'videos',
+    { part: 'snippet,contentDetails', id: videoId },
+    (error) =>
+      new GraphQLError(`YouTube API request failed: ${error.message}`, {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+  )
   if (videosData.items?.[0] == null) {
     throw new GraphQLError('videoId cannot be found on YouTube', {
       extensions: { code: 'NOT_FOUND' }

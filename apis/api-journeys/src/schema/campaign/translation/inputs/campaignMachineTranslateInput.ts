@@ -1,6 +1,7 @@
 import { builder } from '../../../builder'
 import { CampaignMachineTranslateMode } from '../../enums'
 
+// Machine translation in code; the schema name `CampaignAiTranslateInput` is frozen for journeys-admin.
 export const CampaignMachineTranslateInput = builder.inputType(
   'CampaignAiTranslateInput',
   {

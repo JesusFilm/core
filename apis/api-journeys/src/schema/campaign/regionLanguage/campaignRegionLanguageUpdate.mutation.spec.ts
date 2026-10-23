@@ -644,6 +644,9 @@ describe('campaignRegionLanguageUpdate', () => {
       url: 'https://admin.nextstep.is/journeys/journeyId'
     })
 
+    expect(result.errors[0].message).toBe(
+      'user is not allowed to update share language'
+    )
     expect(result.errors[0].extensions).toMatchObject({ code: 'FORBIDDEN' })
     expect(createShortLink).not.toHaveBeenCalled()
   })

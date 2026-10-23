@@ -12,7 +12,7 @@ import {
 
 import {
   REWRITE_BATCH_SIZE,
-  updateAllShortlinks,
+  updateAllShortLinks,
   updateJourneyShortLink
 } from './service'
 
@@ -142,7 +142,7 @@ describe('shortlinkUpdater service', () => {
     })
   })
 
-  describe('updateAllShortlinks', () => {
+  describe('updateAllShortLinks', () => {
     it('leaves a getTo-built link untouched for a non-route-all domain and a journey outside its collection', async () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(
@@ -156,7 +156,7 @@ describe('shortlinkUpdater service', () => {
         )
       )
 
-      const count = await updateAllShortlinks(logger)
+      const count = await updateAllShortLinks(logger)
 
       expect(count).toBe(0)
       expect(mockMutate).not.toHaveBeenCalled()
@@ -183,7 +183,7 @@ describe('shortlinkUpdater service', () => {
           })
         )
 
-      const count = await updateAllShortlinks(logger)
+      const count = await updateAllShortLinks(logger)
 
       expect(prismaMock.qrCode.findMany).toHaveBeenCalledWith()
       expect(count).toBe(2)
@@ -213,7 +213,7 @@ describe('shortlinkUpdater service', () => {
       prismaMock.qrCode.findMany.mockResolvedValue([qrCodeRow()])
       prismaMock.journey.findUniqueOrThrow.mockResolvedValue(journeyRow())
 
-      await updateAllShortlinks(logger)
+      await updateAllShortLinks(logger)
 
       const to = mockMutate.mock.calls[0][0].variables.input.to as string
       expect(to).toContain('utm_campaign=shortLinkId')
@@ -241,7 +241,7 @@ describe('shortlinkUpdater service', () => {
         return updateSuccess
       })
 
-      const count = await updateAllShortlinks(logger)
+      const count = await updateAllShortLinks(logger)
 
       expect(count).toBe(rowCount)
       expect(mockMutate).toHaveBeenCalledTimes(rowCount)
@@ -261,7 +261,7 @@ describe('shortlinkUpdater service', () => {
         .mockRejectedValueOnce(new Error('No Journey found'))
         .mockResolvedValueOnce(journeyRow())
 
-      const count = await updateAllShortlinks(logger)
+      const count = await updateAllShortLinks(logger)
 
       expect(count).toBe(1)
       expect(mockMutate).toHaveBeenCalledTimes(1)

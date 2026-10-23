@@ -50,7 +50,7 @@ interface PublicCampaignResponse {
   errors?: Array<{ message: string; extensions: { code: string } }>
 }
 
-/** A region language as the `campaignPublic` read returns it: with the linked journey and Campaign QR Code rows attached. */
+/** A Share Language as the `campaignPublic` read returns it: with the linked journey and Campaign QR Code rows attached. */
 type LinkedRegionLanguage = CampaignRegionRow['languages'][number] & {
   journey: Record<string, unknown>
   qrCode: Record<string, unknown> | null
@@ -1312,13 +1312,19 @@ describe('campaignPublic', () => {
       document: CAMPAIGN_PUBLIC,
       variables: { slug: 'outreach-2026', hostname: 'outreach.example.org' }
     })) as PublicCampaignResponse
-    expect(both.errors?.[0].extensions.code).toBe('BAD_USER_INPUT')
+    expect(both.errors?.[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'slug'
+    })
 
     const neither = (await publicClient({
       document: CAMPAIGN_PUBLIC,
       variables: {}
     })) as PublicCampaignResponse
-    expect(neither.errors?.[0].extensions.code).toBe('BAD_USER_INPUT')
+    expect(neither.errors?.[0].extensions).toMatchObject({
+      code: 'BAD_USER_INPUT',
+      field: 'slug'
+    })
     expect(prismaMock.campaign.findFirst).not.toHaveBeenCalled()
   })
 

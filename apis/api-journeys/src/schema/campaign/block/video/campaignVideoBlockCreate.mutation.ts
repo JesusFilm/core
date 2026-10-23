@@ -2,14 +2,12 @@ import { builder } from '../../../builder'
 import { CLIENT_ID_ERROR, TEXT_CAPS, assertClientId } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
 import {
-  CAMPAIGN_CAROUSEL_TYPENAME,
-  CAMPAIGN_VIDEO_TYPENAME,
   assertMediaOwner,
   authorizeBlockCreate,
   createChildBlock,
   createOwnedBlock,
   createWithClientIds,
-  validateSlotOwner
+  validateHostBlock
 } from '../service'
 
 import { CampaignVideoBlockCreateInput } from './inputs'
@@ -30,14 +28,14 @@ builder.mutationField('campaignVideoBlockCreate', (t) =>
       const parentBlockId = String(input.parentBlockId)
       const campaign = await authorizeBlockCreate(campaignId, context.user)
       const id = assertClientId(input.id)
-      const owner = await validateSlotOwner(parentBlockId, campaignId)
-      const isCarouselItem = owner.typename === CAMPAIGN_CAROUSEL_TYPENAME
+      const owner = await validateHostBlock(parentBlockId, campaignId)
+      const isCarouselItem = owner.typename === 'CampaignVideoCarouselBlock'
       if (!isCarouselItem) assertMediaOwner(owner)
       const overrides = validateVideoText(input)
       const video = await pickVideo(input, campaign.defaultLanguageId)
       const data = {
         id,
-        typename: CAMPAIGN_VIDEO_TYPENAME,
+        typename: 'CampaignVideoBlock' as const,
         ...video,
         title: overrides.title ?? video.title,
         description: overrides.description ?? video.description

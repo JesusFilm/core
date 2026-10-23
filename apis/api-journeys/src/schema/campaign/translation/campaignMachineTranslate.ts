@@ -13,9 +13,9 @@ import { User } from '@core/yoga/firebaseClient'
 import { env } from '../../../env'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
+import { authorizeCampaign } from '../authorizeCampaign'
 import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { authorizeCampaign } from '../campaign.acl'
 import { type CampaignMachineTranslateModeValue } from '../enums'
 import { badUserInput, conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
@@ -41,6 +41,7 @@ interface CampaignMachineTranslateProgress {
   campaign: Campaign | null
 }
 
+// Machine translation in code; the schema name `CampaignAiTranslateProgress` is frozen for journeys-admin.
 const CampaignMachineTranslateProgressRef =
   builder.objectRef<CampaignMachineTranslateProgress>(
     'CampaignAiTranslateProgress'
@@ -520,6 +521,7 @@ export async function* campaignMachineTranslate(
   }
 }
 
+// Machine translation in code; the schema name `campaignAiTranslateSubscription` is frozen for journeys-admin.
 builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     description:

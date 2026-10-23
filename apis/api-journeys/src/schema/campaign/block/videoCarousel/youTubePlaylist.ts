@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql'
 
 import {
   YouTubeApiError,
-  YoutubeVideosData,
+  YouTubeVideosData,
   youTubeRequest
 } from '../../../../lib/youTube/youTubeRequest'
 import { parseISO8601Duration } from '../../../block/video/service'
@@ -44,7 +44,7 @@ export interface YouTubePlaylistVideo {
   duration: number
 }
 
-interface YoutubePlaylistItemsData {
+interface YouTubePlaylistItemsData {
   error?: YouTubeApiError
   items?: Array<{ contentDetails: { videoId: string } }>
 }
@@ -68,7 +68,7 @@ function youTubeError(error: YouTubeApiError): GraphQLError {
 export async function fetchYouTubePlaylistVideos(
   playlistId: string
 ): Promise<YouTubePlaylistVideo[]> {
-  const playlist = await youTubeRequest<YoutubePlaylistItemsData>(
+  const playlist = await youTubeRequest<YouTubePlaylistItemsData>(
     'playlistItems',
     {
       part: 'contentDetails',
@@ -83,7 +83,7 @@ export async function fetchYouTubePlaylistVideos(
   if (videoIds.length === 0)
     throw badUserInput('That playlist has no videos', 'url')
 
-  const videos = await youTubeRequest<YoutubeVideosData>(
+  const videos = await youTubeRequest<YouTubeVideosData>(
     'videos',
     { part: 'snippet,contentDetails', id: videoIds.join(',') },
     youTubeError

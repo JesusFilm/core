@@ -4,11 +4,7 @@ import { logger } from '../../../../logger'
 import { builder } from '../../../builder'
 import { NULL_FIELD_ERROR, TEXT_CAPS } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
-import {
-  CAMPAIGN_VIDEO_TYPENAME,
-  authorizeTypedBlockUpdate,
-  updateBlock
-} from '../service'
+import { authorizeTypedBlockUpdate, updateBlock } from '../service'
 
 import { CampaignVideoBlockUpdateInput } from './inputs'
 import {
@@ -61,7 +57,7 @@ builder.mutationField('campaignVideoBlockUpdate', (t) =>
       const block = await authorizeTypedBlockUpdate(
         String(id),
         context.user,
-        CAMPAIGN_VIDEO_TYPENAME
+        'CampaignVideoBlock'
       )
       const data = validateVideoText(input)
       if (data.title === null || data.description === null) {

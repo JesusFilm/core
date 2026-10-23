@@ -1,4 +1,5 @@
 import { builder } from '../../builder'
+import { LINK_URL_MAX_LENGTH } from '../validation'
 
 export type CampaignActionTypename =
   | 'CampaignLinkAction'
@@ -56,8 +57,7 @@ export const CampaignLinkActionRef = builder.prismaObject('CampaignAction', {
   interfaces: [CampaignActionInterface],
   isTypeOf: (action: unknown) =>
     isCampaignActionOfType(action, 'CampaignLinkAction'),
-  description:
-    'A web link: a journey, video or any https address. The url is validated as https and at most 2048 characters.',
+  description: `A web link: a journey, video or any https address. The url is validated as https and at most ${LINK_URL_MAX_LENGTH} characters.`,
   fields: (t) => ({
     url: t.string({
       nullable: false,

@@ -1,4 +1,5 @@
 import { builder } from '../../../builder'
+import { TEXT_CAPS } from '../../validation'
 
 export const CampaignRegionLanguageUpdateInput = builder.inputType(
   'CampaignRegionLanguageUpdateInput',
@@ -16,13 +17,11 @@ export const CampaignRegionLanguageUpdateInput = builder.inputType(
       }),
       title: t.string({
         required: false,
-        description:
-          'Edit the snapshotted title; at most 200 characters. Null clears it.'
+        description: `Edit the snapshotted title; at most ${TEXT_CAPS.journeyTitle} characters. Null clears it.`
       }),
       description: t.string({
         required: false,
-        description:
-          'Edit the snapshotted description; at most 1000 characters. Null clears it.'
+        description: `Edit the snapshotted description; at most ${TEXT_CAPS.journeyDescription} characters. Null clears it.`
       }),
       snapshotEdited: t.boolean({
         required: false,

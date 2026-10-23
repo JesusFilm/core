@@ -1,5 +1,5 @@
 import { builder } from '../../builder'
-import { authorizeCampaign } from '../campaign.acl'
+import { authorizeCampaign } from '../authorizeCampaign'
 import {
   CampaignTextField,
   CampaignTextSource,
