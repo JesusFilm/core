@@ -19,7 +19,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { graphql } from '@core/shared/gql'
 
-import { PublishedChip } from '../../../../../components/PublishedChip'
+import {
+  PublishedChip,
+  isPublishPending
+} from '../../../../../components/PublishedChip'
 import { DEFAULT_VIDEO_LANGUAGE_ID } from '../../constants'
 
 import {
@@ -37,6 +40,10 @@ const GET_ADMIN_VIDEO_VARIANTS = graphql(`
       variants(input: { onlyPublished: false }) {
         id
         published
+        reconciliation {
+          status
+          published
+        }
         language {
           id
           slug
@@ -118,7 +125,13 @@ export default function ClientLayout({
   const [isResumeRequestInFlight, setIsResumeRequestInFlight] = useState(false)
   const { videoId } = useParams<{ videoId: string }>()
 
-  const { data, loading, refetch } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
+  const {
+    data,
+    loading,
+    refetch,
+    startPolling: startVariantPolling,
+    stopPolling: stopVariantPolling
+  } = useQuery(GET_ADMIN_VIDEO_VARIANTS, {
     variables: { id: videoId, languageId: DEFAULT_VIDEO_LANGUAGE_ID }
   })
 
@@ -169,6 +182,20 @@ export default function ClientLayout({
     startUploadPolling,
     stopUploadPolling
   ])
+
+  const hasPendingPublish = useMemo(
+    () => (data?.adminVideo.variants ?? []).some(isPublishPending),
+    [data?.adminVideo.variants]
+  )
+
+  useEffect(() => {
+    if (hasPendingPublish) {
+      startVariantPolling(3000)
+      return () => stopVariantPolling()
+    }
+
+    stopVariantPolling()
+  }, [hasPendingPublish, startVariantPolling, stopVariantPolling])
 
   const completeResumedUpload = useCallback(() => {
     setResumingUploadId(null)
@@ -403,7 +430,10 @@ export default function ClientLayout({
                     primary={variant.language.name[0].value}
                     secondary={variant.language.id}
                   />
-                  <PublishedChip published={variant.published} />
+                  <PublishedChip
+                    published={variant.published}
+                    pending={isPublishPending(variant)}
+                  />
                 </Box>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                   <IconButton
