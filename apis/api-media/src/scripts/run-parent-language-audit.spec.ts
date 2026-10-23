@@ -1,0 +1,333 @@
+import { open, readFile } from 'fs/promises'
+import path from 'path'
+
+import {
+  type Mock,
+  afterAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi
+} from 'vitest'
+
+import '../../test/prismaMock'
+
+import type { ParentVariantAuditResult } from './audit-parent-variants'
+import { auditParentVariants } from './audit-parent-variants'
+import type { ParentLanguageRepairSummary } from './parent-language-repair'
+import { applyParentLanguageRepairs } from './parent-language-repair'
+// eslint-disable-next-line import/order -- must follow the mocks above
+import { main, runParentLanguageAudit } from './run-parent-language-audit'
+
+vi.mock('./audit-parent-variants', () => ({
+  auditParentVariants: vi.fn()
+}))
+vi.mock('./parent-language-repair', () => ({
+  applyParentLanguageRepairs: vi.fn(),
+  toPendingRetry: (entry: {
+    parentVideoId: string
+    childVideoId: string
+    languageId: string
+    variantId: string
+    action: string
+  }) => ({
+    parentVideoId: entry.parentVideoId,
+    childVideoId: entry.childVideoId,
+    languageId: entry.languageId,
+    variantId: entry.variantId,
+    action: entry.action
+  })
+}))
+
+const files = new Map<string, string>()
+const locks = new Set<string>()
+
+vi.mock('fs', () => {
+  const fsMock = { existsSync: vi.fn(() => true) }
+  return { ...fsMock, default: fsMock }
+})
+
+vi.mock('fs/promises', () => ({
+  mkdir: vi.fn().mockResolvedValue(undefined),
+  readFile: vi.fn((path: string) => {
+    if (!files.has(path)) {
+      const error: NodeJS.ErrnoException = new Error('ENOENT')
+      error.code = 'ENOENT'
+      return Promise.reject(error)
+    }
+    return Promise.resolve(files.get(path) as string)
+  }),
+  writeFile: vi.fn((path: string, data: string) => {
+    files.set(path, data)
+    return Promise.resolve()
+  }),
+  appendFile: vi.fn((path: string, data: string) => {
+    files.set(path, (files.get(path) ?? '') + data)
+    return Promise.resolve()
+  }),
+  rename: vi.fn((oldPath: string, newPath: string) => {
+    files.set(newPath, files.get(oldPath) as string)
+    files.delete(oldPath)
+    return Promise.resolve()
+  }),
+  open: vi.fn((path: string, flag: string) => {
+    if (flag === 'wx' && locks.has(path)) {
+      const error: NodeJS.ErrnoException = new Error('EEXIST')
+      error.code = 'EEXIST'
+      return Promise.reject(error)
+    }
+    locks.add(path)
+    return Promise.resolve({ close: vi.fn().mockResolvedValue(undefined) })
+  }),
+  unlink: vi.fn((path: string) => {
+    locks.delete(path)
+    return Promise.resolve()
+  })
+}))
+
+const mockedAudit = auditParentVariants as unknown as Mock
+const mockedRepair = applyParentLanguageRepairs as unknown as Mock
+
+function auditResult(
+  overrides: Partial<ParentVariantAuditResult> = {}
+): ParentVariantAuditResult {
+  return {
+    applied: false,
+    deterministicGaps: [],
+    ambiguous: [],
+    ...overrides
+  }
+}
+
+function repairSummary(
+  overrides: Partial<ParentLanguageRepairSummary> = {}
+): ParentLanguageRepairSummary {
+  return {
+    applied: false,
+    repaired: [],
+    indexIncomplete: [],
+    failed: [],
+    pendingIndexRetries: [],
+    ...overrides
+  }
+}
+
+const ORIGINAL_ARGV = process.argv
+const RETRY_PATH = path.resolve(
+  '.cache/api-media',
+  'parent-language-audit-index-retry.json'
+)
+const REPORT_PATH = path.resolve(
+  '.cache/api-media',
+  'parent-language-audit-report.jsonl'
+)
+const LOCK_PATH = `${RETRY_PATH}.lock`
+
+describe('run-parent-language-audit', () => {
+  beforeEach(() => {
+    files.clear()
+    locks.clear()
+    mockedAudit.mockReset()
+    mockedRepair.mockReset()
+    process.argv = ['node', 'run-parent-language-audit.ts']
+  })
+
+  afterAll(() => {
+    process.argv = ORIGINAL_ARGV
+  })
+
+  it('runs dry run by default, never passing pendingIndexRetries to the repair step', async () => {
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary())
+
+    const { repair } = await runParentLanguageAudit(false)
+
+    expect(mockedRepair).toHaveBeenCalledWith([], {
+      apply: false,
+      pendingIndexRetries: []
+    })
+    expect(repair.applied).toBe(false)
+  })
+
+  it('loads pending index retries from disk and persists the updated list after an apply run', async () => {
+    const savedRetry = {
+      parentVideoId: 'series-2',
+      childVideoId: 'episode-2',
+      languageId: '6788',
+      variantId: '6788_series-2',
+      action: 'createGeneratedParentVariant' as const
+    }
+    files.set(RETRY_PATH, JSON.stringify([savedRetry]))
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(
+      repairSummary({ applied: true, pendingIndexRetries: [] })
+    )
+
+    await runParentLanguageAudit(true)
+
+    expect(mockedRepair).toHaveBeenCalledWith([], {
+      apply: true,
+      pendingIndexRetries: [savedRetry],
+      onOutcome: expect.any(Function)
+    })
+    expect(files.get(RETRY_PATH)).toBe('[]')
+  })
+
+  it('persists the report and retry file incrementally as each outcome resolves, not only at the end', async () => {
+    mockedAudit.mockResolvedValue(auditResult())
+    const outcome = {
+      parentVideoId: 'series-1',
+      childVideoId: 'episode-1',
+      languageId: '20770',
+      variantId: '20770_series-1',
+      action: 'createGeneratedParentVariant' as const,
+      result: 'indexIncomplete' as const,
+      error: 'Algolia unavailable'
+    }
+    mockedRepair.mockImplementation(async (_gaps, options) => {
+      await options.onOutcome?.(outcome)
+      // Simulate the file state an interruption would leave behind: the
+      // incremental write from onOutcome already landed even though this
+      // mock never returns a final summary.
+      expect(files.get(RETRY_PATH)).toBe(
+        JSON.stringify(
+          [
+            {
+              parentVideoId: outcome.parentVideoId,
+              childVideoId: outcome.childVideoId,
+              languageId: outcome.languageId,
+              variantId: outcome.variantId,
+              action: outcome.action
+            }
+          ],
+          null,
+          2
+        )
+      )
+      expect(files.get(REPORT_PATH)).toContain('"type":"indexIncomplete"')
+      return repairSummary({
+        applied: true,
+        indexIncomplete: [outcome],
+        pendingIndexRetries: [
+          {
+            parentVideoId: outcome.parentVideoId,
+            childVideoId: outcome.childVideoId,
+            languageId: outcome.languageId,
+            variantId: outcome.variantId,
+            action: outcome.action
+          }
+        ]
+      })
+    })
+
+    await runParentLanguageAudit(true)
+  })
+
+  it('propagates a non-ENOENT retry-file read error instead of treating it as an empty queue', async () => {
+    const permissionError: NodeJS.ErrnoException = new Error('EACCES')
+    permissionError.code = 'EACCES'
+    vi.mocked(readFile).mockRejectedValueOnce(permissionError)
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+
+    await expect(runParentLanguageAudit(true)).rejects.toThrow('EACCES')
+
+    expect(mockedRepair).not.toHaveBeenCalled()
+  })
+
+  it('propagates invalid JSON in the retry file instead of silently discarding it', async () => {
+    files.set(RETRY_PATH, 'not valid json')
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+
+    await expect(runParentLanguageAudit(true)).rejects.toThrow()
+
+    expect(mockedRepair).not.toHaveBeenCalled()
+  })
+
+  it('exits non-zero when apply mode leaves index-incomplete or failed entries', async () => {
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(
+      repairSummary({
+        applied: true,
+        indexIncomplete: [
+          {
+            parentVideoId: 'series-1',
+            childVideoId: 'episode-1',
+            languageId: '20770',
+            variantId: '20770_series-1',
+            action: 'createGeneratedParentVariant',
+            result: 'indexIncomplete',
+            error: 'Algolia unavailable'
+          }
+        ],
+        pendingIndexRetries: [
+          {
+            parentVideoId: 'series-1',
+            childVideoId: 'episode-1',
+            languageId: '20770',
+            variantId: '20770_series-1',
+            action: 'createGeneratedParentVariant'
+          }
+        ]
+      })
+    )
+    process.argv.push('--apply')
+    process.exitCode = undefined
+
+    await main()
+
+    expect(process.exitCode).toBe(1)
+  })
+
+  it('refuses to start a second apply run while one is already in progress, without touching the retry file', async () => {
+    await open(LOCK_PATH, 'wx')
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+
+    await expect(runParentLanguageAudit(true)).rejects.toThrow(
+      'apply run appears to be in progress'
+    )
+    expect(mockedAudit).not.toHaveBeenCalled()
+    expect(mockedRepair).not.toHaveBeenCalled()
+  })
+
+  it('does not take a lock for a dry run, and releases its own lock once an apply run finishes', async () => {
+    mockedAudit.mockResolvedValue(auditResult())
+    mockedRepair.mockResolvedValue(repairSummary())
+
+    await runParentLanguageAudit(false)
+    expect(locks.has(LOCK_PATH)).toBe(false)
+
+    mockedRepair.mockResolvedValue(repairSummary({ applied: true }))
+    await runParentLanguageAudit(true)
+    expect(locks.has(LOCK_PATH)).toBe(false)
+
+    // The lock being clear means a second apply run is free to proceed.
+    await expect(runParentLanguageAudit(true)).resolves.toBeDefined()
+  })
+
+  it('exits 0 in dry run even when deterministic gaps are reported', async () => {
+    mockedAudit.mockResolvedValue(
+      auditResult({
+        deterministicGaps: [
+          {
+            parentVideoId: 'series-1',
+            childVideoId: 'episode-1',
+            languageId: '20770',
+            variantId: '20770_series-1',
+            action: 'createGeneratedParentVariant',
+            result: 'proposed'
+          }
+        ]
+      })
+    )
+    mockedRepair.mockResolvedValue(repairSummary())
+    process.exitCode = undefined
+
+    await main()
+
+    expect(process.exitCode).toBeUndefined()
+  })
+})
