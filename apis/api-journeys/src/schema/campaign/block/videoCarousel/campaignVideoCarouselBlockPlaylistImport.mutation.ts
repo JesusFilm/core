@@ -4,13 +4,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { badUserInput } from '../../errors'
+import { badUserInput, notFound } from '../../errors'
 import { BLOCK_CAP_ERROR } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
 import {
   CAMPAIGN_CAROUSEL_TYPENAME,
   CAMPAIGN_VIDEO_TYPENAME,
   assertCampaignBlockRoom,
+  assertParentStillLive,
   authorizeTypedBlockUpdate,
   getSiblings,
   lockCampaignStructure,
@@ -51,6 +52,9 @@ builder.mutationField('campaignVideoCarouselBlockPlaylistImport', (t) =>
         throw badUserInput('That playlist has no public videos', 'url')
       return await prisma.$transaction(async (tx) => {
         await lockCampaignStructure(tx, carousel.campaignId)
+        await assertParentStillLive(tx, carousel.id, () =>
+          notFound('block not found')
+        )
         await assertCampaignBlockRoom(tx, carousel.campaignId, videos.length)
         const siblings = await getSiblings(
           { ...carousel, parentBlockId: carousel.id },

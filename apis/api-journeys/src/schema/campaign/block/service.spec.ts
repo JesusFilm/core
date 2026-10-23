@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import sortBy from 'lodash/sortBy'
 
 import { CampaignAction, Prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
@@ -35,6 +36,7 @@ import {
   getSiblings,
   removeBlock,
   reorderBlock,
+  reorderSiblings,
   restoreBlock,
   sectionStyleColumns,
   swapSlot,
@@ -767,7 +769,51 @@ describe('tree order and creates', () => {
     })
   })
 
+  describe('reorderSiblings', () => {
+    const siblings = ['sectionC', 'sectionA', 'sectionB'].map((id) => ({
+      ...hero,
+      id,
+      action: null
+    }))
+
+    it('renumbers from zero and returns the siblings in the order given', async () => {
+      mockCampaignBlockWrites(hero)
+
+      const reordered = await reorderSiblings(siblings, prismaMock)
+
+      expect(reordered.map((block) => [block.id, block.parentOrder])).toEqual([
+        ['sectionC', 0],
+        ['sectionA', 1],
+        ['sectionB', 2]
+      ])
+    })
+
+    it('updates one sibling at a time in id order, as lockCampaignTextRows locks them', async () => {
+      const updates: string[] = []
+      let inFlight = 0
+      prismaMock.campaignBlock.update.mockImplementation((async ({
+        where,
+        data
+      }: any) => {
+        inFlight++
+        expect(inFlight).toBe(1)
+        await Promise.resolve()
+        updates.push(`${where.id}:${data.parentOrder}`)
+        inFlight--
+        return { ...hero, id: where.id, ...data }
+      }) as never)
+
+      await reorderSiblings(siblings, prismaMock)
+
+      expect(updates).toEqual(['sectionA:1', 'sectionB:2', 'sectionC:0'])
+    })
+  })
+
   describe('createChildBlock', () => {
+    beforeEach(() => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+    })
+
     it('sets parentOrder = siblings.length across above and below and copies the parent scoping down', async () => {
       prismaMock.campaignBlock.findMany.mockResolvedValue([
         { ...heroButton, placement: 'above', parentOrder: 0 },
@@ -892,10 +938,13 @@ describe('tree order and creates', () => {
 
       expect(created).toMatchObject({ id: 'newId', parentOrder: 2 })
       expect(
-        prismaMock.campaignBlock.update.mock.calls.map(([call]) => [
-          call.where.id,
-          call.data.parentOrder
-        ])
+        sortBy(
+          prismaMock.campaignBlock.update.mock.calls.map(([call]) => [
+            call.where.id,
+            call.data.parentOrder
+          ]),
+          ([, parentOrder]) => parentOrder
+        )
       ).toEqual([
         ['heroId', 0],
         ['landingSwitcherId', 1],
@@ -1008,6 +1057,7 @@ describe('tree order and creates', () => {
     }
 
     it('creates the slot’s only section at parentOrder 0 with the slot’s scoping', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(slot)
       prismaMock.campaignBlock.findMany.mockResolvedValue([])
       prismaMock.campaignBlock.create.mockResolvedValue({
         ...hero,
@@ -1121,6 +1171,7 @@ describe('tree order and creates', () => {
     })
 
     it('appends a new item after the carousel’s children by parentOrder', async () => {
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(carousel)
       prismaMock.campaignBlock.findMany.mockResolvedValue([
         item('firstId', 0),
         item('secondId', 1)
@@ -2342,10 +2393,12 @@ describe('the structure lock', () => {
     [
       'createChildBlock',
       'it counts the siblings',
-      async () =>
-        await createChildBlock(prismaMock, hero, {
+      async () => {
+        prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+        return await createChildBlock(prismaMock, hero, {
           typename: 'CampaignButtonBlock'
         })
+      }
     ],
     [
       'createTopLevelBlock',
@@ -2360,12 +2413,14 @@ describe('the structure lock', () => {
     [
       'createSlotChild',
       'it reads the occupant',
-      async () =>
-        await createSlotChild(
+      async () => {
+        prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+        return await createSlotChild(
           prismaMock,
           { ...hero, id: 'slotId', typename: 'CampaignColumnBlock' },
           { typename: 'CampaignHeroBlock' }
         )
+      }
     ],
     [
       'createColumnsSection',
@@ -2475,18 +2530,18 @@ describe('the structure lock', () => {
     }
 
     it('refuses a child of a section binned since it was validated, without a create', async () => {
-      prismaMock.campaignBlock.count.mockResolvedValue(0)
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
       await expectParentRefused(
         createChildBlock(prismaMock, hero, { typename: 'CampaignButtonBlock' })
       )
-      expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
         where: { id: 'heroId', deletedAt: null }
       })
     })
 
     it('refuses a section in a slot binned since with its Columns section, without a create', async () => {
-      prismaMock.campaignBlock.count.mockResolvedValue(0)
+      prismaMock.campaignBlock.findFirst.mockResolvedValue(null)
 
       await expectParentRefused(
         createSlotChild(
@@ -2495,7 +2550,7 @@ describe('the structure lock', () => {
           { typename: 'CampaignHeroBlock' }
         )
       )
-      expect(prismaMock.campaignBlock.count).toHaveBeenCalledWith({
+      expect(prismaMock.campaignBlock.findFirst).toHaveBeenCalledWith({
         where: { id: 'slotId', deletedAt: null }
       })
     })
@@ -2561,13 +2616,12 @@ describe('the block cap', () => {
 
   /**
    * `live` blocks in the campaign; `restoring` rows share the restored
-   * block's `deletedAt`. A count by id is a parent's liveness: always live.
+   * block's `deletedAt`.
    */
   function countBlocks(live: number, restoring = 0): void {
     prismaMock.campaignBlock.count.mockImplementation((async ({
       where
     }: any) => {
-      if (where.id != null) return where.deletedAt === null ? 1 : 0
       if (where.deletedAt === null) return live
       return where.deletedAt instanceof Date ? restoring : 0
     }) as never)
@@ -2594,7 +2648,13 @@ describe('the block cap', () => {
     mockCampaignBlockWrites(hero, { createdId: 'newId' })
   })
 
+  /** The parent a child is created under, still live under the lock. */
+  function liveParent(): void {
+    prismaMock.campaignBlock.findFirst.mockResolvedValue(hero)
+  }
+
   it('counts the live blocks inside the transaction, after the structure lock', async () => {
+    liveParent()
     countBlocks(0)
 
     await createChildBlock(prismaMock, hero, {
@@ -2611,6 +2671,8 @@ describe('the block cap', () => {
   })
 
   describe('a child block', () => {
+    beforeEach(liveParent)
+
     it(`is refused at ${CAMPAIGN_BLOCKS_MAX} live blocks`, async () => {
       countBlocks(CAMPAIGN_BLOCKS_MAX)
       await expectRefused(
