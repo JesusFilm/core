@@ -3,11 +3,11 @@ import { GraphQLError } from 'graphql'
 import { JourneyStatus, Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { graphqlRequest } from '../../lib/gateway/graphqlRequest'
+import { badUserInput } from '../campaign/errors'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   getJourneyPublicUrl
 } from '../campaign/getJourneyPublicUrl'
-import { badUserInput } from '../campaign/validation'
 
 interface ShortLinkCreateInput {
   id: string

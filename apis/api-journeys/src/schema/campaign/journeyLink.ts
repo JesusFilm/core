@@ -1,10 +1,11 @@
 import { prisma } from '@core/prisma/journeys/client'
 
+import { badUserInput } from './errors'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   JourneyWithPublicUrl
 } from './getJourneyPublicUrl'
-import { badUserInput, isOneOf } from './validation'
+import { isOneOf } from './validation'
 
 export const JOURNEY_NOT_FOUND_MESSAGE = 'Journey not found or not published'
 
@@ -55,15 +56,14 @@ export function parseJourneyLink(url: string): JourneyLink {
 }
 
 /**
- * Resolve a pasted link to a live-published journey of any team, with the
- * routing filter skipped (PRD §5): an unknown journey and an unpublished one
- * are the same `BAD_USER_INPUT` on `url`, never `NOT_FOUND`.
+ * The journey `link` addresses in one of `statuses`, not deleted; anything
+ * else is `BAD_USER_INPUT` on `field`.
  */
-export async function resolveJourneyLink(
-  url: string,
-  statuses: LinkableStatus[] = ['published']
+async function findLinkableJourney(
+  link: JourneyLink,
+  statuses: LinkableStatus[],
+  field: string
 ): Promise<JourneyWithPublicUrl> {
-  const link = parseJourneyLink(url)
   const journey = await prisma.journey.findFirst({
     where: {
       ...('id' in link ? { id: link.id } : { slug: link.slug }),
@@ -72,8 +72,21 @@ export async function resolveJourneyLink(
     },
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
-  if (journey == null) throw badUserInput(notFoundMessage(statuses), 'url')
+  if (journey == null) throw badUserInput(notFoundMessage(statuses), field)
   return journey
+}
+
+/**
+ * Resolve a pasted link to a live-published journey of any team, with the
+ * routing filter skipped (GLOSSARY.md: Campaign access): an unknown journey
+ * and an unpublished one are the same `BAD_USER_INPUT` on `url`, never
+ * `NOT_FOUND`.
+ */
+export async function resolveJourneyLink(
+  url: string,
+  statuses: LinkableStatus[] = ['published']
+): Promise<JourneyWithPublicUrl> {
+  return await findLinkableJourney(parseJourneyLink(url), statuses, 'url')
 }
 
 /** A journey addressed by id must likewise be live-published. */
@@ -82,14 +95,5 @@ export async function resolveJourneyId(
   field = 'journeyId',
   statuses: LinkableStatus[] = ['published']
 ): Promise<JourneyWithPublicUrl> {
-  const journey = await prisma.journey.findFirst({
-    where: {
-      id: journeyId,
-      status: { in: statuses },
-      deletedAt: null
-    },
-    include: INCLUDE_JOURNEY_PUBLIC_URL
-  })
-  if (journey == null) throw badUserInput(notFoundMessage(statuses), field)
-  return journey
+  return await findLinkableJourney({ id: journeyId }, statuses, field)
 }

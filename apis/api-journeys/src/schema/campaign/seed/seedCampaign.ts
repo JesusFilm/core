@@ -34,7 +34,7 @@ export interface SeedCampaignInput {
 }
 
 /**
- * The Campaign Seed (PRD §14): everything a campaign is born with, written
+ * The Campaign Seed (GLOSSARY.md): everything a campaign is born with, written
  * inside the caller's transaction in a fixed order. Ids are generated up front
  * so ScrollToBlockAction targets exist in the same transaction. Returns the
  * new campaign id.

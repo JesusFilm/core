@@ -7,12 +7,12 @@ import {
   videoBlockMuxSchema,
   videoBlockYouTubeSchema
 } from '../../../block/video/service'
+import { badUserInput } from '../../errors'
 import { fetchWatchVideoById } from '../../gatewayClient'
 import {
   TEXT_CAPS,
   assertEnum,
   assertLengthOrNull,
-  badUserInput,
   parseWithZod,
   truncate
 } from '../../validation'

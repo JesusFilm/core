@@ -1,17 +1,7 @@
-import { GraphQLError } from 'graphql'
-
-import { Prisma, prisma } from '@core/prisma/journeys/client'
-
-import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
-import {
-  campaignLanguageTags,
-  campaignPagePaths,
-  enqueueCampaignRevalidation
-} from './revalidateCampaign'
+import { setCampaignStatus } from './setCampaignStatus'
 
 builder.mutationField('campaignUnpublish', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -22,62 +12,7 @@ builder.mutationField('campaignUnpublish', (t) =>
     args: {
       id: t.arg({ type: 'ID', required: true })
     },
-    resolve: async (query, _parent, args, context) => {
-      const id = String(args.id)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id },
-        include: {
-          ...INCLUDE_CAMPAIGN_ACL,
-          regions: true,
-          customDomains: true
-        }
-      })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Manage, campaign, context.user))
-        throw new GraphQLError('user is not allowed to unpublish campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-
-      try {
-        const { result, transitioned } = await prisma.$transaction(
-          async (tx) => {
-            let transitioned = false
-            if (campaign.status === 'published') {
-              const { count } = await tx.campaign.updateMany({
-                where: { id, status: 'published' },
-                data: { status: 'draft' }
-              })
-              transitioned = count > 0
-            }
-            const result = await tx.campaign.findUniqueOrThrow({
-              ...query,
-              where: { id }
-            })
-            return { result, transitioned }
-          }
-        )
-        if (transitioned)
-          await enqueueCampaignRevalidation(
-            campaignPagePaths({
-              ...campaign,
-              hostnames: campaign.customDomains.map(({ name }) => name),
-              languageTags: await campaignLanguageTags(campaign.id)
-            })
-          )
-        return result
-      } catch (error) {
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === 'P2025'
-        )
-          throw new GraphQLError('campaign not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
-        throw error
-      }
-    }
+    resolve: async (query, _parent, args, context) =>
+      await setCampaignStatus(query, String(args.id), 'unpublish', context.user)
   })
 )

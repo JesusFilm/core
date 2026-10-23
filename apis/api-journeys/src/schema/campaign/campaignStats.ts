@@ -5,7 +5,7 @@ import type {
   CampaignRegionStats,
   CampaignStats,
   CampaignStatsScope
-} from './stats/campaignStats'
+} from './stats/getCampaignStats'
 
 export const CampaignCountryStatRef = builder.objectRef<CampaignCountryStat>(
   'CampaignCountryStat'

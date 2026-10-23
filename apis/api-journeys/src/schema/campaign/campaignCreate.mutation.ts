@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
@@ -7,17 +5,12 @@ import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
 import { campaignAcl } from './campaign.acl'
-import { conflict } from './errors'
+import { badUserInput, conflict, forbidden, notFound } from './errors'
 import { fetchLanguage } from './gatewayClient'
 import { CampaignCreateInput } from './inputs'
 import { resolveCampaignStringValues, seedCampaign } from './seed'
-import {
-  TEXT_CAPS,
-  assertLength,
-  badUserInput,
-  generateUniqueCampaignSlug,
-  isUniqueViolation
-} from './validation'
+import { generateUniqueCampaignSlug } from './slug'
+import { TEXT_CAPS, assertLength, isUniqueViolation } from './validation'
 
 builder.mutationField('campaignCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -34,14 +27,9 @@ builder.mutationField('campaignCreate', (t) =>
         where: { id: teamId },
         include: { userTeams: true }
       })
-      if (team == null)
-        throw new GraphQLError('team not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
+      if (team == null) throw notFound('team not found')
       if (!campaignAcl(Action.Create, { team }, context.user))
-        throw new GraphQLError('user is not allowed to create campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+        throw forbidden('user is not allowed to create campaign')
 
       const title = assertLength(
         input.title,

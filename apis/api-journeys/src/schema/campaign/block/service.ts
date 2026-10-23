@@ -22,7 +22,7 @@ import {
   CAMPAIGN_IMAGE_SLOTS,
   type CampaignImageSlotValue
 } from '../enums/campaignImageSlot'
-import { conflict, forbidden, notFound } from '../errors'
+import { badUserInput, conflict, forbidden, notFound } from '../errors'
 import {
   CAMPAIGN_BLOCKS_MAX,
   assertClientIds,
@@ -30,7 +30,6 @@ import {
   assertEnumOrNull,
   assertHexOrNull,
   assertNotNull,
-  badUserInput,
   isOneOf,
   isUniqueViolation
 } from '../validation'

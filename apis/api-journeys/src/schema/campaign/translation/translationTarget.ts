@@ -9,7 +9,7 @@ import {
   CAMPAIGN_STRING_TEXT_FIELDS,
   CAMPAIGN_TITLE_TEXT_FIELDS,
   CampaignTextFieldCaps
-} from './campaignTextField'
+} from './textFields'
 
 /** The four rows a Translated Field lives on. */
 export type TranslationTargetKind = 'block' | 'region' | 'string' | 'campaign'

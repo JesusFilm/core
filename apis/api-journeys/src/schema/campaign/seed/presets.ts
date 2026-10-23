@@ -1,7 +1,7 @@
 /**
  * The Theme Presets are code constants shared with the editor and the viewer
  * (`libs/journeys/ui`), so the seed, the panel's Light / Dark / Custom label
- * and the renderer agree on the same nine values.
+ * and the renderer agree on the same ten values.
  */
 export {
   CAMPAIGN_THEME_PRESETS,

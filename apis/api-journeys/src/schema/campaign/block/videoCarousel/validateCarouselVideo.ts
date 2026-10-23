@@ -1,5 +1,6 @@
+import { badUserInput } from '../../errors'
 import { fetchLanguage, fetchWatchVideoById } from '../../gatewayClient'
-import { assertNotNull, badUserInput } from '../../validation'
+import { assertNotNull } from '../../validation'
 import { resolveWatchUrl } from '../video/watchUrl'
 
 export interface CarouselVideoInput {

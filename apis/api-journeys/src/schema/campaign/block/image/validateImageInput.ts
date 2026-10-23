@@ -2,13 +2,13 @@ import { GraphQLError } from 'graphql'
 
 import { env } from '../../../../env'
 import { transformInput } from '../../../block/image/transformInput'
+import { badUserInput } from '../../errors'
 import {
   TEXT_CAPS,
   assertHttpsUrl,
   assertLengthOrNull,
   assertPercentOrNull,
-  assertScaleOrNull,
-  badUserInput
+  assertScaleOrNull
 } from '../../validation'
 
 /** Every stored campaign image lives on Cloudflare Images (PRD §15). */

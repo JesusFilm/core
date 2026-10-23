@@ -11,46 +11,42 @@ import { hardenPrompt, preSystemPrompt } from '@core/shared/ai/prompts'
 import { User } from '@core/yoga/firebaseClient'
 
 import { env } from '../../../env'
-import { Action } from '../../../lib/auth/ability'
 import { logger } from '../../../logger'
 import { builder } from '../../builder'
 import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { campaignAcl } from '../campaign.acl'
-import { conflict } from '../errors'
+import { authorizeCampaign } from '../campaign.acl'
+import { type CampaignMachineTranslateModeValue } from '../enums'
+import { badUserInput, conflict } from '../errors'
 import { fetchLanguageName } from '../gatewayClient'
 import { TranslationsJson, parseTranslations } from '../translatedValue'
-import { badUserInput } from '../validation'
 
-import {
-  CAMPAIGN_TEXT_FIELD_VALUES,
-  translationsColumn
-} from './campaignTextField'
+import { CampaignMachineTranslateInput } from './inputs'
+import { CAMPAIGN_TEXT_FIELD_VALUES, translationsColumn } from './textFields'
 import {
   CampaignTranslationRowShape,
   INCLUDE_TRANSLATIONS_CAMPAIGN,
   campaignTranslationRows
-} from './campaignTranslations.query'
-import { CampaignAiTranslateInput } from './inputs'
+} from './translationRows'
 import {
   TranslationRunLock,
   acquireTranslationRunLock
 } from './translationRunLock'
 import { TRANSLATION_TARGETS, TranslationTargetKind } from './translationTarget'
 
-type CampaignAiTranslateMode = 'all' | 'missing'
-
-interface CampaignAiTranslateProgress {
+interface CampaignMachineTranslateProgress {
   progress: number
   message: string
   translatedCount: number
   campaign: Campaign | null
 }
 
-const CampaignAiTranslateProgressRef =
-  builder.objectRef<CampaignAiTranslateProgress>('CampaignAiTranslateProgress')
+const CampaignMachineTranslateProgressRef =
+  builder.objectRef<CampaignMachineTranslateProgress>(
+    'CampaignAiTranslateProgress'
+  )
 
-builder.objectType(CampaignAiTranslateProgressRef, {
+builder.objectType(CampaignMachineTranslateProgressRef, {
   description:
     'One progress report of a machine-translation run; `campaign` is present only on the final report.',
   fields: (t) => ({
@@ -120,11 +116,6 @@ interface TranslationBatch {
   rows: CampaignTranslationRowShape[]
 }
 
-function targetIdOf(row: CampaignTranslationRowShape): string {
-  const { blockId, regionId, stringId, campaignId } = row.target
-  return (blockId ?? regionId ?? stringId ?? campaignId) as string
-}
-
 function rowKey(targetId: string, field: string): string {
   return `${targetId}:${field}`
 }
@@ -155,7 +146,7 @@ function sectionIdOf(
 export function translationBatches(
   rows: CampaignTranslationRowShape[],
   parentOf: Map<string, string | null>,
-  mode: CampaignAiTranslateMode
+  mode: CampaignMachineTranslateModeValue
 ): TranslationBatch[] {
   const batches = new Map<string, TranslationBatch>()
   for (const row of rows) {
@@ -163,7 +154,7 @@ export function translationBatches(
       continue
     const key =
       row.group === 'landing' || row.group === 'region'
-        ? `section:${sectionIdOf(row.target.blockId as string, parentOf)}`
+        ? `section:${sectionIdOf(row.target.id, parentOf)}`
         : row.group
     const batch = batches.get(key) ?? { label: key, rows: [] }
     batch.rows.push(row)
@@ -173,7 +164,7 @@ export function translationBatches(
 }
 
 function describeRow(row: CampaignTranslationRowShape): string {
-  return `[${targetIdOf(row)}] ${row.field} (max ${row.maxLength} characters): ${row.defaultValue}`
+  return `[${row.target.id}] ${row.field} (max ${row.maxLength} characters): ${row.defaultValue}`
 }
 
 /** Output longer than a field's cap is cut to the cap, not failed. */
@@ -191,13 +182,6 @@ function withinCap(
   return characters.slice(0, cap).join('').trim()
 }
 
-function kindOf(row: CampaignTranslationRowShape): TranslationTargetKind {
-  if (row.target.blockId != null) return 'block'
-  if (row.target.regionId != null) return 'region'
-  if (row.target.stringId != null) return 'string'
-  return 'campaign'
-}
-
 /**
  * Lock the batch's target rows in the default-language swap's order: blocks,
  * regions, then strings, each by id, then the campaign row. Block edits and
@@ -210,7 +194,9 @@ async function lockBatchTargets(
   targetIds: Map<string, TranslationTargetKind>
 ): Promise<void> {
   for (const kind of ['block', 'region', 'string'] as const) {
-    const ids = [...targetIds].filter(([, k]) => k === kind).map(([id]) => id)
+    const ids = [...targetIds]
+      .filter(([, targetKind]) => targetKind === kind)
+      .map(([id]) => id)
     if (ids.length > 0) await TRANSLATION_TARGETS[kind].lock(tx, ids)
   }
   await lockCampaign(tx, campaignId)
@@ -235,21 +221,21 @@ async function writeBatch({
 }: {
   campaignId: string
   languageId: string
-  mode: CampaignAiTranslateMode
+  mode: CampaignMachineTranslateModeValue
   batch: TranslationBatch
   translated: Map<string, MachineTranslation>
 }): Promise<number> {
   const rowsByTarget = new Map<string, CampaignTranslationRowShape[]>()
   for (const row of batch.rows) {
-    if (!translated.has(rowKey(targetIdOf(row), row.field))) continue
-    const rows = rowsByTarget.get(targetIdOf(row)) ?? []
+    if (!translated.has(rowKey(row.target.id, row.field))) continue
+    const rows = rowsByTarget.get(row.target.id) ?? []
     rows.push(row)
-    rowsByTarget.set(targetIdOf(row), rows)
+    rowsByTarget.set(row.target.id, rows)
   }
   if (rowsByTarget.size === 0) return 0
 
   const kinds = new Map(
-    [...rowsByTarget].map(([targetId, rows]) => [targetId, kindOf(rows[0])])
+    [...rowsByTarget].map(([targetId, rows]) => [targetId, rows[0].target.kind])
   )
   return await prisma.$transaction(async (tx) => {
     await lockBatchTargets(tx, campaignId, kinds)
@@ -321,7 +307,7 @@ async function translateBatch({
   cancelSignal?: AbortSignal
 }): Promise<Map<string, MachineTranslation>> {
   const requested = new Set(
-    batch.rows.map((row) => rowKey(targetIdOf(row), row.field))
+    batch.rows.map((row) => rowKey(row.target.id, row.field))
   )
   const translated = new Map<string, MachineTranslation>()
   const prompt = `Campaign: ${hardenPrompt(campaignTitle)}
@@ -379,15 +365,15 @@ Return exactly one entry for every line listed above — do not skip, merge, or 
  * translated would still finish its model call and write after the caller left.
  * With it, an in-flight model call is aborted and nothing more is written.
  */
-export async function* campaignAiTranslate(
+export async function* campaignMachineTranslate(
   input: {
     campaignId: string | number
     languageId: string | number
-    mode: CampaignAiTranslateMode
+    mode: CampaignMachineTranslateModeValue
   },
   user: User,
   cancelSignal?: AbortSignal
-): AsyncGenerator<CampaignAiTranslateProgress> {
+): AsyncGenerator<CampaignMachineTranslateProgress> {
   let runLock: TranslationRunLock | null = null
   try {
     // Load-bearing despite the `User` type: the builder does not set
@@ -410,18 +396,12 @@ export async function* campaignAiTranslate(
 
     const campaignId = String(input.campaignId)
     const languageId = String(input.languageId)
-    const campaign = await prisma.campaign.findUnique({
-      where: { id: campaignId },
-      include: INCLUDE_TRANSLATIONS_CAMPAIGN
-    })
-    if (campaign == null)
-      throw new GraphQLError('campaign not found', {
-        extensions: { code: 'NOT_FOUND' }
-      })
-    if (!campaignAcl(Action.Update, campaign, user))
-      throw new GraphQLError('user is not allowed to update campaign', {
-        extensions: { code: 'FORBIDDEN' }
-      })
+    const campaign = await authorizeCampaign(
+      campaignId,
+      'update',
+      user,
+      INCLUDE_TRANSLATIONS_CAMPAIGN
+    )
     if (
       languageId === campaign.defaultLanguageId ||
       !campaign.languages.some((language) => language.languageId === languageId)
@@ -544,13 +524,13 @@ builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
     description:
       'Machine-translate a campaign into one of its languages, a batch at a time, reporting progress after each. `missing` writes `{ value, source: machine }` only where the language has no entry; `all` also replaces machine entries. A person’s entries are never touched. Output longer than a field’s cap is cut to the cap.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: campaign does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `languageId`): not a campaign language other than the default, or not an api-languages language.\n- CONFLICT (field: `languageId`): another run into the same campaign language is in flight.\n- `Translation is temporarily unavailable. Please try again.` (no code): the one-run check could not reach Redis; nothing is translated.',
-    type: CampaignAiTranslateProgressRef,
+    type: CampaignMachineTranslateProgressRef,
     nullable: false,
     args: {
-      input: t.arg({ type: CampaignAiTranslateInput, required: true })
+      input: t.arg({ type: CampaignMachineTranslateInput, required: true })
     },
     subscribe: (_root, { input }, context) =>
-      campaignAiTranslate(
+      campaignMachineTranslate(
         input,
         context.user,
         (context as { request?: { signal?: AbortSignal } }).request?.signal

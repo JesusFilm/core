@@ -5,18 +5,17 @@ import { SlugTakenError } from '../../templateGalleryPage/generateUniqueSlug'
 import { touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'
+import { assertRegionSlugFreeOfJourneys, validateRegionSlug } from '../slug'
 import {
   NULL_FIELD_ERROR,
   TEXT_CAPS,
   assertLength,
   assertNotNull,
-  assertRegionSlugFreeOfJourneys,
-  isUniqueViolation,
-  validateRegionSlug
+  isUniqueViolation
 } from '../validation'
 
 import { CampaignRegionUpdateInput } from './inputs'
-import { authorizeRegionUpdate, getRegions } from './service'
+import { authorizeRegionUpdate } from './service'
 
 builder.mutationField('campaignRegionUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -59,7 +58,10 @@ builder.mutationField('campaignRegionUpdate', (t) =>
               data
             })
             await touchCampaign(tx, region.campaignId)
-            const regions = await getRegions(region.campaignId, tx)
+            const regions = await tx.campaignRegion.findMany({
+              where: { campaignId: region.campaignId },
+              orderBy: { order: 'asc' }
+            })
             return {
               updated,
               regionSlugs: [

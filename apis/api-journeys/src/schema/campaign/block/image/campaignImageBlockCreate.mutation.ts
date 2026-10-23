@@ -1,5 +1,6 @@
 import { builder } from '../../../builder'
-import { TEXT_CAPS, assertClientId, badUserInput } from '../../validation'
+import { badUserInput } from '../../errors'
+import { TEXT_CAPS, assertClientId } from '../../validation'
 import { CampaignImageBlock } from '../campaignImageBlock'
 import { createSection } from '../createSection'
 import { sectionCreateErrors } from '../inputs/sectionCreateInput'

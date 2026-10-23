@@ -1,6 +1,7 @@
 import { builder } from '../../../builder'
+import { badUserInput } from '../../errors'
 import { CARD_JOURNEY_STATUSES, resolveJourneyLink } from '../../journeyLink'
-import { CLIENT_ID_ERROR, assertClientId, badUserInput } from '../../validation'
+import { CLIENT_ID_ERROR, assertClientId } from '../../validation'
 import { CampaignJourneyBlock } from '../campaignJourneyBlock'
 import {
   authorizeBlockUpdate,

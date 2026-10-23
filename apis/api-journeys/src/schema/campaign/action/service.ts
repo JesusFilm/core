@@ -6,7 +6,7 @@ import {
   authorizeBlockUpdate,
   touchCampaign
 } from '../block/service'
-import { badUserInput } from '../validation'
+import { badUserInput } from '../errors'
 
 /**
  * The campaign Action service: the journeys Action mutations' shape

@@ -126,6 +126,46 @@ export async function enqueueCampaignRevalidation(
   )
 }
 
+/** What listing a campaign's pages reads off it. */
+interface CampaignPages {
+  id: string
+  slug: string
+  regions: Array<{ slug: string }>
+  customDomains: Array<{ name: string }>
+}
+
+interface PublishedCampaignPages extends CampaignPages {
+  status: string
+}
+
+/**
+ * Every page path of a campaign as it stands: `campaignPagePaths` in the
+ * root-domain form and the form of each Custom Domain naming it as Campaign
+ * Root, under the tag of each of its Page Languages and `extraLanguageTag`.
+ */
+export async function listCampaignPagePaths(
+  campaign: CampaignPages,
+  extraLanguageTag?: string | null
+): Promise<string[]> {
+  const languageTags = await campaignLanguageTags(campaign.id)
+  return campaignPagePaths({
+    slug: campaign.slug,
+    regions: campaign.regions,
+    hostnames: campaign.customDomains.map(({ name }) => name),
+    languageTags:
+      extraLanguageTag == null
+        ? languageTags
+        : [...new Set([...languageTags, extraLanguageTag])]
+  })
+}
+
+/** Queue on-demand revalidation of every page of a campaign (`listCampaignPagePaths`). */
+export async function enqueueCampaignPagesRevalidation(
+  campaign: CampaignPages
+): Promise<void> {
+  await enqueueCampaignRevalidation(await listCampaignPagePaths(campaign))
+}
+
 /**
  * After a Custom Domain starts or stops naming a campaign as Campaign Root,
  * revalidate every page of each given campaign in the root-domain form and in
@@ -134,35 +174,21 @@ export async function enqueueCampaignRevalidation(
  * draft campaign serves nothing, so nothing is queued for it.
  */
 export async function enqueueCampaignRootRevalidation(
-  campaigns: Array<{
-    id: string
-    slug: string
-    status: string
-    regions: Array<{ slug: string }>
-  }>,
+  campaigns: Array<Omit<PublishedCampaignPages, 'customDomains'>>,
   hostname: string
 ): Promise<void> {
   const paths = await Promise.all(
     campaigns
       .filter((campaign) => campaign.status === 'published')
-      .map(async (campaign) =>
-        campaignPagePaths({
-          slug: campaign.slug,
-          regions: campaign.regions,
-          hostnames: [hostname],
-          languageTags: await campaignLanguageTags(campaign.id)
-        })
+      .map(
+        async (campaign) =>
+          await listCampaignPagePaths({
+            ...campaign,
+            customDomains: [{ name: hostname }]
+          })
       )
   )
   await enqueueCampaignRevalidation(paths.flat())
-}
-
-interface PublishedCampaignPages {
-  id: string
-  slug: string
-  status: string
-  regions: Array<{ slug: string }>
-  customDomains: Array<{ name: string }>
 }
 
 /**
@@ -178,19 +204,9 @@ export async function enqueueLanguageRevalidation(
   languageId: string
 ): Promise<void> {
   if (campaign.status !== 'published') return
-  const [tags, changedTag] = await Promise.all([
-    campaignLanguageTags(campaign.id),
-    resolveLanguageTag(campaign.id, languageId)
-  ])
+  const changedTag = await resolveLanguageTag(campaign.id, languageId)
   await enqueueCampaignRevalidation(
-    campaignPagePaths({
-      slug: campaign.slug,
-      regions: campaign.regions,
-      hostnames: campaign.customDomains.map(({ name }) => name),
-      languageTags: [
-        ...new Set(changedTag == null ? tags : [...tags, changedTag])
-      ]
-    })
+    await listCampaignPagePaths(campaign, changedTag)
   )
 }
 
@@ -222,21 +238,12 @@ export async function enqueueCampaignSlugRevalidation(
  * is queued.
  */
 export async function enqueueRegionRevalidation(
-  campaign: {
-    id: string
-    slug: string
-    status: string
-    customDomains: Array<{ name: string }>
-  },
+  campaign: Omit<PublishedCampaignPages, 'regions'>,
   regionSlugs: string[]
 ): Promise<void> {
   if (campaign.status !== 'published') return
-  await enqueueCampaignRevalidation(
-    campaignPagePaths({
-      slug: campaign.slug,
-      regions: [...new Set(regionSlugs)].map((slug) => ({ slug })),
-      hostnames: campaign.customDomains.map(({ name }) => name),
-      languageTags: await campaignLanguageTags(campaign.id)
-    })
-  )
+  await enqueueCampaignPagesRevalidation({
+    ...campaign,
+    regions: [...new Set(regionSlugs)].map((slug) => ({ slug }))
+  })
 }

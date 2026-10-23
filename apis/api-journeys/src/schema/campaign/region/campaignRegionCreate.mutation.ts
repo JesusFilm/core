@@ -3,12 +3,11 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
-import { conflict } from '../errors'
+import { badUserInput, conflict } from '../errors'
+import { generateUniqueRegionSlug } from '../slug'
 import {
   CAMPAIGN_REGIONS_MAX,
   assertClientId,
-  badUserInput,
-  generateUniqueRegionSlug,
   isUniqueViolation
 } from '../validation'
 

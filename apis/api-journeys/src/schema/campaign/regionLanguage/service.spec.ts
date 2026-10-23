@@ -6,7 +6,7 @@ import {
   getTo
 } from '../../qrCode/qrCode.service'
 
-import { createRegionLanguageQrCode, runWithShortLinkStep } from './service'
+import { createRegionLanguageQrCode } from './service'
 
 vi.mock('../../qrCode/qrCode.service', () => ({
   createShortLink: vi.fn(),
@@ -34,17 +34,14 @@ describe('createRegionLanguageQrCode', () => {
     }))
   })
 
-  /** Link a journey as the region-language mutation does: the step applied last in the transaction. */
+  /** Link a journey as the Share Language mutation does: the step applied last in the transaction. */
   async function link(): Promise<void> {
-    await runWithShortLinkStep(async (runner) => {
-      const { step } = await createRegionLanguageQrCode(
-        prismaMock,
-        'teamId',
-        'journeyId'
-      )
-      runner.defer(step)
-      await runner.apply()
-    })
+    const { step } = await createRegionLanguageQrCode(
+      prismaMock,
+      'teamId',
+      'journeyId'
+    )
+    await step.apply()
   }
 
   it("saves the short link's address on the QR row inside the transaction once the link exists", async () => {

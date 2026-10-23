@@ -3,11 +3,10 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
-import { badUserInput } from '../validation'
+import { badUserInput } from '../errors'
 
 import {
   authorizeRegionLanguageUpdate,
-  getRegionLanguages,
   lockRegionLanguage,
   reorderRegionLanguages
 } from './service'
@@ -44,7 +43,10 @@ builder.mutationField('campaignRegionLanguageDelete', (t) =>
           where: { id: regionLanguage.id }
         })
         await reorderRegionLanguages(
-          await getRegionLanguages(regionLanguage.regionId, tx),
+          await tx.campaignRegionLanguage.findMany({
+            where: { regionId: regionLanguage.regionId },
+            orderBy: { order: 'asc' }
+          }),
           tx
         )
         await touchCampaign(tx, regionLanguage.region.campaignId)

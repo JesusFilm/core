@@ -22,11 +22,11 @@ import { renumber } from '../order'
 import { INCLUDE_CAMPAIGN_REGION_ACL } from '../region/service'
 
 /**
- * The Share Language service: every region language mutation is campaign
+ * The Share Language service: every Share Language mutation is campaign
  * Update on the region's campaign, authorised through the Campaign as
- * aggregate root; the Campaign QR Code is created and retargeted here,
- * inside the same mutation as the link it belongs to (PRD §6). Unlinking
- * keeps it; only a region or campaign delete removes it.
+ * aggregate root; the Campaign QR Code is created and retargeted here, inside
+ * the same mutation as the link it belongs to (GLOSSARY.md: Campaign QR Code).
+ * Unlinking keeps it; only a region or campaign delete removes it.
  */
 
 export const INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL = {
@@ -48,9 +48,9 @@ export async function authorizeRegionLanguageUpdate(
     where: { id },
     include: INCLUDE_CAMPAIGN_REGION_LANGUAGE_ACL
   })
-  if (regionLanguage == null) throw notFound('region language not found')
+  if (regionLanguage == null) throw notFound('share language not found')
   if (!campaignAcl(Action.Update, regionLanguage.region.campaign, user))
-    throw forbidden('user is not allowed to update region language')
+    throw forbidden('user is not allowed to update share language')
   return regionLanguage
 }
 
@@ -162,39 +162,7 @@ export async function retargetRegionLanguageQrCode(
   }
 }
 
-/** Holds the step a transaction decides so it can be applied last and undone if the commit fails. */
-export interface ShortLinkStepRunner {
-  defer: (step: ShortLinkStep) => void
-  /** Apply the deferred step; call it as the last statement of the transaction. */
-  apply: () => Promise<void>
-}
-
-/** Run `transaction` with a step runner; if it fails after the step was applied, undo the step. */
-export async function runWithShortLinkStep<T>(
-  transaction: (runner: ShortLinkStepRunner) => Promise<T>
-): Promise<T> {
-  let deferred: ShortLinkStep | undefined
-  let applied = false
-  try {
-    return await transaction({
-      defer: (step) => {
-        deferred = step
-      },
-      apply: async () => {
-        await deferred?.apply()
-        applied = deferred != null
-      }
-    })
-  } catch (error) {
-    if (applied && deferred != null)
-      await deferred.revert().catch((revertError) => {
-        logger.error({ error: revertError }, 'short link revert failed')
-      })
-    throw error
-  }
-}
-
-/** Delete Campaign QR Code rows in `tx`; returns their short link ids for `deleteShortLinks` once the transaction has committed. */
+/** Delete Campaign QR Code rows in `tx`; returns their short link ids for `enqueueShortLinkDeletes` once the transaction has committed. */
 export async function deleteQrCodes(
   tx: Prisma.TransactionClient,
   qrCodes: Array<{ id: string; shortLinkId: string }>
@@ -204,16 +172,6 @@ export async function deleteQrCodes(
     where: { id: { in: qrCodes.map((qrCode) => qrCode.id) } }
   })
   return qrCodes.map((qrCode) => qrCode.shortLinkId)
-}
-
-/**
- * Delete the short links of Campaign QR Codes whose rows are already gone:
- * call it once the transaction has committed. Each delete is a retried job on
- * the short-link delete queue, so a gateway or api-media failure is retried
- * rather than leaving a working, unreferenced short link behind.
- */
-export async function deleteShortLinks(shortLinkIds: string[]): Promise<void> {
-  await enqueueShortLinkDeletes(shortLinkIds)
 }
 
 /** Every Campaign QR Code owned by the given regions' Share Languages. */
@@ -229,17 +187,6 @@ export async function findRegionQrCodes(
   for (const row of rows)
     if (row.qrCode != null) seen.set(row.qrCode.id, row.qrCode)
   return [...seen.values()]
-}
-
-/** The region's Share Languages in selector order. */
-export async function getRegionLanguages(
-  regionId: string,
-  tx: Prisma.TransactionClient = prisma
-): Promise<CampaignRegionLanguage[]> {
-  return await tx.campaignRegionLanguage.findMany({
-    where: { regionId },
-    orderBy: { order: 'asc' }
-  })
 }
 
 /** Renumber `CampaignRegionLanguage.order` contiguously from zero in the order given. */

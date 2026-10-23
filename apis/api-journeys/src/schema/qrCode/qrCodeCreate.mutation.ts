@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../builder'
-import { badUserInput } from '../campaign/validation'
+import { badUserInput } from '../campaign/errors'
 
 import { QrCodeCreateInput } from './inputs'
 import { QrCodeRef } from './qrCode'

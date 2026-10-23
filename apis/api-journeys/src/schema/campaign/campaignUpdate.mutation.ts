@@ -1,15 +1,14 @@
-import { GraphQLError } from 'graphql'
-
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 import { SlugTakenError } from '../templateGalleryPage/generateUniqueSlug'
 
 import { CampaignRef } from './campaign'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+import { authorizeCampaign } from './campaign.acl'
+import { badUserInput } from './errors'
 import { CampaignUpdateInput } from './inputs'
 import { enqueueCampaignSlugRevalidation } from './revalidateCampaign'
+import { validateCampaignSlug } from './slug'
 import { swapDefaultLanguage } from './translation/defaultLanguageSwap'
 import {
   NULL_FIELD_ERROR,
@@ -17,9 +16,7 @@ import {
   assertLength,
   assertNotNull,
   assertPalette,
-  badUserInput,
-  isUniqueViolation,
-  validateCampaignSlug
+  isUniqueViolation
 } from './validation'
 
 const DEFAULT_LANGUAGE_SWAP_TIMEOUT_MS = 30_000
@@ -38,18 +35,10 @@ builder.mutationField('campaignUpdate', (t) =>
     },
     resolve: async (query, _parent, { id: rawId, input }, context) => {
       const id = String(rawId)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id },
-        include: { ...INCLUDE_CAMPAIGN_ACL, languages: true, regions: true }
+      const campaign = await authorizeCampaign(id, 'update', context.user, {
+        languages: true,
+        regions: true
       })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Update, campaign, context.user))
-        throw new GraphQLError('user is not allowed to update campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
 
       const title = assertNotNull(input.title, 'title')
       const rawSlug = assertNotNull(input.slug, 'slug')

@@ -5,7 +5,7 @@ import {
   CAMPAIGN_REGION_TEXT_FIELDS,
   CAMPAIGN_STRING_TEXT_FIELDS,
   CAMPAIGN_TITLE_TEXT_FIELDS
-} from './campaignTextField'
+} from './textFields'
 import {
   INCLUDE_TARGET_CAMPAIGN,
   TRANSLATION_TARGETS,

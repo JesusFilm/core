@@ -1,11 +1,11 @@
 import { TEXT_CAPS } from '../validation'
 
 /**
- * Every translatable text column across the campaign types, the values of
- * the `CampaignTextField` enum (PRD §2): the single source of truth for
- * `campaignTranslationSet`, the public read's text resolution, the
- * Translations view, the machine-translation sweep and the default-language
- * swap. A field's cap depends on the target that carries it (`title` is 100
+ * Every translatable text column across the campaign types (GLOSSARY.md:
+ * Translated Field), the values of the `CampaignTextField` enum: the single
+ * source of truth for `campaignTranslationSet`, the public read's text
+ * resolution, the Translations view, the machine-translation sweep and the
+ * default-language swap. A field's cap depends on the target that carries it (`title` is 100
  * on the campaign, 150 on a section, 200 on a video or journey card), so the
  * maps below pair each target with its fields and caps.
  */
@@ -33,7 +33,7 @@ const SECTION_HEADING: CampaignTextFieldCaps = {
   title: TEXT_CAPS.title
 }
 
-/** The translatable columns of every Campaign Block typename, with the cap each takes (PRD §1, §15). */
+/** The translatable columns of every Campaign Block typename, with the cap each takes. */
 export const CAMPAIGN_BLOCK_TEXT_FIELDS: Record<string, CampaignTextFieldCaps> =
   {
     CampaignHeroBlock: {
@@ -89,16 +89,16 @@ export const CAMPAIGN_TITLE_TEXT_FIELDS: CampaignTextFieldCaps = {
   title: TEXT_CAPS.campaignTitle
 }
 
-/**
- * Every text column a CampaignBlock row may carry, each paired with its
- * `<field>Translations` sibling: what the public read resolves per block.
- */
 /** The text fields a CampaignBlock row can carry (region `name` and string `value` live on other tables). */
 export type CampaignBlockTextColumn = Exclude<
   CampaignTextFieldName,
   'name' | 'value'
 >
 
+/**
+ * Every text column a CampaignBlock row may carry, each paired with its
+ * `<field>Translations` sibling: what the public read resolves per block.
+ */
 export const CAMPAIGN_BLOCK_TEXT_COLUMNS = Array.from(
   new Set(
     Object.values(CAMPAIGN_BLOCK_TEXT_FIELDS).flatMap(
@@ -111,12 +111,4 @@ export function translationsColumn<F extends CampaignTextFieldName>(
   field: F
 ): `${F}Translations` {
   return `${field}Translations`
-}
-
-/** The cap `field` takes on a block of `typename`, or null when the block has no such field. */
-export function campaignBlockTextCap(
-  typename: string,
-  field: CampaignTextFieldName
-): number | null {
-  return CAMPAIGN_BLOCK_TEXT_FIELDS[typename]?.[field] ?? null
 }

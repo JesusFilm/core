@@ -1,12 +1,9 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
 import { touchCampaign } from './block/service'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
+import { authorizeCampaign } from './campaign.acl'
 import { CampaignStringRef } from './campaignString'
 import { CampaignStringKey } from './enums'
 import {
@@ -28,18 +25,7 @@ builder.mutationField('campaignStringUpdate', (t) =>
     },
     resolve: async (query, _parent, args, context) => {
       const campaignId = String(args.campaignId)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id: campaignId },
-        include: INCLUDE_CAMPAIGN_ACL
-      })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Update, campaign, context.user))
-        throw new GraphQLError('user is not allowed to update campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      await authorizeCampaign(campaignId, 'update', context.user)
       const value = assertLength(
         normaliseControlCharacters(args.value),
         'value',

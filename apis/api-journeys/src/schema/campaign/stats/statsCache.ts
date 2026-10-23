@@ -1,8 +1,5 @@
-import Redis from 'ioredis'
-
-import { connection } from '@core/yoga/redis/connection'
-
 import { logger as parentLogger } from '../../logger'
+import { redisClient } from '../redisClient'
 
 const logger = parentLogger.child({ module: 'campaignStatsCache' })
 
@@ -51,21 +48,6 @@ interface StatsCacheEntry {
   sweep: CampaignStatsSweep | null
 }
 
-let client: Redis | undefined
-
-function getClient(): Redis {
-  if (client != null) return client
-  const options = { connectTimeout: 5000, maxRetriesPerRequest: 2 }
-  client =
-    'url' in connection
-      ? new Redis(connection.url, options)
-      : new Redis({ host: connection.host, port: connection.port, ...options })
-  client.on('error', (error) => {
-    logger.error({ error }, 'redis connection error')
-  })
-  return client
-}
-
 function key(campaignId: string): string {
   return `campaign-stats:${campaignId}`
 }
@@ -95,7 +77,7 @@ export const statsCache = {
   async get(campaignId: string): Promise<CachedCampaignStatsSweep | null> {
     let raw: string | null
     try {
-      raw = await getClient().get(key(campaignId))
+      raw = await redisClient().get(key(campaignId))
     } catch (error) {
       logReadFailure(campaignId, error)
       throw error
@@ -142,7 +124,7 @@ export const statsCache = {
         }
       : { sweptAt: now, sweep }
     try {
-      await getClient().set(
+      await redisClient().set(
         key(campaignId),
         JSON.stringify(entry),
         'EX',
@@ -177,7 +159,7 @@ export const statsCache = {
       sweep: cached?.sweep ?? null
     }
     try {
-      await getClient().set(
+      await redisClient().set(
         key(campaignId),
         JSON.stringify(entry),
         'EX',

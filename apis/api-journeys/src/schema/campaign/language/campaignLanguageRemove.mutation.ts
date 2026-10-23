@@ -1,8 +1,5 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
-import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
 import {
   lockCampaign,
@@ -10,8 +7,8 @@ import {
   touchCampaign
 } from '../block/service'
 import { CampaignRef } from '../campaign'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign.acl'
-import { conflict } from '../errors'
+import { authorizeCampaign } from '../campaign.acl'
+import { conflict, notFound } from '../errors'
 import { renumber } from '../order'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
 
@@ -28,22 +25,15 @@ builder.mutationField('campaignLanguageRemove', (t) =>
     resolve: async (query, _parent, args, context) => {
       const campaignId = String(args.campaignId)
       const languageId = String(args.languageId)
-      const campaign = await prisma.campaign.findUnique({
-        where: { id: campaignId },
-        include: {
-          ...INCLUDE_CAMPAIGN_ACL,
+      const campaign = await authorizeCampaign(
+        campaignId,
+        'update',
+        context.user,
+        {
           regions: true,
           customDomains: true
         }
-      })
-      if (campaign == null)
-        throw new GraphQLError('campaign not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      if (!campaignAcl(Action.Update, campaign, context.user))
-        throw new GraphQLError('user is not allowed to update campaign', {
-          extensions: { code: 'FORBIDDEN' }
-        })
+      )
 
       const updated = await prisma.$transaction(async (tx) => {
         // A concurrent default-language swap or removal can move the default
@@ -58,17 +48,11 @@ builder.mutationField('campaignLanguageRemove', (t) =>
             languages: { orderBy: { order: 'asc' } }
           }
         })
-        if (current == null)
-          throw new GraphQLError('campaign not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
+        if (current == null) throw notFound('campaign not found')
         const row = current.languages.find(
           (language) => language.languageId === languageId
         )
-        if (row == null)
-          throw new GraphQLError('language not found', {
-            extensions: { code: 'NOT_FOUND' }
-          })
+        if (row == null) throw notFound('language not found')
         if (languageId === current.defaultLanguageId)
           throw conflict(
             'languageId is the default language and cannot be removed',

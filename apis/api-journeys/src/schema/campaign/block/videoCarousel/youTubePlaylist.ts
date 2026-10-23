@@ -6,7 +6,8 @@ import {
   youTubeRequest
 } from '../../../../lib/youTube/youTubeRequest'
 import { parseISO8601Duration } from '../../../block/video/service'
-import { TEXT_CAPS, badUserInput, truncate } from '../../validation'
+import { badUserInput } from '../../errors'
+import { TEXT_CAPS, truncate } from '../../validation'
 
 /** A playlist import brings in this many videos; the author pastes more one by one. */
 export const PLAYLIST_IMPORT_LIMIT = 12

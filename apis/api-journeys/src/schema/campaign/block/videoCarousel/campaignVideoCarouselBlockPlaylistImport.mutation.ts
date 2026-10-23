@@ -4,7 +4,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
-import { BLOCK_CAP_ERROR, badUserInput } from '../../validation'
+import { badUserInput } from '../../errors'
+import { BLOCK_CAP_ERROR } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
 import {
   CAMPAIGN_CAROUSEL_TYPENAME,

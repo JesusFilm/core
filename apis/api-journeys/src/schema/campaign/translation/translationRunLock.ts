@@ -1,10 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
-import Redis from 'ioredis'
-
-import { connection } from '@core/yoga/redis/connection'
-
 import { logger as parentLogger } from '../../../logger'
+import { redisClient } from '../redisClient'
 
 const logger = parentLogger.child({ module: 'campaignTranslationRunLock' })
 
@@ -18,21 +15,6 @@ export const TRANSLATION_RUN_LOCK_TTL_SECONDS = 10 * 60
 // another run never extends or deletes that run's key.
 const EXTEND_IF_HELD = `if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('expire', KEYS[1], ARGV[2]) else return 0 end`
 const RELEASE_IF_HELD = `if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end`
-
-let client: Redis | undefined
-
-function getClient(): Redis {
-  if (client != null) return client
-  const options = { connectTimeout: 5000, maxRetriesPerRequest: 2 }
-  client =
-    'url' in connection
-      ? new Redis(connection.url, options)
-      : new Redis({ host: connection.host, port: connection.port, ...options })
-  client.on('error', (error) => {
-    logger.error({ error }, 'redis connection error')
-  })
-  return client
-}
 
 function key(campaignId: string, languageId: string): string {
   return `campaign-translate:${campaignId}:${languageId}`
@@ -57,7 +39,7 @@ export async function acquireTranslationRunLock(
 ): Promise<TranslationRunLock | null> {
   const runKey = key(campaignId, languageId)
   const token = randomUUID()
-  const taken = await getClient().set(
+  const taken = await redisClient().set(
     runKey,
     token,
     'EX',
@@ -69,7 +51,7 @@ export async function acquireTranslationRunLock(
   return {
     extend: async () => {
       try {
-        await getClient().eval(
+        await redisClient().eval(
           EXTEND_IF_HELD,
           1,
           runKey,
@@ -82,7 +64,7 @@ export async function acquireTranslationRunLock(
     },
     release: async () => {
       try {
-        await getClient().eval(RELEASE_IF_HELD, 1, runKey, token)
+        await redisClient().eval(RELEASE_IF_HELD, 1, runKey, token)
       } catch (error) {
         logger.warn(
           { error, campaignId, languageId },

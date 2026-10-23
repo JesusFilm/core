@@ -5,9 +5,10 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../../builder'
 import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
+import { badUserInput } from '../errors'
 import { fetchLanguage } from '../gatewayClient'
 import { authorizeRegionUpdate } from '../region/service'
-import { REGION_SHARE_LANGUAGES_MAX, badUserInput } from '../validation'
+import { REGION_SHARE_LANGUAGES_MAX } from '../validation'
 
 function alreadyAdded(languageId: string): GraphQLError {
   return badUserInput(
