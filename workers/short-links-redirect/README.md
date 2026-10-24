@@ -207,11 +207,11 @@ Cloudflare resources are created and wired by hand, with wrangler and
 `wrangler.toml`; api-media never calls Cloudflare's control plane. Who does
 what:
 
-| Step                                              | Where                          | Who                           |
-| ------------------------------------------------- | ------------------------------ | ----------------------------- |
-| Create the domain's KV namespace                  | `wrangler kv namespace create` | whoever has Cloudflare access |
-| Declare its binding and its route                 | `wrangler.toml`, then deploy   | a PR                          |
-| Add the domain and enter the namespace id/binding | the admin app                  | a superAdmin                  |
+| Step                                              | Where                          | Who                            |
+| ------------------------------------------------- | ------------------------------ | ------------------------------ |
+| Create the domain's KV namespace                  | `wrangler kv namespace create` | whoever has Cloudflare access  |
+| Declare its binding and its route                 | `wrangler.toml`, then deploy   | a PR                           |
+| Add the domain and enter the namespace id/binding | the admin app                  | a shortLinkAdmin or superAdmin |
 
 Per environment, once (the ids go into `wrangler.toml`, commands at the top
 of that file): the global namespace, the two queues, the ClickHouse database
@@ -245,7 +245,7 @@ routes = [{ pattern = "stage.jesus.film/s/*", zone_name = "jesus.film" }]
 pnpm exec wrangler deploy --env=stage
 ```
 
-5. In the admin app, as a superAdmin: Domains → **Add domain** (hostname,
+5. In the admin app, as a shortLinkAdmin or superAdmin: Domains → **Add domain** (hostname,
    path prefix `s`), then on the domain page set **KV namespace id** to the id
    from step 1 and **Worker binding** to `KV_STAGE_JESUS_FILM`, and save.
    Saving publishes the domain record and every link into the namespace.

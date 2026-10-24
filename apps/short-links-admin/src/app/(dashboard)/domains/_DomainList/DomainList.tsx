@@ -31,7 +31,7 @@ import {
 
 export function DomainList(): ReactElement {
   const router = useRouter()
-  const { isSuperAdmin } = useShortLinkAccess()
+  const { isDomainAdmin } = useShortLinkAccess()
   const [addOpen, setAddOpen] = useState(false)
   const { data, loading, error } = useQuery(GET_SHORT_LINK_DOMAINS)
 
@@ -54,7 +54,7 @@ export function DomainList(): ReactElement {
     <div className="flex w-full max-w-7xl flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">Domains</h2>
-        {isSuperAdmin && (
+        {isDomainAdmin && (
           <Button size="sm" onClick={() => setAddOpen(true)}>
             <PlusIcon aria-hidden="true" />
             Add domain
@@ -151,7 +151,7 @@ export function DomainList(): ReactElement {
           </div>
         </CardPanel>
       </Card>
-      {isSuperAdmin && (
+      {isDomainAdmin && (
         <AddDomainDialog
           open={addOpen}
           onClose={() => setAddOpen(false)}

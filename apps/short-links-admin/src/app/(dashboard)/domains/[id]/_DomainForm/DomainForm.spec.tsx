@@ -24,7 +24,7 @@ vi.mocked(useRouter).mockReturnValue({ push } as unknown as ReturnType<
 >)
 vi.mocked(useParams).mockReturnValue({ id: 'domain-1' })
 
-function accessMock(superAdmin: boolean) {
+function accessMock(superAdmin: boolean, roles: string[]) {
   return {
     request: { query: GET_SHORT_LINK_ACCESS },
     result: {
@@ -32,7 +32,7 @@ function accessMock(superAdmin: boolean) {
         me: {
           __typename: 'AuthenticatedUser',
           id: 'user-1',
-          mediaUserRoles: ['shortLinkAdmin'],
+          mediaUserRoles: roles,
           superAdmin
         }
       }
@@ -134,10 +134,13 @@ function publishMock(edgePublishedAt: string | null) {
 
 function renderForm(
   mocks: unknown[],
-  { superAdmin = true }: { superAdmin?: boolean } = {}
+  {
+    superAdmin = true,
+    roles = ['shortLinkAdmin']
+  }: { superAdmin?: boolean; roles?: string[] } = {}
 ): void {
   render(
-    <MockedProvider mocks={[accessMock(superAdmin), ...mocks] as never}>
+    <MockedProvider mocks={[accessMock(superAdmin, roles), ...mocks] as never}>
       <DomainForm />
     </MockedProvider>
   )
@@ -258,55 +261,57 @@ describe('DomainForm', () => {
     expect(update.result).not.toHaveBeenCalled()
   })
 
-  describe('for an admin who is not a superAdmin', () => {
-    it('hides the edge wiring fields and leaves them out of the save', async () => {
-      const update = {
-        request: {
-          query: SHORT_LINK_DOMAIN_UPDATE,
-          variables: {
-            input: {
-              id: 'domain-1',
-              services: [],
-              redirectStatus: 307,
-              slugAllowedChars: 'a-z0-9-',
-              slugMinLength: 3,
-              slugMaxLength: 32,
-              slugCaseSensitive: false,
-              reservedPaths: ['dashboard'],
-              fallbackTo: 'https://www.jesusfilm.org',
-              notFound: 'fallback',
-              passthroughOrigin: null,
-              autoFailover: false
-            }
-          }
-        },
-        result: vi.fn(() => ({
-          data: {
-            shortLinkDomainUpdate: {
-              __typename: 'MutationShortLinkDomainUpdateSuccess',
-              data: domain
-            }
-          }
-        }))
-      }
+  describe('for a shortLinkAdmin who is not a superAdmin', () => {
+    it('saves every setting but cannot remove the domain', async () => {
+      const update = updateMock('s')
       renderForm([domainMock, update], { superAdmin: false })
 
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Save domain' })
-      )
+      const field = await screen.findByRole('textbox', { name: 'Path prefix' })
+      await userEvent.type(field, 's')
+      await userEvent.click(screen.getByRole('button', { name: 'Save domain' }))
 
       await waitFor(() => expect(update.result).toHaveBeenCalled())
       expect(
-        screen.queryByRole('textbox', { name: 'Path prefix' })
+        screen.queryByRole('button', { name: 'Remove domain' })
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('for a publisher who is not a superAdmin', () => {
+    it('shows the settings read-only with no save, republish or remove', async () => {
+      renderForm([domainMock], { superAdmin: false, roles: ['publisher'] })
+
       expect(
-        screen.queryByRole('textbox', { name: 'KV namespace id' })
-      ).not.toBeInTheDocument()
+        await screen.findByText(
+          'Only a shortLinkAdmin or superAdmin can change domain settings.'
+        )
+      ).toBeInTheDocument()
       expect(
-        screen.queryByRole('textbox', { name: 'Worker binding' })
+        screen.getByRole('textbox', { name: 'Fallback URL' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('textbox', { name: 'Path prefix' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('textbox', { name: 'KV namespace id' })
+      ).toBeDisabled()
+      expect(
+        screen.getByRole('combobox', { name: 'Redirect status' })
+      ).toBeDisabled()
+      // Base UI renders the switch as a span, so it is disabled by aria only
+      expect(
+        screen.getByRole('switch', {
+          name: 'Auto failover on failed health check'
+        })
+      ).toHaveAttribute('aria-disabled', 'true')
+      expect(
+        screen.queryByRole('button', { name: 'Save domain' })
       ).not.toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Remove domain' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Republish domain' })
       ).not.toBeInTheDocument()
     })
   })

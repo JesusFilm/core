@@ -169,10 +169,7 @@ plausible-analytics:
     port: 80
 
   ingress:
-    # Off since the move to ECS: analytics.jesusfilm.org is a Cloudflare DNS
-    # CNAME to the public ALB, changed by hand at cutover
-    # (infrastructure/modules/plausible/README.md, "Prod cutover").
-    enabled: false
+    enabled: true
     annotations:
       kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: 'true'
@@ -188,7 +185,14 @@ plausible-analytics:
         hosts:
           - analytics.jesusfilm.org
 
-  resources: {}
+  # Without a memory limit a runaway Plausible process can exhaust a node and
+  # take its kubelet down; the limit confines that to a container restart.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 1Gi
+    limits:
+      memory: 2Gi
 
   autoscaling:
     enabled: false

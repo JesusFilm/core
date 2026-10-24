@@ -11,6 +11,32 @@ date: 2026-10-14
 
 Plausible Analytics is the only product-facing workload on the EKS Platform Cluster; everything else there (ingress-nginx, cert-manager, external-dns, the Doppler operator, the EBS CSI driver, snapshot tooling) exists to serve it. Once its ClickHouse has moved to the shared ClickHouse Cloud service (plan `2026-10-14-001`), Plausible itself is a stateless Elixir container with two external databases, which is exactly what the ECS Fargate substrate already runs for every other Service. This plan runs the upstream `ghcr.io/plausible/community-edition` image as an ECS Service on arm64 Fargate (Graviton), behind the public ALB, with its configuration pulled from the existing `plausible` Doppler project, cuts the two hostnames over, and removes Plausible from EKS. Decommissioning the EKS cluster itself is the follow-up this makes possible.
 
+### Revision (2026-10-20): app first, events second
+
+Where this section and the rest of the plan disagree, this section wins. The
+module README (`infrastructure/modules/plausible/README.md`) is the runbook.
+
+- **Plausible moves to ECS before its events move to ClickHouse Cloud**, the
+  reverse of the Assumptions below. ECS and EKS share a VPC, so the task reaches
+  the in-cluster ClickHouse through a temporary internal NLB (a hand-applied
+  `LoadBalancer` Service, plus a Terraform security group that admits port 8123
+  from the public ECS tasks only). Each step then changes one thing: first the
+  platform, then the data store.
+- **The ECS task reads a Doppler branch config** (`stg_ecs` / `prd_ecs`) that
+  overrides only `CLICKHOUSE_DATABASE_URL`, so the EKS Deployment keeps its own
+  value and is untouched until it is scaled to 0.
+- **The events move in one pass with Plausible stopped.** Measured on
+  2026-10-20: prod about 1.3 GiB compressed (24M events), stage about 45 MiB.
+  The two-phase copy in plan `001` is unnecessary at this size.
+- **Task memory is 4 GiB.** Stage's EKS pod leaked memory (5.8 GB before it had
+  a limit, then repeated OOM kills at 2 GiB) while prod sits near 0.8 GiB. The
+  leak's cause is open and is checked on the stage task before prod moves.
+- **Argo CD is already live on the correct chart path** in both environments,
+  with automated sync (stage from `stage`, prod from `main`). Chart changes
+  therefore reach the clusters without the separate path fix.
+- **No cleanup of EKS objects beyond scaling to 0** (U7 shrinks): the whole
+  Platform Cluster is torn down once Plausible and its events have left it.
+
 ---
 
 ## Problem Frame
@@ -91,7 +117,7 @@ _Authored without synchronous confirmation; review before implementation._
 - **A `modules/plausible` wrapper, not an `apps/plausible/infrastructure`.** There is no Nx project and no code; the wrapper is the Service definition only, like `modules/clickhouse/service`. It pins the image tag in one variable (`plausible_version`, default `v2.1.1`) so the CE v3 upgrade is a one-line PR.
 - **Service name `plausible`, hostnames explicit.** The module auto-creates `plausible.<zone>` (`plausible.central.jesusfilm.org`, `plausible.stage.central.jesusfilm.org`), covered by the wildcard certificates, which gives a smoke-test URL before any DNS moves. `host_names` carries both that and the real `analytics` hostname, so the listener rule is complete before cutover.
 - **Prod certificate is requested by Terraform, validated by hand in Cloudflare, attached by Terraform.** The ACM validation CNAME has to live where `jesusfilm.org` is served (Cloudflare), so `modules/aws/acm`'s Route53 validation does not apply. The certificate resource lands first (no `aws_acm_certificate_validation`, which would block an Atlantis apply for up to 75 minutes); once ACM shows ISSUED, a second PR attaches it to the listener.
-- **Stage DNS cutover removes the ingress first, then Terraform takes the record.** external-dns is `upsert-only` and owns `analytics.stage.central.jesusfilm.org` through its TXT registry; it would rewrite any out-of-band change to a record it still desires. Disabling the chart's `ingress` makes it stop desiring the record (it will not delete it under upsert-only), then an `aws_route53_record` with `allow_overwrite` points it at the public ALB. The orphaned `external-dns-analytics...` TXT records are deleted by hand.
+- **Stage DNS cutover is Terraform taking the record; the Ingress stays.** external-dns created `analytics.stage.central.jesusfilm.org` but does not manage it any more: each pass it finds no hosted zone for the name and skips it, and the zone has no ownership TXT records (checked 2026-10-23). An `aws_route53_record` with `allow_overwrite` points it at the public ALB, and the chart's Ingress stays until the soak is over so the rollback is DNS alone.
 - **Prod DNS cutover is a Cloudflare record edit**, documented in the runbook, exactly as the short-links routes are: CNAME `analytics` from the ingress NLB name to `jfp-public-alb-prod-...elb.amazonaws.com`, TTL already 300. Rollback is the same edit reversed. Terraform owns nothing in Cloudflare for jesusfilm.org and this plan does not start.
 - **Single task, serialized deploys.** `desired_count = 1`, autoscaling min = max = 1, deploy 0%/100%. Plausible CE is not multi-node safe; a short gap per deploy is the honest trade.
 - **Doppler token like every other Service.** A Doppler service token per config for project `plausible`, stored at `/terraform/prd/DOPPLER_PLAUSIBLE_STAGE_TOKEN` and `/terraform/prd/DOPPLER_PLAUSIBLE_PROD_TOKEN` (the naming the stacks already use), created by hand before the service PR is applied. The module then copies the six keys into SSM under `/ecs/plausible/<env>/`.
@@ -130,7 +156,7 @@ flowchart LR
   subgraph After["after"]
     CF2[Cloudflare DNS: analytics.jesusfilm.org] --> ALB[jfp-public-alb-prod :443<br/>+ ACM analytics.jesusfilm.org]
     ALB -->|host-header rule| T[ECS Fargate ARM64 task<br/>ghcr.io/plausible/community-edition:v2.1.1]
-    D[Doppler plausible/prd] -->|ecs-task → SSM| T
+    D[Doppler plausible/prd_ecs] -->|ecs-task → SSM| T
     T --> PG[(Aurora: Plausible Postgres)]
     T --> CH[(ClickHouse Cloud: plausible_events_db)]
   end
@@ -210,11 +236,11 @@ flowchart LR
 
 - Modify: `infrastructure/modules/plausible/README.md` (the commands)
 
-**Approach:** Create a Doppler service token (read) for `plausible/stg` and `plausible/prd`; `aws ssm put-parameter --type SecureString` at `/terraform/prd/DOPPLER_PLAUSIBLE_STAGE_TOKEN` and `/terraform/prd/DOPPLER_PLAUSIBLE_PROD_TOKEN`. Same shape as every other `DOPPLER_*_TOKEN` parameter.
+**Approach:** In the `plausible` Doppler project, create the branch configs `stg_ecs` (of `stg`) and `prd_ecs` (of `prd`); they inherit everything, and later override only `CLICKHOUSE_DATABASE_URL` with the temporary NLB host (README prerequisite 4). Create a read-only service token for each branch config, not for `stg`/`prd`, so the ECS task gets the NLB URL while the EKS Deployment keeps its own; `aws ssm put-parameter --type SecureString` at `/terraform/prd/DOPPLER_PLAUSIBLE_STAGE_TOKEN` and `/terraform/prd/DOPPLER_PLAUSIBLE_PROD_TOKEN`. Same shape as every other `DOPPLER_*_TOKEN` parameter.
 
 **Test scenarios:**
 
-- Test expectation: none -- operational. Verified by the U4 Atlantis plan reading the data sources without error.
+- Test expectation: none -- operational. Verified by the U4 plan reading the data sources without error, and by the ECS task connecting to ClickHouse through the NLB (a token for `stg`/`prd` would hand it the in-cluster URL, which it cannot resolve).
 
 ---
 
@@ -224,7 +250,7 @@ flowchart LR
 
 **Requirements:** R1, R2, R3 (prod cert requested)
 
-**Dependencies:** U1, U2, U3; plan `001` U5 on the same environment before this is _used_, not before it is applied (the task will crash-loop on ClickHouse until then, which is harmless but noisy; sequence the apply after the ClickHouse cutover to avoid it)
+**Dependencies:** U1, U2, U3, and the temporary NLB to the in-cluster ClickHouse with `CLICKHOUSE_DATABASE_URL` overridden in the branch config (README prerequisites 2–4). Not plan `001`: the events move to ClickHouse Cloud after the cutover, with Plausible stopped (README, "Moving the events to ClickHouse Cloud").
 
 **Files:**
 
@@ -239,9 +265,9 @@ flowchart LR
 **Test scenarios:**
 
 - Happy path: on stage, `https://plausible.stage.central.jesusfilm.org/api/health` returns 200 from the ECS task; the task log shows `createdb`/`migrate` no-ops and the app booting; ECS shows one task on `ARM64`.
-- Happy path: a test pageview POSTed to `https://plausible.stage.central.jesusfilm.org/api/event` for a stage site appears in ClickHouse Cloud `events_v2`.
+- Happy path: `/api/health` reports `clickhouse: ok`, reached through the NLB; a test pageview POSTed to `https://plausible.stage.central.jesusfilm.org/api/event` for a stage site appears in the in-cluster ClickHouse's `events_v2`.
 - Error path: with the Doppler token parameter missing, the Atlantis plan fails on the data source and nothing is created (proves U3 is a real prerequisite).
-- Integration: the existing stage Plausible on EKS keeps serving `analytics.stage.central.jesusfilm.org` throughout; nothing in this unit touches DNS.
+- Integration: the existing stage Plausible on EKS keeps serving `analytics.stage.central.jesusfilm.org` throughout, on its own config's ClickHouse URL; nothing in this unit touches DNS.
 - Edge case (prod): ACM shows the certificate `PENDING_VALIDATION` with one CNAME to add; after adding it in Cloudflare, `ISSUED` within minutes.
 
 **Verification:** both Services healthy on their smoke-test hostnames; prod cert ISSUED.
@@ -254,21 +280,20 @@ flowchart LR
 
 **Requirements:** R3, R4
 
-**Dependencies:** U4 (stage), plan `001` U5 on stage
+**Dependencies:** U4 (stage)
 
 **Files:**
 
-- Modify: `infrastructure/kube/plausible-analytics/values-stage.yaml` (`ingress.enabled: false`)
 - Modify: `infrastructure/environments/stage/main.tf` (`aws_route53_record "plausible_analytics"`: `analytics` CNAME → `module.stage.public_alb.dns_name`, TTL 300, `allow_overwrite = true`)
 - Modify: `infrastructure/modules/plausible/README.md`
 
-**Approach:** Merge the chart change first and confirm Argo synced it (ingress gone; external-dns logs show it no longer desires the record). Then apply the Terraform record. Delete the `external-dns-analytics.stage.central.jesusfilm.org` TXT records by hand. Scale the EKS Deployment to 0 only after the soak; until then it idles with no traffic.
+**Approach:** The chart's Ingress stays, with the EKS Deployment, until the soak is over, so the rollback is DNS alone: the record back to the ingress NLB name, which still routes to the EKS Deployment. external-dns created the record but does not manage it any more (it finds no hosted zone for the name and skips it, and the zone has no ownership TXT records), so Terraform can take the record without the Ingress going first. Note the record's NLB value, then apply the Terraform record on its own. The Ingress and the Deployment go in U7, after the soak.
 
 **Test scenarios:**
 
 - Happy path: after apply, the record resolves to the stage ALB; dashboard login, a stats query from the stage gateway, and realtime ingest all work.
-- Error path: rollback rehearsal: set the record back to the ingress NLB name (Terraform `records` change or console), scale the EKS Deployment to 1 if it was scaled down; service returns within TTL.
-- Integration: external-dns does not re-point the record after the ingress is removed (watch for one reconcile interval before applying Terraform).
+- Error path: rollback rehearsal: set the record back to the ingress NLB name (Terraform `records` change or console); the EKS Ingress still routes to the Deployment, so service returns within TTL.
+- Integration: external-dns's next reconcile leaves the record on the ALB.
 
 **Verification:** stage traffic on ECS for a week with no errors beyond those explained in the soak notes.
 
@@ -280,20 +305,20 @@ flowchart LR
 
 **Requirements:** R3, R4
 
-**Dependencies:** U5 soak passed, U4 prod cert ISSUED, plan `001` U5 on prod
+**Dependencies:** U5 soak passed, U4 prod cert ISSUED
 
 **Files:**
 
 - Modify: `infrastructure/environments/prod/main.tf` (`aws_lb_listener_certificate` attaching the ACM cert to `module.prod.public_alb.alb_listener.arn`)
-- Modify: `infrastructure/kube/plausible-analytics/values.yaml` (`ingress.enabled: false`)
 - Modify: `infrastructure/modules/plausible/README.md` (the Cloudflare steps)
 
-**Approach:** Attach the certificate (Terraform). Verify `curl --resolve analytics.jesusfilm.org:443:<alb ip>` serves the right certificate and `/api/health`. In Cloudflare, change the `analytics` CNAME target to the prod ALB DNS name (DNS-only, TTL 300). Then disable the chart ingress (prod Argo is manual: `argocd app sync`). Rollback is the CNAME back to the NLB name; the EKS Deployment stays until U7.
+**Approach:** Attach the certificate (Terraform). Verify `curl --resolve analytics.jesusfilm.org:443:<alb ip>` serves the right certificate and `/api/health`. In Cloudflare, change the `analytics` CNAME target to the prod ALB DNS name (DNS-only, TTL 300). No chart change in this unit: prod Argo CD syncs automatically from `main`, so an `ingress.enabled: false` merged alongside the certificate could remove the live EKS route before DNS moves. The Ingress and the EKS Deployment stay through the rollback window, so the rollback is the CNAME back to the NLB name and nothing else; both go in U7.
 
 **Test scenarios:**
 
 - Happy path: `curl --resolve` pre-check passes before DNS changes; after the change, dashboards, `api-journeys` stats and ingest work from the public hostname.
 - Error path: a certificate mismatch at pre-check stops the cutover before DNS moves.
+- Error path: rollback rehearsal on the pre-check host: `curl --resolve analytics.jesusfilm.org:443:<nlb ip>` still returns 200 from the EKS Ingress after the cutover.
 - Integration: Plausible's weekly/monthly email jobs and the Stats API keys keep working (Postgres unchanged).
 
 **Verification:** prod on ECS; rollback steps written with the actual NLB and ALB names.
@@ -313,7 +338,7 @@ flowchart LR
 - Delete: `infrastructure/kube/argocd/applications/{stage,prod}/plausible-analytics.yaml`, `infrastructure/kube/plausible-analytics/` (after moving the ClickHouse runbook content into `infrastructure/modules/plausible/README.md` or a `docs/` location), `apis/api-analytics/infrastructure/{deploy.sh,deploy-stage.sh,values-prod.yaml,values-stage.yaml,storage-class.yaml,snapshot-class.yaml,volume-snapshot.yaml}`
 - Modify: `infrastructure/kube/doppler/values.yaml`, `values-stage.yaml`, `templates/doppler-secrets.yaml` (drop the `plausible` DopplerSecret), `infrastructure/GLOSSARY.md`, `docker-compose.services.yml` comment if it references the chart
 
-**Approach:** Delete the Argo Application (prune removes the Deployment, Service, Ingress, certificate); then the chart directory; then the DopplerSecret. Leave the cluster's support tooling for the EKS teardown plan.
+**Approach:** First, per environment once its soak or rollback window is over: `ingress.enabled: false` and `replicaCount: 0` in the chart values (`values-stage.yaml` through the `stage` branch, `values.yaml` through `main`; Argo CD self-heals both, so not kubectl). The chart's ClickHouse keeps running until the events have moved to ClickHouse Cloud, because the ECS task reads it through the NLB. After that, delete the Argo Application (prune removes the Deployment, Service, Ingress, certificate); then the chart directory; then the DopplerSecret. Leave the cluster's support tooling for the EKS teardown plan.
 
 **Test scenarios:**
 
@@ -340,10 +365,11 @@ flowchart LR
 | Risk                                                            | Likelihood         | Impact | Mitigation                                                                                          |
 | --------------------------------------------------------------- | ------------------ | ------ | --------------------------------------------------------------------------------------------------- |
 | `ecs-task` change produces a diff for existing Services         | Low                | Med    | Dynamic `runtime_platform`, null defaults; the PR's Atlantis plan must be empty before merge        |
-| external-dns rewrites the stage record after Terraform takes it | Med                | Low    | Remove the ingress first, watch one reconcile, then apply; delete the TXT registry records          |
+| external-dns rewrites the stage record after Terraform takes it | Low                | Low    | It skips the zone today; watch one reconcile after the apply                                        |
 | Prod certificate validation stalls (CNAME typo in Cloudflare)   | Low                | Low    | No `aws_acm_certificate_validation` resource, so nothing blocks; verify ISSUED before the attach PR |
 | ARM64-specific crash in the Erlang release                      | Low                | Med    | Stage soak; fallback is `cpu_architecture = "X86_64"` on the same module                            |
-| Task crash-loops on ClickHouse before plan `001` cutover        | High if misordered | Low    | Apply U4 after the ClickHouse cutover for that environment                                          |
+| Task crash-loops on ClickHouse (no NLB or override yet)         | High if misordered | Low    | README prerequisites 2–4 (NLB, branch config override) before U4's apply                            |
+| DNS rollback finds no EKS route                                 | Low                | High   | Ingress and Deployment stay until the soak or rollback window ends (U7)                             |
 | Phoenix origin checks reject the smoke-test hostname            | Med                | Low    | Smoke tests use health + ingest; dashboard verified after DNS                                       |
 | Doppler token parameter missing at apply                        | Med                | Low    | U3 is a named prerequisite; plan fails loudly on the data source                                    |
 

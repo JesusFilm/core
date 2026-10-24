@@ -11,13 +11,15 @@ concurrency:
   cancel-in-progress: true
 jobs:
   affected:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          filter: blob:none
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -25,7 +27,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'ci-jfp') && 'pnpm' || '' }}
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -61,7 +64,8 @@ jobs:
           - app: short-links
             github-ref-name: stage
             github-event-name: push
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     outputs:
@@ -85,7 +89,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'ci-jfp') && 'pnpm' || '' }}
+          package-manager-cache: false
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: vercel deployment
@@ -166,7 +171,8 @@ jobs:
           overwrite: true
           retention-days: 2
   deploy-status:
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     needs: [affected, deploy-preview]
     if: ${{ always() && github.event_name == 'pull_request' }}
     permissions:
@@ -228,7 +234,8 @@ jobs:
     if: ${{ needs.deploy-status.result == 'success' && needs.deploy-status.outputs.apps != '[]' && needs.deploy-status.outputs.apps != '' }}
     permissions:
       contents: read
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-4vcpu-ubuntu-2204' }}
     env:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
     strategy:
@@ -245,7 +252,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'ci-jfp') && 'pnpm' || '' }}
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -328,7 +336,8 @@ jobs:
             github-ref-name: stage
           - app: short-links
             github-ref-name: stage
-    runs-on: blacksmith-2vcpu-ubuntu-2204
+    runs-on: >-
+      ${{ (github.repository == 'JesusFilm/core' && github.event_name == 'pull_request' && vars.JFP00_PR_AUTHORS != '' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.repo.full_name == github.repository && (contains(fromJSON(vars.JFP00_PR_AUTHORS || '[]'), github.event.pull_request.user.login) || (github.event.pull_request.user.login == 'tataihono' && github.event.pull_request.head.ref == '00-00-CI-chore-i10n-updates' && github.event.pull_request.title == 'chore: new crowdin translations'))) && format('ci-run-{0}', github.run_id) || 'blacksmith-2vcpu-ubuntu-2204' }}
     permissions:
       deployments: write
       contents: write
@@ -349,7 +358,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: 'pnpm'
+          cache: ${{ !startsWith(runner.name, 'ci-jfp') && 'pnpm' || '' }}
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

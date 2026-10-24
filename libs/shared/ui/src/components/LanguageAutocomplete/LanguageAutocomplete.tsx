@@ -22,6 +22,7 @@ import {
   isTwoLineOption
 } from '../../libs/extractLanguageNames'
 import type { Translation } from '../../libs/extractLanguageNames'
+import { sortLanguageOptions } from '../../libs/sortLanguageOptions'
 import { ResizeObserverPolyfill } from '../ResizeObserverPolyfill'
 
 import { defaultRenderOption } from './defaultRenderOption'
@@ -100,14 +101,7 @@ export function LanguageAutocomplete({
   }, [languages])
 
   const sortedOptions = useMemo(() => {
-    if (options.length > 0 && !disableSort) {
-      return options.sort((a, b) => {
-        return (a.localName ?? a.nativeName ?? '').localeCompare(
-          b.localName ?? b.nativeName ?? ''
-        )
-      })
-    }
-    return options
+    return disableSort ? options : sortLanguageOptions(options)
   }, [options, disableSort])
 
   const filterOptions = useMemo(
