@@ -251,10 +251,32 @@ and `api-journeys` stats fail):
 then `aws ecs update-service --force-new-deployment`. Events written to Cloud
 in between are lost.
 
-Once it has run on Cloud for the rollback window: delete
-`plausible-clickhouse-ecs` from the cluster, remove `eks-clickhouse.tf` and
-the manifest, and take a final EBS snapshot of the ClickHouse volume. EKS then
-runs nothing of its own, and its teardown is a separate plan.
+### Retiring the EKS ClickHouse
+
+Per environment, once Plausible runs on Cloud. Order matters:
+
+1. A final snapshot of the data volume (the PV behind
+   `plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0`),
+   tagged `DeleteAfter`. The replica's volume holds no Plausible data, only
+   its own system logs. Stage: `snap-016b2925ce7836226`.
+2. Remove the environment's `module "plausible_clickhouse_snapshots"` and
+   apply it (`tofu apply -target=module.<env>.module.plausible_clickhouse_snapshots`)
+   **while the volumes still exist**: the module looks them up, so a
+   still-configured module with deleted volumes fails every plan for the
+   environment. The DLM snapshots it took stay until deleted by hand.
+3. Chart: `plausible-analytics.clickhouse.enabled: false` in the environment's
+   values file. The StorageClass, VolumeSnapshotClass and VolumeSnapshot
+   templates follow the same flag. Argo CD prunes the StatefulSets and those
+   objects; the PVCs, the PVs (`Retain`) and the VolumeSnapshotContents
+   (`Retain`) stay.
+4. `kubectl delete svc plausible-clickhouse-ecs` (the NLB).
+5. Delete the PVCs, then the PVs, then the EBS volumes; then the
+   VolumeSnapshotContents and the EBS snapshots of these volumes, keeping the
+   final one.
+
+`eks-clickhouse.tf` (the NLB's security group) and the bridge manifest go once
+both environments are done. EKS then runs nothing of its own, and its teardown
+is a separate plan.
 
 ## Upgrading Plausible
 
