@@ -65,10 +65,18 @@ case $kube_cluster in
     ;;
 esac
 
-# sql <statement>: run in the source pod, TSV on stdout.
+errors=$(mktemp)
+trap 'rm -f "$errors"' EXIT
+
+# sql <statement>: run in the source pod, TSV on stdout. ClickHouse quotes the
+# failing query in its error, remoteSecure() password and all, so errors are
+# printed with the password masked.
 sql() {
-  printf '%s\n' "$1" |
-    kubectl -n "$namespace" exec -i "$pod" -- clickhouse-client --format TSV
+  if ! printf '%s\n' "$1" |
+    kubectl -n "$namespace" exec -i "$pod" -- clickhouse-client --format TSV 2>"$errors"; then
+    sed "s/$CLICKHOUSE_CLOUD_PASSWORD/***/g" "$errors" >&2
+    return 1
+  fi
 }
 
 cloud() {
@@ -101,10 +109,12 @@ partition_key() {
 source_numbers() { sql "SELECT $(metrics "$1") FROM $db.$1 WHERE $2"; }
 cloud_numbers() { sql "SELECT $(metrics "$1") FROM $(cloud "$db" "$1") WHERE $2"; }
 
+# A failed command substitution inside echo or a for list does not trip set -e,
+# so every query result is assigned before it is used.
 check() {
-  echo "Cloud server: $(sql "SELECT version() FROM $(cloud system one)")"
   failed=0
-  for table in $(sql "SELECT name FROM system.tables WHERE database = '$db' ORDER BY name"); do
+  all_tables=$(sql "SELECT name FROM system.tables WHERE database = '$db' ORDER BY name")
+  for table in $all_tables; do
     columns="SELECT groupArray((name, type)) FROM (SELECT name, type FROM system.columns WHERE database = '$db' AND table = '$table' ORDER BY position)"
     source_columns=$(sql "$columns")
     cloud_columns=$(sql "SELECT groupArray((name, type)) FROM (SELECT name, type FROM $(cloud system columns) WHERE database = '$db' AND table = '$table' ORDER BY position)")
@@ -113,15 +123,17 @@ check() {
       failed=1
       continue
     fi
-    echo "  $table: columns match; on Cloud now: $(cloud_numbers "$table" 1)"
+    on_cloud=$(cloud_numbers "$table" 1)
+    echo "  $table: columns match; on Cloud now: $on_cloud"
   done
   [ $failed -eq 0 ] || exit 1
 }
 
 require_stopped() {
-  set -- $(aws ecs describe-services --cluster "jfp-ecs-cluster-$env_name" \
+  counts=$(aws ecs describe-services --cluster "jfp-ecs-cluster-$env_name" \
     --services "plausible-$env_name-service" \
     --query 'services[0].[desiredCount,runningCount,pendingCount]' --output text)
+  set -- $counts
   if [ "$1 $2 $3" != "0 0 0" ]; then
     echo "ECS plausible-$env_name-service has desired/running/pending $1/$2/$3; stop it first" >&2
     exit 1
@@ -143,7 +155,8 @@ copy_slice() {
     echo "  $label: on Cloud already ($source)"
     return
   fi
-  if [ "$(sql "SELECT count() FROM $(cloud "$db" "$table") WHERE $where")" != 0 ]; then
+  rows_on_cloud=$(sql "SELECT count() FROM $(cloud "$db" "$table") WHERE $where")
+  if [ "$rows_on_cloud" != 0 ]; then
     echo "  $label: partly on Cloud (source $source, Cloud $target). As default on Cloud run" >&2
     echo "    DELETE FROM $db.$table WHERE $where" >&2
     echo "  then rerun." >&2
@@ -174,7 +187,8 @@ copy() {
       copy_slice "$table" 1 "$table"
       continue
     fi
-    for partition in $(sql "SELECT DISTINCT $key AS p FROM $db.$table ORDER BY p"); do
+    partitions=$(sql "SELECT DISTINCT $key AS p FROM $db.$table ORDER BY p")
+    for partition in $partitions; do
       copy_slice "$table" "$key = $partition" "$table $partition"
     done
   done
