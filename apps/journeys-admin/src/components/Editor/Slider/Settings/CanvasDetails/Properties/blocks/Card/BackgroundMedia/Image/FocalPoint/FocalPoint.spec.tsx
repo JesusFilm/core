@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client'
+import { InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type MockedFunction } from 'vitest'
@@ -95,11 +95,16 @@ describe('FocalPoint', () => {
     return image
   }
 
-  function cachedFocalPoint(cache: InMemoryCache): {
+  // what the canvas shows: saved data plus any optimistic layers, such as
+  // the preview
+  function cachedFocalPoint(
+    cache: InMemoryCache,
+    { optimistic = true }: { optimistic?: boolean } = {}
+  ): {
     focalLeft: unknown
     focalTop: unknown
   } {
-    const cached = cache.extract()[`ImageBlock:${imageBlock.id}`]
+    const cached = cache.extract(optimistic)[`ImageBlock:${imageBlock.id}`]
     return { focalLeft: cached?.focalLeft, focalTop: cached?.focalTop }
   }
 
@@ -124,7 +129,6 @@ describe('FocalPoint', () => {
     const image = startDrag({ x: 25, y: 25 })
     fireEvent.pointerUp(image, { pointerId: 1 })
 
-    expect(cachedFocalPoint(cache)).toEqual({ focalLeft: 25, focalTop: 25 })
     expect(updateImageBlock).toHaveBeenCalledTimes(1)
     expect(updateImageBlock).toHaveBeenCalledWith(
       { ...imageBlockResult, focalTop: 25, focalLeft: 25 },
@@ -143,9 +147,16 @@ describe('FocalPoint', () => {
     mockedCalculatePoint.mockReturnValueOnce({ x: 75, y: 75 })
     fireEvent.pointerMove(image, { pointerId: 1 })
     await waitForCachedFocalPoint(cache, 75, 75)
+    expect(cachedFocalPoint(cache, { optimistic: false })).toEqual({
+      focalLeft: 50,
+      focalTop: 50
+    })
     expect(updateImageBlock).not.toHaveBeenCalled()
 
     fireEvent.pointerUp(image, { pointerId: 1 })
+
+    // updateImageBlock is mocked, so nothing saved takes over from the preview
+    expect(cachedFocalPoint(cache)).toEqual({ focalLeft: 50, focalTop: 50 })
 
     expect(updateImageBlock).toHaveBeenCalledTimes(1)
     expect(updateImageBlock).toHaveBeenCalledWith(
@@ -157,7 +168,7 @@ describe('FocalPoint', () => {
 
   it('writes at most one preview per frame, with the latest point', async () => {
     const { cache } = renderFocalPoint()
-    const writeFragment = vi.spyOn(cache, 'writeFragment')
+    const recordPreview = vi.spyOn(cache, 'recordOptimisticTransaction')
 
     const image = startDrag({ x: 30, y: 30 })
     mockedCalculatePoint
@@ -166,9 +177,9 @@ describe('FocalPoint', () => {
     fireEvent.pointerMove(image, { pointerId: 1 })
     fireEvent.pointerMove(image, { pointerId: 1 })
 
-    expect(writeFragment).not.toHaveBeenCalled()
+    expect(recordPreview).not.toHaveBeenCalled()
     await waitForCachedFocalPoint(cache, 70, 20)
-    expect(writeFragment).toHaveBeenCalledTimes(1)
+    expect(recordPreview).toHaveBeenCalledTimes(1)
   })
 
   it('does not preview moves without a pressed pointer', () => {
@@ -250,6 +261,27 @@ describe('FocalPoint', () => {
     // the editor's hotkey still runs, after the preview is reverted
     expect(hotkey).toHaveReturnedWith({ focalLeft: 50, focalTop: 50 })
     expect(updateImageBlock).not.toHaveBeenCalled()
+  })
+
+  it('reveals a change saved by someone else when the drag is cancelled', async () => {
+    const { cache } = renderFocalPoint()
+
+    const image = startDrag({ x: 80, y: 20 })
+    await waitForCachedFocalPoint(cache, 80, 20)
+    // a teammate's update arrives mid-drag
+    cache.writeFragment({
+      id: `ImageBlock:${imageBlock.id}`,
+      fragment: gql`
+        fragment TeammateFocalPoint on ImageBlock {
+          focalLeft
+          focalTop
+        }
+      `,
+      data: { focalLeft: 10, focalTop: 90 }
+    })
+    fireEvent.pointerCancel(image, { pointerId: 1 })
+
+    expect(cachedFocalPoint(cache)).toEqual({ focalLeft: 10, focalTop: 90 })
   })
 
   it('restores the saved point when unmounted mid-drag', async () => {

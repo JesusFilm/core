@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useId, useRef, useState } from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
@@ -40,6 +40,7 @@ export function FocalPoint({
 }: FocalPointProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const client = useApolloClient()
+  const previewId = `focal-point-preview${useId()}`
 
   const imageRef = useRef<HTMLDivElement>(null)
   // the block as it was when the drag started; null when not dragging
@@ -67,17 +68,26 @@ export function FocalPoint({
     setLocalPosition(position)
   }, [imageBlock?.id, imageBlock?.focalLeft, imageBlock?.focalTop])
 
-  // Writes to the cache only, so the canvas previews the point before it is
-  // saved.
-  function writeFocalPoint(blockId: string, position: Position): void {
-    client.cache.writeFragment({
-      id: client.cache.identify({ __typename: 'ImageBlock', id: blockId }),
-      fragment: IMAGE_FOCAL_POINT_FRAGMENT,
-      data: {
-        focalLeft: Math.round(position.x),
-        focalTop: Math.round(position.y)
-      }
-    })
+  // The preview lives in its own optimistic cache layer, so the canvas shows
+  // it while the cache's saved data stays untouched. Dropping the layer
+  // reveals whatever is saved underneath: the value before the drag, a
+  // teammate's newer change, or the last saved value if the save fails.
+  function showPreview(blockId: string, position: Position): void {
+    client.cache.removeOptimistic(previewId)
+    client.cache.recordOptimisticTransaction((cache) => {
+      cache.writeFragment({
+        id: cache.identify({ __typename: 'ImageBlock', id: blockId }),
+        fragment: IMAGE_FOCAL_POINT_FRAGMENT,
+        data: {
+          focalLeft: Math.round(position.x),
+          focalTop: Math.round(position.y)
+        }
+      })
+    }, previewId)
+  }
+
+  function clearPreview(): void {
+    client.cache.removeOptimistic(previewId)
   }
 
   function cancelPreviewFrame(): void {
@@ -96,8 +106,7 @@ export function FocalPoint({
     previewFrameRef.current = requestAnimationFrame(() => {
       previewFrameRef.current = null
       const startBlock = startBlockRef.current
-      if (startBlock != null)
-        writeFocalPoint(startBlock.id, positionRef.current)
+      if (startBlock != null) showPreview(startBlock.id, positionRef.current)
     })
   }
 
@@ -109,12 +118,18 @@ export function FocalPoint({
     pointerIdRef.current = null
     if (startBlock == null) return
 
-    writeFocalPoint(startBlock.id, positionRef.current)
     const focalLeft = Math.round(positionRef.current.x)
     const focalTop = Math.round(positionRef.current.y)
-    if (focalLeft === startBlock.focalLeft && focalTop === startBlock.focalTop)
+    if (
+      focalLeft === startBlock.focalLeft &&
+      focalTop === startBlock.focalTop
+    ) {
+      clearPreview()
       return
+    }
 
+    // the save's optimistic response takes over showing the point, so the
+    // preview layer is dropped once the save has started
     updateImageBlock(
       {
         src: startBlock.src,
@@ -128,6 +143,7 @@ export function FocalPoint({
       true,
       startBlock
     )
+    clearPreview()
   }
 
   // drops the unsaved drag and restores the saved position
@@ -144,7 +160,7 @@ export function FocalPoint({
     }
     positionRef.current = position
     setLocalPosition(position)
-    writeFocalPoint(startBlock.id, position)
+    clearPreview()
   }
 
   // Undo/redo would act on saved history while the cache holds a preview, so
