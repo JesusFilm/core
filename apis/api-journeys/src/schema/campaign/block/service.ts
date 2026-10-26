@@ -413,7 +413,8 @@ export async function lockCampaignStructure(
   tx: Prisma.TransactionClient,
   campaignId: string
 ): Promise<void> {
-  await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtext(${'campaign:' + campaignId}))`
+  // $executeRaw, not $queryRaw: pg_advisory_xact_lock returns void, which Prisma cannot deserialize.
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${'campaign:' + campaignId}))`
 }
 
 /**

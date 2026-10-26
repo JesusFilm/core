@@ -103,11 +103,11 @@ describe('campaignRegionLanguageDelete', () => {
     await remove()
 
     expectStructureLockFirst()
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegionLanguage.findUniqueOrThrow.mock
         .invocationCallOrder[0]
     )
-    const rowLock = prismaMock.$queryRaw.mock.calls[1]
+    const rowLock = prismaMock.$queryRaw.mock.calls[0]
     expect((rowLock[0] as unknown as string[]).join('?')).toContain(
       'FOR UPDATE'
     )
@@ -118,7 +118,7 @@ describe('campaignRegionLanguageDelete', () => {
 
     const order = (mock: unknown): number =>
       vi.mocked(mock as () => void).mock.invocationCallOrder[0]
-    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(2)
+    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
     expect(order(prismaMock.$queryRaw)).toBeLessThan(
       order(prismaMock.campaignRegionLanguage.findUniqueOrThrow)
     )

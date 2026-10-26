@@ -84,7 +84,7 @@ describe('campaignRegionOrderUpdate', () => {
     await move(2)
 
     expectStructureLockFirst()
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegion.findMany.mock.invocationCallOrder[0]
     )
   })

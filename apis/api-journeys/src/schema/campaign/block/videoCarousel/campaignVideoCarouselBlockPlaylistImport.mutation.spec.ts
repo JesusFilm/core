@@ -199,7 +199,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
 
     expect(result.errors).toBeUndefined()
     expectStructureLockFirst()
-    expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+    expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
   })
 
   it('locks before it reads the carousel’s children and creates the videos', async () => {
@@ -208,10 +208,10 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     const result = await importPlaylist()
 
     expect(result.errors).toBeUndefined()
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignBlock.findMany.mock.invocationCallOrder[0]
     )
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignBlock.createManyAndReturn.mock.invocationCallOrder[0]
     )
   })
@@ -231,7 +231,7 @@ describe('campaignVideoCarouselBlockPlaylistImport', () => {
     expect(prismaMock.campaignBlock.findFirst).toHaveBeenLastCalledWith({
       where: { id: 'carouselId', deletedAt: null }
     })
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignBlock.findFirst.mock.invocationCallOrder[1]
     )
     expect(prismaMock.campaignBlock.createManyAndReturn).not.toHaveBeenCalled()
