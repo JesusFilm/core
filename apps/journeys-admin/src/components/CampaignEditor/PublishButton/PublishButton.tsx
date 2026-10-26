@@ -18,7 +18,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { useCampaignPublishMutation } from '../../../libs/useCampaignPublishMutation'
 import { useCampaignUnpublishMutation } from '../../../libs/useCampaignUnpublishMutation'
-import { campaignPermanentAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 
 import { campaignStatusCopy } from './statusCopy'
@@ -28,8 +27,10 @@ import { UnpublishDialog } from './UnpublishDialog'
  * The rail's Publish button: an icon with a status dot (grey draft, green
  * published) whose popover holds the status copy, Publish (no confirmation)
  * or Unpublish (confirming, and stating that the linked journeys and their
- * QR codes keep working) and Open page. Publish and unpublish are explicit
- * actions, never Commands; nothing here replaces Save.
+ * QR codes keep working) and Refresh and open page, which goes through
+ * `/api/campaign/open` so the campaign's public pages are rebuilt before the
+ * page it stands on opens, like journey Preview. Publish and unpublish are
+ * explicit actions, never Commands; nothing here replaces Save.
  */
 export function PublishButton(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -46,10 +47,14 @@ export function PublishButton(): ReactElement {
   const [campaignUnpublish, { loading: unpublishing }] =
     useCampaignUnpublishMutation()
   const published = campaign.status === CampaignStatus.published
-  const openPageHref =
+  const regionSlug =
     pageKind === CampaignPageKind.regionTemplate && currentRegion != null
-      ? `${campaignPermanentAddress(campaign.slug)}/${currentRegion.slug}`
-      : campaignPermanentAddress(campaign.slug)
+      ? currentRegion.slug
+      : undefined
+  const openPageHref = `/api/campaign/open?${new URLSearchParams({
+    id: campaign.id,
+    ...(regionSlug != null ? { regionSlug } : {})
+  }).toString()}`
 
   function showError(error: unknown, fallback: string): void {
     enqueueSnackbar(error instanceof Error ? error.message : fallback, {
@@ -155,7 +160,7 @@ export function PublishButton(): ReactElement {
             target="_blank"
             rel="noopener"
           >
-            {t('Open page')}
+            {t('Refresh and open page')}
           </Button>
         </Stack>
       </Popover>
