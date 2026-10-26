@@ -75,7 +75,7 @@ describe('campaignRegionCountryRemove', () => {
     await remove()
 
     expectStructureLockFirst()
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegionCountry.delete.mock.invocationCallOrder[0]
     )
   })

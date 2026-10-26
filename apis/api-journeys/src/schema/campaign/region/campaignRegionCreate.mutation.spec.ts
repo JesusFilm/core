@@ -145,7 +145,7 @@ describe('campaignRegionCreate', () => {
 
     expect(result.data.campaignRegionCreate.order).toBe(3)
     expectStructureLockFirst()
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignRegion.count.mock.invocationCallOrder[0]
     )
     expect(prismaMock.campaignRegion.count).toHaveBeenCalledWith({

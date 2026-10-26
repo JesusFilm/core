@@ -153,7 +153,7 @@ describe('campaignRegionLanguageCreate', () => {
 
       expect(result.data.campaignRegionLanguageCreate.order).toBe(2)
       expectStructureLockFirst()
-      expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
         prismaMock.campaignRegionLanguage.findMany.mock.invocationCallOrder[1]
       )
       expect(prismaMock.campaignRegionLanguage.create).toHaveBeenCalledWith(
