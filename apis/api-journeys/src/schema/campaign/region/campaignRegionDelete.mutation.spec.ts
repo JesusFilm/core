@@ -9,6 +9,7 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { campaignRegionWithAcl } from '../../../../test/campaignRegionFactory'
+import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
 import { prismaMock } from '../../../../test/prismaMock'
 import { graphql } from '../../../lib/graphql/subgraphGraphql'
 import { deleteShortLink } from '../../qrCode/qrCode.service'
@@ -146,9 +147,11 @@ describe('campaignRegionDelete', () => {
         values
       })
     )
-    expect(statements[0].sql).toContain('pg_advisory_xact_lock(hashtext(')
-    expect(statements[0].values).toEqual(['campaign:campaignId'])
-    expect(statements.slice(1, 4)).toEqual([
+    expectStructureLockFirst()
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
+      prismaMock.$queryRaw.mock.invocationCallOrder[0]
+    )
+    expect(statements).toEqual([
       {
         sql: 'SELECT 1 FROM "CampaignBlock" WHERE "campaignId" = ? ORDER BY id FOR UPDATE',
         values: ['campaignId']
@@ -166,10 +169,10 @@ describe('campaignRegionDelete', () => {
       where: { id: 'eurRegionId' },
       select: { listed: true }
     })
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[3]).toBeLessThan(
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[2]).toBeLessThan(
       prismaMock.campaignRegion.findUnique.mock.invocationCallOrder[1]
     )
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[3]).toBeLessThan(
+    expect(prismaMock.$queryRaw.mock.invocationCallOrder[2]).toBeLessThan(
       prismaMock.campaignRegion.delete.mock.invocationCallOrder[0]
     )
   })

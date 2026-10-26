@@ -2379,6 +2379,7 @@ describe('the slot contract (cover, logo and media)', () => {
     it('leaves the structure alone for columns that are not slots', async () => {
       await updateBlock(ownerRef, { backgroundKind: 'surface' })
 
+      expect(prismaMock.$executeRaw).not.toHaveBeenCalled()
       expect(prismaMock.$queryRaw).not.toHaveBeenCalled()
       expect(prismaMock.campaignBlock.findFirst).not.toHaveBeenCalled()
     })
@@ -2400,9 +2401,9 @@ describe('the structure lock', () => {
     return Math.min(...mock.mock.invocationCallOrder)
   }
 
-  /** The first `$queryRaw` ran before every read and write of the transaction. */
+  /** The first `$executeRaw` ran before every read and write of the transaction. */
   function expectLockedBeforeEveryRead(): void {
-    const lockedAt = firstCall(prismaMock.$queryRaw)
+    const lockedAt = firstCall(prismaMock.$executeRaw)
     for (const mock of [
       prismaMock.campaignBlock.findMany,
       prismaMock.campaignBlock.findFirst,
@@ -2534,7 +2535,7 @@ describe('the structure lock', () => {
       await run()
 
       expectStructureLockFirst()
-      expect(prismaMock.$queryRaw).toHaveBeenCalledTimes(1)
+      expect(prismaMock.$executeRaw).toHaveBeenCalledTimes(1)
     }
   )
 
@@ -2703,7 +2704,7 @@ describe('the block cap', () => {
       where: { campaignId: 'campaignId', deletedAt: null }
     })
     expectStructureLockFirst()
-    expect(prismaMock.$queryRaw.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(prismaMock.$executeRaw.mock.invocationCallOrder[0]).toBeLessThan(
       prismaMock.campaignBlock.count.mock.invocationCallOrder[0]
     )
   })
