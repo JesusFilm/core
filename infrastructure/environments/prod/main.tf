@@ -217,6 +217,15 @@ resource "aws_acm_certificate" "analytics_jesusfilm_org" {
   }
 }
 
+# Attach only once ACM reports the certificate ISSUED; attaching a pending
+# certificate fails the apply. The public listener then answers for
+# analytics.jesusfilm.org, and the Cloudflare CNAME edit is the cutover
+# (modules/plausible/README.md, "Prod cutover").
+resource "aws_lb_listener_certificate" "analytics_jesusfilm_org" {
+  listener_arn    = module.prod.public_alb.alb_listener.arn
+  certificate_arn = aws_acm_certificate.analytics_jesusfilm_org.arn
+}
+
 module "postgresql" {
   source                          = "../../modules/aws/aurora"
   name                            = "jfp-core"
