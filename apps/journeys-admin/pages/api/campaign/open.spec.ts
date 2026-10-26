@@ -3,8 +3,8 @@ import { getApiRequestTokens } from 'next-firebase-auth-edge'
 import { type Mock } from 'vitest'
 
 import {
-  GetCampaignPagePaths,
-  GetCampaignPagePaths_campaign as Campaign
+  GetCampaignPagePaths_campaign as Campaign,
+  GetCampaignPagePaths
 } from '../../../__generated__/GetCampaignPagePaths'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
 import { createApolloClient } from '../../../src/libs/apolloClient'
@@ -109,7 +109,8 @@ function mockCampaign(campaign: Campaign | undefined): void {
 describe('campaign/open', () => {
   const ORIGINAL_ENV = {
     JOURNEYS_URL: process.env.JOURNEYS_URL,
-    JOURNEYS_REVALIDATE_ACCESS_TOKEN: process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
+    JOURNEYS_REVALIDATE_ACCESS_TOKEN:
+      process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
   }
 
   beforeEach(() => {
@@ -151,7 +152,10 @@ describe('campaign/open', () => {
   it('returns 403 when Sec-Fetch-Site is cross-site', async () => {
     const { res, status, json, redirect } = mockResponse()
     await handler(
-      openReq({ id: 'campaignId' }, { headers: { 'sec-fetch-site': 'cross-site' } }),
+      openReq(
+        { id: 'campaignId' },
+        { headers: { 'sec-fetch-site': 'cross-site' } }
+      ),
       res
     )
     expect(status).toHaveBeenCalledWith(403)
@@ -163,7 +167,10 @@ describe('campaign/open', () => {
   it('allows same-origin Sec-Fetch-Site requests', async () => {
     const { res, redirect } = mockResponse()
     await handler(
-      openReq({ id: 'campaignId' }, { headers: { 'sec-fetch-site': 'same-origin' } }),
+      openReq(
+        { id: 'campaignId' },
+        { headers: { 'sec-fetch-site': 'same-origin' } }
+      ),
       res
     )
     expect(redirect).toHaveBeenCalledWith(307, 'https://outreach.example.org')
@@ -174,7 +181,9 @@ describe('campaign/open', () => {
     const { res, status, json, redirect } = mockResponse()
     await handler(openReq(), res)
     expect(status).toHaveBeenCalledWith(500)
-    expect(json).toHaveBeenCalledWith({ error: 'Missing Environment Variables' })
+    expect(json).toHaveBeenCalledWith({
+      error: 'Missing Environment Variables'
+    })
     expect(redirect).not.toHaveBeenCalled()
   })
 

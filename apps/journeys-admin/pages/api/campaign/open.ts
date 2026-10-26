@@ -5,8 +5,8 @@ import { getApiRequestTokens } from 'next-firebase-auth-edge'
 import { campaignPagePaths } from '@core/journeys/ui/Campaign/libs/campaignPagePaths'
 
 import {
-  GetCampaignPagePaths,
   GetCampaignPagePaths_campaign as Campaign,
+  GetCampaignPagePaths,
   GetCampaignPagePathsVariables
 } from '../../../__generated__/GetCampaignPagePaths'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
@@ -86,7 +86,9 @@ async function revalidatePaths(
     await Promise.all(
       paths
         .slice(start, start + REVALIDATE_CONCURRENCY)
-        .map(async (path) => await revalidatePath(journeysUrl, accessToken, path))
+        .map(
+          async (path) => await revalidatePath(journeysUrl, accessToken, path)
+        )
     )
   }
 }
