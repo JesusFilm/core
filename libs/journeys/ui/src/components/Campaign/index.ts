@@ -126,6 +126,7 @@ export {
   createCampaignTheme
 } from './libs/createCampaignTheme'
 export { matchRegionSlug } from './libs/matchRegionSlug'
+export { campaignPagePaths } from './libs/campaignPagePaths'
 export { VIEWER_RESERVED_SEGMENTS } from './libs/viewerReservedSegments'
 export {
   CAMPAIGN_OVERLAY_ALPHA,
@@ -183,6 +184,7 @@ export type {
 } from './libs/resolvePageLanguage'
 export type { CampaignThemeInput } from './libs/createCampaignTheme'
 export type { CampaignBandOverlay, ResolvedBand } from './libs/resolveBand'
+export type { CampaignPagePathsInput } from './libs/campaignPagePaths'
 export type {
   CampaignThemePreset,
   CampaignThemePresetColumn,
