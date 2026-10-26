@@ -1078,7 +1078,9 @@ describe('Inspector', () => {
       )
 
       expect(screen.getByTestId('RegionSettings')).toBeInTheDocument()
-      expect(screen.queryByRole('link', { name: 'Open page' })).toBeNull()
+      expect(
+        screen.queryByRole('link', { name: 'Refresh and open page' })
+      ).toBeNull()
       expect(screen.getByRole('button', { name: 'Unlist' })).toBeEnabled()
 
       fireEvent.click(screen.getByRole('button', { name: 'Edit page' }))

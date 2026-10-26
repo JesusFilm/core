@@ -180,19 +180,19 @@ describe('PublishButton', () => {
     expect(screen.getByRole('button', { name: 'Unpublish' })).toBeEnabled()
   })
 
-  it('opens the root-domain campaign address in a new tab', () => {
+  it('opens the campaign through the refresh route in a new tab', () => {
     render(<Harness />)
     openPopover()
 
-    const link = screen.getByRole('link', { name: 'Open page' })
+    const link = screen.getByRole('link', { name: 'Refresh and open page' })
     expect(link).toHaveAttribute(
       'href',
-      'https://your.nextstep.is/campaign/outreach-2026'
+      '/api/campaign/open?id=campaignId&slug=outreach-2026'
     )
     expect(link).toHaveAttribute('target', '_blank')
   })
 
-  it('opens the rendered region’s page on a Region Page', () => {
+  it('opens the rendered region’s page through the refresh route on a Region Page', () => {
     render(
       <Harness
         campaignProp={campaignWithRegions}
@@ -204,9 +204,11 @@ describe('PublishButton', () => {
     )
     openPopover()
 
-    expect(screen.getByRole('link', { name: 'Open page' })).toHaveAttribute(
+    expect(
+      screen.getByRole('link', { name: 'Refresh and open page' })
+    ).toHaveAttribute(
       'href',
-      'https://your.nextstep.is/campaign/outreach-2026/afr'
+      '/api/campaign/open?id=campaignId&slug=outreach-2026&regionSlug=afr'
     )
   })
 
