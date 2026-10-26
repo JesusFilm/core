@@ -36,7 +36,7 @@ AWS resources are named `jfp-<thing>-<env>` (`jfp` = Jesus Film Project), e.g. `
 ### Services
 
 **Service**:
-A deployable workload running on ECS Fargate in each Environment: the six subgraph APIs plus Arclight. Its infrastructure lives in its own Infrastructure Folder; its container image is deployed by GitHub Actions, not by Terraform.
+A deployable workload running on ECS Fargate in each Environment: the six subgraph APIs, Arclight, and Plausible. Its infrastructure lives in its own Infrastructure Folder; its container image is deployed by GitHub Actions, not by Terraform. Plausible is the exception on both counts: no code in this repo, so its folder is `infrastructure/modules/plausible`, and it runs the published upstream image pinned by tag (and on ARM64, the only Graviton Service so far).
 _Avoid_: app (ambiguous — most `apps/*` deploy to Vercel, not ECS)
 
 **Infrastructure Folder**:
@@ -46,7 +46,7 @@ The `infrastructure/` directory inside a Service's own project (e.g. `apis/api-m
 A Service's runtime shape — CPU, memory, desired count, port, health check, autoscaling — defined in its Infrastructure Folder.
 
 **Public Service / Internal Service**:
-A Service's exposure class. Public Services (`api-gateway`, `arclight`) sit behind the public ALB and real hostnames; Internal Services (the other five APIs) sit behind the internal ALB and are reachable only inside the VPC as `<name>.service.internal`.
+A Service's exposure class. Public Services (`api-gateway`, `arclight`, `plausible`) sit behind the public ALB and real hostnames; Internal Services (the other five APIs) sit behind the internal ALB and are reachable only inside the VPC as `<name>.service.internal`. Plausible's prod hostname (`analytics.jesusfilm.org`) is the one public hostname whose DNS is in Cloudflare rather than Route53 and whose certificate is a per-hostname ACM certificate validated there by hand.
 _Avoid_: external/private (say Public/Internal to match the ALB names)
 
 **Deploy Surface**:
@@ -69,7 +69,7 @@ The per-Service, per-Environment secret handle: Terraform reads it from SSM and 
 The SSH jump host (`bastion.central.jesusfilm.org`) for reaching internal resources (the Core Database, Redis); access is an IP allowlist of named individuals.
 
 **Platform Cluster**:
-The EKS cluster (`jfp-eks`) per Environment. It runs platform/ops tooling only (Plausible Analytics, cert-manager, Datadog, ingress) via Argo CD GitOps from `infrastructure/kube/` — no product Services run there. ECS is the product runtime; EKS is the ops runtime.
+The EKS cluster (`jfp-eks`) per Environment. It runs platform/ops tooling only (cert-manager, Datadog, ingress, external-dns, and the Plausible Analytics Deployment until its move to ECS completes — plan `docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md`) via Argo CD GitOps from `infrastructure/kube/` — no product Services run there. ECS is the product runtime; EKS is the ops runtime, and once Plausible has left it has no tenant of its own.
 _Avoid_: "the cluster" (ambiguous with the ECS cluster)
 
 ### Terminology traps

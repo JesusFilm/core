@@ -1,0 +1,35 @@
+# Temporary internal NLB in front of Plausible's ClickHouse, so the Plausible
+# ECS service (infrastructure/modules/plausible) can use the events stored here
+# until they move to ClickHouse Cloud.
+#
+# Applied by hand, not by Argo CD. Delete it after the events move, or let it
+# go with the cluster. NLB_SECURITY_GROUP_ID is the security group
+# jfp-plausible-eks-clickhouse-<env>, created by the plausible module; it admits
+# port 8123 from the ECS tasks only. Steps: infrastructure/modules/plausible/README.md,
+# "Prerequisites".
+apiVersion: v1
+kind: Service
+metadata:
+  name: plausible-clickhouse-ecs
+  namespace: default
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internal
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-security-groups: NLB_SECURITY_GROUP_ID
+    # With a custom security group the controller leaves the node rules alone
+    # unless told to; this adds the node-side rule for 8123 from the NLB.
+    service.beta.kubernetes.io/aws-load-balancer-manage-backend-security-group-rules: 'true'
+spec:
+  type: LoadBalancer
+  loadBalancerClass: service.k8s.aws/nlb
+  # The data lives only on the main StatefulSet pod; the -replica StatefulSet
+  # has no Plausible database.
+  selector:
+    app.kubernetes.io/instance: plausible-analytics
+    app.kubernetes.io/name: clickhouse
+    statefulset.kubernetes.io/pod-name: plausible-analytics-clickhouse-0
+  ports:
+    - name: http
+      port: 8123
+      targetPort: 8123
+      protocol: TCP
