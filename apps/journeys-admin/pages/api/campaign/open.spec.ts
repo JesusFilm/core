@@ -65,15 +65,25 @@ interface CapturedRes {
   res: NextApiResponse
   status: Mock
   json: Mock
+  send: Mock
+  setHeader: Mock
   redirect: Mock
 }
 
 function mockResponse(): CapturedRes {
   const json = vi.fn()
-  const status = vi.fn(() => ({ json }))
+  const send = vi.fn()
+  const status = vi.fn(() => ({ json, send }))
+  const setHeader = vi.fn()
   const redirect = vi.fn()
-  const res = { status, json, redirect } as unknown as NextApiResponse
-  return { res, status, json, redirect }
+  const res = {
+    status,
+    json,
+    send,
+    setHeader,
+    redirect
+  } as unknown as NextApiResponse
+  return { res, status, json, send, setHeader, redirect }
 }
 
 // Default request shape: a top-level GET with Sec-Fetch-Site omitted, as a
@@ -225,21 +235,75 @@ describe('campaign/open', () => {
     })
   })
 
-  it('returns 404 when the campaign cannot be read', async () => {
-    mockQuery.mockRejectedValueOnce(new Error('FORBIDDEN'))
-    const { res, status, json, redirect } = mockResponse()
-    await handler(openReq(), res)
-    expect(status).toHaveBeenCalledWith(404)
-    expect(json).toHaveBeenCalledWith({ error: 'Campaign not found' })
-    expect(mockFetch).not.toHaveBeenCalled()
-    expect(redirect).not.toHaveBeenCalled()
-  })
+  describe('when the campaign cannot be read', () => {
+    it('logs it and opens the permanent address from the slug the editor passed, with no rebuild', async () => {
+      mockQuery.mockRejectedValueOnce(new Error('FORBIDDEN'))
+      const { res, status, redirect } = mockResponse()
+      await handler(openReq({ id: 'campaignId', slug: 'outreach' }), res)
+      expect(console.error).toHaveBeenCalledTimes(1)
+      expect(mockFetch).not.toHaveBeenCalled()
+      expect(status).not.toHaveBeenCalled()
+      expect(redirect).toHaveBeenCalledWith(
+        307,
+        'https://your.nextstep.is/campaign/outreach'
+      )
+    })
 
-  it('returns 404 when the read comes back without data', async () => {
-    mockCampaign(undefined)
-    const { res, status } = mockResponse()
-    await handler(openReq(), res)
-    expect(status).toHaveBeenCalledWith(404)
+    it('keeps the region page when regionSlug has a slug shape', async () => {
+      mockQuery.mockRejectedValueOnce(new Error('gateway down'))
+      const { res, redirect } = mockResponse()
+      await handler(
+        openReq({ id: 'campaignId', slug: 'outreach', regionSlug: 'eur' }),
+        res
+      )
+      expect(redirect).toHaveBeenCalledWith(
+        307,
+        'https://your.nextstep.is/campaign/outreach/eur'
+      )
+    })
+
+    it('drops a regionSlug that is not slug-shaped', async () => {
+      mockQuery.mockRejectedValueOnce(new Error('gateway down'))
+      const { res, redirect } = mockResponse()
+      await handler(
+        openReq({ id: 'campaignId', slug: 'outreach', regionSlug: '../evil' }),
+        res
+      )
+      expect(redirect).toHaveBeenCalledWith(
+        307,
+        'https://your.nextstep.is/campaign/outreach'
+      )
+    })
+
+    it('falls back the same way when the read comes back without data', async () => {
+      mockCampaign(undefined)
+      const { res, redirect } = mockResponse()
+      await handler(openReq({ id: 'campaignId', slug: 'outreach' }), res)
+      expect(mockFetch).not.toHaveBeenCalled()
+      expect(redirect).toHaveBeenCalledWith(
+        307,
+        'https://your.nextstep.is/campaign/outreach'
+      )
+    })
+
+    it.each([[undefined], ['../evil'], ['Outreach'], ['']])(
+      'shows a short plain-text message instead of JSON when the slug is %j',
+      async (slug) => {
+        mockQuery.mockRejectedValueOnce(new Error('FORBIDDEN'))
+        const { res, status, json, send, setHeader, redirect } = mockResponse()
+        await handler(openReq({ id: 'campaignId', slug }), res)
+        expect(redirect).not.toHaveBeenCalled()
+        expect(json).not.toHaveBeenCalled()
+        expect(setHeader).toHaveBeenCalledWith(
+          'Content-Type',
+          'text/plain; charset=utf-8'
+        )
+        expect(status).toHaveBeenCalledWith(404)
+        expect(send).toHaveBeenCalledWith(
+          expect.stringContaining('could not be read')
+        )
+      }
+    )
   })
 
   it('revalidates every page of a published campaign with the access token, then redirects to the public address', async () => {

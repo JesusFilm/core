@@ -2,7 +2,7 @@ import { gql } from '@apollo/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getApiRequestTokens } from 'next-firebase-auth-edge'
 
-import { campaignPagePaths } from '@core/journeys/ui/Campaign/libs/campaignPagePaths'
+import { campaignPagePaths } from '@core/journeys/ui/Campaign'
 
 import {
   GetCampaignPagePaths_campaign as Campaign,
@@ -10,7 +10,10 @@ import {
   GetCampaignPagePathsVariables
 } from '../../../__generated__/GetCampaignPagePaths'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
-import { campaignPublicAddress } from '../../../src/components/CampaignEditor/campaignAddress'
+import {
+  campaignPermanentAddress,
+  campaignPublicAddress
+} from '../../../src/components/CampaignEditor/campaignAddress'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { authConfig } from '../../../src/libs/auth/config'
 
@@ -39,6 +42,18 @@ export const GET_CAMPAIGN_PAGE_PATHS = gql`
     }
   }
 `
+
+/**
+ * The shape of a campaign or region slug: lowercase ASCII letters, digits and
+ * single hyphens, as the API's slugify produces. A query value of any other
+ * shape is ignored, so nothing but a slug is ever appended to a redirect.
+ */
+const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
+function slugParam(value: string | string[] | undefined): string | undefined {
+  const slug = value?.toString()
+  return slug != null && SLUG_RE.test(slug) ? slug : undefined
+}
 
 /**
  * Rebuilds in flight at once. Each one regenerates a page on the journeys
@@ -109,8 +124,14 @@ function languageTags(campaign: Campaign): string[] {
  * the browser to the public address — the Custom Domain root when one names
  * the campaign as Campaign Root, else the permanent `/campaign/<slug>`, with
  * `regionSlug` appended when it names one of the campaign's regions. A draft
- * serves nothing, so it is opened without a rebuild; a rebuild that fails is
- * logged and the page still opens, so the button never dead-ends.
+ * serves nothing, so it is opened without a rebuild.
+ *
+ * The button never dead-ends: a rebuild that fails is logged and the page
+ * still opens, and when the campaign cannot be read at all (gateway down,
+ * not found, not a team member — the gateway throws for each of these, since
+ * `campaign` is non-null in the schema) the browser is sent to the permanent
+ * address built from the `slug` the editor passes along, with no rebuild.
+ * Only without a usable slug does the tab show a short message instead.
  */
 export default async function handler(
   req: NextApiRequest,
@@ -143,7 +164,8 @@ export default async function handler(
   if (id == null || id === '') {
     return res.status(400).json({ error: 'Missing id' })
   }
-  const regionSlug = req.query.regionSlug?.toString()
+  const fallbackSlug = slugParam(req.query.slug)
+  const regionSlug = slugParam(req.query.regionSlug)
 
   let token: string
   try {
@@ -171,7 +193,17 @@ export default async function handler(
     console.error('[campaign/open] campaign read failed', { id, error })
   }
   if (campaign == null) {
-    return res.status(404).json({ error: 'Campaign not found' })
+    if (fallbackSlug == null) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+      return res
+        .status(404)
+        .send(
+          'The campaign could not be read, so there is no page to open. Close this tab and try again from the editor.'
+        )
+    }
+    const address = campaignPermanentAddress(fallbackSlug)
+    res.redirect(307, regionSlug == null ? address : `${address}/${regionSlug}`)
+    return
   }
 
   if (campaign.status === CampaignStatus.published) {

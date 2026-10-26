@@ -15,8 +15,11 @@ export interface CampaignPagePathsInput {
  * form. Each of them also has one page per `languageTags` entry, under
  * `_lang/<tag>` ahead of the region, which is where a `?lang=` link lands.
  * Paths are the page paths behind the proxy rewrite, which is what the
- * journeys app's `/api/revalidate` needs. Mirrors `campaignPagePaths` in
- * api-journeys' `revalidateCampaign.ts`, which still keeps its own copy.
+ * journeys app's `/api/revalidate` needs.
+ *
+ * The backend PR (JesusFilm/core#10011) lands the same function in
+ * api-journeys' `revalidateCampaign.ts`; once both are in production, that
+ * copy should import this one.
  */
 export function campaignPagePaths(campaign: CampaignPagePathsInput): string[] {
   const bases = [

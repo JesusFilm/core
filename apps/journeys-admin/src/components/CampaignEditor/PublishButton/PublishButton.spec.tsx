@@ -185,7 +185,10 @@ describe('PublishButton', () => {
     openPopover()
 
     const link = screen.getByRole('link', { name: 'Refresh and open page' })
-    expect(link).toHaveAttribute('href', '/api/campaign/open?id=campaignId')
+    expect(link).toHaveAttribute(
+      'href',
+      '/api/campaign/open?id=campaignId&slug=outreach-2026'
+    )
     expect(link).toHaveAttribute('target', '_blank')
   })
 
@@ -203,7 +206,10 @@ describe('PublishButton', () => {
 
     expect(
       screen.getByRole('link', { name: 'Refresh and open page' })
-    ).toHaveAttribute('href', '/api/campaign/open?id=campaignId&regionSlug=afr')
+    ).toHaveAttribute(
+      'href',
+      '/api/campaign/open?id=campaignId&slug=outreach-2026&regionSlug=afr'
+    )
   })
 
   it('has no Save button, Unsaved chip or save indicator', () => {
