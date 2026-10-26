@@ -184,22 +184,72 @@ on the NLB too.
 
 ## Moving the events to ClickHouse Cloud
 
-After the environment's cutover. The tenant setup on Cloud (database, users,
-settings profile) and the copy are in plan `2026-10-14-001` and its runbook in
-`infrastructure/kube/plausible-analytics/README.md`. Prod's event store is
-about 1.3 GiB compressed, so the copy is one pass with Plausible stopped:
+After the environment's DNS cutover, with the EKS Deployment at 0 (stage:
+`replicaCount: 0` in `values-stage.yaml`; prod: the same in `values.yaml`,
+which ends the DNS rollback). The target is the environment's ClickHouse Cloud
+service (`module.<env>.module.short_links_clickhouse`), which also holds the
+short-links `redirects` database. Its HTTPS URL and `default` password are
+`SHORT_LINKS_CLICKHOUSE_URL` and `SHORT_LINKS_CLICKHOUSE_ADMIN_PASSWORD` in
+the `core` Doppler project. Plausible gets its own database and users; the
+files are in `clickhouse-cloud/`.
 
-1. Prepare the tenant on Cloud.
-2. Stop Plausible: set the service's desired count to 0
-   (`aws ecs update-service --desired-count 0`), and confirm the EKS Deployment
-   is already at 0.
-3. Copy every table from the EKS ClickHouse to Cloud; compare counts.
-4. In the branch config, set `CLICKHOUSE_DATABASE_URL` to the Cloud URL; apply
-   Terraform; set the desired count back to 1.
-5. Verify as in the cutover.
+The event stores are small (stage 45 MiB on disk, prod about 1.3 GiB), so the
+copy is one pass with Plausible stopped. It is pushed from the EKS ClickHouse
+pod with `remoteSecure()` to the native TLS port, 9440.
 
-**Rollback:** the branch config URL back to the NLB, apply, restart. Events
-written to Cloud in between are lost.
+**Before the window**, with Plausible running:
+
+1. As `default` on Cloud (SQL console, or `clickhouse client --secure --port 9440`):
+   run `clickhouse-cloud/schema.sql`, then `clickhouse-cloud/users.sql` with two
+   new passwords.
+2. With kubectl on `jfp-eks-<env>`:
+
+   ```bash
+   CLICKHOUSE_CLOUD_HOST=<host> CLICKHOUSE_CLOUD_PASSWORD=<migrator password> \
+     infrastructure/modules/plausible/clickhouse-cloud/copy-to-cloud.sh <env> check
+   ```
+
+   It proves the push route, that every table exists on Cloud with the same
+   columns in the same order, and that Cloud is empty. An idled stage service
+   can time out the first attempt: rerun.
+
+3. Have the URL ready: `https://plausible:<plausible password>@<host>:8443/plausible_events_db`.
+
+**The window** (Plausible is down: tracking events sent meanwhile are lost,
+and `api-journeys` stats fail):
+
+1. Stop the service. Its autoscaling floor is 1, so lower that too, or it
+   starts a task again:
+
+   ```bash
+   svc=plausible-<env>-service cluster=jfp-ecs-cluster-<env>
+   aws application-autoscaling register-scalable-target --service-namespace ecs \
+     --scalable-dimension ecs:service:DesiredCount --resource-id "service/$cluster/$svc" \
+     --min-capacity 0 --max-capacity 0
+   aws ecs update-service --cluster "$cluster" --service "$svc" --desired-count 0
+   aws ecs wait services-stable --cluster "$cluster" --services "$svc"
+   ```
+
+   The task flushes its write buffer on shutdown.
+
+2. Copy: the same command with `copy`. It refuses while any Plausible runs,
+   compares merge-independent numbers per partition after each slice, and
+   prints a whole-table comparison at the end. It is rerunnable; a slice that
+   is partly on Cloud stops it, with the `DELETE` to run first.
+3. In the `<cfg>_ecs` Doppler config, set `CLICKHOUSE_DATABASE_URL` to the
+   Cloud URL. Keep the NLB value; it is the rollback.
+4. `tofu apply -target=module.<env>.module.plausible`. It rewrites the SSM
+   parameter and puts the autoscaling floor and desired count back to 1, so the
+   new task starts on Cloud. Its log should show the migrations with nothing
+   to do.
+5. Verify: `/api/health`; a test pageview reaches `events_v2` on Cloud; a
+   dashboard over a long range shows the same numbers as before; journey
+   stats in Journeys admin.
+6. As `default`: `DROP USER migrator`.
+
+**Rollback:** `CLICKHOUSE_DATABASE_URL` back to the NLB value, the same apply,
+then `aws ecs update-service --force-new-deployment`. Events written to Cloud
+in between are lost.
 
 Once it has run on Cloud for the rollback window: delete
 `plausible-clickhouse-ecs` from the cluster, remove `eks-clickhouse.tf` and
