@@ -1,5 +1,5 @@
 -- Plausible's two users on the environment's ClickHouse Cloud service, run as
--- `default` after schema.sql (README.md, "Moving the events to ClickHouse
+-- `default` (or your SQL console login) after schema.sql (README.md, "Moving the events to ClickHouse
 -- Cloud"). The service also holds the short-links `redirects` database;
 -- neither user can see it.
 --
@@ -17,10 +17,13 @@ CREATE SETTINGS PROFILE IF NOT EXISTS plausible_profile SETTINGS
   max_execution_time = 120,
   max_concurrent_queries_for_user = 8;
 
--- Plausible: everything on its own database (its migrations need DDL rights).
+-- Plausible: its own database, with the DDL its migrations need. Not GRANT
+-- ALL: the SQL console runs as your console login, not `default`, and cannot
+-- pass on the SYSTEM, CHECK and view privileges that ALL includes.
 CREATE USER IF NOT EXISTS plausible IDENTIFIED WITH sha256_password BY '<plausible password>'
   SETTINGS PROFILE 'plausible_profile';
-GRANT ALL ON plausible_events_db.* TO plausible;
+GRANT SELECT, INSERT, ALTER, CREATE TABLE, CREATE DATABASE, DROP TABLE, DROP DATABASE, TRUNCATE, OPTIMIZE
+  ON plausible_events_db.* TO plausible;
 
 -- The copy (copy-to-cloud.sh). Dropped after the cutover:
 --   DROP USER migrator;
