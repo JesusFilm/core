@@ -216,6 +216,42 @@ module "short_links_clickhouse" {
   doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
 }
 
+# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
+# EKS Platform Cluster. Serves plausible.stage.central.jesusfilm.org (the
+# module's own record) for smoke tests; analytics.stage.central.jesusfilm.org
+# moves here in the cutover step (modules/plausible/README.md). Apply only
+# once its Doppler token for the stg_ecs branch config is in SSM; the task
+# then needs the EKS ClickHouse NLB (README.md, "Prerequisites").
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
+}
+
+# The stage Plausible hostname, moved from the EKS ingress NLB to the public
+# ALB. external-dns created this record but no longer manages it: each pass it
+# finds no hosted zone for the name and skips it, and the zone holds no
+# ownership TXT records. allow_overwrite lets Terraform take the record as it
+# is. Rollback is the NLB name again (modules/plausible/README.md, "Stage
+# cutover").
+resource "aws_route53_record" "plausible_analytics" {
+  zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
+  name            = "analytics"
+  type            = "CNAME"
+  ttl             = 300
+  records         = [module.stage.public_alb.dns_name]
+  allow_overwrite = true
+}
+
 module "postgresql" {
   source                          = "../../modules/aws/aurora"
   name                            = "jfp-core"
