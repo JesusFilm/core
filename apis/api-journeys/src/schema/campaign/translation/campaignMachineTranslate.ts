@@ -521,6 +521,40 @@ export async function* campaignMachineTranslate(
   }
 }
 
+/** What Yoga's request `signal` is guaranteed to be: AbortSignal-like, not necessarily native. */
+interface AbortSignalLike {
+  aborted: boolean
+  reason?: unknown
+  addEventListener: (
+    type: 'abort',
+    listener: () => void,
+    options?: { once: boolean }
+  ) => void
+}
+
+/**
+ * Yoga's `Request` comes from `@whatwg-node/server`, whose `signal` is a
+ * `CustomAbortControllerSignal extends EventTarget` with an `aborted` flag —
+ * AbortSignal-like, but not Node's native `AbortSignal`. Node 24's
+ * `AbortSignal.any` refuses it (`ERR_INVALID_ARG_TYPE`, "signals[1] is not
+ * of type AbortSignal"), which failed every batch on stage (#10023); Node 22
+ * accepts it but never propagates its abort. Mirror it onto a native
+ * controller, so `AbortSignal.any` and every `aborted` check downstream see a
+ * real signal that aborts when the caller disconnects.
+ */
+export function nativeCancelSignal(
+  signal: AbortSignalLike | undefined
+): AbortSignal | undefined {
+  if (signal == null) return undefined
+  const controller = new AbortController()
+  if (signal.aborted) controller.abort(signal.reason)
+  else
+    signal.addEventListener('abort', () => controller.abort(signal.reason), {
+      once: true
+    })
+  return controller.signal
+}
+
 // Machine translation in code; the schema name `campaignAiTranslateSubscription` is frozen for journeys-admin.
 builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
   t.withAuth({ isAuthenticated: true }).field({
@@ -535,7 +569,10 @@ builder.subscriptionField('campaignAiTranslateSubscription', (t) =>
       campaignMachineTranslate(
         input,
         context.user,
-        (context as { request?: { signal?: AbortSignal } }).request?.signal
+        nativeCancelSignal(
+          (context as { request?: { signal?: AbortSignalLike } }).request
+            ?.signal
+        )
       ),
     resolve: (progressUpdate) => progressUpdate
   })
