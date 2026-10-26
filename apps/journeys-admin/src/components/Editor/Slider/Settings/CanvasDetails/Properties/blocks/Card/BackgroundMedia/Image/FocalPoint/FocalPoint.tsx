@@ -5,7 +5,14 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Image from 'next/image'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useId, useRef, useState } from 'react'
+import {
+  ReactElement,
+  useEffect,
+  useEffectEvent,
+  useId,
+  useRef,
+  useState
+} from 'react'
 
 import { BlockFields_ImageBlock as ImageBlock } from '../../../../../../../../../../../../__generated__/BlockFields'
 import { ImageBlockUpdateInput } from '../../../../../../../../../../../../__generated__/globalTypes'
@@ -58,7 +65,7 @@ export function FocalPoint({
     // previews write to the block mid-drag; the dot already shows them
     if (startBlockRef.current?.id === imageBlock?.id) return
     // a different block was selected mid-drag, so drop the unsaved preview
-    revert()
+    revertFromEffect()
 
     const position = {
       x: imageBlock?.focalLeft ?? 50,
@@ -173,18 +180,19 @@ export function FocalPoint({
     if (isUndoOrRedo || e.key === 'Escape') revert()
   }
 
-  // window listeners outlive renders, so they call the latest handlers
-  const latestHandlersRef = useRef({ handleWindowKeyDown, revert })
-  latestHandlersRef.current = { handleWindowKeyDown, revert }
+  // Effect Events always run the latest render's handlers, so effects can
+  // use them without re-subscribing or depending on them.
+  const handleWindowKeyDownFromEffect = useEffectEvent(handleWindowKeyDown)
+  const revertFromEffect = useEffectEvent(revert)
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent): void =>
-      latestHandlersRef.current.handleWindowKeyDown(e)
+      handleWindowKeyDownFromEffect(e)
     window.addEventListener('keydown', handleKeyDown, true)
     return () => {
       window.removeEventListener('keydown', handleKeyDown, true)
       // unmounting mid-drag (e.g. the drawer closes) drops the preview
-      latestHandlersRef.current.revert()
+      revertFromEffect()
     }
   }, [])
 

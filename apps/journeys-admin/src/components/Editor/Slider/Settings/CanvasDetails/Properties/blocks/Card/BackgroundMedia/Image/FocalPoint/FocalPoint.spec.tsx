@@ -124,7 +124,7 @@ describe('FocalPoint', () => {
   })
 
   it('saves the point when the image is tapped', () => {
-    const { cache } = renderFocalPoint()
+    renderFocalPoint()
 
     const image = startDrag({ x: 25, y: 25 })
     fireEvent.pointerUp(image, { pointerId: 1 })
