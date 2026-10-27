@@ -1,5 +1,3 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-
 import Mux from '@mux/mux-node'
 
 import {
@@ -10,58 +8,17 @@ import {
 import {
   createDownloadsFromMuxAsset,
   downloadsReadyToStore,
-  previewMuxDownloadsFromAsset,
-  qualityEnumToOrder
+  previewMuxDownloadsFromAsset
 } from '../lib/downloads'
 import { videoVariantCacheReset } from '../lib/videoCacheReset'
 import { getVideo } from '../schema/mux/video/service'
 
 const MUX_STREAM_BASE_URL = 'https://stream.mux.com'
-const DISTRO_DOWNLOAD_QUALITIES: VideoVariantDownloadQuality[] = [
+const DISTRO_DOWNLOAD_QUALITIES = [
   VideoVariantDownloadQuality.distroLow,
   VideoVariantDownloadQuality.distroSd,
   VideoVariantDownloadQuality.distroHigh
 ]
-// low, sd, high, fhd, qhd, uhd, highest: an upper bound on the Mux-hosted
-// rows one variant can have, used to spot variants missing rows entirely (see
-// the "missing rows" pass below). Not a per-variant expectation -- a
-// lower-resolution master legitimately produces fewer, and processing those
-// again is a harmless no-op.
-const MAX_MUX_DOWNLOAD_QUALITY_COUNT = Object.keys(qualityEnumToOrder).filter(
-  (quality) =>
-    !DISTRO_DOWNLOAD_QUALITIES.includes(quality as VideoVariantDownloadQuality)
-).length
-
-// getVideo() is a lightweight read against Mux's Video API, not one of the
-// asset creation calls importMuxVideos()/updateHls() serialize with their own
-// 2s sleeps. Bounded concurrency with a small per-call stagger stays well
-// under the prod pool's connection_limit and any reasonable Mux read-rate
-// ceiling.
-const DEFAULT_PROCESS_CONCURRENCY = 4
-const MUX_API_CALL_STAGGER_MS = 250
-
-// Reads an optional positive-integer env var. Validates the whole string, not
-// just its leading digits -- Number.parseInt('5junk', 10) is 5.
-function parsePositiveIntegerEnv(name: string): number | null {
-  const value = process.env[name]?.trim()
-  if (value == null || value === '') return null
-
-  if (!/^\d+$/.test(value) || Number.parseInt(value, 10) <= 0) {
-    throw new Error(`${name} must be a positive integer`)
-  }
-
-  return Number.parseInt(value, 10)
-}
-
-async function processConcurrently<T>(
-  items: T[],
-  concurrency: number,
-  handler: (item: T) => Promise<void>
-): Promise<void> {
-  for (let index = 0; index < items.length; index += concurrency) {
-    await Promise.all(items.slice(index, index + concurrency).map(handler))
-  }
-}
 
 function getMuxClient(): Mux {
   if (process.env.MUX_ACCESS_TOKEN_ID == null)
@@ -270,12 +227,17 @@ export async function processDownloads(): Promise<void> {
   console.log('mux downloads processing started')
 
   const applyChanges = process.env.MUX_DOWNLOAD_BACKFILL_APPLY === 'true'
-  const sampleSize = parsePositiveIntegerEnv(
-    'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE'
-  )
-  const concurrency =
-    parsePositiveIntegerEnv('MUX_DOWNLOAD_BACKFILL_CONCURRENCY') ??
-    DEFAULT_PROCESS_CONCURRENCY
+  const sampleSizeValue = process.env.MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE?.trim()
+  const sampleSize =
+    sampleSizeValue != null && sampleSizeValue !== ''
+      ? Number.parseInt(sampleSizeValue, 10)
+      : null
+
+  if (sampleSize != null && (!Number.isFinite(sampleSize) || sampleSize <= 0)) {
+    throw new Error(
+      'MUX_DOWNLOAD_BACKFILL_SAMPLE_SIZE must be a positive integer'
+    )
+  }
 
   if (applyChanges) {
     console.log('Apply mode enabled: download metadata rows will be refreshed')
@@ -317,10 +279,6 @@ export async function processDownloads(): Promise<void> {
   let totalProcessed = 0
   let nextCursor: string | null = null
   let carryoverDownloads: ZeroMetadataDownloadRow[] = []
-  // Variants the zero-metadata pass already handed to processVariant(), so the
-  // missing-rows pass doesn't re-fetch them from Mux or spend sample budget on
-  // them again.
-  const processedVariantIds = new Set<string>()
 
   const processVariant = async (
     variant: Prisma.VideoVariantGetPayload<{
@@ -329,8 +287,7 @@ export async function processDownloads(): Promise<void> {
       }
     }>,
     variantZeroMetadataDownloads: ZeroMetadataDownloadRow[]
-  ): Promise<boolean> => {
-    processedVariantIds.add(variant.id)
+  ): Promise<void> => {
     console.log(
       `Processing downloads for variant ${variant.id}, zero-metadata download count: ${variantZeroMetadataDownloads.length}`
     )
@@ -339,10 +296,10 @@ export async function processDownloads(): Promise<void> {
       console.log(
         `Skipping Mux-backed downloads for variant ${variant.id}: mux video has no assetId to repair from`
       )
-      return true
+      return
     }
 
-    await new Promise((resolve) => setTimeout(resolve, MUX_API_CALL_STAGGER_MS))
+    await new Promise((resolve) => setTimeout(resolve, 1500))
 
     try {
       const muxVideoAsset = await getVideo(variant.muxVideo.assetId, false)
@@ -369,12 +326,6 @@ export async function processDownloads(): Promise<void> {
           console.log(
             `Preview for variant ${variant.id}, muxVideoId: ${variant.muxVideo.id}`
           )
-          if (variantZeroMetadataDownloads.length === 0) {
-            console.log(
-              `  candidate: ${previewDownloads.length} Mux download rendition(s) available; apply mode creates or refreshes only the rows that are missing, legacy, or missing metadata`
-            )
-            return true
-          }
           for (const download of variantZeroMetadataDownloads) {
             const replacement = previewByQuality.get(download.quality)
             if (replacement == null) {
@@ -388,7 +339,7 @@ export async function processDownloads(): Promise<void> {
               `  quality=${download.quality}: size ${download.size ?? 'null'} -> ${replacement.size}, bitrate ${download.bitrate ?? 'null'} -> ${replacement.bitrate}`
             )
           }
-          return true
+          return
         }
 
         const createdCount = await createDownloadsFromMuxAsset({
@@ -407,18 +358,12 @@ export async function processDownloads(): Promise<void> {
         console.log(
           `Video not ready for download processing - variant: ${variant.id}, assetId: ${variant.muxVideo.assetId}, status: ${muxVideoAsset.status}, hasPlaybackId: ${!!muxVideoAsset.playback_ids?.[0]?.id}, downloadsReady: ${downloadsReadyToStore(muxVideoAsset)}`
         )
-        // The asset still needs repair on a later run, so report it as
-        // incomplete. Returning true here advanced the missing-row cursor past
-        // the variant and it was never revisited.
-        return false
       }
-      return true
     } catch (error) {
       console.error(
         `Failed to process downloads for variant ${variant.id}, assetId: ${variant.muxVideo.assetId}`,
         error
       )
-      return false
     }
   }
 
@@ -511,16 +456,12 @@ export async function processDownloads(): Promise<void> {
       `Found ${variantsToProcess.length} variants with zero-metadata download rows to process in this batch`
     )
 
-    await processConcurrently(
-      variantsToProcess,
-      concurrency,
-      async (variant) => {
-        const variantZeroMetadataDownloads =
-          downloadsByVariant.get(variant.id) ?? []
-        await processVariant(variant, variantZeroMetadataDownloads)
-      }
-    )
-    totalProcessed += variantsToProcess.length
+    for (const variant of variantsToProcess) {
+      const variantZeroMetadataDownloads =
+        downloadsByVariant.get(variant.id) ?? []
+      await processVariant(variant, variantZeroMetadataDownloads)
+      totalProcessed++
+    }
 
     nextCursor = zeroMetadataDownloads.at(-1)?.id ?? null
 
@@ -561,161 +502,6 @@ export async function processDownloads(): Promise<void> {
       )
       await processVariant(variant, variantDownloads)
       totalProcessed++
-    }
-  }
-
-  // Second pass: the loop above only ever discovers variants that already
-  // have an EXISTING Mux-hosted download row with null/zero size or bitrate.
-  // A variant whose muxVideoId is set but that is missing a quality's row
-  // entirely -- never created, not just broken -- has no such row to match
-  // that query, so it's invisible to the pass above. Find those directly off
-  // VideoVariant and route them through the same processVariant() repair
-  // path; createDownloadsFromMuxAsset() only creates what's actually absent.
-  // MUX_DOWNLOAD_BACKFILL_CURSOR_FILE: given a file path, the cursor is read
-  // from it at startup and written back after each page, so a run interrupted
-  // by a connection drop can be re-invoked with the same file and pick up
-  // where it left off. The file's first line is the resume cursor; any
-  // further lines are variant ids that failed and still need a retry. Those
-  // are tracked separately from the cursor so one bad/flaky variant can't
-  // pin the cursor in place and force every future run to re-walk the whole
-  // remaining catalog just to reach it again -- the cursor always advances
-  // past a page once it's done, and failures are retried out of band.
-  const cursorFilePath = process.env.MUX_DOWNLOAD_BACKFILL_CURSOR_FILE?.trim()
-
-  const [persistedCursor = '', ...persistedRetryIds] =
-    cursorFilePath != null && existsSync(cursorFilePath)
-      ? readFileSync(cursorFilePath, 'utf-8').trim().split('\n')
-      : ['']
-  let missingRowsCursor = persistedCursor
-  const retryVariantIds = new Set(persistedRetryIds.filter((id) => id !== ''))
-
-  const persistCursorFile = (): void => {
-    if (cursorFilePath == null) return
-    writeFileSync(
-      cursorFilePath,
-      [missingRowsCursor, ...retryVariantIds].join('\n')
-    )
-  }
-
-  if (cursorFilePath != null) {
-    console.log(
-      `Missing-rows pass resuming from cursor: ${missingRowsCursor === '' ? '(start)' : missingRowsCursor} (file: ${cursorFilePath})` +
-        (retryVariantIds.size > 0
-          ? `, retrying ${retryVariantIds.size} previously failed variant(s)`
-          : '')
-    )
-  }
-
-  const retrySampleSize =
-    sampleSize == null ? null : sampleSize - totalProcessed
-
-  if (
-    retryVariantIds.size > 0 &&
-    (retrySampleSize == null || retrySampleSize > 0)
-  ) {
-    // A ready backlog id can also turn up in this run's own zero-metadata
-    // pass above (e.g. one quality row went zero-metadata while another
-    // quality from the same variant failed a missing-rows repair last run).
-    // Skip those here -- processVariant() already ran for them this run --
-    // the same guard the missing-rows loop below applies via
-    // unprocessedCandidateIds.
-    const unprocessedRetryVariantIds = Array.from(retryVariantIds).filter(
-      (id) => !processedVariantIds.has(id)
-    )
-
-    const allRetryVariants =
-      unprocessedRetryVariantIds.length === 0
-        ? []
-        : await prisma.videoVariant.findMany({
-            where: { id: { in: unprocessedRetryVariantIds } },
-            include: { muxVideo: true }
-          })
-
-    // A retried variant can be deleted between runs, so findMany won't
-    // return it -- drop its id now or it would sit in the cursor file
-    // forever, retried-in-name-only on every future invocation.
-    const foundRetryVariantIds = new Set(allRetryVariants.map((v) => v.id))
-    for (const id of unprocessedRetryVariantIds) {
-      if (!foundRetryVariantIds.has(id)) retryVariantIds.delete(id)
-    }
-
-    // Respect the sample-size cap the same way the missing-rows loop
-    // below does -- a large retry backlog from a prior outage shouldn't
-    // blow through a deliberately small/cautious sampleSize run.
-    const retryVariants =
-      retrySampleSize == null
-        ? allRetryVariants
-        : allRetryVariants.slice(0, retrySampleSize)
-
-    await processConcurrently(retryVariants, concurrency, async (variant) => {
-      const completed = await processVariant(variant, [])
-      if (completed) retryVariantIds.delete(variant.id)
-    })
-    totalProcessed += retryVariants.length
-    persistCursorFile()
-  }
-
-  let hasMoreMissingRows = true
-
-  while (hasMoreMissingRows) {
-    const remainingSampleSize =
-      sampleSize == null ? null : sampleSize - totalProcessed
-    if (remainingSampleSize != null && remainingSampleSize <= 0) {
-      break
-    }
-
-    const take =
-      remainingSampleSize == null ? 200 : Math.min(200, remainingSampleSize)
-
-    const candidates = await prisma.$queryRaw<Array<{ id: string }>>`
-      SELECT v.id
-      FROM "VideoVariant" v
-      LEFT JOIN "VideoVariantDownload" d
-        ON d."videoVariantId" = v.id
-        AND d.url LIKE ${MUX_STREAM_BASE_URL + '/%'}
-      WHERE v."muxVideoId" IS NOT NULL
-        AND v.id > ${missingRowsCursor}
-      GROUP BY v.id
-      HAVING COUNT(d.id) < ${MAX_MUX_DOWNLOAD_QUALITY_COUNT}
-      ORDER BY v.id
-      LIMIT ${take}
-    `
-
-    if (candidates.length === 0) {
-      break
-    }
-
-    const unprocessedCandidateIds = candidates
-      .map((candidate) => candidate.id)
-      .filter((id) => !processedVariantIds.has(id))
-
-    const variants =
-      unprocessedCandidateIds.length === 0
-        ? []
-        : await prisma.videoVariant.findMany({
-            where: { id: { in: unprocessedCandidateIds } },
-            include: { muxVideo: true }
-          })
-
-    console.log(
-      `Found ${variants.length} variants with fewer than ${MAX_MUX_DOWNLOAD_QUALITY_COUNT} Mux-hosted download rows to process in this batch`
-    )
-
-    await processConcurrently(variants, concurrency, async (variant) => {
-      const completed = await processVariant(variant, [])
-      if (completed) {
-        retryVariantIds.delete(variant.id)
-      } else {
-        retryVariantIds.add(variant.id)
-      }
-    })
-    totalProcessed += variants.length
-
-    missingRowsCursor = candidates.at(-1)?.id ?? missingRowsCursor
-    persistCursorFile()
-
-    if (candidates.length < take) {
-      hasMoreMissingRows = false
     }
   }
 
