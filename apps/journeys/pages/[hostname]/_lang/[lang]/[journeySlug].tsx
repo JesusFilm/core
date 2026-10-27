@@ -11,7 +11,7 @@ import {
 } from '../../../../src/libs/campaignStaticProps'
 import HostSlugPage from '../../[journeySlug]'
 
-// A region of a Campaign Root in the campaign language the proxy rewrote
+// A region of a Campaign Domain in the campaign language the proxy rewrote
 // `?lang=` to. A journey slug, or a tag that is not one of the campaign's
 // languages, goes to the plain `/<segment>`, which serves journeys, keeping
 // the rest of the query.

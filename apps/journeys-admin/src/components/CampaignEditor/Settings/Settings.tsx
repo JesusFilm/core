@@ -27,14 +27,12 @@ import {
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import {
-  campaignPermanentAddress,
-  campaignPublicAddresses
-} from '../campaignAddress'
+import { campaignPublicAddresses } from '../campaignAddress'
 import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
 
+import { CampaignDomain } from './CampaignDomain'
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
 
 const TITLE_MAX_LENGTH = 100
@@ -61,8 +59,8 @@ export function shapeSlug(value: string): string {
 
 /**
  * Campaign settings: title and slug saved through `campaignUpdate` as each
- * field commits (never Commands, so undo does not touch them), the default
- * language (confirmed in a dialog that offers machine translation when texts
+ * field commits (never Commands, so undo does not touch them), the Campaign
+ * Domain (`CampaignDomain`), the default language (confirmed in a dialog that offers machine translation when texts
  * are missing), the status copy, the address hint and, for managers, Delete
  * campaign. There is no
  * Save button: an optimistic response shows the edit at once and a failed
@@ -180,7 +178,7 @@ export function Settings({
     try {
       await campaignDelete({ variables: { id: campaign.id } })
       setDeleteOpen(false)
-      await router.push('/campaigns')
+      await router.push('/?type=campaigns')
       // Evict only once the redirect has resolved: until then this page is
       // still mounted and its `GetCampaign` would refetch the deleted
       // campaign and flash "Campaign not found".
@@ -195,7 +193,7 @@ export function Settings({
   }
 
   const published = campaign.status === CampaignStatus.published
-  const permanentAddress = campaignPermanentAddress(campaign.slug)
+  const domainName = campaign.customDomains[0]?.name
   const publicAddresses = campaignPublicAddresses(
     campaign.slug,
     campaign.customDomains.map(({ name }) => name)
@@ -238,11 +236,6 @@ export function Settings({
                   'Changing this breaks links to this page you have already shared.'
                 )}
               </Box>
-              <Box component="span" sx={{ display: 'block' }}>
-                {t('Permanent address: {{address}}', {
-                  address: permanentAddress
-                })}
-              </Box>
               {publicAddresses.map((address) => (
                 <Box key={address} component="span" sx={{ display: 'block' }}>
                   {t('Current public address: {{address}}', { address })}
@@ -257,6 +250,7 @@ export function Settings({
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
       />
+      <CampaignDomain campaign={campaign} isManager={isManager} />
       <TextField
         select
         label={t('Default language')}
@@ -319,6 +313,14 @@ export function Settings({
             'This permanently removes the campaign with its pages, regions and translations. The linked journeys and their QR codes keep working at their own URLs.'
           )}
         </Typography>
+        {domainName != null && (
+          <Typography sx={{ mt: 2 }}>
+            {t(
+              'Its domain {{domain}} is removed too; add it again to use it elsewhere.',
+              { domain: domainName }
+            )}
+          </Typography>
+        )}
       </Dialog>
     </Stack>
   )

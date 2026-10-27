@@ -121,8 +121,8 @@ function languageTags(campaign: Campaign): string[] {
  * journey Preview (`pages/api/preview.ts`): as the signed-in user, read the
  * campaign, ask the journeys app at `JOURNEYS_URL` to rebuild every page it
  * is served from (`campaignPagePaths`), wait for the edge caches, then send
- * the browser to the public address — the Custom Domain root when one names
- * the campaign as Campaign Root, else the permanent `/campaign/<slug>`, with
+ * the browser to the public address — the Campaign Domain's root when the
+ * campaign has one, else the root-domain `/campaign/<slug>`, with
  * `regionSlug` appended when it names one of the campaign's regions. A draft
  * serves nothing, so it is opened without a rebuild.
  *

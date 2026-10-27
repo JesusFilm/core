@@ -31,7 +31,7 @@ import { getFlags } from '../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 
-// The campaign branch only renders for a Campaign Root domain; journey visitors
+// The campaign branch only renders for a Campaign Domain; journey visitors
 // never download it.
 const CampaignPageWrapper = dynamic(
   async () =>
@@ -116,7 +116,7 @@ interface HostSlugPageProps {
   worldMap?: WorldMapShapes | null
 }
 
-// `/<segment>` on a domain is a region of its Campaign Root first, then a
+// `/<segment>` on a domain is a region of its campaign first, then a
 // journey slug (a region outranks a journey with the same spelling).
 function HostSlugPage({
   campaign,

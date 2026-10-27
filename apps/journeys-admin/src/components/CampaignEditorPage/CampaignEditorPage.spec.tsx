@@ -77,7 +77,7 @@ describe('CampaignEditorPage', () => {
     expect(screen.getByText('Bad gateway')).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Back to campaigns' })
-    ).toHaveAttribute('href', '/campaigns')
+    ).toHaveAttribute('href', '/?type=campaigns')
     expect(
       screen.queryByText('There was an error refreshing the campaign.')
     ).not.toBeInTheDocument()

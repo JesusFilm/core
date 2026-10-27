@@ -14,10 +14,8 @@ import NextLink from 'next/link'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, Suspense, useState } from 'react'
 
-import { useFlags } from '@core/shared/ui/FlagsProvider'
 import Bag5Icon from '@core/shared/ui/icons/Bag5'
 import ChevronRightIcon from '@core/shared/ui/icons/ChevronRight'
-import Globe1Icon from '@core/shared/ui/icons/Globe1'
 import JourneysIcon from '@core/shared/ui/icons/Journeys'
 
 import nextstepsTitle from '../../../../public/nextsteps-title.svg'
@@ -50,7 +48,6 @@ export function NavigationDrawer({
 }: NavigationDrawerProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [tooltip, setTooltip] = useState<string | undefined>()
-  const { campaignBuilder } = useFlags()
 
   const isAnon = user?.isAnonymous ?? false
 
@@ -180,24 +177,6 @@ export function NavigationDrawer({
             }}
           />
         </ListItemButton>
-        {campaignBuilder === true && (
-          <ListItemButton
-            LinkComponent={NextLink}
-            href="/campaigns"
-            selected={selectedPage === 'campaigns'}
-            data-testid="NavigationListItemCampaigns"
-          >
-            <ListItemIcon>
-              <Globe1Icon />
-            </ListItemIcon>
-            <ListItemText
-              primary={t('Campaigns')}
-              slotProps={{
-                primary: { style: { whiteSpace: 'nowrap' } }
-              }}
-            />
-          </ListItemButton>
-        )}
         {user?.id != null && !isAnon && (
           <NoSsr>
             <Suspense>

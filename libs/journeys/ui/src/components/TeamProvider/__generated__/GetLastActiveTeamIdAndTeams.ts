@@ -49,6 +49,9 @@ export interface GetLastActiveTeamIdAndTeams_teams {
   title: string;
   publicTitle: string | null;
   userTeams: GetLastActiveTeamIdAndTeams_teams_userTeams[];
+  /**
+   * The team's own domains; a Campaign Domain belongs to its campaign and is left out.
+   */
   customDomains: GetLastActiveTeamIdAndTeams_teams_customDomains[];
 }
 

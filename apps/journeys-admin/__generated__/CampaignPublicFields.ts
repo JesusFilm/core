@@ -3244,7 +3244,7 @@ export interface CampaignPublicFields {
    */
   languageId: string;
   /**
-   * Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+   * The name of the Campaign Domain, as a list of at most one; empty when the campaign has none. A campaign with a domain is served only there, so the canonical link points at its domain-root form, else at the root-domain path.
    */
   customDomainNames: string[];
   publishedAt: any | null;

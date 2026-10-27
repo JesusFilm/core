@@ -72,7 +72,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
           graphQLError.extensions?.code === 'FORBIDDEN'
       )
     )
-      return { redirect: { destination: '/campaigns', permanent: false } }
+      return { redirect: { destination: '/?type=campaigns', permanent: false } }
     throw error
   }
 
