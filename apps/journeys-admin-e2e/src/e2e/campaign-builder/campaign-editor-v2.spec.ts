@@ -17,8 +17,9 @@ import { CampaignBuilderPage } from '../../pages/campaign-builder-page'
  * Setup:
  * - The e2e user's team needs the `campaignBuilder` LaunchDarkly flag on in
  *   the preview environment, or the dashboard has no Team Campaigns tab.
- * - The e2e user must be a manager of that team: Publish is disabled for
- *   anyone else.
+ * - The e2e user must be a manager of that team: the run ends by deleting
+ *   the campaign, and Delete campaign is offered to managers only. (Publish
+ *   is open to any member or manager.)
  * - The campaign is deleted at the end of the run. To run the public half
  *   against it, keep it with CAMPAIGN_E2E_KEEP=true, read the generated slug
  *   from the `campaign-v2-slug` annotation in the report, run the public half
