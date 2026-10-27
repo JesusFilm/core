@@ -3,8 +3,6 @@ import type { FrameLocator, Locator, Page } from 'playwright-core'
 
 export const DEFAULT_HERO_TITLE = 'Share the story of Christmas'
 export const NEW_REGION_NAME = 'New region'
-// Lets `new URL` parse a relative link; the origin itself is never read.
-const RELATIVE_URL_BASE = 'http://localhost'
 
 export class CampaignBuilderPage {
   readonly page: Page
@@ -219,22 +217,27 @@ export class CampaignBuilderPage {
   }
 
   /**
-   * The campaign's slug, read from the `slug` query parameter of the Refresh
-   * and open page address `/api/campaign/open?id=…&slug=…`.
+   * The campaign's slug, read from its Settings slug field. Call it while
+   * nothing is selected (right after the editor opens), when Settings shows
+   * the campaign itself; with a selection it shows that selection instead.
    */
   async getCampaignSlug(): Promise<string> {
-    await this.page.getByRole('button', { name: 'Publish status' }).click()
-    const href = await this.page
-      .getByRole('link', { name: 'Refresh and open page', exact: true })
-      .getAttribute('href')
-    await this.page.keyboard.press('Escape')
-    const slug =
-      href == null
-        ? null
-        : new URL(href, RELATIVE_URL_BASE).searchParams.get('slug')
-    if (slug == null || slug === '')
-      throw new Error(`No slug parameter in Refresh and open page: ${href}`)
-    return slug
+    await this.openSettingsTab()
+    const slugField = this.page.getByRole('textbox', {
+      name: 'Slug',
+      exact: true
+    })
+    await expect(slugField).toHaveValue(/.+/)
+    return await slugField.inputValue()
+  }
+
+  /** Opens the Inspector's Settings tab. */
+  private async openSettingsTab(): Promise<void> {
+    const settingsTab = this.inspectorTabs.getByRole('tab', {
+      name: 'Settings'
+    })
+    await settingsTab.click()
+    await expect(settingsTab).toHaveAttribute('aria-selected', 'true')
   }
 
   /**
@@ -253,11 +256,7 @@ export class CampaignBuilderPage {
     // no popover open it steps the editor selection up instead.
     await this.page.reload()
 
-    const settingsTab = this.inspectorTabs.getByRole('tab', {
-      name: 'Settings'
-    })
-    await settingsTab.click()
-    await expect(settingsTab).toHaveAttribute('aria-selected', 'true')
+    await this.openSettingsTab()
     await this.page.getByRole('button', { name: 'Delete campaign' }).click()
     await this.page
       .getByRole('dialog')

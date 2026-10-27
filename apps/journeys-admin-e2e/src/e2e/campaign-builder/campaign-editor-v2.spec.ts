@@ -60,12 +60,12 @@ test(
     await campaignBuilder.goToCampaigns()
     await campaignBuilder.createCampaign(CAMPAIGN_TITLE, DEFAULT_LANGUAGE)
     await campaignBuilder.verifyEditorOpenedOnLandingPage(CAMPAIGN_TITLE)
+    // Read while nothing is selected, so Settings shows the campaign.
+    const slug = await campaignBuilder.getCampaignSlug()
 
     await campaignBuilder.selectHeroInNavigator()
     await campaignBuilder.setBackgroundKind(HERO_BACKGROUND_KIND)
     await campaignBuilder.addRichTextSectionBelowSelection(RICH_TEXT_TITLE)
-
-    const slug = await campaignBuilder.getCampaignSlug()
 
     test
       .info()

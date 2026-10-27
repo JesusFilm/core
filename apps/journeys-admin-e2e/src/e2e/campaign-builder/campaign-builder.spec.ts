@@ -61,6 +61,8 @@ test(
     await campaignBuilder.goToCampaigns()
     await campaignBuilder.createCampaign(CAMPAIGN_TITLE, DEFAULT_LANGUAGE)
     await campaignBuilder.verifyEditorOpenedOnLandingPage(CAMPAIGN_TITLE)
+    // Read while nothing is selected, so Settings shows the campaign.
+    const slug = await campaignBuilder.getCampaignSlug()
 
     await campaignBuilder.editHeroTitle(HERO_TITLE)
     await campaignBuilder.undo()
@@ -72,8 +74,6 @@ test(
     await campaignBuilder.openRegionPage()
     const shareLink =
       await campaignBuilder.linkJourneyToDefaultShareLanguage(JOURNEY_URL)
-
-    const slug = await campaignBuilder.getCampaignSlug()
 
     test
       .info()
