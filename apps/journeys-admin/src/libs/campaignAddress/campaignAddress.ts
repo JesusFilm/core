@@ -14,23 +14,23 @@ export function campaignPermanentAddress(slug: string): string {
   return `${JOURNEYS_URL}/campaign/${slug}`
 }
 
+/** What a campaign's public address is read from. */
+export interface CampaignAddressFields {
+  slug: string
+  customDomains: ReadonlyArray<{ name: string }>
+}
+
 /**
  * The name of the campaign's Campaign Domain, or null when it has none (an
  * empty name counts as none). A campaign has at most one domain, so
  * `customDomains` holds zero or one.
  */
 export function campaignDomainName(
-  customDomains: ReadonlyArray<{ name: string }>
+  customDomains: CampaignAddressFields['customDomains']
 ): string | null {
   const name = customDomains[0]?.name
   if (name == null || name === '') return null
   return name
-}
-
-/** What a campaign's public address is read from. */
-export interface CampaignAddressFields {
-  slug: string
-  customDomains: ReadonlyArray<{ name: string }>
 }
 
 /**

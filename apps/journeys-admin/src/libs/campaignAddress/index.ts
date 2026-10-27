@@ -1,5 +1,4 @@
 export {
-  type CampaignAddressFields,
   campaignDomainName,
   campaignPermanentAddress,
   campaignPublicAddress,
