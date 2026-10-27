@@ -7,6 +7,8 @@ import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { deleteVercelDomain } from '../customDomain/service'
+import { logger } from '../logger'
 import { deleteShortLink } from '../qrCode/qrCode.service'
 
 import { fetchLanguage } from './gatewayClient'
@@ -18,6 +20,11 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 vi.mock('../qrCode/qrCode.service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../qrCode/qrCode.service')>()),
   deleteShortLink: vi.fn()
+}))
+
+vi.mock('../customDomain/service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../customDomain/service')>()),
+  deleteVercelDomain: vi.fn().mockResolvedValue(true)
 }))
 
 vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
@@ -113,7 +120,7 @@ describe('campaignDelete', () => {
     )
   })
 
-  it('leaves an attached Custom Domain to the SetNull foreign key: no domain row is written', async () => {
+  it('leaves its Campaign Domain row to the cascade and removes it from Vercel after the commit', async () => {
     const campaign = campaignFactory({ role: 'manager' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...campaign,
@@ -121,15 +128,63 @@ describe('campaignDelete', () => {
     } as any)
     prismaMock.campaign.delete.mockResolvedValue(campaign)
 
+    const result = await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaign.delete).toHaveBeenCalledTimes(1)
+    expect(prismaMock.customDomain.delete).not.toHaveBeenCalled()
+    expect(deleteVercelDomain).toHaveBeenCalledWith('outreach.example.org')
+    expect(
+      vi.mocked(deleteVercelDomain).mock.invocationCallOrder[0]
+    ).toBeGreaterThan(prismaMock.campaign.delete.mock.invocationCallOrder[0])
+  })
+
+  it('logs a Vercel failure and still returns the deleted campaign', async () => {
+    const campaign = campaignFactory({ role: 'manager' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue({
+      ...campaign,
+      customDomains: [{ id: 'customDomainId', name: 'outreach.example.org' }]
+    } as any)
+    prismaMock.campaign.delete.mockResolvedValue(campaign)
+    vi.mocked(deleteVercelDomain).mockRejectedValueOnce(
+      new Error('vercel response not handled')
+    )
+    const errorSpy = vi
+      .spyOn(logger, 'error')
+      .mockImplementation(() => undefined)
+
+    const result = await authClient({
+      document: CAMPAIGN_DELETE,
+      variables: { id: 'campaignId' }
+    })
+
+    expect(result).toEqual({
+      data: { campaignDelete: { id: 'campaignId', slug: 'outreach-2026' } }
+    })
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        campaignId: 'campaignId',
+        name: 'outreach.example.org'
+      }),
+      'Failed to delete campaign domain from Vercel'
+    )
+    errorSpy.mockRestore()
+  })
+
+  it('touches Vercel for no campaign without a domain', async () => {
+    const campaign = campaignFactory({ role: 'manager' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    prismaMock.campaign.delete.mockResolvedValue(campaign)
+
     await authClient({
       document: CAMPAIGN_DELETE,
       variables: { id: 'campaignId' }
     })
 
-    expect(prismaMock.campaign.delete).toHaveBeenCalledTimes(1)
-    expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
-    expect(prismaMock.customDomain.updateMany).not.toHaveBeenCalled()
-    expect(prismaMock.customDomain.delete).not.toHaveBeenCalled()
+    expect(deleteVercelDomain).not.toHaveBeenCalled()
   })
 
   it('revalidates every page of a published campaign, domain root and _lang pages included, once the delete committed', async () => {

@@ -57,7 +57,8 @@ builder.queryField('customDomains', (t) =>
       return await prisma.customDomain.findMany({
         ...query,
         where: {
-          AND: [accessible, { teamId: args.teamId }]
+          // A Campaign Domain belongs to its campaign, not the team list.
+          AND: [accessible, { teamId: args.teamId, campaignId: null }]
         }
       })
     }

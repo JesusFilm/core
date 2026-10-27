@@ -5,7 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
-import { enqueueCampaignRootRevalidation } from '../campaign/revalidateCampaign'
+import { enqueueCampaignDomainRevalidation } from '../campaign/revalidateCampaign'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -46,13 +46,16 @@ builder.mutationField('customDomainDelete', (t) =>
         await deleteVercelDomain(customDomain.name)
       })
 
-      // The domain form of the Campaign Root it released stops resolving, and
-      // the root-domain form loses its canonical link to the domain.
-      if (customDomain.campaign != null)
-        await enqueueCampaignRootRevalidation(
+      // A Campaign Domain's pages stop resolving and the campaign is served
+      // at its root address again. It routed no team journey, so no short
+      // link moves.
+      if (customDomain.campaign != null) {
+        await enqueueCampaignDomainRevalidation(
           [customDomain.campaign],
           customDomain.name
         )
+        return customDomain
+      }
 
       try {
         await updateTeamShortLinks(customDomain.teamId)

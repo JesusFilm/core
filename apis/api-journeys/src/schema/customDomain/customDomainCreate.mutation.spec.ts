@@ -4,6 +4,8 @@ import { type MockedFunction, vi } from 'vitest'
 import { CustomDomain, Prisma } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
+import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -293,5 +295,174 @@ describe('customDomainCreate', () => {
 
     expect(result.errors).toBeDefined()
     expect(result.errors?.[0]?.message).toContain('Not authorized')
+  })
+
+  describe('with campaignId (Campaign Domain)', () => {
+    const campaignFixture = campaignFactory({ role: 'manager' }).withRegion(
+      'EUR'
+    )
+    const campaignDomain: CustomDomain = {
+      ...mockCustomDomain,
+      routeAllTeamJourneys: false,
+      campaignId: 'campaignId'
+    }
+
+    beforeEach(() => {
+      mockIsDomainValid.mockReturnValue(true)
+      mockCreateVercelDomain.mockResolvedValue({
+        name: 'www.example.com',
+        apexName: 'example.com'
+      })
+      prismaMock.customDomain.create.mockResolvedValue(campaignDomain)
+      prismaMock.campaignLanguage.findMany.mockResolvedValue([])
+    })
+
+    it('connects the campaign, forces route-all off and queues both forms of its pages', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(
+        campaignFixture.published().build()
+      )
+
+      const result = (await authClient({
+        document: MUTATION,
+        variables: {
+          input: {
+            name: 'www.example.com',
+            teamId: 'teamId',
+            campaignId: 'campaignId'
+          }
+        }
+      })) as ExecutionResult<{ customDomainCreate: CustomDomain }>
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data?.customDomainCreate.routeAllTeamJourneys).toBe(false)
+      expect(prismaMock.customDomain.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            routeAllTeamJourneys: false,
+            campaign: { connect: { id: 'campaignId' } }
+          })
+        })
+      )
+      expect(
+        prismaMock.customDomain.create.mock.calls[0][0].data
+      ).not.toHaveProperty('journeyCollection')
+      expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])).toEqual([
+        '/home/campaign/outreach-2026',
+        '/home/campaign/outreach-2026/eur',
+        '/www.example.com',
+        '/www.example.com/eur'
+      ])
+      expect(mockUpdateTeamShortLinks).not.toHaveBeenCalled()
+    })
+
+    it('queues nothing for a draft campaign', async () => {
+      prismaMock.campaign.findUnique.mockResolvedValue(campaignFixture.build())
+
+      const result = (await authClient({
+        document: MUTATION,
+        variables: {
+          input: {
+            name: 'www.example.com',
+            teamId: 'teamId',
+            campaignId: 'campaignId'
+          }
+        }
+      })) as ExecutionResult
+
+      expect(result.errors).toBeUndefined()
+      expect(prismaMock.customDomain.create).toHaveBeenCalled()
+      expect(mockQueueAdd).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      {
+        name: 'a campaign of another team',
+        campaign: campaignFactory({ role: 'manager', teamId: 'otherTeamId' })
+          .published()
+          .build(),
+        input: {},
+        message: 'campaign not found for this team',
+        field: 'campaignId'
+      },
+      {
+        name: 'an unknown campaign',
+        campaign: null,
+        input: {},
+        message: 'campaign not found for this team',
+        field: 'campaignId'
+      },
+      {
+        name: 'a campaign that already has a domain',
+        campaign: {
+          ...campaignFixture.build(),
+          customDomains: [{ ...campaignDomain, name: 'taken.example.com' }]
+        },
+        input: {},
+        message: 'campaign already has a custom domain',
+        field: 'campaignId'
+      },
+      {
+        name: 'routeAllTeamJourneys true',
+        campaign: campaignFixture.build(),
+        input: { routeAllTeamJourneys: true },
+        message: 'a campaign domain cannot route team journeys',
+        field: 'routeAllTeamJourneys'
+      },
+      {
+        name: 'a journey collection',
+        campaign: campaignFixture.build(),
+        input: { journeyCollectionId: 'collectionId' },
+        message: 'a campaign domain cannot serve a journey collection',
+        field: 'journeyCollectionId'
+      }
+    ])(
+      'is BAD_USER_INPUT for $name, before Vercel',
+      async ({ campaign, input, message, field }) => {
+        prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+
+        const result = (await authClient({
+          document: MUTATION,
+          variables: {
+            input: {
+              name: 'www.example.com',
+              teamId: 'teamId',
+              campaignId: 'campaignId',
+              ...input
+            }
+          }
+        })) as ExecutionResult
+
+        expect(result.errors?.[0]).toMatchObject({
+          message,
+          extensions: { code: 'BAD_USER_INPUT', field }
+        })
+        expect(mockCreateVercelDomain).not.toHaveBeenCalled()
+        expect(prismaMock.customDomain.create).not.toHaveBeenCalled()
+      }
+    )
+
+    it('is FORBIDDEN when the caller may not update the campaign', async () => {
+      // Team manager scope passes, but the campaign row carries no membership.
+      prismaMock.campaign.findUnique.mockResolvedValue(
+        campaignFactory({ role: 'manager', userId: 'someoneElse' }).build()
+      )
+
+      const result = (await authClient({
+        document: MUTATION,
+        variables: {
+          input: {
+            name: 'www.example.com',
+            teamId: 'teamId',
+            campaignId: 'campaignId'
+          }
+        }
+      })) as ExecutionResult
+
+      expect(result.errors?.[0]).toMatchObject({
+        message: 'user is not allowed to update campaign',
+        extensions: { code: 'FORBIDDEN' }
+      })
+      expect(mockCreateVercelDomain).not.toHaveBeenCalled()
+    })
   })
 })

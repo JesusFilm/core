@@ -19,7 +19,7 @@ export const CustomDomainRef = builder.prismaObject('CustomDomain', {
       type: 'ID',
       nullable: true,
       description:
-        "Campaign Root: the campaign served at `/` and `/<regionSlug>` on this domain; null when none, or when the campaign is a draft and the caller cannot read the domain team's campaigns.",
+        "Campaign Domain: the campaign this domain belongs to, served at `/` and `/<regionSlug>` on it; null for a team domain, or when the campaign is a draft and the caller cannot read the domain team's campaigns.",
       resolve: async (customDomain, _args, context) => {
         const campaignId = customDomain.campaignId
         if (campaignId == null) return null

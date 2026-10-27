@@ -513,7 +513,11 @@ describe('campaignPublic', () => {
 
     expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { slug: 'outreach-2026', status: 'published' }
+        where: {
+          slug: 'outreach-2026',
+          status: 'published',
+          customDomains: { none: {} }
+        }
       })
     )
     // Each Share Link is the address saved on its Campaign QR Code.
@@ -1233,7 +1237,7 @@ describe('campaignPublic', () => {
     })
   })
 
-  it('is NOT_FOUND for a draft or unknown slug', async () => {
+  it('is NOT_FOUND for a draft or unknown slug, or one whose campaign has a Campaign Domain', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue(null)
 
     const result = await publicClient({
@@ -1252,7 +1256,11 @@ describe('campaignPublic', () => {
     })
     expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { slug: 'outreach-2026', status: 'published' }
+        where: {
+          slug: 'outreach-2026',
+          status: 'published',
+          customDomains: { none: {} }
+        }
       })
     )
   })
@@ -1267,7 +1275,7 @@ describe('campaignPublic', () => {
     expect(prismaMock.campaign.findFirst).not.toHaveBeenCalled()
   })
 
-  it("returns the domain's published Campaign Root for a hostname", async () => {
+  it('returns the published campaign of a Campaign Domain for its hostname', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue({
       ...publishedFixture(),
       customDomains: [
@@ -1296,7 +1304,7 @@ describe('campaignPublic', () => {
     )
   })
 
-  it('is NOT_FOUND for a hostname with no Campaign Root or a draft one, so the route falls through', async () => {
+  it('is NOT_FOUND for a hostname that is no Campaign Domain or whose campaign is a draft, so the route falls through', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue(null)
 
     const result = (await publicClient({
