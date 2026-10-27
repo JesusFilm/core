@@ -21,10 +21,10 @@ export class CampaignBuilderPage {
   }
 
   async goToCampaigns(): Promise<void> {
-    await this.page.goto('/campaigns')
+    await this.page.goto('/?type=campaigns')
     await expect(
-      this.page.getByRole('heading', { name: 'Campaigns' })
-    ).toBeVisible()
+      this.page.getByRole('tab', { name: /Campaigns$/ })
+    ).toHaveAttribute('aria-selected', 'true')
   }
 
   async createCampaign(title: string, languageName: string): Promise<void> {
@@ -254,7 +254,7 @@ export class CampaignBuilderPage {
       .getByRole('dialog')
       .getByRole('button', { name: 'Delete', exact: true })
       .click()
-    await expect(this.page).toHaveURL(/\/campaigns$/)
+    await expect(this.page).toHaveURL(/\/\?type=campaigns$/)
     return true
   }
 }

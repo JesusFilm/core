@@ -5,14 +5,18 @@ import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from
 const JOURNEYS_URL =
   process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
 
-/** The permanent Campaign Address: `/campaign/<slug>` on the root domain, reachable on every host. */
+/**
+ * The root-domain Campaign Address: `/campaign/<slug>` on the root domain.
+ * It serves only a campaign with no Campaign Domain; once one is added it is
+ * not found.
+ */
 export function campaignPermanentAddress(slug: string): string {
   return `${JOURNEYS_URL}/campaign/${slug}`
 }
 
 /**
- * The address the public page is served at right now: the Custom Domain root
- * when one names the campaign as Campaign Root, else the permanent address.
+ * The address the public page is served at right now: the Campaign Domain's
+ * root when the campaign has one, else the root-domain address.
  */
 export function campaignPublicAddress(
   slug: string,
@@ -23,8 +27,8 @@ export function campaignPublicAddress(
 }
 
 /**
- * Every address the public page is served at right now: one per Custom Domain
- * naming the campaign as Campaign Root, else the permanent address.
+ * Every address the public page is served at right now: the Campaign Domain
+ * alone when the campaign has one, else the root-domain address.
  */
 export function campaignPublicAddresses(
   slug: string,

@@ -2,7 +2,7 @@
 export interface CampaignPagePathsInput {
   slug: string
   regions: Array<{ slug: string }>
-  /** The Custom Domains naming the campaign as Campaign Root. */
+  /** The campaign's Campaign Domain, as a list of at most one. */
   hostnames?: string[]
   /** The `_lang/<tag>` tags of its Page Languages, lowercased as the proxy does. */
   languageTags?: string[]
@@ -11,7 +11,7 @@ export interface CampaignPagePathsInput {
 /**
  * Every Next.js page path a campaign is served from: the landing page and
  * every region (listed and orphan) in the root-domain form, and — once a
- * Custom Domain names it as Campaign Root — the same pages in the domain
+ * it has a Campaign Domain — the same pages in the domain
  * form. Each of them also has one page per `languageTags` entry, under
  * `_lang/<tag>` ahead of the region, which is where a `?lang=` link lands.
  * Paths are the page paths behind the proxy rewrite, which is what the

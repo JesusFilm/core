@@ -102,7 +102,7 @@ describe('campaignPublish', () => {
     ])
   })
 
-  it('also revalidates the domain form of every attached Campaign Root domain', async () => {
+  it('also revalidates the domain form of its Campaign Domain', async () => {
     const draft = campaignFactory({ role: 'manager' }).withRegion('EUR').build()
     prismaMock.campaign.findUnique.mockResolvedValue({
       ...draft,

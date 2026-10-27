@@ -158,7 +158,7 @@ _Avoid_: channel, social network
 ### Distribution & routing
 
 **Custom Domain**:
-A team's vanity hostname for serving journeys. `apexName` is the registrable root used for DNS verification. `routeAllTeamJourneys` fans the domain out to every team journey by slug; when false it resolves to a linked **Journey Collection** instead. It may additionally name a **Campaign Root**, which claims the domain's `/` and region paths while journeys keep `/<slug>`.
+A team's vanity hostname for serving journeys. `apexName` is the registrable root used for DNS verification. `routeAllTeamJourneys` fans the domain out to every team journey by slug; when false it resolves to a linked **Journey Collection** instead. A Custom Domain is either a team domain (route-all or collection, listed on the Team) or a **Campaign Domain**, never both: a Campaign Domain belongs to one Campaign and serves no team journey.
 _Avoid_: domain, host (Host is the presenter), vanity url
 
 **QR Code**:
@@ -192,7 +192,7 @@ Changing a Campaign's default language: one transaction moves every Translated F
 _Avoid_: language change, re-translate
 
 **Campaign access**:
-Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or makes it a Custom Domain's root. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
+Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or adds, checks or removes its Campaign Domain. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
 _Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
 
 **Campaign Seed**:
@@ -366,19 +366,19 @@ _Avoid_: translation report, review queue
 ### Campaign delivery & stats
 
 **Campaign Address**:
-Where a Campaign is served. Every published Campaign always answers at its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper), and when a Custom Domain names it as its **Campaign Root** the same pages also answer at that domain's root and `/<region slug>`, with the linked Journeys at `/<journey slug>` beside them.
+Where a Campaign is served: its permanent address on the **Root Domain** (`/campaign/<slug>`, region pages one segment deeper) until it has a **Campaign Domain**, and from then on that domain's root and `/<region slug>` only — the root-domain address is not found, as a journey on a route-all team domain is. Its linked Journeys keep opening on their team's domain or the Root Domain, never on the Campaign Domain.
 _Avoid_: campaign URL (ambiguous between the two forms), vanity link, permalink
 
-**Campaign Root**:
-A Custom Domain's third routing target, beside routing all team journeys and a Journey Collection: the Campaign whose landing page the domain serves at `/`. Independent of the other two, only a team manager sets or clears it, and on that domain a region slug outranks a journey slug with the same spelling.
-_Avoid_: home page, default campaign, primary campaign
+**Campaign Domain**:
+A Custom Domain that belongs to one Campaign (`campaignId` in code), added and removed from the Campaign's Settings by a team manager. It serves only that Campaign's landing page at `/` and its Region Pages at `/<region slug>`; `/<journey slug>` on it is not found, and team journey URLs, QR short links and stats links never use it. One per Campaign, never route-all and never a Journey Collection's; it may be added to a draft (serving nothing until published), and deleting the Campaign deletes it and its Vercel registration. To move one, remove it and add it again.
+_Avoid_: Campaign Root (the retired name), home page, default campaign, primary campaign
 
 **Campaign Public**:
-The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals. It is read by Campaign slug or by the hostname of a Campaign Root, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
+The narrowed read of a published Campaign served to anonymous visitors, like the public Template Gallery Page: status is the only gate and nothing on it leads to the Team, its members or linked-Journey internals. It is read by Campaign slug (only while it has no Campaign Domain) or by the hostname of its Campaign Domain, a draft or unknown key is not found, and every Translated Field arrives already resolved to the requested language.
 _Avoid_: public campaign (as a status), published view, visitor API
 
 **Campaign Public Page**:
-How a Campaign reaches visitors: the two pages served on the Root Domain and on a Campaign Root domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, sooner when the author publishes or unpublishes. A draft is never served, and empty text or an empty section renders nothing.
+How a Campaign reaches visitors: the two pages served on the Root Domain or, once it has one, on its Campaign Domain, built from the published Campaign in the visitor's Page Language and refreshed within a minute of an edit, sooner when the author publishes or unpublishes. A draft is never served, and empty text or an empty section renders nothing.
 _Avoid_: viewer page (the viewer is the app), preview (that is the editor's)
 
 **Campaign Renderer**:

@@ -16,7 +16,7 @@ import { CampaignBuilderPage } from '../../pages/campaign-builder-page'
  *
  * Setup:
  * - The e2e user's team needs the `campaignBuilder` LaunchDarkly flag on in
- *   the preview environment, or /campaigns sends the user home.
+ *   the preview environment, or the dashboard has no Team Campaigns tab.
  * - The e2e user must be a manager of that team: Publish is disabled for
  *   anyone else.
  * - The campaign is deleted at the end of the run. To run the public half

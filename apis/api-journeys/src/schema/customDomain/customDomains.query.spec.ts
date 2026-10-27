@@ -93,7 +93,7 @@ describe('customDomains', () => {
                 })
               ])
             }),
-            { teamId: 'teamId' }
+            { teamId: 'teamId', campaignId: null }
           ]
         }
       })

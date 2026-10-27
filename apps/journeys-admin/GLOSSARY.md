@@ -73,7 +73,7 @@ The Campaign Editor's rendering of the open Campaign Page at a fixed Desktop or 
 _Avoid_: preview (the public page is the preview), the Canvas (that is the journey Editor's)
 
 **Left Rail**:
-The narrow column of icon buttons beside the Campaign Canvas: back to the campaigns list, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
+The narrow column of icon buttons beside the Campaign Canvas: back to the **Team Campaigns** tab, the panel toggles **Add**, **Pages**, **Navigator** and **Localize** in that order, then at the bottom undo, redo, Desktop / Phone and the **Publish button**. One panel is always open (Add on first open), docked beside the rail rather than over the canvas. A toggle or shortcut opens its panel in place of the open one; a second click or shortcut on the open panel changes nothing, and Escape only steps the selection up, never the panel.
 _Avoid_: toolbar, sidebar, top bar
 
 **Inspector**:
@@ -113,8 +113,12 @@ The Pages Panel select that sets which Campaign language the Campaign Canvas ren
 _Avoid_: canvas language, view language, locale
 
 **Publish button**:
-The Left Rail's status-dot button (grey draft, green published) whose popover offers Publish, Unpublish (confirmed) and Open page. Publish and Unpublish are explicit actions open to any member or manager of the Team, never Commands; Delete campaign and the Campaign Root stay with managers.
+The Left Rail's status-dot button (grey draft, green published) whose popover offers Publish, Unpublish (confirmed) and Open page. Publish and Unpublish are explicit actions open to any member or manager of the Team, never Commands; Delete campaign and the **Campaign Domain** stay with managers.
 _Avoid_: status chip
+
+**Campaign Domain** (in Settings):
+The domain section of a Campaign's Settings, under the slug: the domain field with Connect / Disconnect, then the DNS records, status and Check reused from the team Custom Domain dialog. Managers only; a member sees the name read-only. Connecting to, or disconnecting from, a published Campaign is confirmed first, because the public address moves. The team Custom Domain dialog lists team domains only. Code keeps `campaignId` on the Custom Domain.
+_Avoid_: Campaign Root (the retired name), custom domain (that is the team's)
 
 **Canvas banner**:
 The floating slot at the top of the canvas area that holds the First-run Hint and the orphan page bar. It takes no layout height.
@@ -129,6 +133,10 @@ _Avoid_: tour, onboarding (that is the dashboard flow), tooltip
 **Status Tabs**:
 The three lifecycle views of the journey list: **Active** (working journeys, drafts and published alike — publish state is a property, not a tab), **Archived**, and **Trash**.
 _Avoid_: draft tab / published tab (no such tabs exist)
+
+**Team Campaigns**:
+The homepage's third content tab, after Team Projects and Team Templates (`?type=campaigns`, "Campaigns" on mobile): the team's Campaign list and its Create button, with no Status Tabs and no journey sort. Shown only with the `campaignBuilder` flag and an active team, never in Shared With Me; the retired `/campaigns` page redirects to it.
+_Avoid_: campaigns page, campaign dashboard
 
 **Archive**:
 Reversibly tuck a journey out of the Active list without deleting anything. Undone by **Unarchive**.

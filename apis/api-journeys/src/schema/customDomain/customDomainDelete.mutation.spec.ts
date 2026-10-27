@@ -130,7 +130,7 @@ describe('customDomainDelete', () => {
     expect(deleteVercelDomain).toHaveBeenCalledWith('example.com')
   })
 
-  it('should change no campaign row when a domain with a Campaign Root is deleted', async () => {
+  it('should change no campaign row when a Campaign Domain is deleted', async () => {
     const attached = { ...mockCustomDomain, campaignId: 'campaignId' }
     prismaMock.customDomain.findUnique.mockResolvedValue(attached)
     prismaMock.customDomain.delete.mockResolvedValue(attached)
@@ -146,7 +146,7 @@ describe('customDomainDelete', () => {
     expect(prismaMock.campaign.delete).not.toHaveBeenCalled()
   })
 
-  it('should queue the released Campaign Root’s pages for the hostname when it is published', async () => {
+  it('should queue a published campaign’s pages in both forms when its Campaign Domain is deleted, and rewrite no short link', async () => {
     const campaign = campaignFactory().withRegion('EUR').published().build()
     const attached = {
       ...mockCustomDomain,
@@ -176,9 +176,11 @@ describe('customDomainDelete', () => {
       '/outreach.example.org',
       '/outreach.example.org/eur'
     ])
+    expect(deleteVercelDomain).toHaveBeenCalledWith('outreach.example.org')
+    expect(updateTeamShortLinks).not.toHaveBeenCalled()
   })
 
-  it('should queue nothing for a domain whose Campaign Root is a draft', async () => {
+  it('should queue nothing when the Campaign Domain’s campaign is a draft', async () => {
     const campaign = campaignFactory().build()
     const attached = { ...mockCustomDomain, campaignId: campaign.id, campaign }
     prismaMock.customDomain.findUnique.mockResolvedValue(attached)
@@ -192,7 +194,7 @@ describe('customDomainDelete', () => {
     expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
-  it('should queue nothing for a domain with no Campaign Root', async () => {
+  it('should queue nothing for a team domain', async () => {
     const unattached = { ...mockCustomDomain, campaign: null }
     prismaMock.customDomain.findUnique.mockResolvedValue(unattached)
     prismaMock.customDomain.delete.mockResolvedValue(mockCustomDomain)

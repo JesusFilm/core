@@ -252,6 +252,7 @@ export const CAMPAIGN_FIELDS = gql`
     customDomains {
       id
       name
+      apexName
     }
     team {
       id

@@ -3,6 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 import { UserTeamRole } from '@core/prisma/journeys/client'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
@@ -142,6 +143,49 @@ describe('journeyUpdate', () => {
 
       expect(result.errors).toBeUndefined()
       expect(result.data.journeyUpdate.id).toBe('journeyId')
+    })
+  })
+
+  it('revalidates the SEO change on a team domain, never a Campaign Domain', async () => {
+    prismaMock.journey.findUnique.mockResolvedValue({
+      id: 'journeyId',
+      teamId: 'teamId',
+      userJourneys: [],
+      team: {
+        id: 'teamId',
+        userTeams: [
+          { userId: mockUser.id, teamId: 'teamId', role: UserTeamRole.manager }
+        ]
+      }
+    } as any)
+    prismaMock.$transaction.mockImplementation(
+      async (callback: any) => await callback(prismaMock)
+    )
+    prismaMock.journey.update.mockResolvedValue({
+      id: 'journeyId',
+      slug: 'journey-slug',
+      team: { customDomains: [{ name: 'team.example.com' }] }
+    } as any)
+
+    const result = (await authClient({
+      document: JOURNEY_UPDATE,
+      variables: { id: 'journeyId', input: { seoTitle: 'New title' } }
+    })) as any
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.journey.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        include: expect.objectContaining({
+          team: {
+            include: { customDomains: { where: { campaignId: null } } }
+          }
+        })
+      })
+    )
+    expect(mockQueueAdd).toHaveBeenCalledWith('revalidate', {
+      slug: 'journey-slug',
+      hostname: 'team.example.com',
+      fbReScrape: true
     })
   })
 })

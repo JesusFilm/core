@@ -702,16 +702,18 @@ model CustomDomain {
   name                 String             @unique
   apexName             String
   journeyCollectionId  String?
-  /// Campaign Root: the campaign served at `/` (and its regions at
-  /// `/<regionSlug>`) on this domain. The campaign stores no address; deleting
-  /// the campaign releases the domain.
+  /// Campaign Domain: the campaign this domain belongs to. It serves only
+  /// that campaign's front page at `/` and its regions at `/<regionSlug>`,
+  /// never team journeys, and is never a route-all or collection domain (a
+  /// CHECK constraint holds this). One per campaign; deleting the campaign
+  /// deletes the domain.
   campaignId           String?
   routeAllTeamJourneys Boolean            @default(true)
   journeyCollection    JourneyCollection? @relation(fields: [journeyCollectionId], references: [id])
-  campaign             Campaign?          @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  campaign             Campaign?          @relation(fields: [campaignId], references: [id], onDelete: Cascade)
   team                 Team               @relation(fields: [teamId], references: [id])
 
-  @@index([campaignId])
+  @@unique([campaignId])
 }
 
 model JourneyCollection {

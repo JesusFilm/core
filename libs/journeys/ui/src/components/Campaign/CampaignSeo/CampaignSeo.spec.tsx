@@ -177,7 +177,7 @@ describe('campaignSeoProps', () => {
       ).toBeUndefined()
     })
 
-    it('canonicalises to the domain root when a Campaign Root is attached', () => {
+    it('canonicalises to the domain root when the campaign has a Campaign Domain', () => {
       expect(
         campaignSeoProps(
           campaignPublic,
@@ -224,7 +224,7 @@ describe('campaignSeoProps', () => {
       ])
     })
 
-    it('points each alternate at the Region Page and the Campaign Root in the preferred form', () => {
+    it('points each alternate at the Region Page and the Campaign Domain in the preferred form', () => {
       expect(
         campaignSeoProps(
           campaignPublic,
@@ -464,7 +464,7 @@ describe('CampaignSeo', () => {
     expect(seoCalls[0].title).toBe('Europe · Outreach 2026')
   })
 
-  it('canonicalises to the domain-root form when a Campaign Root is attached', () => {
+  it('canonicalises to the domain-root form when the campaign has a Campaign Domain', () => {
     render(
       <CampaignSeo
         campaign={{
@@ -483,7 +483,7 @@ describe('CampaignSeo', () => {
 describe('campaignPreferredLocation', () => {
   const rootDomain = 'your.nextstep.is'
 
-  it('names the root-domain campaign path when no Campaign Root is attached', () => {
+  it('names the root-domain campaign path when the campaign has no Campaign Domain', () => {
     expect(
       campaignPreferredLocation({ campaign: campaignPublic, rootDomain })
     ).toEqual(ROOT)

@@ -106,7 +106,7 @@ export const CampaignRef = builder.prismaObject('Campaign', {
     customDomains: t.relation('customDomains', {
       nullable: false,
       description:
-        'Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.',
+        'The Campaign Domain, as a list of at most one: the Custom Domain that belongs to this campaign. Once set it is the campaign’s only address and `/campaign/<slug>` on the root domain is NOT_FOUND. Settings reads this to show and manage the domain.',
       query: { orderBy: { name: 'asc' } }
     })
   })

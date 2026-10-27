@@ -21,7 +21,7 @@ export interface CampaignContextValue {
   pageKind: CampaignPageKind
   /** The Campaign Region a Region Page renders for; null on the landing page. */
   region: CampaignRegion | null
-  /** The path the landing page is served at (`/campaign/<slug>` or `` on a Campaign Root). */
+  /** The path the landing page is served at (`/campaign/<slug>` or `` on a Campaign Domain). */
   basePath: string
   /** The projected world map for the Analytics section; null when the page has none (the section then skips the map). */
   worldMap?: WorldMapShapes | null
@@ -60,7 +60,7 @@ export function campaignPageHref(
   return `${path}?lang=${encodeURIComponent(bcp47)}`
 }
 
-/** The landing page in the current Page Language (`/` on a Campaign Root). */
+/** The landing page in the current Page Language (`/` on a Campaign Domain). */
 export function campaignLandingHref(
   context: Pick<CampaignContextValue, 'campaign' | 'basePath'>
 ): string {
