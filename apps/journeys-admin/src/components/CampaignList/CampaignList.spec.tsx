@@ -138,14 +138,18 @@ describe('CampaignList', () => {
     )
   })
 
-  it("shows a campaign's domain as its address, else its root-domain path", async () => {
+  it("shows a campaign's domain as its address, else its root-domain address", async () => {
     renderList()
 
-    expect(await screen.findByText('outreach.example.com')).toBeInTheDocument()
     expect(
-      screen.queryByText('/campaign/outreach-2026')
+      await screen.findByText('https://outreach.example.com')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('https://your.nextstep.is/campaign/outreach-2026')
     ).not.toBeInTheDocument()
-    expect(screen.getByText('/campaign/hope-2027')).toBeInTheDocument()
+    expect(
+      screen.getByText('https://your.nextstep.is/campaign/hope-2027')
+    ).toBeInTheDocument()
   })
 
   it('opens the Create dialog', async () => {

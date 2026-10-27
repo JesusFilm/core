@@ -15,6 +15,10 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { CampaignStatus } from '../../../__generated__/globalTypes'
 import { useCampaignsQuery } from '../../libs/useCampaignsQuery'
+import {
+  campaignDomainName,
+  campaignPublicAddress
+} from '../CampaignEditor/campaignAddress'
 import { LabelChip } from '../LabelChip'
 
 import { CreateCampaignDialog } from './CreateCampaignDialog'
@@ -23,9 +27,10 @@ import { CreateCampaignDialog } from './CreateCampaignDialog'
  * The active team's campaigns, newest first — the body of the dashboard's
  * Team Campaigns tab, so the team select lives in the page header. With no
  * team picked the list asks for one and Create stays disabled. Each row
- * opens the editor and shows the campaign's public address: its Campaign
- * Domain when it has one (the root-domain address then 404s), else
- * `/campaign/<slug>`. Create campaign opens the dialog.
+ * opens the editor and shows the campaign's public address as Settings
+ * does: its Campaign Domain when it has one (the root-domain address then
+ * 404s), else `/campaign/<slug>` on the root domain. Create campaign opens
+ * the dialog.
  */
 export function CampaignList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -91,7 +96,6 @@ export function CampaignList(): ReactElement {
       <Stack spacing={2}>
         {campaigns.map((campaign) => {
           const published = campaign.status === CampaignStatus.published
-          const domainName = campaign.customDomains[0]?.name
           return (
             <Card key={campaign.id} variant="outlined">
               <CardActionArea
@@ -117,7 +121,10 @@ export function CampaignList(): ReactElement {
                     />
                   </Stack>
                   <Typography variant="body2" color="text.secondary">
-                    {domainName ?? `/campaign/${campaign.slug}`}
+                    {campaignPublicAddress(
+                      campaign.slug,
+                      campaignDomainName(campaign.customDomains)
+                    )}
                   </Typography>
                 </CardContent>
               </CardActionArea>
