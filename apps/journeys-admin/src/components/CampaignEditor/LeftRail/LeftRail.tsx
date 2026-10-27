@@ -133,7 +133,7 @@ export function LeftRail({ view, onViewChange }: LeftRailProps): ReactElement {
         <Tooltip title={t('Back to campaigns')} placement="right" arrow>
           <IconButton
             component={NextLink}
-            href="/campaigns"
+            href="/?type=campaigns"
             aria-label={t('Back to campaigns')}
           >
             <ArrowLeftIcon />

@@ -16,15 +16,14 @@ import Plus2Icon from '@core/shared/ui/icons/Plus2'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
 import { useCampaignsQuery } from '../../libs/useCampaignsQuery'
 import { LabelChip } from '../LabelChip'
-import { TeamSelect } from '../Team/TeamSelect'
 
 import { CreateCampaignDialog } from './CreateCampaignDialog'
 
 /**
- * The active team's campaigns, newest first. The team select beside the
- * heading names the team and switches it, as on Journeys; with no team
- * picked ("Shared With Me") the list asks for one and Create stays
- * disabled. Each row opens the editor; Create campaign opens the dialog.
+ * The active team's campaigns, newest first — the body of the dashboard's
+ * Team Campaigns tab, so the team select lives in the page header. With no
+ * team picked the list asks for one and Create stays disabled. Each row
+ * opens the editor; Create campaign opens the dialog.
  */
 export function CampaignList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -39,15 +38,12 @@ export function CampaignList(): ReactElement {
   const campaigns = data?.campaigns ?? []
 
   return (
-    <Stack spacing={4} data-testid="CampaignList">
-      <Stack
-        direction="row"
-        sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-      >
-        <Stack direction="row" spacing={4} sx={{ alignItems: 'center' }}>
-          <Typography variant="h4">{t('Campaigns')}</Typography>
-          <TeamSelect />
-        </Stack>
+    <Stack
+      spacing={4}
+      data-testid="CampaignList"
+      sx={{ mt: { xs: 3, sm: 4 }, px: { xs: 5, sm: 0 } }}
+    >
+      <Stack direction="row" sx={{ justifyContent: 'flex-end' }}>
         <Button
           variant="contained"
           startIcon={<Plus2Icon />}

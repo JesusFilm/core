@@ -66,7 +66,11 @@ export function CampaignEditorPage({
           <Typography variant="h5">{t('Campaign not found')}</Typography>
           <Typography color="text.secondary">{error.message}</Typography>
           <Stack direction="row" spacing={2}>
-            <Button component={NextLink} href="/campaigns" variant="outlined">
+            <Button
+              component={NextLink}
+              href="/?type=campaigns"
+              variant="outlined"
+            >
               {t('Back to campaigns')}
             </Button>
             <Button

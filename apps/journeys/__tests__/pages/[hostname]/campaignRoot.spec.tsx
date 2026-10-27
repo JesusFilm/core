@@ -71,7 +71,7 @@ function journeyRow(slug: string): {
 const region = campaignPublic.regions[0]
 const french = { ...campaignPublic, languageId: '496', title: 'Noël' }
 
-describe('Campaign Root on a custom domain', () => {
+describe('Campaign Domain', () => {
   beforeEach(() => {
     mockQuery.mockReset()
     vi.mocked(logger.error).mockClear()
@@ -297,7 +297,7 @@ describe('Campaign Root on a custom domain', () => {
   describe.each([
     ['a gateway validation error', validationError],
     ['a network failure', () => new Error('socket hang up')]
-  ])('when the Campaign Root read fails with %s', (_name, failure) => {
+  ])('when the Campaign Domain read fails with %s', (_name, failure) => {
     it('serves the journey collection logic on /', async () => {
       mockQuery
         .mockRejectedValueOnce(failure())

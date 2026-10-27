@@ -74,7 +74,7 @@ export async function fetchCampaignPublic(
 }
 
 /**
- * Read the published Campaign Root of a custom domain. Null when the domain
+ * Read the published campaign of a Campaign Domain. Null when the domain
  * has no root campaign or it is a draft, which the route reads as "serve
  * today's journey behaviour"; any other failure is rethrown.
  */
@@ -160,7 +160,7 @@ export async function fetchCampaignPublicInPageLanguage(
 }
 
 /**
- * The same read for the published Campaign Root of a custom domain. Null
+ * The same read for the published campaign of a Campaign Domain. Null
  * when the domain has no root campaign, it is a draft, or `wanted` rejects
  * the root campaign read in its default language.
  */

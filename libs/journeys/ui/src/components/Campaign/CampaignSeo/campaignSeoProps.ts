@@ -9,9 +9,9 @@ import { hasText } from '../types'
 import type { CampaignBlockOf, CampaignPublic, CampaignRegion } from '../types'
 
 export interface CampaignSeoOptions {
-  /** The canonical origin: the root domain, or the Campaign Root's domain. */
+  /** The canonical origin: the root domain, or the Campaign Domain. */
   origin: string
-  /** Where the landing page is served under it: `/campaign/<slug>`, or `` on a Campaign Root. */
+  /** Where the landing page is served under it: `/campaign/<slug>`, or `` on a Campaign Domain. */
   basePath: string
 }
 
@@ -21,10 +21,10 @@ interface CampaignPreferredLocationOptions {
 }
 
 /**
- * Where a campaign's preferred public address lives: the domain root of an
- * attached Custom Domain when one names the campaign as its Campaign Root,
- * else the root-domain `/campaign/<slug>` path. Both forms stay served;
- * nothing redirects between them and this is the one the canonical names.
+ * Where a campaign's preferred public address lives: the root of its
+ * Campaign Domain when it has one, else the root-domain `/campaign/<slug>`
+ * path. A campaign with a domain is served only there, so the canonical names
+ * the one form that serves.
  */
 export function campaignPreferredLocation({
   campaign,
@@ -98,7 +98,7 @@ export function campaignSocialImage(
   )
 }
 
-/** The page's path under the origin: `/` on a Campaign Root landing page. */
+/** The page's path under the origin: `/` on a Campaign Domain landing page. */
 export function campaignPagePath(
   basePath: string,
   region: CampaignRegion | null

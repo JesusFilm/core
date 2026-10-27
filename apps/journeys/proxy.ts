@@ -115,7 +115,7 @@ export default async function proxy(
     )
   }
 
-  // a Campaign Root's landing page or region (or a journey slug, which the
+  // a Campaign Domain's landing page or region (or a journey slug, which the
   // route sends back to the plain path) in the Page Language the URL names
   if (language != null && segments.length <= 1)
     return NextResponse.rewrite(

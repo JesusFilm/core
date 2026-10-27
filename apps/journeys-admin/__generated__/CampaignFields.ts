@@ -23,6 +23,7 @@ export interface CampaignFields_customDomains {
   __typename: "CustomDomain";
   id: string;
   name: string;
+  apexName: string;
 }
 
 export interface CampaignFields_team_userTeams_user_AnonymousUser {
@@ -1606,7 +1607,7 @@ export interface CampaignFields {
   createdAt: any;
   updatedAt: any;
   /**
-   * Custom Domains that name this campaign as their Campaign Root, by name. The campaign stores no address; Settings reads this to show the domain form beside the permanent root-domain address.
+   * The Campaign Domain, as a list of at most one: the Custom Domain that belongs to this campaign. Once set it is the campaign’s only address and `/campaign/<slug>` on the root domain is NOT_FOUND. Settings reads this to show and manage the domain.
    */
   customDomains: CampaignFields_customDomains[];
   /**

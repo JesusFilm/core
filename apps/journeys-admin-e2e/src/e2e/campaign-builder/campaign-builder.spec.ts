@@ -15,7 +15,7 @@ import {
  *
  * Setup:
  * - The e2e user's team needs the `campaignBuilder` LaunchDarkly flag on in
- *   the preview environment, or /campaigns sends the user home.
+ *   the preview environment, or the dashboard has no Team Campaigns tab.
  * - A published journey must be reachable at CAMPAIGN_E2E_JOURNEY_URL
  *   (default: the public Fact or Fiction journey the journeys-e2e suite
  *   already depends on).

@@ -188,7 +188,7 @@ describe('CampaignHeader', () => {
       )
     })
 
-    it('links to the domain root on a Campaign Root', () => {
+    it('links to the domain root on a Campaign Domain', () => {
       renderHeader(campaignPublic, { basePath: '' })
       expect(screen.getByTestId('CampaignBrandMark')).toHaveAttribute(
         'href',
