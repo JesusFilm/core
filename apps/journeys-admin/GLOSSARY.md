@@ -117,7 +117,7 @@ The Left Rail's status-dot button (grey draft, green published) whose popover of
 _Avoid_: status chip
 
 **Campaign Domain** (in Settings):
-The domain section of a Campaign's Settings, under the slug: the domain field with Connect / Disconnect, then the DNS records, status and Check reused from the team Custom Domain dialog. Managers only; a member sees the name read-only. Connecting to, or disconnecting from, a published Campaign is confirmed first, because the public address moves. The team Custom Domain dialog lists team domains only. Code keeps `campaignId` on the Custom Domain.
+The domain section of a Campaign's Settings, under the slug: the domain field with Connect / Disconnect, then the domain's DNS status and records in its own layout, each record's Type, Name and Value stacked with the value copyable. The status rechecks every minute, as the team Custom Domain dialog's does; neither has a Check button. A domain already in use elsewhere, this team's included, is removed there and added again here. Managers only; a member sees the name read-only. Connecting to, or disconnecting from, a published Campaign is confirmed first, because the public address moves. The team Custom Domain dialog lists team domains only. Code keeps `campaignId` on the Custom Domain.
 _Avoid_: Campaign Root (the retired name), custom domain (that is the team's)
 
 **Canvas banner**:
