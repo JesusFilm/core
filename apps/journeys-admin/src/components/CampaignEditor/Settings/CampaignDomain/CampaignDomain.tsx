@@ -81,7 +81,9 @@ export function CampaignDomain({
       message.includes('custom domain already exists') ||
       message.includes("it's already in use by your account.")
     )
-      return t('This domain is already connected to another NextSteps Team')
+      return t(
+        "This domain is already in use. Remove it where it's connected, then add it here."
+      )
     if (
       CombinedGraphQLErrors.is(caught) &&
       caught.errors[0]?.extensions?.code === 'BAD_USER_INPUT' &&
