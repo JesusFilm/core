@@ -38,7 +38,14 @@ const campaignsMock = {
           status: CampaignStatus.published,
           publishedAt: '2026-10-05T00:00:00.000Z',
           createdAt: '2026-10-05T00:00:00.000Z',
-          updatedAt: '2026-10-05T00:00:00.000Z'
+          updatedAt: '2026-10-05T00:00:00.000Z',
+          customDomains: [
+            {
+              __typename: 'CustomDomain',
+              id: 'customDomainId',
+              name: 'outreach.example.com'
+            }
+          ]
         },
         {
           __typename: 'Campaign',
@@ -49,7 +56,8 @@ const campaignsMock = {
           status: CampaignStatus.draft,
           publishedAt: null,
           createdAt: '2026-10-05T00:00:00.000Z',
-          updatedAt: '2026-10-05T00:00:00.000Z'
+          updatedAt: '2026-10-05T00:00:00.000Z',
+          customDomains: []
         }
       ]
     }
@@ -128,6 +136,13 @@ describe('CampaignList', () => {
       'href',
       '/campaigns/campaignId'
     )
+  })
+
+  it("shows a campaign's domain as its address, else its root-domain path", async () => {
+    renderList()
+
+    expect(await screen.findByText('outreach.example.com')).toBeInTheDocument()
+    expect(screen.queryByText('/campaign/outreach-2026')).not.toBeInTheDocument()
     expect(screen.getByText('/campaign/hope-2027')).toBeInTheDocument()
   })
 
