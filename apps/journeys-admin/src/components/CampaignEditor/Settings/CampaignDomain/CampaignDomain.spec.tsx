@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client'
+import { InMemoryCache, gql } from '@apollo/client'
 import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
@@ -104,7 +104,7 @@ describe('CampaignDomain', () => {
     const cache = new InMemoryCache()
     cache.writeFragment({
       id: cache.identify({ __typename: 'Campaign', id: 'campaignId' }),
-      fragment: (await import('@apollo/client')).gql`
+      fragment: gql`
         fragment CachedCampaignDomains on Campaign {
           id
           customDomains {
