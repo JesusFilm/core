@@ -1278,10 +1278,7 @@ describe('campaignPublic', () => {
   it('returns the published campaign of a Campaign Domain for its hostname', async () => {
     prismaMock.campaign.findFirst.mockResolvedValue({
       ...publishedFixture(),
-      customDomains: [
-        { name: 'outreach.example.org' },
-        { name: 'z.example.org' }
-      ]
+      customDomains: [{ name: 'outreach.example.org' }]
     } as any)
 
     const result = (await publicClient({
@@ -1292,7 +1289,7 @@ describe('campaignPublic', () => {
     expect(result.data.campaignPublic).toMatchObject({
       id: 'campaignId',
       slug: 'outreach-2026',
-      customDomainNames: ['outreach.example.org', 'z.example.org']
+      customDomainNames: ['outreach.example.org']
     })
     expect(prismaMock.campaign.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({

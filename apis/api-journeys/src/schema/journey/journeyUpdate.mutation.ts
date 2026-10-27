@@ -9,6 +9,7 @@ import { logger } from '../../logger'
 import { queue as revalidateQueue } from '../../workers/revalidate/queue'
 import { updateJourneyShortLink } from '../../workers/shortlinkUpdater/service'
 import { builder } from '../builder'
+import { TEAM_DOMAINS_WHERE } from '../customDomain/teamDomainsWhere'
 
 import { JourneyUpdateInput } from './inputs'
 import { JourneyRef } from './journey'
@@ -83,7 +84,7 @@ builder.mutationField('journeyUpdate', (t) =>
               include: {
                 ...query.include,
                 team: {
-                  include: { customDomains: { where: { campaignId: null } } }
+                  include: { customDomains: { where: TEAM_DOMAINS_WHERE } }
                 }
               },
               data: {

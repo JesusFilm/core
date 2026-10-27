@@ -1,8 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
+import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
 import { badUserInput, conflict } from '../errors'
 import { generateUniqueRegionSlug } from '../slug'
 import {

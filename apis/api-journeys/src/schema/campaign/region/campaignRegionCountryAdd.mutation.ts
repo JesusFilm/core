@@ -1,8 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
+import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
 import { badUserInput } from '../errors'
 import { fetchCountry } from '../gatewayClient'
 import { assertRegionCountries } from '../validation'

@@ -3,9 +3,9 @@ import { User } from '@core/yoga/firebaseClient'
 
 import {
   CampaignBlockWithCampaignAcl,
-  authorizeBlockUpdate,
-  touchCampaign
+  authorizeBlockUpdate
 } from '../block/service'
+import { touchCampaign } from '../campaignWrite'
 import { badUserInput } from '../errors'
 
 /**

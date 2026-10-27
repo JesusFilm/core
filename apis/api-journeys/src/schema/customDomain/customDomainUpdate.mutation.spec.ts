@@ -290,7 +290,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'journey collection not found for this custom domain team'
+          message: 'journey collection not found for this custom domain team',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -316,7 +317,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'custom domain not found'
+          message: 'custom domain not found',
+          extensions: { code: 'NOT_FOUND' }
         })
       ]
     })
@@ -356,7 +358,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'user is not allowed to update custom domain'
+          message: 'user is not allowed to update custom domain',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -387,7 +390,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'user is not allowed to update custom domain'
+          message: 'user is not allowed to update custom domain',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -403,10 +407,11 @@ describe('customDomainUpdate', () => {
     }
 
     it.each([
-      { routeAllTeamJourneys: true },
-      { journeyCollectionId: 'collectionId' },
-      { journeyCollectionId: null }
-    ])('refuses a routing change %o with BAD_USER_INPUT', async (input) => {
+      { input: { routeAllTeamJourneys: true } },
+      { input: { journeyCollectionId: 'collectionId' } },
+      { input: { journeyCollectionId: null } },
+      { input: {} }
+    ])('refuses any update $input on the domain id', async ({ input }) => {
       prismaMock.customDomain.findUnique.mockResolvedValue(campaignDomain)
 
       const result = await authClient({
@@ -420,7 +425,7 @@ describe('customDomainUpdate', () => {
           expect.objectContaining({
             message:
               'a campaign domain serves only its campaign and cannot be rerouted',
-            extensions: expect.objectContaining({ code: 'BAD_USER_INPUT' })
+            extensions: { code: 'BAD_USER_INPUT', field: 'id' }
           })
         ]
       })

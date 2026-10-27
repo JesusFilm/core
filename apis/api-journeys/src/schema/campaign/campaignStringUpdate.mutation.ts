@@ -3,8 +3,8 @@ import { prisma } from '@core/prisma/journeys/client'
 import { builder } from '../builder'
 
 import { authorizeCampaign } from './authorizeCampaign'
-import { touchCampaign } from './block/service'
 import { CampaignStringRef } from './campaignString'
+import { touchCampaign } from './campaignWrite'
 import { CampaignStringKey } from './enums'
 import {
   TEXT_CAPS,

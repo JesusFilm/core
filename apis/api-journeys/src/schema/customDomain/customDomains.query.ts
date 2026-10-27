@@ -8,6 +8,7 @@ import {
 import { builder } from '../builder'
 
 import { CustomDomainRef } from './customDomain'
+import { TEAM_DOMAINS_WHERE } from './teamDomainsWhere'
 
 function customDomainReadAccessWhere(
   userId: string
@@ -57,8 +58,7 @@ builder.queryField('customDomains', (t) =>
       return await prisma.customDomain.findMany({
         ...query,
         where: {
-          // A Campaign Domain belongs to its campaign, not the team list.
-          AND: [accessible, { teamId: args.teamId, campaignId: null }]
+          AND: [accessible, { teamId: args.teamId, ...TEAM_DOMAINS_WHERE }]
         }
       })
     }

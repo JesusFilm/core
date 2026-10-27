@@ -2,8 +2,8 @@ import { Prisma, prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { SlugTakenError } from '../../templateGalleryPage/generateUniqueSlug'
-import { touchCampaign } from '../block/service'
 import { CampaignRegionRef } from '../campaignRegion'
+import { touchCampaign } from '../campaignWrite'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'
 import { assertRegionSlugFreeOfJourneys, validateRegionSlug } from '../slug'
 import {

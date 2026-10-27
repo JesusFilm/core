@@ -1,6 +1,6 @@
 import { Prisma } from '@core/prisma/journeys/client'
 
-import { lockCampaign, lockCampaignTextRows } from '../block/service'
+import { lockCampaign, lockCampaignTextRows } from '../campaignWrite'
 import { badUserInput, conflict } from '../errors'
 import { TranslationsJson, parseTranslations } from '../translatedValue'
 

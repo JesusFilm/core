@@ -4,12 +4,12 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { authorizeCampaign } from '../authorizeCampaign'
+import { CampaignRef } from '../campaign'
 import {
   lockCampaign,
   lockCampaignLanguageRows,
   touchCampaign
-} from '../block/service'
-import { CampaignRef } from '../campaign'
+} from '../campaignWrite'
 import { badUserInput } from '../errors'
 import { fetchLanguage } from '../gatewayClient'
 import { enqueueLanguageRevalidation } from '../revalidateCampaign'
