@@ -108,6 +108,11 @@ const campaignWithDomain: Campaign = {
   ]
 }
 
+const campaignWithEmptyDomainName: Campaign = {
+  ...campaign,
+  customDomains: [{ ...campaignWithDomain.customDomains[0], name: '' }]
+}
+
 describe('Settings', () => {
   const mockPush = vi.fn()
 
@@ -419,6 +424,24 @@ describe('Settings', () => {
         'Its domain outreach.example.org is removed too; add it again to use it elsewhere.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('treats an empty domain name as no domain in the address and the delete confirm', () => {
+    renderSettings({ campaign: campaignWithEmptyDomainName })
+
+    expect(
+      screen.getByText(
+        'Current public address: https://your.nextstep.is/campaign/outreach-2026'
+      )
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete campaign' }))
+
+    expect(
+      within(screen.getByTestId('CampaignDeleteDialog')).queryByText(
+        /^Its domain .* is removed too/
+      )
+    ).not.toBeInTheDocument()
   })
 
   it('does not offer Delete campaign to members', () => {
