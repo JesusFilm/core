@@ -110,7 +110,7 @@ describe('CustomDomain.campaignId', () => {
     return result.data.journey.team.customDomains
   }
 
-  it('is null for a draft Campaign Root on an anonymous read, and the root of a published one', async () => {
+  it('is null for a draft campaign on an anonymous read, and names a published one', async () => {
     mockGetUserFromPayload.mockReturnValue(null)
 
     await expect(domains(publicClient)).resolves.toEqual([
@@ -121,7 +121,7 @@ describe('CustomDomain.campaignId', () => {
     expect(prismaMock.userTeam.findUnique).not.toHaveBeenCalled()
   })
 
-  it("is null for a draft Campaign Root when the caller is not in the domain's team", async () => {
+  it("is null for a draft campaign when the caller is not in the domain's team", async () => {
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userTeam.findUnique.mockResolvedValue(null)
 
@@ -132,7 +132,7 @@ describe('CustomDomain.campaignId', () => {
     ])
   })
 
-  it("names a draft Campaign Root to a caller with campaign Read on the domain's team", async () => {
+  it("names a draft campaign to a caller with campaign Read on the domain's team", async () => {
     mockGetUserFromPayload.mockReturnValue(mockUser)
     prismaMock.userTeam.findUnique.mockResolvedValue({
       id: 'userTeamId',
