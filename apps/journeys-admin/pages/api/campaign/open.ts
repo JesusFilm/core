@@ -11,6 +11,7 @@ import {
 } from '../../../__generated__/GetCampaignPagePaths'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
 import {
+  campaignDomainName,
   campaignPermanentAddress,
   campaignPublicAddress
 } from '../../../src/components/CampaignEditor/campaignAddress'
@@ -224,7 +225,7 @@ export default async function handler(
 
   const address = campaignPublicAddress(
     campaign.slug,
-    campaign.customDomains[0]?.name ?? null
+    campaignDomainName(campaign.customDomains)
   )
   const region = campaign.regions.find(
     (candidate) => candidate.slug === regionSlug

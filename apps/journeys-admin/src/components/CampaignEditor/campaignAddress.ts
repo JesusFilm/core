@@ -15,6 +15,16 @@ export function campaignPermanentAddress(slug: string): string {
 }
 
 /**
+ * The name of the campaign's Campaign Domain, or null when it has none. A
+ * campaign has at most one domain, so `customDomains` holds zero or one.
+ */
+export function campaignDomainName(
+  customDomains: ReadonlyArray<{ name: string }>
+): string | null {
+  return customDomains[0]?.name ?? null
+}
+
+/**
  * The address the public page is served at right now: the Campaign Domain's
  * root when the campaign has one, else the root-domain address.
  */

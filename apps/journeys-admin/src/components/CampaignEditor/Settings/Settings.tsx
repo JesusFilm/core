@@ -27,7 +27,7 @@ import {
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import { campaignPublicAddresses } from '../campaignAddress'
+import { campaignDomainName, campaignPublicAddresses } from '../campaignAddress'
 import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
@@ -193,7 +193,7 @@ export function Settings({
   }
 
   const published = campaign.status === CampaignStatus.published
-  const domainName = campaign.customDomains[0]?.name
+  const domainName = campaignDomainName(campaign.customDomains)
   const publicAddresses = campaignPublicAddresses(
     campaign.slug,
     campaign.customDomains.map(({ name }) => name)
