@@ -24,7 +24,7 @@ import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetC
 import { CampaignStatus } from '../../../../__generated__/globalTypes'
 import {
   campaignDomainName,
-  campaignPublicAddresses
+  campaignPublicAddress
 } from '../../../libs/campaignAddress'
 import {
   evictCampaignFromCache,
@@ -197,10 +197,7 @@ export function Settings({
 
   const published = campaign.status === CampaignStatus.published
   const domainName = campaignDomainName(campaign.customDomains)
-  const publicAddresses = campaignPublicAddresses(
-    campaign.slug,
-    campaign.customDomains.map(({ name }) => name)
-  )
+  const publicAddress = campaignPublicAddress(campaign)
 
   return (
     <Stack spacing={5} data-testid="CampaignSettings">
@@ -239,11 +236,11 @@ export function Settings({
                   'Changing this breaks links to this page you have already shared.'
                 )}
               </Box>
-              {publicAddresses.map((address) => (
-                <Box key={address} component="span" sx={{ display: 'block' }}>
-                  {t('Current public address: {{address}}', { address })}
-                </Box>
-              ))}
+              <Box component="span" sx={{ display: 'block' }}>
+                {t('Current public address: {{address}}', {
+                  address: publicAddress
+                })}
+              </Box>
               <Box component="span" sx={{ display: 'block' }}>
                 {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
               </Box>

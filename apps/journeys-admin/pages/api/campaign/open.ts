@@ -13,7 +13,6 @@ import { CampaignStatus } from '../../../__generated__/globalTypes'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { authConfig } from '../../../src/libs/auth/config'
 import {
-  campaignDomainName,
   campaignPermanentAddress,
   campaignPublicAddress
 } from '../../../src/libs/campaignAddress'
@@ -223,10 +222,7 @@ export default async function handler(
     await sleep(300)
   }
 
-  const address = campaignPublicAddress(
-    campaign.slug,
-    campaignDomainName(campaign.customDomains)
-  )
+  const address = campaignPublicAddress(campaign)
   const region = campaign.regions.find(
     (candidate) => candidate.slug === regionSlug
   )

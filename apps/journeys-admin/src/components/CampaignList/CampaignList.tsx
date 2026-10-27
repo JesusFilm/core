@@ -14,10 +14,7 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { CampaignStatus } from '../../../__generated__/globalTypes'
-import {
-  campaignDomainName,
-  campaignPublicAddress
-} from '../../libs/campaignAddress'
+import { campaignPublicAddress } from '../../libs/campaignAddress'
 import { useCampaignsQuery } from '../../libs/useCampaignsQuery'
 import { LabelChip } from '../LabelChip'
 
@@ -121,10 +118,7 @@ export function CampaignList(): ReactElement {
                     />
                   </Stack>
                   <Typography variant="body2" color="text.secondary">
-                    {campaignPublicAddress(
-                      campaign.slug,
-                      campaignDomainName(campaign.customDomains)
-                    )}
+                    {campaignPublicAddress(campaign)}
                   </Typography>
                 </CardContent>
               </CardActionArea>

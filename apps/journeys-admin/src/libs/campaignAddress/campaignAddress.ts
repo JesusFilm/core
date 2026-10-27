@@ -27,30 +27,20 @@ export function campaignDomainName(
   return name
 }
 
+/** What a campaign's public address is read from. */
+export interface CampaignAddressFields {
+  slug: string
+  customDomains: ReadonlyArray<{ name: string }>
+}
+
 /**
  * The address the public page is served at right now: the Campaign Domain's
  * root when the campaign has one, else the root-domain address.
  */
-export function campaignPublicAddress(
-  slug: string,
-  hostname: string | null
-): string {
-  if (hostname != null && hostname !== '') return `https://${hostname}`
-  return campaignPermanentAddress(slug)
-}
-
-/**
- * Every address the public page is served at right now: the Campaign Domain
- * alone when the campaign has one, else the root-domain address.
- */
-export function campaignPublicAddresses(
-  slug: string,
-  hostnames: string[]
-): string[] {
-  const addresses = hostnames
-    .filter((hostname) => hostname !== '')
-    .map((hostname) => `https://${hostname}`)
-  return addresses.length > 0 ? addresses : [campaignPermanentAddress(slug)]
+export function campaignPublicAddress(campaign: CampaignAddressFields): string {
+  const domainName = campaignDomainName(campaign.customDomains)
+  if (domainName == null) return campaignPermanentAddress(campaign.slug)
+  return `https://${domainName}`
 }
 
 /** The preview frame's address for a linked journey: the root-domain embed route, kept a preview. */
