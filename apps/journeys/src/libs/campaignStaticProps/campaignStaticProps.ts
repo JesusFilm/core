@@ -154,7 +154,7 @@ export async function getCampaignStaticProps({
 }
 
 /**
- * Static props of a page of a custom domain's Campaign Root, or null when the
+ * Static props of a page of a Campaign Domain's campaign, or null when the
  * request is not one: the domain has no published root campaign, or the
  * segment is not one of its regions (a journey slug). The region is matched
  * on the first, default-language read, before the Page Language costs a

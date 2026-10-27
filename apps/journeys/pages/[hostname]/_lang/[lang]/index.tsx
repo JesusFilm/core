@@ -11,7 +11,7 @@ import {
 } from '../../../../src/libs/campaignStaticProps'
 import HostJourneysPage from '../../index'
 
-// A Campaign Root's landing page in the campaign language the proxy rewrote
+// A Campaign Domain's landing page in the campaign language the proxy rewrote
 // `?lang=` to. Without a published root campaign, or for a tag that is not
 // one of its languages, the visitor goes to `/`, keeping the rest of the
 // query.

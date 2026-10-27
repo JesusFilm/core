@@ -33,16 +33,16 @@ _Avoid_: gated step, blocked step
 ### Delivery
 
 **Root Domain**:
-The product's own hostname (e.g. `your.nextstep.is`), serving any published Journey by Slug, the public landing and template gallery pages, and every published Campaign at its permanent `/campaign/<slug>` address.
+The product's own hostname (e.g. `your.nextstep.is`), serving any published Journey by Slug, the public landing and template gallery pages, and every published Campaign that has no **Campaign Domain** at its `/campaign/<slug>` address.
 _Avoid_: default domain, main site
 
 **Custom Domain** (consumed):
-A team's vanity hostname, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing input_: the incoming hostname scopes which Journey a Slug resolves to, and a domain that names a **Campaign Root** serves that Campaign at its root.
+A team's vanity hostname, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing input_: the incoming hostname scopes which Journey a Slug resolves to, and a **Campaign Domain** serves its Campaign at its root. A Custom Domain is a team domain or a Campaign Domain, never both.
 _Avoid_: host (ambiguous — Host is a presenter identity upstream), hostname (fine in code, not in conversation)
 
-**Campaign Root** (consumed):
-The Campaign a Custom Domain names, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing target_: the domain's `/` serves its landing page and `/<region slug>` a Region Page, and a region slug outranks a journey slug of the same spelling.
-_Avoid_: home page, default campaign
+**Campaign Domain** (consumed):
+A Custom Domain that belongs to one Campaign, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing target_: the domain's `/` serves the Campaign's landing page and `/<region slug>` a Region Page; it serves no team Journey, so `/<journey slug>` on it is not found. Once a Campaign has one, its `/campaign/<slug>` address on the Root Domain is not found.
+_Avoid_: Campaign Root (the retired name), home page, default campaign
 
 **Reserved Segment**:
 A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The viewer owns the concept; one list in the Journeys API backs both Journey and Region slug validation.

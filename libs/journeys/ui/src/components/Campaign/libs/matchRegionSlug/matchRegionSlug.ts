@@ -1,7 +1,7 @@
 import { VIEWER_RESERVED_SEGMENTS } from '../viewerReservedSegments'
 
 /**
- * Resolve `/<segment>` on a Campaign Root domain to a region of the root
+ * Resolve `/<segment>` on a Campaign Domain to a region of the root
  * campaign, listed or orphan alike. Null means "not a region": the caller
  * falls through to the journey lookup, so a region outranks a journey with
  * the same slug and everything else behaves as it does today. A segment the

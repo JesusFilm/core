@@ -96,6 +96,18 @@ function renderSettings({
   )
 }
 
+const campaignWithDomain: Campaign = {
+  ...campaign,
+  customDomains: [
+    {
+      __typename: 'CustomDomain',
+      id: 'customDomainId',
+      name: 'outreach.example.org',
+      apexName: 'example.org'
+    }
+  ]
+}
+
 describe('Settings', () => {
   const mockPush = vi.fn()
 
@@ -145,14 +157,9 @@ describe('Settings', () => {
     )
   })
 
-  it('shows the permanent root-domain address and the current public address', () => {
+  it('shows the root-domain address as the current public address while there is no domain', () => {
     renderSettings()
 
-    expect(
-      screen.getByText(
-        'Permanent address: https://your.nextstep.is/campaign/outreach-2026'
-      )
-    ).toBeInTheDocument()
     expect(
       screen.getByText(
         'Current public address: https://your.nextstep.is/campaign/outreach-2026'
@@ -160,55 +167,19 @@ describe('Settings', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows the domain form as the current public address when a Campaign Root is attached', () => {
-    renderSettings({
-      campaign: {
-        ...campaign,
-        customDomains: [
-          {
-            __typename: 'CustomDomain',
-            id: 'customDomainId',
-            name: 'outreach.example.org'
-          }
-        ]
-      }
-    })
+  it('shows the Campaign Domain as the only public address once one is set', () => {
+    renderSettings({ campaign: campaignWithDomain })
 
-    expect(
-      screen.getByText(
-        'Permanent address: https://your.nextstep.is/campaign/outreach-2026'
-      )
-    ).toBeInTheDocument()
+    expect(screen.getAllByText(/^Current public address:/)).toHaveLength(1)
     expect(
       screen.getByText('Current public address: https://outreach.example.org')
     ).toBeInTheDocument()
   })
 
-  it('shows every attached Campaign Root as a current public address', () => {
-    renderSettings({
-      campaign: {
-        ...campaign,
-        customDomains: [
-          {
-            __typename: 'CustomDomain',
-            id: 'customDomainId',
-            name: 'outreach.example.org'
-          },
-          {
-            __typename: 'CustomDomain',
-            id: 'secondCustomDomainId',
-            name: 'gifts.example.org'
-          }
-        ]
-      }
-    })
+  it('shows the Domain section under the slug', () => {
+    renderSettings()
 
-    expect(
-      screen.getByText('Current public address: https://outreach.example.org')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Current public address: https://gifts.example.org')
-    ).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignDomain')).toBeInTheDocument()
   })
 
   it('saves the title through campaignUpdate on commit without adding a Command', async () => {
@@ -394,7 +365,9 @@ describe('Settings', () => {
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Delete' }))
     await waitFor(() => expect(result).toHaveBeenCalled())
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/campaigns'))
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith('/?type=campaigns')
+    )
   })
 
   it('evicts the campaign from the cache only after the redirect resolves', async () => {
@@ -427,11 +400,25 @@ describe('Settings', () => {
       })
     )
 
-    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/campaigns'))
+    await waitFor(() =>
+      expect(mockPush).toHaveBeenCalledWith('/?type=campaigns')
+    )
     expect(evict).not.toHaveBeenCalled()
 
     finishRedirect(true)
     await waitFor(() => expect(evict).toHaveBeenCalled())
+  })
+
+  it('names the Campaign Domain in the delete confirm', () => {
+    renderSettings({ campaign: campaignWithDomain })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete campaign' }))
+
+    expect(
+      within(screen.getByTestId('CampaignDeleteDialog')).getByText(
+        'Its domain outreach.example.org is removed too; add it again to use it elsewhere.'
+      )
+    ).toBeInTheDocument()
   })
 
   it('does not offer Delete campaign to members', () => {

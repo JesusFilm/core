@@ -3244,7 +3244,7 @@ export interface GetCampaignPublic_campaignPublic {
    */
   languageId: string;
   /**
-   * Names of the Custom Domains that name this campaign as their Campaign Root, alphabetical. The first is the preferred address: the canonical link points at its domain-root form, else at the root-domain path. Empty when none is attached.
+   * The name of the Campaign Domain, as a list of at most one; empty when the campaign has none. A campaign with a domain is served only there, so the canonical link points at its domain-root form, else at the root-domain path.
    */
   customDomainNames: string[];
   publishedAt: any | null;
@@ -3276,11 +3276,11 @@ export interface GetCampaignPublic_campaignPublic {
 
 export interface GetCampaignPublic {
   /**
-   * Public, unauthenticated read of a published Campaign for the public page: exactly one of `slug` (the root-domain address) or `hostname` (a Custom Domain whose Campaign Root it is), plus the Page Language to resolve every text field to (null = the campaign default). `status: published` is the only gate.
+   * Public, unauthenticated read of a published Campaign for the public page: exactly one of `slug` (the root-domain address of a campaign with no Campaign Domain) or `hostname` (its Campaign Domain), plus the Page Language to resolve every text field to (null = the campaign default). `status: published` is the only gate.
    * 
    * Errors:
    * - BAD_USER_INPUT: both or neither of `slug` and `hostname` given.
-   * - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a hostname with no Campaign Root or a draft one).
+   * - NOT_FOUND: no published campaign at that key (draft, unknown, or malformed slug; a slug whose campaign has a Campaign Domain; a hostname that is no Campaign Domain, or whose campaign is a draft).
    */
   campaignPublic: GetCampaignPublic_campaignPublic;
 }

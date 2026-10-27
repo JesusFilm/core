@@ -55,7 +55,7 @@ describe('LeftRail', () => {
 
     expect(
       screen.getByRole('link', { name: 'Back to campaigns' })
-    ).toHaveAttribute('href', '/campaigns')
+    ).toHaveAttribute('href', '/?type=campaigns')
   })
 
   it('switches between the Pages, Add and Localize panels, one open at a time, starting on Add', () => {

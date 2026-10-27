@@ -30,7 +30,7 @@ interface CampaignPageWrapperProps {
   worldMap?: WorldMapShapes | null
   /**
    * Where region links point: the root-domain `/campaign/<slug>` path by
-   * default, `''` on a Campaign Root domain where regions sit at `/<slug>`.
+   * default, `''` on a Campaign Domain where regions sit at `/<slug>`.
    */
   basePath?: string
   children?: ReactNode

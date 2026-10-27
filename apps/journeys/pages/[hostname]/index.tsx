@@ -63,7 +63,7 @@ function HostJourneysPage({
 export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   context
 ) => {
-  // Campaign Root first: a published root campaign owns `/`, else the
+  // Campaign Domain first: its published campaign owns `/`, else the
   // collection logic below runs unchanged.
   const campaignProps = await getHostCampaignStaticProps({
     hostname: context.params?.hostname as string,
