@@ -2,6 +2,7 @@ import { CampaignRegion, Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../../lib/auth/ability'
+import { authorizeCampaign } from '../authorizeCampaign'
 import { lockCampaignStructure, touchCampaign } from '../block/service'
 import {
   CampaignWithAcl,
@@ -33,14 +34,7 @@ export async function authorizeRegionCreate(
   campaignId: string,
   user: User
 ): Promise<CampaignWithAcl> {
-  const campaign = await prisma.campaign.findUnique({
-    where: { id: campaignId },
-    include: INCLUDE_CAMPAIGN_ACL
-  })
-  if (campaign == null) throw notFound('campaign not found')
-  if (!campaignAcl(Action.Update, campaign, user))
-    throw forbidden('user is not allowed to create region')
-  return campaign
+  return await authorizeCampaign(campaignId, 'createRegion', user)
 }
 
 /** Region update, reorder, delete and country changes are campaign Update on the region's campaign. */

@@ -86,4 +86,29 @@ describe('authorizeCampaign', () => {
       })
     }
   )
+
+  it.each<{ operation: CampaignOperation; refused: string }>([
+    { operation: 'createBlock', refused: 'create block' },
+    { operation: 'createRegion', refused: 'create region' }
+  ])(
+    'lets a member $operation and refuses an outsider, naming what they create',
+    async ({ operation, refused }) => {
+      prismaMock.campaign.findUnique.mockResolvedValueOnce(
+        campaignRow(campaignFactory({ role: 'member' }).build())
+      )
+      await expect(
+        authorizeCampaign('campaignId', operation, user)
+      ).resolves.toMatchObject({ id: 'campaignId' })
+
+      prismaMock.campaign.findUnique.mockResolvedValueOnce(
+        campaignRow(campaignFactory({ userId: 'someoneElse' }).build())
+      )
+      await expect(
+        authorizeCampaign('campaignId', operation, user)
+      ).rejects.toMatchObject({
+        message: `user is not allowed to ${refused}`,
+        extensions: { code: 'FORBIDDEN' }
+      })
+    }
+  )
 })

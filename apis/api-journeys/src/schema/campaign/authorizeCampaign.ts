@@ -11,17 +11,20 @@ import {
 import { forbidden, notFound } from './errors'
 
 /**
- * What a caller asks to do to a campaign by id, as its `FORBIDDEN` message
- * names it, and the action `campaignAcl` decides it by. Publishing is
- * editing: whoever can see and change the page can put it live.
+ * What a caller asks to do to a campaign by id: the action `campaignAcl`
+ * decides it by, and what its `FORBIDDEN` message says the caller may not do.
+ * Publishing is editing: whoever can see and change the page can put it live.
+ * Creating a block or region is editing the campaign it will belong to.
  */
 const CAMPAIGN_OPERATIONS = {
-  view: Action.Read,
-  update: Action.Update,
-  publish: Action.Update,
-  unpublish: Action.Update,
-  delete: Action.Delete
-} as const satisfies Record<string, Action>
+  view: { action: Action.Read, refused: 'view campaign' },
+  update: { action: Action.Update, refused: 'update campaign' },
+  publish: { action: Action.Update, refused: 'publish campaign' },
+  unpublish: { action: Action.Update, refused: 'unpublish campaign' },
+  delete: { action: Action.Delete, refused: 'delete campaign' },
+  createBlock: { action: Action.Update, refused: 'create block' },
+  createRegion: { action: Action.Update, refused: 'create region' }
+} as const satisfies Record<string, { action: Action; refused: string }>
 
 export type CampaignOperation = keyof typeof CAMPAIGN_OPERATIONS
 
@@ -47,7 +50,8 @@ export async function authorizeCampaign<
     include: { ...INCLUDE_CAMPAIGN_ACL, ...include }
   })) as (CampaignWithAcl & AuthorizedCampaign<Include>) | null
   if (campaign == null) throw notFound('campaign not found')
-  if (!campaignAcl(CAMPAIGN_OPERATIONS[operation], campaign, user))
-    throw forbidden(`user is not allowed to ${operation} campaign`)
+  const { action, refused } = CAMPAIGN_OPERATIONS[operation]
+  if (!campaignAcl(action, campaign, user))
+    throw forbidden(`user is not allowed to ${refused}`)
   return campaign
 }

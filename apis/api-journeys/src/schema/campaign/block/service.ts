@@ -14,6 +14,7 @@ import {
 import { User } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../../lib/auth/ability'
+import { authorizeCampaign } from '../authorizeCampaign'
 import {
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
@@ -165,14 +166,7 @@ export async function authorizeBlockCreate(
   campaignId: string,
   user: User
 ): Promise<CampaignWithAcl> {
-  const campaign = await prisma.campaign.findUnique({
-    where: { id: campaignId },
-    include: INCLUDE_CAMPAIGN_ACL
-  })
-  if (campaign == null) throw notFound('campaign not found')
-  if (!campaignAcl(Action.Update, campaign, user))
-    throw forbidden('user is not allowed to create block')
-  return campaign
+  return await authorizeCampaign(campaignId, 'createBlock', user)
 }
 
 /**
