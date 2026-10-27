@@ -1,11 +1,10 @@
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
-import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
-import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign/campaign.acl'
-import { badUserInput, forbidden } from '../campaign/errors'
+import { authorizeCampaignDomainAdd } from '../campaign/authorizeCampaignDomainAdd'
+import { badUserInput } from '../campaign/errors'
 import { enqueueCampaignDomainRevalidation } from '../campaign/revalidateCampaign'
 import { isUniqueViolation } from '../campaign/validation'
 
@@ -21,21 +20,15 @@ import {
 type CustomDomainCreateArgs = typeof CustomDomainCreateInput.$inferInput
 
 /**
- * The campaign a Campaign Domain is being added to, refused unless it is the
- * team's, the caller may update it, it has no domain yet, and the input asks
- * for no team routing.
+ * The campaign a Campaign Domain is being added to, once the campaign allows
+ * it (`authorizeCampaignDomainAdd`) and the input asks for no team routing.
  */
 async function loadDomainCampaign(input: CustomDomainCreateArgs, user: User) {
-  const campaign = await prisma.campaign.findUnique({
-    where: { id: String(input.campaignId) },
-    include: { ...INCLUDE_CAMPAIGN_ACL, regions: true, customDomains: true }
-  })
-  if (campaign == null || campaign.teamId !== input.teamId)
-    throw badUserInput('campaign not found for this team', 'campaignId')
-  if (!campaignAcl(Action.Update, campaign, user))
-    throw forbidden('user is not allowed to update campaign')
-  if (campaign.customDomains.length > 0)
-    throw badUserInput('campaign already has a custom domain', 'campaignId')
+  const campaign = await authorizeCampaignDomainAdd(
+    String(input.campaignId),
+    input.teamId,
+    user
+  )
   if (input.routeAllTeamJourneys === true)
     throw badUserInput(
       'a campaign domain cannot route team journeys',
