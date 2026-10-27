@@ -1,1 +1,1 @@
-export { CampaignDomainDns, campaignDomainRecords } from './CampaignDomainDns'
+export { CampaignDomainDns } from './CampaignDomainDns'
