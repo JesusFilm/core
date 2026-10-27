@@ -13,6 +13,11 @@ describe('campaign errors', () => {
     expect(error.extensions).toEqual({ code: 'FORBIDDEN' })
   })
 
+  it('forbidden carries the field that named the target, when given', () => {
+    const error = forbidden('not yours', 'url')
+    expect(error.extensions).toEqual({ code: 'FORBIDDEN', field: 'url' })
+  })
+
   it('conflict is CONFLICT with the message and field', () => {
     const error = conflict('restore the section first', 'id')
     expect(error.message).toBe('restore the section first')

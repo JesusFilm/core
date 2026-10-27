@@ -192,7 +192,7 @@ Changing a Campaign's default language: one transaction moves every Translated F
 _Avoid_: language change, re-translate
 
 **Campaign access**:
-Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or adds, checks or removes its Campaign Domain. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
+Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or adds, checks or removes its Campaign Domain. Linking a Journey to a Share Language needs the right to see that Journey's stats (journey Update: a member or manager of its Team, or its owner or editor), because its visitors feed the public Campaign Stats; a campaign never shows numbers its authors could not already see. The check is made at link time only: a link stays if its linker later loses access. Journey cards feed no stats and need no rights on their Journey. Neither kind of link grants any rights on the Journey. QR codes and short links about linked Journeys are the Campaign's Team's own; the traffic the Campaign Stats show is the Share Language Journeys', each one its linker could already see.
 _Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
 
 **Campaign Seed**:

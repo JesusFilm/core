@@ -1,6 +1,9 @@
-import { prisma } from '@core/prisma/journeys/client'
+import { Prisma, prisma } from '@core/prisma/journeys/client'
+import { User } from '@core/yoga/firebaseClient'
 
-import { badUserInput } from './errors'
+import { Action, ability, subject } from '../../lib/auth/ability'
+
+import { badUserInput, forbidden } from './errors'
 import {
   INCLUDE_JOURNEY_PUBLIC_URL,
   JourneyWithPublicUrl
@@ -8,6 +11,19 @@ import {
 import { isOneOf } from './validation'
 
 export const JOURNEY_NOT_FOUND_MESSAGE = 'Journey not found or not published'
+
+/** The refusal of a Share Language link to a journey whose stats the caller cannot see. */
+export const SHARE_LANGUAGE_JOURNEY_FORBIDDEN_MESSAGE =
+  'You can only link a journey whose stats you can see'
+
+/** A Share Language journey as resolved: its public URL plus what the journey ACL reads. */
+const INCLUDE_SHARE_LANGUAGE_JOURNEY = {
+  ...INCLUDE_JOURNEY_PUBLIC_URL,
+  team: {
+    include: { ...INCLUDE_JOURNEY_PUBLIC_URL.team.include, userTeams: true }
+  },
+  userJourneys: true
+} satisfies Prisma.JourneyInclude
 
 /** The refusal where an archived journey is accepted too: a journey card. */
 export const CARD_JOURNEY_NOT_FOUND_MESSAGE =
@@ -55,6 +71,18 @@ export function parseJourneyLink(url: string): JourneyLink {
   return { slug: first }
 }
 
+/** The journey `link` addresses in one of `statuses`, not deleted. */
+function linkableJourneyWhere(
+  link: JourneyLink,
+  statuses: LinkableStatus[]
+): Prisma.JourneyWhereInput {
+  return {
+    ...('id' in link ? { id: link.id } : { slug: link.slug }),
+    status: { in: statuses },
+    deletedAt: null
+  }
+}
+
 /**
  * The journey `link` addresses in one of `statuses`, not deleted; anything
  * else is `BAD_USER_INPUT` on `field`.
@@ -65,11 +93,7 @@ async function findLinkableJourney(
   field: string
 ): Promise<JourneyWithPublicUrl> {
   const journey = await prisma.journey.findFirst({
-    where: {
-      ...('id' in link ? { id: link.id } : { slug: link.slug }),
-      status: { in: statuses },
-      deletedAt: null
-    },
+    where: linkableJourneyWhere(link, statuses),
     include: INCLUDE_JOURNEY_PUBLIC_URL
   })
   if (journey == null) throw badUserInput(notFoundMessage(statuses), field)
@@ -96,4 +120,27 @@ export async function resolveJourneyId(
   statuses: LinkableStatus[] = ['published']
 ): Promise<JourneyWithPublicUrl> {
   return await findLinkableJourney({ id: journeyId }, statuses, field)
+}
+
+/**
+ * Resolve the journey a Share Language links to. Its visitors feed the public
+ * Campaign Stats, so the caller must already be allowed to see its stats
+ * (GLOSSARY.md: Campaign access): the journey `Update` the Plausible stats
+ * queries check. A journey that is unknown or not live-published is
+ * `BAD_USER_INPUT` on `field`, one the caller may not see is `FORBIDDEN` on
+ * `field`.
+ */
+export async function resolveShareLanguageJourney(
+  link: JourneyLink,
+  field: string,
+  user: User
+): Promise<JourneyWithPublicUrl> {
+  const journey = await prisma.journey.findFirst({
+    where: linkableJourneyWhere(link, ['published']),
+    include: INCLUDE_SHARE_LANGUAGE_JOURNEY
+  })
+  if (journey == null) throw badUserInput(JOURNEY_NOT_FOUND_MESSAGE, field)
+  if (!ability(Action.Update, subject('Journey', journey), user))
+    throw forbidden(SHARE_LANGUAGE_JOURNEY_FORBIDDEN_MESSAGE, field)
+  return journey
 }

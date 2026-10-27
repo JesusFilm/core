@@ -108,6 +108,19 @@ describe('campaignRegionLanguageSnapshotRefresh', () => {
     )
   })
 
+  it('refreshes a journey whose stats the caller cannot see: only linking checks journey access', async () => {
+    prismaMock.journey.findFirst.mockResolvedValue({
+      ...JOURNEY,
+      team: { ...JOURNEY.team, userTeams: [] },
+      userJourneys: []
+    } as never)
+
+    const result = await refresh()
+
+    expect(result.errors).toBeUndefined()
+    expect(prismaMock.campaignRegionLanguage.update).toHaveBeenCalled()
+  })
+
   it('cuts the snapshot to the caps an edit is held to: title 200, description 1000', async () => {
     prismaMock.journey.findFirst.mockResolvedValue({
       ...JOURNEY,
