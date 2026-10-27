@@ -288,32 +288,35 @@ describe('v4 observations HTTP contract', () => {
     ).toBe('NZ')
   })
 
-  it('recovers trace metadata from a root observation before applying journey exclusions', async () => {
-    const root = {
-      ...generation,
-      id: 'root',
-      type: 'SPAN',
-      parentObservationId: null,
-      startTime: '2026-10-01T00:59:59Z'
+  it.each(['root', null, ''])(
+    'recovers trace metadata from a root observation with generation parent %j before applying journey exclusions',
+    async (parentObservationId) => {
+      const root = {
+        ...generation,
+        id: 'root',
+        type: 'SPAN',
+        parentObservationId: null,
+        startTime: '2026-10-01T00:59:59Z'
+      }
+      const legacy = { ...generation, metadata: {}, parentObservationId }
+      fetchMock
+        .mockResolvedValueOnce(page([legacy]))
+        .mockResolvedValueOnce(page([legacy, root]))
+      const data = await fetchTraceData(client, window, { throttleMs: 0 })
+      const included = normalize(data.traces, data.observations)
+      expect(included.conversations[0]).toMatchObject({
+        journeyId: 'j1',
+        language: 'es',
+        ipCountry: 'NZ',
+        sessionId: 's1'
+      })
+      const excluded = normalize(data.traces, data.observations, {
+        excludeJourneyIds: new Set(['j1'])
+      })
+      expect(excluded.excludedTurnCount).toBe(1)
+      expect(excluded.conversations).toEqual([])
     }
-    const legacy = { ...generation, metadata: {}, parentObservationId: 'root' }
-    fetchMock
-      .mockResolvedValueOnce(page([legacy]))
-      .mockResolvedValueOnce(page([legacy, root]))
-    const data = await fetchTraceData(client, window, { throttleMs: 0 })
-    const included = normalize(data.traces, data.observations)
-    expect(included.conversations[0]).toMatchObject({
-      journeyId: 'j1',
-      language: 'es',
-      ipCountry: 'NZ',
-      sessionId: 's1'
-    })
-    const excluded = normalize(data.traces, data.observations, {
-      excludeJourneyIds: new Set(['j1'])
-    })
-    expect(excluded.excludedTurnCount).toBe(1)
-    expect(excluded.conversations).toEqual([])
-  })
+  )
 
   it('stops a historical export explicitly when trace-only metadata has no v2 root to recover', async () => {
     const legacy = {
@@ -332,6 +335,33 @@ describe('v4 observations HTTP contract', () => {
           new URL(String(url)).pathname === '/api/public/v2/observations'
       )
     ).toBe(true)
+  })
+
+  it('retains an untagged generation when it is the sole root', async () => {
+    const root = {
+      ...generation,
+      parentObservationId: null,
+      metadata: {},
+      tags: []
+    }
+    fetchMock.mockImplementation(async () => page([root]))
+    const data = await fetchTraceData(client, window, { throttleMs: 0 })
+    expect(data.traces[0].journeyId).toBeUndefined()
+    expect(data.observations).toHaveLength(1)
+  })
+
+  it('recovers consistent context across multiple parentless generations', async () => {
+    const first = { ...generation, parentObservationId: null }
+    const second = { ...generation, id: 'g2', parentObservationId: '' }
+    fetchMock.mockImplementation(async () => page([first, second]))
+    const data = await fetchTraceData(client, window, { throttleMs: 0 })
+    expect(data.traces[0]).toMatchObject({ journeyId: 'j1', sessionId: 's1' })
+    expect(data.observations).toHaveLength(2)
+    const excluded = normalize(data.traces, data.observations, {
+      excludeJourneyIds: new Set(['j1'])
+    })
+    expect(excluded.conversations).toEqual([])
+    expect(excluded.excludedTurnCount).toBe(2)
   })
 
   it('allows a recovered, genuinely untagged historical root with empty metadata', async () => {
@@ -447,21 +477,25 @@ describe('v4 observations HTTP contract', () => {
     ).rejects.toThrow('no recoverable root or consistent generation context')
   })
 
-  it('refuses conflicting generation context without an authoritative root', async () => {
-    fetchMock.mockResolvedValueOnce(page([generation])).mockResolvedValueOnce(
-      page([
-        generation,
-        {
-          ...generation,
-          id: 'different',
-          metadata: { ...generation.metadata, journeyId: 'another-journey' }
-        }
-      ])
-    )
-    await expect(
-      fetchTraceData(client, window, { throttleMs: 0 })
-    ).rejects.toThrow('no recoverable root or consistent generation context')
-  })
+  it.each([undefined, null, ''])(
+    'refuses conflicting generation context without an authoritative root (parent %j)',
+    async (parentObservationId) => {
+      fetchMock.mockResolvedValueOnce(page([generation])).mockResolvedValueOnce(
+        page([
+          { ...generation, parentObservationId },
+          {
+            ...generation,
+            id: 'different',
+            parentObservationId,
+            metadata: { ...generation.metadata, journeyId: 'another-journey' }
+          }
+        ])
+      )
+      await expect(
+        fetchTraceData(client, window, { throttleMs: 0 })
+      ).rejects.toThrow('no recoverable root or consistent generation context')
+    }
+  )
 
   it('retains every generation of an in-window trace, including earlier and later turns across detail pages', async () => {
     const earlier = {
