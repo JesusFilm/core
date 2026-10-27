@@ -1364,5 +1364,7 @@
   "This will permanently delete all trashed Templates not in a collection.": "This will permanently delete all trashed Templates not in a collection.",
   "This will archive all active Templates not in a collection.": "This will archive all active Templates not in a collection.",
   "This will trash all active Templates not in a collection.": "This will trash all active Templates not in a collection.",
-  "All Templates": "All Templates"
+  "All Templates": "All Templates",
+  "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)": "File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)",
+  "Maximum file size: 10 MB": "Maximum file size: 10 MB"
 }

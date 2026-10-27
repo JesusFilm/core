@@ -142,7 +142,7 @@ describe('useImageUpload', () => {
       createCloudflareUploadByFile
     ] as unknown as ReturnType<typeof useCloudflareUploadByFileMutation>)
 
-    const { result } = renderHook(() => useImageUpload({ onUploadComplete }))
+    renderHook(() => useImageUpload({ onUploadComplete }))
 
     const onDrop = mockUseDropzone.mock.calls[0][0]?.onDrop
     const file = new File(['file'], 'test.png', { type: 'image/png' })
@@ -194,7 +194,7 @@ describe('useImageUpload', () => {
 
     expect(onUploadError).toHaveBeenCalledWith(
       ErrorCode.FileInvalidType,
-      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, or HEIC)'
+      'File type not accepted. Please upload one of the following: (PNG, JPG, GIF, SVG, HEIC, or WebP)'
     )
   })
 
