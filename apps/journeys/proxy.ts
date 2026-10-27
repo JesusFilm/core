@@ -86,15 +86,21 @@ export default async function proxy(
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
-  // Campaign pages resolve on every host (PRD §8): the root-domain address
-  // `/campaign/<slug>…` gets the same prefix rewrite on a custom domain and
-  // on a dev host alike. It serves only a campaign with no Campaign Domain;
-  // one with a domain is not found there and is served at the domain root.
+  const isRootDomain =
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
+    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
+
+  // The root-domain Campaign Address `/campaign/<slug>…` resolves on the root
+  // domain only (dev hosts and Vercel previews count as root, above). A
+  // Campaign Domain serves only its own campaign, at its root (#10026), so on
+  // any other host the path falls through to the hostname routes and is not
+  // found. On the root domain it serves only a campaign with no Campaign
+  // Domain.
   const lang = url.searchParams.get('lang')?.toLowerCase() ?? ''
   const language = LANGUAGE_TAG_PATTERN.test(lang) ? lang : null
   const segments = url.pathname.split('/').filter((segment) => segment !== '')
 
-  if (url.pathname.startsWith('/campaign/')) {
+  if (isRootDomain && url.pathname.startsWith('/campaign/')) {
     const [, slug, ...region] = segments
     if (language != null && slug != null && region.length <= 1)
       return NextResponse.rewrite(
@@ -107,10 +113,7 @@ export default async function proxy(
   }
 
   // rewrite root application to `/home` folder
-  if (
-    process.env.NEXT_PUBLIC_ROOT_DOMAIN != null &&
-    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN
-  ) {
+  if (isRootDomain) {
     return NextResponse.rewrite(
       new URL(`/home${path === '/' ? '' : path}`, req.url)
     )

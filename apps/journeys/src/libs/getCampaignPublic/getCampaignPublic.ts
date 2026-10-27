@@ -58,8 +58,9 @@ async function queryCampaignPublic(
 
 /**
  * Read a published campaign for the public page in one language. Null for a
- * draft, unknown or malformed slug (the route answers not found); any other
- * failure is rethrown.
+ * draft, unknown or malformed slug, and for a campaign that has a Campaign
+ * Domain, which is served only there (the route answers not found); any
+ * other failure is rethrown.
  */
 export async function fetchCampaignPublic(
   apolloClient: ApolloClient,
@@ -74,9 +75,9 @@ export async function fetchCampaignPublic(
 }
 
 /**
- * Read the published campaign of a Campaign Domain. Null when the domain
- * has no root campaign or it is a draft, which the route reads as "serve
- * today's journey behaviour"; any other failure is rethrown.
+ * Read the published campaign of a Campaign Domain. Null when the host is
+ * no Campaign Domain or its campaign is a draft, which the route reads as
+ * "serve today's journey behaviour"; any other failure is rethrown.
  */
 export async function fetchCampaignPublicByHostname(
   apolloClient: ApolloClient,

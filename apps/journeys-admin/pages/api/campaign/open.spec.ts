@@ -236,74 +236,51 @@ describe('campaign/open', () => {
   })
 
   describe('when the campaign cannot be read', () => {
-    it('logs it and opens the root-domain address from the slug the editor passed, with no rebuild', async () => {
+    function expectMessage({
+      status,
+      json,
+      send,
+      setHeader,
+      redirect
+    }: ReturnType<typeof mockResponse>): void {
+      expect(redirect).not.toHaveBeenCalled()
+      expect(json).not.toHaveBeenCalled()
+      expect(setHeader).toHaveBeenCalledWith(
+        'Content-Type',
+        'text/plain; charset=utf-8'
+      )
+      expect(status).toHaveBeenCalledWith(404)
+      expect(send).toHaveBeenCalledWith(
+        expect.stringContaining('could not be read')
+      )
+    }
+
+    it('logs it and shows a short plain-text message, with no rebuild', async () => {
       mockQuery.mockRejectedValueOnce(new Error('FORBIDDEN'))
-      const { res, status, redirect } = mockResponse()
-      await handler(openReq({ id: 'campaignId', slug: 'outreach' }), res)
+      const response = mockResponse()
+      await handler(openReq(), response.res)
       expect(console.error).toHaveBeenCalledTimes(1)
       expect(mockFetch).not.toHaveBeenCalled()
-      expect(status).not.toHaveBeenCalled()
-      expect(redirect).toHaveBeenCalledWith(
-        307,
-        'https://your.nextstep.is/campaign/outreach'
-      )
+      expectMessage(response)
     })
 
-    it('keeps the region page when regionSlug has a slug shape', async () => {
+    it('shows the message on a Region Page too', async () => {
       mockQuery.mockRejectedValueOnce(new Error('gateway down'))
-      const { res, redirect } = mockResponse()
+      const response = mockResponse()
       await handler(
-        openReq({ id: 'campaignId', slug: 'outreach', regionSlug: 'eur' }),
-        res
+        openReq({ id: 'campaignId', regionSlug: 'eur' }),
+        response.res
       )
-      expect(redirect).toHaveBeenCalledWith(
-        307,
-        'https://your.nextstep.is/campaign/outreach/eur'
-      )
+      expectMessage(response)
     })
 
-    it('drops a regionSlug that is not slug-shaped', async () => {
-      mockQuery.mockRejectedValueOnce(new Error('gateway down'))
-      const { res, redirect } = mockResponse()
-      await handler(
-        openReq({ id: 'campaignId', slug: 'outreach', regionSlug: '../evil' }),
-        res
-      )
-      expect(redirect).toHaveBeenCalledWith(
-        307,
-        'https://your.nextstep.is/campaign/outreach'
-      )
-    })
-
-    it('falls back the same way when the read comes back without data', async () => {
+    it('shows the message when the read comes back without data', async () => {
       mockCampaign(undefined)
-      const { res, redirect } = mockResponse()
-      await handler(openReq({ id: 'campaignId', slug: 'outreach' }), res)
+      const response = mockResponse()
+      await handler(openReq(), response.res)
       expect(mockFetch).not.toHaveBeenCalled()
-      expect(redirect).toHaveBeenCalledWith(
-        307,
-        'https://your.nextstep.is/campaign/outreach'
-      )
+      expectMessage(response)
     })
-
-    it.each([[undefined], ['../evil'], ['Outreach'], ['']])(
-      'shows a short plain-text message instead of JSON when the slug is %j',
-      async (slug) => {
-        mockQuery.mockRejectedValueOnce(new Error('FORBIDDEN'))
-        const { res, status, json, send, setHeader, redirect } = mockResponse()
-        await handler(openReq({ id: 'campaignId', slug }), res)
-        expect(redirect).not.toHaveBeenCalled()
-        expect(json).not.toHaveBeenCalled()
-        expect(setHeader).toHaveBeenCalledWith(
-          'Content-Type',
-          'text/plain; charset=utf-8'
-        )
-        expect(status).toHaveBeenCalledWith(404)
-        expect(send).toHaveBeenCalledWith(
-          expect.stringContaining('could not be read')
-        )
-      }
-    )
   })
 
   it('revalidates every page of a published campaign with the access token, then redirects to the public address', async () => {

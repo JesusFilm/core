@@ -46,12 +46,15 @@ import {
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import {
+  campaignShareLink,
+  journeyPreviewAddress
+} from '../../../libs/campaignAddress'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignRegionLanguageCreateMutation } from '../../../libs/useCampaignRegionLanguageCreateMutation'
 import { useCampaignRegionLanguageDeleteMutation } from '../../../libs/useCampaignRegionLanguageDeleteMutation'
 import { useCampaignRegionLanguageUpdateMutation } from '../../../libs/useCampaignRegionLanguageUpdateMutation'
 import { shareLanguageLabel } from '../blockLabel'
-import { campaignShareLink, journeyPreviewAddress } from '../campaignAddress'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
