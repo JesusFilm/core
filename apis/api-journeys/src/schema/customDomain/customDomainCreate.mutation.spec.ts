@@ -9,9 +9,11 @@ import { campaignFactory } from '../../../test/campaignFactory'
 import { getClient } from '../../../test/client'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { logger } from '../../logger'
 
 import {
   createVercelDomain,
+  deleteVercelDomain,
   isDomainValid,
   updateTeamShortLinks
 } from './service'
@@ -23,6 +25,7 @@ vi.mock('@core/yoga/firebaseClient', () => ({
 vi.mock('./service', () => ({
   isDomainValid: vi.fn(),
   createVercelDomain: vi.fn(),
+  deleteVercelDomain: vi.fn(),
   updateTeamShortLinks: vi.fn()
 }))
 
@@ -33,6 +36,9 @@ const mockGetUserFromPayload = getUserFromPayload as MockedFunction<
 const mockIsDomainValid = isDomainValid as MockedFunction<typeof isDomainValid>
 const mockCreateVercelDomain = createVercelDomain as MockedFunction<
   typeof createVercelDomain
+>
+const mockDeleteVercelDomain = deleteVercelDomain as MockedFunction<
+  typeof deleteVercelDomain
 >
 const mockUpdateTeamShortLinks = updateTeamShortLinks as MockedFunction<
   typeof updateTeamShortLinks
@@ -440,6 +446,80 @@ describe('customDomainCreate', () => {
         expect(prismaMock.customDomain.create).not.toHaveBeenCalled()
       }
     )
+
+    describe('when a concurrent create gave the campaign its domain first', () => {
+      const raceError = new Prisma.PrismaClientKnownRequestError('', {
+        code: 'P2002',
+        clientVersion: '',
+        meta: { target: ['campaignId'] }
+      })
+      const input = {
+        name: 'www.example.com',
+        teamId: 'teamId',
+        campaignId: 'campaignId'
+      }
+
+      beforeEach(() => {
+        prismaMock.campaign.findUnique.mockResolvedValue(
+          campaignFixture.published().build()
+        )
+        prismaMock.customDomain.create.mockRejectedValue(raceError)
+      })
+
+      it('is BAD_USER_INPUT on campaignId and removes its own Vercel registration', async () => {
+        prismaMock.customDomain.findUnique.mockResolvedValue(null)
+        mockDeleteVercelDomain.mockResolvedValue(true)
+
+        const result = (await authClient({
+          document: MUTATION,
+          variables: { input }
+        })) as ExecutionResult
+
+        expect(result.errors?.[0]).toMatchObject({
+          message: 'campaign already has a custom domain',
+          extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' }
+        })
+        expect(mockDeleteVercelDomain).toHaveBeenCalledWith('www.example.com')
+        expect(mockQueueAdd).not.toHaveBeenCalled()
+      })
+
+      it('leaves Vercel alone when the winning request took the same name', async () => {
+        prismaMock.customDomain.findUnique.mockResolvedValue({
+          ...campaignDomain,
+          id: 'winningDomainId'
+        })
+
+        const result = (await authClient({
+          document: MUTATION,
+          variables: { input }
+        })) as ExecutionResult
+
+        expect(result.errors?.[0]?.extensions?.field).toBe('campaignId')
+        expect(mockDeleteVercelDomain).not.toHaveBeenCalled()
+      })
+
+      it('logs a Vercel failure and still reports the campaign', async () => {
+        prismaMock.customDomain.findUnique.mockResolvedValue(null)
+        mockDeleteVercelDomain.mockRejectedValue(new Error('vercel down'))
+        const errorSpy = vi
+          .spyOn(logger, 'error')
+          .mockImplementation(() => undefined)
+
+        const result = (await authClient({
+          document: MUTATION,
+          variables: { input }
+        })) as ExecutionResult
+
+        expect(result.errors?.[0]?.message).toBe(
+          'campaign already has a custom domain'
+        )
+        expect(errorSpy).toHaveBeenCalledWith(
+          expect.objectContaining({ name: 'www.example.com' }),
+          'Failed to remove campaign domain from Vercel after a lost race'
+        )
+        errorSpy.mockRestore()
+      })
+    })
 
     it('is FORBIDDEN when the caller may not update the campaign', async () => {
       // Team manager scope passes, but the campaign row carries no membership.

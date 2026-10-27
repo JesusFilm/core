@@ -9,11 +9,13 @@ import { builder } from '../builder'
 import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from '../campaign/campaign.acl'
 import { badUserInput, forbidden } from '../campaign/errors'
 import { enqueueCampaignDomainRevalidation } from '../campaign/revalidateCampaign'
+import { isUniqueViolation } from '../campaign/validation'
 
 import { CustomDomainRef } from './customDomain'
 import { CustomDomainCreateInput } from './inputs'
 import {
   createVercelDomain,
+  deleteVercelDomain,
   isDomainValid,
   updateTeamShortLinks
 } from './service'
@@ -51,6 +53,25 @@ async function loadDomainCampaign(input: CustomDomainCreateArgs, user: User) {
   return campaign
 }
 
+/**
+ * A concurrent create gave the campaign its domain first, after this request
+ * had registered `name` with Vercel. Remove that registration unless a row
+ * owns the name (the other request may have used the same one); a Vercel
+ * failure is logged, not thrown.
+ */
+async function releaseVercelDomain(name: string): Promise<void> {
+  try {
+    const owner = await prisma.customDomain.findUnique({ where: { name } })
+    if (owner != null) return
+    await deleteVercelDomain(name)
+  } catch (error) {
+    logger.error(
+      { name, error },
+      'Failed to remove campaign domain from Vercel after a lost race'
+    )
+  }
+}
+
 builder.mutationField('customDomainCreate', (t) =>
   t
     .withAuth((_parent, args) => ({
@@ -80,9 +101,11 @@ builder.mutationField('customDomainCreate', (t) =>
             ? null
             : await loadDomainCampaign(input, context.user)
 
+        let registeredWithVercel = false
         const customDomain = await prisma
           .$transaction(async (tx) => {
             const { apexName } = await createVercelDomain(input.name)
+            registeredWithVercel = true
 
             const data: Prisma.CustomDomainCreateInput = {
               ...(input.id != null ? { id: input.id } : {}),
@@ -109,7 +132,16 @@ builder.mutationField('customDomainCreate', (t) =>
               data
             })
           })
-          .catch((err: unknown) => {
+          .catch(async (err: unknown) => {
+            // Two creates raced for one campaign: the unique campaignId index
+            // refused the second, which is no fault of the domain name.
+            if (campaign != null && isUniqueViolation(err, 'campaignId')) {
+              if (registeredWithVercel) await releaseVercelDomain(input.name)
+              throw badUserInput(
+                'campaign already has a custom domain',
+                'campaignId'
+              )
+            }
             if (
               err instanceof Prisma.PrismaClientKnownRequestError &&
               err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
