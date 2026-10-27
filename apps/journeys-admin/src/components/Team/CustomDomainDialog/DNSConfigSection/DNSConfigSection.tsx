@@ -26,8 +26,7 @@ import { GetCustomDomains_customDomains as CustomDomain } from '../../../../../_
 import { CustomDomainDialogTitle } from '../CustomDomainDialogTitle'
 
 interface DNSConfigSectionProps {
-  /** A team domain, or a campaign's own Campaign Domain: only its name and apex are read. */
-  customDomain: Pick<CustomDomain, 'id' | 'name' | 'apexName'>
+  customDomain: CustomDomain
 }
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
