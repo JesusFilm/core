@@ -263,12 +263,24 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
   const ordered = [...rows].sort((a, b) =>
     toIso(a.startTime).localeCompare(toIso(b.startTime))
   )
-  const roots = ordered.filter(
+  const rootCandidates = ordered.filter(
     (row) =>
       row.isRootObservation === true ||
       row.parentObservationId === null ||
       row.parentObservationId === ''
   )
+  // Backfilled trace roots can coexist with legacy parentless generations.
+  // Prefer the trace root; multiple generation-only roots still need the
+  // consistent-context validation below rather than an arbitrary selection.
+  const nonGenerationRoots = rootCandidates.filter(
+    (row) => row.type !== 'GENERATION'
+  )
+  const roots =
+    nonGenerationRoots.length > 0
+      ? nonGenerationRoots
+      : rootCandidates.length === 1
+        ? rootCandidates
+        : []
   // Without verified ancestry, choosing any one of several roots could apply
   // another journey's context and silently bypass its exclusion rules.
   if (roots.length > 1) {
