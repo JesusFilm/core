@@ -14,11 +14,11 @@ import { useTeam } from '@core/journeys/ui/TeamProvider'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
 
 import { CampaignStatus } from '../../../__generated__/globalTypes'
-import { useCampaignsQuery } from '../../libs/useCampaignsQuery'
 import {
   campaignDomainName,
   campaignPublicAddress
-} from '../CampaignEditor/campaignAddress'
+} from '../../libs/campaignAddress'
+import { useCampaignsQuery } from '../../libs/useCampaignsQuery'
 import { LabelChip } from '../LabelChip'
 
 import { CreateCampaignDialog } from './CreateCampaignDialog'

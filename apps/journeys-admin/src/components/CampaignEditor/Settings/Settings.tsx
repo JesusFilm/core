@@ -23,11 +23,14 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignStatus } from '../../../../__generated__/globalTypes'
 import {
+  campaignDomainName,
+  campaignPublicAddresses
+} from '../../../libs/campaignAddress'
+import {
   evictCampaignFromCache,
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import { campaignDomainName, campaignPublicAddresses } from '../campaignAddress'
 import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'

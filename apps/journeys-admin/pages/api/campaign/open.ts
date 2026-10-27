@@ -10,13 +10,13 @@ import {
   GetCampaignPagePathsVariables
 } from '../../../__generated__/GetCampaignPagePaths'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
+import { createApolloClient } from '../../../src/libs/apolloClient'
+import { authConfig } from '../../../src/libs/auth/config'
 import {
   campaignDomainName,
   campaignPermanentAddress,
   campaignPublicAddress
-} from '../../../src/components/CampaignEditor/campaignAddress'
-import { createApolloClient } from '../../../src/libs/apolloClient'
-import { authConfig } from '../../../src/libs/auth/config'
+} from '../../../src/libs/campaignAddress'
 
 /** What listing a campaign's pages and its public address reads off it, as the signed-in user. */
 export const GET_CAMPAIGN_PAGE_PATHS = gql`
