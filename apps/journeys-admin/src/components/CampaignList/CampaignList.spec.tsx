@@ -142,7 +142,9 @@ describe('CampaignList', () => {
     renderList()
 
     expect(await screen.findByText('outreach.example.com')).toBeInTheDocument()
-    expect(screen.queryByText('/campaign/outreach-2026')).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('/campaign/outreach-2026')
+    ).not.toBeInTheDocument()
     expect(screen.getByText('/campaign/hope-2027')).toBeInTheDocument()
   })
 
