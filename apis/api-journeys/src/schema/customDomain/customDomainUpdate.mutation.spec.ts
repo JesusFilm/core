@@ -407,36 +407,31 @@ describe('customDomainUpdate', () => {
     }
 
     it.each([
-      { input: { routeAllTeamJourneys: true }, field: 'routeAllTeamJourneys' },
-      {
-        input: { journeyCollectionId: 'collectionId' },
-        field: 'journeyCollectionId'
-      },
-      { input: { journeyCollectionId: null }, field: 'journeyCollectionId' }
-    ])(
-      'refuses a routing change $input on $field',
-      async ({ input, field }) => {
-        prismaMock.customDomain.findUnique.mockResolvedValue(campaignDomain)
+      { input: { routeAllTeamJourneys: true } },
+      { input: { journeyCollectionId: 'collectionId' } },
+      { input: { journeyCollectionId: null } },
+      { input: {} }
+    ])('refuses any update $input on the domain id', async ({ input }) => {
+      prismaMock.customDomain.findUnique.mockResolvedValue(campaignDomain)
 
-        const result = await authClient({
-          document: CUSTOM_DOMAIN_UPDATE_MUTATION,
-          variables: { id: 'customDomainId', input }
-        })
+      const result = await authClient({
+        document: CUSTOM_DOMAIN_UPDATE_MUTATION,
+        variables: { id: 'customDomainId', input }
+      })
 
-        expect(result).toEqual({
-          data: null,
-          errors: [
-            expect.objectContaining({
-              message:
-                'a campaign domain serves only its campaign and cannot be rerouted',
-              extensions: { code: 'BAD_USER_INPUT', field }
-            })
-          ]
-        })
-        expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
-        expect(updateTeamShortLinks).not.toHaveBeenCalled()
-      }
-    )
+      expect(result).toEqual({
+        data: null,
+        errors: [
+          expect.objectContaining({
+            message:
+              'a campaign domain serves only its campaign and cannot be rerouted',
+            extensions: { code: 'BAD_USER_INPUT', field: 'id' }
+          })
+        ]
+      })
+      expect(prismaMock.customDomain.update).not.toHaveBeenCalled()
+      expect(updateTeamShortLinks).not.toHaveBeenCalled()
+    })
 
     it('is FORBIDDEN, not BAD_USER_INPUT, for a team member', async () => {
       const memberCampaignDomain = {

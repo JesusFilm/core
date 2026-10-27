@@ -32,13 +32,12 @@ builder.mutationField('customDomainUpdate', (t) =>
         throw forbidden('user is not allowed to update custom domain')
 
       // A Campaign Domain serves only its campaign: it never takes team
-      // routing, so there is nothing on it to update.
+      // routing, so there is nothing on it to update. The refusal is the
+      // domain's, not one input key's.
       if (customDomain.campaignId != null)
         throw badUserInput(
           'a campaign domain serves only its campaign and cannot be rerouted',
-          'journeyCollectionId' in input
-            ? 'journeyCollectionId'
-            : 'routeAllTeamJourneys'
+          'id'
         )
 
       let journeyCollectionUpdate:
