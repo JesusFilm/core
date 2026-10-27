@@ -3,12 +3,12 @@ import { User } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../../lib/auth/ability'
 import { authorizeCampaign } from '../authorizeCampaign'
-import { lockCampaignStructure, touchCampaign } from '../block/service'
 import {
   CampaignWithAcl,
   INCLUDE_CAMPAIGN_ACL,
   campaignAcl
 } from '../campaign.acl'
+import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
 import { forbidden, notFound } from '../errors'
 import { renumber } from '../order'
 

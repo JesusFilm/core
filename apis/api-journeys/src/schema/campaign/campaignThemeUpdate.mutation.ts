@@ -8,9 +8,9 @@ import {
 import { Action } from '../../lib/auth/ability'
 import { builder } from '../builder'
 
-import { touchCampaign } from './block/service'
 import { INCLUDE_CAMPAIGN_ACL, campaignAcl } from './campaign.acl'
 import { CampaignThemeRef } from './campaignTheme'
+import { touchCampaign } from './campaignWrite'
 import { forbidden, notFound } from './errors'
 import { CampaignThemeUpdateInput } from './inputs'
 import { PRESET_COLOR_COLUMNS } from './seed/presets'

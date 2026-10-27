@@ -2,8 +2,8 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
 import { snapshotOf } from '../block/journey/snapshot'
-import { touchCampaign } from '../block/service'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
+import { touchCampaign } from '../campaignWrite'
 import { badUserInput, conflict } from '../errors'
 import { resolveJourneyId } from '../journeyLink'
 
