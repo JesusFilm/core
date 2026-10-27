@@ -3,6 +3,8 @@ import type { FrameLocator, Locator, Page } from 'playwright-core'
 
 export const DEFAULT_HERO_TITLE = 'Share the story of Christmas'
 export const NEW_REGION_NAME = 'New region'
+// Lets `new URL` parse a relative link; the origin itself is never read.
+const RELATIVE_URL_BASE = 'http://localhost'
 
 export class CampaignBuilderPage {
   readonly page: Page
@@ -229,7 +231,7 @@ export class CampaignBuilderPage {
     const slug =
       href == null
         ? null
-        : new URL(href, 'http://localhost').searchParams.get('slug')
+        : new URL(href, RELATIVE_URL_BASE).searchParams.get('slug')
     if (slug == null || slug === '')
       throw new Error(`No slug parameter in Refresh and open page: ${href}`)
     return slug
