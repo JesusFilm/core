@@ -714,15 +714,17 @@ describe('campaignMachineTranslate', () => {
     it('aborts the model call when the caller disconnects', async () => {
       const disconnect = new AbortController()
       const scripted = mockStreamText.getMockImplementation()!
+      let modelSignal: AbortSignal | undefined
       mockStreamText.mockImplementation((options: unknown) => {
         disconnect.abort()
-        expect(
-          (options as { abortSignal: AbortSignal }).abortSignal.aborted
-        ).toBe(true)
+        modelSignal = (options as { abortSignal: AbortSignal }).abortSignal
         return scripted(options as never)
       })
 
       await run({ mode: 'all' }, mockUser, disconnect.signal)
+
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+      expect(modelSignal?.aborted).toBe(true)
     })
 
     it('fails when every batch fails', async () => {
@@ -806,7 +808,25 @@ describe('campaignMachineTranslate', () => {
       }
     `)
 
-    async function subscribeAs(user: typeof mockUser | null): Promise<any[]> {
+    /**
+     * Yoga's request `signal` is `@whatwg-node`'s: AbortSignal-like, with an
+     * `aborted` flag and an `abort` event, but not Node's native `AbortSignal`.
+     * Node's `AbortSignal.any` refuses it, which is what broke every batch on
+     * stage (#10023).
+     */
+    class RequestLikeSignal extends EventTarget {
+      aborted = false
+
+      abort(): void {
+        this.aborted = true
+        this.dispatchEvent(new Event('abort'))
+      }
+    }
+
+    async function subscribeAs(
+      user: typeof mockUser | null,
+      request?: { signal?: RequestLikeSignal }
+    ): Promise<any[]> {
       const result = await normalizedExecutor({
         schema: schema as any,
         document: subscription,
@@ -817,7 +837,8 @@ describe('campaignMachineTranslate', () => {
           ...initContextCache(),
           type: user == null ? 'public' : 'authenticated',
           user,
-          currentRoles: []
+          currentRoles: [],
+          ...(request == null ? {} : { request })
         }
       })
       if (!isAsyncIterable(result)) return [result]
@@ -846,6 +867,54 @@ describe('campaignMachineTranslate', () => {
     it('requires an authenticated caller', async () => {
       await expect(subscribeAs(null)).rejects.toThrow('Not authenticated')
       expect(mockStreamText).not.toHaveBeenCalled()
+    })
+
+    it('translates every part when the request signal is not a native AbortSignal', async () => {
+      const warn = vi.spyOn(logger, 'warn')
+
+      const reports = await subscribeAs(mockUser, {
+        signal: new RequestLikeSignal()
+      })
+
+      expect(warn).not.toHaveBeenCalledWith(
+        expect.anything(),
+        'Campaign translation batch failed'
+      )
+      expect(reports.at(-1).data.campaignAiTranslateSubscription).toEqual({
+        progress: 100,
+        message: 'Translation completed!',
+        translatedCount: expect.any(Number),
+        campaign: { id: 'campaignId' }
+      })
+      expect(
+        reports.at(-1).data.campaignAiTranslateSubscription.translatedCount
+      ).toBeGreaterThan(0)
+      expect(prismaMock.campaignBlock.update).toHaveBeenCalled()
+    })
+
+    it('still cancels the run when that request signal aborts', async () => {
+      const signal = new RequestLikeSignal()
+      const scripted = mockStreamText.getMockImplementation()!
+      let modelSignal: AbortSignal | undefined
+      mockStreamText.mockImplementation((options: unknown) => {
+        signal.abort()
+        modelSignal = (options as { abortSignal: AbortSignal }).abortSignal
+        return scripted(options as never)
+      })
+
+      const reports = await subscribeAs(mockUser, { signal })
+
+      expect(mockStreamText).toHaveBeenCalledTimes(1)
+      // Asserted here, not inside the mock: a throw there is swallowed by the
+      // per-batch catch and would pass as a failed batch.
+      expect(modelSignal?.aborted).toBe(true)
+      expect(prismaMock.campaignBlock.update).not.toHaveBeenCalled()
+      expect(prismaMock.campaignString.update).not.toHaveBeenCalled()
+      expect(
+        reports.every(
+          (report) => report.data.campaignAiTranslateSubscription.progress < 100
+        )
+      ).toBe(true)
     })
   })
 })
