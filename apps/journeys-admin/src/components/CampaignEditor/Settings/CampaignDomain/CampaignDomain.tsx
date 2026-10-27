@@ -189,10 +189,34 @@ export function CampaignDomain({
     if (event.key === 'Enter') handleConnect()
   }
 
-  function handleConfirm(): void {
-    if (pending === 'connect') void connect()
-    if (pending === 'disconnect') void disconnect()
+  // What the published-campaign confirm says and does for each change; the
+  // connect copy stands in while the dialog closes.
+  const confirmations: Record<
+    PendingChange,
+    {
+      title: string
+      submitLabel: string
+      body: string
+      run: () => Promise<void>
+    }
+  > = {
+    connect: {
+      title: t('Connect domain?'),
+      submitLabel: t('Connect'),
+      body: t(
+        'Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.',
+        { domain: trimmedName }
+      ),
+      run: connect
+    },
+    disconnect: {
+      title: t('Disconnect domain?'),
+      submitLabel: t('Disconnect'),
+      body: t('The campaign moves back to its your.nextstep.is address.'),
+      run: disconnect
+    }
   }
+  const confirmation = confirmations[pending ?? 'connect']
 
   return (
     <Stack spacing={3} data-testid="CampaignDomain">
@@ -269,29 +293,17 @@ export function CampaignDomain({
       <Dialog
         open={pending != null}
         onClose={() => setPending(undefined)}
-        dialogTitle={{
-          title:
-            pending === 'disconnect'
-              ? t('Disconnect domain?')
-              : t('Connect domain?'),
-          closeButton: true
-        }}
+        dialogTitle={{ title: confirmation.title, closeButton: true }}
         dialogAction={{
-          onSubmit: handleConfirm,
-          submitLabel:
-            pending === 'disconnect' ? t('Disconnect') : t('Connect'),
+          onSubmit: () => {
+            void confirmation.run()
+          },
+          submitLabel: confirmation.submitLabel,
           closeLabel: t('Cancel')
         }}
         testId="CampaignDomainConfirmDialog"
       >
-        <Typography>
-          {pending === 'disconnect'
-            ? t('The campaign moves back to its your.nextstep.is address.')
-            : t(
-                'Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.',
-                { domain: trimmedName }
-              )}
-        </Typography>
+        <Typography>{confirmation.body}</Typography>
       </Dialog>
     </Stack>
   )
