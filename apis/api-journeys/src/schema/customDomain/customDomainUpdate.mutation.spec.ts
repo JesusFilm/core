@@ -290,7 +290,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'journey collection not found for this custom domain team'
+          message: 'journey collection not found for this custom domain team',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -316,7 +317,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'custom domain not found'
+          message: 'custom domain not found',
+          extensions: { code: 'NOT_FOUND' }
         })
       ]
     })
@@ -356,7 +358,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'user is not allowed to update custom domain'
+          message: 'user is not allowed to update custom domain',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })
@@ -387,7 +390,8 @@ describe('customDomainUpdate', () => {
       data: null,
       errors: [
         expect.objectContaining({
-          message: 'user is not allowed to update custom domain'
+          message: 'user is not allowed to update custom domain',
+          extensions: { code: 'FORBIDDEN' }
         })
       ]
     })

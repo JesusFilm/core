@@ -1,5 +1,3 @@
-import { GraphQLError } from 'graphql'
-
 import { Prisma, prisma } from '@core/prisma/journeys/client'
 import { User } from '@core/yoga/firebaseClient'
 
@@ -19,8 +17,6 @@ import {
   isDomainValid,
   updateTeamShortLinks
 } from './service'
-
-const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
 type CustomDomainCreateArgs = typeof CustomDomainCreateInput.$inferInput
 
@@ -92,9 +88,7 @@ builder.mutationField('customDomainCreate', (t) =>
         const { input } = args
 
         if (!isDomainValid(input.name))
-          throw new GraphQLError('custom domain has invalid domain name', {
-            extensions: { code: 'BAD_USER_INPUT' }
-          })
+          throw badUserInput('custom domain has invalid domain name', 'name')
 
         const campaign =
           input.campaignId == null
@@ -142,14 +136,8 @@ builder.mutationField('customDomainCreate', (t) =>
                 'campaignId'
               )
             }
-            if (
-              err instanceof Prisma.PrismaClientKnownRequestError &&
-              err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED
-            ) {
-              throw new GraphQLError('custom domain already exists', {
-                extensions: { code: 'BAD_USER_INPUT' }
-              })
-            }
+            if (isUniqueViolation(err, 'name'))
+              throw badUserInput('custom domain already exists', 'name')
             throw err
           })
 
