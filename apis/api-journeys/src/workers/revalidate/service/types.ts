@@ -13,8 +13,8 @@ export interface RevalidateSlugJob {
  * `campaignPublish`, `campaignUnpublish` and `campaignDelete`; by a slug
  * change in `campaignUpdate`; by `campaignLanguageAdd` and
  * `campaignLanguageRemove`; by `campaignRegionUpdate` and
- * `campaignRegionDelete`; by a Campaign Root change in `customDomainUpdate`;
- * and by `customDomainDelete` releasing a Campaign Root.
+ * `campaignRegionDelete`; and by `customDomainCreate` and
+ * `customDomainDelete` of a Campaign Domain.
  */
 export interface RevalidatePathsJob {
   paths: string[]

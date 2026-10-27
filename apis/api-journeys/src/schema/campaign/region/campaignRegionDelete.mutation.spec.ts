@@ -239,7 +239,7 @@ describe('campaignRegionDelete', () => {
     ])
   })
 
-  it('revalidates the domain form of the deleted path for a Custom Domain Campaign Root', async () => {
+  it('revalidates the domain form of the deleted path for its Campaign Domain', async () => {
     const published = campaignFactory()
       .withRegion('EUR')
       .withRegion('AFR')

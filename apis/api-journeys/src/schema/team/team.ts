@@ -34,7 +34,12 @@ export const TeamRef = builder.prismaObject('Team', {
         return userTeams
       }
     }),
-    customDomains: t.relation('customDomains', { nullable: false }),
+    customDomains: t.relation('customDomains', {
+      nullable: false,
+      description:
+        "The team's own domains; a Campaign Domain belongs to its campaign and is left out.",
+      query: { where: { campaignId: null } }
+    }),
     integrations: t.relation('integrations', { nullable: false }),
     qrCodes: t.relation('qrCodes', { nullable: false })
   })

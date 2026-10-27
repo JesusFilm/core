@@ -252,7 +252,7 @@ describe('campaignRegionUpdate', () => {
       )
     })
 
-    it('revalidates the domain form of each path for a Custom Domain Campaign Root', async () => {
+    it('revalidates the domain form of each path for its Campaign Domain', async () => {
       const published = campaignFactory()
         .withRegion('EUR')
         .withRegion('AFR')

@@ -82,7 +82,9 @@ builder.mutationField('journeyUpdate', (t) =>
               where: { id: journeyId },
               include: {
                 ...query.include,
-                team: { include: { customDomains: true } }
+                team: {
+                  include: { customDomains: { where: { campaignId: null } } }
+                }
               },
               data: {
                 ...(omit(input, ['tagIds']) as any),
