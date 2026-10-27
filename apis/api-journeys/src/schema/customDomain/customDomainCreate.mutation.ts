@@ -142,7 +142,7 @@ builder.mutationField('customDomainCreate', (t) =>
           })
 
         // A Campaign Domain serves no team journey, so no short link moves;
-        // the campaign's pages leave the root address and start on the domain.
+        // the Campaign Address moves from the Root Domain to the domain.
         if (campaign != null) {
           await enqueueCampaignDomainRevalidation([campaign], customDomain.name)
           return customDomain

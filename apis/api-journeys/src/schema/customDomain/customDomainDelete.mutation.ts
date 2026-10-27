@@ -46,8 +46,8 @@ builder.mutationField('customDomainDelete', (t) =>
         await deleteVercelDomain(customDomain.name)
       })
 
-      // A Campaign Domain's pages stop resolving and the campaign is served
-      // at its root address again. It routed no team journey, so no short
+      // A Campaign Domain's pages stop resolving and the Campaign Address
+      // is back on the Root Domain. It routed no team journey, so no short
       // link moves.
       if (customDomain.campaign != null) {
         await enqueueCampaignDomainRevalidation(
