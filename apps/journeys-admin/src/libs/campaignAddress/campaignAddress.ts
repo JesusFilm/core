@@ -2,6 +2,8 @@ import { previewEmbedUrl } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../__generated__/GetCampaign'
 
+// Public addresses a visitor's browser opens, so NEXT_PUBLIC_JOURNEYS_URL;
+// server-to-server calls use JOURNEYS_URL (see pages/api/campaign/open.ts).
 const JOURNEYS_URL =
   process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
 
@@ -14,30 +16,33 @@ export function campaignPermanentAddress(slug: string): string {
   return `${JOURNEYS_URL}/campaign/${slug}`
 }
 
+/** What a campaign's public address is read from. */
+export interface CampaignAddressFields {
+  slug: string
+  customDomains: ReadonlyArray<{ name: string }>
+}
+
+/**
+ * The name of the campaign's Campaign Domain, or null when it has none (an
+ * empty name counts as none). A campaign has at most one domain, so
+ * `customDomains` holds zero or one.
+ */
+export function campaignDomainName(
+  customDomains: CampaignAddressFields['customDomains']
+): string | null {
+  const name = customDomains[0]?.name
+  if (name == null || name === '') return null
+  return name
+}
+
 /**
  * The address the public page is served at right now: the Campaign Domain's
  * root when the campaign has one, else the root-domain address.
  */
-export function campaignPublicAddress(
-  slug: string,
-  hostname: string | null
-): string {
-  if (hostname != null && hostname !== '') return `https://${hostname}`
-  return campaignPermanentAddress(slug)
-}
-
-/**
- * Every address the public page is served at right now: the Campaign Domain
- * alone when the campaign has one, else the root-domain address.
- */
-export function campaignPublicAddresses(
-  slug: string,
-  hostnames: string[]
-): string[] {
-  const addresses = hostnames
-    .filter((hostname) => hostname !== '')
-    .map((hostname) => `https://${hostname}`)
-  return addresses.length > 0 ? addresses : [campaignPermanentAddress(slug)]
+export function campaignPublicAddress(campaign: CampaignAddressFields): string {
+  const domainName = campaignDomainName(campaign.customDomains)
+  if (domainName == null) return campaignPermanentAddress(campaign.slug)
+  return `https://${domainName}`
 }
 
 /** The preview frame's address for a linked journey: the root-domain embed route, kept a preview. */

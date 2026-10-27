@@ -215,14 +215,51 @@ describe('journeys proxy', () => {
   })
 
   describe('campaign short-circuit', () => {
-    it('rewrites /campaign/<slug> to /home/campaign/<slug> on a custom domain', async () => {
+    it('rewrites /campaign/<slug> to /home/campaign/<slug> on the root domain', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('your.nextstep.is', '/campaign/christmas-2026')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://your.nextstep.is/home/campaign/christmas-2026'
+      )
+    })
+
+    it('leaves /campaign/<slug> on a custom domain to the hostname routes, so a Campaign Domain serves no other campaign', async () => {
       process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
       const result = await proxy(
         buildRequest('custom.example.com', '/campaign/christmas-2026')
       )
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://custom.example.com/home/campaign/christmas-2026'
+        'http://custom.example.com/custom.example.com/campaign/christmas-2026'
+      )
+    })
+
+    it('leaves a region page on a custom domain to the hostname routes', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      const result = await proxy(
+        buildRequest('custom.example.com', '/campaign/christmas-2026/eur')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/campaign/christmas-2026/eur'
+      )
+    })
+
+    it('rewrites /campaign/<slug> on a Vercel preview deployment', async () => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+      process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX = '-jesusfilm.vercel.app'
+      const result = await proxy(
+        buildRequest(
+          'preview-abc-jesusfilm.vercel.app',
+          '/campaign/christmas-2026'
+        )
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://preview-abc-jesusfilm.vercel.app/home/campaign/christmas-2026'
       )
     })
 
@@ -281,13 +318,23 @@ describe('journeys proxy', () => {
     it('rewrites a region page with ?lang, lower-casing the tag', async () => {
       const result = await proxy(
         buildRequest(
-          'custom.example.com',
+          'your.nextstep.is',
           '/campaign/christmas-2026/eur?lang=zh-Hans-CN'
         )
       )
 
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
-        'http://custom.example.com/home/campaign/christmas-2026/_lang/zh-hans-cn/eur?lang=zh-Hans-CN'
+        'http://your.nextstep.is/home/campaign/christmas-2026/_lang/zh-hans-cn/eur?lang=zh-Hans-CN'
+      )
+    })
+
+    it('leaves /campaign/<slug> with ?lang on a custom domain to the hostname routes', async () => {
+      const result = await proxy(
+        buildRequest('custom.example.com', '/campaign/christmas-2026?lang=fr')
+      )
+
+      expect(result?.headers.get('x-middleware-rewrite')).toBe(
+        'http://custom.example.com/custom.example.com/campaign/christmas-2026?lang=fr'
       )
     })
 

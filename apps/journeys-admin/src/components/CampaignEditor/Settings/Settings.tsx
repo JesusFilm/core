@@ -23,11 +23,14 @@ import Trash2Icon from '@core/shared/ui/icons/Trash2'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
 import { CampaignStatus } from '../../../../__generated__/globalTypes'
 import {
+  campaignDomainName,
+  campaignPublicAddress
+} from '../../../libs/campaignAddress'
+import {
   evictCampaignFromCache,
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import { campaignPublicAddresses } from '../campaignAddress'
 import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
@@ -193,11 +196,8 @@ export function Settings({
   }
 
   const published = campaign.status === CampaignStatus.published
-  const domainName = campaign.customDomains[0]?.name
-  const publicAddresses = campaignPublicAddresses(
-    campaign.slug,
-    campaign.customDomains.map(({ name }) => name)
-  )
+  const domainName = campaignDomainName(campaign.customDomains)
+  const publicAddress = campaignPublicAddress(campaign)
 
   return (
     <Stack spacing={5} data-testid="CampaignSettings">
@@ -236,11 +236,11 @@ export function Settings({
                   'Changing this breaks links to this page you have already shared.'
                 )}
               </Box>
-              {publicAddresses.map((address) => (
-                <Box key={address} component="span" sx={{ display: 'block' }}>
-                  {t('Current public address: {{address}}', { address })}
-                </Box>
-              ))}
+              <Box component="span" sx={{ display: 'block' }}>
+                {t('Current public address: {{address}}', {
+                  address: publicAddress
+                })}
+              </Box>
               <Box component="span" sx={{ display: 'block' }}>
                 {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
               </Box>

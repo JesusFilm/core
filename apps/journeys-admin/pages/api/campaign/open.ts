@@ -10,12 +10,9 @@ import {
   GetCampaignPagePathsVariables
 } from '../../../__generated__/GetCampaignPagePaths'
 import { CampaignStatus } from '../../../__generated__/globalTypes'
-import {
-  campaignPermanentAddress,
-  campaignPublicAddress
-} from '../../../src/components/CampaignEditor/campaignAddress'
 import { createApolloClient } from '../../../src/libs/apolloClient'
 import { authConfig } from '../../../src/libs/auth/config'
+import { campaignPublicAddress } from '../../../src/libs/campaignAddress'
 
 /** What listing a campaign's pages and its public address reads off it, as the signed-in user. */
 export const GET_CAMPAIGN_PAGE_PATHS = gql`
@@ -44,9 +41,9 @@ export const GET_CAMPAIGN_PAGE_PATHS = gql`
 `
 
 /**
- * The shape of a campaign or region slug: lowercase ASCII letters, digits and
- * single hyphens, as the API's slugify produces. A query value of any other
- * shape is ignored, so nothing but a slug is ever appended to a redirect.
+ * The shape of a region slug: lowercase ASCII letters, digits and single
+ * hyphens, as the API's slugify produces. A query value of any other shape is
+ * ignored, so nothing but a slug is ever appended to a redirect.
  */
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/
 
@@ -126,13 +123,11 @@ function languageTags(campaign: Campaign): string[] {
  * `regionSlug` appended when it names one of the campaign's regions. A draft
  * serves nothing, so it is opened without a rebuild.
  *
- * The button never dead-ends: a rebuild that fails is logged and the page
- * still opens, and when the campaign cannot be read at all (gateway down,
- * not found, not a team member — the gateway throws for each of these, since
- * `campaign` is non-null in the schema) the browser is sent to the root-domain
- * `/campaign/<slug>` address built from the `slug` the editor passes along,
- * with no rebuild.
- * Only without a usable slug does the tab show a short message instead.
+ * A rebuild that fails is logged and the page still opens. When the campaign
+ * cannot be read at all (gateway down, not found, not a team member — the
+ * gateway throws for each of these, since `campaign` is non-null in the
+ * schema) the tab shows a short message instead: without the campaign there
+ * is no address to send the browser to.
  */
 export default async function handler(
   req: NextApiRequest,
@@ -155,6 +150,8 @@ export default async function handler(
     return res.status(403).json({ error: 'Forbidden' })
   }
 
+  // Server to server (`/api/revalidate`), so JOURNEYS_URL; the redirect below
+  // is a public address and uses NEXT_PUBLIC_JOURNEYS_URL (campaignAddress).
   const journeysUrl = process.env.JOURNEYS_URL
   const accessToken = process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
   if (journeysUrl == null || accessToken == null) {
@@ -165,7 +162,6 @@ export default async function handler(
   if (id == null || id === '') {
     return res.status(400).json({ error: 'Missing id' })
   }
-  const fallbackSlug = slugParam(req.query.slug)
   const regionSlug = slugParam(req.query.regionSlug)
 
   let token: string
@@ -194,17 +190,12 @@ export default async function handler(
     console.error('[campaign/open] campaign read failed', { id, error })
   }
   if (campaign == null) {
-    if (fallbackSlug == null) {
-      res.setHeader('Content-Type', 'text/plain; charset=utf-8')
-      return res
-        .status(404)
-        .send(
-          'The campaign could not be read, so there is no page to open. Close this tab and try again from the editor.'
-        )
-    }
-    const address = campaignPermanentAddress(fallbackSlug)
-    res.redirect(307, regionSlug == null ? address : `${address}/${regionSlug}`)
-    return
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+    return res
+      .status(404)
+      .send(
+        'The campaign could not be read, so there is no page to open. Close this tab and try again from the editor.'
+      )
   }
 
   if (campaign.status === CampaignStatus.published) {
@@ -222,10 +213,7 @@ export default async function handler(
     await sleep(300)
   }
 
-  const address = campaignPublicAddress(
-    campaign.slug,
-    campaign.customDomains[0]?.name ?? null
-  )
+  const address = campaignPublicAddress(campaign)
   const region = campaign.regions.find(
     (candidate) => candidate.slug === regionSlug
   )
