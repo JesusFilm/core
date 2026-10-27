@@ -12,6 +12,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
 import { DELETE_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/DomainNameForm/DomainNameForm'
+import { ThemeProvider } from '../../../ThemeProvider'
 import { campaign, publishedCampaign } from '../../data'
 
 import { CAMPAIGN_DOMAIN_CREATE, CampaignDomain } from './CampaignDomain'
@@ -72,9 +73,11 @@ function renderDomain({
 } = {}): void {
   render(
     <MockedProvider mocks={mocks as never} cache={cache}>
-      <SnackbarProvider>
-        <CampaignDomain campaign={campaignProp} isManager={isManager} />
-      </SnackbarProvider>
+      <ThemeProvider>
+        <SnackbarProvider>
+          <CampaignDomain campaign={campaignProp} isManager={isManager} />
+        </SnackbarProvider>
+      </ThemeProvider>
     </MockedProvider>
   )
 }
