@@ -544,5 +544,35 @@ describe('customDomainCreate', () => {
       })
       expect(mockCreateVercelDomain).not.toHaveBeenCalled()
     })
+
+    it('is FORBIDDEN for a team member, who may edit the campaign but not add its domain', async () => {
+      prismaMock.userTeam.findFirst.mockResolvedValue({
+        id: 'userTeamId',
+        userId: mockUser.id,
+        teamId: 'teamId',
+        role: 'member'
+      } as any)
+      // A member passes campaign Update, so only the isTeamManager scope
+      // stands between this call and a new domain.
+      prismaMock.campaign.findUnique.mockResolvedValue(
+        campaignFactory({ role: 'member' }).build()
+      )
+
+      const result = (await authClient({
+        document: MUTATION,
+        variables: {
+          input: {
+            name: 'www.example.com',
+            teamId: 'teamId',
+            campaignId: 'campaignId'
+          }
+        }
+      })) as ExecutionResult
+
+      expect(result.errors?.[0]?.message).toContain('Not authorized')
+      expect(prismaMock.campaign.findUnique).not.toHaveBeenCalled()
+      expect(mockCreateVercelDomain).not.toHaveBeenCalled()
+      expect(prismaMock.customDomain.create).not.toHaveBeenCalled()
+    })
   })
 })
