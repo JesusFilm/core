@@ -1,3 +1,4 @@
+{{- if (index .Values "plausible-analytics" "clickhouse" "enabled") }}
 apiVersion: snapshot.storage.k8s.io/v1
 kind: VolumeSnapshot
 metadata:
@@ -15,3 +16,4 @@ spec:
   volumeSnapshotClassName: clickhouse-gp3-snapshotclass
   source:
     persistentVolumeClaimName: plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0
+{{- end }}
