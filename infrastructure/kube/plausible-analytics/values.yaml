@@ -129,7 +129,10 @@ plausible-analytics:
   # -- Extra Env Variables that are passed down to plausible 1:1
   extraEnv: []
 
-  replicaCount: 1
+  # Off since the move to ECS (analytics.jesusfilm.org is a CNAME to the public
+  # ALB). The ClickHouse subchart keeps running until the events are on
+  # ClickHouse Cloud (infrastructure/modules/plausible/README.md).
+  replicaCount: 0
 
   image:
     repository: ghcr.io/plausible/community-edition
@@ -169,7 +172,7 @@ plausible-analytics:
     port: 80
 
   ingress:
-    enabled: true
+    enabled: false
     annotations:
       kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: 'true'
