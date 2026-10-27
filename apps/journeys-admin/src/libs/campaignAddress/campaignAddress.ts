@@ -2,6 +2,8 @@ import { previewEmbedUrl } from '@core/journeys/ui/Campaign'
 
 import { GetCampaign_campaign_regions_languages as CampaignRegionLanguage } from '../../../__generated__/GetCampaign'
 
+// Public addresses a visitor's browser opens, so NEXT_PUBLIC_JOURNEYS_URL;
+// server-to-server calls use JOURNEYS_URL (see pages/api/campaign/open.ts).
 const JOURNEYS_URL =
   process.env.NEXT_PUBLIC_JOURNEYS_URL ?? 'https://your.nextstep.is'
 

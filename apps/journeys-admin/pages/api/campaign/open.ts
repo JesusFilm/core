@@ -150,6 +150,8 @@ export default async function handler(
     return res.status(403).json({ error: 'Forbidden' })
   }
 
+  // Server to server (`/api/revalidate`), so JOURNEYS_URL; the redirect below
+  // is a public address and uses NEXT_PUBLIC_JOURNEYS_URL (campaignAddress).
   const journeysUrl = process.env.JOURNEYS_URL
   const accessToken = process.env.JOURNEYS_REVALIDATE_ACCESS_TOKEN
   if (journeysUrl == null || accessToken == null) {
