@@ -11,7 +11,7 @@ GraphQL API layer for the NextSteps platform, composed via Apollo Federation.
 
 ### Prisma
 
-- ORM for all database access — **no raw SQL** (except `prisma.$queryRaw` when necessary).
+- ORM for all database access — **no raw SQL** (except `prisma.$queryRaw` when necessary, or `$executeRaw` for a statement that returns nothing a query can read, such as `pg_advisory_xact_lock`: `$queryRaw` throws on its void column).
 - Schema: `libs/prisma/journeys/db/schema.prisma`
 - Migrations: `libs/prisma/journeys/db/migrations/` — timestamped SQL files, one atomic change each.
 - Soft deletes via `deletedAt` field on blocks, journeys, and other entities. Always filter `where: { deletedAt: null }` in queries.

@@ -322,7 +322,7 @@ The Campaign's single region-page layout, rendered once per Campaign Region. Eve
 _Avoid_: region template, shared layout, customised page (there is none), per-region page
 
 **Share Language**:
-A language a Campaign Region hands out a Journey in. An independent set from the Page Languages, with no link between them other than the Share section pre-selecting the visitor's Page Language when the region has it.
+A language a Campaign Region hands out a Journey in. An independent set from the Page Languages, with no link between them other than the Share section pre-selecting the visitor's Page Language when the region has it. The Prisma and GraphQL names are `CampaignRegionLanguage` (`campaignRegionLanguage*`, `schema/campaign/regionLanguage/`) for historical reasons; the term stays Share Language.
 _Avoid_: region language (fine in conversation; the term is Share Language), journey language
 
 **Share Link**:
