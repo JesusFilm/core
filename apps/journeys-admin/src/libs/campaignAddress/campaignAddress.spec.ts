@@ -10,4 +10,8 @@ describe('campaignDomainName', () => {
   it('returns null when the campaign has no Campaign Domain', () => {
     expect(campaignDomainName([])).toBeNull()
   })
+
+  it('returns null for an empty domain name', () => {
+    expect(campaignDomainName([{ name: '' }])).toBeNull()
+  })
 })

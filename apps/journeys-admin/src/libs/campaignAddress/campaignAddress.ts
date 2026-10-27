@@ -15,13 +15,16 @@ export function campaignPermanentAddress(slug: string): string {
 }
 
 /**
- * The name of the campaign's Campaign Domain, or null when it has none. A
- * campaign has at most one domain, so `customDomains` holds zero or one.
+ * The name of the campaign's Campaign Domain, or null when it has none (an
+ * empty name counts as none). A campaign has at most one domain, so
+ * `customDomains` holds zero or one.
  */
 export function campaignDomainName(
   customDomains: ReadonlyArray<{ name: string }>
 ): string | null {
-  return customDomains[0]?.name ?? null
+  const name = customDomains[0]?.name
+  if (name == null || name === '') return null
+  return name
 }
 
 /**
