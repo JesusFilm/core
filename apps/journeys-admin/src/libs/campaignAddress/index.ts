@@ -1,6 +1,5 @@
 export {
   campaignDomainName,
-  campaignPermanentAddress,
   campaignPublicAddress,
   campaignShareLink,
   journeyPreviewAddress
