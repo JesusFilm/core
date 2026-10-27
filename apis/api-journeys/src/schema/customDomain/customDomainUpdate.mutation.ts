@@ -5,6 +5,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
+import { badUserInput } from '../campaign/errors'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -42,9 +43,11 @@ builder.mutationField('customDomainUpdate', (t) =>
       // A Campaign Domain serves only its campaign: it never takes team
       // routing, so there is nothing on it to update.
       if (customDomain.campaignId != null)
-        throw new GraphQLError(
+        throw badUserInput(
           'a campaign domain serves only its campaign and cannot be rerouted',
-          { extensions: { code: 'BAD_USER_INPUT', field: 'campaignId' } }
+          'journeyCollectionId' in input
+            ? 'journeyCollectionId'
+            : 'routeAllTeamJourneys'
         )
 
       let journeyCollectionUpdate:
