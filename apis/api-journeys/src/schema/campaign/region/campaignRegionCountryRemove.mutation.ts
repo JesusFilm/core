@@ -1,8 +1,8 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../builder'
-import { lockCampaignStructure, touchCampaign } from '../block/service'
 import { CampaignRegionCountryRef } from '../campaignRegionCountry'
+import { lockCampaignStructure, touchCampaign } from '../campaignWrite'
 import { notFound } from '../errors'
 import { renumber } from '../order'
 

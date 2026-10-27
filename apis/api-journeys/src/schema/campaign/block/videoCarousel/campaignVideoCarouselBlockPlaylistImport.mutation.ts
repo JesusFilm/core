@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@core/prisma/journeys/client'
 
 import { builder } from '../../../builder'
+import { lockCampaignStructure, touchCampaign } from '../../campaignWrite'
 import { badUserInput, notFound } from '../../errors'
 import { BLOCK_CAP_ERROR } from '../../validation'
 import { CampaignVideoBlock } from '../campaignVideoBlock'
@@ -11,9 +12,7 @@ import {
   assertCampaignBlockRoom,
   assertParentStillLive,
   authorizeTypedBlockUpdate,
-  getSiblings,
-  lockCampaignStructure,
-  touchCampaign
+  getSiblings
 } from '../service'
 
 import {

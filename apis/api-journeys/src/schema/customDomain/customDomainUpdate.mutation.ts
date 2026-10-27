@@ -1,11 +1,9 @@
-import { GraphQLError } from 'graphql'
-
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
 import { logger } from '../../logger'
 import { builder } from '../builder'
-import { badUserInput } from '../campaign/errors'
+import { badUserInput, forbidden, notFound } from '../campaign/errors'
 
 import { CustomDomainRef } from './customDomain'
 import { canAccessCustomDomain } from './customDomain.acl'
@@ -28,26 +26,18 @@ builder.mutationField('customDomainUpdate', (t) =>
         include: { team: { include: { userTeams: true } } }
       })
 
-      if (customDomain == null) {
-        throw new GraphQLError('custom domain not found', {
-          extensions: { code: 'NOT_FOUND' }
-        })
-      }
+      if (customDomain == null) throw notFound('custom domain not found')
 
-      if (!canAccessCustomDomain(Action.Update, customDomain, context.user)) {
-        throw new GraphQLError('user is not allowed to update custom domain', {
-          extensions: { code: 'FORBIDDEN' }
-        })
-      }
+      if (!canAccessCustomDomain(Action.Update, customDomain, context.user))
+        throw forbidden('user is not allowed to update custom domain')
 
       // A Campaign Domain serves only its campaign: it never takes team
-      // routing, so there is nothing on it to update.
+      // routing, so there is nothing on it to update. The refusal is the
+      // domain's, not one input key's.
       if (customDomain.campaignId != null)
         throw badUserInput(
           'a campaign domain serves only its campaign and cannot be rerouted',
-          'journeyCollectionId' in input
-            ? 'journeyCollectionId'
-            : 'routeAllTeamJourneys'
+          'id'
         )
 
       let journeyCollectionUpdate:
@@ -66,12 +56,10 @@ builder.mutationField('customDomainUpdate', (t) =>
             }
           })
 
-          if (journeyCollection == null) {
-            throw new GraphQLError(
-              'journey collection not found for this custom domain team',
-              { extensions: { code: 'FORBIDDEN' } }
+          if (journeyCollection == null)
+            throw forbidden(
+              'journey collection not found for this custom domain team'
             )
-          }
 
           journeyCollectionUpdate = {
             connect: { id: input.journeyCollectionId }

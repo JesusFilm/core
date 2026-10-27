@@ -2,12 +2,12 @@ import { prisma } from '@core/prisma/journeys/client'
 
 import { enqueueShortLinkDeletes } from '../../../workers/shortlinkDelete/queue'
 import { builder } from '../../builder'
+import { CampaignRegionRef } from '../campaignRegion'
 import {
   lockCampaignStructure,
   lockCampaignTextRows,
   touchCampaign
-} from '../block/service'
-import { CampaignRegionRef } from '../campaignRegion'
+} from '../campaignWrite'
 import { conflict, notFound } from '../errors'
 import { deleteQrCodes, findRegionQrCodes } from '../regionLanguage/service'
 import { enqueueRegionRevalidation } from '../revalidateCampaign'

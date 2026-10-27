@@ -3,8 +3,8 @@ import { User } from '@core/yoga/firebaseClient'
 
 import { Action } from '../../../lib/auth/ability'
 import { builder } from '../../builder'
-import { lockCampaign, touchCampaign } from '../block/service'
 import { CampaignAclSubject, campaignAcl } from '../campaign.acl'
+import { lockCampaign, touchCampaign } from '../campaignWrite'
 import { badUserInput, forbidden, notFound } from '../errors'
 import {
   TranslatedValueRef,

@@ -62,8 +62,9 @@ export async function campaignLanguageTags(
  * every region (listed and orphan) in the root-domain form, and — once it
  * has a Campaign Domain — the same pages in the domain form. The root-domain
  * form of a campaign with a domain is NOT_FOUND; it is still listed so a
- * page cached before the domain was added is purged. Each of them also has one page per `languageTags` entry, under
- * `_lang/<tag>` ahead of the region, which is where a `?lang=` link lands.
+ * page cached before the domain was added is purged. Each of them also has
+ * one page per `languageTags` entry, under `_lang/<tag>` ahead of the region,
+ * which is where a `?lang=` link lands.
  * Paths are the page paths behind the proxy rewrite, which is what
  * `/api/revalidate` needs.
  */
@@ -100,11 +101,11 @@ export const CAMPAIGN_REVALIDATE_JOB_OPTIONS: JobsOptions = {
 
 /**
  * Queue on-demand revalidation of a campaign's pages: exactly one job per
- * affected path through the revalidate worker's `paths[]` job variant, retried
- * with backoff. Only `campaignPublish`, `campaignUnpublish`, `campaignDelete`
- * of a published campaign, and — on a published campaign — a Campaign Domain
- * create or delete, a campaign slug change, a Page Language add
- * or remove, and a region slug, listing or delete change call this; other
+ * affected path through the revalidate worker's `paths[]` job variant,
+ * retried with backoff. Only `campaignPublish`, `campaignUnpublish`,
+ * `campaignDelete` of a published campaign, and — on a published campaign —
+ * a Campaign Domain create or delete, a campaign slug change, a Page Language
+ * add or remove, and a region slug, listing or delete change call this; other
  * content mutations rely on the 60 s ISR window and queue nothing. A queue
  * failure is logged, not thrown: the page still refreshes at the next ISR
  * regeneration.
@@ -141,8 +142,9 @@ interface PublishedCampaignPages extends CampaignPages {
 
 /**
  * Every page path of a campaign as it stands: `campaignPagePaths` in the
- * root-domain form and the form of its Campaign Domain, under the tag of each of its Page Languages, or of `languageTags`
- * when the caller has already resolved them.
+ * root-domain form and the form of its Campaign Domain, under the tag of each
+ * of its Page Languages, or of `languageTags` when the caller has already
+ * resolved them.
  */
 export async function listCampaignPagePaths(
   campaign: CampaignPages,
@@ -156,7 +158,10 @@ export async function listCampaignPagePaths(
   })
 }
 
-/** Queue on-demand revalidation of every page of a campaign (`listCampaignPagePaths`). */
+/**
+ * Queue on-demand revalidation of every page of a campaign
+ * (`listCampaignPagePaths`).
+ */
 export async function enqueueCampaignPagesRevalidation(
   campaign: CampaignPages
 ): Promise<void> {
@@ -238,8 +243,8 @@ export async function enqueueCampaignSlugRevalidation(
  * After a region's slug, listing or deletion changes on a published campaign,
  * revalidate the landing page and the given region paths, including the
  * region's previous path, so the old URL stops resolving and the switchers
- * refresh. A Campaign Domain gets the same paths in its domain form. A draft campaign serves nothing, so nothing
- * is queued.
+ * refresh. A Campaign Domain gets the same paths in its domain form. A draft
+ * campaign serves nothing, so nothing is queued.
  */
 export async function enqueueRegionRevalidation(
   campaign: Omit<PublishedCampaignPages, 'regions'>,
