@@ -51,8 +51,9 @@ export function PublishButton(): ReactElement {
     pageKind === CampaignPageKind.regionTemplate && currentRegion != null
       ? currentRegion.slug
       : undefined
-  // `slug` lets the route still open the permanent address when it cannot
-  // read the campaign; `regionSlug` keeps the current region's page.
+  // `slug` lets the route still open the root-domain `/campaign/<slug>`
+  // address when it cannot read the campaign; `regionSlug` keeps the current
+  // region's page.
   const openPageHref = `/api/campaign/open?${new URLSearchParams({
     id: campaign.id,
     slug: campaign.slug,

@@ -129,8 +129,9 @@ function languageTags(campaign: Campaign): string[] {
  * The button never dead-ends: a rebuild that fails is logged and the page
  * still opens, and when the campaign cannot be read at all (gateway down,
  * not found, not a team member — the gateway throws for each of these, since
- * `campaign` is non-null in the schema) the browser is sent to the permanent
- * address built from the `slug` the editor passes along, with no rebuild.
+ * `campaign` is non-null in the schema) the browser is sent to the root-domain
+ * `/campaign/<slug>` address built from the `slug` the editor passes along,
+ * with no rebuild.
  * Only without a usable slug does the tab show a short message instead.
  */
 export default async function handler(

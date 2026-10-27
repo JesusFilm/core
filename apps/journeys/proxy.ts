@@ -86,9 +86,10 @@ export default async function proxy(
     return NextResponse.rewrite(new URL(`/home${path}`, req.url))
   }
 
-  // Campaign pages resolve on every host (PRD §8): a campaign is always
-  // reachable at its root-domain address `/campaign/<slug>…`, on a custom
-  // domain and on a dev host alike, so the same prefix rewrite applies.
+  // Campaign pages resolve on every host (PRD §8): the root-domain address
+  // `/campaign/<slug>…` gets the same prefix rewrite on a custom domain and
+  // on a dev host alike. It serves only a campaign with no Campaign Domain;
+  // one with a domain is not found there and is served at the domain root.
   const lang = url.searchParams.get('lang')?.toLowerCase() ?? ''
   const language = LANGUAGE_TAG_PATTERN.test(lang) ? lang : null
   const segments = url.pathname.split('/').filter((segment) => segment !== '')
