@@ -21,8 +21,9 @@ import {
 } from '../../../../../__generated__/DeleteCustomDomain'
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
 import { CampaignStatus } from '../../../../../__generated__/globalTypes'
-import { DNSConfigSection } from '../../../Team/CustomDomainDialog/DNSConfigSection'
 import { DELETE_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/DomainNameForm/DomainNameForm'
+
+import { CampaignDomainDns } from './CampaignDomainDns'
 
 export const CAMPAIGN_DOMAIN_CREATE = gql`
   mutation CampaignDomainCreate($input: CustomDomainCreateInput!) {
@@ -49,7 +50,7 @@ interface CampaignDomainProps {
 /**
  * The Campaign Domain section of campaign Settings, mirroring the team Custom
  * Domain dialog: the domain field with Connect / Disconnect, then its DNS
- * records, status and Check. Members see the name read-only. On a published
+ * status and records (`CampaignDomainDns`). Members see the name read-only. On a published
  * campaign both changes are confirmed first, since the public address moves.
  */
 export function CampaignDomain({
@@ -261,7 +262,7 @@ export function CampaignDomain({
         </Typography>
       )}
       {domain != null && isManager && (
-        <DNSConfigSection customDomain={domain} />
+        <CampaignDomainDns customDomain={domain} />
       )}
       <Dialog
         open={pending != null}

@@ -187,7 +187,7 @@ describe('CampaignDomain', () => {
     expect(screen.getByRole('textbox', { name: 'Domain Name' })).toHaveValue(
       'outreach.example.org'
     )
-    expect(screen.getByText('DNS Config')).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignDomainDns')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Disconnect' }))
 
@@ -229,7 +229,7 @@ describe('CampaignDomain', () => {
       screen.getByText('Only team managers can change the domain')
     ).toBeInTheDocument()
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
-    expect(screen.queryByText('DNS Config')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignDomainDns')).not.toBeInTheDocument()
   })
 
   it('tells a member without a domain that only managers can add one', () => {
