@@ -40,6 +40,16 @@ export async function cli(argv = process.argv): Promise<void> {
       queue = new Queue(queueName, { connection })
       break
     }
+    case 'plausible-site-cleanup': {
+      const config = await import(
+        /* webpackChunkName: "plausibleSiteCleanupConfig" */
+        './plausibleSiteCleanup/config'
+      )
+      queueName = config.queueName
+      jobName = config.jobName
+      queue = new Queue(queueName, { connection })
+      break
+    }
     default:
       throw new Error('unknown queue')
   }
@@ -56,6 +66,16 @@ export async function cli(argv = process.argv): Promise<void> {
   // For anonymous-journey-cleanup
   if (argv[2] === 'anonymous-journey-cleanup') {
     options.__typename = 'anonymousJourneyCleanup'
+  }
+
+  if (argv[2] === 'plausible-site-cleanup') {
+    options.__typename = 'plausibleSiteCleanup'
+    if (argv.includes('--dry-run')) {
+      options.dryRun = true
+      console.log(
+        chalk.yellow('Running in DRY RUN mode - no sites will be deleted')
+      )
+    }
   }
 
   // For e2e-cleanup, parse command line options
