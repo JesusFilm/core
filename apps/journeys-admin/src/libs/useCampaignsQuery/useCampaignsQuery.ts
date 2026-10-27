@@ -17,6 +17,10 @@ export const GET_CAMPAIGNS = gql`
       publishedAt
       createdAt
       updatedAt
+      customDomains {
+        id
+        name
+      }
     }
   }
 `

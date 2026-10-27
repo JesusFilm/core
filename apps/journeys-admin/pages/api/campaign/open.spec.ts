@@ -236,7 +236,7 @@ describe('campaign/open', () => {
   })
 
   describe('when the campaign cannot be read', () => {
-    it('logs it and opens the permanent address from the slug the editor passed, with no rebuild', async () => {
+    it('logs it and opens the root-domain address from the slug the editor passed, with no rebuild', async () => {
       mockQuery.mockRejectedValueOnce(new Error('FORBIDDEN'))
       const { res, status, redirect } = mockResponse()
       await handler(openReq({ id: 'campaignId', slug: 'outreach' }), res)
@@ -330,7 +330,7 @@ describe('campaign/open', () => {
     expect(redirect).toHaveBeenCalledWith(307, 'https://outreach.example.org')
   })
 
-  it('redirects to the permanent address when no Custom Domain names the campaign', async () => {
+  it('redirects to the root-domain address when the campaign has no Campaign Domain', async () => {
     mockCampaign({ ...publishedCampaign, customDomains: [] })
     const { res, redirect } = mockResponse()
     await handler(openReq(), res)

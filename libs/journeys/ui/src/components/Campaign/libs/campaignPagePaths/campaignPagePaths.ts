@@ -10,9 +10,9 @@ export interface CampaignPagePathsInput {
 
 /**
  * Every Next.js page path a campaign is served from: the landing page and
- * every region (listed and orphan) in the root-domain form, and — once a
- * it has a Campaign Domain — the same pages in the domain
- * form. Each of them also has one page per `languageTags` entry, under
+ * every region (listed and orphan) in the root-domain form, and — once it
+ * has a Campaign Domain — the same pages in the domain form. Each of them
+ * also has one page per `languageTags` entry, under
  * `_lang/<tag>` ahead of the region, which is where a `?lang=` link lands.
  * Paths are the page paths behind the proxy rewrite, which is what the
  * journeys app's `/api/revalidate` needs.

@@ -12,6 +12,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
 import { DELETE_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/DomainNameForm/DomainNameForm'
+import { ThemeProvider } from '../../../ThemeProvider'
 import { campaign, publishedCampaign } from '../../data'
 
 import { CAMPAIGN_DOMAIN_CREATE, CampaignDomain } from './CampaignDomain'
@@ -72,9 +73,11 @@ function renderDomain({
 } = {}): void {
   render(
     <MockedProvider mocks={mocks as never} cache={cache}>
-      <SnackbarProvider>
-        <CampaignDomain campaign={campaignProp} isManager={isManager} />
-      </SnackbarProvider>
+      <ThemeProvider>
+        <SnackbarProvider>
+          <CampaignDomain campaign={campaignProp} isManager={isManager} />
+        </SnackbarProvider>
+      </ThemeProvider>
     </MockedProvider>
   )
 }
@@ -158,24 +161,26 @@ describe('CampaignDomain', () => {
     expect(result).not.toHaveBeenCalled()
   })
 
-  it('shows a domain already in use as connected to another team', async () => {
-    renderDomain({
-      mocks: [
-        createMock(() => ({
-          errors: [new GraphQLError('custom domain already exists')]
-        }))
-      ]
-    })
+  it.each([
+    'custom domain already exists',
+    "Cannot add outreach.example.org since it's already in use by your account."
+  ])(
+    'shows a domain already in use neutrally, wherever it is connected (%s)',
+    async (message) => {
+      renderDomain({
+        mocks: [createMock(() => ({ errors: [new GraphQLError(message)] }))]
+      })
 
-    typeDomain()
-    fireEvent.click(screen.getByRole('button', { name: 'Connect' }))
+      typeDomain()
+      fireEvent.click(screen.getByRole('button', { name: 'Connect' }))
 
-    expect(
-      await screen.findByText(
-        'This domain is already connected to another NextSteps Team'
-      )
-    ).toBeInTheDocument()
-  })
+      expect(
+        await screen.findByText(
+          "This domain is already in use. Remove it where it's connected, then add it here."
+        )
+      ).toBeInTheDocument()
+    }
+  )
 
   it('shows the domain with its DNS records and disconnects a draft’s without a confirm', async () => {
     const result = vi.fn(deleteResult)

@@ -9,6 +9,12 @@ import { CampaignStatus } from "./globalTypes";
 // GraphQL query operation: GetCampaigns
 // ====================================================
 
+export interface GetCampaigns_campaigns_customDomains {
+  __typename: "CustomDomain";
+  id: string;
+  name: string;
+}
+
 export interface GetCampaigns_campaigns {
   __typename: "Campaign";
   id: string;
@@ -28,6 +34,10 @@ export interface GetCampaigns_campaigns {
   publishedAt: any | null;
   createdAt: any;
   updatedAt: any;
+  /**
+   * The Campaign Domain, as a list of at most one: the Custom Domain that belongs to this campaign. Once set it is the campaign’s only address and `/campaign/<slug>` on the root domain is NOT_FOUND. Settings reads this to show and manage the domain.
+   */
+  customDomains: GetCampaigns_campaigns_customDomains[];
 }
 
 export interface GetCampaigns {

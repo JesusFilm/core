@@ -325,7 +325,7 @@ export const RegionCardStyle: Story = {
   }
 }
 
-/** A region card, Settings: the region's settings, list / unlist and Open page. */
+/** A region card, Settings: the region's settings, list / unlist and Edit page. */
 export const RegionCardSettings: Story = {
   args: {
     campaignProp: campaignWithRegions,

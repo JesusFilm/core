@@ -10,6 +10,7 @@ import { SnackbarProvider } from 'notistack'
 
 import { CheckCustomDomain_customDomainCheck as CustomDomainCheck } from '../../../../../../__generated__/CheckCustomDomain'
 import { CHECK_CUSTOM_DOMAIN } from '../../../../Team/CustomDomainDialog/DNSConfigSection'
+import { ThemeProvider } from '../../../../ThemeProvider'
 
 import { CampaignDomainDns, campaignDomainRecords } from './CampaignDomainDns'
 
@@ -54,9 +55,11 @@ function renderDns(
 ): void {
   render(
     <MockedProvider mocks={[checkMock(result)] as never}>
-      <SnackbarProvider>
-        <CampaignDomainDns customDomain={customDomain} />
-      </SnackbarProvider>
+      <ThemeProvider>
+        <SnackbarProvider>
+          <CampaignDomainDns customDomain={customDomain} />
+        </SnackbarProvider>
+      </ThemeProvider>
     </MockedProvider>
   )
 }

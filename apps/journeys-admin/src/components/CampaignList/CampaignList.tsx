@@ -23,7 +23,9 @@ import { CreateCampaignDialog } from './CreateCampaignDialog'
  * The active team's campaigns, newest first — the body of the dashboard's
  * Team Campaigns tab, so the team select lives in the page header. With no
  * team picked the list asks for one and Create stays disabled. Each row
- * opens the editor; Create campaign opens the dialog.
+ * opens the editor and shows the campaign's public address: its Campaign
+ * Domain when it has one (the root-domain address then 404s), else
+ * `/campaign/<slug>`. Create campaign opens the dialog.
  */
 export function CampaignList(): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -89,6 +91,7 @@ export function CampaignList(): ReactElement {
       <Stack spacing={2}>
         {campaigns.map((campaign) => {
           const published = campaign.status === CampaignStatus.published
+          const domainName = campaign.customDomains[0]?.name
           return (
             <Card key={campaign.id} variant="outlined">
               <CardActionArea
@@ -114,7 +117,7 @@ export function CampaignList(): ReactElement {
                     />
                   </Stack>
                   <Typography variant="body2" color="text.secondary">
-                    {`/campaign/${campaign.slug}`}
+                    {domainName ?? `/campaign/${campaign.slug}`}
                   </Typography>
                 </CardContent>
               </CardActionArea>

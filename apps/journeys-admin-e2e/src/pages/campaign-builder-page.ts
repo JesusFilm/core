@@ -216,15 +216,22 @@ export class CampaignBuilderPage {
     await this.page.keyboard.press('Escape')
   }
 
-  /** The campaign's slug, read from the Open page address `/campaign/<slug>`. */
+  /**
+   * The campaign's slug, read from the `slug` query parameter of the Refresh
+   * and open page address `/api/campaign/open?id=…&slug=…`.
+   */
   async getCampaignSlug(): Promise<string> {
     await this.page.getByRole('button', { name: 'Publish status' }).click()
     const href = await this.page
-      .getByRole('link', { name: 'Open page' })
+      .getByRole('link', { name: 'Refresh and open page', exact: true })
       .getAttribute('href')
     await this.page.keyboard.press('Escape')
-    const slug = href?.match(/\/campaign\/([^/?#]+)/)?.[1]
-    if (slug == null) throw new Error(`No campaign slug in Open page: ${href}`)
+    const slug =
+      href == null
+        ? null
+        : new URL(href, 'http://localhost').searchParams.get('slug')
+    if (slug == null || slug === '')
+      throw new Error(`No slug parameter in Refresh and open page: ${href}`)
     return slug
   }
 
