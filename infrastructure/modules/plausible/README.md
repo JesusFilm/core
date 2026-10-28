@@ -214,6 +214,9 @@ pod with `remoteSecure()` to the native TLS port, 9440.
    can time out the first attempt: rerun.
 
 3. Have the URL ready: `https://plausible:<plausible password>@<host>:8443/plausible_events_db`.
+   Port 8443, not the NLB URL's 8123: Cloud drops other ports silently, and
+   the task then dies at startup with `Ch.Connection ... failed to connect:
+** (Mint.TransportError) timeout` (prod lost 40 minutes to this).
 
 **The window** (Plausible is down: tracking events sent meanwhile are lost,
 and `api-journeys` stats fail):

@@ -3244,7 +3244,7 @@ export interface CampaignPublicFields {
    */
   languageId: string;
   /**
-   * The name of the Campaign Domain, as a list of at most one; empty when the campaign has none. A campaign with a domain is served only there, so the canonical link points at its domain-root form, else at the root-domain path.
+   * The name of the Campaign Domain, as a list of at most one; empty when the campaign has none. A campaign with a domain is served only on it: its root-domain `/campaign/<slug>` address is NOT_FOUND, so the canonical link is the domain root. Without one, the canonical link is the root-domain path.
    */
   customDomainNames: string[];
   publishedAt: any | null;
