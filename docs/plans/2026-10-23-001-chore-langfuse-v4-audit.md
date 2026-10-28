@@ -68,10 +68,13 @@ The primary Core checkout was not changed.
   observations. Duplicate terminal callbacks cannot overwrite or re-export an
   ended observation. `forceFlush` is awaited for the serverless lifecycle;
   telemetry export failure does not replace the chat response.
-- Browser disconnects abort the model, end pending observations as a warning,
-  and await export before the handler returns. A real local HTTP test covers a
-  closed socket with more provider chunks pending, as well as normal completion.
-  Stage browser-disconnect verification is still outstanding.
+- The follow-up rollback removes the browser-disconnect AbortController, close
+  listener and pipe/close race added during review. Normal streaming again awaits
+  the SDK response pipe directly. Browser disconnect delivery is not guaranteed.
+  The previous local disconnect tests did not establish stage ingestion: neither
+  the completed nor interrupted synthetic stage chats was found in the inspected
+  Langfuse project. Repeat both checks after this rollback deploys; the cause of
+  the missing telemetry remains unconfirmed.
 - Real export uses `POST /api/public/otel/v1/traces` with Basic authentication,
   SDK name/version headers and an explicit `x-langfuse-ingestion-version: 4`.
   The explicit header is a compatibility guard: supported SDK headers already
@@ -164,7 +167,7 @@ Final local results (all exit 0):
 
 | Check                                                | Outcome                                                                                                                                                                           |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chat/client/wire tests                               | 73 passed across 4 files (baseline 68 across 2 files)                                                                                                                             |
+| Chat/client/wire tests                               | 71 passed across 3 files after disconnect rollback (baseline 68 across 2 files)                                                                                                                             |
 | Export tool suite                                    | 238 passed across 12 files (baseline 205)                                                                                                                                         |
 | Journeys direct TS7                                  | Passed                                                                                                                                                                            |
 | Export direct TypeScript                             | Passed                                                                                                                                                                            |
@@ -209,9 +212,10 @@ project:
    trace ID, correct parent, complete timing, root I/O, prompt name/version,
    model/token usage and metadata on both observations. Filter by session,
    environment, journey, language and country.
-3. Close the browser mid-answer and exercise provider failure; confirm completed
-   warning/error observations and no duplicate export from a later callback.
-   Local regression tests do not establish Vercel's live disconnect behavior.
+3. Close the browser mid-answer and record whether observations arrive and end;
+   disconnect delivery is unverified after the rollback. Separately exercise
+   provider failure and check error observations and duplicate exports.
+   Local tests do not establish Vercel's live behavior.
 4. Read the same bounded observations through v2 with every required field group;
    confirm session reconstruction and cost/usage. Run the export against synthetic
    staging data and inspect its offline bundle for full messages and PII scrubbing.
