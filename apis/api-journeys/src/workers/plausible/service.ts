@@ -177,10 +177,19 @@ function campaignSiteId(campaignId: string): string {
   return `api-journeys-campaign-${campaignId}`
 }
 
+interface CreateSiteOptions {
+  /** Create no shared link (template sites have no embeddable dashboard). */
+  disableSharedLinks?: boolean
+  /** The site's goals; journey, team and template sites get the journey goals. */
+  goals?: string[]
+}
+
 async function createSite(
   domain: string,
-  disableSharedLinks = false,
-  siteGoals: string[] = goals as string[]
+  {
+    disableSharedLinks = false,
+    goals: siteGoals = goals as string[]
+  }: CreateSiteOptions = {}
 ): Promise<MutationSiteCreateResult | undefined> {
   const { data } = await client.mutate<{
     siteCreate: MutationSiteCreateResult
@@ -273,7 +282,9 @@ async function createTemplateSite(
     return
   }
 
-  const site = await createSite(templateSiteId(templateId), true)
+  const site = await createSite(templateSiteId(templateId), {
+    disableSharedLinks: true
+  })
   if (site == null || site.__typename !== 'MutationSiteCreateSuccess') {
     logger?.warn({ templateId }, 'failed to create template site in Plausible')
     return
@@ -292,11 +303,9 @@ async function createCampaignSite(
   { campaignId }: PlausibleCreateCampaignSiteJob,
   logger?: Logger
 ): Promise<void> {
-  const site = await createSite(
-    campaignSiteId(campaignId),
-    false,
-    campaignGoals
-  )
+  const site = await createSite(campaignSiteId(campaignId), {
+    goals: campaignGoals
+  })
   if (site == null || site.__typename !== 'MutationSiteCreateSuccess') {
     logger?.warn({ campaignId }, 'failed to create campaign site in Plausible')
     return
