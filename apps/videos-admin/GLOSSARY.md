@@ -51,7 +51,7 @@ The UI name for the media context's **snippet** (`videoSnippet*` mutations). Dis
 _Avoid_: Snippet (in UI copy), summary
 
 **Video URL**:
-The Information form's name for the Video's **slug**, shown as `jesusfilm.org/watch/{slug}` and immutable after creation. The create form still says "Slug".
+The Information form's name for the Video's **slug**, shown as `jesusfilm.org/watch/{slug}`. Editable; renaming a published Video asks for confirmation, and the old slug keeps working as a redirect. The create form still says "Slug".
 
 **Origin**:
 The media-context provenance of a Video, required at creation; a child defaults to its parent's Origin.
