@@ -667,18 +667,55 @@ describe('campaignRegionLanguageUpdate', () => {
       }
     )
 
-    it('refuses an undo that writes back a journey the caller cannot see', async () => {
+    it('refuses an undo of an unlink that writes back a journey the caller cannot see', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+        campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529', {
+          journeyId: null,
+          title: null,
+          description: null,
+          qrCodeId: 'qrCodeId',
+          qrCode: QR_CODE
+        })
+      )
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess({}) as never
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'You can only link a journey whose stats you can see',
+        extensions: { code: 'FORBIDDEN', field: 'journeyId' }
+      })
+      expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+      expect(updateShortLink).not.toHaveBeenCalled()
+    })
+
+    it('refuses an undo of a relink that writes back a journey the caller cannot see', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+        linked('otherJourneyId')
+      )
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess({}) as never
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'You can only link a journey whose stats you can see',
+        extensions: { code: 'FORBIDDEN', field: 'journeyId' }
+      })
+      expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+      expect(updateShortLink).not.toHaveBeenCalled()
+    })
+
+    it('refuses re-sending the journey already linked when the caller cannot see it', async () => {
       prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
       prismaMock.journey.findFirst.mockResolvedValue(
         journeyWithAccess({}) as never
       )
 
-      const result = await update({
-        journeyId: 'journeyId',
-        title: 'My title',
-        description: 'My description',
-        snapshotEdited: true
-      })
+      const result = await update({ journeyId: 'journeyId' })
 
       expect(result.errors[0].extensions).toMatchObject({
         code: 'FORBIDDEN',
