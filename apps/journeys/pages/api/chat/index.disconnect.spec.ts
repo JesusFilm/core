@@ -15,10 +15,10 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@ai-sdk/google', () => ({ google: mocks.model }))
 vi.mock('../../../src/libs/getFlags', () => ({
-  getFlags: async () => ({ apologistChat: true })
+  getFlags: () => Promise.resolve({ apologistChat: true })
 }))
 vi.mock('../../../src/libs/getCardChatEnabled', () => ({
-  getCardChatEnabled: async () => true
+  getCardChatEnabled: () => Promise.resolve(true)
 }))
 vi.mock('../../../src/libs/logger', () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() }
@@ -27,7 +27,9 @@ vi.mock('../../../src/libs/langfuse/client', () => ({
   APOLOGIST_PROMPT_NAME: 'synthetic-prompt',
   getActivePromptLabel: () => 'development',
   getLangfuse: () => ({
-    prompt: { get: async () => ({ type: 'text', compile: () => 'synthetic' }) }
+    prompt: {
+      get: () => Promise.resolve({ type: 'text', compile: () => 'synthetic' })
+    }
   }),
   startChatGeneration: () => ({ end: mocks.end }),
   flushLangfuse: mocks.flush
@@ -66,9 +68,9 @@ describe('chat HTTP stream lifecycle', () => {
       })
       mocks.model.mockReturnValue(
         new MockLanguageModelV4({
-          doStream: async ({ abortSignal }) => {
+          doStream: ({ abortSignal }) => {
             providerSignal = abortSignal
-            return {
+            return Promise.resolve({
               stream: new ReadableStream({
                 async start(controller) {
                   controller.enqueue({ type: 'stream-start', warnings: [] })
@@ -104,7 +106,7 @@ describe('chat HTTP stream lifecycle', () => {
                   controller.close()
                 }
               })
-            }
+            })
           }
         })
       )
@@ -112,7 +114,9 @@ describe('chat HTTP stream lifecycle', () => {
         const request = req as NextApiRequest
         request.method = 'POST'
         request.body = {
-          messages: [{ role: 'user', parts: [{ type: 'text', text: 'synthetic' }] }],
+          messages: [
+            { role: 'user', parts: [{ type: 'text', text: 'synthetic' }] }
+          ],
           journeyId: 'synthetic-journey',
           cardId: 'synthetic-card'
         }
@@ -122,20 +126,25 @@ describe('chat HTTP stream lifecycle', () => {
           handled.reject
         )
       })
-      await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
+      await new Promise<void>((resolve) =>
+        server.listen(0, '127.0.0.1', resolve)
+      )
       let handlerFinished = false
       void handled.promise.then(() => {
         handlerFinished = true
       })
       try {
         await new Promise<void>((resolve, reject) => {
-          get(`http://127.0.0.1:${(server.address() as AddressInfo).port}`, (res) => {
-            res.once('data', () => {
-              if (disconnect) res.destroy()
-              else release.resolve()
-              resolve()
-            })
-          }).on('error', reject)
+          get(
+            `http://127.0.0.1:${(server.address() as AddressInfo).port}`,
+            (res) => {
+              res.once('data', () => {
+                if (disconnect) res.destroy()
+                else release.resolve()
+                resolve()
+              })
+            }
+          ).on('error', reject)
         })
         await vi.waitFor(() => expect(mocks.end).toHaveBeenCalledTimes(1))
         expect(mocks.end).toHaveBeenCalledWith(
