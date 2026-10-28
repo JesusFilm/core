@@ -511,6 +511,7 @@ export interface CustomDomainCreateInput {
   name: string;
   journeyCollectionId?: string | null;
   routeAllTeamJourneys?: boolean | null;
+  campaignId?: string | null;
 }
 
 export interface CustomDomainUpdateInput {
