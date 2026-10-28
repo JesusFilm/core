@@ -364,9 +364,31 @@ export default async function handler(
     generation?.end(args)
   }
 
+  const abortController = new AbortController()
+  let handleDisconnect: () => void
+  const disconnected = new Promise<void>((resolve) => {
+    handleDisconnect = () => {
+      if (res.writableFinished) return
+      endGenerationIfPending({
+        level: 'WARNING',
+        statusMessage: 'client disconnected'
+      })
+      abortController.abort()
+      resolve()
+    }
+    res.once('close', handleDisconnect)
+  })
+
   try {
+    // The browser may have left while prompt/model preparation was pending.
+    if (res.destroyed) {
+      handleDisconnect!()
+      await flushLangfuse()
+      return
+    }
     const result = streamText({
       model: modelResult.resolved.model,
+      abortSignal: abortController.signal,
       instructions: system,
       messages: modelMessages,
       maxOutputTokens: MAX_OUTPUT_TOKENS,
@@ -449,7 +471,7 @@ export default async function handler(
 
     // AI SDK 7 resolves once the stream has finished piping — awaited so the
     // handler stays alive until the response is fully written.
-    await result.pipeUIMessageStreamToResponse(res, {
+    const piping = result.pipeUIMessageStreamToResponse(res, {
       onError: (error) => {
         const err = error as Error
         // Pipe-step failures (write to closed socket etc.) are
@@ -470,6 +492,10 @@ export default async function handler(
         return 'stream failed'
       }
     })
+    // The SDK can wait forever for drain on a closed socket. A close must
+    // release the handler and flush ended spans even without an SDK callback.
+    await Promise.race([piping, disconnected])
+    if (abortController.signal.aborted) await flushLangfuse()
   } catch (error) {
     const err = error as Error
     logger.error(
@@ -495,6 +521,8 @@ export default async function handler(
     } else {
       res.end()
     }
+  } finally {
+    res.off('close', handleDisconnect!)
   }
 }
 
