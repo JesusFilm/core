@@ -167,7 +167,7 @@ Final local results (all exit 0):
 
 | Check                                                | Outcome                                                                                                                                                                           |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chat/client/wire tests                               | 71 passed across 3 files after disconnect rollback (baseline 68 across 2 files)                                                                                                                             |
+| Chat/client/wire tests                               | 71 passed across 3 files after disconnect rollback (baseline 68 across 2 files)                                                                                                   |
 | Export tool suite                                    | 238 passed across 12 files (baseline 205)                                                                                                                                         |
 | Journeys direct TS7                                  | Passed                                                                                                                                                                            |
 | Export direct TypeScript                             | Passed                                                                                                                                                                            |
