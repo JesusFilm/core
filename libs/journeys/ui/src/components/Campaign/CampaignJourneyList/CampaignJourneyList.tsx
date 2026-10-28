@@ -4,13 +4,17 @@ import Stack from '@mui/material/Stack'
 import { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, ReactNode } from 'react'
+import { MouseEvent, ReactElement, ReactNode } from 'react'
 
 import {
   CampaignJourneyListDisplay,
   CampaignStringKey,
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
+import {
+  journeySlug,
+  useCampaignPlausible
+} from '../../../libs/campaignPlausible'
 import { useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
@@ -122,6 +126,8 @@ interface CampaignJourneyOpenButtonProps {
   label: string
   /** The journey's address; without one the button is a read-only preview. */
   href?: string
+  /** Runs when a button with an address is clicked. */
+  onClick?: (event: MouseEvent<HTMLElement>) => void
 }
 
 /**
@@ -130,14 +136,15 @@ interface CampaignJourneyOpenButtonProps {
  */
 export function CampaignJourneyOpenButton({
   label,
-  href
+  href,
+  onClick
 }: CampaignJourneyOpenButtonProps): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
   return (
     <Button
       {...(href == null
         ? { component: 'div', tabIndex: -1, disableRipple: true }
-        : { href })}
+        : { href, onClick })}
       aria-label={hasText(label) ? undefined : t('Open')}
       variant="contained"
       size="small"
@@ -169,6 +176,18 @@ function JourneyCard({
   display,
   openLabel
 }: JourneyCardProps): ReactElement {
+  const track = useCampaignPlausible()
+  const journeyUrl = card.journeyUrl
+
+  function handleOpen(event: MouseEvent<HTMLElement>): void {
+    if (journeyUrl == null) return
+    track(
+      'campaignJourneyClick',
+      { journey: journeySlug(journeyUrl), source: 'card' },
+      event
+    )
+  }
+
   return (
     <Stack
       data-testid={`CampaignJourneyCard-${card.id}`}
@@ -210,7 +229,8 @@ function JourneyCard({
         <Box sx={{ flexGrow: 1 }} />
         <CampaignJourneyOpenButton
           label={openLabel}
-          href={card.journeyUrl ?? undefined}
+          href={journeyUrl ?? undefined}
+          onClick={handleOpen}
         />
       </Stack>
     </Stack>

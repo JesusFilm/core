@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 
 import {
   CampaignPageKind,
@@ -53,6 +54,7 @@ interface RenderOptions {
   campaign?: CampaignPublic
   region?: CampaignRegion | null
   pageKind?: CampaignPageKind
+  reportEvents?: boolean
 }
 
 function renderSwitcher(
@@ -60,17 +62,20 @@ function renderSwitcher(
   {
     campaign = campaignPublic,
     region = null,
-    pageKind = CampaignPageKind.landing
+    pageKind = CampaignPageKind.landing,
+    reportEvents
   }: RenderOptions = {}
 ) {
   return render(
     <ThemeProvider theme={theme}>
-      <CampaignProvider value={{ campaign, pageKind, region }}>
+      <CampaignProvider value={{ campaign, pageKind, region, reportEvents }}>
         <CampaignRegionSwitcher block={block} />
       </CampaignProvider>
     </ThemeProvider>
   )
 }
+
+vi.mock('next-plausible', () => ({ usePlausible: vi.fn() }))
 
 describe('CampaignRegionSwitcher', () => {
   const withLac: CampaignPublic = {
@@ -254,5 +259,34 @@ describe('CampaignRegionSwitcher', () => {
         regions: [eurRegion]
       })
     ).toBe(true)
+  })
+})
+
+describe('CampaignRegionSwitcher events', () => {
+  const plausible = vi.fn()
+
+  beforeEach(() => {
+    vi.mocked(usePlausible).mockReturnValue(plausible)
+    plausible.mockClear()
+    vi.stubGlobal('location', { ...window.location, assign: vi.fn() })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('sends campaignRegionClick with the target region on the public page', () => {
+    renderSwitcher(switcherTree(), { reportEvents: true })
+    fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
+    expect(plausible).toHaveBeenCalledWith('campaignRegionClick', {
+      props: { campaignId: 'campaignId', language: 'en', region: 'afr' },
+      callback: expect.any(Function)
+    })
+  })
+
+  it('sends nothing from the editor canvas', () => {
+    renderSwitcher(switcherTree())
+    fireEvent.click(screen.getByTestId('CampaignRegionCard-afrRegionId'))
+    expect(plausible).not.toHaveBeenCalled()
   })
 })

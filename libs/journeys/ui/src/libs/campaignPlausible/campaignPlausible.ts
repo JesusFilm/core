@@ -26,8 +26,8 @@ export interface CampaignPlausibleEvents {
   campaignShareLinkCopy: { shareLanguage: string }
 }
 
-/** The props every campaign page view and event carries. */
-export interface CampaignPlausibleProps {
+/** The props every campaign page view and event carries; a type, so it passes as next-plausible's `pageviewProps`. */
+export type CampaignPlausibleProps = {
   campaignId: string
   /** The Region Page's slug; absent on the landing page. */
   region?: string

@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
+import { usePlausible } from 'next-plausible'
 
 import {
   CampaignJourneyListDisplay,
@@ -53,7 +54,8 @@ function listTree(
 
 function renderList(
   block: CampaignTreeOf<'CampaignJourneyListBlock'>,
-  campaign: CampaignPublic = campaignPublic
+  campaign: CampaignPublic = campaignPublic,
+  reportEvents?: boolean
 ) {
   return render(
     <ThemeProvider theme={theme}>
@@ -61,7 +63,8 @@ function renderList(
         value={{
           campaign,
           pageKind: CampaignPageKind.landing,
-          region: null
+          region: null,
+          reportEvents
         }}
       >
         <CampaignJourneyList block={block} />
@@ -69,6 +72,8 @@ function renderList(
     </ThemeProvider>
   )
 }
+
+vi.mock('next-plausible', () => ({ usePlausible: vi.fn() }))
 
 describe('CampaignJourneyList', () => {
   it('renders a card for each live-published journey, in order, with its snapshot and live image', () => {
@@ -301,5 +306,39 @@ describe('CampaignJourneyList', () => {
         shouldRenderSection(listTree([item('live', 0)], noText), context)
       ).toBe(true)
     })
+  })
+})
+
+describe('CampaignJourneyList events', () => {
+  const plausible = vi.fn()
+
+  beforeEach(() => {
+    vi.mocked(usePlausible).mockReturnValue(plausible)
+    plausible.mockClear()
+    vi.stubGlobal('location', { ...window.location, assign: vi.fn() })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it("sends campaignJourneyClick with the journey's slug when a card is opened on the public page", () => {
+    renderList(listTree([item('first', 0)]), campaignPublic, true)
+    fireEvent.click(screen.getByTestId('CampaignJourneyCardOpen'))
+    expect(plausible).toHaveBeenCalledWith('campaignJourneyClick', {
+      props: {
+        campaignId: 'campaignId',
+        language: 'en',
+        journey: 'first',
+        source: 'card'
+      },
+      callback: expect.any(Function)
+    })
+  })
+
+  it('sends nothing from the editor canvas', () => {
+    renderList(listTree([item('first', 0)]))
+    fireEvent.click(screen.getByTestId('CampaignJourneyCardOpen'))
+    expect(plausible).not.toHaveBeenCalled()
   })
 })
