@@ -5,10 +5,7 @@ import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type MockedFunction } from 'vitest'
 
-import {
-  UPDATE_VIDEO_INFORMATION,
-  VideoInformation
-} from './VideoInformation'
+import { UPDATE_VIDEO_INFORMATION, VideoInformation } from './VideoInformation'
 import { GET_KEYWORDS } from './VideoKeywords'
 
 // Mock useSuspenseQuery hook
