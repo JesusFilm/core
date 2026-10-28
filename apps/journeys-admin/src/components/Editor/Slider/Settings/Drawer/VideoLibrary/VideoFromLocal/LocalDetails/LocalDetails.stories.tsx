@@ -247,8 +247,13 @@ export const Unpublished: StoryObj<typeof LocalDetails> = {
               data: {
                 video: {
                   id: '2_Acts7302-0-0',
-                  image:
-                    'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg',
+                  images: [
+                    {
+                      __typename: 'CloudflareImage',
+                      mobileCinematicHigh:
+                        'https://d1wl257kev7hsz.cloudfront.net/cinematics/2_Acts7302-0-0.mobileCinematicHigh.jpg'
+                    }
+                  ],
                   primaryLanguageId: '529',
                   title: [
                     {
