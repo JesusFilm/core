@@ -31,7 +31,10 @@ plausible-analytics:
 
   # -- Clickhouse Database
   clickhouse:
-    enabled: true
+    # Off since prod's events moved to ClickHouse Cloud (2026-10-27,
+    # infrastructure/modules/plausible/README.md). The data volume's final
+    # snapshot is snap-0decfd85f117e31a6.
+    enabled: false
     # -- The URL Connection String to clickhouse DB see -> https://clickhouse.tech/docs/en/interfaces/http/
     #  url: "http://plausible-clickhouse:8123/plausible_events_db"
     # -- Sub-chart values, see https://artifacthub.io/packages/helm/sentry/clickhouse
@@ -129,7 +132,10 @@ plausible-analytics:
   # -- Extra Env Variables that are passed down to plausible 1:1
   extraEnv: []
 
-  replicaCount: 1
+  # Off since the move to ECS (analytics.jesusfilm.org is a CNAME to the public
+  # ALB). The ClickHouse subchart keeps running until the events are on
+  # ClickHouse Cloud (infrastructure/modules/plausible/README.md).
+  replicaCount: 0
 
   image:
     repository: ghcr.io/plausible/community-edition
@@ -169,7 +175,7 @@ plausible-analytics:
     port: 80
 
   ingress:
-    enabled: true
+    enabled: false
     annotations:
       kubernetes.io/ingress.class: nginx
       kubernetes.io/tls-acme: 'true'
