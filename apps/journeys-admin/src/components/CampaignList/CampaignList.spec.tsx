@@ -138,7 +138,7 @@ describe('CampaignList', () => {
     )
   })
 
-  it("links each campaign to its Campaign Report", async () => {
+  it('links each campaign to its Campaign Report', async () => {
     renderList()
 
     expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()

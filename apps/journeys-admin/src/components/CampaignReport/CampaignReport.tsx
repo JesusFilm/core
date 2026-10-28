@@ -48,7 +48,11 @@ export function CampaignReport({
   if (!loading && error == null && data != null && plausibleToken == null)
     return (
       <Stack
-        sx={{ minHeight: '50vh', alignItems: 'center', justifyContent: 'center' }}
+        sx={{
+          minHeight: '50vh',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
         <Typography variant="overline" sx={{ color: 'secondary.light' }}>
           {t('The report is being set up. Check back in a few minutes.')}

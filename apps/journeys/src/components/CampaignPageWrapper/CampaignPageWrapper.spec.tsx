@@ -23,10 +23,7 @@ vi.mock('../CampaignLanguageRedirect', () => ({
 }))
 
 function plausibleProps(): Record<string, unknown> {
-  return vi.mocked(PlausibleProvider).mock.calls[0][0] as unknown as Record<
-    string,
-    unknown
-  >
+  return vi.mocked(PlausibleProvider).mock.calls[0][0]
 }
 
 describe('CampaignPageWrapper', () => {
