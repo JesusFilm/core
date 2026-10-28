@@ -62,17 +62,17 @@ is referenced nowhere.
 **The clusters created, outside Terraform** (must be removed by hand or by the
 in-cluster controllers before the cluster goes):
 
-| Resource | stage | prod | Created by |
-| --- | --- | --- | --- |
-| Ingress NLB `k8s-ingressn-ingressn-*` | `c4435aa5e1` | `f9b5e10220` | AWS Load Balancer Controller for the `ingress-nginx-controller` Service |
-| NLB security group `k8s-ingressn-ingressn-*` | `sg-0f4cfb50378c6d583` | `sg-04d2139f6221f5568` | same |
-| Shared backend security group `k8s-traffic-jfpeks<env>-*` | `sg-0308abecd60cb7634` | `sg-0ea69881812a17bcf` | same; references the EKS-managed cluster security group |
-| EKS-managed cluster security group `eks-cluster-sg-jfp-eks-<env>-*` | `sg-0f325d1f95172a8f9` | `sg-0b81b56ab982de63a` | EKS; deleted with the cluster, but only once nothing references it |
-| IAM OIDC provider | `.../id/805F2E83DC00D36BAE414C922D462626` | `.../id/2139796B026E33A2CDC80C0DECE2CFE9` | by hand (IRSA) |
-| IRSA roles | `AmazonEKSLoadBalancerControllerRoleStage`, `AmazonEKS_EBS_CSI_DriverRole`, `AmazonEKS_EBS_CSI_DriverRole_stage` | `AmazonEKSLoadBalancerControllerRole`, `AmazonEKS_EBS_CSI_DriverRole_prod` | by hand |
-| IAM user `externaldns` | shared | shared | by hand; no access keys remain |
-| Policy `AllowExternalDNSUpdates` attached to `terraform-eks-node-stage` | stage | | by hand, outside Terraform; the policy is also on the user `externaldns` and on `mike.allison` |
-| Policy `AWSLoadBalancerControllerIAMPolicy` | shared | shared | by hand; attached to the two controller roles only |
+| Resource                                                                | stage                                                                                                            | prod                                                                       | Created by                                                                                     |
+| ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Ingress NLB `k8s-ingressn-ingressn-*`                                   | `c4435aa5e1`                                                                                                     | `f9b5e10220`                                                               | AWS Load Balancer Controller for the `ingress-nginx-controller` Service                        |
+| NLB security group `k8s-ingressn-ingressn-*`                            | `sg-0f4cfb50378c6d583`                                                                                           | `sg-04d2139f6221f5568`                                                     | same                                                                                           |
+| Shared backend security group `k8s-traffic-jfpeks<env>-*`               | `sg-0308abecd60cb7634`                                                                                           | `sg-0ea69881812a17bcf`                                                     | same; references the EKS-managed cluster security group                                        |
+| EKS-managed cluster security group `eks-cluster-sg-jfp-eks-<env>-*`     | `sg-0f325d1f95172a8f9`                                                                                           | `sg-0b81b56ab982de63a`                                                     | EKS; deleted with the cluster, but only once nothing references it                             |
+| IAM OIDC provider                                                       | `.../id/805F2E83DC00D36BAE414C922D462626`                                                                        | `.../id/2139796B026E33A2CDC80C0DECE2CFE9`                                  | by hand (IRSA)                                                                                 |
+| IRSA roles                                                              | `AmazonEKSLoadBalancerControllerRoleStage`, `AmazonEKS_EBS_CSI_DriverRole`, `AmazonEKS_EBS_CSI_DriverRole_stage` | `AmazonEKSLoadBalancerControllerRole`, `AmazonEKS_EBS_CSI_DriverRole_prod` | by hand                                                                                        |
+| IAM user `externaldns`                                                  | shared                                                                                                           | shared                                                                     | by hand; no access keys remain                                                                 |
+| Policy `AllowExternalDNSUpdates` attached to `terraform-eks-node-stage` | stage                                                                                                            |                                                                            | by hand, outside Terraform; the policy is also on the user `externaldns` and on `mike.allison` |
+| Policy `AWSLoadBalancerControllerIAMPolicy`                             | shared                                                                                                           | shared                                                                     | by hand; attached to the two controller roles only                                             |
 
 No CloudWatch log groups under `/aws/eks`, no EBS volumes or snapshots tagged
 to either cluster (the Plausible ones were cleaned up in #10020 and #10038).
