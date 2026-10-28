@@ -19,6 +19,8 @@ interface FontSelectProps {
   labelId: string
   selectId: string
   helperText?: string
+  /** When given, a first option with an empty value and this label (the default font). */
+  emptyLabel?: string
 }
 
 /**
@@ -31,6 +33,7 @@ interface FontSelectProps {
  * @param labelId - ID for the label element (for accessibility)
  * @param selectId - ID for the select element
  * @param helperText - Optional helper text displayed below the select
+ * @param emptyLabel - Optional label for an empty-value option meaning the default font
  * @returns Font selection dropdown component
  */
 export function FontSelect({
@@ -41,7 +44,8 @@ export function FontSelect({
   icon,
   labelId,
   selectId,
-  helperText
+  helperText,
+  emptyLabel
 }: FontSelectProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
 
@@ -60,6 +64,11 @@ export function FontSelect({
             <InputAdornment position="start">{icon}</InputAdornment>
           }
         >
+          {emptyLabel != null && (
+            <MenuItem value="" tabIndex={0} aria-label={emptyLabel}>
+              {emptyLabel}
+            </MenuItem>
+          )}
           {options.map((font) => (
             <MenuItem key={font} value={font} tabIndex={0} aria-label={font}>
               {font}

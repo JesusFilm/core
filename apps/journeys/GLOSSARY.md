@@ -1,6 +1,6 @@
 # Journeys Viewer
 
-The audience-facing delivery surface (`apps/journeys`, the NextSteps viewer): it plays back published Journeys to anonymous Visitors, one Step at a time or as a website, on the root domain or a team's Custom Domain, standalone or embedded. It owns no content — the **Journey**, **Block**, **Step**, **Card**, and **Action** vocabulary is owned by [Journeys](../../apis/api-journeys/GLOSSARY.md), and the events it reports belong to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _playback experience_: navigation state, delivery modes, and the Visitor's session on the device.
+The audience-facing delivery surface (`apps/journeys`, the NextSteps viewer): it plays back published Journeys to anonymous Visitors, one Step at a time or as a website, on the root domain or a team's Custom Domain, standalone or embedded, and serves published Campaigns beside them. It owns no content — the **Journey**, **Block**, **Step**, **Card**, **Action**, and **Campaign** vocabulary is owned by [Journeys](../../apis/api-journeys/GLOSSARY.md), and the events it reports belong to [Journey Analytics](../../apis/api-journeys/GLOSSARY-analytics.md). What this context owns is the _playback experience_: navigation state, delivery modes, and the Visitor's session on the device.
 
 ## Language
 
@@ -33,12 +33,20 @@ _Avoid_: gated step, blocked step
 ### Delivery
 
 **Root Domain**:
-The product's own hostname (e.g. `your.nextstep.is`), serving any published Journey by Slug plus the public landing and template gallery pages.
+The product's own hostname (e.g. `your.nextstep.is`), serving any published Journey by Slug, the public landing and template gallery pages, and every published Campaign that has no **Campaign Domain** at its `/campaign/<slug>` address.
 _Avoid_: default domain, main site
 
 **Custom Domain** (consumed):
-A team's vanity hostname, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing input_: the incoming hostname scopes which Journey a Slug resolves to.
+A team's vanity hostname, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing input_: the incoming hostname scopes which Journey a Slug resolves to, and a **Campaign Domain** serves its Campaign at its root. A Custom Domain is a team domain or a Campaign Domain, never both.
 _Avoid_: host (ambiguous — Host is a presenter identity upstream), hostname (fine in code, not in conversation)
+
+**Campaign Domain** (consumed):
+A Custom Domain that belongs to one Campaign, owned by the [Journeys](../../apis/api-journeys/GLOSSARY.md) context. Here it is a _routing target_: the domain's `/` serves the Campaign's landing page and `/<region slug>` a Region Page; it serves no team Journey, so `/<journey slug>` on it is not found. Once a Campaign has one, its `/campaign/<slug>` address on the Root Domain is not found.
+_Avoid_: Campaign Root (the retired name), home page, default campaign
+
+**Reserved Segment**:
+A first path segment the viewer owns on a domain root (such as `embed`, `legal`, `campaign` and `template-gallery`), so no Journey or Region slug may take it. The viewer owns the concept; one list in the Journeys API backs both Journey and Region slug validation.
+_Avoid_: reserved word, blocked slug
 
 **Embed**:
 The iframe presentation of a Journey — shown as a clickable preview card that expands to fullscreen playback. A Journey page that detects it is inside an iframe redirects itself to its embed form; an oEmbed endpoint hands out the iframe HTML to third-party sites.
