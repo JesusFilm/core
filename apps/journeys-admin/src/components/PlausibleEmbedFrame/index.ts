@@ -1,0 +1,1 @@
+export { PlausibleEmbedFrame } from './PlausibleEmbedFrame'

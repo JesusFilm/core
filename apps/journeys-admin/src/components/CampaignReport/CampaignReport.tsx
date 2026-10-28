@@ -11,7 +11,7 @@ import type {
   GetCampaignReport,
   GetCampaignReportVariables
 } from '../../../__generated__/GetCampaignReport'
-import { PlausibleEmbedFrame } from '../PlausibleEmbedDashboard'
+import { PlausibleEmbedFrame } from '../PlausibleEmbedFrame'
 
 export const GET_CAMPAIGN_REPORT = gql`
   query GetCampaignReport($id: ID!) {

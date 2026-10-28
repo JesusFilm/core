@@ -1,4 +1,1 @@
-export {
-  PlausibleEmbedDashboard,
-  PlausibleEmbedFrame
-} from './PlausibleEmbedDashboard'
+export { PlausibleEmbedDashboard } from './PlausibleEmbedDashboard'
