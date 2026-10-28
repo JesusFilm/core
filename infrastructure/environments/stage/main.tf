@@ -216,12 +216,13 @@ module "short_links_clickhouse" {
   doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
 }
 
-# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
-# EKS Platform Cluster. Serves plausible.stage.central.jesusfilm.org (the
-# module's own record) for smoke tests; analytics.stage.central.jesusfilm.org
-# moves here in the cutover step (modules/plausible/README.md). Apply only
-# once its Doppler token for the stg_ecs branch config is in SSM; the task
-# then needs the EKS ClickHouse NLB (README.md, "Prerequisites").
+# Plausible Analytics on ECS (arm64 Fargate). Serves
+# analytics.stage.central.jesusfilm.org (the record below) and
+# plausible.stage.central.jesusfilm.org (the module's own record, for smoke
+# tests). Its events are in short_links_clickhouse, reached by the
+# CLICKHOUSE_DATABASE_URL of the stg_ecs Doppler branch config; that config's
+# token must be in SSM before the first apply (modules/plausible/README.md,
+# "Prerequisites").
 module "plausible" {
   source = "../../modules/plausible"
   ecs_config = merge(local.public_ecs_config, {

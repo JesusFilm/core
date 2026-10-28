@@ -5,9 +5,9 @@
 # docs/plans/2026-10-14-002-feat-plausible-on-ecs-graviton-plan.md.
 #
 # Its two databases are elsewhere, both read from Doppler: PostgreSQL in the
-# Core Database (Aurora, DATABASE_URL) and the event store (CLICKHOUSE_DATABASE_URL).
-# The event store stays in the EKS ClickHouse, reached through a temporary
-# internal NLB (eks-clickhouse.tf), until it moves to ClickHouse Cloud.
+# Core Database (Aurora, DATABASE_URL) and the event store (CLICKHOUSE_DATABASE_URL)
+# in the environment's ClickHouse Cloud service, database plausible_events_db
+# (clickhouse-cloud/ has its schema and users; README.md has the move from EKS).
 
 module "ecs-task" {
   source                = "../aws/ecs-task"
