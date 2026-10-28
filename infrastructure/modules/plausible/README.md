@@ -260,9 +260,10 @@ Per environment, once Plausible ran on Cloud. Order mattered:
 5. Delete the PVCs, then the PVs, then the EBS volumes; then the
    VolumeSnapshotContents and the EBS snapshots of these volumes, keeping the
    final one.
-
 6. With both environments done, the NLB's security group
-   (`eks-clickhouse.tf` in this module) and the bridge manifest were removed.
+   (`eks-clickhouse.tf` in this module) and the bridge manifest were removed
+   from the configuration, and the groups destroyed with a targeted apply per
+   environment (2026-10-28).
 
 EKS now runs nothing of its own; its teardown is a separate plan.
 
