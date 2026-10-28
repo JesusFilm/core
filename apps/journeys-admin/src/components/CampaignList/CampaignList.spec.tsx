@@ -138,6 +138,16 @@ describe('CampaignList', () => {
     )
   })
 
+  it("links each campaign to its Campaign Report", async () => {
+    renderList()
+
+    expect(await screen.findByText('Outreach 2026')).toBeInTheDocument()
+    expect(screen.getByTestId('CampaignListReport-campaignId')).toHaveAttribute(
+      'href',
+      '/campaigns/campaignId/reports'
+    )
+  })
+
   it("shows a campaign's domain as its address, else its root-domain address", async () => {
     renderList()
 

@@ -63,26 +63,30 @@ function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
   return setRef
 }
 
-interface PlausibleEmbedDashboardProps {
+interface PlausibleEmbedFrameProps {
+  /** The Plausible site shown, e.g. `api-journeys-journey-<id>`. */
+  siteId: string
+  /** The site's shared-link token; the frame waits while it is null. */
+  auth?: string | null
+  /** Show the error message instead of the loading one. */
+  error?: boolean
   host?: string // for testing
 }
 
-export function PlausibleEmbedDashboard({
+/**
+ * A Plausible site's own dashboard, embedded through its shared link (proxied
+ * by the admin's `/share` and `/api/stats` rewrites) and restyled with
+ * `/plausible.css`. A loading or error message covers it until it has drawn.
+ */
+export function PlausibleEmbedFrame({
+  siteId,
+  auth,
+  error = false,
   host
-}: PlausibleEmbedDashboardProps): ReactElement {
+}: PlausibleEmbedFrameProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDashboard, setShowDashboard] = useState(false)
-  const router = useRouter()
   const ref = useHookWithRefCallback()
-
-  const { data, loading, error } = useQuery<
-    GetAdminJourneyWithPlausibleToken,
-    GetAdminJourneyWithPlausibleTokenVariables
-  >(GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN, {
-    variables: { id: router.query.journeyId as string }
-  })
-
-  const journeyId = router.query.journeyId as string
 
   return (
     <>
@@ -106,21 +110,19 @@ export function PlausibleEmbedDashboard({
               color: 'secondary.light'
             }}
           >
-            {error != null
+            {error
               ? t('There was an error loading the report')
               : t('The report is loading...')}
           </Typography>
         </Box>
       </Fade>
 
-      {!loading && data?.journey.plausibleToken != null && (
+      {auth != null && (
         <>
           <StyledIFrame
             data-testid="PlausibleEmbedDashboard"
             plausible-embed
-            src={`${host ?? ''}/share/api-journeys-journey-${journeyId}?auth=${
-              data?.journey.plausibleToken
-            }&embed=true&theme=light&background=transparent`}
+            src={`${host ?? ''}/share/${siteId}?auth=${auth}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             onLoad={() => {
               setTimeout(() => {
@@ -141,5 +143,33 @@ export function PlausibleEmbedDashboard({
         </>
       )}
     </>
+  )
+}
+
+interface PlausibleEmbedDashboardProps {
+  host?: string // for testing
+}
+
+export function PlausibleEmbedDashboard({
+  host
+}: PlausibleEmbedDashboardProps): ReactElement {
+  const router = useRouter()
+
+  const { data, loading, error } = useQuery<
+    GetAdminJourneyWithPlausibleToken,
+    GetAdminJourneyWithPlausibleTokenVariables
+  >(GET_ADMIN_JOURNEY_WITH_PLAUSIBLE_TOKEN, {
+    variables: { id: router.query.journeyId as string }
+  })
+
+  const journeyId = router.query.journeyId as string
+
+  return (
+    <PlausibleEmbedFrame
+      siteId={`api-journeys-journey-${journeyId}`}
+      auth={loading ? null : data?.journey.plausibleToken}
+      error={error != null}
+      host={host}
+    />
   )
 }
