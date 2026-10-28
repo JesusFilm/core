@@ -43,8 +43,9 @@ export function PlausibleEmbedDashboard({
   return (
     <PlausibleEmbedFrame
       siteId={`api-journeys-journey-${journeyId}`}
-      auth={loading ? null : data?.journey.plausibleToken}
-      error={error != null}
+      token={data?.journey.plausibleToken}
+      loading={loading}
+      error={error}
       host={host}
     />
   )

@@ -9,7 +9,8 @@ const StyledIFrame = styled('iframe')({
   border: 0
 })
 
-function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
+/** A ref callback that adds `/plausible.css` to the embedded dashboard each time it loads. */
+function usePlausibleStylesheetRef(): (node: HTMLIFrameElement | null) => void {
   const ref = useRef<HTMLIFrameElement | null>(null)
   const setRef = useCallback((node: HTMLIFrameElement | null) => {
     function handleLoad(): void {
@@ -45,10 +46,12 @@ function useHookWithRefCallback(): (node: HTMLIFrameElement | null) => void {
 interface PlausibleEmbedFrameProps {
   /** The Plausible site shown, e.g. `api-journeys-journey-<id>`. */
   siteId: string
-  /** The site's shared-link token; the frame waits while it is null. */
-  auth?: string | null
-  /** Show the error message instead of the loading one. */
-  error?: boolean
+  /** The site's shared-link token, as the caller's query read it; the frame waits while it is null. */
+  token?: string | null
+  /** The caller's query is still loading the token. */
+  loading?: boolean
+  /** The caller's query failed: shows the error message instead of the loading one. */
+  error?: unknown
   host?: string // for testing
 }
 
@@ -59,13 +62,14 @@ interface PlausibleEmbedFrameProps {
  */
 export function PlausibleEmbedFrame({
   siteId,
-  auth,
-  error = false,
+  token,
+  loading = false,
+  error,
   host
 }: PlausibleEmbedFrameProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [showDashboard, setShowDashboard] = useState(false)
-  const ref = useHookWithRefCallback()
+  const ref = usePlausibleStylesheetRef()
 
   return (
     <>
@@ -89,19 +93,19 @@ export function PlausibleEmbedFrame({
               color: 'secondary.light'
             }}
           >
-            {error
+            {error != null
               ? t('There was an error loading the report')
               : t('The report is loading...')}
           </Typography>
         </Box>
       </Fade>
 
-      {auth != null && (
+      {!loading && token != null && (
         <>
           <StyledIFrame
             data-testid="PlausibleEmbedFrame"
             plausible-embed
-            src={`${host ?? ''}/share/${siteId}?auth=${auth}&embed=true&theme=light&background=transparent`}
+            src={`${host ?? ''}/share/${siteId}?auth=${token}&embed=true&theme=light&background=transparent`}
             loading="lazy"
             onLoad={() => {
               setTimeout(() => {

@@ -7,7 +7,7 @@ describe('PlausibleEmbedFrame', () => {
     render(
       <PlausibleEmbedFrame
         siteId="api-journeys-campaign-campaignId"
-        auth="sharedLinkSlug"
+        token="sharedLinkSlug"
       />
     )
 
@@ -25,9 +25,25 @@ describe('PlausibleEmbedFrame', () => {
     expect(screen.queryByTestId('PlausibleEmbedFrame')).not.toBeInTheDocument()
   })
 
+  it('waits without a frame while the query is still loading', () => {
+    render(
+      <PlausibleEmbedFrame
+        siteId="api-journeys-journey-journeyId"
+        token="sharedLinkSlug"
+        loading
+      />
+    )
+
+    expect(screen.getByText('The report is loading...')).toBeInTheDocument()
+    expect(screen.queryByTestId('PlausibleEmbedFrame')).not.toBeInTheDocument()
+  })
+
   it('shows the error message instead of the loading one', () => {
     render(
-      <PlausibleEmbedFrame siteId="api-journeys-journey-journeyId" error />
+      <PlausibleEmbedFrame
+        siteId="api-journeys-journey-journeyId"
+        error={new Error('network')}
+      />
     )
 
     expect(

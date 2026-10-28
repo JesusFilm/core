@@ -63,8 +63,9 @@ export function CampaignReport({
   return (
     <PlausibleEmbedFrame
       siteId={campaignSiteId(campaignId)}
-      auth={loading ? null : plausibleToken}
-      error={error != null}
+      token={plausibleToken}
+      loading={loading}
+      error={error}
       host={host}
     />
   )
