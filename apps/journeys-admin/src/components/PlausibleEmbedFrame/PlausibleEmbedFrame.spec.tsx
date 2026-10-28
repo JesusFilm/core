@@ -22,9 +22,7 @@ describe('PlausibleEmbedFrame', () => {
     render(<PlausibleEmbedFrame siteId="api-journeys-journey-journeyId" />)
 
     expect(screen.getByText('The report is loading...')).toBeInTheDocument()
-    expect(
-      screen.queryByTestId('PlausibleEmbedFrame')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByTestId('PlausibleEmbedFrame')).not.toBeInTheDocument()
   })
 
   it('shows the error message instead of the loading one', () => {
