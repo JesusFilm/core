@@ -1007,13 +1007,14 @@ type Mutation @join__type(graph: API_ANALYTICS)  @join__type(graph: API_JOURNEYS
   """
   campaignRegionLanguageCreate(regionId: ID!, languageId: ID!) : CampaignRegionLanguage! @join__field(graph: API_JOURNEYS_MODERN) 
   """
-  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Re-linking the journey already linked keeps the snapshot and only creates a missing Campaign QR Code. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking another journey or unlinking clears the mark.
+  Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Re-linking the journey already linked keeps the snapshot and only creates a missing Campaign QR Code. The journey’s visitors feed the public Campaign Stats, so linking it (by `url` or `journeyId`, an undo included) needs the right to see its stats: journey Update, as the Plausible stats queries check — a member or manager of its team, or its owner or editor. Linking creates no journey access row; unlinking needs no journey rights. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking another journey or unlinking clears the mark.
   
-  Auth: campaign Update — any member or manager of the campaign’s team.
+  Auth: campaign Update — any member or manager of the campaign’s team — plus journey Update on a journey being linked.
   
   Errors:
   - NOT_FOUND: id does not resolve.
   - FORBIDDEN: caller is not in the team.
+  - FORBIDDEN (field: `url` / `journeyId`): "You can only link a journey whose stats you can see".
   - BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".
   - BAD_USER_INPUT (field: `title` / `description`): over the length cap.
   - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.

@@ -32,7 +32,10 @@ vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
 
 const UTM = /\?utm_source=ns-qr-code&utm_campaign=[0-9a-f-]{36}$/
 
-/** A live-published journey of another team, as the paste resolution reads it. */
+/**
+ * A live-published journey of another team, as the paste resolution reads it,
+ * whose team the caller is a member of: the caller may see its stats.
+ */
 function journeyRow(
   id: string,
   slug: string,
@@ -46,10 +49,42 @@ function journeyRow(
     status: 'published',
     deletedAt: null,
     teamId: 'otherTeamId',
-    team: { id: 'otherTeamId', customDomains: [] },
+    team: {
+      id: 'otherTeamId',
+      customDomains: [],
+      userTeams: [{ teamId: 'otherTeamId', userId: 'userId', role: 'member' }]
+    },
+    userJourneys: [],
     journeyCollectionJourneys: [],
     ...overrides
   }
+}
+
+/** The same journey with the given access: no team role and no journey role unless named. */
+function journeyWithAccess(access: {
+  teamRole?: 'manager' | 'member'
+  journeyRole?: 'owner' | 'editor' | 'inviteRequested'
+}): Record<string, unknown> {
+  return journeyRow('journeyId', 'outreach-europe', {
+    team: {
+      id: 'otherTeamId',
+      customDomains: [],
+      userTeams:
+        access.teamRole == null
+          ? [{ teamId: 'otherTeamId', userId: 'someoneElse', role: 'manager' }]
+          : [{ teamId: 'otherTeamId', userId: 'userId', role: access.teamRole }]
+    },
+    userJourneys:
+      access.journeyRole == null
+        ? []
+        : [
+            {
+              journeyId: 'journeyId',
+              userId: 'userId',
+              role: access.journeyRole
+            }
+          ]
+  })
 }
 
 const QR_CODE = {
@@ -571,17 +606,156 @@ describe('campaignRegionLanguageUpdate', () => {
     })
   })
 
-  it("linking another team's journey needs only campaign Update: no membership of its team and no UserJourney row", async () => {
-    const result = await update({
-      url: 'https://admin.nextstep.is/journeys/journeyId'
+  describe('journey access: linking needs the right to see the journey stats', () => {
+    it('loads the journey with what the journey ACL reads', async () => {
+      await update({ url: 'https://admin.nextstep.is/journeys/journeyId' })
+
+      expect(prismaMock.journey.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          include: expect.objectContaining({
+            userJourneys: true,
+            team: {
+              include: expect.objectContaining({ userTeams: true })
+            }
+          })
+        })
+      )
     })
 
-    expect(result.errors).toBeUndefined()
-    expect(fixture.teamId).not.toBe('otherTeamId')
-    expect(prismaMock.userJourney.create).not.toHaveBeenCalled()
-    expect(prismaMock.userJourney.upsert).not.toHaveBeenCalled()
-    expect(prismaMock.userTeam.findUnique).not.toHaveBeenCalled()
-    expect(prismaMock.userTeam.findFirst).not.toHaveBeenCalled()
+    it.each([
+      ['a team member', { teamRole: 'member' as const }],
+      ['a team manager', { teamRole: 'manager' as const }],
+      ['the journey owner', { journeyRole: 'owner' as const }],
+      ['the journey editor', { journeyRole: 'editor' as const }]
+    ])('links a journey of another team for %s', async (_who, access) => {
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess(access) as never
+      )
+
+      const result = await update({
+        url: 'https://admin.nextstep.is/journeys/journeyId'
+      })
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.campaignRegionLanguageUpdate.journeyId).toBe(
+        'journeyId'
+      )
+      expect(fixture.teamId).not.toBe('otherTeamId')
+      expect(prismaMock.userJourney.create).not.toHaveBeenCalled()
+      expect(prismaMock.userJourney.upsert).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      ['url', { url: 'https://journeys.example.org/outreach-europe' }],
+      ['journeyId', { journeyId: 'journeyId' }]
+    ])(
+      'refuses a journey linked by %s for a caller outside its team with no journey role (FORBIDDEN on that field)',
+      async (field, input) => {
+        prismaMock.journey.findFirst.mockResolvedValue(
+          journeyWithAccess({ journeyRole: 'inviteRequested' }) as never
+        )
+
+        const result = await update(input)
+
+        expect(result.errors[0]).toMatchObject({
+          message: 'You can only link a journey whose stats you can see',
+          extensions: { code: 'FORBIDDEN', field }
+        })
+        expect(prismaMock.$transaction).not.toHaveBeenCalled()
+        expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+        expect(createShortLink).not.toHaveBeenCalled()
+      }
+    )
+
+    it('refuses an undo of an unlink that writes back a journey the caller cannot see', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+        campaignRegionLanguageWithAcl(fixture, 'eurRegionId', '529', {
+          journeyId: null,
+          title: null,
+          description: null,
+          qrCodeId: 'qrCodeId',
+          qrCode: QR_CODE
+        })
+      )
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess({}) as never
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'You can only link a journey whose stats you can see',
+        extensions: { code: 'FORBIDDEN', field: 'journeyId' }
+      })
+      expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+      expect(updateShortLink).not.toHaveBeenCalled()
+    })
+
+    it('refuses an undo of a relink that writes back a journey the caller cannot see', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(
+        linked('otherJourneyId')
+      )
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess({}) as never
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'You can only link a journey whose stats you can see',
+        extensions: { code: 'FORBIDDEN', field: 'journeyId' }
+      })
+      expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+      expect(updateShortLink).not.toHaveBeenCalled()
+    })
+
+    it('refuses re-sending the journey already linked when the caller cannot see it', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess({}) as never
+      )
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.errors[0].extensions).toMatchObject({
+        code: 'FORBIDDEN',
+        field: 'journeyId'
+      })
+      expect(prismaMock.campaignRegionLanguage.update).not.toHaveBeenCalled()
+    })
+
+    it('clears a link to a journey the caller cannot see without reading the journey', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+      prismaMock.journey.findFirst.mockResolvedValue(
+        journeyWithAccess({}) as never
+      )
+
+      const result = await update({ journeyId: null })
+
+      expect(result.errors).toBeUndefined()
+      expect(result.data.campaignRegionLanguageUpdate.journeyId).toBeNull()
+      expect(prismaMock.journey.findFirst).not.toHaveBeenCalled()
+    })
+
+    it('re-describes a link without checking journey access', async () => {
+      prismaMock.campaignRegionLanguage.findUnique.mockResolvedValue(linked())
+
+      const result = await update({ title: 'Our title' })
+
+      expect(result.errors).toBeUndefined()
+      expect(prismaMock.journey.findFirst).not.toHaveBeenCalled()
+    })
+
+    it('checks an unknown journey before access: BAD_USER_INPUT, not FORBIDDEN', async () => {
+      prismaMock.journey.findFirst.mockResolvedValue(null)
+
+      const result = await update({ journeyId: 'journeyId' })
+
+      expect(result.errors[0]).toMatchObject({
+        message: 'Journey not found or not published',
+        extensions: { code: 'BAD_USER_INPUT', field: 'journeyId' }
+      })
+    })
   })
 
   it('edits the snapshot title and description within their caps', async () => {

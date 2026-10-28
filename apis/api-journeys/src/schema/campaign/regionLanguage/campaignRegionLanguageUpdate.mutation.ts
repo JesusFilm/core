@@ -7,7 +7,7 @@ import { snapshotOf } from '../block/journey/snapshot'
 import { CampaignRegionLanguageRef } from '../campaignRegionLanguage'
 import { touchCampaign } from '../campaignWrite'
 import { JourneyWithPublicUrl } from '../getJourneyPublicUrl'
-import { resolveJourneyId, resolveJourneyLink } from '../journeyLink'
+import { parseJourneyLink, resolveShareLanguageJourney } from '../journeyLink'
 import {
   NULL_FIELD_ERROR,
   TEXT_CAPS,
@@ -27,7 +27,7 @@ import {
 builder.mutationField('campaignRegionLanguageUpdate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
     description:
-      'Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Re-linking the journey already linked keeps the snapshot and only creates a missing Campaign QR Code. Linking another team’s journey needs no rights there and creates no journey access row. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking another journey or unlinking clears the mark.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".\n- BAD_USER_INPUT (field: `title` / `description`): over the length cap.\n' +
+      'Link, swap, unlink or re-describe the journey a Share Language hands out. A pasted `url` (admin link or public URL on any domain) resolves to a live-published journey of any team with the routing filter skipped, and its title and description are snapshotted; `journeyId` links by id or, as `null`, unlinks. The Campaign QR Code follows in the same step: linking creates a `QrCode` row in the campaign’s team with its short link (drafts too, never lazily), swapping retargets the same short link so printed codes stay valid, unlinking keeps the row and its short link, which a later link retargets. Re-linking the journey already linked keeps the snapshot and only creates a missing Campaign QR Code. The journey’s visitors feed the public Campaign Stats, so linking it (by `url` or `journeyId`, an undo included) needs the right to see its stats: journey Update, as the Plausible stats queries check — a member or manager of its team, or its owner or editor. Linking creates no journey access row; unlinking needs no journey rights. `title` and `description` edit the snapshot and mark it edited (`snapshotEdited`, which an undo can set back outright); linking another journey or unlinking clears the mark.\n\nAuth: campaign Update — any member or manager of the campaign’s team — plus journey Update on a journey being linked.\n\nErrors:\n- NOT_FOUND: id does not resolve.\n- FORBIDDEN: caller is not in the team.\n- FORBIDDEN (field: `url` / `journeyId`): "You can only link a journey whose stats you can see".\n- BAD_USER_INPUT (field: `url` / `journeyId`): not a journey link, or "Journey not found or not published".\n- BAD_USER_INPUT (field: `title` / `description`): over the length cap.\n' +
       NULL_FIELD_ERROR,
     type: CampaignRegionLanguageRef,
     nullable: false,
@@ -66,12 +66,21 @@ builder.mutationField('campaignRegionLanguageUpdate', (t) =>
       if (snapshotEdited !== undefined) data.snapshotEdited = snapshotEdited
 
       let journey: JourneyWithPublicUrl | null | undefined
-      if (url !== undefined) journey = await resolveJourneyLink(url)
+      if (url !== undefined)
+        journey = await resolveShareLanguageJourney(
+          parseJourneyLink(url),
+          'url',
+          context.user
+        )
       else if (input.journeyId !== undefined)
         journey =
           input.journeyId == null
             ? null
-            : await resolveJourneyId(String(input.journeyId))
+            : await resolveShareLanguageJourney(
+                { id: String(input.journeyId) },
+                'journeyId',
+                context.user
+              )
 
       // The short-link step is decided inside the transaction and applied as its
       // last statement; should the transaction fail after that, it is undone.
