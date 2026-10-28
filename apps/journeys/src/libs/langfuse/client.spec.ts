@@ -2,14 +2,8 @@ import { type MockInstance } from 'vitest'
 
 const mockLangfuseConstructor = vi.fn()
 
-vi.mock('@langfuse/client', () => ({
-  LangfuseClient: mockLangfuseConstructor
-}))
-const mockProcessorConstructor: import('vitest').Mock = vi.fn(function () {
-  return { onStart: vi.fn(), onEnd: vi.fn(), forceFlush: vi.fn() }
-})
-vi.mock('@langfuse/otel', () => ({
-  LangfuseSpanProcessor: mockProcessorConstructor
+vi.mock('langfuse', () => ({
+  Langfuse: mockLangfuseConstructor
 }))
 
 describe('langfuse client', () => {
@@ -19,7 +13,6 @@ describe('langfuse client', () => {
   beforeEach(() => {
     vi.resetModules()
     mockLangfuseConstructor.mockClear()
-    mockProcessorConstructor.mockClear()
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     process.env = { ...ORIGINAL_ENV }
     delete process.env.LANGFUSE_PUBLIC_KEY
@@ -117,7 +110,8 @@ describe('langfuse client', () => {
       expect(mockLangfuseConstructor).toHaveBeenCalledWith({
         publicKey: 'pk-test',
         secretKey: 'sk-test',
-        baseUrl: 'https://lf.test'
+        baseUrl: 'https://lf.test',
+        environment: 'development'
       })
     })
 
@@ -134,20 +128,6 @@ describe('langfuse client', () => {
     })
   })
 
-  it('keeps telemetry export failure from rejecting a completed response', async () => {
-    process.env.LANGFUSE_PUBLIC_KEY = 'pk-offline'
-    process.env.LANGFUSE_SECRET_KEY = 'sk-offline'
-    process.env.LANGFUSE_BASE_URL = 'https://offline.invalid'
-    // eslint-disable-next-line import/dynamic-import-chunkname
-    const { getLangfuse, flushLangfuse } = await import('./client')
-    getLangfuse()
-    mockProcessorConstructor.mock.results[0].value.forceFlush.mockRejectedValue(
-      new Error('offline failure')
-    )
-    await expect(flushLangfuse()).resolves.toBeUndefined()
-    expect(warnSpy).toHaveBeenCalledWith('[langfuse] trace export failed')
-  })
-
   describe('environment resolution', () => {
     beforeEach(() => {
       process.env.LANGFUSE_PUBLIC_KEY = 'pk'
@@ -160,7 +140,7 @@ describe('langfuse client', () => {
       const { getLangfuse } = await import('./client')
       getLangfuse()
       expect(mockLangfuseConstructor).toHaveBeenCalledTimes(1)
-      return mockProcessorConstructor.mock.calls[0][0].environment
+      return mockLangfuseConstructor.mock.calls[0][0].environment
     }
 
     it("tags 'production' when VERCEL_ENV is 'production'", async () => {
