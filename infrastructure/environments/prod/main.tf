@@ -177,6 +177,55 @@ module "short_links_clickhouse" {
   doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
 }
 
+# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
+# EKS Platform Cluster. Serves plausible.central.jesusfilm.org (the module's
+# own record) for smoke tests; analytics.jesusfilm.org moves here in the
+# cutover step (modules/plausible/README.md). Apply only once its Doppler
+# token for the prd_ecs branch config is in SSM; the task then needs the EKS
+# ClickHouse NLB (README.md, "Prerequisites").
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "prod"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_names       = ["analytics.jesusfilm.org", "plausible.central.jesusfilm.org"]
+}
+
+# analytics.jesusfilm.org is served by Cloudflare DNS, not Route53, so the ACM
+# validation CNAME is added there by hand (modules/plausible/README.md) and
+# the certificate is attached to the public listener in the cutover step once
+# ACM reports ISSUED. Deliberately no aws_acm_certificate_validation: it would
+# hold an Atlantis apply for up to 75 minutes waiting on that record.
+resource "aws_acm_certificate" "analytics_jesusfilm_org" {
+  domain_name       = "analytics.jesusfilm.org"
+  validation_method = "DNS"
+
+  tags = {
+    Name = "analytics.jesusfilm.org"
+    Env  = "prod"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Attach only once ACM reports the certificate ISSUED; attaching a pending
+# certificate fails the apply. The public listener then answers for
+# analytics.jesusfilm.org, and the Cloudflare CNAME edit is the cutover
+# (modules/plausible/README.md, "Prod cutover").
+resource "aws_lb_listener_certificate" "analytics_jesusfilm_org" {
+  listener_arn    = module.prod.public_alb.alb_listener.arn
+  certificate_arn = aws_acm_certificate.analytics_jesusfilm_org.arn
+}
+
 module "postgresql" {
   source                          = "../../modules/aws/aurora"
   name                            = "jfp-core"
@@ -234,25 +283,6 @@ module "eks" {
   subnet_ids_2a      = ["subnet-0b7c1e14af0ffb3ea", "subnet-036663ddfdb3b94b0"]
   subnet_ids_2b      = ["subnet-05c389158df4b940a", "subnet-01aa708571a3e499c"]
   subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
-}
-
-# Bounded EBS snapshot retention for the Plausible ClickHouse volumes: 7 daily
-# plus 4 weekly snapshots, replacing the former SnapScheduler schedule,
-# whose EBS snapshots were never deleted (the VolumeSnapshotClass uses
-# deletionPolicy: Retain).
-module "plausible_clickhouse_snapshots" {
-  source       = "../../modules/aws/ebs-snapshot-policy"
-  env          = "prod"
-  name         = "plausible-clickhouse"
-  cluster_name = module.eks.cluster_name
-  pvc_names = [
-    "plausible-analytics-clickhouse-data-plausible-analytics-clickhouse-0",
-    "plausible-analytics-clickhouse-replica-data-plausible-analytics-clickhouse-replica-0"
-  ]
-  schedules = [
-    { name = "daily", cron_expression = "cron(0 1 * * ? *)", retain_count = 7 },
-    { name = "weekly", cron_expression = "cron(0 2 ? * SUN *)", retain_count = 4 }
-  ]
 }
 
 locals {

@@ -1,0 +1,38 @@
+import { builder } from '../../../builder'
+import { TEXT_CAPS } from '../../validation'
+import { CampaignRegionHeaderBlock } from '../campaignRegionHeaderBlock'
+import { SECTION_STYLE_ERRORS } from '../inputs/sectionStyleInput'
+import {
+  authorizeTypedBlockUpdate,
+  sectionStyleColumns,
+  updateBlock
+} from '../service'
+import { validateSectionText } from '../validateSectionText'
+
+import { CampaignRegionHeaderBlockUpdateInput } from './inputs'
+
+builder.mutationField('campaignRegionHeaderBlockUpdate', (t) =>
+  t.withAuth({ isAuthenticated: true }).field({
+    type: CampaignRegionHeaderBlock,
+    nullable: false,
+    description: `Update the region header’s default-language intro, or its Section Background and colour overrides. Only the given fields change.\n\nAuth: campaign Update — any member or manager of the campaign’s team.\n\nErrors:\n- NOT_FOUND: id does not resolve to a live CampaignRegionHeaderBlock.\n- FORBIDDEN: caller is not in the team.\n- BAD_USER_INPUT (field: \`intro\`): over ${TEXT_CAPS.intro} characters.\n${SECTION_STYLE_ERRORS}`,
+    args: {
+      id: t.arg({ type: 'ID', required: true }),
+      input: t.arg({
+        type: CampaignRegionHeaderBlockUpdateInput,
+        required: true
+      })
+    },
+    resolve: async (_parent, { id, input }, context) => {
+      const block = await authorizeTypedBlockUpdate(
+        String(id),
+        context.user,
+        'CampaignRegionHeaderBlock'
+      )
+      return await updateBlock(block, {
+        ...validateSectionText(input, ['intro']),
+        ...sectionStyleColumns(input)
+      })
+    }
+  })
+)

@@ -132,6 +132,21 @@ export const yoga = createYoga<
             'Query.adminJourneysReport': 0,
             'Query.block': 0,
             'Query.blocks': 0,
+            // Campaign reads. `campaigns` and `campaign` are team-ACL'd and
+            // would otherwise cache a fresh team's first empty list forever
+            // (hazard 1 above: no entity IDs to invalidate on). `campaignPublic`
+            // caches a null for an unknown or unpublished slug that a later
+            // publish cannot invalidate; the journeys app's ISR layer already
+            // caches the rendered page. `campaignTranslations` is per-team.
+            // `campaignStats` gates a draft campaign on the caller, and a cache
+            // hit returns before the resolver runs, so a member's read would be
+            // served to anyone with the id and never refresh; its Redis stats
+            // cache already shares the Plausible reads across callers.
+            'Query.campaign': 0,
+            'Query.campaignPublic': 0,
+            'Query.campaignStats': 0,
+            'Query.campaignTranslations': 0,
+            'Query.campaigns': 0,
             'Query.hosts': 0,
             'Query.integrations': 0,
             'Query.journey': 0,
