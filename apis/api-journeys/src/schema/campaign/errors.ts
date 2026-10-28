@@ -5,9 +5,14 @@ export function notFound(message: string): GraphQLError {
   return new GraphQLError(message, { extensions: { code: 'NOT_FOUND' } })
 }
 
-/** The target resolves but the caller is not allowed to act on it (GLOSSARY.md: Campaign access). */
-export function forbidden(message: string): GraphQLError {
-  return new GraphQLError(message, { extensions: { code: 'FORBIDDEN' } })
+/**
+ * The target resolves but the caller is not allowed to act on it (GLOSSARY.md:
+ * Campaign access); `field` names the input that named it, when one did.
+ */
+export function forbidden(message: string, field?: string): GraphQLError {
+  return new GraphQLError(message, {
+    extensions: { code: 'FORBIDDEN', ...(field != null ? { field } : {}) }
+  })
 }
 
 /**

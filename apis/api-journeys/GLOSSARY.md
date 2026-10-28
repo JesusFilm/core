@@ -192,8 +192,8 @@ Changing a Campaign's default language: one transaction moves every Translated F
 _Avoid_: language change, re-translate
 
 **Campaign access**:
-Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team and nothing else: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or adds, checks or removes its Campaign Domain. Linking a Journey from another Team needs no rights there and grants none; QR codes, short links and traffic reads about linked Journeys are the Campaign's Team's own.
-_Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates templates, irrelevant here)
+Who may do what to a Campaign, decided by the caller's **Team Role** on the owning Team, plus journey Update to link a Share Language Journey: any member or manager creates, reads, edits, publishes and unpublishes it, while only a manager deletes it or adds, checks or removes its Campaign Domain. Linking a Journey to a Share Language needs the right to see that Journey's stats (journey Update: a member or manager of its Team, or its owner or editor; for a Template, also any **Publisher**, who can already read every Template's stats), because its visitors feed the public Campaign Stats. The check is made at link time only: a link stays if its linker later loses access. Journey cards feed no stats and need no rights on their Journey. Neither kind of link grants any rights on the Journey. QR codes and short links about linked Journeys are the Campaign's Team's own; the traffic the Campaign Stats show is the Share Language Journeys', each one its linker could see when linking it.
+_Avoid_: campaign role (there is no such role; reuse Team Role), owner (a journey role), publisher (gates Templates; here it only lets a Publisher link a Template, whose stats it can already read)
 
 **Campaign Seed**:
 What every Campaign is born with, in one step: a draft Campaign with one language and a generated slug, the Light theme and a Palette drawn from it, the landing and Region pages with their starter sections and copy, the header and footer with their starter links, and the eighteen Campaign Strings. No regions, media or Journeys: those are the author's first edits.
@@ -386,7 +386,7 @@ The shared viewer code that turns a published Campaign into a page, one componen
 _Avoid_: block renderer (that is the Journey one), template, layout engine
 
 **Campaign Stats**:
-The visitor numbers a Campaign shows: for each linked Journey that is not trashed (published, archived and draft alike), its unique visitors by country over all time (the sweep starts at a fixed early date, and the public tile says "all time"), read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two linked Journeys counts in both.
+The visitor numbers a Campaign shows: for each Share Language Journey that is not trashed (published, archived and draft alike), its unique visitors by country over all time (the sweep starts at a fixed early date, and the public tile says "all time"), read from that Journey's own **Plausible** site and summed along the Campaign's region and language structure into landing, region and country totals. One cached sweep serves anyone once the Campaign is published and its team while a draft, and a visitor who opens two Share Language Journeys counts in both.
 _Avoid_: analytics (too broad; the section is the Analytics section, the data is Campaign Stats), views (the metric is visitors), per-region stats (there is one sweep, scoped on read)
 
 ### Account deletion
