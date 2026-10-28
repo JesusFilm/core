@@ -1,33 +1,33 @@
 {
   "RootIndexPage": {
-    "pageTitle": "Player",
-    "description": "Navigate to /pl/[playlistId] to view a playlist"
+    "pageTitle": "খেলোয়াড়",
+    "description": "প্লেলিস্ট দেখতে /pl/[playlistId] এ নেভিগেট করুন।"
   },
   "Metadata": {
-    "pageTitle": "{title} | Jesus Film Project"
+    "pageTitle": "{title} যিশু চলচ্চিত্র প্রকল্প"
   },
   "PlaylistRoutePage": {
     "defaultPageTitle": "প্লেলিস্ট",
-    "pageTitle": "{title} by {name}",
-    "thisPlaylistIsEmpty": "This playlist is empty",
-    "defaultDescription": "Your friend shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus.",
-    "description": "Your friend {name} shared these videos as an encouragement to you. Press play for uplifting stories about finding peace in Jesus."
+    "pageTitle": "{title} দ্বারা {name}",
+    "thisPlaylistIsEmpty": "এই প্লেলিস্টটি ফাঁকা",
+    "defaultDescription": "তোমার বন্ধু তোমাকে উৎসাহিত করার জন্য এই ভিডিওগুলো শেয়ার করেছে। যীশুতে শান্তি পাওয়ার অনুপ্রেরণামূলক গল্প দেখতে প্লে চাপুন।",
+    "description": "তোমার বন্ধু {name} এই ভিডিওগুলো তোমার উৎসাহের জন্য শেয়ার করেছে। যীশুতে শান্তি পাওয়ার অনুপ্রেরণামূলক গল্প দেখতে প্লে চাপুন।"
   },
   "PlaylistPage": {
-    "noVideoAvailable": "No video available"
+    "noVideoAvailable": "কোনও ভিডিও উপলব্ধ নেই"
   },
   "PlaylistList": {
-    "noThumbnail": "No thumbnail"
+    "noThumbnail": "থাম্বনেইল নেই"
   },
   "StudyQuestions": {
-    "title": "Study Questions"
+    "title": "অধ্যয়ন প্রশ্নাবলী"
   },
   "VideoPlayer": {
-    "lackOfBrowserSupport": "To view this video please enable JavaScript, and consider upgrading to a web browser that <link>supports HTML5 video</link>"
+    "lackOfBrowserSupport": "এই ভিডিওটি দেখতে অনুগ্রহ করে JavaScript সক্ষম করুন এবং <link>HTML5 ভিডিও সমর্থন করে</link> এমন একটি ওয়েব ব্রাউজারে আপগ্রেড করার কথা ভাবুন।"
   },
   "SharedPlaylistBanner": {
-    "sharedWithYou": "Your friend <strong>{name}</strong> shared these videos with you as an encouragement to you. The best way to view these videos is by downloading our app.",
-    "downloadOnAppStore": "Download on App Store",
-    "getItOnGooglePlay": "Get it on Google Play"
+    "sharedWithYou": "তোমার বন্ধু <strong>{name}</strong> আপনার বন্ধু আপনাকে উৎসাহিত করার জন্য এই ভিডিওগুলো শেয়ার করেছেন। এই ভিডিওগুলো দেখার সেরা উপায় হল আমাদের অ্যাপ ডাউনলোড করা।",
+    "downloadOnAppStore": "অ্যাপ স্টোর থেকে ডাউনলোড করুন",
+    "getItOnGooglePlay": "গুগল প্লে-এ পান"
   }
 }

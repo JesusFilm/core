@@ -24,7 +24,7 @@ function badYouTubeUrl(): GraphQLError {
 function extractVideoId(parsed: URL): string | null {
   const host = parsed.hostname.toLowerCase().replace(/^(?:www|m)\./, '')
 
-  let candidate: string | null = null
+  let candidate: string | null
   if (host === 'youtu.be') {
     candidate = parsed.pathname.split('/')[1] ?? null
   } else if (parsed.pathname === '/watch') {

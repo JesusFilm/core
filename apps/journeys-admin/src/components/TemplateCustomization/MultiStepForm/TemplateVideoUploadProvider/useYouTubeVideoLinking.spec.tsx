@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { ReactElement, ReactNode } from 'react'
 
@@ -25,7 +26,7 @@ vi.mock('notistack', () => ({
 
 const mockJourney = { ...mockJourneyBase, id: 'journey-1' }
 
-const videoBlockUpdateSuccessMock: MockedResponse = {
+const videoBlockUpdateSuccessMock: MockLink.MockedResponse = {
   request: {
     query: VIDEO_BLOCK_UPDATE,
     variables: {
@@ -46,7 +47,7 @@ const videoBlockUpdateSuccessMock: MockedResponse = {
   }
 }
 
-const videoBlockUpdateErrorMock: MockedResponse = {
+const videoBlockUpdateErrorMock: MockLink.MockedResponse = {
   request: {
     query: VIDEO_BLOCK_UPDATE,
     variables: {
@@ -72,7 +73,7 @@ function useYouTubeLinkingWithTaskMap() {
 }
 
 function createWrapper(
-  mocks: MockedResponse[] = [],
+  mocks: MockLink.MockedResponse[] = [],
   journey = mockJourney
 ): React.FC<{ children: ReactNode }> {
   const Wrapper = function Wrapper({
@@ -81,7 +82,7 @@ function createWrapper(
     children: ReactNode
   }): ReactElement {
     return (
-      <MockedProvider mocks={mocks} addTypename={false}>
+      <MockedProvider mocks={mocks}>
         <JourneyProvider value={{ journey, renderMode: 'customize' }}>
           {children}
         </JourneyProvider>

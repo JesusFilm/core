@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
@@ -193,10 +193,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -216,10 +213,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -237,10 +231,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -261,10 +252,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher={false}
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher={false} authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -282,10 +270,7 @@ describe('TemplateViewHeader', () => {
               journey
             }}
           >
-            <TemplateViewHeader
-              isPublisher={false}
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher={false} authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -337,9 +322,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider value={{ journey: customizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={
-              { id: '123', email: 'user@example.com' } as unknown as User
-            }
+            authUser={{ id: '123', email: 'user@example.com' }}
           />
         </JourneyProvider>
       </MockedProvider>
@@ -358,9 +341,7 @@ describe('TemplateViewHeader', () => {
         <JourneyProvider value={{ journey: nonCustomizableJourney }}>
           <TemplateViewHeader
             isPublisher
-            authUser={
-              { id: '123', email: 'user@example.com' } as unknown as User
-            }
+            authUser={{ id: '123', email: 'user@example.com' }}
           />
         </JourneyProvider>
       </MockedProvider>
@@ -378,10 +359,7 @@ describe('TemplateViewHeader', () => {
       <MockedProvider>
         <SnackbarProvider>
           <JourneyProvider value={{ journey: nonCustomizableJourney }}>
-            <TemplateViewHeader
-              isPublisher
-              authUser={{ id: '123' } as unknown as User}
-            />
+            <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
           </JourneyProvider>
         </SnackbarProvider>
       </MockedProvider>
@@ -401,10 +379,7 @@ describe('TemplateViewHeader', () => {
     render(
       <MockedProvider>
         <JourneyProvider value={{ journey: undefined }}>
-          <TemplateViewHeader
-            isPublisher
-            authUser={{ id: '123' } as unknown as User}
-          />
+          <TemplateViewHeader isPublisher authUser={{ id: '123' }} />
         </JourneyProvider>
       </MockedProvider>
     )

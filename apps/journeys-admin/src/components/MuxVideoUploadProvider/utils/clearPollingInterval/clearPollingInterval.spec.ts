@@ -23,7 +23,7 @@ describe('clearPollingInterval', () => {
 
   it('should clear interval and delete from map when interval exists', () => {
     const videoId = 'video-1'
-    const mockInterval = setInterval(noop, 1000) as unknown as NodeJS.Timeout
+    const mockInterval = setInterval(noop, 1000)
     pollingIntervalsRef.current.set(videoId, mockInterval)
 
     clearPollingInterval(videoId, pollingIntervalsRef)
@@ -46,8 +46,8 @@ describe('clearPollingInterval', () => {
   it('should handle multiple intervals and only clear the specified one', () => {
     const videoId1 = 'video-1'
     const videoId2 = 'video-2'
-    const mockInterval1 = setInterval(noop, 1000) as unknown as NodeJS.Timeout
-    const mockInterval2 = setInterval(noop, 1000) as unknown as NodeJS.Timeout
+    const mockInterval1 = setInterval(noop, 1000)
+    const mockInterval2 = setInterval(noop, 1000)
     pollingIntervalsRef.current.set(videoId1, mockInterval1)
     pollingIntervalsRef.current.set(videoId2, mockInterval2)
 

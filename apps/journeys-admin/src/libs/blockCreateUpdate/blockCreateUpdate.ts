@@ -5,7 +5,7 @@ import { BlockFields } from '../../../__generated__/BlockFields'
 export function blockCreateUpdate(
   // apollo gives any type to ApolloCache generic
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cache: ApolloCache<any>,
+  cache: ApolloCache,
   journeyId: string | undefined,
   data: { id: string; __typename: BlockFields['__typename'] } | undefined | null
 ): void {

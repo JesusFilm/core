@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook } from '@testing-library/react'
 import { FormikHelpers } from 'formik'
 import { GraphQLError } from 'graphql'
@@ -86,7 +87,7 @@ function muxForm(
 }
 
 function wrapperWithMocks(
-  mocks: ReadonlyArray<MockedResponse>
+  mocks: ReadonlyArray<MockLink.MockedResponse>
 ): ({ children }: { children: ReactNode }) => JSX.Element {
   return function Wrapper({ children }) {
     return (
@@ -1000,7 +1001,7 @@ describe('useCollectionForm', () => {
         slug: 'old-slug'
       })
 
-      const errorMock: MockedResponse = {
+      const errorMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_UPDATE,
           variables: { id: 'page-9', input: { slug: 'new-slug' } }
@@ -1059,7 +1060,7 @@ describe('useCollectionForm', () => {
         title: 'Old'
       })
 
-      const errorMock: MockedResponse = {
+      const errorMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_UPDATE,
           variables: { id: 'page-10', input: { title: 'New' } }
@@ -1571,7 +1572,7 @@ describe('useCollectionForm', () => {
     it('maps a backend media reason to an inline media field error and stays open', async () => {
       const onClose = vi.fn()
       const collection = makeCollection({ id: 'page-1' })
-      const errorMock: MockedResponse = {
+      const errorMock: MockLink.MockedResponse = {
         request: {
           query: TEMPLATE_GALLERY_PAGE_UPDATE,
           variables: {

@@ -1,4 +1,4 @@
-import { useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Fullscreen from '@mui/icons-material/Fullscreen'
 import FullscreenExit from '@mui/icons-material/FullscreenExit'
 import PauseRounded from '@mui/icons-material/PauseRounded'
@@ -20,6 +20,10 @@ import { defaultVideoJsOptions } from '@core/shared/ui/defaultVideoJsOptions'
 import { isIOS } from '@core/shared/ui/deviceUtils'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
+import {
+  GetVideoContent,
+  GetVideoContentVariables
+} from '../../../../__generated__/GetVideoContent'
 import { GET_VIDEO_CONTENT } from '../../../../pages/watch/[part1]/[part2]'
 
 import { useIsInViewport } from './utils/useIsInViewport'
@@ -80,7 +84,7 @@ export function CollectionVideoPlayer({
     data: videoData,
     loading: videoLoading,
     error: videoError
-  } = useQuery(GET_VIDEO_CONTENT, {
+  } = useQuery<GetVideoContent, GetVideoContentVariables>(GET_VIDEO_CONTENT, {
     variables: {
       id: contentId
     }

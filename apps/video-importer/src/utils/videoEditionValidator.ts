@@ -53,7 +53,7 @@ function describeGraphQLError(error: unknown): string {
 
   const combined = [raw, causeMessage, causeCode].filter(Boolean).join(' | ')
   const looksLikeTransport =
-    /unable to connect|fetch failed|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|network|socket hang up|getaddrinfo/i.test(
+    /unable to connect|fetch failed|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|ETIMEDOUT|timed out|network|socket hang up|getaddrinfo/i.test(
       combined
     )
 
@@ -86,7 +86,7 @@ export async function validateLanguage(rawLanguageId: string): Promise<void> {
       languageId
     })
   } catch (error) {
-    throw new Error(describeGraphQLError(error))
+    throw new Error(describeGraphQLError(error), { cause: error })
   }
 
   if (!response.language) {
@@ -134,7 +134,7 @@ export async function validateVideoAndEdition(
       languageId
     })
   } catch (error) {
-    throw new Error(describeGraphQLError(error))
+    throw new Error(describeGraphQLError(error), { cause: error })
   }
 
   if (!response.video) {

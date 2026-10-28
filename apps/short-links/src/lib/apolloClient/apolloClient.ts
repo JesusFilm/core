@@ -1,10 +1,10 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { registerApolloClient } from '@apollo/client-integration-nextjs'
 
 const ONE_HOUR_IN_SECONDS = 60 * 60 // 60 seconds times 60 minutes
 
 export const { getClient: getApolloClient } = registerApolloClient(() => {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: process.env.NEXT_PUBLIC_GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'short-links',

@@ -17,6 +17,7 @@ import { builder } from '../builder'
 
 import { JourneyRef } from './journey'
 import { Action, journeyAcl } from './journey.acl'
+import { isReservedJourneySlug } from './reservedJourneySlugs/reservedJourneySlugs'
 
 const ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED = 'P2002'
 
@@ -243,6 +244,11 @@ builder.mutationField('journeyDuplicate', (t) =>
         )
 
         let slug = slugify(duplicateTitle, { lower: true, strict: true })
+        if (isReservedJourneySlug(slug))
+          slug = slugify(`${slug}-${duplicateJourneyId}`, {
+            lower: true,
+            strict: true
+          })
 
         const duplicateCustomizationFields =
           journey.journeyCustomizationFields.map((field) => ({
@@ -470,7 +476,6 @@ builder.mutationField('journeyDuplicate', (t) =>
             if (err.code === ERROR_PSQL_UNIQUE_CONSTRAINT_VIOLATED) {
               slug = slugify(`${slug}-${duplicateJourneyId}`)
             } else {
-              retry = false
               throw err
             }
           }

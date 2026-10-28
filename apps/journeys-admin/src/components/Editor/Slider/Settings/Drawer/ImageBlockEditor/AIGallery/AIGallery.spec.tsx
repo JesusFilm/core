@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { offsetLimitPagination } from '@apollo/client/utilities'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -35,7 +36,10 @@ describe('AIGallery', () => {
     process.env = originalEnv
   })
 
-  const getAIImage: MockedResponse<CreateAiImage, CreateAiImageVariables> = {
+  const getAIImage: MockLink.MockedResponse<
+    CreateAiImage,
+    CreateAiImageVariables
+  > = {
     request: {
       query: CREATE_AI_IMAGE,
       variables: {
@@ -123,7 +127,7 @@ describe('AIGallery', () => {
   })
 
   it('should render the generations grid when mediaLibrary flag is on', async () => {
-    const myAiImagesMock: MockedResponse = {
+    const myAiImagesMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: true }
@@ -157,7 +161,7 @@ describe('AIGallery', () => {
   })
 
   it('should prepend the new image into the AI grid cache after a successful generation', async () => {
-    const myAiImagesMock: MockedResponse = {
+    const myAiImagesMock: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: true }
@@ -212,14 +216,14 @@ describe('AIGallery', () => {
         blurhash: null,
         userId: 'me'
       }))
-    const firstPage: MockedResponse = {
+    const firstPage: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 0, limit: 11, isAi: true }
       },
       result: { data: { getMyCloudflareImages: makeAiImages(11) } }
     }
-    const secondPage: MockedResponse = {
+    const secondPage: MockLink.MockedResponse = {
       request: {
         query: GET_MY_CLOUDFLARE_IMAGES,
         variables: { offset: 10, limit: 11, isAi: true }

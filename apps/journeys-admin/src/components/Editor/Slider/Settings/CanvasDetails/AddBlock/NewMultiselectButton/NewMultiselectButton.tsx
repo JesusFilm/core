@@ -1,4 +1,5 @@
-import { Reference, gql, useMutation } from '@apollo/client'
+import { Reference, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useTranslation } from 'next-i18next/pages'
 import type { ReactElement } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -26,6 +27,7 @@ import {
   ButtonVariant
 } from '../../../../../../../../__generated__/globalTypes'
 import type { MultiselectBlockCreate } from '../../../../../../../../__generated__/MultiselectBlockCreate'
+import type { MultiselectWithButtonCreate } from '../../../../../../../../__generated__/MultiselectWithButtonCreate'
 // Note: multiselect option creation is part of the same mutation operation type
 import {
   MultiselectWithButtonRestore,
@@ -213,7 +215,7 @@ export function NewMultiselectButton(): ReactElement {
   const [multiselectBlockCreate, { loading }] =
     useMutation<MultiselectBlockCreate>(MULTISELECT_BLOCK_CREATE)
   const [multiselectWithButtonCreate, { loading: withButtonLoading }] =
-    useMutation(MULTISELECT_WITH_BUTTON_CREATE)
+    useMutation<MultiselectWithButtonCreate>(MULTISELECT_WITH_BUTTON_CREATE)
   const [multiselectWithButtonDelete] = useMutation(
     MULTISELECT_WITH_BUTTON_DELETE
   )

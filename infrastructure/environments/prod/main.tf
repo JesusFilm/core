@@ -161,16 +161,94 @@ module "datadog_aurora" {
 module "redis" {
   source            = "../../modules/aws/elasticache"
   cluster_id        = "redis-prod"
+  node_type         = "cache.t2.medium"
+  apply_immediately = true
   subnet_ids        = module.prod.vpc.internal_subnets
   security_group_id = module.prod.ecs.internal_ecs_security_group_id
   cidr              = module.prod.cidr
   vpc_id            = module.prod.vpc.id
 }
 
+# Short-link scan events (ClickHouse Cloud, always on; stage idles).
+module "short_links_clickhouse" {
+  source        = "../../modules/clickhouse/service"
+  env           = "prod"
+  idle_scaling  = false
+  doppler_token = data.aws_ssm_parameter.doppler_core_prod_token.value
+}
+
+# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
+# EKS Platform Cluster. Serves plausible.central.jesusfilm.org (the module's
+# own record) for smoke tests; analytics.jesusfilm.org moves here in the
+# cutover step (modules/plausible/README.md). Apply only once its Doppler
+# token for the prd_ecs branch config is in SSM; the task then needs the EKS
+# ClickHouse NLB (README.md, "Prerequisites").
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "prod"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_prod_token.value
+  alb_listener_arn = module.prod.public_alb.alb_listener.arn
+  alb_dns_name     = module.prod.public_alb.dns_name
+  host_names       = ["analytics.jesusfilm.org", "plausible.central.jesusfilm.org"]
+}
+
+# analytics.jesusfilm.org is served by Cloudflare DNS, not Route53, so the ACM
+# validation CNAME is added there by hand (modules/plausible/README.md) and
+# the certificate is attached to the public listener in the cutover step once
+# ACM reports ISSUED. Deliberately no aws_acm_certificate_validation: it would
+# hold an Atlantis apply for up to 75 minutes waiting on that record.
+resource "aws_acm_certificate" "analytics_jesusfilm_org" {
+  domain_name       = "analytics.jesusfilm.org"
+  validation_method = "DNS"
+
+  tags = {
+    Name = "analytics.jesusfilm.org"
+    Env  = "prod"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Attach only once ACM reports the certificate ISSUED; attaching a pending
+# certificate fails the apply. The public listener then answers for
+# analytics.jesusfilm.org, and the Cloudflare CNAME edit is the cutover
+# (modules/plausible/README.md, "Prod cutover").
+resource "aws_lb_listener_certificate" "analytics_jesusfilm_org" {
+  listener_arn    = module.prod.public_alb.alb_listener.arn
+  certificate_arn = aws_acm_certificate.analytics_jesusfilm_org.arn
+}
+
 module "postgresql" {
-  source                  = "../../modules/aws/aurora"
-  name                    = "jfp-core"
-  env                     = "prod"
+  source                          = "../../modules/aws/aurora"
+  name                            = "jfp-core"
+  env                             = "prod"
+  engine_version                  = var.versions.aurora
+  enforce_major_upgrade_approval  = true
+  allow_major_version_upgrade     = var.allow_aurora_major_upgrade
+  db_cluster_parameter_group_name = split(".", var.versions.aurora)[0] == "13" ? "aurora-postgresql13-cluster-replication" : null
+  managed_parameter_group_family  = split(".", var.versions.aurora)[0] == "13" ? null : "aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  db_parameter_group_name         = "default.aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  managed_cluster_parameters = {
+    "rds.logical_replication"    = { value = "1", apply_method = "pending-reboot" }
+    "log_min_duration_statement" = { value = "5000", apply_method = "immediate" }
+    # PostgreSQL 13 uses 0; preserve the existing connection policy during the
+    # major upgrade rather than also changing application TLS requirements.
+    "rds.force_ssl" = { value = "0", apply_method = "immediate" }
+  }
+  storage_type      = null
+  apply_immediately = true
+  serverlessv2_capacity = {
+    min_capacity = 0.5
+    max_capacity = 16
+  }
   doppler_token           = data.aws_ssm_parameter.doppler_core_prod_token.value
   doppler_project         = "core"
   subnet_group_name       = module.prod.vpc.db_subnet_group_name
@@ -179,8 +257,25 @@ module "postgresql" {
 }
 
 module "eks" {
-  source             = "../../modules/aws/eks"
-  env                = "prod"
+  source                     = "../../modules/aws/eks"
+  env                        = "prod"
+  cluster_version            = var.versions.eks_cluster
+  node_version               = var.versions.eks_nodes
+  node_max_unavailable       = 1
+  node_ami_type              = "AL2023_x86_64_STANDARD"
+  enforce_sequential_upgrade = true
+  addons = {
+    for name, version in var.eks_addon_versions : name => {
+      version              = version
+      existing             = name == "eks-node-monitoring-agent"
+      configuration_values = lookup(local.eks_addon_configuration, name, null)
+    }
+  }
+  node_scaling_config = {
+    desired_size = 3
+    min_size     = 3
+    max_size     = 5
+  }
   name               = "jfp-eks"
   subnet_ids         = concat(module.prod.vpc.internal_subnets, module.prod.vpc.public_subnets)
   security_group_ids = [module.prod.ecs.internal_ecs_security_group_id, module.prod.ecs.public_ecs_security_group_id]
@@ -190,3 +285,63 @@ module "eks" {
   subnet_ids_2c      = ["subnet-02f4c2a33ace122c5", "subnet-0aa10af01283bbcdb"]
 }
 
+locals {
+  # Preserve existing networking, fixed DNS replicas and resource requests
+  # while adopting the EKS bootstrap add-ons into Terraform.
+  eks_addon_configuration = {
+    "vpc-cni" = jsonencode({
+      "env" = {
+        "ADDITIONAL_ENI_TAGS"                   = "{}"
+        "ANNOTATE_POD_IP"                       = "false"
+        "AWS_VPC_CNI_NODE_PORT_SUPPORT"         = "true"
+        "AWS_VPC_ENI_MTU"                       = "9001"
+        "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG"    = "false"
+        "AWS_VPC_K8S_CNI_EXTERNALSNAT"          = "false"
+        "AWS_VPC_K8S_CNI_LOGLEVEL"              = "DEBUG"
+        "AWS_VPC_K8S_CNI_LOG_FILE"              = "/host/var/log/aws-routed-eni/ipamd.log"
+        "AWS_VPC_K8S_CNI_RANDOMIZESNAT"         = "prng"
+        "AWS_VPC_K8S_CNI_VETHPREFIX"            = "eni"
+        "AWS_VPC_K8S_PLUGIN_LOG_FILE"           = "/var/log/aws-routed-eni/plugin.log"
+        "AWS_VPC_K8S_PLUGIN_LOG_LEVEL"          = "DEBUG"
+        "DISABLE_INTROSPECTION"                 = "false"
+        "DISABLE_METRICS"                       = "false"
+        "DISABLE_NETWORK_RESOURCE_PROVISIONING" = "false"
+        "ENABLE_POD_ENI"                        = "false"
+        "ENABLE_PREFIX_DELEGATION"              = "false"
+        "ENABLE_SUBNET_DISCOVERY"               = "true"
+        "NETWORK_POLICY_ENFORCING_MODE"         = "standard"
+        "WARM_ENI_TARGET"                       = "1"
+        "WARM_PREFIX_TARGET"                    = "1"
+      }
+      "resources" = {
+        "requests" = {
+          "cpu" = "25m"
+        }
+      }
+      "nodeAgent" = {
+        "resources" = {
+          "requests" = {
+            "cpu" = "25m"
+          }
+        }
+      }
+    })
+    "coredns" = jsonencode({
+      corefile       = ".:53 {\n    errors\n    health {\n        lameduck 5s\n      }\n    ready\n    kubernetes cluster.local in-addr.arpa ip6.arpa {\n      pods insecure\n      fallthrough in-addr.arpa ip6.arpa\n    }\n    prometheus :9153\n    forward . /etc/resolv.conf\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n"
+      "replicaCount" = 2
+      "resources" = {
+        "limits" = {
+          "memory" = "170Mi"
+        }
+        "requests" = {
+          "cpu"    = "100m"
+          "memory" = "70Mi"
+        }
+      }
+      "podDisruptionBudget" = {
+        "enabled"        = true
+        "maxUnavailable" = 1
+      }
+    })
+  }
+}

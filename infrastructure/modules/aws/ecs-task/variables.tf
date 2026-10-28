@@ -132,3 +132,48 @@ variable "include_aws_env_vars" {
   type    = bool
   default = false
 }
+
+variable "image" {
+  type        = string
+  default     = null
+  description = "Image for the app container. Defaults to this service's ECR repository at :latest, which CI pushes to. Set it for a third-party image that is not built in this repo (the ECR repository is still created and stays empty)."
+}
+
+variable "command" {
+  type        = list(string)
+  default     = null
+  description = "Command for the app container. Default: none, so the image's CMD runs."
+}
+
+variable "cpu_architecture" {
+  type        = string
+  default     = "X86_64"
+  description = "Fargate CPU architecture. ARM64 is Graviton; the image and every sidecar must be published for linux/arm64."
+
+  validation {
+    condition     = contains(["X86_64", "ARM64"], var.cpu_architecture)
+    error_message = "cpu_architecture must be X86_64 or ARM64."
+  }
+}
+
+variable "deployment_minimum_healthy_percent" {
+  type        = number
+  default     = null
+  description = "ECS deployment minimum healthy percent. null keeps the provider default (100). 0 with deployment_maximum_percent = 100 serializes deploys for single-node apps."
+
+  validation {
+    condition     = var.deployment_minimum_healthy_percent == null || (var.deployment_minimum_healthy_percent >= 0 && var.deployment_minimum_healthy_percent <= 100)
+    error_message = "deployment_minimum_healthy_percent must be between 0 and 100."
+  }
+}
+
+variable "deployment_maximum_percent" {
+  type        = number
+  default     = null
+  description = "ECS deployment maximum percent. null keeps the provider default (200)."
+
+  validation {
+    condition     = var.deployment_maximum_percent == null || (var.deployment_maximum_percent >= 100 && var.deployment_maximum_percent <= 200)
+    error_message = "deployment_maximum_percent must be between 100 and 200."
+  }
+}

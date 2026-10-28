@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/router'
 import { ReactNode } from 'react'
@@ -23,14 +24,10 @@ const mockUseRouter = useRouter as MockedFunction<typeof useRouter>
 const mockUseAuth = useAuth as MockedFunction<typeof useAuth>
 
 function createWrapper(
-  mocks: MockedResponse[] = []
+  mocks: MockLink.MockedResponse[] = []
 ): ({ children }: { children: ReactNode }) => JSX.Element {
   return function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <MockedProvider mocks={mocks} addTypename={false}>
-        {children}
-      </MockedProvider>
-    )
+    return <MockedProvider mocks={mocks}>{children}</MockedProvider>
   }
 }
 
@@ -75,7 +72,7 @@ describe('useIntegrationGoogleCreate', () => {
   })
 
   it('should not trigger mutation when code is absent', () => {
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: INTEGRATION_GOOGLE_CREATE,
         variables: {
@@ -149,7 +146,7 @@ describe('useIntegrationGoogleCreate', () => {
 
     const onSuccess = vi.fn()
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: INTEGRATION_GOOGLE_CREATE,
         variables: {
@@ -199,7 +196,7 @@ describe('useIntegrationGoogleCreate', () => {
 
     const onError = vi.fn()
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: INTEGRATION_GOOGLE_CREATE,
         variables: {
@@ -241,7 +238,7 @@ describe('useIntegrationGoogleCreate', () => {
 
     const onError = vi.fn()
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: INTEGRATION_GOOGLE_CREATE,
         variables: {
@@ -279,7 +276,7 @@ describe('useIntegrationGoogleCreate', () => {
       replace
     })
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: INTEGRATION_GOOGLE_CREATE,
         variables: {
@@ -320,7 +317,7 @@ describe('useIntegrationGoogleCreate', () => {
 
     const onSuccess = vi.fn()
 
-    const mutationMock: MockedResponse = {
+    const mutationMock: MockLink.MockedResponse = {
       request: {
         query: INTEGRATION_GOOGLE_CREATE,
         variables: {

@@ -1,4 +1,5 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { formatISO } from 'date-fns'
 import { SnackbarProvider } from 'notistack'
@@ -280,7 +281,7 @@ describe('JourneyCard', () => {
   })
 
   it('should show template only section', async () => {
-    const templateFamilyStatsAggregateMock: MockedResponse<
+    const templateFamilyStatsAggregateMock: MockLink.MockedResponse<
       GetTemplateFamilyStatsAggregate,
       GetTemplateFamilyStatsAggregateVariables
     > = {

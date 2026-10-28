@@ -1,4 +1,5 @@
-import { NetworkStatus, gql, useQuery } from '@apollo/client'
+import { NetworkStatus, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
@@ -48,6 +49,8 @@ interface MediaLibraryProps {
    * this team. When null/undefined the query falls back to personal-only.
    */
   teamId?: string | null
+  /** Without the drawer's padding, for a host that pads itself (the campaign pickers). */
+  dense?: boolean
 }
 
 const PAGE_SIZE = 10
@@ -81,7 +84,8 @@ export function MediaLibrary({
   onSelect,
   isAi,
   uploading,
-  teamId
+  teamId,
+  dense = false
 }: MediaLibraryProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { user } = useAuth()
@@ -142,7 +146,7 @@ export function MediaLibrary({
   }
 
   return (
-    <Stack sx={{ p: 6, gap: 2 }} data-testid="MediaLibrary">
+    <Stack sx={{ p: dense ? 0 : 6, gap: 2 }} data-testid="MediaLibrary">
       <Typography variant="overline">{title}</Typography>
       {error != null && (
         <Typography color="error" variant="body2" sx={{ pb: 1 }}>

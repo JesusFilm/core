@@ -63,6 +63,10 @@ export async function getCardChatEnabled({
       // Always hit the gateway: a cached value would defeat the kill switch.
       fetchPolicy: 'no-cache'
     })
+    // Apollo Client 4 types `data` as optional. The default `none` error
+    // policy rejects rather than resolving without data, so this narrows
+    // the type rather than guarding a reachable branch.
+    if (data == null) throw new Error('GetJourney returned no data')
 
     const card = data.journey?.blocks?.find(
       (block) => block.__typename === 'CardBlock' && block.id === cardId

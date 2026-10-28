@@ -1,13 +1,14 @@
 import {
+  ApolloClient,
   ApolloLink,
-  FetchResult,
+  InMemoryCache,
   Observable,
   execute,
-  from,
   gql
 } from '@apollo/client'
-import { print } from 'graphql'
+import { OperationTypeNode, print } from 'graphql'
 import { createClient } from 'graphql-sse'
+import { EMPTY } from 'rxjs'
 import { type Mock, type MockedFunction } from 'vitest'
 
 import { logout } from '../auth/firebase'
@@ -29,6 +30,28 @@ vi.mock('../auth/firebase', () => ({
 
 const mockCreateClient = createClient as MockedFunction<typeof createClient>
 const mockLogout = logout as MockedFunction<typeof logout>
+
+// Apollo Client 4 requires every operation to carry `operationType` and the
+// `client` that issued it, and `execute` takes that client as a third argument.
+const testClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.empty()
+})
+
+function mockOperation(
+  operation: Pick<
+    ApolloLink.Operation,
+    'query' | 'variables' | 'operationName' | 'getContext'
+  >
+): ApolloLink.Operation {
+  return {
+    ...operation,
+    operationType: OperationTypeNode.SUBSCRIPTION,
+    client: testClient,
+    setContext: vi.fn(),
+    extensions: {}
+  }
+}
 
 describe('createApolloClient', () => {
   beforeEach(() => {
@@ -82,17 +105,15 @@ describe('SSELink', () => {
     await new Promise<void>((resolve, reject) => {
       link
         .request(
-          {
+          mockOperation({
             query: doc,
             variables: vars,
             operationName: 'TestOp',
-            getContext: () => ({ headers: {} }),
-            setContext: vi.fn(),
-            extensions: {}
-          },
-          undefined
+            getContext: () => ({ headers: {} })
+          }),
+          () => EMPTY
         )
-        ?.subscribe({
+        .subscribe({
           next: () => {
             try {
               expect(mockSubscribe).toHaveBeenCalledWith(
@@ -130,17 +151,15 @@ describe('SSELink', () => {
     await new Promise<void>((resolve, reject) => {
       link
         .request(
-          {
+          mockOperation({
             query: doc,
             variables: {},
             operationName: 'TestSub',
-            getContext: () => ({ headers: { Authorization: 'JWT my-token' } }),
-            setContext: vi.fn(),
-            extensions: {}
-          },
-          undefined
+            getContext: () => ({ headers: { Authorization: 'JWT my-token' } })
+          }),
+          () => EMPTY
         )
-        ?.subscribe({
+        .subscribe({
           next: () => {
             try {
               // The headers factory in createClient is called at subscribe time,
@@ -154,6 +173,54 @@ describe('SSELink', () => {
           error: reject
         })
     })
+  })
+
+  it('creates the client without retries for CampaignAiTranslateSubscription', () => {
+    const link = new SSELink('http://localhost:4000')
+
+    link
+      .request(
+        mockOperation({
+          query: gql`
+            subscription CampaignAiTranslateSubscription {
+              ping
+            }
+          `,
+          variables: {},
+          operationName: 'CampaignAiTranslateSubscription',
+          getContext: () => ({})
+        }),
+        () => EMPTY
+      )
+      .subscribe({})
+
+    expect(mockCreateClient).toHaveBeenLastCalledWith(
+      expect.objectContaining({ retryAttempts: 0 })
+    )
+  })
+
+  it('keeps the library retry default for other subscriptions', () => {
+    const link = new SSELink('http://localhost:4000')
+
+    link
+      .request(
+        mockOperation({
+          query: gql`
+            subscription JourneyAiTranslateSubscription {
+              ping
+            }
+          `,
+          variables: {},
+          operationName: 'JourneyAiTranslateSubscription',
+          getContext: () => ({})
+        }),
+        () => EMPTY
+      )
+      .subscribe({})
+
+    expect(mockCreateClient.mock.lastCall?.[0]).not.toHaveProperty(
+      'retryAttempts'
+    )
   })
 
   it('propagates errors from graphql-sse sink to the observer', async () => {
@@ -173,17 +240,15 @@ describe('SSELink', () => {
     await new Promise<void>((resolve, reject) => {
       link
         .request(
-          {
+          mockOperation({
             query: doc,
             variables: {},
             operationName: 'TestSubError',
-            getContext: () => ({}),
-            setContext: vi.fn(),
-            extensions: {}
-          },
-          undefined
+            getContext: () => ({})
+          }),
+          () => EMPTY
         )
-        ?.subscribe({
+        .subscribe({
           error: (err: Error) => {
             try {
               expect(err).toBe(sseError)
@@ -315,7 +380,7 @@ describe('createErrorLink', () => {
 
     const terminatingLink = new ApolloLink(
       () =>
-        new Observable<FetchResult>((observer) => {
+        new Observable<ApolloLink.Result>((observer) => {
           observer.next({
             errors: [
               {
@@ -330,16 +395,20 @@ describe('createErrorLink', () => {
         })
     )
 
-    const link = from([errorLink, terminatingLink])
+    const link = ApolloLink.from([errorLink, terminatingLink])
 
     await new Promise<void>((resolve, reject) => {
-      execute(link, {
-        query: gql`
-          query Test {
-            test
-          }
-        `
-      }).subscribe({
+      execute(
+        link,
+        {
+          query: gql`
+            query Test {
+              test
+            }
+          `
+        },
+        { client: testClient }
+      ).subscribe({
         error: (err: Error) => {
           try {
             expect(mockLogout).toHaveBeenCalled()
@@ -358,7 +427,7 @@ describe('createErrorLink', () => {
 
     const terminatingLink = new ApolloLink(
       () =>
-        new Observable<FetchResult>((observer) => {
+        new Observable<ApolloLink.Result>((observer) => {
           observer.next({
             errors: [
               {
@@ -373,16 +442,20 @@ describe('createErrorLink', () => {
         })
     )
 
-    const link = from([errorLink, terminatingLink])
+    const link = ApolloLink.from([errorLink, terminatingLink])
 
     await new Promise<void>((resolve, reject) => {
-      execute(link, {
-        query: gql`
-          query TestNonAuth {
-            test
-          }
-        `
-      }).subscribe({
+      execute(
+        link,
+        {
+          query: gql`
+            query TestNonAuth {
+              test
+            }
+          `
+        },
+        { client: testClient }
+      ).subscribe({
         next: () => {
           try {
             expect(mockLogout).not.toHaveBeenCalled()

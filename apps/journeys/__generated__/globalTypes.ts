@@ -56,6 +56,145 @@ export enum ButtonVariant {
   text = "text",
 }
 
+/**
+ * What a machine-translation run writes: `missing` fills only the texts the language has no entry for; `all` also replaces the machine’s earlier translations. A person’s are never replaced.
+ */
+export enum CampaignAiTranslateMode {
+  all = "all",
+  missing = "missing",
+}
+
+/**
+ * What a Campaign Section sits on. Named kinds are theme-slot references; `custom` reads the section backgroundColor; `image` reads the owned cover block.
+ */
+export enum CampaignBackgroundKind {
+  contrast = "contrast",
+  custom = "custom",
+  image = "image",
+  none = "none",
+  primary = "primary",
+  surface = "surface",
+}
+
+/**
+ * Overlay strength over an image Section Background: light 0.3, medium 0.55, heavy 0.75. Null means medium.
+ */
+export enum CampaignBackgroundOverlay {
+  heavy = "heavy",
+  light = "light",
+  medium = "medium",
+}
+
+/**
+ * Which side of the Section Body an Extra renders on.
+ */
+export enum CampaignChildPlacement {
+  above = "above",
+  below = "below",
+}
+
+/**
+ * The width ratio of the two Column Slots of a Columns section.
+ */
+export enum CampaignColumnsRatio {
+  equal = "equal",
+  wideLeft = "wideLeft",
+  wideRight = "wideRight",
+}
+
+/**
+ * How a Featured Media section arranges its text and Media Slot: side by side, or stacked with the media full width under the text.
+ */
+export enum CampaignFeaturedMediaLayout {
+  sideBySide = "sideBySide",
+  stacked = "stacked",
+}
+
+/**
+ * How a Journey List renders its items: a card grid or a list.
+ */
+export enum CampaignJourneyListDisplay {
+  grid = "grid",
+  list = "list",
+}
+
+/**
+ * Which side of a Featured Media section the Media Slot renders on.
+ */
+export enum CampaignMediaSide {
+  left = "left",
+  right = "right",
+}
+
+/**
+ * One of the two pages every Campaign has: the landing page, or the Region Page that every Campaign Region renders.
+ */
+export enum CampaignPageKind {
+  landing = "landing",
+  regionTemplate = "regionTemplate",
+}
+
+/**
+ * Corner radius of the Campaign Theme: square 0, slight 6, rounded 14, veryRounded 24 px.
+ */
+export enum CampaignRadius {
+  rounded = "rounded",
+  slight = "slight",
+  square = "square",
+  veryRounded = "veryRounded",
+}
+
+/**
+ * The fixed interface phrases every Campaign carries as Campaign Strings.
+ */
+export enum CampaignStringKey {
+  allRegions = "allRegions",
+  copied = "copied",
+  copy = "copy",
+  downloadQr = "downloadQr",
+  noJourneys = "noJourneys",
+  open = "open",
+  openTemplate = "openTemplate",
+  seeAllOnWatch = "seeAllOnWatch",
+  step1 = "step1",
+  step2 = "step2",
+  step2help = "step2help",
+  step3 = "step3",
+  step4 = "step4",
+  topCountry = "topCountry",
+  totalVisitors = "totalVisitors",
+  videos = "videos",
+  watch = "watch",
+  youtube = "youtube",
+}
+
+/**
+ * How a Region Switcher lists the regions: cards, a list, or pills.
+ */
+export enum CampaignSwitcherVariant {
+  cards = "cards",
+  list = "list",
+  pills = "pills",
+}
+
+/**
+ * Who wrote a translation: a person or the machine-translation sweep.
+ */
+export enum CampaignTextSource {
+  human = "human",
+  machine = "machine",
+}
+
+/**
+ * The Translations view section a row belongs to: `interface` (Campaign Strings, header and footer text, the campaign title), `landing` (landing page sections), `region` (Region Page sections) or `regions` (each Campaign Region’s name and Region Lines).
+ */
+export enum CampaignTranslationGroup {
+  interface = "interface",
+  landing = "landing",
+  region = "region",
+  regions = "regions",
+}
+
 export enum ContactActionType {
   call = "call",
   text = "text",
@@ -185,6 +324,7 @@ export enum Service {
   apiTags = "apiTags",
   apiUsers = "apiUsers",
   apiVideos = "apiVideos",
+  youtube = "youtube",
 }
 
 /**
@@ -261,6 +401,17 @@ export enum VideoBlockSource {
   internal = "internal",
   mux = "mux",
   youTube = "youTube",
+}
+
+export enum VideoLabel {
+  behindTheScenes = "behindTheScenes",
+  collection = "collection",
+  episode = "episode",
+  featureFilm = "featureFilm",
+  segment = "segment",
+  series = "series",
+  shortFilm = "shortFilm",
+  trailer = "trailer",
 }
 
 export enum VisitorStatus {

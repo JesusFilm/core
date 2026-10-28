@@ -1,5 +1,6 @@
 import { InMemoryCache } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ReactElement } from 'react'
@@ -78,7 +79,7 @@ describe('ImageOptions', () => {
     }
   }
 
-  const imageBlockUpdateMock: MockedResponse<
+  const imageBlockUpdateMock: MockLink.MockedResponse<
     ImageBlockUpdate,
     ImageBlockUpdateVariables
   > = {
@@ -115,7 +116,7 @@ describe('ImageOptions', () => {
         }
       }
     }))
-    const updateMock: MockedResponse<
+    const updateMock: MockLink.MockedResponse<
       ImageBlockUpdate,
       ImageBlockUpdateVariables
     > = {
@@ -128,7 +129,7 @@ describe('ImageOptions', () => {
       },
       result: updateResult
     }
-    const undoMock: MockedResponse<
+    const undoMock: MockLink.MockedResponse<
       ImageBlockUpdate,
       ImageBlockUpdateVariables
     > = {
@@ -216,7 +217,7 @@ describe('ImageOptions', () => {
         }
       }
     }))
-    const updateMock: MockedResponse<
+    const updateMock: MockLink.MockedResponse<
       ImageBlockUpdate,
       ImageBlockUpdateVariables
     > = {
@@ -293,9 +294,13 @@ describe('ImageOptions', () => {
             request: {
               ...imageBlockUpdateMock.request,
               variables: {
-                ...imageBlockUpdateMock.request.variables,
+                ...(imageBlockUpdateMock.request
+                  .variables as ImageBlockUpdateVariables),
                 input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
+                  ...(
+                    imageBlockUpdateMock.request
+                      .variables as ImageBlockUpdateVariables
+                  ).input,
                   src: null,
                   alt: ''
                 }
@@ -312,9 +317,13 @@ describe('ImageOptions', () => {
             request: {
               ...imageBlockUpdateMock.request,
               variables: {
-                ...imageBlockUpdateMock.request.variables,
+                ...(imageBlockUpdateMock.request
+                  .variables as ImageBlockUpdateVariables),
                 input: {
-                  ...imageBlockUpdateMock.request.variables?.input,
+                  ...(
+                    imageBlockUpdateMock.request
+                      .variables as ImageBlockUpdateVariables
+                  ).input,
                   src: null,
                   alt: ''
                 }
@@ -359,7 +368,7 @@ describe('ImageOptions', () => {
       data: scaleUpdateResponse
     }))
 
-    const zoomUpdateMock: MockedResponse<
+    const zoomUpdateMock: MockLink.MockedResponse<
       ImageBlockUpdate,
       ImageBlockUpdateVariables
     > = {
@@ -385,9 +394,13 @@ describe('ImageOptions', () => {
             request: {
               ...zoomUpdateMock.request,
               variables: {
-                ...zoomUpdateMock.request.variables,
+                ...(zoomUpdateMock.request
+                  .variables as ImageBlockUpdateVariables),
                 input: {
-                  ...zoomUpdateMock.request.variables?.input,
+                  ...(
+                    zoomUpdateMock.request
+                      .variables as ImageBlockUpdateVariables
+                  ).input,
                   scale: null
                 }
               }

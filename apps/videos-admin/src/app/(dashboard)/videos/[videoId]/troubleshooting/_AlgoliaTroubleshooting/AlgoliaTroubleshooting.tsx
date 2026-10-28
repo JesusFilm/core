@@ -1,6 +1,5 @@
 'use client'
-
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -115,9 +114,7 @@ export function AlgoliaTroubleshooting(): ReactElement {
       loading: algoliaVideoLoading,
       error: algoliaVideoError
     }
-  ] = useLazyQuery(CHECK_VIDEO_IN_ALGOLIA, {
-    variables: { videoId }
-  })
+  ] = useLazyQuery(CHECK_VIDEO_IN_ALGOLIA)
 
   const [
     checkVideoVariantsInAlgolia,
@@ -126,9 +123,7 @@ export function AlgoliaTroubleshooting(): ReactElement {
       loading: algoliaVariantsLoading,
       error: algoliaVariantsError
     }
-  ] = useLazyQuery(CHECK_VIDEO_VARIANTS_IN_ALGOLIA, {
-    variables: { videoId }
-  })
+  ] = useLazyQuery(CHECK_VIDEO_VARIANTS_IN_ALGOLIA)
 
   const [
     updateVideoAlgolia,
@@ -169,11 +164,11 @@ export function AlgoliaTroubleshooting(): ReactElement {
   })
 
   const handleCheckAlgoliaVideo = (): void => {
-    void checkVideoInAlgolia()
+    void checkVideoInAlgolia({ variables: { videoId } })
   }
 
   const handleCheckAlgoliaVariants = (): void => {
-    void checkVideoVariantsInAlgolia()
+    void checkVideoVariantsInAlgolia({ variables: { videoId } })
   }
 
   const handleUpdateVideoAlgolia = (): void => {

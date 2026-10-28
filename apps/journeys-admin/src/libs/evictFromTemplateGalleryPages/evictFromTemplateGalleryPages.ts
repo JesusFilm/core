@@ -35,7 +35,7 @@ interface EvictFromTemplateGalleryPagesOptions {
  *   templates list. The filter must reference the variant ref.
  */
 export function evictFromTemplateGalleryPages<TCache>(
-  cache: ApolloCache<TCache>,
+  cache: ApolloCache,
   journeyIds: readonly string[],
   options: EvictFromTemplateGalleryPagesOptions = {}
 ): void {

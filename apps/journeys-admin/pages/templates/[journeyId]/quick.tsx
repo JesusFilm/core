@@ -58,7 +58,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     query: GET_TEAMS
   })
 
-  if (getTeams.teams.length === 1 && ctx.query?.journeyId != null) {
+  if (getTeams?.teams.length === 1 && ctx.query?.journeyId != null) {
     const { data: journeyDuplicate } = await apolloClient.mutate<
       JourneyDuplicate,
       JourneyDuplicateVariables

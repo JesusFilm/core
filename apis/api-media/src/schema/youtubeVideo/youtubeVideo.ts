@@ -16,6 +16,12 @@ export const YoutubeReasonCode = builder.enumType('YoutubeReasonCode', {
   values: ['NO_CATALOG_MATCH', 'NOT_APPLICABLE'] as const
 })
 
+export const YoutubeMetadataSource = builder.enumType('YoutubeMetadataSource', {
+  description:
+    'Who composed a row\'s published title and description. One value on purpose: nothing but the youtube-studio (Wheat) app writes WHEAT, so null means "not composed by Wheat" by construction.',
+  values: ['WHEAT'] as const
+})
+
 interface YoutubeVideoPlaylistShape {
   playlistId: string
   title: string
@@ -105,6 +111,16 @@ export const YoutubeVideo = builder.prismaObject('YoutubeVideo', {
     reviewedAt: t.expose('reviewedAt', { type: 'DateTime', nullable: true }),
     matchMethod: t.exposeString('matchMethod'),
     matchConfidence: t.exposeFloat('matchConfidence'),
+    metadataSource: t.expose('metadataSource', {
+      type: YoutubeMetadataSource,
+      nullable: true,
+      description:
+        'Who composed the published title and description. Null means the text was not composed by Wheat.'
+    }),
+    metadataRulebookVersion: t.exposeString('metadataRulebookVersion', {
+      description:
+        "The version of the composing tool's metadata rulebook — the house style guide the title and description were written against. Opaque to Core; meaningful only alongside a metadataSource."
+    }),
     lastSyncedAt: t.expose('lastSyncedAt', {
       type: 'DateTime',
       nullable: true
@@ -147,7 +163,9 @@ const YoutubeVideoUpsertInput = builder.inputType('YoutubeVideoUpsertInput', {
     privacyStatus: t.string({ required: false }),
     publishedAt: t.field({ type: 'DateTime', required: false }),
     matchMethod: t.string({ required: false }),
-    matchConfidence: t.float({ required: false })
+    matchConfidence: t.float({ required: false }),
+    metadataSource: t.field({ type: YoutubeMetadataSource, required: false }),
+    metadataRulebookVersion: t.string({ required: false })
   })
 })
 
@@ -247,6 +265,8 @@ builder.mutationFields((t) => ({
         publishedAt: input.publishedAt ?? null,
         matchMethod: input.matchMethod ?? null,
         matchConfidence: input.matchConfidence ?? null,
+        metadataSource: input.metadataSource ?? null,
+        metadataRulebookVersion: input.metadataRulebookVersion ?? null,
         reviewedBy: user.id,
         reviewedAt: now,
         lastSyncedAt: now

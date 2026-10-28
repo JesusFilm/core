@@ -1,6 +1,7 @@
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import MenuList from '@mui/material/MenuList'
-import { fireEvent, queryByRole, render, waitFor } from '@testing-library/react'
+import { fireEvent, render, waitFor } from '@testing-library/react'
 import noop from 'lodash/noop'
 import { SnackbarProvider } from 'notistack'
 
@@ -42,7 +43,7 @@ const makeJourneyMock = (id: string) => ({
   }
 })
 
-const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeams: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -64,7 +65,7 @@ const getTeams: MockedResponse<GetLastActiveTeamIdAndTeams> = {
         lastActiveTeamId: 'teamId'
       }
     }
-  })) as MockedResponse<GetLastActiveTeamIdAndTeams>['result']
+  })) as MockLink.MockedResponse<GetLastActiveTeamIdAndTeams>['result']
 }
 
 const currentUserMock = {
@@ -351,9 +352,7 @@ describe('DefaultMenu', () => {
 
     expect(getByRole('menuitem', { name: 'Edit Details' })).toBeInTheDocument()
     expect(getByRole('menuitem', { name: 'Preview' })).toBeInTheDocument()
-    expect(
-      getByRole('menuitem', { name: 'Use This Template' })
-    ).toBeInTheDocument()
+    expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     await waitFor(() => {
       expect(getByRole('menuitem', { name: 'Archive' })).toBeInTheDocument()
     })
@@ -366,7 +365,9 @@ describe('DefaultMenu', () => {
     expect(
       queryByRole('menuitem', { name: 'Translate' })
     ).not.toBeInTheDocument()
-    expect(queryByRole('menuitem', { name: 'Copy to' })).not.toBeInTheDocument()
+    expect(
+      queryByRole('menuitem', { name: 'Use This Template' })
+    ).not.toBeInTheDocument()
     expect(
       queryByRole('menuitem', { name: 'Make Template' })
     ).not.toBeInTheDocument()
@@ -1178,9 +1179,6 @@ describe('DefaultMenu', () => {
           getByTestId('JourneysAdminMenuItemCopyToCollection')
         ).toBeInTheDocument()
       )
-      // CopyToTeamMenuItem also renders in this test because the mock omits
-      // `journey.team`, so `isLocalTemplate` evaluates false (the gate from PR
-      // #8510 only suppresses the item for the active team's own templates).
       expect(getByRole('menuitem', { name: 'Copy to ...' })).toBeInTheDocument()
     })
 

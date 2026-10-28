@@ -54,7 +54,7 @@ describe('multiselectBlockUpdate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    prismaMock.block.findMany.mockResolvedValue([] as any)
+    prismaMock.block.findMany.mockResolvedValue([])
     prismaMock.block.findUnique.mockResolvedValue({
       id,
       typename: 'MultiselectBlock',
@@ -280,7 +280,7 @@ describe('multiselectBlockUpdate', () => {
     prismaMock.$transaction.mockImplementation(async (cb: any) => await cb(tx))
 
     // mock option count
-    prismaMock.block.count.mockResolvedValue(4 as any)
+    prismaMock.block.count.mockResolvedValue(4)
 
     const result = await authClient({
       document: MULTISELECT_BLOCK_UPDATE,

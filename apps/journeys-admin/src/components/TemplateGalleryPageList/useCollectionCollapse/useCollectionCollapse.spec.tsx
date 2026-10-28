@@ -68,7 +68,7 @@ describe('useCollectionCollapse', () => {
     const { result, rerender } = renderHook(
       ({ teamId }: { teamId: string | undefined }) =>
         useCollectionCollapse(teamId),
-      { initialProps: { teamId: 'team-1' as string | undefined } }
+      { initialProps: { teamId: 'team-1' } }
     )
     expect(result.current.isCollapsed('x')).toBe(true)
     expect(result.current.isCollapsed('y')).toBe(false)
@@ -92,7 +92,7 @@ describe('useCollectionCollapse', () => {
     const { result, rerender } = renderHook(
       ({ teamId, ids }: { teamId: string | undefined; ids: string[] }) =>
         useCollectionCollapse(teamId, ids),
-      { initialProps: { teamId: 'team-1' as string | undefined, ids: ['a'] } }
+      { initialProps: { teamId: 'team-1', ids: ['a'] } }
     )
     expect(result.current.isCollapsed('a')).toBe(true)
 

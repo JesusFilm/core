@@ -1,10 +1,14 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { GraphQLError } from 'graphql'
 import { z } from 'zod'
 
 import { graphql } from '@core/shared/gql'
 
 import { env } from '../../../env'
+import {
+  YouTubeVideosData,
+  youTubeRequest
+} from '../../../lib/youTube/youTubeRequest'
 
 export const videoBlockYouTubeSchema = z.object({
   videoId: z
@@ -31,22 +35,6 @@ export const videoBlockMuxSchema = z.object({
     .min(1)
 })
 
-export interface YoutubeVideosData {
-  // present instead of items when the request fails (quota exceeded, bad key)
-  error?: { code: number; message: string }
-  items?: Array<{
-    id: string
-    snippet: {
-      title: string
-      description: string
-      thumbnails: { high: { url: string } }
-    }
-    contentDetails: {
-      duration: string
-    }
-  }>
-}
-
 const GET_MUX_VIDEO_QUERY = graphql(`
   query GetMuxVideo($id: ID!) {
     getMuxVideo(id: $id) {
@@ -69,7 +57,7 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
       endAt: number
     }
 > {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: env.GATEWAY_URL,
     headers: {
       'x-graphql-client-name': 'api-journeys-modern',
@@ -83,7 +71,8 @@ export async function fetchFieldsFromMux(videoId: string): Promise<
 
   const { data } = await apollo.query({
     query: GET_MUX_VIDEO_QUERY,
-    variables: { id: videoId }
+    variables: { id: videoId },
+    errorPolicy: 'none'
   })
 
   if (data.getMuxVideo == null) {
@@ -111,21 +100,16 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   image: string
   duration: number
 }> {
-  const query = new URLSearchParams({
-    part: 'snippet,contentDetails',
-    key: env.FIREBASE_API_KEY,
-    id: videoId
-  }).toString()
-  const videosData: YoutubeVideosData = await (
-    await fetch(`https://www.googleapis.com/youtube/v3/videos?${query}`)
-  ).json()
-  if (videosData.error != null) {
-    // quota/auth failures must not read as "video does not exist"
-    throw new GraphQLError(
-      `YouTube API request failed: ${videosData.error.message}`,
-      { extensions: { code: 'INTERNAL_SERVER_ERROR' } }
-    )
-  }
+  // A quota or auth failure, a timeout or a non-OK status must not read as
+  // "video does not exist".
+  const videosData = await youTubeRequest<YouTubeVideosData>(
+    'videos',
+    { part: 'snippet,contentDetails', id: videoId },
+    (error) =>
+      new GraphQLError(`YouTube API request failed: ${error.message}`, {
+        extensions: { code: 'INTERNAL_SERVER_ERROR' }
+      })
+  )
   if (videosData.items?.[0] == null) {
     throw new GraphQLError('videoId cannot be found on YouTube', {
       extensions: { code: 'NOT_FOUND' }
@@ -139,7 +123,7 @@ export async function fetchFieldsFromYouTube(videoId: string): Promise<{
   }
 }
 
-function parseISO8601Duration(duration: string): number {
+export function parseISO8601Duration(duration: string): number {
   const match = duration.match(/P(\d+Y)?(\d+W)?(\d+D)?T(\d+H)?(\d+M)?(\d+S)?/)
 
   if (match == null) {

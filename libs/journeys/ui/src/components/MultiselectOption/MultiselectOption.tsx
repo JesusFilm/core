@@ -2,6 +2,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import { styled, useTheme } from '@mui/material/styles'
 import { MouseEvent, ReactElement } from 'react'
 
+import { hoverOnly } from '@core/shared/ui/hoverOnly'
 import CheckSquareContainedIcon from '@core/shared/ui/icons/CheckSquareContained'
 import SquareIcon from '@core/shared/ui/icons/Square'
 
@@ -42,8 +43,10 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
         ? 'rgba(255,255,255,0.6)'
         : 'rgba(0, 0, 0, 0.6)',
 
-    // Hover state
-    '&:hover': {
+    // Hover state - pointer devices only. This matters most here: the hover
+    // background is a shade off the genuine selected background, so a hover
+    // left over from a tap would read as a ticked option.
+    ...hoverOnly({
       backgroundColor:
         theme.palette.mode === 'dark'
           ? 'rgba(255,255,255,0.8)'
@@ -52,7 +55,7 @@ export const StyledListMultiselectOption = styled(Button)<ButtonProps>(({
         theme.palette.mode === 'dark'
           ? 'rgba(150, 150, 150, 0.5) !important'
           : 'rgba(255, 255, 255, 0.5) !important'
-    },
+    }),
 
     // Selected state (persistent)
     '&.selected': {

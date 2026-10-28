@@ -158,7 +158,8 @@ describe('Languages API', () => {
 
       expect(createApolloClient).toHaveBeenCalled()
       expect(mockQuery).toHaveBeenCalledWith({
-        query: expect.any(Object)
+        query: expect.any(Object),
+        errorPolicy: 'none'
       })
     })
 

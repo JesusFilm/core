@@ -69,10 +69,10 @@ describe('buttonClickEventCreate', () => {
     )
 
     prismaMock.$queryRaw
-      .mockResolvedValueOnce([{ id: 'visitorId' }] as any)
+      .mockResolvedValueOnce([{ id: 'visitorId' }])
       .mockResolvedValueOnce([
         { journeyId: 'journeyId', visitorId: 'visitorId' }
-      ] as any)
+      ])
   })
 
   it('creates ButtonClickEvent', async () => {

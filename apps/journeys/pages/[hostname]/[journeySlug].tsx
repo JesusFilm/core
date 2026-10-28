@@ -1,10 +1,18 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
+import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { NextSeo } from 'next-seo'
 import { ReactElement } from 'react'
 
+import type {
+  CampaignPublic,
+  CampaignRegion,
+  WorldMapShapes
+} from '@core/journeys/ui/Campaign'
+import { matchRegionSlug } from '@core/journeys/ui/Campaign/libs/matchRegionSlug'
+import { CAMPAIGN_LANGUAGE_COOKIE } from '@core/journeys/ui/Campaign/libs/resolvePageLanguage'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -13,14 +21,26 @@ import {
   GetJourneyVariables,
   GetJourney_journey as Journey
 } from '../../__generated__/GetJourney'
-import { IdType } from '../../__generated__/globalTypes'
+import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
 import { JourneyPageWrapper } from '../../src/components/JourneyPageWrapper'
 import { JourneyRenderer } from '../../src/components/JourneyRenderer'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getHostCampaignStaticProps } from '../../src/libs/campaignStaticProps'
 import { getFlags } from '../../src/libs/getFlags'
 import { isJourneyNotFoundError } from '../../src/libs/isJourneyNotFoundError'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
+
+// The campaign branch only renders for a Campaign Domain; journey visitors
+// never download it.
+const CampaignPageWrapper = dynamic(
+  async () =>
+    (
+      await import(
+        /* webpackChunkName: "CampaignPageWrapper" */ '../../src/components/CampaignPageWrapper'
+      )
+    ).CampaignPageWrapper
+)
 
 interface HostJourneyPageProps {
   host: string
@@ -29,7 +49,7 @@ interface HostJourneyPageProps {
   rtl: boolean
 }
 
-function HostJourneyPage({
+export function HostJourneyPage({
   host,
   journey,
   locale,
@@ -86,10 +106,61 @@ function HostJourneyPage({
   )
 }
 
-export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
+interface HostSlugPageProps {
+  host?: string
+  journey?: Journey
+  locale?: string
+  rtl?: boolean
+  campaign?: CampaignPublic
+  region?: CampaignRegion | null
+  worldMap?: WorldMapShapes | null
+}
+
+// `/<segment>` on a domain is a region of its campaign first, then a
+// journey slug (a region outranks a journey with the same spelling).
+function HostSlugPage({
+  campaign,
+  region,
+  worldMap,
+  journey,
+  host,
+  locale,
+  rtl
+}: HostSlugPageProps): ReactElement {
+  if (campaign != null && region != null)
+    return (
+      <CampaignPageWrapper
+        campaign={campaign}
+        pageKind={CampaignPageKind.regionTemplate}
+        region={region}
+        worldMap={worldMap}
+        basePath=""
+      />
+    )
+
+  if (journey == null) return <></>
+
+  return (
+    <HostJourneyPage
+      host={host ?? ''}
+      journey={journey}
+      locale={locale ?? 'en'}
+      rtl={rtl ?? false}
+    />
+  )
+}
+
+export const getStaticProps: GetStaticProps<HostSlugPageProps> = async (
   context
 ) => {
   const apolloClient = createApolloClient()
+  const campaignProps = await getHostCampaignStaticProps({
+    hostname: context.params?.hostname?.toString() ?? '',
+    segment: context.params?.journeySlug?.toString(),
+    locale: context.locale
+  })
+  if (campaignProps != null) return campaignProps
+
   try {
     const { data } = await apolloClient.query<GetJourney, GetJourneyVariables>({
       query: GET_JOURNEY,
@@ -102,6 +173,11 @@ export const getStaticProps: GetStaticProps<HostJourneyPageProps> = async (
         }
       }
     })
+    // Apollo Client 4 types `data` as optional. The default `none` error
+    // policy rejects rather than resolving without data, so this narrows
+    // the type rather than guarding a reachable branch.
+    if (data == null) throw new Error('GetJourney returned no data')
+
     const { rtl, locale } = getJourneyRTL(data.journey)
     return {
       props: {
@@ -144,4 +220,4 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
-export default HostJourneyPage
+export default HostSlugPage

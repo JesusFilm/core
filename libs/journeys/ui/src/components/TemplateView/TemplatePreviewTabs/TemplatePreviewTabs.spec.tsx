@@ -1,4 +1,4 @@
-import { MockedProvider } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 
 import { JourneyProvider } from '../../../libs/JourneyProvider'
@@ -27,7 +27,7 @@ describe('TemplatePreviewTabs', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: journeyWithVideos as JourneyFields,
+            journey: journeyWithVideos,
             renderMode: 'admin'
           }}
         >
@@ -48,7 +48,7 @@ describe('TemplatePreviewTabs', () => {
       <MockedProvider>
         <JourneyProvider
           value={{
-            journey: journeyWithVideos as JourneyFields,
+            journey: journeyWithVideos,
             renderMode: 'admin'
           }}
         >

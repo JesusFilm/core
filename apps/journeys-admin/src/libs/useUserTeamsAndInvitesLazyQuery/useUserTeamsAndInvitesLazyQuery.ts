@@ -1,5 +1,5 @@
-import { LazyQueryResultTuple, useLazyQuery } from '@apollo/client'
-import { useState } from 'react'
+import { useLazyQuery } from '@apollo/client/react'
+import { useEffect, useState } from 'react'
 
 import {
   GetUserTeamsAndInvites,
@@ -8,9 +8,10 @@ import {
 import { GET_USER_TEAMS_AND_INVITES } from '../useUserTeamsAndInvitesQuery/useUserTeamsAndInvitesQuery'
 
 export function useUserTeamsAndInvitesLazyQuery(): {
-  query: LazyQueryResultTuple<
+  query: useLazyQuery.ResultTuple<
     GetUserTeamsAndInvites,
-    GetUserTeamsAndInvitesVariables
+    GetUserTeamsAndInvitesVariables,
+    'empty' | 'complete' | 'streaming'
   >
   emails: string[]
 } {
@@ -18,20 +19,23 @@ export function useUserTeamsAndInvitesLazyQuery(): {
   const query = useLazyQuery<
     GetUserTeamsAndInvites,
     GetUserTeamsAndInvitesVariables
-  >(GET_USER_TEAMS_AND_INVITES, {
-    onCompleted: ({ userTeams, userTeamInvites }) => {
-      setEmails([
-        ...userTeams
-          .filter(({ user }) => user.__typename === 'AuthenticatedUser')
-          .map(({ user }) =>
-            user.__typename === 'AuthenticatedUser'
-              ? user.email.toLowerCase()
-              : ''
-          ),
-        ...userTeamInvites.map(({ email }) => email.toLowerCase())
-      ])
-    }
-  })
+  >(GET_USER_TEAMS_AND_INVITES)
+  const [, { data }] = query
+
+  // Apollo Client 4 removed `useLazyQuery`'s `onCompleted` option.
+  useEffect(() => {
+    if (data == null) return
+    setEmails([
+      ...data.userTeams
+        .filter(({ user }) => user.__typename === 'AuthenticatedUser')
+        .map(({ user }) =>
+          user.__typename === 'AuthenticatedUser'
+            ? user.email.toLowerCase()
+            : ''
+        ),
+      ...data.userTeamInvites.map(({ email }) => email.toLowerCase())
+    ])
+  }, [data])
 
   return {
     query,

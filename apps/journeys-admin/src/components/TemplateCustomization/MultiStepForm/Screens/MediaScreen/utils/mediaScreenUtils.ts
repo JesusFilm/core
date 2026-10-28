@@ -27,7 +27,7 @@ export function getCardBlockIdFromStep(
 ): string | null {
   const cardBlock = step?.children.find(
     (child) => child.__typename === 'CardBlock'
-  ) as TreeBlock<CardBlock> | undefined
+  )
   return cardBlock?.id ?? null
 }
 

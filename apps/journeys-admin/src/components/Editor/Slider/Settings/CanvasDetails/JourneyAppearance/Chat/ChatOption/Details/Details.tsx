@@ -1,4 +1,5 @@
-import { gql, useMutation } from '@apollo/client'
+import { gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import Box from '@mui/material/Box'
 import FormControl from '@mui/material/FormControl'
 import MenuItem from '@mui/material/MenuItem'
@@ -16,6 +17,7 @@ import ChevronDownIcon from '@core/shared/ui/icons/ChevronDown'
 
 import { MessagePlatform } from '../../../../../../../../../../__generated__/globalTypes'
 import { JourneyChatButtonUpdate } from '../../../../../../../../../../__generated__/JourneyChatButtonUpdate'
+import { normalizeChatButtonLink } from '../../../../../../../../../libs/normalizeChatButtonLink'
 import { TextFieldForm } from '../../../../../../../../TextFieldForm'
 import { messagePlatformToLabel } from '../../../../../../../../VisitorInfo/VisitorJourneysList/utils/messagePlatformToLabel'
 import { getMessagePlatformOptions } from '../../utils/getMessagePlatformOptions'
@@ -81,13 +83,7 @@ export function Details({
     if (chatButtonId == null) return
 
     if (type === 'link') {
-      const hasProtocolPrefix = /^\w+:\/\//
-      const newLink =
-        value === ''
-          ? ''
-          : hasProtocolPrefix.test(value ?? '')
-            ? (value ?? '')
-            : `https://${value}`
+      const newLink = normalizeChatButtonLink(value)
       const oldLink = currentLink
 
       add({
@@ -199,12 +195,11 @@ export function Details({
                     alignItems: 'center'
                   }}
                 >
-                  <MessageChatIcon platform={selected as MessagePlatform} />
+                  <MessageChatIcon platform={selected} />
                   <Typography>
                     {messagePlatformOptions.find(
                       (opt) => opt.value === selected
-                    )?.label ??
-                      messagePlatformToLabel(selected as MessagePlatform, t)}
+                    )?.label ?? messagePlatformToLabel(selected, t)}
                   </Typography>
                 </Stack>
               )}
@@ -227,7 +222,7 @@ export function Details({
           </FormControl>
         )}
         <TextFieldForm
-          id={currentPlatform as string}
+          id={currentPlatform}
           label={t('Paste URL here')}
           initialValue={currentLink}
           onSubmit={(value) => handleUpdate('link', value)}

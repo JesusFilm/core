@@ -199,15 +199,82 @@ module "redis" {
   cluster_id        = "redis-stage"
   subnet_ids        = module.stage.vpc.internal_subnets
   env               = "stage"
+  node_type         = "cache.t2.medium"
+  apply_immediately = true
   security_group_id = module.stage.ecs.internal_ecs_security_group_id
   cidr              = module.stage.cidr
   vpc_id            = module.stage.vpc.id
 }
 
+# ClickHouse Cloud service for short-link scan events (the redirect Worker
+# inserts, api-media reads). # Idles when stage is quiet; only storage is billed while paused.
+module "short_links_clickhouse" {
+  source               = "../../modules/clickhouse/service"
+  env                  = "stage"
+  idle_scaling         = true
+  idle_timeout_minutes = 15
+  doppler_token        = data.aws_ssm_parameter.doppler_core_stage_token.value
+}
+
+# Plausible Analytics on ECS (arm64 Fargate), replacing the Deployment on the
+# EKS Platform Cluster. Serves plausible.stage.central.jesusfilm.org (the
+# module's own record) for smoke tests; analytics.stage.central.jesusfilm.org
+# moves here in the cutover step (modules/plausible/README.md). Apply only
+# once its Doppler token for the stg_ecs branch config is in SSM; the task
+# then needs the EKS ClickHouse NLB (README.md, "Prerequisites").
+module "plausible" {
+  source = "../../modules/plausible"
+  ecs_config = merge(local.public_ecs_config, {
+    alb_target_group = merge(local.alb_target_group, {
+      health_check_path = "/api/health"
+      health_check_port = "8000"
+    })
+  })
+  env              = "stage"
+  doppler_token    = data.aws_ssm_parameter.doppler_plausible_stage_token.value
+  alb_listener_arn = module.stage.public_alb.alb_listener.arn
+  alb_dns_name     = module.stage.public_alb.dns_name
+  host_names       = ["analytics.stage.central.jesusfilm.org", "plausible.stage.central.jesusfilm.org"]
+}
+
+# The stage Plausible hostname, moved from the EKS ingress NLB to the public
+# ALB. external-dns created this record but no longer manages it: each pass it
+# finds no hosted zone for the name and skips it, and the zone holds no
+# ownership TXT records. allow_overwrite lets Terraform take the record as it
+# is. Rollback is the NLB name again (modules/plausible/README.md, "Stage
+# cutover").
+resource "aws_route53_record" "plausible_analytics" {
+  zone_id         = module.route53_stage_central_jesusfilm_org.zone_id
+  name            = "analytics"
+  type            = "CNAME"
+  ttl             = 300
+  records         = [module.stage.public_alb.dns_name]
+  allow_overwrite = true
+}
+
 module "postgresql" {
-  source                  = "../../modules/aws/aurora"
-  name                    = "jfp-core"
-  env                     = "stage"
+  source                          = "../../modules/aws/aurora"
+  name                            = "jfp-core"
+  env                             = "stage"
+  engine_version                  = var.versions.aurora
+  enforce_major_upgrade_approval  = true
+  allow_major_version_upgrade     = var.allow_aurora_major_upgrade
+  db_cluster_parameter_group_name = split(".", var.versions.aurora)[0] == "13" ? "aurora-postgresql13-cluster-replication" : null
+  managed_parameter_group_family  = split(".", var.versions.aurora)[0] == "13" ? null : "aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  db_parameter_group_name         = "default.aurora-postgresql${split(".", var.versions.aurora)[0]}"
+  managed_cluster_parameters = {
+    "rds.logical_replication"    = { value = "1", apply_method = "pending-reboot" }
+    "log_min_duration_statement" = { value = "5000", apply_method = "immediate" }
+    # PostgreSQL 13 uses 0; preserve the existing connection policy during the
+    # major upgrade rather than also changing application TLS requirements.
+    "rds.force_ssl" = { value = "0", apply_method = "immediate" }
+  }
+  storage_type      = "aurora-iopt1"
+  apply_immediately = true
+  serverlessv2_capacity = {
+    min_capacity = 0.5
+    max_capacity = 16
+  }
   doppler_token           = data.aws_ssm_parameter.doppler_core_stage_token.value
   doppler_project         = "core"
   subnet_group_name       = module.stage.vpc.db_subnet_group_name
@@ -216,8 +283,29 @@ module "postgresql" {
 }
 
 module "eks" {
-  source             = "../../modules/aws/eks"
-  env                = "stage"
+  source                     = "../../modules/aws/eks"
+  env                        = "stage"
+  cluster_version            = var.versions.eks_cluster
+  node_version               = var.versions.eks_nodes
+  node_max_unavailable       = 1
+  node_ami_type              = "AL2023_x86_64_STANDARD"
+  enforce_sequential_upgrade = true
+  addons = {
+    for name, version in var.eks_addon_versions : name => {
+      version              = version
+      existing             = name == "eks-node-monitoring-agent"
+      configuration_values = lookup(local.eks_addon_configuration, name, null)
+    }
+  }
+  node_repair_thresholds = {
+    max_parallel_nodes_repaired_percentage  = 10
+    max_unhealthy_node_threshold_percentage = 20
+  }
+  node_scaling_config = {
+    desired_size = 3
+    min_size     = 3
+    max_size     = 5
+  }
   name               = "jfp-eks"
   subnet_ids         = concat(module.stage.vpc.internal_subnets, module.stage.vpc.public_subnets)
   security_group_ids = [module.stage.ecs.internal_ecs_security_group_id, module.stage.ecs.public_ecs_security_group_id]
@@ -227,3 +315,63 @@ module "eks" {
   subnet_ids_2c      = ["subnet-062de12e3e3639eff", "subnet-0c394639d255c3261"]
 }
 
+locals {
+  # Preserve existing networking, fixed DNS replicas and resource requests
+  # while adopting the EKS bootstrap add-ons into Terraform.
+  eks_addon_configuration = {
+    "vpc-cni" = jsonencode({
+      "env" = {
+        "ADDITIONAL_ENI_TAGS"                   = "{}"
+        "ANNOTATE_POD_IP"                       = "false"
+        "AWS_VPC_CNI_NODE_PORT_SUPPORT"         = "true"
+        "AWS_VPC_ENI_MTU"                       = "9001"
+        "AWS_VPC_K8S_CNI_CUSTOM_NETWORK_CFG"    = "false"
+        "AWS_VPC_K8S_CNI_EXTERNALSNAT"          = "false"
+        "AWS_VPC_K8S_CNI_LOGLEVEL"              = "DEBUG"
+        "AWS_VPC_K8S_CNI_LOG_FILE"              = "/host/var/log/aws-routed-eni/ipamd.log"
+        "AWS_VPC_K8S_CNI_RANDOMIZESNAT"         = "prng"
+        "AWS_VPC_K8S_CNI_VETHPREFIX"            = "eni"
+        "AWS_VPC_K8S_PLUGIN_LOG_FILE"           = "/var/log/aws-routed-eni/plugin.log"
+        "AWS_VPC_K8S_PLUGIN_LOG_LEVEL"          = "DEBUG"
+        "DISABLE_INTROSPECTION"                 = "false"
+        "DISABLE_METRICS"                       = "false"
+        "DISABLE_NETWORK_RESOURCE_PROVISIONING" = "false"
+        "ENABLE_POD_ENI"                        = "false"
+        "ENABLE_PREFIX_DELEGATION"              = "false"
+        "ENABLE_SUBNET_DISCOVERY"               = "true"
+        "NETWORK_POLICY_ENFORCING_MODE"         = "standard"
+        "WARM_ENI_TARGET"                       = "1"
+        "WARM_PREFIX_TARGET"                    = "1"
+      }
+      "resources" = {
+        "requests" = {
+          "cpu" = "25m"
+        }
+      }
+      "nodeAgent" = {
+        "resources" = {
+          "requests" = {
+            "cpu" = "25m"
+          }
+        }
+      }
+    })
+    "coredns" = jsonencode({
+      corefile       = ".:53 {\n    errors\n    health {\n        lameduck 5s\n      }\n    ready\n    kubernetes cluster.local in-addr.arpa ip6.arpa {\n      pods insecure\n      fallthrough in-addr.arpa ip6.arpa\n    }\n    prometheus :9153\n    forward . /etc/resolv.conf\n    cache 30\n    loop\n    reload\n    loadbalance\n}\n"
+      "replicaCount" = 2
+      "resources" = {
+        "limits" = {
+          "memory" = "170Mi"
+        }
+        "requests" = {
+          "cpu"    = "100m"
+          "memory" = "70Mi"
+        }
+      }
+      "podDisruptionBudget" = {
+        "enabled"        = true
+        "maxUnavailable" = 1
+      }
+    })
+  }
+}

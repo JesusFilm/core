@@ -49,6 +49,7 @@ describe('customDomains', () => {
     teamId: 'teamId',
     routeAllTeamJourneys: true,
     journeyCollectionId: null,
+    campaignId: null,
     createdAt: new Date()
   }
 
@@ -63,9 +64,7 @@ describe('customDomains', () => {
   })
 
   it('should return custom domains for authenticated user', async () => {
-    prismaMock.customDomain.findMany.mockResolvedValue([
-      mockCustomDomain as any
-    ])
+    prismaMock.customDomain.findMany.mockResolvedValue([mockCustomDomain])
 
     const result = (await authClient({
       document: CUSTOM_DOMAINS_QUERY,
@@ -94,7 +93,7 @@ describe('customDomains', () => {
                 })
               ])
             }),
-            { teamId: 'teamId' }
+            { teamId: 'teamId', campaignId: null }
           ]
         }
       })

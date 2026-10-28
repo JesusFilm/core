@@ -1,5 +1,6 @@
-import { FetchResult } from '@apollo/client'
-import { MockedProvider, MockedResponse } from '@apollo/client/testing'
+import { ApolloLink } from '@apollo/client'
+import { MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { TreeBlock } from '@core/journeys/ui/block'
@@ -23,7 +24,7 @@ import { CommandUndoItem } from '../../../../../../../../../Toolbar/Items/Comman
 
 import { Route, TEXT_RESPONSE_ROUTE_UPDATE } from './Route'
 
-const getTeamsMock: MockedResponse<GetLastActiveTeamIdAndTeams> = {
+const getTeamsMock: MockLink.MockedResponse<GetLastActiveTeamIdAndTeams> = {
   request: {
     query: GET_LAST_ACTIVE_TEAM_ID_AND_TEAMS
   },
@@ -66,7 +67,7 @@ describe('Route', () => {
     hideLabel: false
   }
 
-  const routeUpdateMock: MockedResponse<
+  const routeUpdateMock: MockLink.MockedResponse<
     TextResponseRouteUpdate,
     TextResponseRouteUpdateVariables
   > = {
@@ -87,13 +88,13 @@ describe('Route', () => {
           routeId: 'route.id'
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       TextResponseRouteUpdate,
       TextResponseRouteUpdateVariables
     >['result']
   }
 
-  const routeUpdateMock2: MockedResponse<
+  const routeUpdateMock2: MockLink.MockedResponse<
     TextResponseRouteUpdate,
     TextResponseRouteUpdateVariables
   > = {
@@ -114,7 +115,7 @@ describe('Route', () => {
           routeId: null
         }
       }
-    })) as MockedResponse<
+    })) as MockLink.MockedResponse<
       TextResponseRouteUpdate,
       TextResponseRouteUpdateVariables
     >['result']
@@ -128,7 +129,7 @@ describe('Route', () => {
           getTeamsMock,
           {
             ...getIntegrationMock,
-            result: result as FetchResult<GetIntegration>
+            result: result as ApolloLink.Result<GetIntegration>
           },
           routeUpdateMock
         ]}
@@ -156,7 +157,7 @@ describe('Route', () => {
           getTeamsMock,
           {
             ...getIntegrationMock,
-            result: result as FetchResult<GetIntegration>
+            result: result as ApolloLink.Result<GetIntegration>
           }
         ]}
       >
@@ -184,7 +185,7 @@ describe('Route', () => {
 
           {
             ...getIntegrationMock,
-            result: result as FetchResult<GetIntegration>
+            result: result as ApolloLink.Result<GetIntegration>
           },
           routeUpdateMock,
           routeUpdateMock2
@@ -224,7 +225,7 @@ describe('Route', () => {
 
           {
             ...getIntegrationMock,
-            result: result as FetchResult<GetIntegration>
+            result: result as ApolloLink.Result<GetIntegration>
           },
           mockFirstUpdate,
           routeUpdateMock2

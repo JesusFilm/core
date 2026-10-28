@@ -899,7 +899,7 @@ describe('videoVariantUpload lifecycle API', () => {
     prismaMock.video.findUnique.mockResolvedValueOnce({
       slug: 'video-slug'
     } as any)
-    prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',
@@ -985,7 +985,7 @@ describe('videoVariantUpload lifecycle API', () => {
     prismaMock.video.findUnique.mockResolvedValueOnce({
       slug: 'video-slug'
     } as any)
-    prismaMock.video.findMany.mockResolvedValue([] as any)
+    prismaMock.video.findMany.mockResolvedValue([])
     prismaMock.$executeRaw.mockResolvedValue(1)
     prismaMock.videoVariant.findFirst.mockResolvedValue({
       id: 'variant-id',

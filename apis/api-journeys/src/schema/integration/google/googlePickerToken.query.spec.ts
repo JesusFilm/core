@@ -82,7 +82,7 @@ describe('integrationGooglePickerToken', () => {
   // teamId-based behavior no longer exists; integrationId is required
 
   it('should throw error when user is not authenticated', async () => {
-    mockGetUserFromPayload.mockReturnValue(null as any)
+    mockGetUserFromPayload.mockReturnValue(null)
     const unauthClient = getClient({
       headers: { authorization: 'token' },
       context: { currentUser: null }

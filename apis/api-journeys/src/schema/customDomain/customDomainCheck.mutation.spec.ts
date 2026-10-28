@@ -55,6 +55,7 @@ describe('customDomainCheck', () => {
     name: 'example.com',
     apexName: 'example.com',
     journeyCollectionId: null,
+    campaignId: null,
     routeAllTeamJourneys: true,
     team: {
       id: 'teamId',
@@ -81,9 +82,7 @@ describe('customDomainCheck', () => {
   })
 
   it('should return configured and verified when domain is healthy', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     ;(checkVercelDomain as any).mockResolvedValue({
       configured: true,
       verified: true
@@ -109,9 +108,7 @@ describe('customDomainCheck', () => {
   })
 
   it('should return verification details when domain is not verified', async () => {
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      mockCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(mockCustomDomain)
     ;(checkVercelDomain as any).mockResolvedValue({
       configured: false,
       verified: false,
@@ -193,7 +190,7 @@ describe('customDomainCheck', () => {
     }
 
     prismaMock.customDomain.findUnique.mockResolvedValue(
-      unauthorizedCustomDomain as any
+      unauthorizedCustomDomain
     )
 
     const result = await authClient({
@@ -222,9 +219,7 @@ describe('customDomainCheck', () => {
       }
     }
 
-    prismaMock.customDomain.findUnique.mockResolvedValue(
-      noAccessCustomDomain as any
-    )
+    prismaMock.customDomain.findUnique.mockResolvedValue(noAccessCustomDomain)
 
     const result = await authClient({
       document: CUSTOM_DOMAIN_CHECK_MUTATION,

@@ -24,7 +24,8 @@ export default defineConfig({
       './test/crowdinMock.ts',
       './test/bullmqMock.ts',
       './test/prismaMock.ts',
-      './test/journeysPrismaMock.ts'
+      './test/journeysPrismaMock.ts',
+      './test/usersPrismaMock.ts'
     ],
     coverage: {
       enabled: true,

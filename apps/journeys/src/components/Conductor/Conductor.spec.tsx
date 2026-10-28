@@ -1,4 +1,5 @@
-import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { type MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import { sendGTMEvent } from '@next/third-parties/google'
 import { fireEvent, render, waitFor } from '@testing-library/react'
 import { SnackbarProvider } from 'notistack'
@@ -90,9 +91,8 @@ vi.mock('@core/journeys/ui/ChatOverlay', () => ({
     open ? <div data-testid="ChatOverlay-open" /> : null
 }))
 
-const noopJourneyViewMock: MockedResponse = {
-  request: { query: JOURNEY_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopJourneyViewMock: MockLink.MockedResponse = {
+  request: { query: JOURNEY_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   delay: 99999999,
   result: {
@@ -102,9 +102,8 @@ const noopJourneyViewMock: MockedResponse = {
   }
 }
 
-const noopStepViewMock: MockedResponse = {
-  request: { query: STEP_VIEW_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepViewMock: MockLink.MockedResponse = {
+  request: { query: STEP_VIEW_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {
@@ -113,9 +112,8 @@ const noopStepViewMock: MockedResponse = {
   }
 }
 
-const noopStepNextMock: MockedResponse = {
-  request: { query: STEP_NEXT_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepNextMock: MockLink.MockedResponse = {
+  request: { query: STEP_NEXT_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {
@@ -124,9 +122,8 @@ const noopStepNextMock: MockedResponse = {
   }
 }
 
-const noopStepPreviousMock: MockedResponse = {
-  request: { query: STEP_PREVIOUS_EVENT_CREATE },
-  variableMatcher: () => true,
+const noopStepPreviousMock: MockLink.MockedResponse = {
+  request: { query: STEP_PREVIOUS_EVENT_CREATE, variables: () => true },
   maxUsageCount: Infinity,
   result: {
     data: {

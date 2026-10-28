@@ -112,7 +112,7 @@ youTube source: videoId, title, description, and duration present`,
           id: block.videoId,
           primaryLanguageId: block.videoVariantLanguageId,
           source: block.source
-        } as any
+        }
       }
     }),
     customizable: t.exposeBoolean('customizable', {

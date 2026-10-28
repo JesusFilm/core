@@ -1,4 +1,5 @@
-import { MockedProvider, type MockedResponse } from '@apollo/client/testing'
+import { type MockLink } from '@apollo/client/testing'
+import { MockedProvider } from '@apollo/client/testing/react'
 import Box from '@mui/material/Box'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -11,8 +12,8 @@ import {
   UPDATE_RESTRICT_TRANSLATIONS
 } from './RestrictTranslations'
 
-vi.mock('@apollo/client', async () => {
-  const original = await vi.importActual('@apollo/client')
+vi.mock('@apollo/client/react', async () => {
+  const original = await vi.importActual('@apollo/client/react')
   return {
     ...original,
     useSuspenseQuery: vi.fn(
@@ -94,9 +95,9 @@ const TestWrapper = ({
   mocks
 }: {
   children: React.ReactNode
-  mocks: MockedResponse[]
+  mocks: MockLink.MockedResponse[]
 }) => (
-  <MockedProvider mocks={mocks} addTypename={false}>
+  <MockedProvider mocks={mocks}>
     <SnackbarProvider>
       <Suspense fallback={<Box>Loading...</Box>}>{children}</Suspense>
     </SnackbarProvider>

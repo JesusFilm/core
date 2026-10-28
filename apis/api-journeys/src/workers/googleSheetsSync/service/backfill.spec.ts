@@ -70,8 +70,8 @@ describe('backfillService', () => {
       id: 'journey-id',
       blocks: []
     } as any)
-    prismaMock.event.findMany.mockResolvedValue([] as any)
-    prismaMock.journeyVisitor.findMany.mockResolvedValue([] as any)
+    prismaMock.event.findMany.mockResolvedValue([])
+    prismaMock.journeyVisitor.findMany.mockResolvedValue([])
 
     mockGetIntegrationGoogleAccessToken.mockResolvedValue({
       accessToken: 'access-token',

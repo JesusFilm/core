@@ -19,9 +19,7 @@ describe('VideoPlayer', () => {
     vi.clearAllMocks()
     mockPlayer.paused.mockReturnValue(true)
     mockPlayer.isDisposed.mockReturnValue(false)
-    ;(videojs.getPlayer as Mock).mockReturnValue(
-      mockPlayer as unknown as Player
-    )
+    ;(videojs.getPlayer as Mock).mockReturnValue(mockPlayer)
   })
 
   it('initializes video.js player', () => {
@@ -147,7 +145,7 @@ describe('VideoPlayer', () => {
 
     const videoContainer = container.querySelector('[data-vjs-player]')
     if (videoContainer) {
-      await user.click(videoContainer as HTMLElement)
+      await user.click(videoContainer)
       await waitFor(() => {
         expect(mockPlayer.play).toHaveBeenCalled()
       })
@@ -167,7 +165,7 @@ describe('VideoPlayer', () => {
 
     const videoContainer = container.querySelector('[data-vjs-player]')
     if (videoContainer) {
-      await user.click(videoContainer as HTMLElement)
+      await user.click(videoContainer)
       await waitFor(() => {
         expect(mockPlayer.pause).toHaveBeenCalled()
       })

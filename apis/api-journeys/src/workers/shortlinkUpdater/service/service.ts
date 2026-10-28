@@ -1,11 +1,14 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client'
+import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client'
 import { Job } from 'bullmq'
+import chunk from 'lodash/chunk'
 import { Logger } from 'pino'
 
-import { prisma } from '@core/prisma/journeys/client'
+import { QrCode, prisma } from '@core/prisma/journeys/client'
 import { graphql } from '@core/shared/gql'
 
 import { env } from '../../../env'
+import { logger as defaultLogger } from '../../../logger'
+import { getTo } from '../../../schema/qrCode/qrCode.service'
 
 // GraphQL queries for ShortLink operations
 export const GET_SHORT_LINK = graphql(`
@@ -49,7 +52,7 @@ export const UPDATE_SHORT_LINK = graphql(`
 
 // Create Apollo client for GraphQL operations
 const createApolloClient = () => {
-  const httpLink = createHttpLink({
+  const httpLink = new HttpLink({
     uri: env.GATEWAY_URL,
     headers: {
       'interop-token': env.INTEROP_TOKEN,
@@ -64,47 +67,20 @@ const createApolloClient = () => {
   })
 }
 
-/**
- * Builds the URL for a journey that will be used in shortlinks
- */
-async function buildJourneyUrl(
-  shortLinkId: string,
-  journeyId: string,
-  slug: string,
-  blockId?: string | undefined
-): Promise<string> {
-  const journeysUrl = env.JOURNEYS_URL
-
-  // Check if the journey's team has a custom domain
-  const customDomain = await prisma.customDomain.findFirst({
-    where: {
-      team: {
-        journeys: {
-          some: {
-            id: journeyId
-          }
-        }
-      }
-    }
-  })
-
-  const base =
-    customDomain?.name != null ? `https://${customDomain.name}` : journeysUrl
-
-  // Handle the blockId that might be undefined
-  const blockPath = blockId ? `/${blockId}` : ''
-  const path = `${slug}${blockPath}`
-  const utm = `?utm_source=ns-qr-code&utm_campaign=${shortLinkId}`
-
-  return `${base}/${path}${utm}`
-}
+// Rows rewritten at once, so a sweep over every QR code cannot flood the
+// Prisma pool shared with user requests or the gateway.
+export const REWRITE_BATCH_SIZE = 10
 
 /**
- * Updates a shortlink with a new destination URL
+ * Points a short link at `to`. Returns `null` without a write when it already
+ * points there.
  */
-async function updateShortLink(id: string, to: string, logger?: Logger) {
-  const apollo = createApolloClient()
-
+async function updateShortLinkIfChanged(
+  id: string,
+  to: string,
+  logger?: Logger,
+  apollo: ApolloClient = createApolloClient()
+) {
   try {
     const { data: shortLinkData } = await apollo.query({
       query: GET_SHORT_LINK,
@@ -145,126 +121,95 @@ async function updateShortLink(id: string, to: string, logger?: Logger) {
 }
 
 /**
- * Updates the shortlink for a specific journey
+ * Rewrites the short link of every given QR code to the target `getTo`
+ * resolves. A row that fails is logged and skipped so the others still
+ * rewrite; the next sweep repairs it. Rows are rewritten
+ * `REWRITE_BATCH_SIZE` at a time over one shared Apollo client. Never throws.
+ * Returns the number of rows whose short link was rewritten.
  */
-export async function updateJourneyShortlink(
-  journeyId: string,
-  slug: string,
-  logger?: Logger
-): Promise<void> {
-  // Find QR code for this journey
-  const qrCode = await prisma.qrCode.findFirst({
-    where: { toJourneyId: journeyId }
-  })
+export async function rewriteQrCodeShortLinks(
+  qrCodes: QrCode[],
+  logger: Logger = defaultLogger
+): Promise<number> {
+  const apollo = createApolloClient()
+  let rewrittenCount = 0
 
-  if (qrCode == null || qrCode.journeyId !== journeyId) {
-    logger?.info(
-      `No QR code found for journey ${journeyId} or QR code is for a different journey`
+  for (const batch of chunk(qrCodes, REWRITE_BATCH_SIZE)) {
+    const results = await Promise.allSettled(
+      batch.map(async (qrCode) => {
+        const to = await getTo({
+          shortLinkId: qrCode.shortLinkId,
+          toJourneyId: qrCode.toJourneyId,
+          toBlockId: qrCode.toBlockId
+        })
+        return await updateShortLinkIfChanged(
+          qrCode.shortLinkId,
+          to,
+          logger,
+          apollo
+        )
+      })
     )
-    return
+
+    for (const [index, result] of results.entries()) {
+      if (result.status === 'fulfilled') {
+        if (result.value != null) rewrittenCount++
+        continue
+      }
+      logger.error(
+        {
+          qrCodeId: batch[index].id,
+          shortLinkId: batch[index].shortLinkId,
+          error: result.reason
+        },
+        'Failed to rewrite QR code short link'
+      )
+    }
   }
-
-  try {
-    // Convert toBlockId to undefined if null to fix type issue
-    const blockId = qrCode.toBlockId ?? undefined
-
-    // Build the new URL for the shortlink
-    const to = await buildJourneyUrl(
-      qrCode.id,
-      qrCode.toJourneyId,
-      slug,
-      blockId
-    )
-
-    // Update the shortlink
-    await updateShortLink(qrCode.shortLinkId, to, logger)
-
-    logger?.info(`Updated shortlink for journey: ${slug} (ID: ${journeyId})`)
-  } catch (error) {
-    logger?.error(
-      `Error updating shortlink for journey ${journeyId}: ${error instanceof Error ? error.message : String(error)}`
-    )
-    throw error
-  }
+  return rewrittenCount
 }
 
 /**
- * Updates all shortlinks for journeys with QR codes
+ * Updates the shortlink of every QR code that points at the journey, the
+ * journey's own and any campaign's. A row that fails is logged and left for
+ * the next sweep, but it can still throw on its reads, so callers catch and
+ * log it.
  */
-export async function updateAllShortlinks(logger?: Logger): Promise<number> {
-  try {
-    // Find all journeys that have QR codes with shortlinks
-    const journeys = await prisma.journey.findMany({
-      where: {
-        qrCode: {
-          some: {}
-        }
-      },
-      include: {
-        qrCode: true
-      }
-    })
+export async function updateJourneyShortLink(
+  journeyId: string,
+  logger?: Logger
+): Promise<void> {
+  const qrCodes = await prisma.qrCode.findMany({
+    where: { toJourneyId: journeyId }
+  })
 
-    logger?.info(`Found ${journeys.length} journeys with QR codes to check`)
-
-    // Track number of updates performed
-    let updatedCount = 0
-
-    // Process each journey
-    for (const journey of journeys) {
-      try {
-        // Process each QR code for this journey
-        for (const qrCode of journey.qrCode) {
-          // Only update if the QR code is for this journey
-          if (qrCode.journeyId === qrCode.toJourneyId) {
-            // Convert toBlockId to undefined if null to fix type issue
-            const blockId = qrCode.toBlockId ?? undefined
-
-            // Build the new URL for the shortlink
-            const to = await buildJourneyUrl(
-              qrCode.id,
-              qrCode.toJourneyId,
-              journey.slug,
-              blockId
-            )
-
-            // Update the shortlink
-            const updatedShortLink = await updateShortLink(
-              qrCode.shortLinkId,
-              to,
-              logger
-            )
-
-            if (updatedShortLink != null) {
-              logger?.info(
-                `Updated shortlink for journey: ${journey.slug} (ID: ${journey.id})`
-              )
-              updatedCount++
-            }
-          }
-        }
-      } catch (error) {
-        // Log error but continue processing other journeys
-        logger?.error(
-          `Error updating shortlinks for journey ${journey.id}: ${error instanceof Error ? error.message : String(error)}`
-        )
-      }
-    }
-
-    logger?.info(`Successfully updated ${updatedCount} shortlinks`)
-    return updatedCount
-  } catch (error) {
-    logger?.error(
-      `Error during shortlink check and update: ${error instanceof Error ? error.message : String(error)}`
-    )
-    throw error
+  if (qrCodes.length === 0) {
+    logger?.info(`No QR codes found for journey ${journeyId}`)
+    return
   }
+
+  const rewrittenCount = await rewriteQrCodeShortLinks(qrCodes, logger)
+  logger?.info(`Updated ${rewrittenCount} shortlinks for journey ${journeyId}`)
+}
+
+/**
+ * Updates the shortlink of every QR code
+ */
+export async function updateAllShortLinks(logger?: Logger): Promise<number> {
+  const qrCodes = await prisma.qrCode.findMany()
+
+  logger?.info(`Found ${qrCodes.length} QR codes to check`)
+
+  const updatedCount = await rewriteQrCodeShortLinks(qrCodes, logger)
+
+  logger?.info(`Successfully updated ${updatedCount} shortlinks`)
+  return updatedCount
 }
 
 export async function service(job: Job, logger?: Logger): Promise<void> {
   switch (job.data.__typename) {
     case 'updateAllShortlinks':
-      await updateAllShortlinks(logger)
+      await updateAllShortLinks(logger)
       break
   }
 }

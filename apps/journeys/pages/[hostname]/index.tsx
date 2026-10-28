@@ -2,6 +2,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/pages/serverSideTranslations'
 import { ReactElement } from 'react'
 
+import type { CampaignPublic, WorldMapShapes } from '@core/journeys/ui/Campaign'
 import { getJourneyRTL } from '@core/journeys/ui/rtl'
 import { GET_JOURNEY } from '@core/journeys/ui/useJourneyQuery'
 
@@ -10,27 +11,43 @@ import {
   GetJourneysSummary,
   GetJourneysSummaryVariables
 } from '../../__generated__/GetJourneysSummary'
-import { IdType } from '../../__generated__/globalTypes'
+import { CampaignPageKind, IdType } from '../../__generated__/globalTypes'
 import i18nConfig from '../../next-i18next.config'
+import { CampaignPageWrapper } from '../../src/components/CampaignPageWrapper'
 import { createApolloClient } from '../../src/libs/apolloClient'
+import { getHostCampaignStaticProps } from '../../src/libs/campaignStaticProps'
 import { getFlags } from '../../src/libs/getFlags'
 import { JOURNEY_STATUS_EXCLUDE_DRAFT } from '../../src/libs/journeyQueryOptions'
 import JourneysPage, { GET_JOURNEYS } from '../home'
 
-import HostJourneyPage from './[journeySlug]'
+import { HostJourneyPage } from './[journeySlug]'
 
 interface HostJourneysPageProps {
   host?: string
-  journeys: GetJourneysSummary['journeys']
+  journeys?: GetJourneysSummary['journeys']
   journey?: GetJourney['journey']
+  campaign?: CampaignPublic
+  worldMap?: WorldMapShapes | null
 }
 
 function HostJourneysPage({
   journeys,
   journey,
+  campaign,
+  worldMap,
   host
 }: HostJourneysPageProps): ReactElement {
-  if (journey == null) return <JourneysPage journeys={journeys} />
+  if (campaign != null)
+    return (
+      <CampaignPageWrapper
+        campaign={campaign}
+        pageKind={CampaignPageKind.landing}
+        worldMap={worldMap}
+        basePath=""
+      />
+    )
+
+  if (journey == null) return <JourneysPage journeys={journeys ?? []} />
 
   const { rtl, locale } = getJourneyRTL(journey)
   return (
@@ -46,6 +63,14 @@ function HostJourneysPage({
 export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
   context
 ) => {
+  // Campaign Domain first: its published campaign owns `/`, else the
+  // collection logic below runs unchanged.
+  const campaignProps = await getHostCampaignStaticProps({
+    hostname: context.params?.hostname as string,
+    locale: context.locale
+  })
+  if (campaignProps != null) return campaignProps
+
   const apolloClient = createApolloClient()
   const { data } = await apolloClient.query<
     GetJourneysSummary,
@@ -59,6 +84,10 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
       }
     }
   })
+  // Apollo Client 4 types `data` as optional. The default `none` error
+  // policy rejects rather than resolving without data, so this narrows
+  // the type rather than guarding a reachable branch.
+  if (data == null) throw new Error('GetJourneysSummary returned no data')
 
   if (data.journeys === null) {
     return {
@@ -88,6 +117,11 @@ export const getStaticProps: GetStaticProps<HostJourneysPageProps> = async (
           }
         }
       })
+      // Apollo Client 4 types `data` as optional. The default `none` error
+      // policy rejects rather than resolving without data, so this narrows
+      // the type rather than guarding a reachable branch.
+      if (journeyData == null) throw new Error('GetJourney returned no data')
+
       return {
         props: {
           flags: await getFlags(),

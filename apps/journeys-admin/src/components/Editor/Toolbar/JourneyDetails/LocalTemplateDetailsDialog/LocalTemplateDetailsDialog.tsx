@@ -1,4 +1,4 @@
-import { ApolloError } from '@apollo/client'
+import { LinkError } from '@apollo/client/errors'
 import Divider from '@mui/material/Divider'
 import Stack from '@mui/material/Stack'
 import { Theme } from '@mui/material/styles'
@@ -233,8 +233,7 @@ function LocalTemplateDetailsDialogBody({
       return
     }
 
-    const networkError =
-      failed.reason instanceof ApolloError && failed.reason.networkError != null
+    const networkError = LinkError.is(failed.reason)
     enqueueSnackbar(
       networkError
         ? t('Field update failed. Reload the page or try again.')
