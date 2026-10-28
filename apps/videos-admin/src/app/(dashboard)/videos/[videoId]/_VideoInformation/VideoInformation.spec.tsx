@@ -423,8 +423,7 @@ describe('VideoInformation', () => {
     const publishedVideoData = {
       adminVideo: {
         ...mockVideoData.adminVideo,
-        published: true,
-        publishedAt: '2024-01-01T00:00:00.000Z'
+        published: true
       }
     }
 
