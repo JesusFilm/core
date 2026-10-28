@@ -204,10 +204,11 @@ export function CampaignRegionShare({
 
   function handleOpen(event: MouseEvent<HTMLElement>): void {
     if (shortLink == null) return
+    const journeyUrl = selected?.journeyUrl
     track(
       'campaignJourneyClick',
       {
-        journey: journeySlug(selected?.journeyUrl ?? shortLink),
+        ...(journeyUrl != null ? { journey: journeySlug(journeyUrl) } : {}),
         source: 'share',
         shareLanguage
       },

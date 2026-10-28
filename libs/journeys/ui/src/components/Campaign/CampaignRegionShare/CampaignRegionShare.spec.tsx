@@ -512,6 +512,20 @@ describe('CampaignRegionShare events', () => {
     })
   })
 
+  it('leaves the journey out of campaignJourneyClick when the language has no journey address', () => {
+    const withoutJourneyUrl: CampaignRegion = {
+      ...region,
+      languages: [
+        { ...language('eur-en', '529', 0, 'English'), journeyUrl: null }
+      ]
+    }
+    renderShare(withoutJourneyUrl, campaignPublic, true)
+    fireEvent.click(screen.getByRole('link', { name: 'Open' }))
+    expect(plausible).toHaveBeenCalledWith('campaignJourneyClick', {
+      props: { ...pageProps, source: 'share', shareLanguage: 'en' }
+    })
+  })
+
   it('sends nothing from the editor canvas', async () => {
     renderShare(region, campaignPublic)
     fireEvent.click(screen.getByTestId('CampaignRegionShareCopy'))

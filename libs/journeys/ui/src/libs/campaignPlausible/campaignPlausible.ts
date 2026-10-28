@@ -13,8 +13,8 @@
 export interface CampaignPlausibleEvents {
   /** A journey opened from a journey card's Open button or the Share section's open-link icon. */
   campaignJourneyClick: {
-    /** The journey's slug: the last path segment of its public address. */
-    journey: string
+    /** The journey's slug: the last path segment of its public address; left out when there is none. */
+    journey?: string
     source: 'card' | 'share'
     shareLanguage?: string
   }
