@@ -1,6 +1,16 @@
-// Read enriched v2 observations; trace records below are a local projection.
+// Langfuse Public API reads via raw fetch (HTTP Basic auth).
+//
+// The legacy list endpoints (/api/public/traces and /api/public/observations,
+// which the langfuse SDK v3 wraps) TIME OUT on Langfuse Cloud even with a date
+// filter. So this client takes the working path instead:
+//   1. Page the v2 observations index (/api/public/v2/observations, cursor-
+//      based) to enumerate the distinct traceIds in the window. Slim + fast.
+//   2. GET /api/public/traces/{id} per trace — a by-id read (no list scan) that
+//      returns trace context (sessionId, metadata, tags) AND the full nested
+//      observations (input/output/usage/cost/model/latency) in one call.
+// Neither call scans a list, so neither times out.
+
 import type { ToolEnv } from '../env'
-import { extractAssistantReply } from '../pipeline/normalize'
 import type { DateWindow, ObservationRecord, TraceRecord } from '../types'
 
 export interface FetchOptions {
@@ -10,17 +20,11 @@ export interface FetchOptions {
   pageSize?: number
   onProgress?: (message: string) => void
   // Restrict to traces tagged with this deployment environment (NES-1688).
-  // Filter server-side and re-check each observation. Undefined = all environments.
+  // Sent to the v2 observations index (server-side filter, fewer per-trace
+  // fetches — verified honoured) AND re-checked against each trace's own
+  // `environment` as the authoritative guard. `undefined` = all environments.
   environment?: string
 }
-
-const CONTEXT_KEYS = [
-  'journeyId',
-  'ipCountry',
-  'language',
-  'provider',
-  'modelId'
-] as const
 
 const DEFAULT_THROTTLE_MS = 700
 const DEFAULT_PAGE_SIZE = 100
@@ -40,15 +44,6 @@ export interface LangfuseClient {
 
 // Narrow views of the API payloads — only the fields we read.
 interface RawObservation {
-  parentObservationId?: string | null
-  isRootObservation?: boolean
-  sessionId?: string | null
-  environment?: string | null
-  metadata?: unknown
-  tags?: unknown
-  inputUsage?: number | null
-  outputUsage?: number | null
-  totalUsage?: number | null
   id?: string
   traceId?: string | null
   type?: string | null
@@ -71,6 +66,7 @@ interface RawTrace {
   environment?: string | null
   metadata?: unknown
   tags?: unknown
+  observations?: unknown
 }
 
 const sleep = (ms: number): Promise<void> =>
@@ -136,29 +132,10 @@ function asStringArray(value: unknown): string[] {
   return value.filter((item): item is string => typeof item === 'string')
 }
 
-function parseJson(value: unknown): unknown {
-  if (typeof value !== 'string') return value
-  try {
-    const parsed: unknown = JSON.parse(value)
-    // Preserve plain replies such as "42" and "true" as text.
-    return typeof parsed === 'string' ||
-      (parsed != null && typeof parsed === 'object')
-      ? parsed
-      : value
-  } catch {
-    return value
-  }
-}
-
-function parseRecord(value: unknown): Record<string, unknown> | undefined {
-  value = parseJson(value)
+function asRecord(value: unknown): Record<string, unknown> {
   return value != null && typeof value === 'object' && !Array.isArray(value)
     ? (value as Record<string, unknown>)
-    : undefined
-}
-
-function asRecord(value: unknown): Record<string, unknown> {
-  return parseRecord(value) ?? {}
+    : {}
 }
 
 function metaString(
@@ -194,16 +171,6 @@ export function mapTrace(raw: RawTrace): TraceRecord {
   }
 }
 
-function parseOutput(value: unknown): unknown {
-  const parsed = parseJson(value)
-  // A literal JSON answer is still assistant text. Decode known message
-  // shapes, but never turn an unsupported object/array into an empty reply.
-  if (typeof parsed === 'string') return parsed
-  if (typeof value === 'string' && extractAssistantReply(parsed) === '')
-    return value
-  return parsed
-}
-
 export function mapObservation(raw: RawObservation): ObservationRecord {
   // Langfuse usage fields are input / output / total. usageDetails is
   // preferred; usage is the fallback (it carries an extra `unit`).
@@ -216,13 +183,81 @@ export function mapObservation(raw: RawObservation): ObservationRecord {
     startTime: toIso(raw.startTime),
     endTime: raw.endTime == null ? null : toIso(raw.endTime),
     latencySeconds: numberOrNull(raw.latency),
-    inputRaw: parseJson(raw.input),
-    outputRaw: parseOutput(raw.output),
-    inputTokens: numberOrNull(raw.inputUsage ?? usage.input),
-    outputTokens: numberOrNull(raw.outputUsage ?? usage.output),
-    totalTokens: numberOrNull(raw.totalUsage ?? usage.total),
+    inputRaw: raw.input,
+    outputRaw: raw.output,
+    inputTokens: numberOrNull(usage.input),
+    outputTokens: numberOrNull(usage.output),
+    totalTokens: numberOrNull(usage.total),
     costUsd: numberOrNull(raw.calculatedTotalCost ?? raw.totalCost)
   }
+}
+
+// Enumerate distinct traceIds in the window via the cursor-paginated v2 index.
+async function listTraceIds(
+  client: LangfuseClient,
+  window: DateWindow,
+  options: FetchOptions
+): Promise<string[]> {
+  const throttleMs = options.throttleMs ?? DEFAULT_THROTTLE_MS
+  const pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE
+  const traceIds = new Set<string>()
+  let cursor: string | undefined
+
+  for (let page = 0; page < MAX_PAGES; page += 1) {
+    const params = new URLSearchParams({
+      type: 'GENERATION',
+      limit: String(pageSize),
+      fromStartTime: window.from.toISOString(),
+      toStartTime: window.to.toISOString()
+    })
+    if (options.environment != null)
+      params.set('environment', options.environment)
+    if (cursor != null) params.set('cursor', cursor)
+
+    const response = await getJson<{
+      data?: Array<{ traceId?: string | null }>
+      meta?: { cursor?: string | null }
+    }>(client, `/api/public/v2/observations?${params.toString()}`)
+
+    const data = response.data ?? []
+    for (const item of data) {
+      if (typeof item.traceId === 'string' && item.traceId.length > 0) {
+        traceIds.add(item.traceId)
+      }
+    }
+    options.onProgress?.(
+      `observations index: page ${page + 1} (${traceIds.size} traces)`
+    )
+
+    cursor = response.meta?.cursor ?? undefined
+    if (data.length === 0 || cursor == null) break
+    await sleep(throttleMs)
+  }
+
+  return [...traceIds]
+}
+
+// Fetch one trace's context + its full nested GENERATION observations.
+async function fetchTrace(
+  client: LangfuseClient,
+  traceId: string
+): Promise<{ trace: TraceRecord; observations: ObservationRecord[] }> {
+  const raw = await getJson<RawTrace>(
+    client,
+    `/api/public/traces/${encodeURIComponent(traceId)}`
+  )
+  const trace = mapTrace(raw)
+  const nested = Array.isArray(raw.observations)
+    ? (raw.observations as RawObservation[])
+    : []
+  const observations = nested
+    .filter((observation) => observation.type === 'GENERATION')
+    // Pin traceId to the parent in case the nested record omits it.
+    .map((observation) => ({
+      ...mapObservation(observation),
+      traceId: trace.id
+    }))
+  return { trace, observations }
 }
 
 export interface TraceData {
@@ -230,171 +265,34 @@ export interface TraceData {
   observations: ObservationRecord[]
 }
 
-// Both discovery and per-trace detail use the supported cursor-paginated API.
-async function listObservations(
-  client: LangfuseClient,
-  query: Record<string, string>,
-  options: FetchOptions
-): Promise<RawObservation[]> {
-  const rows = new Map<string, RawObservation>()
-  const seenCursors = new Set<string>()
-  let cursor: string | undefined
-  for (let page = 0; page < MAX_PAGES; page += 1) {
-    const params = new URLSearchParams({
-      ...query,
-      limit: String(options.pageSize ?? DEFAULT_PAGE_SIZE)
-    })
-    if (cursor != null) params.set('cursor', cursor)
-    const response = await getJson<{
-      data: RawObservation[]
-      meta?: { cursor?: string | null }
-    }>(client, `/api/public/v2/observations?${params.toString()}`)
-    if (!Array.isArray(response.data)) {
-      throw new Error('Langfuse observations response is missing data')
-    }
-    for (const raw of response.data) {
-      if (raw.id) rows.set(raw.id, raw)
-    }
-    options.onProgress?.(`observations: page ${page + 1} (${rows.size} rows)`)
-    cursor = response.meta?.cursor ?? undefined
-    if (cursor == null) return [...rows.values()]
-    if (seenCursors.has(cursor)) {
-      throw new Error('Langfuse observations pagination repeated a cursor')
-    }
-    seenCursors.add(cursor)
-    await sleep(options.throttleMs ?? DEFAULT_THROTTLE_MS)
-  }
-  throw new Error(`Langfuse observations exceeded ${MAX_PAGES} pages`)
-}
-
-function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
-  const ordered = [...rows].sort((a, b) =>
-    toIso(a.startTime).localeCompare(toIso(b.startTime))
-  )
-  const rootCandidates = ordered.filter(
-    (row) =>
-      row.isRootObservation === true ||
-      row.parentObservationId === null ||
-      row.parentObservationId === ''
-  )
-  // Backfilled trace roots can coexist with legacy parentless generations.
-  // Prefer the trace root; multiple generation-only roots still need the
-  // consistent-context validation below rather than an arbitrary selection.
-  const nonGenerationRoots = rootCandidates.filter(
-    (row) => row.type !== 'GENERATION'
-  )
-  const roots =
-    nonGenerationRoots.length > 0
-      ? nonGenerationRoots
-      : rootCandidates.length === 1
-        ? rootCandidates
-        : []
-  // Without verified ancestry, choosing any one of several roots could apply
-  // another journey's context and silently bypass its exclusion rules.
-  if (roots.length > 1) {
-    throw new Error(
-      `Langfuse trace ${traceId} has ambiguous root context (${roots.length} root candidates); export stopped to avoid incorrect attribution or load-test filtering.`
-    )
-  }
-  const root = roots[0]
-  // A recovered root is authoritative even when its metadata is empty: that
-  // is known untagged history, not a failed recovery. Rootless current Core
-  // traces can use the context copied consistently to their generations.
-  const generations = ordered.filter((row) => row.type === 'GENERATION')
-  const generationContext = generations[0]
-  const generationMetadata = parseRecord(generationContext?.metadata)
-  const consistentGenerationContext =
-    generationContext != null &&
-    generationMetadata != null &&
-    metaString(generationMetadata, 'journeyId') != null &&
-    generations.every(
-      (row) =>
-        parseRecord(row.metadata) != null &&
-        CONTEXT_KEYS.every(
-          (key) => asRecord(row.metadata)[key] === generationMetadata[key]
-        ) &&
-        row.sessionId === generationContext.sessionId &&
-        row.environment === generationContext.environment &&
-        JSON.stringify(asStringArray(row.tags).sort()) ===
-          JSON.stringify(asStringArray(generationContext.tags).sort())
-    )
-  const context =
-    root != null && parseRecord(root.metadata) != null
-      ? root
-      : consistentGenerationContext
-        ? generationContext
-        : undefined
-  if (context == null) {
-    // Legacy children can lose trace metadata during migration. Refuse an
-    // unattributed export or silently bypassed journey/tag exclusion; an
-    // existing fixture/snapshot remains usable without deprecated API reads.
-    throw new Error(
-      `Langfuse trace ${traceId} has no recoverable root or consistent generation context in v2 observations; legacy trace metadata may not have been migrated. Export stopped to avoid incorrect attribution or load-test filtering.`
-    )
-  }
-  return mapTrace({
-    ...context,
-    id: traceId,
-    timestamp: root?.startTime ?? ordered[0]?.startTime
-  })
-}
-
-// Preserve the old contract: a window selects trace IDs, then ALL generations
-// of each selected trace are exported, including turns outside that window.
+// The CLI's one call: v2 index -> distinct traceIds -> per-trace detail.
 export async function fetchTraceData(
   client: LangfuseClient,
   window: DateWindow,
   options: FetchOptions = {}
 ): Promise<TraceData> {
-  const index = await listObservations(
-    client,
-    {
-      type: 'GENERATION',
-      fields: 'core,basic',
-      fromStartTime: window.from.toISOString(),
-      toStartTime: window.to.toISOString(),
-      ...(options.environment != null && { environment: options.environment })
-    },
-    options
-  )
-  const traceIds = new Set(
-    index
-      .filter(
-        (row) =>
-          row.type === 'GENERATION' &&
-          row.traceId &&
-          (options.environment == null ||
-            row.environment === options.environment)
-      )
-      .map((row) => row.traceId!)
-  )
+  const throttleMs = options.throttleMs ?? DEFAULT_THROTTLE_MS
+  const traceIds = await listTraceIds(client, window, options)
+
   const traces: TraceRecord[] = []
   const observations: ObservationRecord[] = []
-  for (const traceId of traceIds) {
-    await sleep(options.throttleMs ?? DEFAULT_THROTTLE_MS)
-    // Exact traceId bounds this lookup. Do not reapply discovery times or type:
-    // earlier/later generations and a separate root must remain available.
-    const rows = (
-      await listObservations(
-        client,
-        {
-          traceId,
-          fields: 'core,basic,io,metadata,model,usage,metrics,trace_context',
-          expandMetadata: CONTEXT_KEYS.join(',')
-        },
-        options
-      )
-    ).filter((row) => row.traceId === traceId)
-    const context = traceContext(traceId, rows)
+  for (let index = 0; index < traceIds.length; index += 1) {
+    const { trace, observations: obs } = await fetchTrace(
+      client,
+      traceIds[index]
+    )
+    // Authoritative guard: the index param is server-side best-effort; re-check
+    // the trace's own env. Checked after the fetch so it never skips the throttle.
     if (
-      options.environment != null &&
-      context.environment !== options.environment
-    )
-      continue
-    traces.push(context)
-    observations.push(
-      ...rows.filter((row) => row.type === 'GENERATION').map(mapObservation)
-    )
+      options.environment == null ||
+      trace.environment === options.environment
+    ) {
+      traces.push(trace)
+      observations.push(...obs)
+    }
+    options.onProgress?.(`traces: ${index + 1}/${traceIds.length}`)
+    if (index < traceIds.length - 1) await sleep(throttleMs)
   }
+
   return { traces, observations }
 }
