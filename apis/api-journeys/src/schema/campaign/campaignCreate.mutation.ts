@@ -1,6 +1,7 @@
 import { prisma } from '@core/prisma/journeys/client'
 
 import { Action } from '../../lib/auth/ability'
+import { queue as plausibleQueue } from '../../workers/plausible/queue'
 import { builder } from '../builder'
 
 import { CampaignRef } from './campaign'
@@ -14,7 +15,7 @@ import { TEXT_CAPS, assertLength, isUniqueViolation } from './validation'
 
 builder.mutationField('campaignCreate', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
-    description: `Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch.\n\nAuth: campaign Create — any member or manager of \`input.teamId\`.\n\nErrors:\n- FORBIDDEN: caller is not in the team.\n- NOT_FOUND: the team does not exist.\n- BAD_USER_INPUT (field: \`title\`): empty or over ${TEXT_CAPS.campaignTitle} characters.\n- BAD_USER_INPUT (field: \`defaultLanguageId\`): not an api-languages language.\n- BAD_USER_INPUT (field: \`slug\`): the title normalises to empty or to a reserved word.\n- CONFLICT (field: \`slug\`): a concurrent create took the generated address twice; retry.`,
+    description: `Create a draft Campaign born complete (the Campaign Seed): the generated slug, one Campaign Language, the Light Campaign Theme and a Palette drawn from it, both Campaign Pages, the Campaign Chrome, the eighteen Campaign Strings and the starter sections, all in one transaction. No regions, media or journeys. Returns the full campaign so the editor opens it with no second fetch. Once the campaign is committed, the creation of its own Plausible site (behind the Campaign Report) is queued.\n\nAuth: campaign Create — any member or manager of \`input.teamId\`.\n\nErrors:\n- FORBIDDEN: caller is not in the team.\n- NOT_FOUND: the team does not exist.\n- BAD_USER_INPUT (field: \`title\`): empty or over ${TEXT_CAPS.campaignTitle} characters.\n- BAD_USER_INPUT (field: \`defaultLanguageId\`): not an api-languages language.\n- BAD_USER_INPUT (field: \`slug\`): the title normalises to empty or to a reserved word.\n- CONFLICT (field: \`slug\`): a concurrent create took the generated address twice; retry.`,
     type: CampaignRef,
     nullable: false,
     args: {
@@ -51,20 +52,37 @@ builder.mutationField('campaignCreate', (t) =>
       while (true) {
         const slug = await generateUniqueCampaignSlug(title)
         try {
-          return await prisma.$transaction(async (tx) => {
-            const campaignId = await seedCampaign(tx, {
-              teamId,
-              title,
-              slug,
-              defaultLanguageId,
-              strings,
-              year: new Date().getUTCFullYear()
-            })
-            return await tx.campaign.findUniqueOrThrow({
-              ...query,
-              where: { id: campaignId }
-            })
-          })
+          const { campaignId, campaign } = await prisma.$transaction(
+            async (tx) => {
+              const seededId = await seedCampaign(tx, {
+                teamId,
+                title,
+                slug,
+                defaultLanguageId,
+                strings,
+                year: new Date().getUTCFullYear()
+              })
+              return {
+                campaignId: seededId,
+                campaign: await tx.campaign.findUniqueOrThrow({
+                  ...query,
+                  where: { id: seededId }
+                })
+              }
+            }
+          )
+          // The Campaign's own Plausible site, behind its Campaign Report; queued
+          // only once the campaign is committed.
+          const FIVE_DAYS = 5 * 24 * 60 * 60
+          void plausibleQueue.add(
+            'create-campaign-site',
+            { __typename: 'plausibleCreateCampaignSite', campaignId },
+            {
+              removeOnComplete: true,
+              removeOnFail: { age: FIVE_DAYS, count: 50 }
+            }
+          )
+          return campaign
         } catch (error) {
           // Only the slug-uniqueness race is retried, once, with a fresh slug;
           // losing it twice is the same CONFLICT a region create answers with.

@@ -3,6 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
+import { mockQueueAdd } from '../../../test/bullmqMock'
 import { authClient, mockUser } from '../../../test/campaignBlockSetup'
 import {
   CAMPAIGN_FIXTURE_DATE,
@@ -733,6 +734,30 @@ describe('campaignCreate', () => {
       expect(byKey.copy).toBe('Copiar enlace')
       expect(byKey.allRegions).toBe('All regions')
       expect(byKey.videos).toBe('videos')
+    })
+  })
+
+  describe('Plausible site', () => {
+    it("queues the creation of the campaign's own Plausible site once the campaign is committed", async () => {
+      const result = await create()
+      expect(result.errors).toBeUndefined()
+      expect(mockQueueAdd).toHaveBeenCalledWith(
+        'create-campaign-site',
+        { __typename: 'plausibleCreateCampaignSite', campaignId: 'id-1' },
+        expect.objectContaining({ removeOnComplete: true })
+      )
+      expect(mockQueueAdd.mock.invocationCallOrder[0]).toBeGreaterThan(
+        prismaMock.$transaction.mock.invocationCallOrder[0]
+      )
+    })
+
+    it('queues nothing when the create fails', async () => {
+      prismaMock.campaignBlock.create.mockRejectedValueOnce(
+        new Error('disk full')
+      )
+      const result = await create()
+      expect(result.errors).toBeDefined()
+      expect(mockQueueAdd).not.toHaveBeenCalled()
     })
   })
 

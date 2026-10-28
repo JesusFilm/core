@@ -254,6 +254,128 @@ describe('plausible worker service', () => {
     })
   })
 
+  describe('plausibleCreateCampaignSite', () => {
+    const campaignJob: Job<
+      { __typename: 'plausibleCreateCampaignSite'; campaignId: string },
+      unknown,
+      string
+    > = {
+      name: 'plausibleCreateCampaignSite',
+      data: {
+        __typename: 'plausibleCreateCampaignSite',
+        campaignId: 'campaign-id'
+      }
+    } as unknown as Job<
+      { __typename: 'plausibleCreateCampaignSite'; campaignId: string },
+      unknown,
+      string
+    >
+
+    it('creates the campaign site with the campaign goals and stores its token', async () => {
+      const mutateSpy = vi
+        .spyOn(ApolloClient.prototype, 'mutate')
+        .mockResolvedValueOnce({
+          data: {
+            siteCreate: {
+              __typename: 'MutationSiteCreateSuccess',
+              data: {
+                sharedLinks: [{ slug: 'campaign-slug' }]
+              }
+            }
+          }
+        })
+      prismaMock.campaign.updateMany.mockResolvedValueOnce({ count: 1 })
+
+      await service(campaignJob, logger)
+
+      expect(mutateSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          variables: {
+            input: {
+              domain: 'api-journeys-campaign-campaign-id',
+              goals: [
+                'campaignJourneyClick',
+                'campaignRegionClick',
+                'campaignQrDownload',
+                'campaignShareLinkCopy',
+                'Outbound Link: Click'
+              ],
+              disableSharedLinks: false
+            },
+            includeSharedLinks: true
+          }
+        })
+      )
+      expect(prismaMock.campaign.updateMany).toHaveBeenCalledWith({
+        where: { id: 'campaign-id' },
+        data: { plausibleToken: 'campaign-slug' }
+      })
+      expect(logger.info).toHaveBeenCalledWith(
+        { campaignId: 'campaign-id' },
+        'campaign site created in Plausible'
+      )
+      expect(logger.warn).not.toHaveBeenCalled()
+    })
+
+    it('logs warning when site creation fails', async () => {
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+        data: {
+          siteCreate: {
+            __typename: 'Error',
+            message: 'failed'
+          }
+        }
+      })
+
+      await service(campaignJob, logger)
+
+      expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
+      expect(logger.warn).toHaveBeenCalledWith(
+        { campaignId: 'campaign-id' },
+        'failed to create campaign site in Plausible'
+      )
+    })
+
+    it('logs warning when the site has no shared link', async () => {
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+        data: {
+          siteCreate: {
+            __typename: 'MutationSiteCreateSuccess',
+            data: { sharedLinks: [] }
+          }
+        }
+      })
+
+      await service(campaignJob, logger)
+
+      expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
+      expect(logger.warn).toHaveBeenCalledWith(
+        { campaignId: 'campaign-id' },
+        'missing plausible slug in campaign site sharedLinks'
+      )
+    })
+
+    it('logs warning when the campaign was deleted before its site was created', async () => {
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
+        data: {
+          siteCreate: {
+            __typename: 'MutationSiteCreateSuccess',
+            data: { sharedLinks: [{ slug: 'campaign-slug' }] }
+          }
+        }
+      })
+      prismaMock.campaign.updateMany.mockResolvedValueOnce({ count: 0 })
+
+      await service(campaignJob, logger)
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        { campaignId: 'campaign-id' },
+        'campaign deleted before its Plausible site was stored'
+      )
+      expect(logger.info).not.toHaveBeenCalled()
+    })
+  })
+
   describe('plausibleCreateSites', () => {
     const createSitesJob: Job<
       { __typename: 'plausibleCreateSites' },
@@ -292,6 +414,7 @@ describe('plausible worker service', () => {
           ReturnType<typeof prismaMock.journey.findMany>
         >)
         .mockResolvedValueOnce([])
+      prismaMock.campaign.findMany.mockResolvedValueOnce([])
 
       await service(createSitesJob, logger)
 
@@ -334,6 +457,8 @@ describe('plausible worker service', () => {
           { id: 'template-2' }
         ] as unknown as Awaited<ReturnType<typeof prismaMock.journey.findMany>>)
 
+      prismaMock.campaign.findMany.mockResolvedValueOnce([])
+
       prismaMock.journey.findFirst
         .mockResolvedValueOnce({
           id: 'template-1'
@@ -375,6 +500,45 @@ describe('plausible worker service', () => {
         { templateId: 'template-2' },
         'template site created in Plausible'
       )
+    })
+
+    it('creates campaign sites for campaigns without plausible tokens', async () => {
+      vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValue({
+        data: {
+          siteCreate: {
+            __typename: 'MutationSiteCreateSuccess',
+            data: {
+              sharedLinks: [{ slug: 'shared-slug' }]
+            }
+          }
+        }
+      })
+      prismaMock.team.findMany.mockResolvedValueOnce([])
+      prismaMock.journey.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+      prismaMock.campaign.findMany.mockResolvedValueOnce([
+        { id: 'campaign-1' },
+        { id: 'campaign-2' }
+      ] as unknown as Awaited<ReturnType<typeof prismaMock.campaign.findMany>>)
+      prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+
+      await service(createSitesJob, logger)
+
+      expect(prismaMock.campaign.findMany).toHaveBeenCalledWith({
+        where: { plausibleToken: null },
+        select: { id: true }
+      })
+      expect(prismaMock.campaign.updateMany).toHaveBeenCalledTimes(2)
+      expect(prismaMock.campaign.updateMany).toHaveBeenCalledWith({
+        where: { id: 'campaign-1' },
+        data: { plausibleToken: 'shared-slug' }
+      })
+      expect(prismaMock.campaign.updateMany).toHaveBeenCalledWith({
+        where: { id: 'campaign-2' },
+        data: { plausibleToken: 'shared-slug' }
+      })
+      expect(logger.info).toHaveBeenCalledWith('creating campaign sites...')
     })
   })
 })
