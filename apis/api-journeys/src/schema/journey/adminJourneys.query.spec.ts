@@ -38,12 +38,14 @@ describe('adminJourneys', () => {
       $template: Boolean
       $teamId: ID
       $useLastActiveTeamId: Boolean
+      $allAccessible: Boolean
     ) {
       adminJourneys(
         status: $status
         template: $template
         teamId: $teamId
         useLastActiveTeamId: $useLastActiveTeamId
+        allAccessible: $allAccessible
       ) {
         id
         title
@@ -216,6 +218,22 @@ describe('adminJourneys', () => {
         })
       })
     )
+  })
+
+  it('should skip the shared-with-me branch when allAccessible is true', async () => {
+    prismaMock.journey.findMany.mockResolvedValue([mockJourney as any])
+
+    const result = (await authClient({
+      document: ADMIN_JOURNEYS_QUERY,
+      variables: { allAccessible: true, status: ['published', 'archived'] }
+    })) as ExecutionResult<{ adminJourneys: (typeof mockJourney)[] }>
+
+    expect(result.data?.adminJourneys).toHaveLength(1)
+    const where = prismaMock.journey.findMany.mock.calls.at(-1)?.[0]?.where
+    expect(where?.AND).toEqual([
+      expect.objectContaining({ OR: expect.any(Array) }),
+      { status: { in: ['published', 'archived'] } }
+    ])
   })
 
   it('should filter by template', async () => {

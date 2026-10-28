@@ -1,0 +1,7 @@
+import './inputs'
+import './campaignRegionCreate.mutation'
+import './campaignRegionUpdate.mutation'
+import './campaignRegionOrderUpdate.mutation'
+import './campaignRegionDelete.mutation'
+import './campaignRegionCountryAdd.mutation'
+import './campaignRegionCountryRemove.mutation'
