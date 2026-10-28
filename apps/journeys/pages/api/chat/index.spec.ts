@@ -1,3 +1,5 @@
+import { EventEmitter } from 'node:events'
+
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible'
 import { convertToModelMessages, streamText } from 'ai'
 import type { NextApiRequest, NextApiResponse } from 'next'
@@ -82,13 +84,13 @@ function makeRes(headersSent = false): CapturedRes {
   const json = vi.fn().mockReturnThis()
   const setHeader = vi.fn().mockReturnThis()
   return {
-    res: {
+    res: Object.assign(new EventEmitter(), {
       status,
       end,
       json,
       setHeader,
       headersSent
-    } as unknown as NextApiResponse,
+    }) as unknown as NextApiResponse,
     status,
     end,
     json,

@@ -1,10 +1,9 @@
 # Core Langfuse platform v4 audit and verification
 
 Date: 2026-10-23. Baseline: `67c2b9e729ba30fd2ba9f888d3e9b5ac24bcc400`.
-Branch: `10-23-JB-chore-langfuse-v4`. Prepared for PR publication by the
-coordinating agent after final review and validation, using the no-deploy plan
-below. Implementation used no production requests, credentials, deployments,
-or solution-archive reads.
+Branch: `10-23-JB-chore-langfuse-v4`. This records the implementation audit;
+delivery and verification status is recorded separately below. Implementation
+used no production requests, credentials, deployments, or solution-archive reads.
 
 ## Requirements and scope
 
@@ -16,8 +15,13 @@ the documented JS ingestion minimum is **5.4.0**. Core previously used
 The migration follows the official [v3-to-v4 SDK guide](https://langfuse.com/docs/observability/sdk/upgrade-path/js-v3-to-v4)
 and [v4-to-v5 guide](https://langfuse.com/docs/observability/sdk/upgrade-path/js-v4-to-v5).
 The scoped client/tracing/otel packages now resolve together to **5.14.0**.
-Compatible OTLP HTTP/exporter-base peers are explicit dependencies; the lockfile
-retains all workspace importers, including sparse-hidden backend packages.
+`@langfuse/otel@5.14.0` declares `@opentelemetry/exporter-trace-otlp-http`
+and `@opentelemetry/otlp-exporter-base` as required peers at `>=0.202.0 <1.0.0`.
+The explicit `^0.202.0` dependencies satisfy those peers even though application
+code does not import them directly. Existing `0.200.x` instrumentation packages
+cannot satisfy that minimum; aligning unrelated instrumentation is outside this
+migration. The lockfile retains all workspace importers, including sparse-hidden
+backend packages.
 A v6 SDK upgrade is not required for this task.
 
 ## Repository inventory
@@ -64,6 +68,10 @@ The primary Core checkout was not changed.
   observations. Duplicate terminal callbacks cannot overwrite or re-export an
   ended observation. `forceFlush` is awaited for the serverless lifecycle;
   telemetry export failure does not replace the chat response.
+- Browser disconnects abort the model, end pending observations as a warning,
+  and await export before the handler returns. A real local HTTP test covers a
+  closed socket with more provider chunks pending, as well as normal completion.
+  Stage browser-disconnect verification is still outstanding.
 - Real export uses `POST /api/public/otel/v1/traces` with Basic authentication,
   SDK name/version headers and an explicit `x-langfuse-ingestion-version: 4`.
   The explicit header is a compatibility guard: supported SDK headers already
@@ -107,7 +115,7 @@ for `expandMetadata=journeyId,ipCountry,language,provider,modelId`.
 A single recovered root is authoritative when its metadata is an explicit
 object, including `{}` for known untagged history. Missing, null, malformed or
 non-object root metadata requires consistent context copied to every generation,
-as does a rootless current Core trace. Multiple root candidates stop the export:
+as does a rootless current Core trace. Multiple non-generation root candidates stop the export:
 ancestry is not verified, so even matching candidates are conservatively rejected
 instead of risking another root's journey attribution. If no root or trustworthy consistent
 generation context exists, **the entire export fails with the trace ID** rather
@@ -137,7 +145,7 @@ trace completeness, and supported/unsupported I/O shapes.
 Run from this worktree with Node 24.21.0 (repository requires Node >=22):
 
 ```bash
-pnpm exec vitest run --root apps/journeys --config "$PWD/apps/journeys/vitest.config.mts" pages/api/chat/index.spec.ts src/libs/langfuse --coverage=false
+pnpm exec vitest run --root apps/journeys --config "$PWD/apps/journeys/vitest.config.mts" pages/api/chat src/libs/langfuse --coverage=false
 pnpm exec vitest run --config tools/langfuse-export/vitest.config.mts --coverage=false
 pnpm tsc7 -p apps/journeys/tsconfig.ts7.json
 pnpm exec tsc -p tools/langfuse-export/tsconfig.json --noEmit
@@ -156,8 +164,8 @@ Final local results (all exit 0):
 
 | Check                                                | Outcome                                                                                                                                                                           |
 | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chat/client/wire tests                               | 71 passed across 3 files (baseline 68 across 2 files)                                                                                                                             |
-| Export tool suite                                    | 232 passed across 12 files (baseline 205)                                                                                                                                         |
+| Chat/client/wire tests                               | 73 passed across 4 files (baseline 68 across 2 files)                                                                                                                             |
+| Export tool suite                                    | 238 passed across 12 files (baseline 205)                                                                                                                                         |
 | Journeys direct TS7                                  | Passed                                                                                                                                                                            |
 | Export direct TypeScript                             | Passed                                                                                                                                                                            |
 | `nx affected --target=type-check --base=origin/main` | Passed for all 7 projects visible in this sparse worktree: journeys, journeys-admin, journeys-ui, shared-ai, shared-dev-hosts, shared-ui, shared-ui-dynamic                       |
@@ -173,44 +181,37 @@ used `--ignore-scripts` to avoid unrelated native/Prisma workloads. The reposito
 Husky bootstrap is installed locally before committing, and commit hooks run
 normally without `--no-verify`.
 
-## Opening a review PR without deployment
+## Delivery status (updated 2026-10-28)
 
-`vercel.json` already sets `git.deploymentEnabled: false`. This stops native
-Vercel Git integration deployments, but **does not stop Vercel CLI deployments**.
-`.github/workflows/app-deploy.yml` runs for PRs targeting `main` or `feature/*`;
-its `deploy-preview` job has no draft or label gate. It calls the app's deploy
-Nx target and Vercel CLI. A draft PR alone is therefore not safe for this task.
+The initial review-only delivery restrictions are superseded. PR #9999 is ready
+for review and normal CI/staging delivery has been authorized. Subsequent commits
+must run CI and the repository's lint/type-check gates; no workflow or provider
+configuration changes are part of this migration. Production delivery remains
+subject to current-head approval and the repository's normal merge protections.
 
-The local HEAD commit carries **`[skip ci]`**. GitHub's documented
-[skip-workflow behavior](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/skip-workflow-runs)
-skips `push` / `pull_request` workflows when the PR HEAD message has that marker.
-For this review-only branch, retain it on **every new HEAD**, retain the existing
-Vercel Git-disable config. PR publication is already authorized; the coordinating
-agent will publish after review and validation. This implementation agent does
-not push or open the PR.
-This suppresses the known PR deployment path without changing repository or
-provider settings. Required checks remain pending; merging is not allowed here.
+Jaco confirmed a stage chat appears in Langfuse. That confirms ingestion, but does
+not yet establish the full field-level or closed-browser checks below. No
+production chat verification has been performed; Jaco will perform that test.
 
-The other API/ECS/worker deploy workflows trigger on main/stage pushes or reusable
-workflow calls. E2E deployments are scheduled/manually dispatched, not PR
-triggered. There are no `pull_request_target` deployment hooks in this tree.
-Do not push to main/stage, dispatch a deployment workflow, remove the skip marker,
-or use merge queues. Recheck these tracked safeguards at publication time.
-No workflow/config suppression changes are bundled into the migration itself.
+## Verification required before the 2026-11-16 cutover
 
-## Manual verification after separately authorized staging delivery
+An authorized project owner must confirm Migration Assistant has no outstanding
+legacy evaluators, exports or integrations, and that historical trace-root
+backfill is complete for the history needed by exports. These are pre-cutover
+prerequisites, not post-cutover follow-up. This audit does not claim they are
+complete and does not perform any server migration or production data mutation.
 
-1. Use synthetic messages and a non-production Langfuse project; verify the
-   intended prompt label and unchanged ESV/language/fallback response behavior.
-2. Inspect one successful request: exactly one root plus one generation, matching
+Staging verification uses synthetic messages and a non-production Langfuse
+project:
+
+1. Verify the intended prompt label and unchanged ESV/language/fallback behavior.
+2. Inspect a successful request: exactly one root plus one generation, matching
    trace ID, correct parent, complete timing, root I/O, prompt name/version,
    model/token usage and metadata on both observations. Filter by session,
    environment, journey, language and country.
-3. Exercise provider failure and client abort; confirm completed error/warning
-   observations and no second export when another terminal callback arrives.
+3. Close the browser mid-answer and exercise provider failure; confirm completed
+   warning/error observations and no duplicate export from a later callback.
+   Local regression tests do not establish Vercel's live disconnect behavior.
 4. Read the same bounded observations through v2 with every required field group;
    confirm session reconstruction and cost/usage. Run the export against synthetic
    staging data and inspect its offline bundle for full messages and PII scrubbing.
-5. An authorized owner checks Migration Assistant for UI-managed evaluators,
-   exports or integrations and moves any trace-level evaluation to appropriate
-   observation targets. No production or staging action was taken in this audit.

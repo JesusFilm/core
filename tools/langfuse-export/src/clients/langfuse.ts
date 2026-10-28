@@ -14,6 +14,14 @@ export interface FetchOptions {
   environment?: string
 }
 
+const CONTEXT_KEYS = [
+  'journeyId',
+  'ipCountry',
+  'language',
+  'provider',
+  'modelId'
+] as const
+
 const DEFAULT_THROTTLE_MS = 700
 const DEFAULT_PAGE_SIZE = 100
 // Hard ceiling so a never-terminating cursor can't loop forever.
@@ -295,13 +303,6 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
   const generations = ordered.filter((row) => row.type === 'GENERATION')
   const generationContext = generations[0]
   const generationMetadata = parseRecord(generationContext?.metadata)
-  const contextKeys = [
-    'journeyId',
-    'ipCountry',
-    'language',
-    'provider',
-    'modelId'
-  ]
   const consistentGenerationContext =
     generationContext != null &&
     generationMetadata != null &&
@@ -309,7 +310,7 @@ function traceContext(traceId: string, rows: RawObservation[]): TraceRecord {
     generations.every(
       (row) =>
         parseRecord(row.metadata) != null &&
-        contextKeys.every(
+        CONTEXT_KEYS.every(
           (key) => asRecord(row.metadata)[key] === generationMetadata[key]
         ) &&
         row.sessionId === generationContext.sessionId &&
@@ -379,7 +380,7 @@ export async function fetchTraceData(
         {
           traceId,
           fields: 'core,basic,io,metadata,model,usage,metrics,trace_context',
-          expandMetadata: 'journeyId,ipCountry,language,provider,modelId'
+          expandMetadata: CONTEXT_KEYS.join(',')
         },
         options
       )
