@@ -364,6 +364,7 @@ describe('checkDestination', () => {
       expect(lookups).toEqual([])
       expect(hits).toEqual([])
     })
+
     it('rejects literal private addresses, local names, URL credentials and non-web schemes before dialing', async () => {
       for (const url of [
         'http://127.0.0.1',
@@ -486,6 +487,7 @@ describe('checkDestination', () => {
       }
       expect(await checkDestination(destination())).toBe('unknown')
     })
+
     it('destroys a never-ending GET body immediately after response headers', async () => {
       let closed = false
       handler = (request, response) => {
