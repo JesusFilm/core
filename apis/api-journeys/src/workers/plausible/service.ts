@@ -180,7 +180,7 @@ function campaignSiteId(campaignId: string): string {
 async function createSite(
   domain: string,
   disableSharedLinks = false,
-  siteGoals: string[] = goals
+  siteGoals: string[] = goals as string[]
 ): Promise<MutationSiteCreateResult | undefined> {
   const { data } = await client.mutate<{
     siteCreate: MutationSiteCreateResult
