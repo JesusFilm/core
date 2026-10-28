@@ -18,6 +18,7 @@ import {
 } from '../../../test/uniqueViolation'
 import { env } from '../../env'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
+import { logger } from '../logger'
 
 import { fetchLanguage } from './gatewayClient'
 
@@ -753,6 +754,25 @@ describe('campaignCreate', () => {
       expect(mockQueueAdd.mock.invocationCallOrder[0]).toBeGreaterThan(
         prismaMock.$transaction.mock.invocationCallOrder[0]
       )
+    })
+
+    it('still returns the campaign, and logs, when the site job cannot be queued', async () => {
+      const queueError = new Error('redis down')
+      mockQueueAdd.mockRejectedValueOnce(queueError)
+      const errorSpy = vi
+        .spyOn(logger, 'error')
+        .mockImplementation(() => undefined)
+
+      const result = await create()
+
+      expect(result.errors).toBeUndefined()
+      await vi.waitFor(() =>
+        expect(errorSpy).toHaveBeenCalledWith(
+          { error: queueError, campaignId: 'id-1' },
+          "Failed to queue the campaign's Plausible site"
+        )
+      )
+      errorSpy.mockRestore()
     })
 
     it('queues nothing when the create fails', async () => {

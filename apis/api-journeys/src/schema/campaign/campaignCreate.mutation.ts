@@ -3,6 +3,7 @@ import { prisma } from '@core/prisma/journeys/client'
 import { Action } from '../../lib/auth/ability'
 import { queue as plausibleQueue } from '../../workers/plausible/queue'
 import { builder } from '../builder'
+import { logger } from '../logger'
 
 import { CampaignRef } from './campaign'
 import { campaignAcl } from './campaign.acl'
@@ -74,18 +75,27 @@ builder.mutationField('campaignCreate', (t) =>
           // The Campaign's own Plausible site, behind its Campaign Report; queued
           // only once the campaign is committed.
           const FIVE_DAYS = 5 * 24 * 60 * 60
-          void plausibleQueue.add(
-            'create-campaign-site',
-            { __typename: 'plausibleCreateCampaignSite', campaignId },
-            {
-              // A failed site creation is retried (30 s, 1 min, 2 min) rather
-              // than waiting for the next startup backfill.
-              attempts: 3,
-              backoff: { type: 'exponential', delay: 30000 },
-              removeOnComplete: true,
-              removeOnFail: { age: FIVE_DAYS, count: 50 }
-            }
-          )
+          // A failed enqueue must not fail the create (or go unhandled): the
+          // startup backfill creates any site that is still missing.
+          void plausibleQueue
+            .add(
+              'create-campaign-site',
+              { __typename: 'plausibleCreateCampaignSite', campaignId },
+              {
+                // A failed site creation is retried (30 s, 1 min, 2 min) rather
+                // than waiting for the next startup backfill.
+                attempts: 3,
+                backoff: { type: 'exponential', delay: 30000 },
+                removeOnComplete: true,
+                removeOnFail: { age: FIVE_DAYS, count: 50 }
+              }
+            )
+            .catch((error: unknown) => {
+              logger.error(
+                { error, campaignId },
+                "Failed to queue the campaign's Plausible site"
+              )
+            })
           return campaign
         } catch (error) {
           // Only the slug-uniqueness race is retried, once, with a fresh slug;
