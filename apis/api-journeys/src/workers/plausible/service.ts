@@ -299,6 +299,13 @@ async function createTemplateSite(
   logger?.info({ templateId }, 'template site created in Plausible')
 }
 
+/**
+ * Create a Campaign's own site and store its shared-link token. Throws when
+ * Plausible gives no site or no shared link, so the queued job fails and BullMQ
+ * retries it (`campaignCreate` queues it with bounded attempts); the startup
+ * backfill catches per campaign instead. A campaign deleted before the token is
+ * stored is not a failure.
+ */
 async function createCampaignSite(
   { campaignId }: PlausibleCreateCampaignSiteJob,
   logger?: Logger
@@ -306,19 +313,12 @@ async function createCampaignSite(
   const site = await createSite(campaignSiteId(campaignId), {
     goals: campaignGoals
   })
-  if (site == null || site.__typename !== 'MutationSiteCreateSuccess') {
-    logger?.warn({ campaignId }, 'failed to create campaign site in Plausible')
-    return
-  }
+  if (site == null || site.__typename !== 'MutationSiteCreateSuccess')
+    throw new Error('failed to create campaign site in Plausible')
 
   const slug = site.data.sharedLinks?.[0]?.slug
-  if (slug == null) {
-    logger?.warn(
-      { campaignId },
-      'missing plausible slug in campaign site sharedLinks'
-    )
-    return
-  }
+  if (slug == null)
+    throw new Error('missing plausible slug in campaign site sharedLinks')
 
   // Campaigns are hard-deleted, so the row may be gone by the time the job runs.
   const { count } = await prisma.campaign.updateMany({
@@ -409,13 +409,21 @@ async function createSites(logger?: Logger): Promise<void> {
 
   for (const ids of chunk(campaignIds, BATCH_SIZE)) {
     await Promise.all(
-      ids.map(
-        async (campaignId) =>
+      ids.map(async (campaignId) => {
+        // One campaign's failure must not abort the rest of the backfill;
+        // it is retried by the next one.
+        try {
           await createCampaignSite(
             { __typename: 'plausibleCreateCampaignSite', campaignId },
             logger
           )
-      )
+        } catch (error) {
+          logger?.warn(
+            { campaignId, error },
+            'failed to create campaign site in Plausible'
+          )
+        }
+      })
     )
   }
 }

@@ -317,7 +317,7 @@ describe('plausible worker service', () => {
       expect(logger.warn).not.toHaveBeenCalled()
     })
 
-    it('logs warning when site creation fails', async () => {
+    it('fails the job, so BullMQ retries it, when site creation fails', async () => {
       vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
         data: {
           siteCreate: {
@@ -327,16 +327,14 @@ describe('plausible worker service', () => {
         }
       })
 
-      await service(campaignJob, logger)
-
-      expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
-      expect(logger.warn).toHaveBeenCalledWith(
-        { campaignId: 'campaign-id' },
+      await expect(service(campaignJob, logger)).rejects.toThrow(
         'failed to create campaign site in Plausible'
       )
+
+      expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
     })
 
-    it('logs warning when the site has no shared link', async () => {
+    it('fails the job, so BullMQ retries it, when the site has no shared link', async () => {
       vi.spyOn(ApolloClient.prototype, 'mutate').mockResolvedValueOnce({
         data: {
           siteCreate: {
@@ -346,13 +344,11 @@ describe('plausible worker service', () => {
         }
       })
 
-      await service(campaignJob, logger)
-
-      expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
-      expect(logger.warn).toHaveBeenCalledWith(
-        { campaignId: 'campaign-id' },
+      await expect(service(campaignJob, logger)).rejects.toThrow(
         'missing plausible slug in campaign site sharedLinks'
       )
+
+      expect(prismaMock.campaign.updateMany).not.toHaveBeenCalled()
     })
 
     it('logs warning when the campaign was deleted before its site was created', async () => {
@@ -539,6 +535,44 @@ describe('plausible worker service', () => {
         data: { plausibleToken: 'shared-slug' }
       })
       expect(logger.info).toHaveBeenCalledWith('creating campaign sites...')
+    })
+
+    it('carries on past a campaign whose site fails, leaving it for the next backfill', async () => {
+      vi.spyOn(ApolloClient.prototype, 'mutate')
+        .mockResolvedValueOnce({
+          data: { siteCreate: { __typename: 'Error', message: 'failed' } }
+        })
+        .mockRejectedValueOnce(new Error('network'))
+        .mockResolvedValueOnce({
+          data: {
+            siteCreate: {
+              __typename: 'MutationSiteCreateSuccess',
+              data: { sharedLinks: [{ slug: 'shared-slug' }] }
+            }
+          }
+        })
+      prismaMock.team.findMany.mockResolvedValueOnce([])
+      prismaMock.journey.findMany
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+      prismaMock.campaign.findMany.mockResolvedValueOnce([
+        { id: 'campaign-1' },
+        { id: 'campaign-2' },
+        { id: 'campaign-3' }
+      ] as unknown as Awaited<ReturnType<typeof prismaMock.campaign.findMany>>)
+      prismaMock.campaign.updateMany.mockResolvedValue({ count: 1 })
+
+      await service(createSitesJob, logger)
+
+      expect(prismaMock.campaign.updateMany).toHaveBeenCalledTimes(1)
+      expect(prismaMock.campaign.updateMany).toHaveBeenCalledWith({
+        where: { id: 'campaign-3' },
+        data: { plausibleToken: 'shared-slug' }
+      })
+      expect(logger.warn).toHaveBeenCalledWith(
+        { campaignId: 'campaign-2', error: expect.any(Error) },
+        'failed to create campaign site in Plausible'
+      )
     })
   })
 })

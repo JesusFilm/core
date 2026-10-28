@@ -78,6 +78,10 @@ builder.mutationField('campaignCreate', (t) =>
             'create-campaign-site',
             { __typename: 'plausibleCreateCampaignSite', campaignId },
             {
+              // A failed site creation is retried (30 s, 1 min, 2 min) rather
+              // than waiting for the next startup backfill.
+              attempts: 3,
+              backoff: { type: 'exponential', delay: 30000 },
               removeOnComplete: true,
               removeOnFail: { age: FIVE_DAYS, count: 50 }
             }

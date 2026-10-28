@@ -744,7 +744,11 @@ describe('campaignCreate', () => {
       expect(mockQueueAdd).toHaveBeenCalledWith(
         'create-campaign-site',
         { __typename: 'plausibleCreateCampaignSite', campaignId: 'id-1' },
-        expect.objectContaining({ removeOnComplete: true })
+        expect.objectContaining({
+          removeOnComplete: true,
+          attempts: 3,
+          backoff: { type: 'exponential', delay: 30000 }
+        })
       )
       expect(mockQueueAdd.mock.invocationCallOrder[0]).toBeGreaterThan(
         prismaMock.$transaction.mock.invocationCallOrder[0]
