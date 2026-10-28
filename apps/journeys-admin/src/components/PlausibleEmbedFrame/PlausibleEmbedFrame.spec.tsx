@@ -11,7 +11,7 @@ describe('PlausibleEmbedFrame', () => {
       />
     )
 
-    expect(screen.getByTestId('PlausibleEmbedDashboard')).toHaveAttribute(
+    expect(screen.getByTestId('PlausibleEmbedFrame')).toHaveAttribute(
       'src',
       '/share/api-journeys-campaign-campaignId?auth=sharedLinkSlug&embed=true&theme=light&background=transparent'
     )
@@ -23,7 +23,7 @@ describe('PlausibleEmbedFrame', () => {
 
     expect(screen.getByText('The report is loading...')).toBeInTheDocument()
     expect(
-      screen.queryByTestId('PlausibleEmbedDashboard')
+      screen.queryByTestId('PlausibleEmbedFrame')
     ).not.toBeInTheDocument()
   })
 

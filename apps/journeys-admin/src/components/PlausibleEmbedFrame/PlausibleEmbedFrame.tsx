@@ -99,7 +99,7 @@ export function PlausibleEmbedFrame({
       {auth != null && (
         <>
           <StyledIFrame
-            data-testid="PlausibleEmbedDashboard"
+            data-testid="PlausibleEmbedFrame"
             plausible-embed
             src={`${host ?? ''}/share/${siteId}?auth=${auth}&embed=true&theme=light&background=transparent`}
             loading="lazy"

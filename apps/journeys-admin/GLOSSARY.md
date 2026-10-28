@@ -196,12 +196,16 @@ _Avoid_: dashboard (ambiguous between the Power BI and Plausible surfaces)
 The embedded business-intelligence dashboard behind Journeys Analytics, in four variants: multiple/single journey × full/summary detail.
 _Avoid_: report (unqualified)
 
-**Plausible Embed Dashboard**:
-The other embedded analytics surface: a Plausible site's own dashboard iframe, authorized by its `plausibleToken` — a single journey's, or a Campaign's on the **Campaign Report**. Event-level stats, distinct backend from Power BI.
+**Plausible Embed Frame**:
+The other embedded analytics surface: a Plausible site's own dashboard in an iframe, through its shared link and authorized by its `plausibleToken`, restyled for the admin. Event-level stats, distinct backend from Power BI. The **Plausible Embed Dashboard** and the **Campaign Report** each show one.
 _Avoid_: conflating with the Power BI Report
 
+**Plausible Embed Dashboard**:
+A single journey's Plausible Embed Frame, on that journey's reports page.
+_Avoid_: using it for the generic frame or for the Campaign Report
+
 **Campaign Report**:
-A Campaign's site traffic at `/campaigns/<id>/reports`: the Plausible Embed Dashboard of the Campaign's own Plausible site, so Plausible's default reports (visitors, page views, bounce rate, pages, sources, countries, devices), the `region` and `language` properties and the four `campaign*` goals, with nothing built on top. Opened from the Left Rail's Report button and each Team Campaigns card, behind `campaignBuilder`, for anyone with campaign Read; until the Campaign's site exists it says the report is being set up. Private, unlike the public Analytics section.
+A Campaign's site traffic at `/campaigns/<id>/reports`: the **Plausible Embed Frame** of the Campaign's own Plausible site, so Plausible's default reports (visitors, page views, bounce rate, pages, sources, countries, devices), the `region` and `language` properties and the four `campaign*` goals, with nothing built on top. Opened from the Left Rail's Report button and each Team Campaigns card, behind `campaignBuilder`, for anyone with campaign Read; until the Campaign's site exists it says the report is being set up. Private, unlike the public Analytics section.
 _Avoid_: analytics, campaign analytics (the public Analytics section and its **Campaign Stats** already use that word), campaign stats
 
 **Visitor Timeline**:
