@@ -65,7 +65,7 @@ _Avoid_: source, channel
 ### The Campaign Editor
 
 **Campaign Editor**:
-The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1348 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
+The full-screen, desktop-only editor for a **Campaign** (the Journeys context's seasonal site), behind the `campaignBuilder` flag. A window narrower than 1316 px (the Left Rail, the open panel, the Inspector, the canvas padding and the Desktop frame at half scale) gets a "larger screen" message instead. Every edit saves as its own change with no Save step, and one undo history spans both Campaign Pages. The optimistic response needs the result's id known on the client: where the server resolves it (a pasted Watch link for a Video Carousel, a YouTube playlist import), there is no optimistic row and the edit shows when the server answers.
 _Avoid_: campaign builder (the feature name, not the surface), site editor
 
 **Campaign Canvas**:
