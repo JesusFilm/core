@@ -158,7 +158,8 @@ function cardIds(): string[] {
 const context = {
   pageKind: CampaignPageKind.landing,
   region: null,
-  regions: []
+  regions: [],
+  strings: campaignPublic.strings
 }
 
 describe('CampaignVideoCarousel', () => {

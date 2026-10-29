@@ -11,7 +11,8 @@ import { usePlausible } from 'next-plausible'
 
 import {
   CampaignColumnsRatio,
-  CampaignPageKind
+  CampaignPageKind,
+  CampaignStringKey
 } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_STATS } from '../CampaignAnalytics'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
@@ -45,6 +46,19 @@ function withLanding(
     pages: [{ ...campaignPublic.pages[0], blocks }, campaignPublic.pages[1]]
   }
 }
+
+function withRegionPage(blocks: CampaignBlock[]): CampaignPublic {
+  return {
+    ...campaignPublic,
+    pages: [campaignPublic.pages[0], { ...campaignPublic.pages[1], blocks }]
+  }
+}
+
+const noJourneysCleared = campaignPublic.strings.map((string) =>
+  string.key === CampaignStringKey.noJourneys
+    ? { ...string, value: '' }
+    : string
+)
 
 function renderPage(
   campaign: CampaignPublic,
@@ -227,14 +241,17 @@ describe('CampaignPage', () => {
 
     it('skips a section with no body content and no extras, band and all', () => {
       renderPage(
-        withLanding([
-          pick('heroId', { eyebrow: null, title: null, description: null }),
-          pick('landingJourneyListId', {
-            eyebrow: null,
-            title: null,
-            description: null
-          })
-        ])
+        withLanding(
+          [
+            pick('heroId', { eyebrow: null, title: null, description: null }),
+            pick('landingJourneyListId', {
+              eyebrow: null,
+              title: null,
+              description: null
+            })
+          ],
+          { strings: noJourneysCleared }
+        )
       )
       expect(bandIds()).toEqual([])
     })
@@ -347,6 +364,20 @@ describe('CampaignPage', () => {
       expect(bandIds()).toEqual([])
     })
 
+    it('Video carousel with no card renders a description alone', () => {
+      renderPage(
+        withLanding([
+          pick('carouselId', {
+            eyebrow: null,
+            title: null,
+            description: 'Short films to share'
+          })
+        ])
+      )
+      expect(bandIds()).toEqual(['carouselId'])
+      expect(screen.getByText('Short films to share')).toBeInTheDocument()
+    })
+
     it('Journey list with no live-published journeys renders text if any, else is skipped', () => {
       const { unmount } = renderPage(
         withLanding([
@@ -357,6 +388,22 @@ describe('CampaignPage', () => {
       unmount()
 
       renderPage(
+        withLanding(
+          [
+            pick('landingJourneyListId', {
+              eyebrow: null,
+              title: null,
+              description: null
+            })
+          ],
+          { strings: noJourneysCleared }
+        )
+      )
+      expect(bandIds()).toEqual([])
+    })
+
+    it('Journey list with no live-published journeys and no text renders the noJourneys line on the landing page', () => {
+      renderPage(
         withLanding([
           pick('landingJourneyListId', {
             eyebrow: null,
@@ -364,6 +411,40 @@ describe('CampaignPage', () => {
             description: null
           })
         ])
+      )
+      expect(bandIds()).toEqual(['landingJourneyListId'])
+      expect(screen.getByTestId('CampaignJourneyListEmpty')).toHaveTextContent(
+        'Journeys for this region are coming soon'
+      )
+    })
+
+    it('Journey list with no live-published journeys and no text renders the noJourneys line on a Region Page, else is skipped', () => {
+      const regionList = regionPageBlocks.find(
+        (block) => block.id === 'regionJourneyListId'
+      )
+      if (regionList == null)
+        throw new Error('no fixture block regionJourneyListId')
+      const blankList = {
+        ...regionList,
+        eyebrow: null,
+        title: null,
+        description: null
+      } as CampaignBlock
+      const { unmount } = renderPage(
+        withRegionPage([blankList]),
+        CampaignPageKind.regionTemplate,
+        eurRegion
+      )
+      expect(bandIds()).toEqual(['regionJourneyListId'])
+      expect(screen.getByTestId('CampaignJourneyListEmpty')).toHaveTextContent(
+        'Journeys for this region are coming soon'
+      )
+      unmount()
+
+      renderPage(
+        { ...withRegionPage([blankList]), strings: noJourneysCleared },
+        CampaignPageKind.regionTemplate,
+        eurRegion
       )
       expect(bandIds()).toEqual([])
     })

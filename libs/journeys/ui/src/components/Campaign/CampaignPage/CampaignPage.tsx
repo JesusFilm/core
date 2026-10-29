@@ -58,7 +58,12 @@ export function CampaignPage({
     root.dir = getLocaleRTL(bcp47 ?? '') ? 'rtl' : 'ltr'
   }, [bcp47])
   const { sections, pageBlockIds } = useMemo(() => {
-    const context = { pageKind, region, regions: campaign.regions }
+    const context = {
+      pageKind,
+      region,
+      regions: campaign.regions,
+      strings: campaign.strings
+    }
     const page = campaign.pages.find((candidate) => candidate.kind === pageKind)
     const rendered =
       page == null

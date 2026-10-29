@@ -2,7 +2,10 @@ import { RenderResult, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactElement } from 'react'
 
-import { transformCampaignBlocks } from '@core/journeys/ui/Campaign'
+import {
+  contrastText,
+  transformCampaignBlocks
+} from '@core/journeys/ui/Campaign'
 import { headerLogoBlock } from '@core/journeys/ui/Campaign/testData'
 
 import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/GetCampaign'
@@ -574,5 +577,31 @@ describe('CanvasSection button label', () => {
     await userEvent.type(input, '{Enter}now')
 
     expect(input).toHaveValue('Choose your region\nnow')
+  })
+
+  it('gives a contained button with its own colour and no label colour the contrast label', () => {
+    const whiteButtonHero = transformCampaignBlocks(
+      campaign.blocks.map((block) =>
+        block.id === 'heroButtonId'
+          ? ({
+              ...block,
+              buttonVariant: null,
+              color: '#FFFFFF',
+              labelColor: null
+            } as never)
+          : block
+      )
+    ).find((block) => block.id === 'heroId') as CanvasBlock
+    render(
+      <StaticEditor>
+        <CanvasSection block={whiteButtonHero} />
+      </StaticEditor>
+    )
+
+    expect(contrastText('#FFFFFF')).toBe('rgba(0, 0, 0, 0.87)')
+    expect(screen.getByTestId('CanvasButton')).toHaveStyle({
+      backgroundColor: '#FFFFFF',
+      color: contrastText('#FFFFFF')
+    })
   })
 })

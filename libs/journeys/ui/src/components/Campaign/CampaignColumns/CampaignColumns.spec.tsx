@@ -4,6 +4,7 @@ import { render, screen, within } from '@testing-library/react'
 import {
   CampaignBackgroundKind,
   CampaignColumnsRatio,
+  CampaignJourneyListDisplay,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
@@ -198,11 +199,34 @@ describe('CampaignColumns', () => {
     expect(rules).not.toContain('border-radius')
   })
 
+  it('renders a slot whose Journey List has only the noJourneys line', () => {
+    const tree = transformCampaignBlocks([
+      ...blocksFor({ left: false }),
+      section('CampaignJourneyListBlock', {
+        id: 'slotJourneyListId',
+        pageId: LANDING_PAGE_ID,
+        parentBlockId: 'slotLeftId',
+        parentOrder: 0,
+        eyebrow: null,
+        title: null,
+        description: null,
+        display: CampaignJourneyListDisplay.grid
+      })
+    ])[0] as CampaignTreeOf<'CampaignColumnsBlock'>
+    renderColumns(tree)
+
+    const left = screen.getByTestId('CampaignColumnSlot-slotLeftId')
+    expect(
+      within(left).getByTestId('CampaignJourneyListEmpty')
+    ).toHaveTextContent('Journeys for this region are coming soon')
+  })
+
   describe('shouldRenderSection', () => {
     const context = {
       pageKind: CampaignPageKind.landing,
       region: null,
-      regions: campaignPublic.regions
+      regions: campaignPublic.regions,
+      strings: campaignPublic.strings
     }
 
     it('renders when either slot holds a section that renders', () => {

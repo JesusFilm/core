@@ -98,7 +98,8 @@ function renderFeatured(block: CampaignTreeOf<'CampaignFeaturedMediaBlock'>) {
 const context = {
   pageKind: CampaignPageKind.landing,
   region: null,
-  regions: campaignPublic.regions
+  regions: campaignPublic.regions,
+  strings: campaignPublic.strings
 }
 
 describe('CampaignFeaturedMedia', () => {

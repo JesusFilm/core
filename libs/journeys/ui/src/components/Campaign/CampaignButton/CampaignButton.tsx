@@ -10,6 +10,7 @@ import {
 import { useCampaign } from '../CampaignProvider'
 import { useCampaignSection } from '../CampaignSectionBand'
 import { flexAlign } from '../libs/flexAlign'
+import { contrastText } from '../libs/resolveBand'
 import { hasText } from '../types'
 import type { CampaignBlockOf } from '../types'
 
@@ -38,8 +39,9 @@ function variantColors(
 /**
  * The campaign call-to-action. `variant` null ⇒ contained, `size` null ⇒
  * medium, `align` null follows the section, `color` null ⇒ the section's
- * button colour then the theme primary, `labelColor` null ⇒ the section's
- * button text colour then on-primary. A missing action target renders the
+ * button colour then the theme primary, `labelColor` null ⇒ the contrast
+ * text of the block's own `color` when it has one, else the section's button
+ * text colour then on-primary. A missing action target renders the
  * button static: same look, no href, aria-disabled, no pointer effect.
  */
 export function CampaignButton({
@@ -53,7 +55,11 @@ export function CampaignButton({
   const size = block.size ?? ButtonSize.medium
   const align = block.align ?? section?.align ?? null
   const fill = block.color ?? section?.band.button
-  const label = block.labelColor ?? section?.band.buttonLabel
+  const label =
+    block.labelColor ??
+    (block.color != null
+      ? contrastText(block.color)
+      : section?.band.buttonLabel)
   const resolved = resolveCampaignAction(block.action, campaign)
 
   const colorSx = variantColors(variant, fill, label)
