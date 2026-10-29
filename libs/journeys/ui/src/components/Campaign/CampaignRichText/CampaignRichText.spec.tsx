@@ -99,7 +99,8 @@ describe('CampaignRichText', () => {
     const context = {
       pageKind: CampaignPageKind.landing,
       region: null,
-      regions: campaignPublic.regions
+      regions: campaignPublic.regions,
+      strings: campaignPublic.strings
     }
 
     it('renders with a title or any paragraph', () => {

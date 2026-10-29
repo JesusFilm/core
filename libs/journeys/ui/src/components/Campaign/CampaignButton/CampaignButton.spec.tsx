@@ -148,6 +148,19 @@ describe('CampaignButton', () => {
     })
   })
 
+  it('its own colour with no label colour gets the contrast text of that colour, not the section label', () => {
+    renderButton(
+      <CampaignButton
+        block={{ ...heroButton, color: '#FFFFFF', labelColor: null }}
+      />
+    )
+    expect(contrastText('#FFFFFF')).not.toBe(noneBand.buttonLabel)
+    expect(screen.getByTestId('CampaignButton')).toHaveStyle({
+      backgroundColor: '#FFFFFF',
+      color: contrastText('#FFFFFF')
+    })
+  })
+
   it('renders a ScrollToBlockAction as a same-page link to #<blockId> that scrolls smoothly', () => {
     renderButton(
       <>

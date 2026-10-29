@@ -403,7 +403,8 @@ describe('CampaignRegionShare', () => {
       return shouldRenderSection(shareTree(blank), {
         pageKind: CampaignPageKind.regionTemplate,
         region: regionProp,
-        regions: [eurRegion]
+        regions: [eurRegion],
+        strings: campaignPublic.strings
       })
     }
 
@@ -428,7 +429,8 @@ describe('CampaignRegionShare', () => {
         shouldRenderSection(shareTree() as CampaignSectionTree, {
           pageKind: CampaignPageKind.regionTemplate,
           region: { ...region, languages: [] },
-          regions: [eurRegion]
+          regions: [eurRegion],
+          strings: campaignPublic.strings
         })
       ).toBe(true)
     })

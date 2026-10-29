@@ -167,7 +167,8 @@ describe('CampaignHero', () => {
       shouldRenderSection(hero, {
         pageKind: CampaignPageKind.landing,
         region: null,
-        regions: campaignPublic.regions
+        regions: campaignPublic.regions,
+        strings: campaignPublic.strings
       })
     ).toBe(true)
     renderHero(hero)

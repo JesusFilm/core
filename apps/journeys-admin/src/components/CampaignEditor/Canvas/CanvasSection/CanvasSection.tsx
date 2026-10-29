@@ -24,6 +24,7 @@ import {
   bandCssVariables,
   campaignImageSource,
   columnsGridTemplate,
+  contrastText,
   focalImageSx,
   isCampaignSection,
   isExtra,
@@ -196,7 +197,10 @@ function CanvasExtra({
                   : undefined,
               color:
                 buttonVariant === 'contained'
-                  ? (block.labelColor ?? 'var(--campaign-band-button-label)')
+                  ? (block.labelColor ??
+                    (block.color != null
+                      ? contrastText(block.color)
+                      : 'var(--campaign-band-button-label)'))
                   : (block.color ?? 'var(--campaign-band-button)'),
               borderColor: block.color ?? 'var(--campaign-band-button)',
               '&:hover': {

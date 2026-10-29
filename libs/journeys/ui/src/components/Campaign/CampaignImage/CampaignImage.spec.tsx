@@ -48,7 +48,8 @@ function renderImage(block: CampaignTreeOf<'CampaignImageBlock'>) {
 const context = {
   pageKind: CampaignPageKind.landing,
   region: null,
-  regions: campaignPublic.regions
+  regions: campaignPublic.regions,
+  strings: campaignPublic.strings
 }
 
 describe('CampaignImage', () => {
