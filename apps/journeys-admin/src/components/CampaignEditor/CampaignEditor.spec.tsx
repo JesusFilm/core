@@ -1,6 +1,9 @@
+import { ApolloLink } from '@apollo/client'
+import { MockLink, MockSubscriptionLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -11,9 +14,16 @@ import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
 import { NextRouter, useRouter } from 'next/router'
 import { SnackbarProvider } from 'notistack'
+import { ReactElement } from 'react'
 import { type Mock, type MockedFunction } from 'vitest'
 
-import { CampaignTranslationFilter } from '../../../__generated__/globalTypes'
+import { DARK_PRESET } from '@core/journeys/ui/Campaign'
+
+import {
+  CampaignRadius,
+  CampaignTranslationFilter,
+  ThemeMode
+} from '../../../__generated__/globalTypes'
 import { GET_CAMPAIGN } from '../../libs/useCampaignQuery'
 import { CAMPAIGN_TRANSLATIONS } from '../../libs/useCampaignTranslationsQuery'
 import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
@@ -25,7 +35,8 @@ import { CURRENT_USER_ID, campaign, memberCampaign } from './data'
 import { INSPECTOR_WIDTH } from './Inspector'
 import { LEFT_PANEL_WIDTH } from './LeftPanel'
 import { LEFT_RAIL_WIDTH } from './LeftRail'
-import { frameBody } from './testing'
+import { themeMock } from './styleTesting'
+import { campaignCache, frameBody } from './testing'
 
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -112,6 +123,109 @@ function renderEditorAs(
   return {
     currentUserLoaded: () => waitFor(() => expect(loaded).toBe(true))
   }
+}
+
+const defaultLanguageMissingTexts = {
+  request: {
+    query: CAMPAIGN_UPDATE,
+    variables: { id: 'campaignId', input: { defaultLanguageId: '496' } }
+  },
+  result: {
+    errors: [
+      new GraphQLError('3 texts have no translation', {
+        extensions: { code: 'CONFLICT', field: 'defaultLanguageId', count: 3 }
+      })
+    ]
+  }
+}
+
+function runReport(
+  progress: number,
+  finished = false
+): MockSubscriptionLink.Result {
+  return {
+    result: {
+      data: {
+        campaignAiTranslateSubscription: {
+          __typename: 'CampaignAiTranslateProgress',
+          progress,
+          message: finished ? 'Translation completed!' : 'Translating',
+          translatedCount: 3,
+          campaign: finished
+            ? {
+                __typename: 'Campaign',
+                id: 'campaignId',
+                titleTranslations: []
+              }
+            : null
+        }
+      }
+    }
+  }
+}
+
+/**
+ * The editor with its machine-translation run on `subscriptionLink` and
+ * every other operation on `mocks`; `rerender` renders it again, as a
+ * resize does.
+ */
+function renderEditorWithRun(mocks: Array<Record<string, unknown>>): {
+  subscriptionLink: MockSubscriptionLink
+  rerender: () => void
+} {
+  const subscriptionLink = new MockSubscriptionLink()
+  const link = ApolloLink.split(
+    (operation) =>
+      operation.operationName === 'CampaignAiTranslateSubscription',
+    subscriptionLink,
+    new MockLink([currentUserMock, ...mocks] as never)
+  )
+  const cache = campaignCache()
+  const tree = (): ReactElement => (
+    <MockedProvider link={link} cache={cache}>
+      <SnackbarProvider>
+        <CampaignEditor campaign={campaign} />
+      </SnackbarProvider>
+    </MockedProvider>
+  )
+  const { rerender } = render(tree())
+  return { subscriptionLink, rerender: () => rerender(tree()) }
+}
+
+/** Settings → Default language → Français, refused for missing texts, then the sweep. */
+async function machineTranslateMissingIntoFrench(): Promise<void> {
+  fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+  fireEvent.mouseDown(
+    screen.getByRole('combobox', { name: 'Default language' })
+  )
+  fireEvent.click(screen.getByRole('option', { name: 'Français' }))
+  fireEvent.click(
+    within(screen.getByTestId('CampaignDefaultLanguageDialog')).getByRole(
+      'button',
+      { name: 'Change' }
+    )
+  )
+  fireEvent.click(
+    await screen.findByRole('button', {
+      name: 'Machine-translate missing into Français'
+    })
+  )
+  await waitFor(() =>
+    expect(
+      screen.queryByTestId('CampaignDefaultLanguageDialog')
+    ).not.toBeInTheDocument()
+  )
+}
+
+async function emitRun(
+  link: MockSubscriptionLink,
+  result: MockSubscriptionLink.Result,
+  complete = false
+): Promise<void> {
+  await act(async () => {
+    link.simulateResult(result, complete)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  })
 }
 
 describe('CampaignEditor', () => {
@@ -625,6 +739,73 @@ describe('CampaignEditor', () => {
     title.focus()
     fireEvent.keyDown(title, { key: 's', code: 'KeyS' })
     expect(selected()).toBe('Settings')
+  })
+
+  it('keeps a run in flight and the undo history when the window narrows below the minimum and widens again', async () => {
+    const { subscriptionLink, rerender } = renderEditorWithRun([
+      themeMock({
+        ...DARK_PRESET,
+        themeMode: ThemeMode.dark,
+        buttonRadius: CampaignRadius.veryRounded
+      }),
+      defaultLanguageMissingTexts
+    ])
+    const unsubscribed = vi.fn()
+    subscriptionLink.onUnsubscribe(unsubscribed)
+    fireEvent.click(await screen.findByRole('button', { name: 'Dark' }))
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled()
+    await machineTranslateMissingIntoFrench()
+    await emitRun(subscriptionLink, runReport(40))
+    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+
+    setViewport(EDITOR_MIN_WIDTH - 1)
+    rerender()
+    expect(screen.getByTestId('CampaignEditorLargerScreen')).toBeInTheDocument()
+    expect(screen.queryByTestId('CampaignEditor')).not.toBeInTheDocument()
+
+    setViewport(EDITOR_MIN_WIDTH)
+    rerender()
+
+    expect(screen.getByTestId('CampaignEditor')).toBeInTheDocument()
+    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Undo' })).toBeEnabled()
+    expect(unsubscribed).not.toHaveBeenCalled()
+  })
+
+  it('changes the default language once a sweep from the dialog completes, then opens Localize on Translations', async () => {
+    const swapped = vi.fn(() => ({
+      data: {
+        campaignUpdate: {
+          __typename: 'Campaign',
+          id: 'campaignId',
+          title: 'Outreach 2026',
+          slug: 'outreach-2026'
+        }
+      }
+    }))
+    const { subscriptionLink } = renderEditorWithRun([
+      defaultLanguageMissingTexts,
+      { ...defaultLanguageMissingTexts, result: swapped },
+      {
+        request: { query: GET_CAMPAIGN, variables: { id: 'campaignId' } },
+        result: { data: { campaign } }
+      },
+      translationsMock
+    ])
+    await machineTranslateMissingIntoFrench()
+    expect(screen.getByTestId('localizeProgress')).toBeInTheDocument()
+    expect(swapped).not.toHaveBeenCalled()
+
+    await emitRun(subscriptionLink, runReport(100, true), true)
+
+    expect(
+      await screen.findByTestId('TranslationsPromotionNotice')
+    ).toBeInTheDocument()
+    expect(swapped).toHaveBeenCalledTimes(1)
+    expect(screen.getByRole('tab', { name: 'Translations' })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    )
   })
 
   it('shows a loading state until the campaign arrives', () => {

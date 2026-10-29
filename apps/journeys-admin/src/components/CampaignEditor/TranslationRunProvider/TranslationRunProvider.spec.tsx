@@ -1,11 +1,15 @@
-import { InMemoryCache, gql } from '@apollo/client'
-import { MockSubscriptionLink } from '@apollo/client/testing'
+import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
+import { MockLink, MockSubscriptionLink } from '@apollo/client/testing'
 import { MockedProvider } from '@apollo/client/testing/react'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { GraphQLError } from 'graphql'
 import { SnackbarProvider } from 'notistack'
 import { ReactElement } from 'react'
 
 import { CampaignAiTranslateVariables } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
+
+import { CAMPAIGN_UPDATE } from '../../../libs/useCampaignUpdateMutation'
+import { getCampaignMock } from '../testing'
 
 import { TranslationRunProvider, useTranslationRun } from '.'
 
@@ -54,11 +58,23 @@ async function emit(
   })
 }
 
+const defaultLanguageChanged = vi.fn()
+
 function Probe(): ReactElement {
   const { run, error, start, cancel } = useTranslationRun()
   return (
     <>
       <button onClick={() => start(variables, 'Français')}>Start</button>
+      <button
+        onClick={() =>
+          start(variables, 'Français', {
+            thenSwapDefaultLanguage: true,
+            onDefaultLanguageChanged: defaultLanguageChanged
+          })
+        }
+      >
+        Start then swap
+      </button>
       <button onClick={cancel}>Cancel</button>
       <span data-testid="Run">
         {run == null
@@ -70,7 +86,7 @@ function Probe(): ReactElement {
   )
 }
 
-function renderProvider(link: MockSubscriptionLink): ReturnType<typeof render> {
+function renderProvider(link: ApolloLink): ReturnType<typeof render> {
   return render(
     <MockedProvider link={link} cache={new InMemoryCache()}>
       <SnackbarProvider>
@@ -82,7 +98,58 @@ function renderProvider(link: MockSubscriptionLink): ReturnType<typeof render> {
   )
 }
 
+/** The run's subscription on `subscriptionLink`; every other operation on `mocks`. */
+function renderWithMocks(
+  subscriptionLink: MockSubscriptionLink,
+  mocks: Array<Record<string, unknown>>
+): ReturnType<typeof render> {
+  const link = ApolloLink.split(
+    (operation) =>
+      operation.operationName === 'CampaignAiTranslateSubscription',
+    subscriptionLink,
+    new MockLink(mocks as never)
+  )
+  return renderProvider(link)
+}
+
+function conflict(
+  message: string,
+  extensions: Record<string, unknown>
+): {
+  result: { errors: GraphQLError[] }
+} {
+  return { result: { errors: [new GraphQLError(message, { extensions })] } }
+}
+
+const swapped = vi.fn(() => ({
+  data: {
+    campaignUpdate: {
+      __typename: 'Campaign',
+      id: 'campaignId',
+      title: 'Outreach 2026',
+      slug: 'outreach-2026'
+    }
+  }
+}))
+
+const swapMock = {
+  request: {
+    query: CAMPAIGN_UPDATE,
+    variables: { id: 'campaignId', input: { defaultLanguageId: '496' } }
+  },
+  result: swapped
+}
+
+/** Lets a swap the provider might have fired reach the link. */
+async function settle(): Promise<void> {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  })
+}
+
 describe('TranslationRunProvider', () => {
+  beforeEach(() => vi.clearAllMocks())
+
   it('is idle until a run starts', async () => {
     renderProvider(new MockSubscriptionLink())
 
@@ -201,5 +268,109 @@ describe('TranslationRunProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
     expect(hasRows()).toBe(false)
+  })
+
+  it('shows the editor’s own copy when the language is already being translated', async () => {
+    const link = new MockSubscriptionLink()
+    renderProvider(link)
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+
+    await emit(
+      link,
+      conflict('A translation of this campaign into 496 is running', {
+        code: 'CONFLICT',
+        field: 'languageId'
+      })
+    )
+
+    const copy =
+      'Français is already being translated. Try again when it has finished.'
+    expect(screen.getByTestId('Error')).toHaveTextContent(copy)
+    expect(screen.getAllByText(copy)).toHaveLength(2)
+    expect(
+      screen.queryByText('A translation of this campaign into 496 is running')
+    ).not.toBeInTheDocument()
+    expect(screen.getByTestId('Run')).toHaveTextContent('idle')
+  })
+
+  it('shows the server’s message for any other refused run', async () => {
+    const link = new MockSubscriptionLink()
+    renderProvider(link)
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+
+    await emit(
+      link,
+      conflict('campaign not found', { code: 'NOT_FOUND', field: 'campaignId' })
+    )
+
+    expect(screen.getByTestId('Error')).toHaveTextContent('campaign not found')
+    expect(
+      screen.queryByText(/already being translated/)
+    ).not.toBeInTheDocument()
+  })
+
+  describe('thenSwapDefaultLanguage', () => {
+    it('makes the language the default once the run completes, then says so', async () => {
+      const subscriptionLink = new MockSubscriptionLink()
+      renderWithMocks(subscriptionLink, [swapMock, getCampaignMock])
+      fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
+      await emit(subscriptionLink, report(55, 'Translated 2 of 4 parts', 6))
+      expect(swapped).not.toHaveBeenCalled()
+
+      await emit(
+        subscriptionLink,
+        report(100, 'Translation completed!', 12, true),
+        true
+      )
+
+      await waitFor(() => expect(defaultLanguageChanged).toHaveBeenCalled())
+      expect(swapped).toHaveBeenCalledTimes(1)
+    })
+
+    it('leaves the default alone when the run fails', async () => {
+      const subscriptionLink = new MockSubscriptionLink()
+      renderWithMocks(subscriptionLink, [swapMock, getCampaignMock])
+      fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
+
+      await emit(subscriptionLink, { error: new Error('Translation failed') })
+      await settle()
+
+      expect(swapped).not.toHaveBeenCalled()
+      expect(defaultLanguageChanged).not.toHaveBeenCalled()
+    })
+
+    it('leaves the default alone when the run is cancelled', async () => {
+      const subscriptionLink = new MockSubscriptionLink()
+      renderWithMocks(subscriptionLink, [swapMock, getCampaignMock])
+      fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
+      await emit(subscriptionLink, report(55, 'Translated 2 of 4 parts', 6))
+
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+      await settle()
+
+      expect(screen.getByTestId('Run')).toHaveTextContent('idle')
+      expect(swapped).not.toHaveBeenCalled()
+      expect(defaultLanguageChanged).not.toHaveBeenCalled()
+    })
+
+    it('shows the API’s message when the swap is refused for another reason', async () => {
+      const subscriptionLink = new MockSubscriptionLink()
+      renderWithMocks(subscriptionLink, [
+        {
+          ...swapMock,
+          result: conflict('campaign not found', { code: 'NOT_FOUND' }).result
+        }
+      ])
+      fireEvent.click(screen.getByRole('button', { name: 'Start then swap' }))
+
+      await emit(
+        subscriptionLink,
+        report(100, 'Translation completed!', 12, true),
+        true
+      )
+
+      expect(await screen.findByText('campaign not found')).toBeInTheDocument()
+      expect(defaultLanguageChanged).not.toHaveBeenCalled()
+    })
   })
 })

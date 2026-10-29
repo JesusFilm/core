@@ -1,24 +1,19 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
-import { useApolloClient } from '@apollo/client/react'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
-import { TranslationProgressBar } from '@core/journeys/ui/TranslationProgressBar'
-import {
-  CampaignAiTranslateVariables,
-  isMachineTranslatable,
-  useCampaignAiTranslateSubscription
-} from '@core/journeys/ui/useCampaignAiTranslateSubscription'
+import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 import { Dialog } from '@core/shared/ui/Dialog'
 
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
-import { GET_CAMPAIGN } from '../../../libs/useCampaignQuery'
-import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { useTranslationRun } from '../TranslationRunProvider'
+import {
+  missingCountOf,
+  useCampaignDefaultLanguageSwap
+} from '../utils/useCampaignDefaultLanguageSwap'
 
 interface DefaultLanguageDialogProps {
   campaign: Campaign
@@ -29,23 +24,14 @@ interface DefaultLanguageDialogProps {
   onChanged: () => void
 }
 
-function missingCountOf(error: unknown): number | undefined {
-  if (!CombinedGraphQLErrors.is(error)) return undefined
-  const conflict = error.errors.find(
-    (graphQLError) =>
-      graphQLError.extensions?.code === 'CONFLICT' &&
-      graphQLError.extensions?.field === 'defaultLanguageId'
-  )
-  const count = conflict?.extensions?.count
-  return typeof count === 'number' ? count : undefined
-}
-
 /**
  * Confirms a change of the campaign's default language. The API refuses the
  * change until every text exists in the new language (`CONFLICT` with a
- * count); the dialog then offers "Machine-translate missing into <language>"
- * and, when that run completes, asks for the change again. The change is a
- * server-side atomic swap, not a Command, so undo never touches it.
+ * count); the dialog then offers "Machine-translate missing into <language>",
+ * which hands the run to the editor's TranslationRunProvider (progress, Cancel
+ * and the end message live there) and closes. The provider asks for the
+ * change again once that run completes. The change is a server-side atomic
+ * swap, not a Command, so undo never touches it.
  */
 export function DefaultLanguageDialog({
   campaign,
@@ -54,30 +40,16 @@ export function DefaultLanguageDialog({
   onChanged
 }: DefaultLanguageDialogProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const client = useApolloClient()
-  const { run } = useTranslationRun()
-  const [campaignUpdate, { loading: changing }] = useCampaignUpdateMutation()
+  const { run, start } = useTranslationRun()
+  const swapDefaultLanguage = useCampaignDefaultLanguageSwap()
+  const [changing, setChanging] = useState(false)
   const [missingCount, setMissingCount] = useState<number>()
-  const [sweep, setSweep] = useState<CampaignAiTranslateVariables>()
   const [error, setError] = useState<string>()
 
   useEffect(() => {
     setMissingCount(undefined)
-    setSweep(undefined)
     setError(undefined)
   }, [languageId])
-
-  const { data: sweepData } = useCampaignAiTranslateSubscription({
-    variables: sweep,
-    onError: (sweepError) => {
-      setError(sweepError.message)
-      setSweep(undefined)
-    },
-    onComplete: () => {
-      setSweep(undefined)
-      void changeDefaultLanguage()
-    }
-  })
 
   const target = campaign.languages.find(
     (language) => language.languageId === languageId
@@ -87,28 +59,14 @@ export function DefaultLanguageDialog({
   )
   const targetName = target == null ? '' : languageNames(target).autonym
   const currentName = current == null ? '' : languageNames(current).autonym
-  const translating = sweep != null
   const manualOnly = languageId != null && !isMachineTranslatable(languageId)
 
   async function changeDefaultLanguage(): Promise<void> {
     if (languageId == null) return
     setError(undefined)
+    setChanging(true)
     try {
-      await campaignUpdate({
-        variables: {
-          id: campaign.id,
-          input: { defaultLanguageId: languageId }
-        },
-        refetchQueries: [
-          { query: GET_CAMPAIGN, variables: { id: campaign.id } }
-        ],
-        awaitRefetchQueries: true
-      })
-      client.cache.evict({
-        id: 'ROOT_QUERY',
-        fieldName: 'campaignTranslations'
-      })
-      client.cache.gc()
+      await swapDefaultLanguage(campaign.id, languageId)
       setMissingCount(undefined)
       onChanged()
     } catch (updateError) {
@@ -122,22 +80,31 @@ export function DefaultLanguageDialog({
           ? updateError.message
           : t('Could not change the default language')
       )
+    } finally {
+      setChanging(false)
     }
   }
 
   function handleMachineTranslate(): void {
     if (languageId == null) return
-    setError(undefined)
-    setSweep({ campaignId: campaign.id, languageId, mode: 'missing' })
+    start(
+      { campaignId: campaign.id, languageId, mode: 'missing' },
+      targetName,
+      {
+        thenSwapDefaultLanguage: true,
+        onDefaultLanguageChanged: onChanged
+      }
+    )
+    onClose()
   }
 
   return (
     <Dialog
       open={languageId != null}
-      onClose={translating || changing ? undefined : onClose}
+      onClose={changing ? undefined : onClose}
       dialogTitle={{
         title: t('Change default language?'),
-        closeButton: !translating && !changing
+        closeButton: !changing
       }}
       dialogAction={
         missingCount == null
@@ -152,12 +119,10 @@ export function DefaultLanguageDialog({
       }
       dialogActionChildren={
         missingCount == null ? undefined : (
-          <Button onClick={onClose} disabled={translating}>
-            {t('Cancel')}
-          </Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
         )
       }
-      loading={changing || translating}
+      loading={changing}
       testId="CampaignDefaultLanguageDialog"
     >
       <Stack spacing={3}>
@@ -185,7 +150,7 @@ export function DefaultLanguageDialog({
             ) : (
               <Button
                 variant="outlined"
-                disabled={translating || run != null}
+                disabled={run != null}
                 onClick={handleMachineTranslate}
                 sx={{ alignSelf: 'flex-start' }}
               >
@@ -194,19 +159,6 @@ export function DefaultLanguageDialog({
                 })}
               </Button>
             )}
-          </Stack>
-        )}
-        {translating && (
-          <Stack data-testid="CampaignDefaultLanguageSweep">
-            <TranslationProgressBar
-              progress={
-                sweepData?.campaignAiTranslateSubscription.progress ?? 0
-              }
-              message={
-                sweepData?.campaignAiTranslateSubscription.message ??
-                t('Starting translation...')
-              }
-            />
           </Stack>
         )}
         {error != null && (

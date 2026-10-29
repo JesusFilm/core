@@ -1749,5 +1749,12 @@
   "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.": "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.",
   "Copy value": "Copy value",
   "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here.",
-  "All regions label": "All regions label"
+  "All regions label": "All regions label",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._one": "1 text still has no translation in {{language}}, so it cannot become the default.",
+  "{{count}} texts still have no translation in {{language}}, so it cannot become the default._other": "{{count}} texts still have no translation in {{language}}, so it cannot become the default.",
+  "{{language}} is already being translated. Try again when it has finished.": "{{language}} is already being translated. Try again when it has finished.",
+  "Leave the editor?": "Leave the editor?",
+  "Stay": "Stay",
+  "Leave": "Leave",
+  "The translation into {{language}} stops.": "The translation into {{language}} stops."
 }

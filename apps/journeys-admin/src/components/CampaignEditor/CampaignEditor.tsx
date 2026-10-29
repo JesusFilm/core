@@ -29,7 +29,11 @@ import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
 import { Navigator, NavigatorHoverProvider } from './Navigator'
 import { PagesPanel } from './PagesPanel'
-import { TranslationRunProvider } from './TranslationRunProvider'
+import {
+  TranslationRunProvider,
+  useTranslationRun
+} from './TranslationRunProvider'
+import { useCampaignLeaveGuard } from './utils/useCampaignLeaveGuard'
 
 /**
  * The editor shell is desktop only: narrower viewports get a message, no
@@ -130,50 +134,69 @@ function CampaignEditorShell({
   )
 }
 
+/** Narrower than {@link EDITOR_MIN_WIDTH}: a message in place of the shell. */
+function CampaignEditorLargerScreen(): ReactElement {
+  const { t } = useTranslation('apps-journeys-admin')
+  return (
+    <Stack
+      data-testid="CampaignEditorLargerScreen"
+      sx={{
+        minHeight: '100vh',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        p: 6
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
+        {t('Open this on a larger screen')}
+      </Typography>
+      <Typography color="text.secondary">
+        {t(
+          'The campaign editor needs a window at least {{width}} pixels wide.',
+          { width: EDITOR_MIN_WIDTH }
+        )}
+      </Typography>
+    </Stack>
+  )
+}
+
+/**
+ * Inside the providers, so crossing the minimum width swaps only the shell
+ * for the larger-screen message: the Command history and a run in flight
+ * survive it. Leaving the page while a run is in flight asks first.
+ */
+function CampaignEditorViewport({
+  campaign,
+  isManager
+}: CampaignEditorShellProps): ReactElement {
+  const isDesktop = useMediaQuery(`(min-width:${EDITOR_MIN_WIDTH}px)`)
+  const { run } = useTranslationRun()
+  useCampaignLeaveGuard([run != null])
+
+  if (!isDesktop) return <CampaignEditorLargerScreen />
+  return <CampaignEditorShell campaign={campaign} isManager={isManager} />
+}
+
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
  * the Mux upload queue (so a Media Slot upload outlives the selection), the
  * machine-translation run (so it outlives the Localize panel), the
  * Left Rail with its panels, the canvas with its banner and the Inspector.
- * First open after create shows the landing page, nothing selected,
- * Desktop view, the default language as the Preview Language. Nothing
- * replaces Save.
+ * The providers stay mounted below the minimum width, which swaps only the
+ * shell for a message. First open after create shows the landing page,
+ * nothing selected, Desktop view, the default language as the Preview
+ * Language. Nothing replaces Save.
  */
 export function CampaignEditor({
   campaign
 }: CampaignEditorProps): ReactElement {
-  const { t } = useTranslation('apps-journeys-admin')
-  const isDesktop = useMediaQuery(`(min-width:${EDITOR_MIN_WIDTH}px)`)
   const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
 
   useEffect(() => {
     void loadUser()
   }, [loadUser])
-
-  if (!isDesktop)
-    return (
-      <Stack
-        data-testid="CampaignEditorLargerScreen"
-        sx={{
-          minHeight: '100vh',
-          alignItems: 'center',
-          justifyContent: 'center',
-          textAlign: 'center',
-          p: 6
-        }}
-      >
-        <Typography variant="h5" gutterBottom>
-          {t('Open this on a larger screen')}
-        </Typography>
-        <Typography color="text.secondary">
-          {t(
-            'The campaign editor needs a window at least {{width}} pixels wide.',
-            { width: EDITOR_MIN_WIDTH }
-          )}
-        </Typography>
-      </Stack>
-    )
 
   if (campaign == null)
     return (
@@ -208,7 +231,10 @@ export function CampaignEditor({
         <MuxVideoUploadProvider>
           <TranslationRunProvider>
             <NavigatorHoverProvider>
-              <CampaignEditorShell campaign={campaign} isManager={isManager} />
+              <CampaignEditorViewport
+                campaign={campaign}
+                isManager={isManager}
+              />
             </NavigatorHoverProvider>
           </TranslationRunProvider>
         </MuxVideoUploadProvider>
