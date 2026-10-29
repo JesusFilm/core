@@ -95,11 +95,22 @@ export function secondaryTextOf(block: CampaignBlock): string | undefined {
   return undefined
 }
 
+/**
+ * The Header and Footer lay their Extras out in one run, whatever their
+ * placement, on the canvas and the public page alike.
+ */
+function isChromeHost(block: CampaignBlock): boolean {
+  return (
+    block.__typename === 'CampaignHeaderBlock' ||
+    block.__typename === 'CampaignFooterBlock'
+  )
+}
+
 function placementOf(
   block: CampaignBlock,
   parent: CampaignBlock | undefined
 ): NavigatorExtraPlacement | undefined {
-  if (parent == null) return undefined
+  if (parent == null || isChromeHost(parent)) return undefined
   if (!isExtra(block)) return undefined
   return block.placement === CampaignChildPlacement.above ? 'above' : 'below'
 }
@@ -128,12 +139,15 @@ function inGroup(
  * A node's children as the canvas orders them: the Extras placed above, the
  * body (cards, slots, region cards), then the Extras placed below. When there
  * are Extras a divider row stands where the body starts, so an Extra can be
- * dragged across it to change its placement.
+ * dragged across it to change its placement. A Header or Footer has no
+ * placement to change: its Extras are one sibling group, with no divider.
  */
 function childRows(
   block: CampaignBlock,
   nodes: NavigatorNode[]
 ): NavigatorNode[] {
+  if (isChromeHost(block))
+    return inGroup(nodes, `${block.id}:children`, 'block')
   const body = nodes.filter((node) => node.placement == null)
   const regrouped = new Map<string, NavigatorNode>()
   for (const [parentType, type, kind] of BODY_REORDER_KINDS) {
