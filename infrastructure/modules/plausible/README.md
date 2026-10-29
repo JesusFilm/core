@@ -20,8 +20,10 @@ environment, stage first, and the sections below are the record of it:
    bridge are gone; the final snapshots of the data volumes are
    `snap-016b2925ce7836226` (stage) and `snap-0decfd85f117e31a6` (prod).
 
-Nothing of Plausible's runs on EKS now (the Argo CD apps remain, at
-`replicaCount: 0`, until the cluster goes). There is no rollback to EKS.
+Nothing of Plausible's runs on EKS now; the Platform Clusters themselves were
+destroyed on 2026-10-28 (stage) and 2026-10-29 (prod), and the Helm chart and
+Argo CD applications under `infrastructure/kube/` went with them (see the git
+history). There is no rollback to EKS.
 
 |                                             | stage                                                                         | prod                                                   |
 | ------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------ |
@@ -30,7 +32,6 @@ Nothing of Plausible's runs on EKS now (the Argo CD apps remain, at
 | Certificate                                 | the `*.stage.central.jesusfilm.org` wildcard                                  | ACM `analytics.jesusfilm.org`, validated in Cloudflare |
 | DNS for the hostname                        | Route53 zone `stage.central.jesusfilm.org` (external-dns owned until cutover) | Cloudflare DNS, DNS-only CNAME, by hand                |
 | Doppler                                     | `plausible` / `stg_ecs` (branch of `stg`)                                     | `plausible` / `prd_ecs` (branch of `prd`)              |
-| Argo CD (EKS Deployment, at 0 replicas)     | auto-sync from the `stage` branch                                             | auto-sync from `main`                                  |
 
 Configuration is six keys of the `plausible` Doppler project (`BASE_URL`,
 `CLICKHOUSE_DATABASE_URL`, `DATABASE_URL`, `DISABLE_REGISTRATION`,
