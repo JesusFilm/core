@@ -1,5 +1,5 @@
-import { ApolloLink, gql } from '@apollo/client'
-import { useApolloClient } from '@apollo/client/react'
+import { ApolloClient, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
@@ -8,12 +8,10 @@ import {
   CampaignVideoBlockCreate,
   CampaignVideoBlockCreateVariables
 } from '../../../__generated__/CampaignVideoBlockCreate'
-import {
-  GetCampaign_campaign_blocks as CampaignBlock,
-  GetCampaign_campaign_blocks_CampaignVideoBlock
-} from '../../../__generated__/GetCampaign'
+import { GetCampaign_campaign_blocks_CampaignVideoBlock } from '../../../__generated__/GetCampaign'
 import { VideoBlockSource } from '../../../__generated__/globalTypes'
 import {
+  CampaignBlockOwnerRef,
   campaignBlockCreateUpdate,
   campaignBlockSlotWrite
 } from '../campaignBlockCache'
@@ -46,12 +44,6 @@ export type CampaignVideoPick =
       videoId: string
     }
 
-/** The columns of the hero or Featured Media section whose Media Slot the video fills. */
-export type CampaignVideoOwner = Pick<
-  CampaignBlock,
-  '__typename' | 'id' | 'campaignId' | 'pageId' | 'regionId'
->
-
 /**
  * A Media Slot video as its create returns it before the server has
  * resolved or fetched anything: `parentOrder: null`, the owner's scoping,
@@ -59,7 +51,7 @@ export type CampaignVideoOwner = Pick<
  */
 export function newOwnedVideoBlock(
   id: string,
-  owner: CampaignVideoOwner,
+  owner: CampaignBlockOwnerRef,
   pick: CampaignVideoPick
 ): CampaignVideoBlock {
   return {
@@ -85,13 +77,13 @@ export function newOwnedVideoBlock(
 
 export interface CreateOwnedVideoOptions {
   id: string
-  owner: CampaignVideoOwner
+  owner: CampaignBlockOwnerRef
   pick: CampaignVideoPick
 }
 
 export type CreateOwnedVideo = (
   options: CreateOwnedVideoOptions
-) => Promise<ApolloLink.Result<CampaignVideoBlockCreate>>
+) => Promise<ApolloClient.MutateResult<CampaignVideoBlockCreate>>
 
 /**
  * Fill a hero's or Featured Media section's Media Slot with a Campaign Video
@@ -104,14 +96,13 @@ export type CreateOwnedVideo = (
 export function useCampaignVideoBlockCreateMutation(
   campaignId: string
 ): CreateOwnedVideo {
-  const client = useApolloClient()
+  const [createVideo] = useMutation<
+    CampaignVideoBlockCreate,
+    CampaignVideoBlockCreateVariables
+  >(CAMPAIGN_VIDEO_BLOCK_CREATE)
   return useCallback(
     async ({ id, owner, pick }) =>
-      await client.mutate<
-        CampaignVideoBlockCreate,
-        CampaignVideoBlockCreateVariables
-      >({
-        mutation: CAMPAIGN_VIDEO_BLOCK_CREATE,
+      await createVideo({
         variables: {
           input: { id, campaignId, parentBlockId: owner.id, ...pick }
         },
@@ -125,56 +116,6 @@ export function useCampaignVideoBlockCreateMutation(
           campaignBlockSlotWrite(cache, owner, 'mediaBlockId', video.id)
         }
       }),
-    [client, campaignId]
-  )
-}
-
-export interface CreateCarouselItemOptions {
-  id: string
-  carousel: CampaignVideoOwner
-  pick: CampaignVideoPick
-  /** Where the item lands: after the carousel's children. */
-  parentOrder: number
-}
-
-export type CreateCarouselItem = (
-  options: CreateCarouselItemOptions
-) => Promise<ApolloLink.Result<CampaignVideoBlockCreate>>
-
-/**
- * Add an explicit item to a Video Carousel through `campaignVideoBlockCreate`
- * with the carousel as parent: the server appends it after the carousel's
- * children. The optimistic item (the owned video's empty shape at the end
- * of the carousel) joins the campaign's block list at once.
- */
-export function useCampaignCarouselItemCreateMutation(
-  campaignId: string
-): CreateCarouselItem {
-  const client = useApolloClient()
-  return useCallback(
-    async ({ id, carousel, pick, parentOrder }) =>
-      await client.mutate<
-        CampaignVideoBlockCreate,
-        CampaignVideoBlockCreateVariables
-      >({
-        mutation: CAMPAIGN_VIDEO_BLOCK_CREATE,
-        variables: {
-          input: { id, campaignId, parentBlockId: carousel.id, ...pick }
-        },
-        optimisticResponse: {
-          campaignVideoBlockCreate: {
-            ...newOwnedVideoBlock(id, carousel, pick),
-            parentOrder
-          }
-        },
-        update(cache, { data }) {
-          campaignBlockCreateUpdate(
-            cache,
-            campaignId,
-            data?.campaignVideoBlockCreate
-          )
-        }
-      }),
-    [client, campaignId]
+    [createVideo, campaignId]
   )
 }

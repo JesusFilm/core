@@ -112,6 +112,17 @@ export function campaignBlockRestoreUpdate(
   campaignBlocksAdd(cache, campaignId, blocks)
 }
 
+/**
+ * The columns of a block that owns another (a section's cover or Media
+ * Slot, the header's logo, a carousel's item): the scoping the new block
+ * copies.
+ */
+export type CampaignBlockOwnerRef = CampaignBlockRef & {
+  campaignId: string
+  pageId: string | null
+  regionId: string | null
+}
+
 /** The scoping columns that decide which cached blocks are a block's siblings. */
 export type CampaignBlockScopeRef = CampaignBlockRef & {
   pageId: string | null
