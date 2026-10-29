@@ -1,5 +1,12 @@
 import { NextRequest } from 'next/server'
 
+import {
+  campaignAbsoluteAddress,
+  campaignPagePaths,
+  pageLanguageTag,
+  withPageLanguage
+} from '@core/journeys/ui/Campaign/libs/campaignAddress'
+
 import proxy from './proxy'
 
 describe('journeys proxy', () => {
@@ -384,6 +391,60 @@ describe('journeys proxy', () => {
       expect(result?.headers.get('x-middleware-rewrite')).toBe(
         'http://your.nextstep.is/home/?lang=es'
       )
+    })
+  })
+
+  describe('campaign round trip', () => {
+    const ROOT_ORIGIN = 'https://your.nextstep.is'
+    const slug = 'outreach'
+    const domainName = 'outreach.example.org'
+    const regionSlugs = ['eur', 'afr']
+    const bcp47s = ['en', 'zh-Hans-CN']
+
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_ROOT_DOMAIN = 'your.nextstep.is'
+    })
+
+    // The page path the proxy rewrites a public address to. Next.js serves
+    // `/<hostname>/` and `/<hostname>` from the same page, so a trailing
+    // slash is dropped.
+    async function pagePathOf(address: string): Promise<string> {
+      const url = new URL(address)
+      const result = await proxy(
+        buildRequest(url.host, `${url.pathname}${url.search}`)
+      )
+      const rewrite = result?.headers.get('x-middleware-rewrite') ?? ''
+      return new URL(rewrite).pathname.replace(/(.)\/$/, '$1')
+    }
+
+    it('rewrites the public address of every page campaignPagePaths lists to that page path', async () => {
+      const addresses = [
+        { slug, domainName: null },
+        { slug, domainName }
+      ].flatMap((input) =>
+        [undefined, ...regionSlugs].flatMap((regionSlug) => {
+          const address = campaignAbsoluteAddress(
+            input,
+            { rootOrigin: ROOT_ORIGIN },
+            regionSlug
+          )
+          return [
+            address,
+            ...bcp47s.map((bcp47) => withPageLanguage(address, bcp47))
+          ]
+        })
+      )
+      const pagePaths = campaignPagePaths({
+        slug,
+        regions: regionSlugs.map((regionSlug) => ({ slug: regionSlug })),
+        hostnames: [domainName],
+        languageTags: bcp47s.map((bcp47) => pageLanguageTag(bcp47) ?? '')
+      })
+
+      const rewritten = await Promise.all(addresses.map(pagePathOf))
+
+      expect(rewritten).toHaveLength(pagePaths.length)
+      expect([...rewritten].sort()).toEqual([...pagePaths].sort())
     })
   })
 })
