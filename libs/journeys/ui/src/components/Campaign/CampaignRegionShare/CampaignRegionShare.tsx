@@ -20,7 +20,7 @@ import {
   JourneyStatus
 } from '../../../../__generated__/globalTypes'
 import { QrCodeCanvas, downloadQrCodePng } from '../../QrCodeCanvas'
-import { useCampaign } from '../CampaignProvider'
+import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { hasText } from '../types'
@@ -163,14 +163,28 @@ export function CampaignRegionShare({
     step2: string(CampaignStringKey.step2),
     step2help: string(CampaignStringKey.step2help),
     step3: string(CampaignStringKey.step3),
-    step4: string(CampaignStringKey.step4),
-    copy: string(CampaignStringKey.copy),
-    copied: string(CampaignStringKey.copied),
-    downloadQr: string(CampaignStringKey.downloadQr),
-    open: string(CampaignStringKey.open)
+    step4: string(CampaignStringKey.step4)
   }
-  const openLabel = hasText(strings.open) ? strings.open : t('Open')
-  const copiedLabel = hasText(strings.copied) ? strings.copied : t('Copied')
+  const openLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.open,
+    t('Open')
+  )
+  const copiedLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.copied,
+    t('Copied')
+  )
+  const copyLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.copy,
+    t('Copy link')
+  )
+  const downloadLabel = campaignStringOr(
+    campaign.strings,
+    CampaignStringKey.downloadQr,
+    t('Download QR code')
+  )
   const shortLink = selected?.shortLinkUrl ?? undefined
 
   function handleChange(event: SelectChangeEvent<string>): void {
@@ -218,9 +232,11 @@ export function CampaignRegionShare({
                 onChange={handleChange}
                 data-testid="CampaignRegionShareSelect"
                 inputProps={{
-                  'aria-label': hasText(strings.step1)
-                    ? strings.step1
-                    : t('Language'),
+                  'aria-label': campaignStringOr(
+                    campaign.strings,
+                    CampaignStringKey.step1,
+                    t('Language')
+                  ),
                   'aria-labelledby': hasText(strings.step1)
                     ? `${block.id}-step1`
                     : undefined
@@ -381,7 +397,7 @@ export function CampaignRegionShare({
                     whiteSpace: 'pre-line'
                   }}
                 >
-                  {hasText(strings.copy) ? strings.copy : t('Copy link')}
+                  {copyLabel}
                 </Button>
               </ShareStep>
               <ShareStep id={`${block.id}-step4`} label={strings.step4}>
@@ -398,9 +414,7 @@ export function CampaignRegionShare({
                     whiteSpace: 'pre-line'
                   }}
                 >
-                  {hasText(strings.downloadQr)
-                    ? strings.downloadQr
-                    : t('Download QR code')}
+                  {downloadLabel}
                 </Button>
               </ShareStep>
             </Stack>

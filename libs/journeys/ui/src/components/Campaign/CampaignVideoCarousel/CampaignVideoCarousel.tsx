@@ -10,11 +10,10 @@ import { ReactElement, ReactNode, useMemo, useState } from 'react'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
-import { useCampaign } from '../CampaignProvider'
+import { campaignStringOr, useCampaign } from '../CampaignProvider'
 import { CampaignSectionBand } from '../CampaignSectionBand'
 import { CampaignSectionHeading } from '../CampaignSectionHeading'
 import { CampaignVideo, videoCountLabel } from '../CampaignVideo'
-import { hasText } from '../types'
 import type { CampaignTreeOf } from '../types'
 
 import {
@@ -201,12 +200,16 @@ function SeeAllCard({
   card: CampaignCarouselSeeAllCard
 }): ReactElement {
   const { t } = useTranslation('libs-journeys-ui')
-  const { string } = useCampaign()
+  const { campaign, string } = useCampaign()
   const label = string(CampaignStringKey.seeAllOnWatch)
   return (
     <CardFrame
       testId="CampaignVideoCarouselSeeAll"
-      ariaLabel={hasText(label) ? undefined : t('See all')}
+      ariaLabel={campaignStringOr(
+        campaign.strings,
+        CampaignStringKey.seeAllOnWatch,
+        t('See all')
+      )}
       href={card.href}
     >
       <Box

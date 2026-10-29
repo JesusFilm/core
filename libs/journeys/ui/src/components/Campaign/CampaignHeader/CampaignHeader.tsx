@@ -16,7 +16,11 @@ import Menu1 from '@core/shared/ui/icons/Menu1'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { CampaignButton, resolveCampaignAction } from '../CampaignButton'
-import { campaignLandingHref, useCampaign } from '../CampaignProvider'
+import {
+  campaignLandingHref,
+  campaignStringOr,
+  useCampaign
+} from '../CampaignProvider'
 import {
   CAMPAIGN_HEADER_HEIGHT,
   CampaignBandCover,
@@ -132,9 +136,11 @@ export function CampaignHeader({ block }: CampaignHeaderProps): ReactElement {
                   clickable
                   href={landingHref}
                   label={allRegions}
-                  aria-label={
-                    hasText(allRegions) ? undefined : t('All regions')
-                  }
+                  aria-label={campaignStringOr(
+                    campaign.strings,
+                    CampaignStringKey.allRegions,
+                    t('All regions')
+                  )}
                   size="small"
                   variant="outlined"
                   icon={<ChevronLeft />}

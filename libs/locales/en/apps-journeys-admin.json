@@ -1605,7 +1605,6 @@
   "Paste a jesusfilm.org/watch link, or a YouTube video or playlist link": "Paste a jesusfilm.org/watch link, or a YouTube video or playlist link",
   "Add videos": "Add videos",
   "Add videos from Edit": "Add videos from Edit",
-  "See all on Watch": "See all on Watch",
   "Manual only: machine translation does not cover this language, so write each line yourself.": "Manual only: machine translation does not cover this language, so write each line yourself.",
   "Machine-translate missing": "Machine-translate missing",
   "Starting translation...": "Starting translation...",
@@ -1698,7 +1697,6 @@
   "Show on the canvas": "Show on the canvas",
   "Create QR code": "Create QR code",
   "Could not create QR code": "Could not create QR code",
-  "Back to all regions link": "Back to all regions link",
   "Share step 1": "Share step 1",
   "Share step 2": "Share step 2",
   "Share step 2 help": "Share step 2 help",
@@ -1750,5 +1748,6 @@
   "The campaign moves back to its your.nextstep.is address.": "The campaign moves back to its your.nextstep.is address.",
   "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.": "Your your.nextstep.is address stops working now. The campaign shows on {{domain}} once its DNS is set up.",
   "Copy value": "Copy value",
-  "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here."
+  "This domain is already in use. Remove it where it's connected, then add it here.": "This domain is already in use. Remove it where it's connected, then add it here.",
+  "All regions label": "All regions label"
 }

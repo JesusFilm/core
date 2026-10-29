@@ -6,5 +6,5 @@ export {
   useCampaign,
   useOptionalCampaign
 } from './CampaignProvider'
-export { campaignString } from './campaignString'
+export { campaignString, campaignStringOr } from './campaignString'
 export type { CampaignContextValue } from './CampaignProvider'

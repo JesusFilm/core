@@ -4,13 +4,14 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { campaignStringKeysFor } from '@core/journeys/ui/Campaign/libs/campaignStrings'
+
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_strings as CampaignString
 } from '../../../../__generated__/GetCampaign'
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { CAMPAIGN_SECTION_STRING_KEYS } from '../Canvas/CanvasSection'
 import {
   CAMPAIGN_STRING_CAP,
   textLength
@@ -23,7 +24,7 @@ type Translate = (key: string) => string
 export function stringKeyLabel(t: Translate, key: CampaignStringKey): string {
   switch (key) {
     case CampaignStringKey.allRegions:
-      return t('Back to all regions link')
+      return t('All regions label')
     case CampaignStringKey.step1:
       return t('Share step 1')
     case CampaignStringKey.step2:
@@ -114,8 +115,7 @@ export function SectionWordingSettings({
 }: SectionWordingSettingsProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const keys = CAMPAIGN_SECTION_STRING_KEYS[block.__typename] ?? []
-  const strings = keys.flatMap((key) =>
+  const strings = campaignStringKeysFor(block.__typename).flatMap((key) =>
     campaign.strings.filter((string) => string.key === key)
   )
   if (strings.length === 0) return null

@@ -1,6 +1,7 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import Stack from '@mui/material/Stack'
@@ -31,6 +32,7 @@ import {
   resolveBand
 } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
+import ChevronLeftIcon from '@core/shared/ui/icons/ChevronLeft'
 import DragIcon from '@core/shared/ui/icons/Drag'
 import Menu1Icon from '@core/shared/ui/icons/Menu1'
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
@@ -58,6 +60,7 @@ import { regionLines, useCampaignEditor } from '../../CampaignEditorProvider'
 import { JourneyListEdit } from '../../JourneyListEdit'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
+import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
 import { regionDisplayName } from '../../utils/regionDisplayName'
 import { regionLineColor } from '../../utils/regionLineColor'
 import { CanvasCarousel } from '../CanvasCarousel'
@@ -319,44 +322,6 @@ function SectionText({
       sx={styles.sx}
     />
   )
-}
-
-/**
- * The Campaign Strings each section's public rendering reads (PRD §2): the
- * share steps and buttons on the Region Share section, the back chip on the
- * Region Header, the carousel's Watch wording, the journey card's button and
- * the Analytics tile labels. Until each section's own canvas body lands they
- * render as one editable list under the section's text.
- */
-export const CAMPAIGN_SECTION_STRING_KEYS: Partial<
-  Record<CampaignBlock['__typename'], readonly CampaignStringKey[]>
-> = {
-  CampaignRegionHeaderBlock: [CampaignStringKey.allRegions],
-  CampaignRegionShareBlock: [
-    CampaignStringKey.step1,
-    CampaignStringKey.step2,
-    CampaignStringKey.step2help,
-    CampaignStringKey.step3,
-    CampaignStringKey.step4,
-    CampaignStringKey.copy,
-    CampaignStringKey.copied,
-    CampaignStringKey.downloadQr,
-    CampaignStringKey.open
-  ],
-  CampaignVideoCarouselBlock: [
-    CampaignStringKey.watch,
-    CampaignStringKey.youtube,
-    CampaignStringKey.seeAllOnWatch,
-    CampaignStringKey.videos
-  ],
-  CampaignJourneyListBlock: [
-    CampaignStringKey.openTemplate,
-    CampaignStringKey.noJourneys
-  ],
-  CampaignAnalyticsBlock: [
-    CampaignStringKey.totalVisitors,
-    CampaignStringKey.topCountry
-  ]
 }
 
 interface CanvasRegionHeadingProps {
@@ -708,7 +673,7 @@ export function CanvasSection({
     if (navButtonSelected) selectBlock(block.id)
   }
 
-  /** The header row as the public `CampaignHeader` lays it out: Brand Mark, the nav buttons on the right, the language box. The box has no chevron: the canvas never switches language, the Preview Language chip does. */
+  /** The header row as the public `CampaignHeader` lays it out: the "All regions" chip while a region is edited, Brand Mark, the nav buttons on the right, the language box. The chip and the box are static: the canvas never leaves the region, and the box has no chevron since the Preview Language chip switches language. As on the public header, a blank `allRegions` leaves the chip empty. */
   const headerBody = (
     <Box
       data-testid="CanvasHeaderRow"
@@ -719,6 +684,26 @@ export function CanvasSection({
         columnGap: 2
       }}
     >
+      {currentRegion != null && (
+        <Chip
+          label={campaignStringText(
+            campaign,
+            CampaignStringKey.allRegions,
+            previewLanguageId,
+            ''
+          )}
+          size="small"
+          variant="outlined"
+          icon={<ChevronLeftIcon />}
+          data-testid="CanvasAllRegionsChip"
+          sx={{
+            color: 'var(--campaign-band-text)',
+            borderColor: 'var(--campaign-band-accent)',
+            '& .MuiChip-label': { whiteSpace: 'pre-line' },
+            '& .MuiChip-icon': { color: 'var(--campaign-band-accent)' }
+          }}
+        />
+      )}
       <Box
         data-testid="CanvasBrandMark"
         sx={{
