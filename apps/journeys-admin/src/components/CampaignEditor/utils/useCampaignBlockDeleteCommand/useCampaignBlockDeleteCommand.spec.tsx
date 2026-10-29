@@ -14,8 +14,6 @@ import { campaign } from '../../data'
 import { Inspector } from '../../Inspector'
 import { BlocksProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
-import { siblingsOf } from './useCampaignBlockDeleteCommand'
-
 const footerTerms = campaign.blocks.find(
   (block) => block.id === 'footerTermsId'
 )!
@@ -78,13 +76,6 @@ function renderEditor(
 
 describe('useCampaignBlockDeleteCommand', () => {
   beforeEach(() => vi.clearAllMocks())
-
-  it('lists a block’s live siblings in order, excluding itself', () => {
-    expect(siblingsOf(campaign.blocks, footerTerms).map((b) => b.id)).toEqual([
-      'footerCopyrightId',
-      'footerPrivacyId'
-    ])
-  })
 
   it('deletes without confirmation, renumbers the siblings at once and selects the host', async () => {
     renderEditor()

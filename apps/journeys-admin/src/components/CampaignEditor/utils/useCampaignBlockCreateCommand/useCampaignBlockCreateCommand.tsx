@@ -1,8 +1,7 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { siblingRows, siblingsOf } from '../siblingsOf'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
 import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
@@ -28,18 +27,11 @@ export function useCampaignBlockCreateCommand(): {
 } {
   const { addCampaignCommand } = useCampaignCommand()
   const { campaign } = useCampaignEditor()
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const reportFailure = useCommandFailure()
 
   function addBlock({ block, execute }: AddBlockParameters): void {
-    const siblings = siblingsOf(campaign.blocks, block).map(
-      (sibling, parentOrder) => ({
-        __typename: sibling.__typename,
-        id: sibling.id,
-        parentOrder
-      })
-    )
+    const siblings = siblingRows(siblingsOf(campaign.blocks, block))
     const selectCreated = {
       selectedBlockId: block.id,
       selectedRegionId: undefined
@@ -47,16 +39,8 @@ export function useCampaignBlockCreateCommand(): {
     addCampaignCommand({
       focus: { execute: selectCreated, redo: selectCreated },
       execute,
-      undo: async () =>
-        await blockDelete({
-          variables: { id: block.id },
-          optimisticResponse: { campaignBlockDelete: siblings }
-        }),
-      redo: async () =>
-        await blockRestore({
-          variables: { id: block.id },
-          optimisticResponse: { campaignBlockRestore: [block] }
-        })
+      undo: async () => await softDelete(block, siblings),
+      redo: async () => await restore(block, [block])
     }).catch((error: unknown) => reportFailure(error))
   }
 

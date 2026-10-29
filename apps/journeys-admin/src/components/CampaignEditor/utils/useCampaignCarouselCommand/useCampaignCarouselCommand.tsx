@@ -5,8 +5,6 @@ import {
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideoCarouselBlock
 } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
 import {
   CampaignBlockUpdateInput,
@@ -17,8 +15,9 @@ import { CampaignVideoPick } from '../../../../libs/useCampaignVideoBlockCreateM
 import { useCampaignVideoCarouselBlockPlaylistImportMutation } from '../../../../libs/useCampaignVideoCarouselBlockPlaylistImportMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
-import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { CampaignSiblingRow, siblingRows, siblingsOf } from '../siblingsOf'
 import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
 import { useCampaignCommand } from '../useCampaignCommand'
 
 type CampaignCarouselVideoInput =
@@ -66,28 +65,21 @@ export function fitCampaignText(value: string, cap: number): string {
     .trimEnd()}…`
 }
 
-type OrderRow = Pick<CampaignBlock, '__typename' | 'id'> & {
-  parentOrder: number
-}
-
 /** The carousel's children once `removed` are gone, renumbered: what their deletes return. */
 function remainingChildren(
   blocks: CampaignBlock[],
   carouselId: string,
   removed: Set<string>
-): OrderRow[] {
+): CampaignSiblingRow[] {
   const anchor = blocks.find(
     (block) => block.parentBlockId === carouselId && block.parentOrder != null
   )
   if (anchor == null) return []
-  return [anchor, ...siblingsOf(blocks, anchor)]
-    .filter((block) => !removed.has(block.id))
-    .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
-    .map((block, parentOrder) => ({
-      __typename: block.__typename,
-      id: block.id,
-      parentOrder
-    }))
+  return siblingRows(
+    [anchor, ...siblingsOf(blocks, anchor)]
+      .filter((block) => !removed.has(block.id))
+      .sort((a, b) => (a.parentOrder ?? 0) - (b.parentOrder ?? 0))
+  )
 }
 
 /**
@@ -114,8 +106,7 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
   const createPlaylist = useCampaignVideoCarouselBlockPlaylistImportMutation(
     campaign.id
   )
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const [itemError, setItemError] = useState<string>()
 
   function setWatchVideo(
@@ -156,28 +147,16 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
       const removed = new Set<string>()
       for (const block of created) {
         removed.add(block.id)
-        await blockDelete({
-          variables: { id: block.id },
-          optimisticResponse: {
-            campaignBlockDelete: remainingChildren(
-              blocksRef.current,
-              carousel.id,
-              removed
-            )
-          }
-        })
+        await softDelete(
+          block,
+          remainingChildren(blocksRef.current, carousel.id, removed)
+        )
       }
     }
 
     async function restoreItems(): Promise<void> {
       await Promise.all(
-        created.map(
-          async (block) =>
-            await blockRestore({
-              variables: { id: block.id },
-              optimisticResponse: { campaignBlockRestore: [block] }
-            })
-        )
+        created.map(async (block) => await restore(block, [block]))
       )
     }
 

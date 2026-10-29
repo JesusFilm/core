@@ -14,7 +14,7 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../__generated__/globalTypes'
 import { sortedRegions } from '../CampaignEditorProvider'
-import { siblingsOf } from '../utils/useCampaignBlockDeleteCommand'
+import { siblingsOf } from '../utils/siblingsOf'
 
 import { NavigatorNode, flattenNavigatorTree } from './navigatorTree'
 

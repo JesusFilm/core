@@ -1,15 +1,14 @@
 import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import {
   CampaignSectionTypename,
   useCampaignSectionCreateMutation
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { newSectionBlock } from '../../sectionTypes'
-import { CampaignFlushContext, useCampaignCommand } from '../useCampaignCommand'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 /**
@@ -34,28 +33,9 @@ export function useChangeTypeCommand(): {
 } {
   const { addCampaignCommand } = useCampaignCommand()
   const { campaign } = useCampaignEditor()
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const sectionCreate = useCampaignSectionCreateMutation(campaign.id)
   const reportFailure = useCommandFailure()
-
-  async function remove(
-    block: CampaignBlock,
-    flushContext: CampaignFlushContext
-  ): Promise<unknown> {
-    return await blockDelete({
-      variables: { id: block.id },
-      optimisticResponse: { campaignBlockDelete: [] },
-      context: flushContext
-    })
-  }
-
-  async function restore(block: CampaignBlock): Promise<unknown> {
-    return await blockRestore({
-      variables: { id: block.id },
-      optimisticResponse: { campaignBlockRestore: [block] }
-    })
-  }
 
   function addChangeType(
     section: CampaignBlock,
@@ -79,8 +59,9 @@ export function useChangeTypeCommand(): {
         undo: { selectedBlockId: section.id, selectedRegionId: undefined },
         redo: { selectedBlockId: next.id, selectedRegionId: undefined }
       },
-      async execute({ flushContext }) {
-        await remove(section, flushContext)
+      async execute(step) {
+        // A Column Slot holds one section, so it has no siblings to renumber.
+        await softDelete(section, [], step)
         try {
           await sectionCreate(next, {
             id: next.id,
@@ -90,17 +71,17 @@ export function useChangeTypeCommand(): {
             parentOrder: 0
           })
         } catch (error) {
-          await restore(section).catch(() => undefined)
+          await restore(section, [section]).catch(() => undefined)
           throw error
         }
       },
-      async undo({ flushContext }) {
-        await remove(next, flushContext)
-        await restore(section)
+      async undo(step) {
+        await softDelete(next, [], step)
+        await restore(section, [section])
       },
-      async redo({ flushContext }) {
-        await remove(section, flushContext)
-        await restore(next)
+      async redo(step) {
+        await softDelete(section, [], step)
+        await restore(next, [next])
       }
     }).catch((error: unknown) => reportFailure(error))
   }

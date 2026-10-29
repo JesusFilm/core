@@ -1,29 +1,9 @@
-import sortBy from 'lodash/sortBy'
-
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { siblingRows, siblingsOf } from '../siblingsOf'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
 import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
-
-/** A block's live, ordered siblings, excluding itself. */
-export function siblingsOf(
-  blocks: CampaignBlock[],
-  block: CampaignBlock
-): CampaignBlock[] {
-  return sortBy(
-    blocks.filter(
-      (candidate) =>
-        candidate.id !== block.id &&
-        candidate.parentOrder != null &&
-        candidate.parentBlockId === block.parentBlockId &&
-        candidate.pageId === block.pageId &&
-        candidate.regionId === block.regionId
-    ),
-    'parentOrder'
-  )
-}
 
 /**
  * Deleting a block is one Command with no confirmation: execute selects the
@@ -38,17 +18,12 @@ export function useCampaignBlockDeleteCommand(): {
 } {
   const { addCampaignCommand } = useCampaignCommand()
   const { campaign } = useCampaignEditor()
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const reportFailure = useCommandFailure()
 
   function addBlockDelete(block: CampaignBlock): void {
     const siblingsBefore = siblingsOf(campaign.blocks, block)
-    const siblingsAfter = siblingsBefore.map((sibling, parentOrder) => ({
-      __typename: sibling.__typename,
-      id: sibling.id,
-      parentOrder
-    }))
+    const siblingsAfter = siblingRows(siblingsBefore)
     const selectHost = {
       selectedBlockId: block.parentBlockId ?? undefined,
       selectedRegionId: undefined
@@ -61,19 +36,8 @@ export function useCampaignBlockDeleteCommand(): {
         undo: { selectedBlockId: block.id, selectedRegionId: undefined },
         redo: selectHost
       },
-      execute: async ({ flushContext }) =>
-        await blockDelete({
-          variables: { id: block.id },
-          optimisticResponse: { campaignBlockDelete: siblingsAfter },
-          context: flushContext
-        }),
-      undo: async () =>
-        await blockRestore({
-          variables: { id: block.id },
-          optimisticResponse: {
-            campaignBlockRestore: [block, ...siblingsBefore]
-          }
-        })
+      execute: async (step) => await softDelete(block, siblingsAfter, step),
+      undo: async () => await restore(block, [block, ...siblingsBefore])
     }).catch((error: unknown) => reportFailure(error))
   }
 

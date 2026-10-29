@@ -2,12 +2,11 @@ import sortBy from 'lodash/sortBy'
 import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
-import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignBlockDuplicateMutation'
-import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { siblingRows, siblingsOf } from '../siblingsOf'
 import { SLOT_COLUMNS, subtreeOf } from '../subtreeOf'
-import { siblingsOf } from '../useCampaignBlockDeleteCommand'
+import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
 import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
@@ -91,8 +90,7 @@ export function useCampaignBlockDuplicateCommand(): {
   const { addCampaignCommand } = useCampaignCommand()
   const { campaign } = useCampaignEditor()
   const [duplicate] = useCampaignBlockDuplicateMutation(campaign.id)
-  const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
-  const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
+  const { softDelete, restore } = useCampaignBlockSoftDelete()
   const reportFailure = useCommandFailure()
 
   function addBlockDuplicate(block: CampaignBlock): void {
@@ -103,14 +101,9 @@ export function useCampaignBlockDuplicateCommand(): {
     )
     const copy = copies[0]
     const subtreeAfter = [...siblingsAfter, ...copies.slice(1)]
-    const siblingsBefore = sortBy(
-      [...siblingsOf(campaign.blocks, block), block],
-      'parentOrder'
-    ).map((sibling) => ({
-      __typename: sibling.__typename,
-      id: sibling.id,
-      parentOrder: sibling.parentOrder
-    }))
+    const siblingsBefore = siblingRows(
+      sortBy([...siblingsOf(campaign.blocks, block), block], 'parentOrder')
+    )
     const selectCopy = { selectedBlockId: copy.id, selectedRegionId: undefined }
 
     addCampaignCommand({
@@ -126,16 +119,8 @@ export function useCampaignBlockDuplicateCommand(): {
           optimisticResponse: { campaignBlockDuplicate: subtreeAfter },
           context: flushContext
         }),
-      undo: async () =>
-        await blockDelete({
-          variables: { id: copy.id },
-          optimisticResponse: { campaignBlockDelete: siblingsBefore }
-        }),
-      redo: async () =>
-        await blockRestore({
-          variables: { id: copy.id },
-          optimisticResponse: { campaignBlockRestore: subtreeAfter }
-        })
+      undo: async () => await softDelete(copy, siblingsBefore),
+      redo: async () => await restore(copy, subtreeAfter)
     }).catch((error: unknown) => reportFailure(error))
   }
 
