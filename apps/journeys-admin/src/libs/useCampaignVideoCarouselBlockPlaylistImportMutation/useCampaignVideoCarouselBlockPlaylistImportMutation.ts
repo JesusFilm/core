@@ -1,5 +1,5 @@
-import { ApolloLink, gql } from '@apollo/client'
-import { useApolloClient } from '@apollo/client/react'
+import { ApolloClient, gql } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { useCallback } from 'react'
 
 import { CAMPAIGN_PUBLIC_BLOCK_FIELDS } from '@core/journeys/ui/Campaign'
@@ -29,7 +29,9 @@ export const CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT = gql`
 export type ImportCarouselPlaylist = (
   carouselId: string,
   url: string
-) => Promise<ApolloLink.Result<CampaignVideoCarouselBlockPlaylistImport>>
+) => Promise<
+  ApolloClient.MutateResult<CampaignVideoCarouselBlockPlaylistImport>
+>
 
 /**
  * Import the first 12 videos of a YouTube playlist into a Video Carousel
@@ -40,14 +42,13 @@ export type ImportCarouselPlaylist = (
 export function useCampaignVideoCarouselBlockPlaylistImportMutation(
   campaignId: string
 ): ImportCarouselPlaylist {
-  const client = useApolloClient()
+  const [importPlaylist] = useMutation<
+    CampaignVideoCarouselBlockPlaylistImport,
+    CampaignVideoCarouselBlockPlaylistImportVariables
+  >(CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT)
   return useCallback(
     async (carouselId, url) =>
-      await client.mutate<
-        CampaignVideoCarouselBlockPlaylistImport,
-        CampaignVideoCarouselBlockPlaylistImportVariables
-      >({
-        mutation: CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT,
+      await importPlaylist({
         variables: { id: carouselId, url },
         update(cache, { data }) {
           const items = data?.campaignVideoCarouselBlockPlaylistImport
@@ -55,6 +56,6 @@ export function useCampaignVideoCarouselBlockPlaylistImportMutation(
           campaignBlocksAdd(cache, campaignId, items)
         }
       }),
-    [client, campaignId]
+    [importPlaylist, campaignId]
   )
 }

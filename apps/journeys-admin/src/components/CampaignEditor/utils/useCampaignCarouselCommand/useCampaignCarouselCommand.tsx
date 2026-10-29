@@ -14,10 +14,8 @@ import {
   CampaignBlockUpdateInput,
   useCampaignBlockUpdateMutation
 } from '../../../../libs/useCampaignBlockUpdateMutation'
-import {
-  CampaignVideoPick,
-  useCampaignCarouselItemCreateMutation
-} from '../../../../libs/useCampaignVideoBlockCreateMutation'
+import { useCampaignCarouselItemCreateMutation } from '../../../../libs/useCampaignCarouselItemCreateMutation'
+import { CampaignVideoPick } from '../../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignVideoCarouselBlockPlaylistImportMutation } from '../../../../libs/useCampaignVideoCarouselBlockPlaylistImportMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
