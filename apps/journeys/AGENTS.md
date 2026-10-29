@@ -121,7 +121,8 @@ Pages Router with static generation:
 - `getJourneyRTL(journey)` utility returns `{ locale, rtl }` based on journey language
 - RTL affects layout direction (e.g., `NavigationButton` reverses positions)
 - Emotion cache created with `createEmotionCache({ rtl })` when needed
-- `getPageRTL(pageProps)` (`src/libs/getPageRTL`) sets the document `dir`: a campaign page follows its resolved Page Language, a journey page its journey's language
+- `getPageRTL(pageProps)` (`src/libs/getPageRTL`) decides the Emotion cache direction in `_app`: a campaign page follows its resolved Page Language, a journey page its journey's language
+- The document `lang`/`dir` follow the Page Language on campaign pages only (`documentLanguage` in `pages/_document.tsx`); every other page, a journey page included, keeps the app default
 - `createRtlEmotionPlugin()` (`src/libs/rtlEmotionPlugin`) is the `_document` plugin that swaps in a right-to-left Emotion cache for a campaign page whose Page Language is RTL
 
 ## Testing

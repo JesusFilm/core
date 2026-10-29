@@ -282,7 +282,7 @@ How a Campaign shows a Watch Video that has children: the Video Carousel (or a *
 _Avoid_: collection mode (any Video expands, not only collections), playlist (that is YouTube's word)
 
 **Media paste**:
-How media and Journeys enter a Campaign: paste a Watch, YouTube or Journey link, or upload an image or video. Media enter only by paste or upload, with no browsing or searching; a Journey can also be found by search in the editor's Journey Picker, which offers the Journeys the author can open and links the one picked by its admin link. The editor shows what a link resolved to before it is kept, and the server resolves it again on save.
+How media and Journeys enter a Campaign: paste a Watch, YouTube or Journey link, or upload an image or video. Media enter only by paste or upload, with no browsing or searching; a Journey can also be found by search in the editor's Journey Picker, which offers the published or archived Journeys the author can open and links the one picked by its admin link. The editor shows what a link resolved to before it is kept, and the server resolves it again on save.
 _Avoid_: picker (for media: there is no media browsing), library
 
 ### Campaign theme
