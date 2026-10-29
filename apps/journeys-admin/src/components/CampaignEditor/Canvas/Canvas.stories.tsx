@@ -77,7 +77,7 @@ const CanvasMeta: Meta<typeof CanvasStory> = {
 
 type Story = StoryObj<typeof CanvasStory>
 
-/** A selected Journey list with no live card lists its noJourneys string under "Campaign strings". */
+/** A selected Journey list with no live card shows its noJourneys wording in place; the wording is edited in Settings. */
 export const JourneyListEmptyState: Story = {
   args: {
     campaignData: onlySection(JOURNEY_LIST_ID),

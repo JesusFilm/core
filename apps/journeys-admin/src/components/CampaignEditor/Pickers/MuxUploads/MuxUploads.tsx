@@ -17,7 +17,11 @@ import { useAuth } from '../../../../libs/auth'
 import { sendVideoSelectEvent } from '../../../../libs/sendMediaSelectEvent'
 import { LoadMoreButton } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/LoadMoreButton'
 import { MediaLibraryTeamTag } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibraryTeamTag'
-import { GET_MY_MUX_VIDEOS } from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos'
+import {
+  GET_MY_MUX_VIDEOS,
+  PAGE_SIZE,
+  PEEK_LIMIT
+} from '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/MyMuxVideos'
 
 interface MuxUploadsProps {
   /** The campaign's team: its shared uploads are listed with the author's own. */
@@ -26,9 +30,6 @@ interface MuxUploadsProps {
   onPick: (videoId: string) => void
   testId?: string
 }
-
-const PAGE_SIZE = 10
-const PEEK_LIMIT = PAGE_SIZE + 1
 
 /**
  * The team's earlier video uploads as a grid of thumbnails, the journey

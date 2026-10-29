@@ -12,8 +12,8 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
-import { CampaignTranslations_campaignTranslations as TranslationRow } from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { GetCampaignTranslations_campaignTranslations as TranslationRowData } from '../../../../__generated__/GetCampaignTranslations'
 import { CampaignTranslationGroup } from '../../../../__generated__/globalTypes'
 import {
   campaignTranslationsVariables,
@@ -24,8 +24,9 @@ import { useCampaignEditor } from '../CampaignEditorProvider'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { regionCardId } from '../utils/regionCardId'
 
-import { TranslationRowItem } from './TranslationRow'
+import { TranslationRow } from './TranslationRow'
 import {
   TRANSLATION_FILTERS,
   TRANSLATION_GROUPS,
@@ -175,7 +176,7 @@ export function TranslationsView({
     setRevealId(undefined)
   })
 
-  function handleReveal(row: TranslationRow): void {
+  function handleReveal(row: TranslationRowData): void {
     const place = rowPlace(row, campaign)
     if (place.regionId != null) {
       const host = campaign.blocks.find(
@@ -187,7 +188,9 @@ export function TranslationsView({
         selectedBlockId: host?.id,
         selectedRegionId: place.regionId
       })
-      setRevealId(host == null ? undefined : `${host.id}__${place.regionId}`)
+      setRevealId(
+        host == null ? undefined : regionCardId(host.id, place.regionId)
+      )
       return
     }
     const block = campaign.blocks.find(
@@ -362,7 +365,7 @@ export function TranslationsView({
               <Divider sx={{ borderBottomWidth: 2 }} />
               <Stack divider={<Divider flexItem />}>
                 {groupRows.map((row) => (
-                  <TranslationRowItem
+                  <TranslationRow
                     key={rowKey(row)}
                     row={row}
                     languageId={languageId}

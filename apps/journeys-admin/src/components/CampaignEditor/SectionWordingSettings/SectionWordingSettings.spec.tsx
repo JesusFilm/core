@@ -1,4 +1,11 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import { useTranslation } from 'next-i18next/pages'
 
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_STRING_UPDATE } from '../../../libs/useCampaignStringUpdateMutation'
@@ -138,7 +145,11 @@ describe('SectionWordingSettings', () => {
   )
 
   it('names every key', () => {
-    const t = (key: string): string => key
+    const {
+      result: {
+        current: { t }
+      }
+    } = renderHook(() => useTranslation('apps-journeys-admin'))
     for (const key of Object.values(CampaignStringKey)) {
       expect(stringKeyLabel(t, key)).not.toBe(key)
     }

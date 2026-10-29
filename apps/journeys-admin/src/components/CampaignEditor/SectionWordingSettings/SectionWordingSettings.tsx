@@ -1,6 +1,7 @@
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -18,10 +19,8 @@ import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 
-type Translate = (key: string) => string
-
 /** Where the page shows a Campaign String, as the field's label. */
-export function stringKeyLabel(t: Translate, key: CampaignStringKey): string {
+export function stringKeyLabel(t: TFunction, key: CampaignStringKey): string {
   switch (key) {
     case CampaignStringKey.allRegions:
       return t('All regions label')

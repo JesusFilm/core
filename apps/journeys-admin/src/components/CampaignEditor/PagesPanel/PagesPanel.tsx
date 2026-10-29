@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText'
 import MenuItem from '@mui/material/MenuItem'
 import Select, { SelectChangeEvent } from '@mui/material/Select'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
@@ -19,6 +20,7 @@ import {
 } from '../CampaignEditorProvider'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { LeftPanelBody } from '../LeftPanel'
+import { regionIdOfPageValue, regionPageValue } from '../utils/regionPageValue'
 
 /** The page list's selected value: the landing page, or the Region Page rendered for one region. */
 export function pageSelectValue(
@@ -28,12 +30,12 @@ export function pageSelectValue(
   if (pageKind === CampaignPageKind.landing) return CampaignPageKind.landing
   return regionId == null
     ? CampaignPageKind.regionTemplate
-    : `region:${regionId}`
+    : regionPageValue(regionId)
 }
 
 /** The page list entry for a region: its name, with " · not listed" for an orphan. */
 export function regionPageLabel(
-  t: (key: string, options?: Record<string, unknown>) => string,
+  t: TFunction,
   region: Pick<CampaignRegion, 'name' | 'listed'>
 ): string {
   return region.listed
@@ -70,9 +72,7 @@ export function PagesPanel(): ReactElement {
     dispatch({
       type: 'SetPageKindAction',
       pageKind: CampaignPageKind.regionTemplate,
-      regionId: value.startsWith('region:')
-        ? value.slice('region:'.length)
-        : undefined
+      regionId: regionIdOfPageValue(value)
     })
   }
 
@@ -116,7 +116,7 @@ export function PagesPanel(): ReactElement {
           </ListItemButton>
         )}
         {regions.map((region) => {
-          const value = `region:${region.id}`
+          const value = regionPageValue(region.id)
           return (
             <ListItemButton
               key={region.id}

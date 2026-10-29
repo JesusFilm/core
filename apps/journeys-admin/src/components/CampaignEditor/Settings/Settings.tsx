@@ -36,7 +36,8 @@ import { useCommittedField } from '../utils/useCommittedField'
 import { CampaignDomain } from './CampaignDomain'
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
 
-const SLUG_MAX_LENGTH = 200
+/** The longest slug the API accepts, for the campaign and its regions. */
+export const SLUG_MAX_LENGTH = 200
 
 type SettingsField = 'title' | 'slug'
 

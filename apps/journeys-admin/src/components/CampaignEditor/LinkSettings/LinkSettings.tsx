@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import sortBy from 'lodash/sortBy'
 import { useTranslation } from 'next-i18next/pages'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
@@ -27,14 +28,14 @@ import {
   CampaignButtonAction,
   CampaignButtonBlock
 } from '../../../libs/useCampaignBlockActionMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { blockLabel } from '../utils/blockLabel'
+import { isHttpsUrl } from '../utils/isHttpsUrl'
+import { pageSections } from '../utils/sectionTypes'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
 import { useCommittedField } from '../utils/useCommittedField'
 
 type LinkKind = 'link' | 'scroll' | 'region'
-type Translate = (key: string) => string
-
 function kindOf(action: CampaignButtonAction | null): LinkKind {
   switch (action?.__typename) {
     case 'CampaignScrollToBlockAction':
@@ -47,35 +48,9 @@ function kindOf(action: CampaignButtonAction | null): LinkKind {
 }
 
 /** A section is listed by its title when it has one, else by its type. */
-export function sectionLabel(t: Translate, block: CampaignBlock): string {
+export function sectionLabel(t: TFunction, block: CampaignBlock): string {
   if ('title' in block && hasText(block.title)) return block.title
   return blockLabel(t, block.__typename)
-}
-
-/** The top-level blocks of a page in order: the sections a button can scroll to. */
-export function pageSections(
-  blocks: CampaignBlock[],
-  pageId: string | undefined
-): CampaignBlock[] {
-  if (pageId == null) return []
-  return sortBy(
-    blocks.filter(
-      (block) =>
-        block.pageId === pageId &&
-        block.parentBlockId == null &&
-        block.parentOrder != null
-    ),
-    'parentOrder'
-  )
-}
-
-/** The https scheme is the only rule the editor checks before the API does. */
-export function isHttpsUrl(value: string): boolean {
-  try {
-    return new URL(value).protocol === 'https:'
-  } catch {
-    return false
-  }
 }
 
 interface LinkLabel {
@@ -86,7 +61,7 @@ interface LinkLabel {
 
 /** What the link reads for an action: the address, the section, the region, or what is missing. */
 export function linkLabel(
-  t: Translate,
+  t: TFunction,
   action: CampaignButtonAction | null,
   campaign: Pick<Campaign, 'blocks' | 'regions'>
 ): LinkLabel {

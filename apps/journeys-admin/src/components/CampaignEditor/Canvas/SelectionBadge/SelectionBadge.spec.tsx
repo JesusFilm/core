@@ -6,12 +6,13 @@ import { GET_LANGUAGES } from '@core/journeys/ui/useLanguagesQuery'
 
 import { CampaignPageKind } from '../../../../../__generated__/globalTypes'
 import { CampaignEditorState } from '../../CampaignEditorProvider'
+import { CanvasHoverReporter } from '../../CampaignHoverProvider'
 import { campaignWithRegions } from '../../data'
-import { CanvasHoverReporter } from '../../Navigator/NavigatorHover'
 import { RegionSwitcherEdit } from '../../RegionSwitcherEdit'
 import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { SelectionProbe, StaticEditor } from '../../testing'
-import { CanvasBlock, CanvasSection } from '../CanvasSection'
+import type { CanvasBlock } from '../canvasBlock'
+import { CanvasSection } from '../CanvasSection'
 
 import { SelectionBadge } from '.'
 

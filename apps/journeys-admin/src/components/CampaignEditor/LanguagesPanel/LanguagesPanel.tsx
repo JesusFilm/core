@@ -1,4 +1,3 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import Alert from '@mui/material/Alert'
 import IconButton from '@mui/material/IconButton'
 import List from '@mui/material/List'
@@ -27,13 +26,16 @@ import { useCampaignLanguageRemoveMutation } from '../../../libs/useCampaignLang
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { TranslationRunProgress } from '../TranslationRunProgress'
 import { useTranslationRun } from '../TranslationRunProvider'
+import { messageOf } from '../utils/messageOf'
 
 interface LanguagesPanelProps {
   campaign: Campaign
 }
 
 /** Autonym first, the English name beside it when it differs. */
-export function languageNames(language: CampaignLanguage): {
+export function languageNames(
+  language: Pick<CampaignLanguage, 'languageId' | 'language'>
+): {
   autonym: string
   localName?: string
 } {
@@ -48,12 +50,6 @@ export function languageNames(language: CampaignLanguage): {
     localName:
       localName != null && localName !== autonym ? localName : undefined
   }
-}
-
-function messageOf(error: unknown): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : String(error)
 }
 
 /**
@@ -122,6 +118,12 @@ export function LanguagesPanel({
     setRemoveOpen(false)
   }
 
+  /** Remove asks first: every translation into the language goes with it. */
+  function handleRemoveClick(language: CampaignLanguage): void {
+    setRemoveTarget(language)
+    setRemoveOpen(true)
+  }
+
   const removeTargetName =
     removeTarget != null ? languageNames(removeTarget).autonym : ''
 
@@ -157,10 +159,7 @@ export function LanguagesPanel({
               edge="end"
               aria-label={t('Remove {{language}}', { language: autonym })}
               disabled={isDefault || removing}
-              onClick={() => {
-                setRemoveTarget(language)
-                setRemoveOpen(true)
-              }}
+              onClick={() => handleRemoveClick(language)}
             >
               <Trash2Icon />
             </IconButton>

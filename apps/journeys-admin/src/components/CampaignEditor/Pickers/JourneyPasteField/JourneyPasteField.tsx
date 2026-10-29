@@ -1,4 +1,3 @@
-import { CombinedGraphQLErrors } from '@apollo/client'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -17,6 +16,9 @@ import {
 import { GetCampaignJourneyByLink_journey as ResolvedJourney } from '../../../../../__generated__/GetCampaignJourneyByLink'
 import { IdType } from '../../../../../__generated__/globalTypes'
 import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJourneyByLinkLazyQuery'
+import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
+import { messageOf } from '../../utils/messageOf'
+import { parseUrl } from '../../utils/parseUrl'
 
 /** How a pasted journey link addresses the journey: an admin link by id, a public URL by slug. */
 export type JourneyLink = { id: string } | { slug: string }
@@ -28,12 +30,8 @@ export type JourneyLink = { id: string } | { slug: string }
  * whether the journey exists and is published is the server's call.
  */
 export function parseJourneyLink(value: string): JourneyLink | null {
-  let url: URL
-  try {
-    url = new URL(value.trim())
-  } catch {
-    return null
-  }
+  const url = parseUrl(value)
+  if (url == null) return null
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
   const [first, second] = url.pathname
     .split('/')
@@ -44,12 +42,6 @@ export function parseJourneyLink(value: string): JourneyLink | null {
   return { slug: first }
 }
 
-function messageOf(error: unknown, fallback: string): string {
-  if (CombinedGraphQLErrors.is(error) && error.errors[0] != null)
-    return error.errors[0].message
-  return error instanceof Error ? error.message : fallback
-}
-
 interface JourneyPasteFieldProps {
   /** Keep the resolved journey: runs the link mutation; a thrown error's message is shown verbatim. */
   onLink: (url: string, journey: ResolvedJourney) => Promise<void>
@@ -57,8 +49,6 @@ interface JourneyPasteFieldProps {
   label?: string
   autoFocus?: boolean
   disabled?: boolean
-  /** The secondary form, under the journey picker: no standing helper text, only an error. */
-  compact?: boolean
 }
 
 /**
@@ -66,14 +56,14 @@ interface JourneyPasteFieldProps {
  * The shape is checked client-side; the journey is resolved through the
  * public journey query (routing filter skipped, published only, any team)
  * and shown before it is kept; the server re-resolves on link and its
- * message, on failure, is shown verbatim under the field (PRD §5, §15).
+ * message, on failure, is shown verbatim under the field. It sits under the
+ * journey picker, so it has no standing helper text, only an error.
  */
 export function JourneyPasteField({
   onLink,
   label,
   autoFocus = false,
-  disabled = false,
-  compact = false
+  disabled = false
 }: JourneyPasteFieldProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const [value, setValue] = useState('')
@@ -84,10 +74,8 @@ export function JourneyPasteField({
   const [resolve, { loading: resolving }] = useCampaignJourneyByLinkLazyQuery()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Without scrolling: the field sits in the scaled canvas frame, and a plain
-  // focus() would scroll the editor page that holds it.
   useEffect(() => {
-    if (autoFocus) inputRef.current?.focus({ preventScroll: true })
+    if (autoFocus) focusWithoutScroll(inputRef.current)
   }, [autoFocus])
 
   async function handleResolve(raw: string): Promise<void> {
@@ -165,12 +153,7 @@ export function JourneyPasteField({
         }}
         onKeyDown={handleKeyDown}
         error={error != null}
-        helperText={
-          error ??
-          (compact
-            ? undefined
-            : t('Paste the journey’s admin link or its public address.'))
-        }
+        helperText={error}
         inputRef={inputRef}
         disabled={disabled || linking}
         fullWidth

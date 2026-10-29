@@ -9,15 +9,14 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import type {
-  CampaignAddPreset,
-  CampaignSelection
+  CampaignSelection,
+  SectionInsert
 } from '../../CampaignEditorProvider'
 import {
   pageSections,
   sectionTypesForPage,
   sectionTypesForSlot
-} from '../../sectionTypes'
-import type { SectionInsert } from '../useAddSection'
+} from '../sectionTypes'
 
 export type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
@@ -64,7 +63,7 @@ interface AddTargetsInput {
   /** The page the canvas shows: where nothing-selected adds go. */
   pageKind: CampaignPageKind
   /** An insert point the canvas chose; it overrides the selection's rule. */
-  preset?: CampaignAddPreset
+  preset?: SectionInsert
 }
 
 /**
@@ -117,6 +116,19 @@ export function addTargets({
     }
   }
 
+  /** An Extra added to the host, below its text, taking the author's choice. */
+  function extraBelow(
+    host: CampaignBlock | undefined
+  ): ExtraTarget | undefined {
+    if (host == null) return undefined
+    return {
+      host,
+      placement: CampaignChildPlacement.below,
+      inheritsPlacement: false,
+      typenames: extraTypenamesFor(host)
+    }
+  }
+
   if (preset != null) {
     const presetPageKind = kindOfPage(preset.pageId)
     return {
@@ -136,31 +148,16 @@ export function addTargets({
     case 'chrome':
       return {
         section: endOfPage(),
-        extra: selection.host && {
-          host: selection.host,
-          placement: CampaignChildPlacement.below,
-          inheritsPlacement: false,
-          typenames: extraTypenamesFor(selection.host)
-        }
+        extra: extraBelow(selection.host)
       }
     case 'section':
       return {
         section: belowSection(selection.host),
-        extra: selection.host && {
-          host: selection.host,
-          placement: CampaignChildPlacement.below,
-          inheritsPlacement: false,
-          typenames: extraTypenamesFor(selection.host)
-        }
+        extra: extraBelow(selection.host)
       }
     case 'column':
       return {
-        extra: selection.host && {
-          host: selection.host,
-          placement: CampaignChildPlacement.below,
-          inheritsPlacement: false,
-          typenames: extraTypenamesFor(selection.host)
-        }
+        extra: extraBelow(selection.host)
       }
     case 'slot': {
       const slot = selection.block

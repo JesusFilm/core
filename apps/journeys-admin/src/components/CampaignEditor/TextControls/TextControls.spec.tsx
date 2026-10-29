@@ -7,8 +7,8 @@ import {
 } from '@testing-library/react'
 
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
-import { nextPalette } from '../PaletteColorPicker'
 import {
   StyleMock,
   WithBlock,

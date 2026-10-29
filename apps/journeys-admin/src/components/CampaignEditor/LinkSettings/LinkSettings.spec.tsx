@@ -19,8 +19,9 @@ import {
   QueriedEditor,
   StaticEditor
 } from '../testing'
+import { isHttpsUrl } from '../utils/isHttpsUrl'
 
-import { LinkSettings, isHttpsUrl } from './LinkSettings'
+import { LinkSettings } from './LinkSettings'
 
 /** The link settings over the button as the editor currently holds it. */
 function SettingsFor({ blockId }: { blockId: string }): ReactElement | null {

@@ -4,8 +4,6 @@ import { http } from 'msw'
 import { ReactElement } from 'react'
 import { SWRConfig } from 'swr'
 
-import { useEditor } from '@core/journeys/ui/EditorProvider'
-
 import {
   VideoBlockSource,
   VideoLabel
@@ -28,19 +26,16 @@ vi.mock(
   '../../../Editor/Slider/Settings/Drawer/VideoLibrary/VideoFromMux/AddByFile',
   () => ({
     AddByFile: ({
-      onChange
+      onChange,
+      uploadKey
     }: {
       onChange: (id: string) => void
-    }): ReactElement => {
-      const {
-        state: { selectedBlock }
-      } = useEditor()
-      return (
-        <button type="button" onClick={() => onChange('muxVideoId')}>
-          {`Upload under ${selectedBlock?.id ?? ''}`}
-        </button>
-      )
-    }
+      uploadKey?: string
+    }): ReactElement => (
+      <button type="button" onClick={() => onChange('muxVideoId')}>
+        {`Upload under ${uploadKey ?? ''}`}
+      </button>
+    )
   })
 )
 

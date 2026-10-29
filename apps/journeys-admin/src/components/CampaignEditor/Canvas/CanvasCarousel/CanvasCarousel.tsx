@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
@@ -12,19 +11,16 @@ import {
 } from '@core/journeys/ui/Campaign'
 import type { CampaignCarouselCard } from '@core/journeys/ui/Campaign'
 import { videoCountLabel } from '@core/journeys/ui/Campaign/CampaignVideo'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 import { secondsToTimeFormat } from '@core/shared/ui/timeFormat'
 
 import { CampaignStringKey } from '../../../../../__generated__/globalTypes'
-import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
-import type { CanvasBlock } from '../CanvasSection'
+import { blockLabel } from '../../utils/blockLabel'
+import { campaignStringText } from '../../utils/campaignStringText'
+import type { CanvasBlock } from '../canvasBlock'
 import { EditorNote } from '../EditorNote'
-import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../hoverOutline'
 import { SelectionBadge } from '../SelectionBadge'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
 interface CanvasCarouselProps {
   block: Extract<CanvasBlock, { __typename: 'CampaignVideoCarouselBlock' }>
@@ -111,9 +107,7 @@ export function CanvasCarousel({ block }: CanvasCarouselProps): ReactElement {
           border: '1px solid var(--campaign-band-border)',
           cursor: 'pointer',
           ...(explicit ? HOVER_OUTLINE_SX : {}),
-          ...(selected
-            ? { outline: `2px solid ${adminPrimary.main}`, outlineOffset: -2 }
-            : {})
+          ...(selected ? SELECTED_OUTLINE : {})
         }}
       >
         <SelectionBadge

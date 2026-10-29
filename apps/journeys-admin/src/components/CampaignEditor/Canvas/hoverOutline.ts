@@ -2,7 +2,9 @@ import { SimplePaletteColorOptions } from '@mui/material/styles'
 
 import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
+/** The admin theme's primary colour: the canvas's outlines, badges, handles and drop indicators. */
+export const ADMIN_PRIMARY = adminTheme.palette
+  .primary as SimplePaletteColorOptions
 
 /**
  * The 1 px admin-primary outline of a hoverable canvas element (a section,
@@ -16,11 +18,17 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 export const HOVER_OUTLINE_SX = {
   '&:not([data-selected="true"]):hover:not(:has([data-hoverable]:hover)), &:not([data-selected="true"])[data-hovered]':
     {
-      outline: `1px solid ${adminPrimary.main}`,
+      outline: `1px solid ${ADMIN_PRIMARY.main}`,
       outlineOffset: -1
     },
   // A badge sitting on the top edge meets a square corner, not a gap under a rounded one.
-  '&:has(> [data-testid="SelectionBadge"][data-placement="above"])': {
+  '&:has(> [data-placement="above"])': {
     borderTopLeftRadius: 0
   }
 } as const
+
+/** The 2 px admin-primary outline of the selected canvas element. */
+export const SELECTED_OUTLINE = {
+  outline: `2px solid ${ADMIN_PRIMARY.main}`,
+  outlineOffset: -2
+}

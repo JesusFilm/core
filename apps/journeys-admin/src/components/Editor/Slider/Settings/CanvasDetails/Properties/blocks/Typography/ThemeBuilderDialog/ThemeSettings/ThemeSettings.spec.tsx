@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 
-import { FontFamily, ThemeSettings } from './ThemeSettings'
+import { FontFamily } from '@core/shared/ui/fontFamilies'
+
+import { ThemeSettings } from './ThemeSettings'
 
 describe('ThemeSettings', () => {
   const onHeaderFontChange = vi.fn()

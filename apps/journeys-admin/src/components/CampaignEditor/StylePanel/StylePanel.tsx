@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -6,7 +5,6 @@ import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useMemo, useState } from 'react'
 
@@ -29,9 +27,10 @@ import {
   SectionOverrideField
 } from '../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { CampaignPaletteColorPicker } from '../CampaignPaletteColorPicker'
 import { ColourRows } from '../ColourRows'
+import { CommandError } from '../CommandError'
 import { FocalPointControl } from '../FocalPointControl'
-import { PaletteColorPicker } from '../PaletteColorPicker'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignOwnedImageCommand } from '../utils/useCampaignOwnedImageCommand'
 
@@ -40,7 +39,7 @@ type StyleTab = 'background' | 'colours'
 type SectionStyleInput = CampaignBlockUpdateInput<CampaignStyledTypename>
 
 /** The six Section Background kinds, in the Background tab's order. */
-export const BACKGROUND_KINDS = [
+const BACKGROUND_KINDS = [
   CampaignBackgroundKind.none,
   CampaignBackgroundKind.surface,
   CampaignBackgroundKind.contrast,
@@ -175,19 +174,15 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
         <Tab value="background" label={t('Background')} />
         <Tab value="colours" label={t('Colours')} />
       </Tabs>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       {tab === 'background' && (
         <Stack spacing={4} role="tabpanel" data-testid="StyleBackgroundTab">
           <ToggleButtonGroup
             exclusive
             fullWidth
             size="small"
-            // Six kinds in a 360px drawer: stacked, so the panel never
-            // scrolls sideways.
+            // Six kinds in the Inspector's width: stacked, so the panel
+            // never scrolls sideways.
             orientation="vertical"
             value={
               choosingCover
@@ -204,7 +199,7 @@ export function StylePanel({ block }: StylePanelProps): ReactElement {
             ))}
           </ToggleButtonGroup>
           {block.backgroundKind === CampaignBackgroundKind.custom && (
-            <PaletteColorPicker
+            <CampaignPaletteColorPicker
               label={t('Custom colour')}
               value={block.backgroundColor}
               fallback={campaign.theme.backgroundColor}

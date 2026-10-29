@@ -5,22 +5,7 @@ import {
   CampaignLanguageAdd,
   CampaignLanguageAddVariables
 } from '../../../__generated__/CampaignLanguageAdd'
-
-export const CAMPAIGN_LANGUAGE_FIELDS = gql`
-  fragment CampaignLanguageFields on CampaignLanguage {
-    id
-    languageId
-    order
-    language {
-      id
-      bcp47
-      name(languageId: "529", primary: true) {
-        value
-        primary
-      }
-    }
-  }
-`
+import { CAMPAIGN_LANGUAGE_FIELDS } from '../useCampaignQuery'
 
 /** Append a Page Language; the campaign's language list comes back in selector order. */
 export const CAMPAIGN_LANGUAGE_ADD = gql`

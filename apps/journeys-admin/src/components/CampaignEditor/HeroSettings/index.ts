@@ -1,1 +1,1 @@
-export { HeroSettings, HERO_MIN_HEIGHT_STEP } from './HeroSettings'
+export { HeroSettings } from './HeroSettings'

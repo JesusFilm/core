@@ -1,8 +1,4 @@
-import {
-  carouselCards,
-  isExtra,
-  transformCampaignBlocks
-} from '@core/journeys/ui/Campaign'
+import { carouselCards, isExtra } from '@core/journeys/ui/Campaign'
 import type { CampaignTreeBlock } from '@core/journeys/ui/Campaign'
 
 import {
@@ -13,18 +9,28 @@ import {
   CampaignChildPlacement,
   CampaignPageKind
 } from '../../../../__generated__/globalTypes'
+import { textFieldValue } from '../../../libs/useCampaignBlockTextMutation'
 import {
   CampaignSelection,
   regionLines,
   regionNeedsJourney,
   sortedRegions
 } from '../CampaignEditorProvider'
+import { pageBlocks } from '../utils/pageBlocks'
+import { regionCardId } from '../utils/regionCardId'
 
 /** What a row is called: a block's typename, a region card, or the divider between a section's above and below Extras. */
 export type NavigatorNodeType =
   | CampaignBlock['__typename']
   | 'Region'
   | 'SectionContent'
+
+/** The divider row between a section's above and below Extras: a drop target, never selected or dragged. */
+export function isSectionContent(
+  type: NavigatorNodeType
+): type is 'SectionContent' {
+  return type === 'SectionContent'
+}
 
 export type NavigatorExtraPlacement = 'above' | 'below'
 
@@ -82,10 +88,9 @@ const SECONDARY_TEXT_FIELDS = [
 
 /** The block's own title text: its first non-empty title-like field. */
 export function secondaryTextOf(block: CampaignBlock): string | undefined {
-  const fields = block as unknown as Record<string, unknown>
   for (const field of SECONDARY_TEXT_FIELDS) {
-    const value = fields[field]
-    if (typeof value === 'string' && value.trim() !== '') return value.trim()
+    const value = textFieldValue(block, field)
+    if (value != null && value.trim() !== '') return value.trim()
   }
   return undefined
 }
@@ -157,7 +162,7 @@ function childRows(
   )
   return [
     ...extraRows.filter((node) => node.placement === 'above'),
-    ...extraRows.filter((node) => node.type === 'SectionContent'),
+    ...extraRows.filter((node) => isSectionContent(node.type)),
     ...bodyRows,
     ...extraRows.filter((node) => node.placement === 'below')
   ]
@@ -217,7 +222,7 @@ function regionNodes(
   return sortedRegions(campaign.regions)
     .filter((region) => region.id !== currentRegionId)
     .map((region) => {
-      const id = `${hostBlockId}__${region.id}`
+      const id = regionCardId(hostBlockId, region.id)
       return {
         id,
         domId: id,
@@ -260,21 +265,7 @@ export function buildNavigatorTree({
   pageKind,
   currentRegionId
 }: BuildNavigatorTreeParams): NavigatorNode[] {
-  const pageId = campaign.pages.find((page) => page.kind === pageKind)?.id
-  const sections = transformCampaignBlocks(
-    campaign.blocks.filter((block) => block.pageId === pageId)
-  )
-  const chrome = transformCampaignBlocks(
-    campaign.blocks.filter(
-      (block) => block.pageId == null && block.regionId == null
-    )
-  )
-  const header = chrome.find(
-    (block) => block.__typename === 'CampaignHeaderBlock'
-  )
-  const footer = chrome.find(
-    (block) => block.__typename === 'CampaignFooterBlock'
-  )
+  const { header, sections, footer } = pageBlocks(campaign, pageKind)
   const sectionNodes = inGroup(
     sections.map((section) =>
       blockNode(section, undefined, campaign, currentRegionId)
@@ -282,7 +273,7 @@ export function buildNavigatorTree({
     'root:sections',
     'block'
   )
-  const chromeNode = (block: (typeof chrome)[number] | undefined) =>
+  const chromeNode = (block: (typeof sections)[number] | undefined) =>
     block == null
       ? []
       : [blockNode(block, undefined, campaign, currentRegionId)]

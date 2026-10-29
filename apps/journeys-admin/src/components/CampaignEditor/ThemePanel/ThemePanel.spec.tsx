@@ -19,8 +19,8 @@ import {
   ThemeMode
 } from '../../../../__generated__/globalTypes'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
-import { nextPalette } from '../PaletteColorPicker'
 import { StyleMock, paletteMock, readTheme, themeMock } from '../styleTesting'
 import { CommandProbe, QueriedEditor, campaignCache } from '../testing'
 

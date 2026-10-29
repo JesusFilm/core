@@ -17,9 +17,10 @@ export function useCommandFailure(): (
   const { enqueueSnackbar } = useSnackbar()
   return useCallback(
     (error: unknown, fallback?: string): void => {
-      const message =
-        fallback == null || error instanceof Error ? messageOf(error) : fallback
-      enqueueSnackbar(message, { variant: 'error', preventDuplicate: true })
+      enqueueSnackbar(messageOf(error, fallback), {
+        variant: 'error',
+        preventDuplicate: true
+      })
     },
     [enqueueSnackbar]
   )

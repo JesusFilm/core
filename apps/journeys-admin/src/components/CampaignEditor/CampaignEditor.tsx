@@ -16,18 +16,20 @@ import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 import { AddPanel } from './AddPanel'
 import {
   CampaignEditorProvider,
+  CampaignPanel,
   useCampaignEditor
 } from './CampaignEditorProvider'
+import { CampaignHoverProvider } from './CampaignHoverProvider'
 import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
 import { Hotkeys } from './Hotkeys'
 import { INSPECTOR_WIDTH, Inspector } from './Inspector'
 import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
-import { LEFT_RAIL_WIDTH, LeftRail } from './LeftRail'
+import { LEFT_RAIL_WIDTH, LeftRail, PANELS } from './LeftRail'
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
-import { Navigator, NavigatorHoverProvider } from './Navigator'
+import { Navigator } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import {
   TranslationRunProvider,
@@ -81,29 +83,29 @@ function CampaignEditorShell({
       dispatch({ type: 'SetPanelAction', panel: 'localize' })
   }
 
-  const leftPanel =
-    panel === 'add' ? (
-      <LeftPanel label={t('Add')}>
-        <AddPanel />
-      </LeftPanel>
-    ) : panel === 'pages' ? (
-      <LeftPanel label={t('Pages')}>
-        <PagesPanel />
-      </LeftPanel>
-    ) : panel === 'navigator' ? (
-      <LeftPanel label={t('Navigator')}>
-        <Navigator />
-      </LeftPanel>
-    ) : (
-      <LeftPanel label={t('Localize')}>
-        <LocalizePanel
-          tab={localizeTab}
-          onTabChange={setLocalizeTab}
-          promotionNotice={promotionNotice}
-          onPromotionNoticeClose={() => setPromotionNotice(false)}
-        />
-      </LeftPanel>
+  function handlePromotionNoticeClose(): void {
+    setPromotionNotice(false)
+  }
+
+  const panelBodies: Record<CampaignPanel, ReactElement> = {
+    add: <AddPanel />,
+    pages: <PagesPanel />,
+    navigator: <Navigator />,
+    localize: (
+      <LocalizePanel
+        tab={localizeTab}
+        onTabChange={setLocalizeTab}
+        promotionNotice={promotionNotice}
+        onPromotionNoticeClose={handlePromotionNoticeClose}
+      />
     )
+  }
+  const openPanel = PANELS.find((entry) => entry.panel === panel)
+  const leftPanel = (
+    <LeftPanel label={openPanel?.label(t) ?? ''}>
+      {panelBodies[panel]}
+    </LeftPanel>
+  )
 
   return (
     <Stack
@@ -233,12 +235,12 @@ export function CampaignEditor({
         <CampaignCommandProvider>
           <MuxVideoUploadProvider>
             <TranslationRunProvider>
-              <NavigatorHoverProvider>
+              <CampaignHoverProvider>
                 <CampaignEditorViewport
                   campaign={campaign}
                   isManager={isManager}
                 />
-              </NavigatorHoverProvider>
+              </CampaignHoverProvider>
             </TranslationRunProvider>
           </MuxVideoUploadProvider>
         </CampaignCommandProvider>

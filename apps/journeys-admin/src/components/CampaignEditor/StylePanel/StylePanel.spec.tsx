@@ -16,10 +16,10 @@ import {
   CAMPAIGN_IMAGE_BLOCK_CREATE,
   newOwnedImageBlock
 } from '../../../libs/useCampaignImageBlockCreateMutation'
-import { CREATE_CLOUDFLARE_UPLOAD_BY_URL } from '../../../libs/useCloudflareUploadByUrlMutation'
+import { CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL } from '../../../libs/useCloudflareTeamUploadByUrlMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
+import { nextPalette } from '../CampaignPaletteColorPicker'
 import { campaign } from '../data'
-import { nextPalette } from '../PaletteColorPicker'
 import {
   StyleMock,
   WithBlock,
@@ -50,7 +50,7 @@ const SRC = `${STORED}/public`
 
 const uploadByUrlMock = {
   request: {
-    query: CREATE_CLOUDFLARE_UPLOAD_BY_URL,
+    query: CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL,
     variables: { url: PASTED, teamId: 'teamId' }
   },
   result: vi.fn(() => ({

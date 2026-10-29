@@ -9,7 +9,7 @@ import {
   CampaignVideoCarouselBlockPlaylistImportVariables
 } from '../../../__generated__/CampaignVideoCarouselBlockPlaylistImport'
 import { campaignBlocksAdd } from '../campaignBlockCache'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_VIDEO_CAROUSEL_BLOCK_PLAYLIST_IMPORT = gql`
   ${CAMPAIGN_PUBLIC_BLOCK_FIELDS}

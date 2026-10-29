@@ -1,21 +1,18 @@
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement } from 'react'
 
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { ADMIN_PRIMARY } from '../hoverOutline'
 
 interface CanvasInsertPointProps {
   pageId: string
   /** The position among the page's sections a section added here takes. */
   parentOrder: number
 }
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
 /**
  * The "+" between two sections (and above the first, below the last): a hover
@@ -62,7 +59,7 @@ export function CanvasInsertPoint({
             position: 'absolute',
             insetInline: 0,
             height: 2,
-            bgcolor: adminPrimary.main
+            bgcolor: ADMIN_PRIMARY.main
           }}
         />
         <IconButton
@@ -70,9 +67,9 @@ export function CanvasInsertPoint({
           onClick={handleClick}
           size="small"
           sx={{
-            bgcolor: adminPrimary.main,
-            color: adminPrimary.contrastText,
-            '&:hover': { bgcolor: adminPrimary.dark }
+            bgcolor: ADMIN_PRIMARY.main,
+            color: ADMIN_PRIMARY.contrastText,
+            '&:hover': { bgcolor: ADMIN_PRIMARY.dark }
           }}
         >
           <Plus2Icon fontSize="small" />

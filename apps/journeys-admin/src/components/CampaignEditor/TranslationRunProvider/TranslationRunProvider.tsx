@@ -89,6 +89,10 @@ function isRunConflict(error: unknown): boolean {
   )
 }
 
+interface TranslationRunProviderProps {
+  children: ReactNode
+}
+
 /**
  * Owns the editor's one machine-translation subscription, above the Localize
  * panel and its tabs, so a run outlives switching tabs, closing the panel and
@@ -101,9 +105,7 @@ function isRunConflict(error: unknown): boolean {
  */
 export function TranslationRunProvider({
   children
-}: {
-  children: ReactNode
-}): ReactElement {
+}: TranslationRunProviderProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const client = useApolloClient()

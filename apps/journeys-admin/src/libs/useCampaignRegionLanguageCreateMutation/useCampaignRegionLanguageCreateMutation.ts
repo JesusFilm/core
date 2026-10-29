@@ -6,7 +6,7 @@ import {
   CampaignRegionLanguageCreateVariables
 } from '../../../__generated__/CampaignRegionLanguageCreate'
 import { campaignRegionLanguagesAdd } from '../campaignRegionCache'
-import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_REGION_LANGUAGE_FIELDS } from '../useCampaignQuery'
 
 export const CAMPAIGN_REGION_LANGUAGE_CREATE = gql`
   ${CAMPAIGN_REGION_LANGUAGE_FIELDS}

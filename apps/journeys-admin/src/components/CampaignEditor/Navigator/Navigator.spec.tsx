@@ -1,3 +1,4 @@
+import type { DndContextProps } from '@dnd-kit/core'
 import {
   act,
   fireEvent,
@@ -13,13 +14,46 @@ import { campaignStatsFixture } from '@core/journeys/ui/Campaign/testData'
 
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { CampaignHoverProvider } from '../CampaignHoverProvider'
 import { Canvas } from '../Canvas'
-import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
+import {
+  campaign,
+  campaignWithColumns,
+  campaignWithRegions,
+  eurLine
+} from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { SelectionProbe, StaticEditor, frameBody } from '../testing'
 
 import { Navigator } from './Navigator'
-import { NavigatorHoverProvider } from './NavigatorHover'
+
+const mocks = vi.hoisted(() => ({
+  addBlockOrder: vi.fn(),
+  addColumnSwap: vi.fn(),
+  reorderRegion: vi.fn(),
+  dnd: { current: undefined as DndContextProps | undefined }
+}))
+
+vi.mock('@dnd-kit/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@dnd-kit/core')>()
+  return {
+    ...actual,
+    DndContext: (props: DndContextProps): ReactElement => {
+      mocks.dnd.current = props
+      return <actual.DndContext {...props} />
+    }
+  }
+})
+
+vi.mock('../utils/useCampaignBlockOrderCommand', () => ({
+  useCampaignBlockOrderCommand: () => ({ addBlockOrder: mocks.addBlockOrder })
+}))
+vi.mock('../utils/useCampaignColumnSwapCommand', () => ({
+  useCampaignColumnSwapCommand: () => ({ addColumnSwap: mocks.addColumnSwap })
+}))
+vi.mock('../utils/useCampaignRegionCommand', () => ({
+  useCampaignRegionCommand: () => ({ reorderRegion: mocks.reorderRegion })
+}))
 
 const statsMock = {
   request: { query: GET_CAMPAIGN_STATS, variables: { id: campaign.id } },
@@ -67,7 +101,7 @@ function renderNavigator({
       initialState={initialState}
       mocks={[statsMock, statsMock, statsMock]}
     >
-      <NavigatorHoverProvider>
+      <CampaignHoverProvider>
         <Hotkeys />
         <SelectionProbe />
         <PanelProbe />
@@ -86,9 +120,29 @@ function renderNavigator({
             />
           </Profiler>
         )}
-      </NavigatorHoverProvider>
+      </CampaignHoverProvider>
     </StaticEditor>
   )
+}
+
+function renderNavigatorForDrop(campaignProp = campaign): void {
+  render(
+    <StaticEditor campaignProp={campaignProp}>
+      <CampaignHoverProvider>
+        <Navigator />
+      </CampaignHoverProvider>
+    </StaticEditor>
+  )
+}
+
+/** Ends a drag of one row over another as the sensors report it. */
+function drop(activeId: string, overId: string | undefined): void {
+  act(() => {
+    mocks.dnd.current?.onDragEnd?.({
+      active: { id: activeId },
+      collisions: overId == null ? [] : [{ id: overId }]
+    } as unknown as Parameters<NonNullable<DndContextProps['onDragEnd']>>[0])
+  })
 }
 
 function row(id: string): HTMLElement {
@@ -458,5 +512,117 @@ describe('Navigator', () => {
 
       expect(onCanvasRender).not.toHaveBeenCalled()
     })
+  })
+})
+
+describe('Navigator drop', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('reorders a section through the block order Command', () => {
+    renderNavigatorForDrop()
+
+    drop('heroId', 'landingJourneyListId')
+
+    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'heroId' }),
+      3,
+      undefined
+    )
+  })
+
+  it('reorders a journey card through the block order Command', () => {
+    renderNavigatorForDrop()
+
+    drop('landingDraftJourneyId', 'landingJourneyId')
+
+    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'landingDraftJourneyId' }),
+      1,
+      undefined
+    )
+  })
+
+  it('flips an Extra’s placement and reorders it in one Command when it crosses the divider', () => {
+    renderNavigatorForDrop()
+
+    drop('journeyListNoteId', 'landingJourneyListId__content')
+
+    expect(mocks.addBlockOrder).toHaveBeenCalledTimes(1)
+    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'journeyListNoteId' }),
+      0,
+      'below'
+    )
+  })
+
+  it('swaps the Column Slots through the swap Command, selecting the section in the slot', () => {
+    renderNavigatorForDrop(campaignWithColumns)
+
+    drop('slotRightId', 'slotLeftId')
+
+    expect(mocks.addColumnSwap).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'slotRightId' }),
+      undefined
+    )
+    drop('slotLeftId', 'slotRightId')
+    expect(mocks.addColumnSwap).toHaveBeenLastCalledWith(
+      expect.objectContaining({ id: 'slotLeftId' }),
+      'slotRichTextId'
+    )
+  })
+
+  it('reorders region cards through the region order Command', () => {
+    renderNavigatorForDrop(campaignWithRegions)
+
+    drop('landingSwitcherId__eurRegionId', 'landingSwitcherId__afrRegionId')
+
+    expect(mocks.reorderRegion).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'eurRegionId' }),
+      1
+    )
+  })
+
+  it('reorders a Region Line through the block order Command', () => {
+    renderNavigatorForDrop({
+      ...campaignWithRegions,
+      blocks: [
+        ...campaignWithRegions.blocks,
+        { ...eurLine, id: 'eurSecondLineId', parentOrder: 1 }
+      ]
+    })
+
+    drop(
+      'landingSwitcherId__eurRegionId__eurSecondLineId',
+      'landingSwitcherId__eurRegionId__eurLineId'
+    )
+
+    expect(mocks.addBlockOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ id: 'eurSecondLineId' }),
+      0,
+      undefined
+    )
+  })
+
+  it('does nothing for a drop outside the row’s sibling group', () => {
+    renderNavigatorForDrop()
+
+    drop('heroId', 'landingJourneyId')
+    drop('landingJourneyId', 'journeyListNoteId')
+    drop('heroId', 'headerId')
+
+    expect(mocks.addBlockOrder).not.toHaveBeenCalled()
+    expect(mocks.addColumnSwap).not.toHaveBeenCalled()
+    expect(mocks.reorderRegion).not.toHaveBeenCalled()
+  })
+
+  it('does nothing for a drop on nothing, or on the row itself', () => {
+    renderNavigatorForDrop()
+
+    drop('heroId', undefined)
+    drop('heroId', 'heroId')
+
+    expect(mocks.addBlockOrder).not.toHaveBeenCalled()
   })
 })

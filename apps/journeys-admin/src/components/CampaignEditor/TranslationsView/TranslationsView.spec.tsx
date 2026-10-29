@@ -11,7 +11,7 @@ import { ComponentProps, ReactElement } from 'react'
 
 import { CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
-import { CampaignTranslations_campaignTranslations as Row } from '../../../../__generated__/CampaignTranslations'
+import { GetCampaignTranslations_campaignTranslations as Row } from '../../../../__generated__/GetCampaignTranslations'
 import {
   CampaignTextField,
   CampaignTextSource,

@@ -21,7 +21,7 @@ import {
   campaignBlocksAdd
 } from '../campaignBlockCache'
 import { CAMPAIGN_IMAGE_BLOCK_CREATE } from '../useCampaignImageBlockCreateMutation'
-import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery/campaignFields'
+import { CAMPAIGN_BLOCK_TRANSLATION_FIELDS } from '../useCampaignQuery'
 
 /** The section typenames "+Add section" offers: the seeded seven, the Image and the Featured Media sections. */
 export const CAMPAIGN_SECTION_TYPENAMES = [

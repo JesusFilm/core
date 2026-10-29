@@ -35,7 +35,6 @@ import {
   withEmptyTranslations
 } from '../data'
 import { Hotkeys } from '../Hotkeys'
-import { newSectionBlock } from '../sectionTypes'
 import { blockUpdateMock } from '../styleTesting'
 import {
   BlocksProbe,
@@ -44,6 +43,7 @@ import {
   SelectionProbe,
   StaticEditor
 } from '../testing'
+import { newSectionBlock } from '../utils/sectionTypes'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
 
 import { Inspector } from './Inspector'

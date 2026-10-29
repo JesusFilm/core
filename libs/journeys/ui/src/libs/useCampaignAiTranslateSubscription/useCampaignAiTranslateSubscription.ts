@@ -78,6 +78,11 @@ export function useCampaignAiTranslateSubscription(
     CampaignAiTranslateSubscriptionVariables
   >(CAMPAIGN_AI_TRANSLATE_SUBSCRIPTION, {
     ...rest,
+    // graphql-sse must not re-send after a dropped connection: the server
+    // treats each request as a new run, so a retried translation would
+    // restart (or be refused while the first run still holds its lock). The
+    // drop surfaces as the subscription's error instead.
+    context: { ...rest.context, retryAttempts: 0 },
     skip: rest.skip === true || variables == null,
     variables: variables as unknown as CampaignAiTranslateSubscriptionVariables,
     onData: (result) => {

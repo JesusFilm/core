@@ -11,9 +11,9 @@ import {
 } from '@core/journeys/ui/Campaign/testData'
 
 import {
-  CampaignTranslations,
-  CampaignTranslationsVariables
-} from '../../../../../__generated__/CampaignTranslations'
+  GetCampaignTranslations,
+  GetCampaignTranslationsVariables
+} from '../../../../../__generated__/GetCampaignTranslations'
 import {
   CampaignPageKind,
   CampaignTextSource,
@@ -636,32 +636,34 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
     ]
     const cache = campaignCache()
     const variables = campaignTranslationsVariables(campaign.id, '496')
-    cache.writeQuery<CampaignTranslations, CampaignTranslationsVariables>({
-      query: CAMPAIGN_TRANSLATIONS,
-      variables,
-      data: {
-        campaignTranslations: [
-          {
-            __typename: 'CampaignTranslation',
-            group: CampaignTranslationGroup.landing,
-            field: TranslationField.title,
-            maxLength: 150,
-            defaultValue: 'Share the story of Outreach',
-            value: "Partagez l'histoire",
-            source: CampaignTextSource.machine,
-            needsReview: true,
-            target: {
-              __typename: 'CampaignTranslationTarget',
-              typename: 'CampaignHeroBlock',
-              blockId: 'heroId',
-              regionId: null,
-              stringId: null,
-              campaignId: null
+    cache.writeQuery<GetCampaignTranslations, GetCampaignTranslationsVariables>(
+      {
+        query: CAMPAIGN_TRANSLATIONS,
+        variables,
+        data: {
+          campaignTranslations: [
+            {
+              __typename: 'CampaignTranslation',
+              group: CampaignTranslationGroup.landing,
+              field: TranslationField.title,
+              maxLength: 150,
+              defaultValue: 'Share the story of Outreach',
+              value: "Partagez l'histoire",
+              source: CampaignTextSource.machine,
+              needsReview: true,
+              target: {
+                __typename: 'CampaignTranslationTarget',
+                typename: 'CampaignHeroBlock',
+                blockId: 'heroId',
+                regionId: null,
+                stringId: null,
+                campaignId: null
+              }
             }
-          }
-        ]
+          ]
+        }
       }
-    })
+    )
     const link = ApolloLink.from([
       new DebounceLink(500),
       new MockLink([getCampaignMock, ...mocks] as never)
@@ -683,7 +685,10 @@ describe('useCampaignTextCommand on Campaign Strings and translations', () => {
 
     await waitFor(() =>
       expect(
-        cache.readQuery<CampaignTranslations, CampaignTranslationsVariables>({
+        cache.readQuery<
+          GetCampaignTranslations,
+          GetCampaignTranslationsVariables
+        >({
           query: CAMPAIGN_TRANSLATIONS,
           variables
         })?.campaignTranslations[0]

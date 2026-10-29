@@ -1,4 +1,6 @@
-import Autocomplete from '@mui/material/Autocomplete'
+import Autocomplete, {
+  AutocompleteInputChangeReason
+} from '@mui/material/Autocomplete'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
@@ -9,6 +11,7 @@ import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import { GetCampaignAccessibleJourneys_journeys as AccessibleJourney } from '../../../../../__generated__/GetCampaignAccessibleJourneys'
 import { JourneyStatus } from '../../../../../__generated__/globalTypes'
 import { useCampaignAccessibleJourneysLazyQuery } from '../../../../libs/useCampaignAccessibleJourneysLazyQuery'
+import { focusWithoutScroll } from '../../utils/focusWithoutScroll'
 import { messageOf } from '../../utils/messageOf'
 
 /**
@@ -54,11 +57,8 @@ export function JourneyPicker({
   const rootRef = useRef<HTMLDivElement>(null)
   const fieldLabel = label ?? t('Search your journeys')
 
-  // Without scrolling: the field sits in the scaled canvas frame, and a plain
-  // focus() would scroll the editor page that holds it.
   useEffect(() => {
-    if (autoFocus)
-      rootRef.current?.querySelector('input')?.focus({ preventScroll: true })
+    if (autoFocus) focusWithoutScroll(rootRef.current?.querySelector('input'))
   }, [autoFocus])
 
   async function handlePick(journey: AccessibleJourney | null): Promise<void> {
@@ -73,6 +73,27 @@ export function JourneyPicker({
     } finally {
       setLinking(false)
     }
+  }
+
+  function handleInputChange(
+    _event: unknown,
+    value: string,
+    reason: AutocompleteInputChangeReason
+  ): void {
+    if (reason === 'reset') return
+    setInputValue(value)
+    if (linkError != null) setLinkError(undefined)
+  }
+
+  function handleOpen(): void {
+    if (!called || loadError != null) void load()
+  }
+
+  function handleChange(
+    _event: unknown,
+    journey: AccessibleJourney | null
+  ): void {
+    void handlePick(journey)
   }
 
   function statusLabel(status: JourneyStatus): string {
@@ -96,17 +117,9 @@ export function JourneyPicker({
         loading={loading}
         disabled={disabled}
         inputValue={inputValue}
-        onInputChange={(_event, value, reason) => {
-          if (reason === 'reset') return
-          setInputValue(value)
-          if (linkError != null) setLinkError(undefined)
-        }}
-        onOpen={() => {
-          if (!called || loadError != null) void load()
-        }}
-        onChange={(_event, journey) => {
-          void handlePick(journey)
-        }}
+        onInputChange={handleInputChange}
+        onOpen={handleOpen}
+        onChange={handleChange}
         getOptionLabel={(option) => option.title}
         isOptionEqualToValue={(option, value) => option.id === value.id}
         loadingText={t('Loading journeys…')}

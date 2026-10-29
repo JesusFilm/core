@@ -78,7 +78,7 @@ describe('CampaignEditorProvider', () => {
   beforeEach(() => vi.clearAllMocks())
 
   describe('resolveSelection', () => {
-    it('resolves the campaign row, a section, chrome and an Extra with its host', () => {
+    it('resolves the campaign, a section, chrome and an Extra with its host', () => {
       expect(resolveSelection(campaign.blocks, undefined)).toEqual({
         kind: 'campaign'
       })
@@ -251,7 +251,7 @@ describe('CampaignEditorProvider', () => {
     )
   })
 
-  it('steps up one level on Escape, and from a section to the campaign row', async () => {
+  it('steps up one level on Escape, and from a section to the campaign', async () => {
     renderEditor({ selectedBlockId: 'heroButtonId' })
     expect(screen.getByTestId('SelectionKind')).toHaveTextContent('button')
 

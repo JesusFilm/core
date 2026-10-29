@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { useCampaignBlockDuplicateMutation } from '../../../../libs/useCampaignBlockDuplicateMutation'
+import { blockColumn } from '../../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingRows, siblingsOf } from '../siblingsOf'
 import { SLOT_COLUMNS, subtreeOf } from '../subtreeOf'
@@ -36,27 +37,29 @@ export function duplicateBlocks(
 ): CampaignDuplicate {
   const subtree = subtreeOf(blocks, block.id)
   const ids = new Map(subtree.map((row) => [row.id, newId()]))
-  const remap = (id: unknown): unknown =>
-    typeof id === 'string' ? (ids.get(id) ?? id) : id
-  const copies = subtree.map((row) => {
-    const copy: Record<string, unknown> = {
+  const remap = (id: string): string => ids.get(id) ?? id
+  const copies = subtree.map((row): CampaignBlock => {
+    const copy: CampaignBlock = {
       ...row,
-      id: ids.get(row.id),
+      id: remap(row.id),
       parentBlockId:
-        row.id === block.id ? row.parentBlockId : remap(row.parentBlockId),
+        row.id === block.id || row.parentBlockId == null
+          ? row.parentBlockId
+          : remap(row.parentBlockId),
       parentOrder:
         row.id === block.id ? (block.parentOrder ?? 0) + 1 : row.parentOrder
     }
-    for (const column of SLOT_COLUMNS)
-      if (column in copy) copy[column] = remap(copy[column])
-    const action = copy.action as Record<string, unknown> | null | undefined
-    if (action != null)
-      copy.action = {
-        ...action,
-        parentBlockId: copy.id,
-        ...('blockId' in action ? { blockId: remap(action.blockId) } : {})
-      }
-    return copy as unknown as CampaignBlock
+    for (const column of SLOT_COLUMNS) {
+      const owned = blockColumn(copy, column)
+      if (typeof owned === 'string') Reflect.set(copy, column, remap(owned))
+    }
+    if (copy.__typename !== 'CampaignButtonBlock' || copy.action == null)
+      return copy
+    const action =
+      copy.action.__typename === 'CampaignScrollToBlockAction'
+        ? { ...copy.action, blockId: remap(copy.action.blockId) }
+        : copy.action
+    return { ...copy, action: { ...action, parentBlockId: copy.id } }
   })
   const siblings = sortBy([...siblingsOf(blocks, block), block], 'parentOrder')
   const original = siblings.findIndex((sibling) => sibling.id === block.id)
@@ -65,7 +68,7 @@ export function duplicateBlocks(
     copies,
     idMap: subtree.map((row) => ({
       oldId: row.id,
-      newId: ids.get(row.id) as string
+      newId: remap(row.id)
     })),
     siblingsAfter: siblings.map((sibling, parentOrder) => ({
       ...sibling,

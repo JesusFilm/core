@@ -1,4 +1,5 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../__generated__/GetCampaign'
+import { blockColumn } from '../../../libs/useCampaignBlockTextMutation'
 
 /** The block columns that own a slotted block: a cover, a media or a logo. */
 export const SLOT_COLUMNS = [
@@ -23,9 +24,8 @@ export function subtreeOf(
     if (row == null) continue
     seen.add(id)
     result.push(row)
-    const columns = row as unknown as Record<string, unknown>
     for (const column of SLOT_COLUMNS) {
-      const owned = columns[column]
+      const owned = blockColumn(row, column)
       if (typeof owned === 'string') queue.push(owned)
     }
     for (const child of blocks)

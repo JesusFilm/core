@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useCallback } from 'react'
@@ -15,10 +14,8 @@ import {
   regionNameVariant,
   switcherLayoutSx
 } from '@core/journeys/ui/Campaign'
-import DragIcon from '@core/shared/ui/icons/Drag'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 import Plus2Icon from '@core/shared/ui/icons/Plus2'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -28,27 +25,26 @@ import {
   CampaignSwitcherVariant,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
-import { regionCardLabel, regionLineLabel } from '../blockLabel'
 import {
   regionLines,
   regionNeedsJourney,
   sortedRegions,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { CanvasDragHandle } from '../Canvas/CanvasDragHandle'
 import { EditorNote } from '../Canvas/EditorNote'
-import { HOVER_OUTLINE_SX } from '../Canvas/hoverOutline'
+import {
+  ADMIN_PRIMARY,
+  HOVER_OUTLINE_SX,
+  SELECTED_OUTLINE
+} from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
+import { regionCardLabel, regionLineLabel } from '../utils/blockLabel'
+import { regionCardId } from '../utils/regionCardId'
 import { regionDisplayName } from '../utils/regionDisplayName'
 import { regionLineColor } from '../utils/regionLineColor'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
-
-const SELECTED_OUTLINE = {
-  outline: `2px solid ${adminPrimary.main}`,
-  outlineOffset: -2
-}
 
 interface RegionSwitcherEditProps {
   /** The switcher section this editor sits in. */
@@ -119,7 +115,7 @@ function RegionCardEdit({
   return (
     <Box
       ref={setCardRef}
-      id={`${hostBlockId}__${region.id}`}
+      id={regionCardId(hostBlockId, region.id)}
       data-testid={`RegionCardEdit-${region.id}`}
       data-selected={selected}
       data-unlisted={!region.listed}
@@ -136,43 +132,28 @@ function RegionCardEdit({
           ...(selected ? SELECTED_OUTLINE : {}),
           ...(isDragging ? { opacity: 0.6 } : {}),
           ...(isOver && !isDragging
-            ? { outline: `2px dashed ${adminPrimary.main}`, outlineOffset: -2 }
+            ? { outline: `2px dashed ${ADMIN_PRIMARY.main}`, outlineOffset: -2 }
             : {})
         }
       ]}
     >
       <SelectionBadge
-        id={`${hostBlockId}__${region.id}`}
+        id={regionCardId(hostBlockId, region.id)}
         label={regionCardLabel(t)}
         selected={selected}
         borderWidth={1}
       />
-      <Box
-        ref={setActivatorNodeRef}
-        {...listeners}
-        {...attributes}
-        aria-label={t('Drag region')}
-        data-testid={`RegionCardDragHandle-${region.id}`}
-        onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          right: 4,
-          transform: 'translateY(-50%)',
-          display: 'flex',
-          p: 0.5,
-          borderRadius: 1,
-          bgcolor: 'background.paper',
-          color: adminPrimary.main,
-          boxShadow: 1,
-          cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none',
-          opacity: selected ? 1 : 0,
-          '[data-hoverable]:hover > &, &:focus-visible': { opacity: 1 }
-        }}
-      >
-        <DragIcon fontSize="small" />
-      </Box>
+      <CanvasDragHandle
+        activatorRef={setActivatorNodeRef}
+        listeners={listeners}
+        attributes={attributes}
+        label={t('Drag region')}
+        testId={`RegionCardDragHandle-${region.id}`}
+        dragging={isDragging}
+        visible={selected}
+        position={{ top: '50%', right: 4, transform: 'translateY(-50%)' }}
+        stopClick
+      />
       <Stack
         direction="row"
         spacing={1}

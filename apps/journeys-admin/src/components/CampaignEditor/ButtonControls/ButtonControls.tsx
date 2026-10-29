@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
@@ -10,19 +9,21 @@ import {
   ButtonSize,
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
+import { AlignRow } from '../AlignRow'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
-import { AlignRow, StyleRow } from '../StyleRow'
+import { CommandError } from '../CommandError'
+import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
-import { useHostBand } from '../utils/useHostBand'
+import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
-export const BUTTON_VARIANTS = [
+const BUTTON_VARIANTS = [
   ButtonVariant.contained,
   ButtonVariant.outlined,
   ButtonVariant.text
 ] as const
 
-export const BUTTON_SIZES = [
+const BUTTON_SIZES = [
   ButtonSize.small,
   ButtonSize.medium,
   ButtonSize.large
@@ -44,7 +45,7 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addFields, error } = useCampaignBlockFieldsCommand()
-  const band = useHostBand()
+  const band = useCampaignHostBand()
 
   const variantLabels: Record<ButtonVariant, string> = {
     contained: t('Contained'),
@@ -71,11 +72,7 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
 
   return (
     <Stack spacing={4} data-testid="ButtonControls">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Variant')}>
         <ToggleButtonGroup
           exclusive

@@ -11,6 +11,11 @@ import { ReactElement, useState } from 'react'
 
 import { useJourney } from '@core/journeys/ui/JourneyProvider'
 import { Dialog } from '@core/shared/ui/Dialog'
+import {
+  BODY_FONT_OPTIONS,
+  HEADER_FONT_OPTIONS,
+  LABELS_FONT_OPTIONS
+} from '@core/shared/ui/fontFamilies'
 
 import {
   CreateJourneyFonts,
@@ -23,12 +28,7 @@ import {
 import { FontLoader } from '../../../../../../../FontLoader'
 
 import { ThemePreview } from './ThemePreview'
-import {
-  BODY_FONT_OPTIONS,
-  HEADER_FONT_OPTIONS,
-  LABELS_FONT_OPTIONS,
-  ThemeSettings
-} from './ThemeSettings'
+import { ThemeSettings } from './ThemeSettings'
 
 interface ThemeBuilderDialogProps {
   open: boolean

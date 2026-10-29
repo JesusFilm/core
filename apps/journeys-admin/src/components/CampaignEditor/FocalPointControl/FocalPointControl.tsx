@@ -1,14 +1,15 @@
-import Alert from '@mui/material/Alert'
-import Slider from '@mui/material/Slider'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
+import {
+  CampaignFocalPointPicker,
+  FocalPoint
+} from '../CampaignFocalPointPicker'
+import { CommandError } from '../CommandError'
+import { SliderRow } from '../SliderRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
-
-import { FocalPoint, FocalPointPicker } from './FocalPointPicker'
 
 /** The zoom slider runs from none to double, in steps of ten percent. */
 export const IMAGE_SCALE_MIN = 100
@@ -37,12 +38,6 @@ export function FocalPointControl({
 }: FocalPointControlProps): ReactElement | null {
   const { t } = useTranslation('apps-journeys-admin')
   const { addFields, error } = useCampaignBlockFieldsCommand()
-  const scale = image.scale ?? IMAGE_SCALE_MIN
-  const [zoom, setZoom] = useState(scale)
-
-  useEffect(() => {
-    setZoom(scale)
-  }, [image.id, scale])
 
   if (image.src == null) return null
 
@@ -60,8 +55,7 @@ export function FocalPointControl({
     addFields(image, point)
   }
 
-  function handleZoomCommit(_event: unknown, next: number | number[]): void {
-    const percent = Array.isArray(next) ? next[0] : next
+  function handleZoomCommit(percent: number): void {
     const nextScale = percent === IMAGE_SCALE_MIN ? null : percent
     if (nextScale === (image.scale ?? null)) return
     addFields(image, { scale: nextScale })
@@ -69,12 +63,8 @@ export function FocalPointControl({
 
   return (
     <Stack spacing={2} data-testid="FocalPointControl" data-block-id={image.id}>
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
-      <FocalPointPicker
+      <CommandError error={error} />
+      <CampaignFocalPointPicker
         src={image.src}
         alt={image.alt}
         width={image.width}
@@ -83,37 +73,21 @@ export function FocalPointControl({
         onChange={handleChange}
       />
       <Stack spacing={1}>
-        <Stack direction="row" sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="subtitle2" id={`focal-zoom-${image.id}`}>
-            {t('Zoom')}
-          </Typography>
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            data-testid="FocalPointZoomValue"
-          >
-            {zoomLabel(zoom)}
-          </Typography>
-        </Stack>
-        <Slider
-          aria-labelledby={`focal-zoom-${image.id}`}
-          value={zoom}
+        <SliderRow
+          key={image.id}
+          id={`focal-zoom-${image.id}`}
+          label={t('Zoom')}
+          value={image.scale ?? IMAGE_SCALE_MIN}
           min={IMAGE_SCALE_MIN}
           max={IMAGE_SCALE_MAX}
           step={IMAGE_SCALE_STEP}
-          valueLabelDisplay="auto"
-          valueLabelFormat={zoomLabel}
-          onChange={(_event, next) =>
-            setZoom(Array.isArray(next) ? next[0] : next)
-          }
-          onChangeCommitted={handleZoomCommit}
-          sx={{ mx: 1, width: 'auto' }}
-        />
-        <Typography variant="caption" color="text.secondary">
-          {t(
+          format={zoomLabel}
+          helperText={t(
             'Magnifies the picture around the focal point wherever it fills a frame.'
           )}
-        </Typography>
+          valueTestId="FocalPointZoomValue"
+          onCommit={handleZoomCommit}
+        />
       </Stack>
     </Stack>
   )

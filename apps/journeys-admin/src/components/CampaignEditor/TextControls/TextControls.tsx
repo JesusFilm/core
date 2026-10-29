@@ -1,4 +1,3 @@
-import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
@@ -6,11 +5,13 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock } from '../../../../__generated__/GetCampaign'
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
+import { AlignRow } from '../AlignRow'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
-import { AlignRow, StyleRow } from '../StyleRow'
+import { CommandError } from '../CommandError'
+import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
-import { useHostBand } from '../utils/useHostBand'
+import { useCampaignHostBand } from '../utils/useCampaignHostBand'
 
 /** The twelve variants Size walks, largest first. */
 export const TEXT_SIZES = [
@@ -47,7 +48,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
   const { addFields, error } = useCampaignBlockFieldsCommand()
-  const band = useHostBand()
+  const band = useCampaignHostBand()
 
   const sizeLabels: Record<TypographyVariant, string> = {
     h1: t('Heading 1'),
@@ -76,11 +77,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
 
   return (
     <Stack spacing={4} data-testid="TextControls">
-      {error != null && (
-        <Alert severity="error" role="alert">
-          {error}
-        </Alert>
-      )}
+      <CommandError error={error} />
       <StyleRow label={t('Size')}>
         <TextField
           select

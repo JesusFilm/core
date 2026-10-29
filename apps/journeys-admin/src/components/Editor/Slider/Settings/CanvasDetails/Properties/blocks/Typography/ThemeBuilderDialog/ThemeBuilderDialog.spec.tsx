@@ -5,6 +5,7 @@ import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 import { type Mock } from 'vitest'
 
 import { JourneyProvider } from '@core/journeys/ui/JourneyProvider'
+import { FontFamily } from '@core/shared/ui/fontFamilies'
 
 import {
   JourneyStatus,
@@ -18,7 +19,6 @@ import {
   JOURNEY_FONTS_UPDATE,
   ThemeBuilderDialog
 } from './ThemeBuilderDialog'
-import { FontFamily } from './ThemeSettings'
 
 vi.mock('@mui/material/useMediaQuery', async () => ({
   __esModule: true,

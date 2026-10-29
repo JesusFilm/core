@@ -12,11 +12,12 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
-import { newSectionBlock } from '../../sectionTypes'
 import { SelectionProbe, StaticEditor, frameBody } from '../../testing'
+import { newSectionBlock } from '../../utils/sectionTypes'
 import { Canvas } from '../Canvas'
+import type { CanvasBlock } from '../canvasBlock'
 
-import { CanvasBlock, CanvasSection } from './CanvasSection'
+import { CanvasSection } from './CanvasSection'
 
 function chromeBlock(
   source: Campaign,

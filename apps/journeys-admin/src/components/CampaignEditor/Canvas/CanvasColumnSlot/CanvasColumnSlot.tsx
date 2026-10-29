@@ -1,25 +1,22 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
-import { SimplePaletteColorOptions } from '@mui/material/styles'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useCallback } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useCallback } from 'react'
 
-import DragIcon from '@core/shared/ui/icons/Drag'
-import { adminTheme } from '@core/shared/ui/themes/journeysAdmin/theme'
-
-import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { CanvasBlock, CanvasSection } from '../CanvasSection'
+import { blockLabel } from '../../utils/blockLabel'
+import type { CanvasBlock } from '../canvasBlock'
+import { CanvasDragHandle } from '../CanvasDragHandle'
 import { EditorNote } from '../EditorNote'
-import { HOVER_OUTLINE_SX } from '../hoverOutline'
+import { ADMIN_PRIMARY, HOVER_OUTLINE_SX } from '../hoverOutline'
 import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
+  /** The section the slot holds, rendered by the Columns section. */
+  children?: ReactNode
 }
-
-const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
 
 /**
  * One Column Slot on the canvas: the section it holds, or a placeholder when
@@ -31,7 +28,8 @@ const adminPrimary = adminTheme.palette.primary as SimplePaletteColorOptions
  * section ever collide with each other.
  */
 export function CanvasColumnSlot({
-  slot
+  slot,
+  children
 }: CanvasColumnSlotProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { selection, selectBlock, dispatch } = useCampaignEditor()
@@ -93,9 +91,9 @@ export function CanvasColumnSlot({
         opacity: isDragging ? 0.6 : 1,
         ...HOVER_OUTLINE_SX,
         outline: dropTarget
-          ? `3px solid ${adminPrimary.main}`
+          ? `3px solid ${ADMIN_PRIMARY.main}`
           : slotSelected
-            ? `2px solid ${adminPrimary.main}`
+            ? `2px solid ${ADMIN_PRIMARY.main}`
             : 'none',
         outlineOffset: -2
       }}
@@ -105,36 +103,19 @@ export function CanvasColumnSlot({
         label={blockLabel(t, slot.__typename)}
         selected={slotSelected}
       />
-      <Box
-        ref={setActivatorNodeRef}
-        {...listeners}
-        {...attributes}
-        aria-label={t('Drag column')}
-        data-testid={`CanvasColumnDragHandle-${slot.id}`}
-        onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
-        sx={{
-          position: 'absolute',
-          top: 8,
-          right: 8,
-          zIndex: 2,
-          display: 'flex',
-          p: 0.5,
-          borderRadius: 1,
-          bgcolor: 'background.paper',
-          color: adminPrimary.main,
-          boxShadow: 1,
-          cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none',
-          opacity: withinSelection ? 1 : 0,
-          '[data-testid^="CanvasColumnSlot-"]:hover > &, &:focus-visible': {
-            opacity: 1
-          }
-        }}
-      >
-        <DragIcon fontSize="small" />
-      </Box>
+      <CanvasDragHandle
+        activatorRef={setActivatorNodeRef}
+        listeners={listeners}
+        attributes={attributes}
+        label={t('Drag column')}
+        testId={`CanvasColumnDragHandle-${slot.id}`}
+        dragging={isDragging}
+        visible={withinSelection}
+        position={{ top: 8, right: 8, zIndex: 2 }}
+        stopClick
+      />
       {section != null ? (
-        <CanvasSection block={section} inSlot />
+        children
       ) : (
         <ButtonBase
           data-testid={`CanvasEmptyColumn-${slot.id}`}

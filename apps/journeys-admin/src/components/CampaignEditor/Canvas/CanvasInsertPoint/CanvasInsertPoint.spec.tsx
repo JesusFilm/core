@@ -7,8 +7,8 @@ import { CAMPAIGN_HERO_BLOCK_CREATE } from '../../../../libs/useCampaignSectionC
 import { AddPanel } from '../../AddPanel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign, campaignWithColumns } from '../../data'
-import { newSectionBlock } from '../../sectionTypes'
 import { SelectionProbe, StaticEditor, frameBody } from '../../testing'
+import { newSectionBlock } from '../../utils/sectionTypes'
 import { Canvas } from '../Canvas'
 
 vi.mock('uuid', () => ({ v4: vi.fn(() => 'newId') }))

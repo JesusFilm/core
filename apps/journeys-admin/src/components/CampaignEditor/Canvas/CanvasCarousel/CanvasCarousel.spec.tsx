@@ -13,7 +13,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { campaign, withEmptyTranslations } from '../../data'
 import { StaticEditor } from '../../testing'
-import type { CanvasBlock } from '../CanvasSection'
+import type { CanvasBlock } from '../canvasBlock'
 
 import { CanvasCarousel } from './CanvasCarousel'
 

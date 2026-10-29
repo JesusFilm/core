@@ -12,8 +12,8 @@ import { journeysAdminConfig } from '@core/shared/ui/storybook'
 
 import { campaign, withEmptyTranslations } from '../../data'
 import { StaticEditor } from '../../testing'
+import type { CanvasBlock } from '../canvasBlock'
 import { CanvasSection } from '../CanvasSection'
-import type { CanvasBlock } from '../CanvasSection'
 
 const withCards = {
   ...campaign,
