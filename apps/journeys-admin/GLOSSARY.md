@@ -205,7 +205,7 @@ A single journey's Plausible Embed Frame, on that journey's reports page.
 _Avoid_: using it for the generic frame or for the Campaign Report
 
 **Campaign Report**:
-A Campaign's site traffic at `/campaigns/<id>/reports`: the **Plausible Embed Frame** of the Campaign's own Plausible site, so Plausible's default reports (visitors, page views, bounce rate, pages, sources, countries, devices), the `region` and `language` properties and the four `campaign*` goals, with nothing built on top. Opened from the Left Rail's Report button and each Team Campaigns card, behind `campaignBuilder`, for anyone with campaign Read; until the Campaign's site exists it says the report is being set up. Private, unlike the public Analytics section.
+A Campaign's site traffic at `/campaigns/<id>/reports`: the **Plausible Embed Frame** of the Campaign's own Plausible site, so Plausible's default reports (visitors, page views, bounce rate, pages, sources, countries, devices) plus the goals and properties the **Campaign Plausible site** (api-journeys glossary) defines, with nothing built on top. Opened from the Left Rail's Report button and each Team Campaigns card, behind `campaignBuilder`, for anyone with campaign Read; until the Campaign's site exists it says the report is being set up. Private, unlike the public Analytics section.
 _Avoid_: analytics, campaign analytics (the public Analytics section and its **Campaign Stats** already use that word), campaign stats
 
 **Visitor Timeline**:
