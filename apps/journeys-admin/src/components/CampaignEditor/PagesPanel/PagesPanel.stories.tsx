@@ -14,6 +14,7 @@ import {
 } from '../CampaignEditorProvider'
 import { campaign, campaignWithRegions } from '../data'
 import { LEFT_PANEL_WIDTH } from '../LeftPanel'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { PagesPanel } from '.'
 
@@ -34,12 +35,14 @@ function PagesPanelStory({
           campaign={campaignProp}
           initialState={initialState}
         >
-          <Paper
-            square
-            sx={{ width: LEFT_PANEL_WIDTH, height: 480, overflow: 'auto' }}
-          >
-            <PagesPanel />
-          </Paper>
+          <CampaignCommandProvider>
+            <Paper
+              square
+              sx={{ width: LEFT_PANEL_WIDTH, height: 480, overflow: 'auto' }}
+            >
+              <PagesPanel />
+            </Paper>
+          </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>
     </MockedProvider>

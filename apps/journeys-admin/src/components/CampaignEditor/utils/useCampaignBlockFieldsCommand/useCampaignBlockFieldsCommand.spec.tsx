@@ -32,7 +32,7 @@ function refused(mock: ReturnType<typeof blockUpdateMock>): typeof mock {
 
 /** Adds a min-height Command for the hero as the caller holds it, which may lag the cache. */
 function Probe({ minHeight }: { minHeight: number }): ReactElement {
-  const { campaign: current } = useCampaignEditor()
+  const { campaign: current, selectBlock } = useCampaignEditor()
   const { addFields, error } = useCampaignBlockFieldsCommand()
   const cached = current.blocks.find((block) => block.id === hero.id) as
     | CampaignHeroBlock
@@ -44,6 +44,7 @@ function Probe({ minHeight }: { minHeight: number }): ReactElement {
       >
         Set height
       </button>
+      <button onClick={() => selectBlock(hero.id)}>Select hero</button>
       <span data-testid="InlineError">{error ?? ''}</span>
       <span data-testid="MinHeight">{String(cached?.minHeight)}</span>
     </>
@@ -91,7 +92,7 @@ describe('useCampaignBlockFieldsCommand', () => {
     await waitFor(() => expect(execute.result).toHaveBeenCalledTimes(2))
   })
 
-  it('refocuses the block on undo and redo, not on the first execute', async () => {
+  it('returns to the selection the edit was made in on undo and redo, not on the first execute', async () => {
     const execute = {
       ...blockUpdateMock(hero, { minHeight: 70 }),
       maxUsageCount: 2
@@ -104,13 +105,16 @@ describe('useCampaignBlockFieldsCommand', () => {
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
       'landingAnalyticsId'
     )
+    fireEvent.click(screen.getByRole('button', { name: 'Select hero' }))
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
-    await waitFor(() =>
-      expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('heroId')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(
+      'landingAnalyticsId'
     )
     expect(screen.getByTestId('PageKind')).toHaveTextContent('landing')
+    await waitFor(() => expect(undo.result).toHaveBeenCalled())
   })
 
   it('shows a refused first execute inline', async () => {

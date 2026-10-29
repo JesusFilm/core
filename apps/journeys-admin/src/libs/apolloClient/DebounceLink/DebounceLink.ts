@@ -10,12 +10,15 @@ import { Observable, Observer, Subscription } from 'rxjs'
  * `ApolloLink` through a `_super.call(this)` shim. Apollo Client 4's
  * `ApolloLink` is a real class, so that shim throws "Class constructor
  * ApolloLink cannot be invoked without 'new'" the moment the link is
- * constructed. Behaviour is otherwise unchanged from upstream.
+ * constructed.
  *
  * Pass `{ context: { debounceKey, debounceTimeout? } }` to debounce an
  * operation; operations without a `debounceKey` are forwarded untouched.
- * Pass `debounceFlushPrefix` to forward every pending request whose key starts
- * with it before the operation itself, so it cannot overtake them.
+ * Unlike upstream, an operation may also pass `debounceFlushPrefix`, one key
+ * prefix or a list of them: every pending request whose key starts with any
+ * of them is forwarded before the operation itself, so it cannot overtake
+ * them. A structural write flushes the pending text of a whole block subtree
+ * this way, one prefix per block.
  */
 
 type ResultObserver = Observer<ApolloLink.Result>
@@ -51,7 +54,7 @@ export class DebounceLink extends ApolloLink {
       operation.getContext()
 
     if (debounceFlushPrefix != null)
-      this.flushPrefix(debounceFlushPrefix as string)
+      this.flushPrefixes(debounceFlushPrefix as string | string[])
 
     if (debounceKey == null) return forward(operation)
 
@@ -127,9 +130,12 @@ export class DebounceLink extends ApolloLink {
     }
   }
 
-  private flushPrefix(prefix: string): void {
+  private flushPrefixes(prefix: string | string[]): void {
+    const prefixes = Array.isArray(prefix) ? prefix : [prefix]
     Object.keys(this.debounceInfo)
-      .filter((debounceKey) => debounceKey.startsWith(prefix))
+      .filter((debounceKey) =>
+        prefixes.some((candidate) => debounceKey.startsWith(candidate))
+      )
       .forEach((debounceKey) => this.flush(debounceKey))
   }
 

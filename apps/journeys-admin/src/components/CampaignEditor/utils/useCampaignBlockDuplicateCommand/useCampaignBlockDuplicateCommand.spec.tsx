@@ -16,8 +16,9 @@ import {
   campaignCache,
   debounceSpyLink
 } from '../../testing'
+import { subtreeOf } from '../subtreeOf'
 
-import { duplicateBlocks, subtreeOf } from './useCampaignBlockDuplicateCommand'
+import { duplicateBlocks } from './useCampaignBlockDuplicateCommand'
 
 vi.mock('uuid', () => ({ v4: vi.fn() }))
 
@@ -100,14 +101,17 @@ function renderEditor(
   )
 }
 
-function renderWithPendingText(requests: string[]): ReturnType<typeof render> {
+function renderWithPendingText(
+  requests: string[],
+  pendingBlock: { __typename: string; id: string } = hero
+): ReturnType<typeof render> {
   return render(
     <QueriedEditor
       link={debounceSpyLink(requests, [duplicateMock])}
       cache={campaignCache()}
       initialState={{ selectedBlockId: 'heroId' }}
     >
-      <PendingTextSave block={hero} />
+      <PendingTextSave block={pendingBlock} />
       <BlocksProbe />
       <Inspector isManager={false} />
     </QueriedEditor>
@@ -214,6 +218,22 @@ describe('useCampaignBlockDuplicateCommand', () => {
   it('sends a text edit still waiting on its debounce before the duplicate, so the copy is not made from stale text', async () => {
     const requests: string[] = []
     renderWithPendingText(requests)
+    expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Duplicate' }))
+
+    await waitFor(() =>
+      expect(requests).toEqual(['PendingTextSave', 'CampaignBlockDuplicate'])
+    )
+  })
+
+  it('sends a text edit of one of its Extras still waiting on its debounce before the duplicate, so the copy keeps the new text', async () => {
+    const requests: string[] = []
+    renderWithPendingText(requests, {
+      __typename: 'CampaignButtonBlock',
+      id: 'heroButtonId'
+    })
     expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Queue text save' }))

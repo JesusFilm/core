@@ -11,6 +11,7 @@ import { campaign } from '../data'
 import { LEFT_PANEL_WIDTH } from '../LeftPanel'
 import { TranslationRunContext } from '../TranslationRunProvider'
 import type { TranslationRun } from '../TranslationRunProvider'
+import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
 import { LocalizePanel } from '.'
 import type { LocalizeTab } from '.'
@@ -34,30 +35,32 @@ function LocalizePanelStory({
     <MockedProvider>
       <CommandProvider>
         <CampaignEditorProvider campaign={campaign}>
-          <TranslationRunContext.Provider
-            value={{
-              run,
-              start: () => undefined,
-              cancel: () => undefined
-            }}
-          >
-            <Paper
-              square
-              sx={{
-                width: LEFT_PANEL_WIDTH,
-                height: 560,
-                display: 'flex',
-                flexDirection: 'column'
+          <CampaignCommandProvider>
+            <TranslationRunContext.Provider
+              value={{
+                run,
+                start: () => undefined,
+                cancel: () => undefined
               }}
             >
-              <LocalizePanel
-                tab={tab}
-                onTabChange={setTab}
-                promotionNotice={promotionNotice}
-                onPromotionNoticeClose={() => setPromotionNotice(false)}
-              />
-            </Paper>
-          </TranslationRunContext.Provider>
+              <Paper
+                square
+                sx={{
+                  width: LEFT_PANEL_WIDTH,
+                  height: 560,
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}
+              >
+                <LocalizePanel
+                  tab={tab}
+                  onTabChange={setTab}
+                  promotionNotice={promotionNotice}
+                  onPromotionNoticeClose={() => setPromotionNotice(false)}
+                />
+              </Paper>
+            </TranslationRunContext.Provider>
+          </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>
     </MockedProvider>

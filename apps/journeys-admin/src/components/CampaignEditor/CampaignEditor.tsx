@@ -33,6 +33,7 @@ import {
   TranslationRunProvider,
   useTranslationRun
 } from './TranslationRunProvider'
+import { CampaignCommandProvider } from './utils/useCampaignCommand'
 import { useCampaignLeaveGuard } from './utils/useCampaignLeaveGuard'
 
 /**
@@ -181,7 +182,8 @@ function CampaignEditorViewport({
 /**
  * The full-screen campaign editor: one CommandProvider spanning both pages
  * so the Command history survives switching page, the selection reducer,
- * the Mux upload queue (so a Media Slot upload outlives the selection), the
+ * the Campaign Command module with its one queue of Command steps, the Mux
+ * upload queue (so a Media Slot upload outlives the selection), the
  * machine-translation run (so it outlives the Localize panel), the
  * Left Rail with its panels, the canvas with its banner and the Inspector.
  * The providers stay mounted below the minimum width, which swaps only the
@@ -228,16 +230,18 @@ export function CampaignEditor({
   return (
     <CommandProvider>
       <CampaignEditorProvider campaign={campaign}>
-        <MuxVideoUploadProvider>
-          <TranslationRunProvider>
-            <NavigatorHoverProvider>
-              <CampaignEditorViewport
-                campaign={campaign}
-                isManager={isManager}
-              />
-            </NavigatorHoverProvider>
-          </TranslationRunProvider>
-        </MuxVideoUploadProvider>
+        <CampaignCommandProvider>
+          <MuxVideoUploadProvider>
+            <TranslationRunProvider>
+              <NavigatorHoverProvider>
+                <CampaignEditorViewport
+                  campaign={campaign}
+                  isManager={isManager}
+                />
+              </NavigatorHoverProvider>
+            </TranslationRunProvider>
+          </MuxVideoUploadProvider>
+        </CampaignCommandProvider>
       </CampaignEditorProvider>
     </CommandProvider>
   )

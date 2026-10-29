@@ -1,12 +1,10 @@
 import sortBy from 'lodash/sortBy'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { textDebounceKeyPrefix } from '../useCampaignTextCommand'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 /** A block's live, ordered siblings, excluding itself. */
@@ -29,62 +27,54 @@ export function siblingsOf(
 
 /**
  * Deleting a block is one Command with no confirmation: execute selects the
- * host and soft-deletes the block, showing the renumbered siblings at once;
- * undo focuses the page it was on and restores it through
- * `campaignBlockRestore`, with the block and its siblings as the optimistic
- * response so it reappears in place.
+ * host and soft-deletes the block, showing the renumbered siblings at once,
+ * after sending the text edits of its whole subtree still waiting on their
+ * debounce; undo selects the block on the page it was on and restores it
+ * through `campaignBlockRestore`, with the block and its siblings as the
+ * optimistic response so it reappears in place.
  */
 export function useCampaignBlockDeleteCommand(): {
   addBlockDelete: (block: CampaignBlock) => void
 } {
-  const { add } = useCommand()
-  const {
-    campaign,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
   const [blockDelete] = useCampaignBlockDeleteMutation(campaign.id)
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
   const reportFailure = useCommandFailure()
 
   function addBlockDelete(block: CampaignBlock): void {
-    const blockPageKind = pageKindOf(block) ?? pageKind
     const siblingsBefore = siblingsOf(campaign.blocks, block)
     const siblingsAfter = siblingsBefore.map((sibling, parentOrder) => ({
       __typename: sibling.__typename,
       id: sibling.id,
       parentOrder
     }))
+    const selectHost = {
+      selectedBlockId: block.parentBlockId ?? undefined,
+      selectedRegionId: undefined
+    }
 
-    add({
-      parameters: { execute: {}, undo: {} },
-      execute() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.parentBlockId ?? undefined
-        })
-        void blockDelete({
+    addCampaignCommand({
+      flush: block,
+      focus: {
+        execute: selectHost,
+        undo: { selectedBlockId: block.id, selectedRegionId: undefined },
+        redo: selectHost
+      },
+      execute: async ({ flushContext }) =>
+        await blockDelete({
           variables: { id: block.id },
           optimisticResponse: { campaignBlockDelete: siblingsAfter },
-          context: { debounceFlushPrefix: textDebounceKeyPrefix(block) }
-        }).catch(reportFailure)
-      },
-      undo() {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: blockPageKind,
-          selectedBlockId: block.id
-        })
-        void blockRestore({
+          context: flushContext
+        }),
+      undo: async () =>
+        await blockRestore({
           variables: { id: block.id },
           optimisticResponse: {
             campaignBlockRestore: [block, ...siblingsBefore]
           }
-        }).catch(reportFailure)
-      }
-    })
+        })
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addBlockDelete }

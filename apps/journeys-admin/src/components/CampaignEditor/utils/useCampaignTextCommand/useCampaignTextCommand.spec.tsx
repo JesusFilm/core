@@ -2,7 +2,7 @@ import { ApolloLink, InMemoryCache, gql } from '@apollo/client'
 import { MockLink } from '@apollo/client/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { parse } from 'graphql'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 
 import {
   LANDING_PAGE_ID,
@@ -52,19 +52,13 @@ import {
   CommandProbe,
   QueriedEditor,
   SelectionProbe,
+  StaticEditor,
   campaignCache,
   getCampaignMock,
   getCampaignMockFor
 } from '../../testing'
 
-import {
-  textDebounceKey,
-  useCampaignTextCommand
-} from './useCampaignTextCommand'
-
-const hero = campaign.blocks.find(
-  (block) => block.id === 'heroId'
-) as CampaignTextBlock
+import { useCampaignTextCommand } from './useCampaignTextCommand'
 
 /** One inline field over the block as the cache currently holds it. */
 function Field({
@@ -99,6 +93,34 @@ function BoundField({
         onBlur={handleBlur}
       />
       {error != null && <span role="alert">{error}</span>}
+    </>
+  )
+}
+
+/** Shows the landing page: a view change, not a Command. */
+function ShowLanding(): ReactElement {
+  const { dispatch } = useCampaignEditor()
+  return (
+    <button
+      onClick={() =>
+        dispatch({
+          type: 'SetPageKindAction',
+          pageKind: CampaignPageKind.landing
+        })
+      }
+    >
+      Show landing
+    </button>
+  )
+}
+
+/** The field, until the panel holding it closes. */
+function ClosableField(): ReactElement {
+  const [open, setOpen] = useState(true)
+  return (
+    <>
+      <button onClick={() => setOpen(false)}>Close panel</button>
+      {open && <Field blockId="heroId" field="title" />}
     </>
   )
 }
@@ -153,6 +175,7 @@ function renderField(
       <CommandRedoItem variant="button" />
       <CommandProbe />
       <SelectionProbe />
+      <ShowLanding />
       <Field
         blockId={options.blockId ?? 'heroId'}
         field={options.field ?? 'title'}
@@ -187,12 +210,6 @@ describe('useCampaignTextCommand', () => {
     await waitFor(() => expect(mocks[2].result).toHaveBeenCalled())
     expect(mocks[0].result).not.toHaveBeenCalled()
     expect(mocks[1].result).not.toHaveBeenCalled()
-  })
-
-  it('keys the debounce by typename, block and field', () => {
-    expect(textDebounceKey(hero, 'title')).toBe(
-      'CampaignHeroBlock:heroId:title'
-    )
   })
 
   it('undoes by writing the previous value back through the same mutation, optimistically', async () => {
@@ -310,14 +327,19 @@ describe('useCampaignTextCommand', () => {
     renderField(mocks, {
       blockId: 'regionHeaderId',
       field: 'intro',
-      initialState: { pageKind: CampaignPageKind.landing }
+      initialState: {
+        pageKind: CampaignPageKind.regionTemplate,
+        selectedBlockId: 'regionHeaderId'
+      }
     })
     const input = await screen.findByRole('textbox', { name: 'intro' })
 
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: 'Hello' } })
     await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    fireEvent.click(screen.getByRole('button', { name: 'Show landing' }))
     expect(screen.getByTestId('PageKind')).toHaveTextContent('landing')
+    expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent('')
 
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
 
@@ -326,6 +348,78 @@ describe('useCampaignTextCommand', () => {
       'regionHeaderId'
     )
     await waitFor(() => expect(mocks[1].result).toHaveBeenCalled())
+  })
+
+  it('reports a refused undo in the snackbar once the field has unmounted', async () => {
+    const mocks = [
+      heroMock('New title'),
+      {
+        ...heroMock('Share the story of Outreach'),
+        result: vi.fn(() => ({
+          errors: [{ message: 'The block was deleted in another tab' }]
+        }))
+      }
+    ]
+    render(
+      <QueriedEditor
+        link={ApolloLink.from([
+          new DebounceLink(500),
+          new MockLink([getCampaignMock, ...mocks] as never)
+        ])}
+        initialState={{ selectedBlockId: 'heroId' }}
+      >
+        <CommandUndoItem variant="button" />
+        <ClosableField />
+      </QueriedEditor>
+    )
+    const input = await screen.findByRole('textbox', { name: 'title' })
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'New title' } })
+    await waitFor(() => expect(mocks[0].result).toHaveBeenCalled())
+    fireEvent.blur(input)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close panel' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+    expect(
+      await screen.findByText('The block was deleted in another tab')
+    ).toBeInTheDocument()
+  })
+
+  it('keeps the typed text when a refetch answered with older text lands while the save is pending', async () => {
+    const save = heroMock('Typed title')
+    const cache = campaignCache()
+    const link = ApolloLink.from([
+      new DebounceLink(500),
+      new MockLink([save] as never)
+    ])
+    function editorWithTitle(title: string): ReactElement {
+      return (
+        <StaticEditor
+          link={link}
+          cache={cache}
+          campaignProp={{
+            ...campaign,
+            blocks: campaign.blocks.map((block) =>
+              block.id === 'heroId' ? { ...block, title } : block
+            )
+          }}
+          initialState={{ selectedBlockId: 'heroId' }}
+        >
+          <Field blockId="heroId" field="title" />
+        </StaticEditor>
+      )
+    }
+    const { rerender } = render(editorWithTitle('Share the story of Outreach'))
+    const input = screen.getByRole('textbox', { name: 'title' })
+
+    fireEvent.focus(input)
+    fireEvent.change(input, { target: { value: 'Typed title' } })
+    // The refetch's response carries the text from before the keystroke.
+    rerender(editorWithTitle('Refetched older title'))
+
+    expect(input).toHaveValue('Typed title')
+    await waitFor(() => expect(save.result).toHaveBeenCalled())
   })
 
   it('surfaces the API message verbatim when a save fails and rolls the value back', async () => {

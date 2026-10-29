@@ -1,5 +1,3 @@
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { useCampaignBlockOrderUpdateMutation } from '../../../../libs/useCampaignBlockOrderUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
@@ -8,6 +6,7 @@ import {
   currentSiblings,
   reorderedSiblings
 } from '../useCampaignBlockOrderCommand'
+import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
 type OrderRows = ReturnType<typeof currentSiblings>
@@ -32,28 +31,25 @@ export function otherSlotOf(
 /**
  * Swapping a Columns section's two slots is one Command: a block order
  * update on a slot to the other slot's position, which the API answers by
- * renumbering both. Execute and undo both focus the page and the block the
- * author had selected (the slot, or the section in it) so the swap is seen;
- * undo writes the position the slot had back through the same mutation.
+ * renumbering both. Every step focuses the block the author had selected
+ * (the slot, or the section in it) so the swap is seen; undo writes the
+ * position the slot had back through the same mutation.
  */
 export function useColumnSwapCommand(): {
   addColumnSwap: (slot: CampaignBlock, selectedBlockId?: string) => void
 } {
-  const { add } = useCommand()
-  const {
-    campaign,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
   const [orderUpdate] = useCampaignBlockOrderUpdateMutation()
   const reportFailure = useCommandFailure()
 
   function addColumnSwap(slot: CampaignBlock, selectedBlockId?: string): void {
     const other = otherSlotOf(campaign.blocks, slot)
     if (other?.parentOrder == null || slot.parentOrder == null) return
-    const slotPageKind = pageKindOf(slot) ?? pageKind
-    const focus = selectedBlockId ?? slot.id
+    const focus = {
+      selectedBlockId: selectedBlockId ?? slot.id,
+      selectedRegionId: undefined
+    }
     const before: SwapParameters = {
       parentOrder: slot.parentOrder,
       rows: currentSiblings(campaign.blocks, slot)
@@ -63,20 +59,21 @@ export function useColumnSwapCommand(): {
       rows: reorderedSiblings(campaign.blocks, slot, other.parentOrder)
     }
 
-    add<SwapParameters>({
-      parameters: { execute: after, undo: before },
-      execute({ parentOrder, rows }) {
-        dispatch({
-          type: 'SetEditorFocusAction',
-          pageKind: slotPageKind,
-          selectedBlockId: focus
-        })
-        void orderUpdate({
-          variables: { id: slot.id, parentOrder },
-          optimisticResponse: { campaignBlockOrderUpdate: rows }
-        }).catch(reportFailure)
-      }
-    })
+    async function write({
+      parentOrder,
+      rows
+    }: SwapParameters): Promise<unknown> {
+      return await orderUpdate({
+        variables: { id: slot.id, parentOrder },
+        optimisticResponse: { campaignBlockOrderUpdate: rows }
+      })
+    }
+
+    addCampaignCommand({
+      focus: { execute: focus, undo: focus, redo: focus },
+      execute: async () => await write(after),
+      undo: async () => await write(before)
+    }).catch((error: unknown) => reportFailure(error))
   }
 
   return { addColumnSwap }

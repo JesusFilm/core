@@ -22,7 +22,10 @@ import {
 import { campaign } from './data'
 import { NavigatorHoverProvider } from './Navigator/NavigatorHover'
 import { TranslationRunProvider } from './TranslationRunProvider'
-import { textDebounceKey } from './utils/useCampaignTextCommand'
+import {
+  CampaignCommandProvider,
+  textDebounceKey
+} from './utils/useCampaignCommand'
 
 /** A cache that matches campaign fragments exactly, as the app's cache does. */
 export function campaignCache(): InMemoryCache {
@@ -128,7 +131,9 @@ function QueriedEditorInner({
       campaign={data.campaign}
       initialState={initialState}
     >
-      <NavigatorHoverProvider>{children}</NavigatorHoverProvider>
+      <CampaignCommandProvider>
+        <NavigatorHoverProvider>{children}</NavigatorHoverProvider>
+      </CampaignCommandProvider>
     </CampaignEditorProvider>
   )
 }
@@ -203,9 +208,11 @@ export function StaticEditor({
             campaign={campaignProp}
             initialState={initialState}
           >
-            <NavigatorHoverProvider>
-              <TranslationRunProvider>{children}</TranslationRunProvider>
-            </NavigatorHoverProvider>
+            <CampaignCommandProvider>
+              <NavigatorHoverProvider>
+                <TranslationRunProvider>{children}</TranslationRunProvider>
+              </NavigatorHoverProvider>
+            </CampaignCommandProvider>
           </CampaignEditorProvider>
         </CommandProvider>
       </SnackbarProvider>

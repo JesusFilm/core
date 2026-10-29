@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
-import { useCommand } from '@core/journeys/ui/CommandProvider'
-
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideoCarouselBlock
@@ -21,6 +19,7 @@ import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
 import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
+import { useCampaignCommand } from '../useCampaignCommand'
 
 type CampaignCarouselVideoInput =
   CampaignBlockUpdateInput<'CampaignVideoCarouselBlock'>
@@ -98,17 +97,15 @@ function remainingChildren(
  * video or upload, or a playlist's first 12 — is one Command that also
  * switches an expanded carousel to explicit mode so the items show. The
  * items are created once; undo soft-deletes them (and restores the Watch
- * video it replaced), redo restores the same rows. A refused change shows
- * the API's message and is retried by redo.
+ * video it replaced), redo restores the same rows. An undo pressed while the
+ * create is in flight waits for it, so it removes the items once they land.
+ * A refused create writes the Watch video back and shows the API's message;
+ * its undo sends nothing and redo runs the create again. The Campaign
+ * Command module reports a refused undo or redo in the snackbar.
  */
 export function useCampaignCarouselCommand(): CampaignCarouselCommand {
-  const { add } = useCommand()
-  const {
-    campaign,
-    state: { pageKind },
-    dispatch,
-    pageKindOf
-  } = useCampaignEditor()
+  const { addCampaignCommand } = useCampaignCommand()
+  const { campaign } = useCampaignEditor()
   const blocksRef = useRef(campaign.blocks)
   blocksRef.current = campaign.blocks
   const fieldsCommand = useCampaignBlockFieldsCommand()
@@ -150,62 +147,61 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
   ): void {
     fieldsCommand.clearError()
     setItemError(undefined)
-    const blockPageKind = pageKindOf(carousel) ?? pageKind
     const explicit: CampaignCarouselVideoInput = { videoId: null }
     const previous = previousFields(carousel, explicit)
     const wasExpanded = previous.videoId != null
-    let created: CampaignBlock[] | undefined
+    let created: CampaignBlock[] = []
 
-    function focus(): void {
-      dispatch({
-        type: 'SetEditorFocusAction',
-        pageKind: blockPageKind,
-        selectedBlockId: carousel.id
-      })
+    async function removeItems(): Promise<void> {
+      const removed = new Set<string>()
+      for (const block of created) {
+        removed.add(block.id)
+        await blockDelete({
+          variables: { id: block.id },
+          optimisticResponse: {
+            campaignBlockDelete: remainingChildren(
+              blocksRef.current,
+              carousel.id,
+              removed
+            )
+          }
+        })
+      }
     }
 
-    add({
-      parameters: { execute: {}, undo: {} },
-      execute() {
-        focus()
-        void (async () => {
-          if (wasExpanded) await update(carousel, explicit)
-          if (created == null) {
-            created = await create(carousel)
-            return
-          }
-          await Promise.all(
-            created.map(
-              async (block) =>
-                await blockRestore({
-                  variables: { id: block.id },
-                  optimisticResponse: { campaignBlockRestore: [block] }
-                })
-            )
-          )
-        })().catch((error: unknown) => setItemError(messageOf(error)))
-      },
-      undo() {
-        focus()
-        void (async () => {
-          const removed = new Set<string>()
-          for (const block of created ?? []) {
-            removed.add(block.id)
-            await blockDelete({
+    async function restoreItems(): Promise<void> {
+      await Promise.all(
+        created.map(
+          async (block) =>
+            await blockRestore({
               variables: { id: block.id },
-              optimisticResponse: {
-                campaignBlockDelete: remainingChildren(
-                  blocksRef.current,
-                  carousel.id,
-                  removed
-                )
-              }
+              optimisticResponse: { campaignBlockRestore: [block] }
             })
-          }
-          if (wasExpanded) await update(carousel, previous)
-        })().catch((error: unknown) => setItemError(messageOf(error)))
+        )
+      )
+    }
+
+    addCampaignCommand({
+      async execute() {
+        if (wasExpanded) await update(carousel, explicit)
+        try {
+          created = await create(carousel)
+        } catch (error) {
+          // The create's refusal is the one to report, not this write's.
+          if (wasExpanded)
+            await update(carousel, previous).catch(() => undefined)
+          throw error
+        }
+      },
+      async undo() {
+        await removeItems()
+        if (wasExpanded) await update(carousel, previous)
+      },
+      async redo() {
+        if (wasExpanded) await update(carousel, explicit)
+        await restoreItems()
       }
-    })
+    }).catch((error: unknown) => setItemError(messageOf(error)))
   }
 
   function addItem(

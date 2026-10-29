@@ -42,7 +42,10 @@ function CachedSettings(): ReactElement | null {
 
 function renderSettings(mocks: Array<Record<string, unknown>> = []): void {
   render(
-    <StaticEditor mocks={mocks}>
+    <StaticEditor
+      initialState={{ selectedBlockId: 'landingSwitcherId' }}
+      mocks={mocks}
+    >
       <CommandUndoItem variant="button" />
       <CommandProbe />
       <SelectionProbe />

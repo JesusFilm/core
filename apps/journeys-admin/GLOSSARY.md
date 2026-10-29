@@ -47,7 +47,7 @@ The Editor's top action bar: preview, share, access, analytics, undo/redo, templ
 _Avoid_: app bar, header
 
 **Command**:
-One undoable editing act. Every edit in the Editor is dispatched as a Command onto an undo/redo history; undo/redo operate on Commands, not raw mutations.
+One undoable editing act. Every edit in the Editor is dispatched as a Command onto an undo/redo history; undo/redo operate on Commands, not raw mutations. In the Campaign Editor a Command's undo and redo return to the page, selection and Preview Language it was made in, run in order behind any step still in flight, and report a refusal inline the first time and in the error snackbar on replay.
 _Avoid_: mutation (the transport, not the concept), action (an Action is a block behaviour upstream)
 
 **Social Preview**:
