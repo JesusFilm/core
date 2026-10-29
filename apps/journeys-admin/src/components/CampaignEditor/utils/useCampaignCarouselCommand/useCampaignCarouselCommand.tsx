@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
+import { TRANSLATED_FIELDS } from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
   GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideoCarouselBlock
 } from '../../../../../__generated__/GetCampaign'
-import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
 import {
   CampaignBlockUpdateInput,
   useCampaignBlockUpdateMutation
@@ -121,7 +122,7 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
       if (value == null || value.trim() === '') continue
       input[field] = fitCampaignText(
         value,
-        campaignTextCap('CampaignVideoCarouselBlock', field)
+        TRANSLATED_FIELDS.block.CampaignVideoCarouselBlock[field]
       )
     }
     fieldsCommand.addFields(carousel, input)

@@ -1,4 +1,3 @@
-import { MockedProvider } from '@apollo/client/testing/react'
 import {
   fireEvent,
   render,
@@ -8,7 +7,6 @@ import {
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { GraphQLError } from 'graphql'
-import { SnackbarProvider } from 'notistack'
 
 import { CampaignTextSource } from '../../../../__generated__/globalTypes'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
@@ -17,6 +15,7 @@ import { CAMPAIGN_REGION_COUNTRY_REMOVE } from '../../../libs/useCampaignRegionC
 import { CAMPAIGN_REGION_UPDATE } from '../../../libs/useCampaignRegionUpdateMutation'
 import { CAMPAIGN_TRANSLATION_SET } from '../../../libs/useCampaignTranslationSetMutation'
 import { eurRegion } from '../data'
+import { PreviewLanguageSwitch, StaticEditor } from '../testing'
 
 import { RegionSettings } from './RegionSettings'
 
@@ -188,12 +187,10 @@ const clearNameTranslationMock = {
   result: vi.fn(() => ({ data: { campaignTranslationSet: [] } }))
 }
 
-function renderSettings(
-  region = eurRegion,
-  translationLanguageId?: string
-): void {
+function renderSettings(region = eurRegion, previewLanguageId = '529'): void {
   render(
-    <MockedProvider
+    <StaticEditor
+      initialState={{ previewLanguageId }}
       mocks={
         [
           countriesMock,
@@ -208,13 +205,9 @@ function renderSettings(
         ] as never
       }
     >
-      <SnackbarProvider>
-        <RegionSettings
-          region={region}
-          translationLanguageId={translationLanguageId}
-        />
-      </SnackbarProvider>
-    </MockedProvider>
+      <PreviewLanguageSwitch languageIds={['529', '496']} />
+      <RegionSettings region={region} />
+    </StaticEditor>
   )
 }
 
@@ -292,6 +285,19 @@ describe('RegionSettings', () => {
       expect(renameMock.result).not.toHaveBeenCalled()
     })
 
+    it('drops an uncommitted name when the Preview Language changes', () => {
+      renderSettings(translated, '496')
+
+      const name = screen.getByRole('textbox', { name: 'Name' })
+      fireEvent.change(name, { target: { value: 'Europe de l’Ouest' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+      expect(name).toHaveValue('Europe')
+      expect(name).not.toHaveAttribute('placeholder')
+      expect(translateNameMock.result).not.toHaveBeenCalled()
+      expect(renameMock.result).not.toHaveBeenCalled()
+    })
+
     it('clears the translation when the name is emptied, instead of asking for a name', async () => {
       renderSettings(
         {
@@ -327,6 +333,7 @@ describe('RegionSettings', () => {
     fireEvent.blur(name)
 
     await waitFor(() => expect(renameMock.result).toHaveBeenCalled())
+    expect(translateNameMock.result).not.toHaveBeenCalled()
   })
 
   it('requires a name and caps it at 60 characters before saving', async () => {
@@ -355,7 +362,7 @@ describe('RegionSettings', () => {
     expect(slug).toHaveValue('europe')
   })
 
-  it("shows the API's slug and name messages verbatim under the field", async () => {
+  it("shows the API's slug and name messages verbatim under the field, on the refused value", async () => {
     renderSettings()
 
     const slug = screen.getByRole('textbox', { name: 'Slug' })
@@ -371,7 +378,7 @@ describe('RegionSettings', () => {
     expect(
       await screen.findByText('name must be at most 60 characters')
     ).toBeInTheDocument()
-    expect(name).toHaveValue('Europe')
+    expect(name).toHaveValue('Europe!')
   })
 
   it("adds a country chip picked from the languages API's countries", async () => {

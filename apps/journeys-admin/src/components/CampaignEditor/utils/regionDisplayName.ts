@@ -1,5 +1,6 @@
 import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
-import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
+
+import { previewFieldText } from './useTranslatedField/readPreviewField'
 
 /**
  * The region's name in the language being previewed: that language's
@@ -11,8 +12,10 @@ export function regionDisplayName(
   previewLanguageId: string,
   defaultLanguageId: string
 ): string {
-  if (previewLanguageId === defaultLanguageId) return region.name
-  return (
-    translationValue(region.nameTranslations, previewLanguageId) || region.name
-  )
+  return previewFieldText({
+    field: region.name,
+    translations: region.nameTranslations,
+    previewLanguageId,
+    defaultLanguageId
+  })
 }

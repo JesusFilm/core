@@ -1,11 +1,11 @@
 export {
-  CAMPAIGN_TEXT_CAPS,
   CAMPAIGN_TEXT_FIELDS,
   campaignTextInputKey,
-  campaignTextCap,
   blockTranslations,
+  editorTextField,
   isCampaignTextBlock,
   primaryTextField,
+  translatedBlockFields,
   translationValue,
   withTranslationValue
 } from './campaignTextFields'

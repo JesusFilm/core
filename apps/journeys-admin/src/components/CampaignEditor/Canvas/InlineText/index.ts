@@ -1,1 +1,1 @@
-export { InlineText, textLength } from './InlineText'
+export { InlineText } from './InlineText'

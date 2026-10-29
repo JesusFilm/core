@@ -1,70 +1,73 @@
+import {
+  TRANSLATED_FIELDS,
+  type TranslatedBlockField,
+  type TranslatedBlockTypename,
+  isTranslated,
+  translatedFieldsOf
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../__generated__/GetCampaign'
 import { CampaignTextSource } from '../../../__generated__/globalTypes'
 
-/** Every inline-editable default-language text column of a campaign block. */
-export type CampaignTextField =
-  | 'content'
-  | 'label'
-  | 'eyebrow'
-  | 'title'
-  | 'description'
-  | 'intro'
-  | 'richTextContent'
-  | 'bullets'
+/**
+ * The block typenames whose text is typed in place on the canvas: every
+ * block with text but an image (its alt) and a carousel card (its title and
+ * description), which are edited in their panels.
+ */
+type InlineTextTypename = Exclude<
+  TranslatedBlockTypename,
+  'CampaignImageBlock' | 'CampaignVideoBlock'
+>
 
-/** PRD §15 text caps, mirrored for the editor's pure pre-validation. */
-export const CAMPAIGN_TEXT_CAPS: Record<CampaignTextField, number> = {
-  content: 2000,
-  label: 60,
-  eyebrow: 80,
-  title: 150,
-  description: 500,
-  intro: 500,
-  richTextContent: 5000,
-  bullets: 1000
+/** A block's text field under the name the editor reads it by (see `editorTextField`). */
+type EditorTextField<T> = T extends TranslatedBlockTypename
+  ? T extends 'CampaignRichTextBlock'
+    ? Exclude<TranslatedBlockField<T>, 'content'> | 'richTextContent'
+    : TranslatedBlockField<T>
+  : never
+
+/**
+ * The name the editor reads a block's text field by. Rich text `content` is
+ * read as `richTextContent` because the public fragment aliases it away from
+ * the Typography block's `content`.
+ */
+export function editorTextField(typename: string, field: string): string {
+  return typename === 'CampaignRichTextBlock' && field === 'content'
+    ? 'richTextContent'
+    : field
 }
 
 /**
- * The API input key a text field is written under. Rich text `content` is
- * read as `richTextContent` because the public fragment aliases it away
- * from the Typography block's `content`.
+ * Every Translated Field of a block typename as the editor's block holds it,
+ * in render order; none for a typename without text.
  */
-export function campaignTextInputKey(field: CampaignTextField): string {
+export function translatedBlockFields(typename: string): string[] {
+  return Object.keys(translatedFieldsOf({ kind: 'block', typename })).map(
+    (field) => editorTextField(typename, field)
+  )
+}
+
+const PANEL_TEXT_TYPENAMES: readonly string[] = [
+  'CampaignImageBlock',
+  'CampaignVideoBlock'
+] satisfies Array<Exclude<TranslatedBlockTypename, InlineTextTypename>>
+
+/** The inline text fields each typename carries, in render order, from the Translated Field declaration. */
+export const CAMPAIGN_TEXT_FIELDS = Object.fromEntries<readonly string[]>(
+  Object.keys(TRANSLATED_FIELDS.block)
+    .filter((typename) => !PANEL_TEXT_TYPENAMES.includes(typename))
+    .map((typename) => [typename, translatedBlockFields(typename)])
+) as {
+  readonly [T in InlineTextTypename]: ReadonlyArray<EditorTextField<T>>
+}
+
+/** Every inline-editable default-language text column of a campaign block. */
+export type CampaignTextField = EditorTextField<InlineTextTypename>
+
+/** The API input key a block's text field is written under (see `editorTextField`). */
+export function campaignTextInputKey(field: string): string {
   return field === 'richTextContent' ? 'content' : field
 }
-
-/**
- * The cap of a field on a given typename where it differs from the field's
- * default: a journey card's title holds 200 characters and its description
- * 1000, a section's 150 and 500.
- */
-export function campaignTextCap(
-  typename: CampaignTextTypename,
-  field: CampaignTextField
-): number {
-  if (typename === 'CampaignJourneyBlock' && field === 'title') return 200
-  if (typename === 'CampaignJourneyBlock' && field === 'description')
-    return 1000
-  return CAMPAIGN_TEXT_CAPS[field]
-}
-
-/** The text fields each typename carries, in render order. */
-export const CAMPAIGN_TEXT_FIELDS = {
-  CampaignTypographyBlock: ['content'],
-  CampaignButtonBlock: ['label'],
-  CampaignHeroBlock: ['eyebrow', 'title', 'description'],
-  CampaignRegionSwitcherBlock: ['title'],
-  CampaignVideoCarouselBlock: ['eyebrow', 'title', 'description'],
-  CampaignJourneyListBlock: ['eyebrow', 'title', 'description'],
-  CampaignJourneyBlock: ['title', 'description'],
-  CampaignAnalyticsBlock: ['eyebrow', 'title'],
-  CampaignRegionHeaderBlock: ['intro'],
-  CampaignRegionShareBlock: ['title', 'intro'],
-  CampaignRichTextBlock: ['title', 'richTextContent'],
-  CampaignFeaturedMediaBlock: ['eyebrow', 'title', 'description', 'bullets']
-} as const satisfies Partial<
-  Record<CampaignBlock['__typename'], readonly CampaignTextField[]>
->
 
 export type CampaignTextTypename = keyof typeof CAMPAIGN_TEXT_FIELDS
 
@@ -106,15 +109,15 @@ export function blockTranslations(
   return Array.isArray(list) ? (list as CampaignTranslatedValue[]) : []
 }
 
-/** The stored translation of a field in one language, or empty when there is none. */
+/** The stored translation of a field in one language, or empty when it is not translated there. */
 export function translationValue(
   translations: readonly CampaignTranslatedValue[],
   languageId: string
 ): string {
-  return (
-    translations.find((translation) => translation.languageId === languageId)
-      ?.value ?? ''
+  const entry = translations.find(
+    (translation) => translation.languageId === languageId
   )
+  return isTranslated(entry) ? entry.value : ''
 }
 
 /**
@@ -130,14 +133,11 @@ export function withTranslationValue(
   const others = translations.filter(
     (translation) => translation.languageId !== languageId
   )
-  if (value === '') return others
-  return [
-    ...others,
-    {
-      __typename: 'TranslatedValue',
-      languageId,
-      value,
-      source: CampaignTextSource.human
-    }
-  ]
+  const entry: CampaignTranslatedValue = {
+    __typename: 'TranslatedValue',
+    languageId,
+    value,
+    source: CampaignTextSource.human
+  }
+  return isTranslated(entry) ? [...others, entry] : others
 }

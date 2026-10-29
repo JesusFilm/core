@@ -5,6 +5,10 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
 import { campaignStringKeysFor } from '@core/journeys/ui/Campaign/libs/campaignStrings'
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 
 import {
   GetCampaign_campaign_blocks as CampaignBlock,
@@ -12,10 +16,6 @@ import {
 } from '../../../../__generated__/GetCampaign'
 import { CampaignStringKey } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import {
-  CAMPAIGN_STRING_CAP,
-  textLength
-} from '../Canvas/InlineText/InlineText'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 
 type Translate = (key: string) => string
@@ -83,10 +83,12 @@ function WordingField({ string }: WordingFieldProps): ReactElement {
       onFocus={handleFocus}
       onBlur={handleBlur}
       error={error != null}
-      helperText={error ?? `${textLength(value)} / ${CAMPAIGN_STRING_CAP}`}
+      helperText={
+        error ?? `${textLength(value)} / ${TRANSLATED_FIELDS.string.value}`
+      }
       slotProps={{
         htmlInput: {
-          maxLength: CAMPAIGN_STRING_CAP,
+          maxLength: TRANSLATED_FIELDS.string.value,
           'data-testid': `WordingField-${string.key}`
         },
         formHelperText: error != null ? { role: 'alert' } : undefined

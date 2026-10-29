@@ -7,38 +7,24 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import {
-  FocusEvent,
-  KeyboardEvent,
-  ReactElement,
-  useEffect,
-  useState
-} from 'react'
+import { KeyboardEvent, ReactElement, useState } from 'react'
+
+import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 
 import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
-import { CampaignTextField } from '../../../../__generated__/globalTypes'
-import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQuery'
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
-import { textLength } from '../Canvas/InlineText'
 import { shapeSlug } from '../Settings'
-import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
+import { useCommittedField } from '../utils/useCommittedField'
+import { useTranslatedField } from '../utils/useTranslatedField'
 
-export const REGION_NAME_MAX_LENGTH = 60
 const SLUG_MAX_LENGTH = 200
-
-type RegionField = 'name' | 'slug' | 'countryId'
 
 interface RegionSettingsProps {
   region: CampaignRegion
-  /**
-   * The non-default campaign language being previewed: the name then reads
-   * and writes that language's translation. Absent for the default language.
-   */
-  translationLanguageId?: string
 }
 
 function countryName(country: Pick<Country, 'id' | 'name'>): string {
@@ -61,56 +47,55 @@ function fieldErrorOf(
 
 /**
  * Region settings: the name and slug saved through `campaignRegionUpdate`
- * as each field commits (the name through `campaignTranslationSet` while
- * previewing a non-default language, where clearing it falls back to the
- * default name), and the country chips picked from api-languages'
- * countries, added and removed one row at a time. Never Commands, so undo
- * does not touch them; the only pre-validation is the pure length rule and
- * the API's own messages are shown verbatim under the field that failed.
+ * as each field commits (the name, in the Preview Language, through
+ * `campaignTranslationSet` while previewing a non-default language, where
+ * clearing it falls back to the default name), and the country chips picked
+ * from api-languages' countries, added and removed one row at a time. Never
+ * Commands, so undo does not touch them; the only pre-validation is the pure
+ * length rule and the API's own messages are shown verbatim under the field
+ * that failed.
  */
-export function RegionSettings({
-  region,
-  translationLanguageId
-}: RegionSettingsProps): ReactElement {
+export function RegionSettings({ region }: RegionSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
-  const committedName =
-    translationLanguageId == null
-      ? region.name
-      : translationValue(region.nameTranslations, translationLanguageId)
-  const [name, setName] = useState(committedName)
-  const [slug, setSlug] = useState(region.slug)
-  const [errors, setErrors] = useState<Partial<Record<RegionField, string>>>({})
+  const [countryError, setCountryError] = useState<string>()
   const [regionUpdate] = useCampaignRegionUpdateMutation()
   const [countryAdd] = useCampaignRegionCountryAddMutation()
   const [countryRemove] = useCampaignRegionCountryRemoveMutation()
-  const writeTranslation = useCampaignTranslationWrite()
   const { data: countriesData, loading: countriesLoading } =
     useCampaignCountriesQuery()
   const countries = countriesData?.countries ?? []
   const chosen = [...region.countries].sort((a, b) => a.order - b.order)
   const chosenIds = new Set(chosen.map((country) => country.countryId))
-
-  useEffect(() => {
-    setName(committedName)
-  }, [committedName])
-  useEffect(() => {
-    setSlug(region.slug)
-  }, [region.slug])
-
-  function setFieldError(field: RegionField, message?: string): void {
-    setErrors((previous) => ({ ...previous, [field]: message }))
-  }
+  const name = useTranslatedField(
+    { region },
+    {
+      validate: (value, translating) =>
+        value === '' && !translating ? t('Name is required') : undefined
+    }
+  )
+  const slug = useCommittedField({
+    committed: region.slug,
+    normalize: (typed) => typed.replace(/-+$/, ''),
+    validate: (value) => {
+      if (value === '') return t('Slug is required')
+      if (textLength(value) > SLUG_MAX_LENGTH)
+        return t('Max {{max}} characters', { max: SLUG_MAX_LENGTH })
+      return undefined
+    },
+    save: saveSlug,
+    onRefused: (error) => {
+      const fieldError = fieldErrorOf(error)
+      if (fieldError?.field === 'slug') return fieldError.message
+      showError(error, t('Could not save region'))
+      return undefined
+    }
+  })
 
   function showError(error: unknown, fallback: string): void {
     const fieldError = fieldErrorOf(error)
-    if (
-      fieldError != null &&
-      (fieldError.field === 'name' ||
-        fieldError.field === 'slug' ||
-        fieldError.field === 'countryId')
-    ) {
-      setFieldError(fieldError.field, fieldError.message)
+    if (fieldError?.field === 'countryId') {
+      setCountryError(fieldError.message)
       return
     }
     enqueueSnackbar(error instanceof Error ? error.message : fallback, {
@@ -119,68 +104,24 @@ export function RegionSettings({
     })
   }
 
-  function preValidate(
-    field: 'name' | 'slug',
-    value: string
-  ): string | undefined {
-    if (value === '' && !(field === 'name' && translationLanguageId != null))
-      return field === 'name' ? t('Name is required') : t('Slug is required')
-    const max = field === 'name' ? REGION_NAME_MAX_LENGTH : SLUG_MAX_LENGTH
-    if ([...value].length > max) return t('Max {{max}} characters', { max })
-    return undefined
-  }
-
-  async function save(field: 'name' | 'slug', rawValue: string): Promise<void> {
-    const value =
-      field === 'slug' ? rawValue.replace(/-+$/, '') : rawValue.trim()
-    if (field === 'slug') setSlug(value)
-    const committed = field === 'name' ? committedName : region.slug
-    if (value === committed) {
-      setFieldError(field, undefined)
-      return
-    }
-    const message = preValidate(field, value)
-    if (message != null) {
-      setFieldError(field, message)
-      return
-    }
-    try {
-      if (field === 'name' && translationLanguageId != null) {
-        await writeTranslation({
-          campaignId: region.campaignId,
-          row: region,
-          target: { regionId: region.id },
-          field: CampaignTextField.name,
-          languageId: translationLanguageId,
-          value,
-          translations: region.nameTranslations
-        })
-        setFieldError(field, undefined)
-        return
-      }
-      await regionUpdate({
-        variables: { id: region.id, input: { [field]: value } },
-        optimisticResponse: {
-          campaignRegionUpdate: {
-            __typename: 'CampaignRegion',
-            id: region.id,
-            name: field === 'name' ? value : region.name,
-            slug: field === 'slug' ? value : region.slug,
-            listed: region.listed
-          }
+  async function saveSlug(value: string): Promise<void> {
+    await regionUpdate({
+      variables: { id: region.id, input: { slug: value } },
+      optimisticResponse: {
+        campaignRegionUpdate: {
+          __typename: 'CampaignRegion',
+          id: region.id,
+          name: region.name,
+          slug: value,
+          listed: region.listed
         }
-      })
-      setFieldError(field, undefined)
-    } catch (error) {
-      showError(error, t('Could not save region'))
-      if (field === 'name') setName(committedName)
-      if (field === 'slug') setSlug(region.slug)
-    }
+      }
+    })
   }
 
   async function handleAddCountry(country: Country | null): Promise<void> {
     if (country == null || chosenIds.has(country.id)) return
-    setFieldError('countryId', undefined)
+    setCountryError(undefined)
     try {
       await countryAdd({
         variables: { regionId: region.id, countryId: country.id },
@@ -208,7 +149,7 @@ export function RegionSettings({
   async function handleRemoveCountry(
     country: CampaignRegion['countries'][number]
   ): Promise<void> {
-    setFieldError('countryId', undefined)
+    setCountryError(undefined)
     try {
       await countryRemove({
         variables: { id: country.id },
@@ -233,37 +174,28 @@ export function RegionSettings({
     <Stack spacing={5} data-testid="RegionSettings">
       <TextField
         label={t('Name')}
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        onBlur={(event: FocusEvent<HTMLInputElement>) => {
-          void save('name', event.target.value)
-        }}
+        value={name.value}
+        onChange={(event) => name.onChange(event.target.value)}
+        onBlur={name.onBlur}
         onKeyDown={handleKeyDown}
-        placeholder={translationLanguageId == null ? undefined : region.name}
-        error={errors.name != null}
-        helperText={
-          errors.name ?? `${textLength(name)} / ${REGION_NAME_MAX_LENGTH}`
-        }
-        required={translationLanguageId == null}
+        placeholder={name.translating ? name.fallback : undefined}
+        error={name.error != null}
+        helperText={name.error ?? `${textLength(name.value)} / ${name.max}`}
+        required={!name.translating}
         fullWidth
         slotProps={{
-          htmlInput: {
-            'aria-label': t('Name'),
-            maxLength: REGION_NAME_MAX_LENGTH + 1
-          }
+          htmlInput: { 'aria-label': t('Name') }
         }}
       />
       <TextField
         label={t('Slug')}
-        value={slug}
-        onChange={(event) => setSlug(shapeSlug(event.target.value))}
-        onBlur={(event: FocusEvent<HTMLInputElement>) => {
-          void save('slug', event.target.value)
-        }}
+        value={slug.value}
+        onChange={(event) => slug.onChange(shapeSlug(event.target.value))}
+        onBlur={slug.onBlur}
         onKeyDown={handleKeyDown}
-        error={errors.slug != null}
+        error={slug.error != null}
         helperText={
-          errors.slug ?? (
+          slug.error ?? (
             <>
               <Box component="span" sx={{ display: 'block' }}>
                 {t(
@@ -271,7 +203,7 @@ export function RegionSettings({
                 )}
               </Box>
               <Box component="span" sx={{ display: 'block' }}>
-                {`${textLength(slug)} / ${SLUG_MAX_LENGTH}`}
+                {`${textLength(slug.value)} / ${SLUG_MAX_LENGTH}`}
               </Box>
             </>
           )
@@ -328,9 +260,9 @@ export function RegionSettings({
             <TextField
               {...params}
               label={t('Add country')}
-              error={errors.countryId != null}
+              error={countryError != null}
               helperText={
-                errors.countryId ??
+                countryError ??
                 t('Country chips show on the region card with their flag.')
               }
             />

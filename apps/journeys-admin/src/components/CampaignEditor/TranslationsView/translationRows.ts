@@ -10,10 +10,12 @@ import {
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
 import {
-  CAMPAIGN_TEXT_FIELDS,
-  isCampaignTextBlock
+  CampaignTranslatedValue,
+  editorTextField,
+  translatedBlockFields
 } from '../../../libs/useCampaignBlockTextMutation'
 import type { CampaignSelection } from '../CampaignEditorProvider'
+import type { CampaignTranslationTarget } from '../utils/useCampaignTranslationWrite'
 
 /** The Translations view's sections, in display order. */
 export const TRANSLATION_GROUPS: CampaignTranslationGroup[] = [
@@ -124,22 +126,6 @@ export function rowMatchesSelection(
   return selection.kind === 'campaign'
 }
 
-type CampaignBlock = Campaign['blocks'][number]
-
-/** Translated text a block carries beyond inline text: a carousel card's title and description, an image's alt text. */
-const MEDIA_TEXT_FIELDS: Partial<
-  Record<CampaignBlock['__typename'], readonly string[]>
-> = {
-  CampaignVideoBlock: ['title', 'description'],
-  CampaignImageBlock: ['alt']
-}
-
-/** Every translated default-language text field of a block, as the API lists them. */
-function translatedFields(block: CampaignBlock): readonly string[] {
-  if (isCampaignTextBlock(block)) return CAMPAIGN_TEXT_FIELDS[block.__typename]
-  return MEDIA_TEXT_FIELDS[block.__typename] ?? []
-}
-
 /**
  * Everything that decides which lines the Translations list has and what
  * they translate: each block's place and every translated default-language
@@ -161,7 +147,7 @@ export function campaignTextSignature(
       block.parentOrder,
       block.pageId,
       block.regionId,
-      translatedFields(block).map(
+      translatedBlockFields(block.__typename).map(
         (field) => (block as unknown as Record<string, unknown>)[field]
       )
     ]),
@@ -171,14 +157,42 @@ export function campaignTextSignature(
 }
 
 /** The `campaignTranslationSet` target input for a row. */
-export function targetInput(target: TranslationTarget): {
-  blockId?: string
-  regionId?: string
-  stringId?: string
-  campaignId?: string
-} {
+export function targetInput(
+  target: TranslationTarget
+): CampaignTranslationTarget {
   if (target.blockId != null) return { blockId: target.blockId }
   if (target.regionId != null) return { regionId: target.regionId }
   if (target.stringId != null) return { stringId: target.stringId }
-  return { campaignId: target.campaignId ?? undefined }
+  return { campaignId: target.campaignId ?? '' }
+}
+
+/**
+ * A row's `<field>Translations` list as the editor's campaign holds it,
+ * every language included, for a write to merge its one entry into; empty
+ * when the campaign no longer holds the row.
+ */
+export function rowTranslations(
+  campaign: Pick<
+    Campaign,
+    'blocks' | 'regions' | 'strings' | 'titleTranslations'
+  >,
+  row: Pick<TranslationRow, 'target' | 'field'>
+): CampaignTranslatedValue[] {
+  const { target, field } = row
+  let holder: object | undefined = campaign
+  let column: string = field
+  if (target.blockId != null) {
+    const block = campaign.blocks.find(
+      (candidate) => candidate.id === target.blockId
+    )
+    holder = block
+    if (block != null) column = editorTextField(block.__typename, field)
+  } else if (target.regionId != null)
+    holder = campaign.regions.find((region) => region.id === target.regionId)
+  else if (target.stringId != null)
+    holder = campaign.strings.find((string) => string.id === target.stringId)
+  const list = (holder as Record<string, unknown> | undefined)?.[
+    `${column}Translations`
+  ]
+  return Array.isArray(list) ? (list as CampaignTranslatedValue[]) : []
 }

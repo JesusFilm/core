@@ -10,11 +10,18 @@ import {
   writeCachedTranslation
 } from '../../../../libs/useCampaignTranslationsQuery'
 
+/** The row a translation is written on, as `campaignTranslationSet`'s target input names it. */
+export type CampaignTranslationTarget =
+  | { blockId: string }
+  | { regionId: string }
+  | { stringId: string }
+  | { campaignId: string }
+
 export interface CampaignTranslationWrite {
   campaignId: string
   /** The cached row the translation belongs to. */
   row: { __typename: string; id: string }
-  target: { blockId: string } | { regionId: string } | { stringId: string }
+  target: CampaignTranslationTarget
   field: CampaignTextField
   /** The campaign language being previewed; never the default. */
   languageId: string

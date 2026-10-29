@@ -5,11 +5,13 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyBlock as CampaignJourneyBlock } from '../../../../__generated__/GetCampaign'
-import { campaignTextCap } from '../../../libs/useCampaignBlockTextMutation'
-import { textLength } from '../Canvas/InlineText'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 import { useJourneyCardSnapshotRefreshCommand } from '../utils/useJourneyCardSnapshotRefreshCommand'
 
@@ -27,7 +29,7 @@ function SnapshotField({
   label,
   multiline = false
 }: SnapshotFieldProps): ReactElement {
-  const max = campaignTextCap(block.__typename, field)
+  const max = TRANSLATED_FIELDS.block.CampaignJourneyBlock[field]
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand({ block, field })
 

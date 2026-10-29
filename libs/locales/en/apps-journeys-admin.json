@@ -1525,7 +1525,6 @@
   "Use as background": "Use as background",
   "Picture": "Picture",
   "Alt text": "Alt text",
-  "Alt text must be at most 500 characters": "Alt text must be at most 500 characters",
   "Read aloud by screen readers; shown when the picture fails.": "Read aloud by screen readers; shown when the picture fails.",
   "No logo: the campaign title shows as the brand mark.": "No logo: the campaign title shows as the brand mark.",
   "Replace logo": "Replace logo",
@@ -1756,5 +1755,6 @@
   "Leave the editor?": "Leave the editor?",
   "Stay": "Stay",
   "Leave": "Leave",
-  "The translation into {{language}} stops.": "The translation into {{language}} stops."
+  "The translation into {{language}} stops.": "The translation into {{language}} stops.",
+  "Alt text must be at most {{max}} characters": "Alt text must be at most {{max}} characters"
 }

@@ -10,7 +10,7 @@ import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMut
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign, withEmptyTranslations } from '../data'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, PreviewLanguageSwitch, QueriedEditor } from '../testing'
 
 import { CarouselCardEdit } from './CarouselCardEdit'
 
@@ -84,6 +84,7 @@ function renderEdit(
     >
       <CommandUndoItem variant="button" />
       <CommandProbe />
+      <PreviewLanguageSwitch languageIds={['529', '496']} />
       <CachedCardEdit />
     </QueriedEditor>
   )
@@ -112,6 +113,38 @@ describe('CarouselCardEdit', () => {
 
     await waitFor(() => expect(update.result).toHaveBeenCalled())
     expect(translation.result).not.toHaveBeenCalled()
+  })
+
+  it('counts an emoji in the title once, as the API does', async () => {
+    renderEdit([])
+
+    const title = await screen.findByRole('textbox', { name: 'Title' })
+    expect(screen.getByText('25 / 200')).toBeInTheDocument()
+    fireEvent.change(title, { target: { value: 'Outreach 👋' } })
+
+    expect(screen.getByText('10 / 200')).toBeInTheDocument()
+  })
+
+  it('does not save a title over its cap', async () => {
+    const update = {
+      request: {
+        query: CAMPAIGN_VIDEO_BLOCK_UPDATE,
+        variables: { id: 'cardId', input: { title: 'x'.repeat(201) } }
+      },
+      result: vi.fn(() => ({
+        data: { campaignVideoBlockUpdate: { ...card, title: 'x'.repeat(201) } }
+      }))
+    }
+    renderEdit([update as never])
+
+    const title = await screen.findByRole('textbox', { name: 'Title' })
+    fireEvent.change(title, { target: { value: 'x'.repeat(201) } })
+    expect(screen.getByText('201 / 200')).toBeInTheDocument()
+    fireEvent.blur(title)
+
+    expect(screen.getByText('Max 200 characters')).toBeInTheDocument()
+    expect(title).toHaveAttribute('aria-invalid', 'true')
+    await waitFor(() => expect(update.result).not.toHaveBeenCalled())
   })
 
   it('shows the previewed language’s translations with the default text as the placeholder', async () => {
@@ -177,5 +210,17 @@ describe('CarouselCardEdit', () => {
 
     await waitFor(() => expect(translation.result).toHaveBeenCalled())
     await waitFor(() => expect(title).toHaveValue(''))
+  })
+
+  it('drops an uncommitted draft when the Preview Language changes', async () => {
+    renderEdit([], '496')
+
+    const field = await screen.findByRole('textbox', { name: 'Title' })
+    fireEvent.change(field, { target: { value: 'Campagne dans le monde' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+    await waitFor(() => expect(field).toHaveValue('Outreach around the world'))
+    expect(field).not.toHaveAttribute('placeholder')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 })

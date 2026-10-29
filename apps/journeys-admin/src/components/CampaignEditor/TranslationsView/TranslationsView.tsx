@@ -367,7 +367,6 @@ export function TranslationsView({
                     row={row}
                     languageId={languageId}
                     bcp47={bcp47}
-                    queryVariables={queryVariables}
                     selected={rowMatchesSelection(row, selection, campaign)}
                     onReveal={() => handleReveal(row)}
                   />

@@ -11,7 +11,7 @@ import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignWithColumns, withEmptyTranslations } from '../data'
 import { blockUpdateMock } from '../styleTesting'
-import { CommandProbe, QueriedEditor } from '../testing'
+import { CommandProbe, PreviewLanguageSwitch, QueriedEditor } from '../testing'
 
 import { ImageSectionEdit } from './ImageSectionEdit'
 
@@ -88,6 +88,7 @@ function renderEdit(
     >
       <CommandUndoItem variant="button" />
       <CommandProbe />
+      <PreviewLanguageSwitch languageIds={['529', '496']} />
       <CachedImageEdit />
     </QueriedEditor>
   )
@@ -118,6 +119,15 @@ describe('ImageSectionEdit', () => {
     fireEvent.change(alt, { target: { value: 'Readers' } })
 
     expect(screen.getByText('7 / 500')).toBeInTheDocument()
+  })
+
+  it('counts an emoji in the alt text once, as the API does', async () => {
+    renderEdit([])
+
+    const alt = await screen.findByRole('textbox', { name: 'Alt text' })
+    fireEvent.change(alt, { target: { value: 'Readers 👋🏽' } })
+
+    expect(screen.getByText('10 / 500')).toBeInTheDocument()
   })
 
   it('shows the previewed language’s alt translation with the default text as the placeholder', async () => {
@@ -184,5 +194,17 @@ describe('ImageSectionEdit', () => {
       'alt must be at most 500 characters'
     )
     expect(alt).toHaveValue('Une famille qui lit')
+  })
+
+  it('drops an uncommitted draft when the Preview Language changes', async () => {
+    renderEdit([], '496')
+
+    const field = await screen.findByRole('textbox', { name: 'Alt text' })
+    fireEvent.change(field, { target: { value: 'Lecture en famille' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Preview 529' }))
+
+    await waitFor(() => expect(field).toHaveValue('A family reading together'))
+    expect(field).not.toHaveAttribute('placeholder')
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
   })
 })

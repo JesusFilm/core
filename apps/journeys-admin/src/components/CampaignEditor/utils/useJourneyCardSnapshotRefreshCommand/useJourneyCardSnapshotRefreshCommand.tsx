@@ -2,6 +2,11 @@ import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
 import { ReactElement, useState } from 'react'
 
+import {
+  TEXT_CAPS,
+  truncate
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { IdType } from '../../../../../__generated__/globalTypes'
 import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBlockUpdateMutation'
@@ -22,25 +27,21 @@ interface SnapshotText {
   description: string | null
 }
 
-/** The caps the API cuts a snapshot to, so an untouched card compares equal to its journey. */
-const TITLE_CAP = 200
-const DESCRIPTION_CAP = 1000
-
-function cut(value: string, max: number): string {
-  return [...value].slice(0, max).join('')
-}
-
-/** The default-language values the API would snapshot from a journey. */
+/**
+ * The default-language values the API would snapshot from a journey: cut to
+ * the caps it cuts a snapshot to, so an untouched card compares equal to its
+ * journey.
+ */
 export function snapshotOf(journey: {
   title: string
   description?: string | null
 }): SnapshotText {
   return {
-    title: cut(journey.title, TITLE_CAP),
+    title: truncate(journey.title, TEXT_CAPS.journeyTitle),
     description:
       journey.description == null
         ? null
-        : cut(journey.description, DESCRIPTION_CAP)
+        : truncate(journey.description, TEXT_CAPS.journeyDescription)
   }
 }
 

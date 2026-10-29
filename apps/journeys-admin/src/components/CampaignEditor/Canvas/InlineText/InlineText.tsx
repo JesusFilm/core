@@ -10,16 +10,19 @@ import {
   useState
 } from 'react'
 
-import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
+import {
+  TRANSLATED_FIELDS,
+  textLength,
+  translatedFieldCap
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
+import { campaignTextInputKey } from '../../../../libs/useCampaignBlockTextMutation'
 import { InlineEditInput } from '../../../Editor/Slider/Content/Canvas/InlineEditWrapper/InlineEditInput'
 import { useCampaignTextCommand } from '../../utils/useCampaignTextCommand'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
 /** Show the character counter once this share of the cap is used. */
 const COUNTER_THRESHOLD = 0.8
-
-/** `CampaignString.value` cap (PRD §15). */
-export const CAMPAIGN_STRING_CAP = 200
 
 interface InlineTextProps
   extends Pick<TypographyProps, 'variant' | 'component' | 'align' | 'sx'> {
@@ -41,9 +44,15 @@ interface InlineTextProps
   autoWidth?: boolean
 }
 
-/** Count text the way the API does: Unicode code points after trim. */
-export function textLength(value: string): number {
-  return [...value.trim()].length
+/** The cap of an inline text, from the Translated Field declaration, which declares every inline text field. */
+export function inlineTextCap(target: CampaignTextTarget): number {
+  if (target.string != null) return TRANSLATED_FIELDS.string.value
+  return (
+    translatedFieldCap(
+      { kind: 'block', typename: target.block.__typename },
+      campaignTextInputKey(target.field)
+    ) ?? 0
+  )
 }
 
 export function inlineTextTestId(target: CampaignTextTarget): string {
@@ -76,10 +85,7 @@ export function InlineText({
   autoWidth = false
 }: InlineTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const max =
-    target.string != null
-      ? CAMPAIGN_STRING_CAP
-      : campaignTextCap(target.block.__typename, target.field)
+  const max = inlineTextCap(target)
   const { value, fallback, error, handleChange, handleFocus, handleBlur } =
     useCampaignTextCommand(target)
   const [overLength, setOverLength] = useState(false)

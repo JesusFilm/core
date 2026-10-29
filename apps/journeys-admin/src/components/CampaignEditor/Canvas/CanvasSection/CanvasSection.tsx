@@ -51,8 +51,7 @@ import {
   CampaignTextBlock,
   CampaignTextField,
   blockTranslations,
-  isCampaignTextBlock,
-  translationValue
+  isCampaignTextBlock
 } from '../../../../libs/useCampaignBlockTextMutation'
 import { AnalyticsEdit } from '../../AnalyticsEdit'
 import { blockLabel } from '../../blockLabel'
@@ -63,6 +62,7 @@ import { ShareSectionEdit } from '../../ShareSectionEdit'
 import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
 import { regionDisplayName } from '../../utils/regionDisplayName'
 import { regionLineColor } from '../../utils/regionLineColor'
+import { previewFieldText } from '../../utils/useTranslatedField/readPreviewField'
 import { CanvasCarousel } from '../CanvasCarousel'
 import { CanvasColumnSlot } from '../CanvasColumnSlot'
 import { CanvasMedia } from '../CanvasMedia'
@@ -343,14 +343,12 @@ function CanvasRegionHeading({
       <CampaignRegionName>{name}</CampaignRegionName>
       {lines.map((line) => {
         if (line.__typename !== 'CampaignTypographyBlock') return null
-        const content =
-          previewLanguageId === defaultLanguageId
-            ? (line.content ?? '')
-            : translationValue(
-                blockTranslations(line, 'content'),
-                previewLanguageId
-              ) ||
-              (line.content ?? '')
+        const content = previewFieldText({
+          field: line.content,
+          translations: blockTranslations(line, 'content'),
+          previewLanguageId,
+          defaultLanguageId
+        })
         if (content.trim() === '') return null
         const variant = line.typographyVariant ?? TypographyVariant.body1
         return (
