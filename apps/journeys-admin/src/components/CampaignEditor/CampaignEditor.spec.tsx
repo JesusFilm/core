@@ -24,6 +24,7 @@ import {
   CampaignTranslationFilter,
   ThemeMode
 } from '../../../__generated__/globalTypes'
+import { hasPendingDebouncedWrites } from '../../libs/apolloClient'
 import { GET_CAMPAIGN } from '../../libs/useCampaignQuery'
 import { CAMPAIGN_TRANSLATIONS } from '../../libs/useCampaignTranslationsQuery'
 import { CAMPAIGN_UPDATE } from '../../libs/useCampaignUpdateMutation'
@@ -41,6 +42,10 @@ import { campaignCache, frameBody } from './testing'
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
   default: vi.fn()
+}))
+
+vi.mock('../../libs/apolloClient', () => ({
+  hasPendingDebouncedWrites: vi.fn(() => false)
 }))
 
 vi.mock('next/router', () => ({
@@ -651,18 +656,22 @@ describe('CampaignEditor', () => {
     renderEditor()
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
-    expect(
-      await screen.findByRole('button', { name: 'Delete campaign' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Delete campaign' })
+      ).toBeEnabled()
+    )
   })
 
   it('recognises the manager by email, as me.id is the users-table uuid and the team user id the Firebase uid', async () => {
     renderEditorAs({ id: 'users-table-uuid', email: 'test@example.com' })
 
     fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
-    expect(
-      await screen.findByRole('button', { name: 'Delete campaign' })
-    ).toBeInTheDocument()
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Delete campaign' })
+      ).toBeEnabled()
+    )
   })
 
   it('withholds Delete campaign from a user whose email no manager row carries, even when the ids match', async () => {
@@ -689,6 +698,91 @@ describe('CampaignEditor', () => {
     expect(
       screen.queryByRole('button', { name: 'Delete campaign' })
     ).not.toBeInTheDocument()
+  })
+
+  it('shows the manager controls disabled with a spinner while GetCurrentUser is loading', async () => {
+    render(
+      <MockedProvider mocks={[{ ...currentUserMock, delay: 60_000 }] as never}>
+        <SnackbarProvider>
+          <CampaignEditor campaign={campaign} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete campaign' })
+    expect(deleteButton).toBeDisabled()
+    expect(within(deleteButton).getByRole('progressbar')).toBeInTheDocument()
+    const connect = within(screen.getByTestId('CampaignDomain')).getByRole(
+      'button',
+      { name: 'Connect' }
+    )
+    expect(connect).toBeDisabled()
+    expect(within(connect).getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('says the role could not be checked when GetCurrentUser fails, and Retry with a manager answer enables the manager controls', async () => {
+    const managerAnswer = vi.fn(() => currentUserMock.result)
+    render(
+      <MockedProvider
+        mocks={
+          [
+            {
+              request: { query: GET_CURRENT_USER },
+              error: new Error('Network error')
+            },
+            { request: { query: GET_CURRENT_USER }, result: managerAnswer }
+          ] as never
+        }
+      >
+        <SnackbarProvider>
+          <CampaignEditor campaign={campaign} />
+        </SnackbarProvider>
+      </MockedProvider>
+    )
+    fireEvent.click(screen.getByRole('tab', { name: 'Settings' }))
+
+    const notices = await screen.findAllByTestId('ManagerRoleNotice')
+    expect(notices[0]).toHaveTextContent("We couldn't check your role.")
+    expect(
+      screen.getByRole('button', { name: 'Delete campaign' })
+    ).toBeDisabled()
+    expect(
+      within(screen.getByTestId('CampaignDomain')).getByRole('button', {
+        name: 'Connect'
+      })
+    ).toBeDisabled()
+
+    fireEvent.click(within(notices[0]).getByRole('button', { name: 'Retry' }))
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: 'Delete campaign' })
+      ).toBeEnabled()
+    )
+    expect(managerAnswer).toHaveBeenCalled()
+    expect(screen.queryByTestId('ManagerRoleNotice')).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Domain Name' })).toBeEnabled()
+  })
+
+  it('asks before the page unloads while a text write is pending, and not otherwise', () => {
+    renderEditor()
+
+    function leavePrevented(): boolean {
+      const event = new Event('beforeunload', { cancelable: true })
+      window.dispatchEvent(event)
+      return event.defaultPrevented
+    }
+
+    vi.mocked(hasPendingDebouncedWrites).mockReturnValue(false)
+    expect(leavePrevented()).toBe(false)
+
+    vi.mocked(hasPendingDebouncedWrites).mockReturnValue(true)
+    expect(leavePrevented()).toBe(true)
+
+    vi.mocked(hasPendingDebouncedWrites).mockReturnValue(false)
+    expect(leavePrevented()).toBe(false)
   })
 
   it('swaps the Inspector’s content on selection without a drawer or a dimmed canvas', async () => {

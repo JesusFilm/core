@@ -14,6 +14,7 @@ import { GetCampaign_campaign as Campaign } from '../../../../../__generated__/G
 import { DELETE_CUSTOM_DOMAIN } from '../../../Team/CustomDomainDialog/DomainNameForm/DomainNameForm'
 import { ThemeProvider } from '../../../ThemeProvider'
 import { campaign, publishedCampaign } from '../../data'
+import { CampaignRole } from '../../utils/campaignRole'
 
 import { CAMPAIGN_DOMAIN_CREATE, CampaignDomain } from './CampaignDomain'
 
@@ -62,12 +63,14 @@ const deleteResult = (): unknown => ({
 
 function renderDomain({
   campaign: campaignProp = campaign,
-  isManager = true,
+  role = 'manager',
+  onRoleRetry,
   mocks = [],
   cache
 }: {
   campaign?: Campaign
-  isManager?: boolean
+  role?: CampaignRole
+  onRoleRetry?: () => void
   mocks?: Array<Record<string, unknown>>
   cache?: InMemoryCache
 } = {}): void {
@@ -75,7 +78,11 @@ function renderDomain({
     <MockedProvider mocks={mocks as never} cache={cache}>
       <ThemeProvider>
         <SnackbarProvider>
-          <CampaignDomain campaign={campaignProp} isManager={isManager} />
+          <CampaignDomain
+            campaign={campaignProp}
+            role={role}
+            onRoleRetry={onRoleRetry}
+          />
         </SnackbarProvider>
       </ThemeProvider>
     </MockedProvider>
@@ -224,7 +231,7 @@ describe('CampaignDomain', () => {
   it('shows a member the domain name read-only, with no records or actions', () => {
     renderDomain({
       campaign: { ...publishedCampaign, customDomains: [domain] },
-      isManager: false
+      role: 'member'
     })
 
     expect(screen.getByRole('textbox', { name: 'Domain Name' })).toHaveValue(
@@ -237,8 +244,32 @@ describe('CampaignDomain', () => {
     expect(screen.queryByTestId('CampaignDomainDns')).not.toBeInTheDocument()
   })
 
+  it('shows the manager’s actions disabled with a spinner while the role is pending', () => {
+    renderDomain({ role: 'pending' })
+
+    expect(screen.getByRole('textbox', { name: 'Domain Name' })).toBeDisabled()
+    const connect = screen.getByRole('button', { name: 'Connect' })
+    expect(connect).toBeDisabled()
+    expect(within(connect).getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('shows Disconnect disabled with Retry, and no records, when the role could not be read', () => {
+    const onRoleRetry = vi.fn()
+    renderDomain({
+      campaign: { ...publishedCampaign, customDomains: [domain] },
+      role: 'error',
+      onRoleRetry
+    })
+
+    expect(screen.getByRole('button', { name: 'Disconnect' })).toBeDisabled()
+    expect(screen.queryByTestId('CampaignDomainDns')).not.toBeInTheDocument()
+    expect(screen.getByText("We couldn't check your role.")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
+    expect(onRoleRetry).toHaveBeenCalled()
+  })
+
   it('tells a member without a domain that only managers can add one', () => {
-    renderDomain({ isManager: false })
+    renderDomain({ role: 'member' })
 
     expect(
       screen.getByText('No domain. Only team managers can add one.')

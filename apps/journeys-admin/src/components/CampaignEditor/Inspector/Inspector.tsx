@@ -17,6 +17,7 @@ import {
 } from '../CampaignEditorProvider'
 import { blockIcon } from '../utils/blockIcon'
 import { blockLabel } from '../utils/blockLabel'
+import { CampaignRole } from '../utils/campaignRole'
 
 import { SELECTION_KINDS } from './selectionKinds'
 
@@ -35,7 +36,10 @@ function inspectorLabel(t: TFunction, selection: CampaignSelection): string {
 }
 
 interface InspectorProps {
-  isManager: boolean
+  /** The user's role on the campaign's team; manager-only settings read it. */
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry?: () => void
   /** The default language was swapped; the shell opens Localize on Translations. */
   onDefaultLanguageChanged?: () => void
 }
@@ -50,7 +54,8 @@ interface InspectorProps {
  * block simply swaps its content.
  */
 export function Inspector({
-  isManager,
+  role,
+  onRoleRetry,
   onDefaultLanguageChanged
 }: InspectorProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -171,7 +176,8 @@ export function Inspector({
           <SettingsBody
             key={bodyKey}
             campaign={campaign}
-            isManager={isManager}
+            role={role}
+            onRoleRetry={onRoleRetry}
             onDefaultLanguageChanged={onDefaultLanguageChanged}
           />
         )}

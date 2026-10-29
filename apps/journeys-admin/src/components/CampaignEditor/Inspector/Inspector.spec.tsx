@@ -260,7 +260,7 @@ function renderInspector(
       <Hotkeys />
       <SelectionProbe />
       <CommandProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
     </StaticEditor>
   )
 }
@@ -313,7 +313,7 @@ describe('Inspector', () => {
         <StaticEditor>
           <Hotkeys />
           <input aria-label="Shell field" />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </StaticEditor>
       )
 
@@ -716,7 +716,7 @@ describe('Inspector', () => {
         >
           <CommandUndoItem variant="button" />
           <SelectionProbe />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </StaticEditor>
       )
 
@@ -1239,7 +1239,7 @@ describe('Inspector', () => {
           <Hotkeys />
           <SelectionProbe />
           <CommandProbe />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </StaticEditor>
       )
     }
@@ -1355,7 +1355,7 @@ describe('Inspector', () => {
         >
           <SelectionProbe />
           <BlocksProbe />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </QueriedEditor>
       )
 

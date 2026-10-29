@@ -31,10 +31,12 @@ import {
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
+import { CampaignRole } from '../utils/campaignRole'
 import { useCommittedField } from '../utils/useCommittedField'
 
 import { CampaignDomain } from './CampaignDomain'
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
+import { ManagerRoleNotice, managerControlIcon } from './ManagerRoleNotice'
 
 /** The longest slug the API accepts, for the campaign and its regions. */
 export const SLUG_MAX_LENGTH = 200
@@ -43,8 +45,13 @@ type SettingsField = 'title' | 'slug'
 
 interface SettingsProps {
   campaign: Campaign
-  /** Delete campaign is campaign Delete: offered to a manager of the team only. */
-  isManager: boolean
+  /**
+   * Delete campaign is campaign Delete: offered to a manager of the team
+   * only, and shown disabled while the role is pending or could not be read.
+   */
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry?: () => void
   /** The default language was swapped; the Translations view tells the author about promoted machine values. */
   onDefaultLanguageChanged?: () => void
 }
@@ -69,7 +76,8 @@ export function shapeSlug(value: string): string {
  */
 export function Settings({
   campaign,
-  isManager,
+  role,
+  onRoleRetry,
   onDefaultLanguageChanged
 }: SettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
@@ -220,7 +228,11 @@ export function Settings({
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Slug') } }}
       />
-      <CampaignDomain campaign={campaign} isManager={isManager} />
+      <CampaignDomain
+        campaign={campaign}
+        role={role}
+        onRoleRetry={onRoleRetry}
+      />
       <TextField
         select
         label={t('Default language')}
@@ -243,17 +255,19 @@ export function Settings({
             </MenuItem>
           ))}
       </TextField>
-      {isManager && (
-        <Box>
+      {role !== 'member' && (
+        <Stack spacing={2} sx={{ alignItems: 'flex-start' }}>
           <Button
             variant="outlined"
             color="error"
-            startIcon={<Trash2Icon />}
+            startIcon={managerControlIcon(role, <Trash2Icon />)}
             onClick={() => setDeleteOpen(true)}
+            disabled={role !== 'manager'}
           >
             {t('Delete campaign')}
           </Button>
-        </Box>
+          <ManagerRoleNotice role={role} onRetry={onRoleRetry} />
+        </Stack>
       )}
       <DefaultLanguageDialog
         campaign={campaign}

@@ -33,13 +33,16 @@ import { RegionSettings } from '../../RegionSettings'
 import { RegionSwitcherSettings } from '../../RegionSwitcherSettings'
 import { SectionWordingSettings } from '../../SectionWordingSettings'
 import { Settings } from '../../Settings'
+import { CampaignRole } from '../../utils/campaignRole'
 import { useCampaignRegionCommand } from '../../utils/useCampaignRegionCommand'
 import { ColumnControls } from '../ColumnControls'
 
 /** What every Settings body is given; only the campaign's own settings read it. */
 export interface InspectorSettingsProps {
   campaign: Campaign
-  isManager: boolean
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry?: () => void
   /** The default language was swapped; the shell opens Localize on Translations. */
   onDefaultLanguageChanged?: () => void
 }
@@ -104,13 +107,15 @@ function SectionEditor({ block }: SectionEditorProps): ReactElement {
 /** The campaign's settings, when nothing is selected. */
 export function CampaignSettings({
   campaign,
-  isManager,
+  role,
+  onRoleRetry,
   onDefaultLanguageChanged
 }: InspectorSettingsProps): ReactElement {
   return (
     <Settings
       campaign={campaign}
-      isManager={isManager}
+      role={role}
+      onRoleRetry={onRoleRetry}
       onDefaultLanguageChanged={onDefaultLanguageChanged}
     />
   )

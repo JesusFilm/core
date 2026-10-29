@@ -26,6 +26,7 @@ import {
   TranslationRunContext,
   TranslationRunProvider
 } from '../TranslationRunProvider'
+import { CampaignRole } from '../utils/campaignRole'
 
 import { Settings, shapeSlug } from './Settings'
 
@@ -62,7 +63,8 @@ function RunScope({
 
 interface RenderOptions {
   campaign?: Campaign
-  isManager?: boolean
+  role?: CampaignRole
+  onRoleRetry?: () => void
   mocks?: Array<Record<string, unknown>>
   onDefaultLanguageChanged?: () => void
   cache?: InMemoryCache
@@ -72,7 +74,8 @@ interface RenderOptions {
 
 function renderSettings({
   campaign: campaignProp = campaign,
-  isManager = true,
+  role = 'manager',
+  onRoleRetry,
   mocks = [],
   onDefaultLanguageChanged,
   cache,
@@ -86,7 +89,8 @@ function renderSettings({
           <RunScope run={run}>
             <Settings
               campaign={campaignProp}
-              isManager={isManager}
+              role={role}
+              onRoleRetry={onRoleRetry}
               onDefaultLanguageChanged={onDefaultLanguageChanged}
             />
           </RunScope>
@@ -444,8 +448,38 @@ describe('Settings', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('shows Delete campaign disabled with a spinner while the role is pending', () => {
+    renderSettings({ role: 'pending' })
+
+    const button = screen.getByRole('button', { name: 'Delete campaign' })
+    expect(button).toBeDisabled()
+    expect(within(button).getByRole('progressbar')).toBeInTheDocument()
+    expect(
+      screen.queryByText("We couldn't check your role.")
+    ).not.toBeInTheDocument()
+  })
+
+  it('shows Delete campaign disabled with Retry when the role could not be read', () => {
+    const onRoleRetry = vi.fn()
+    renderSettings({ role: 'error', onRoleRetry })
+
+    expect(
+      screen.getByRole('button', { name: 'Delete campaign' })
+    ).toBeDisabled()
+    const notices = screen.getAllByTestId('ManagerRoleNotice')
+    expect(notices[notices.length - 1]).toHaveTextContent(
+      "We couldn't check your role."
+    )
+    fireEvent.click(
+      within(notices[notices.length - 1]).getByRole('button', {
+        name: 'Retry'
+      })
+    )
+    expect(onRoleRetry).toHaveBeenCalled()
+  })
+
   it('does not offer Delete campaign to members', () => {
-    renderSettings({ isManager: false })
+    renderSettings({ role: 'member' })
 
     expect(
       screen.queryByRole('button', { name: 'Delete campaign' })

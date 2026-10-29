@@ -4,12 +4,12 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { useTranslation } from 'next-i18next/pages'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { CommandProvider } from '@core/journeys/ui/CommandProvider'
 
 import { GetCampaign_campaign as Campaign } from '../../../__generated__/GetCampaign'
-import { UserTeamRole } from '../../../__generated__/globalTypes'
+import { hasPendingDebouncedWrites } from '../../libs/apolloClient'
 import { useCurrentUserLazyQuery } from '../../libs/useCurrentUserLazyQuery'
 import { MuxVideoUploadProvider } from '../MuxVideoUploadProvider'
 
@@ -35,6 +35,7 @@ import {
   TranslationRunProvider,
   useTranslationRun
 } from './TranslationRunProvider'
+import { CampaignRole, campaignRoleOf } from './utils/campaignRole'
 import { CampaignCommandProvider } from './utils/useCampaignCommand'
 import { useCampaignLeaveGuard } from './utils/useCampaignLeaveGuard'
 
@@ -58,13 +59,16 @@ interface CampaignEditorProps {
 
 interface CampaignEditorShellProps {
   campaign: Campaign
-  isManager: boolean
+  role: CampaignRole
+  /** Asks for the role again after it could not be read. */
+  onRoleRetry: () => void
 }
 
 /** Everything inside the providers: the rail, the docked panel (always one open, ahead of the canvas in Tab order), the canvas with its banner, and the Inspector. */
 function CampaignEditorShell({
   campaign,
-  isManager
+  role,
+  onRoleRetry
 }: CampaignEditorShellProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const {
@@ -130,7 +134,8 @@ function CampaignEditorShell({
         </Box>
       </Stack>
       <Inspector
-        isManager={isManager}
+        role={role}
+        onRoleRetry={onRoleRetry}
         onDefaultLanguageChanged={handleDefaultLanguageChanged}
       />
     </Stack>
@@ -167,18 +172,26 @@ function CampaignEditorLargerScreen(): ReactElement {
 /**
  * Inside the providers, so crossing the minimum width swaps only the shell
  * for the larger-screen message: the Command history and a run in flight
- * survive it. Leaving the page while a run is in flight asks first.
+ * survive it. Leaving the page while a run is in flight, or with a text edit
+ * still inside its debounce, asks first.
  */
 function CampaignEditorViewport({
   campaign,
-  isManager
+  role,
+  onRoleRetry
 }: CampaignEditorShellProps): ReactElement {
   const isDesktop = useMediaQuery(`(min-width:${EDITOR_MIN_WIDTH}px)`)
   const { run } = useTranslationRun()
-  useCampaignLeaveGuard([run != null])
+  useCampaignLeaveGuard([run != null, hasPendingDebouncedWrites])
 
   if (!isDesktop) return <CampaignEditorLargerScreen />
-  return <CampaignEditorShell campaign={campaign} isManager={isManager} />
+  return (
+    <CampaignEditorShell
+      campaign={campaign}
+      role={role}
+      onRoleRetry={onRoleRetry}
+    />
+  )
 }
 
 /**
@@ -196,11 +209,21 @@ function CampaignEditorViewport({
 export function CampaignEditor({
   campaign
 }: CampaignEditorProps): ReactElement {
-  const { loadUser, data: currentUser } = useCurrentUserLazyQuery()
+  const {
+    loadUser,
+    data: currentUser,
+    loading: currentUserLoading,
+    error: currentUserError
+  } = useCurrentUserLazyQuery()
+
+  /** A failure shows as the `error` role; nothing retries on its own. */
+  const handleLoadUser = useCallback((): void => {
+    loadUser().catch(() => undefined)
+  }, [loadUser])
 
   useEffect(() => {
-    void loadUser()
-  }, [loadUser])
+    handleLoadUser()
+  }, [handleLoadUser])
 
   if (campaign == null)
     return (
@@ -217,17 +240,12 @@ export function CampaignEditor({
       </Box>
     )
 
-  // Matched by email, as CustomDomainDialog does: `me.id` is the users
-  // table uuid while a UserTeam's `user.id` is the Firebase uid, so the two
-  // never compare equal.
-  const isManager =
-    currentUser.__typename === 'AuthenticatedUser' &&
-    campaign.team.userTeams.some(
-      (userTeam) =>
-        userTeam.user.__typename === 'AuthenticatedUser' &&
-        userTeam.user.email === currentUser.email &&
-        userTeam.role === UserTeamRole.manager
-    )
+  const role = campaignRoleOf({
+    campaign,
+    currentUser,
+    loading: currentUserLoading,
+    error: currentUserError
+  })
 
   return (
     <CommandProvider>
@@ -238,7 +256,8 @@ export function CampaignEditor({
               <CampaignHoverProvider>
                 <CampaignEditorViewport
                   campaign={campaign}
-                  isManager={isManager}
+                  role={role}
+                  onRoleRetry={handleLoadUser}
                 />
               </CampaignHoverProvider>
             </TranslationRunProvider>

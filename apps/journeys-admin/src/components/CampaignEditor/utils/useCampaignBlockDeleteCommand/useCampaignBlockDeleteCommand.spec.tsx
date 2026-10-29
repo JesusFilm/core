@@ -69,7 +69,7 @@ function renderEditor(
       <CommandUndoItem variant="button" />
       <SelectionProbe />
       <BlocksProbe />
-      <Inspector isManager={false} />
+      <Inspector role="member" />
     </QueriedEditor>
   )
 }
@@ -200,7 +200,7 @@ describe('useCampaignBlockDeleteCommand', () => {
           <CommandUndoItem variant="button" />
           <SelectionProbe />
           <BlocksProbe />
-          <Inspector isManager={false} />
+          <Inspector role="member" />
         </QueriedEditor>
       )
     }
