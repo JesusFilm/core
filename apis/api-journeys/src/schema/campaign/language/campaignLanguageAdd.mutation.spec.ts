@@ -3,6 +3,7 @@ import { type MockedFunction, vi } from 'vitest'
 import { getUserFromPayload } from '@core/yoga/firebaseClient'
 
 import { mockQueueAdd } from '../../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
@@ -206,15 +207,20 @@ describe('campaignLanguageAdd', () => {
     })
   })
 
-  it('queues every page of a published campaign, the new language’s _lang pages included', async () => {
-    const campaign = campaignFactory({ role: 'member' })
+  it('queues every page of a published campaign before and after, the new language’s _lang pages included, each once', async () => {
+    const published = campaignFactory({ role: 'member' })
       .withRegion('EUR')
       .published()
       .build()
-    prismaMock.campaign.findUnique.mockResolvedValue({
-      ...campaign,
+    const campaign = {
+      ...published,
       customDomains: [{ name: 'outreach.example.org' }]
-    } as any)
+    }
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, {
+      ...campaign,
+      languages: languageRows(['529', FRENCH])
+    })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(
       campaignFactory({ role: 'member' }).withLanguage(FRENCH).build()
     )
@@ -233,15 +239,30 @@ describe('campaignLanguageAdd', () => {
       '/home/campaign/outreach-2026/eur',
       '/home/campaign/outreach-2026/_lang/en',
       '/home/campaign/outreach-2026/_lang/en/eur',
-      '/home/campaign/outreach-2026/_lang/fr',
-      '/home/campaign/outreach-2026/_lang/fr/eur',
       '/outreach.example.org',
       '/outreach.example.org/eur',
       '/outreach.example.org/_lang/en',
       '/outreach.example.org/_lang/en/eur',
+      '/home/campaign/outreach-2026/_lang/fr',
+      '/home/campaign/outreach-2026/_lang/fr/eur',
       '/outreach.example.org/_lang/fr',
       '/outreach.example.org/_lang/fr/eur'
     ])
+  })
+
+  it('queues nothing for a draft campaign', async () => {
+    const campaign = campaignFactory({ role: 'member' }).build()
+    prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, {
+      ...campaign,
+      languages: languageRows(['529', FRENCH])
+    })
+    prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(campaign)
+
+    const result = await add(FRENCH)
+
+    expect(result.errors).toBeUndefined()
+    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 
   it('rejects a language api-languages does not know (BAD_USER_INPUT, field languageId)', async () => {

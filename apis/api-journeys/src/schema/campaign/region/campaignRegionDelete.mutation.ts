@@ -4,7 +4,10 @@ import { CampaignRegionRef } from '../campaignRegion'
 import { campaignWrite } from '../campaignWrite'
 import { conflict, notFound } from '../errors'
 import { deleteQrCodes, findRegionQrCodes } from '../regionLanguage/service'
-import { enqueueRegionRevalidation } from '../revalidateCampaign'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from '../revalidateCampaign'
 
 import { authorizeRegionUpdate, reorderRegions } from './service'
 
@@ -26,6 +29,7 @@ builder.mutationField('campaignRegionDelete', (t) =>
         region.campaignId,
         { structure: true, textRows: true },
         async ({ tx, afterCommit }) => {
+          const before = await snapshotCampaignAddress(tx, region.campaignId)
           // Decide from the row as locked, not as authorised: a concurrent
           // update may have listed it since.
           const current = await tx.campaignRegion.findUnique({
@@ -53,10 +57,8 @@ builder.mutationField('campaignRegionDelete', (t) =>
             tx
           )
           afterCommit(async () => await enqueueShortLinkDeletes(shortLinkIds))
-          afterCommit(
-            async () =>
-              await enqueueRegionRevalidation(region.campaign, [deleted.slug])
-          )
+          const after = await snapshotCampaignAddress(tx, region.campaignId)
+          afterCommit(async () => await queuePageSetChange(before, after))
           return deleted
         }
       )

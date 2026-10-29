@@ -1,4 +1,5 @@
 import { mockQueueAdd } from '../../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
@@ -16,6 +17,11 @@ import { deleteShortLink } from '../../qrCode/qrCode.service'
 
 vi.mock('@core/yoga/firebaseClient', () => ({
   getUserFromPayload: vi.fn()
+}))
+
+vi.mock('../gatewayClient', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../gatewayClient')>()),
+  fetchLanguage: vi.fn()
 }))
 
 vi.mock('../../qrCode/qrCode.service', async (importOriginal) => ({
@@ -220,37 +226,54 @@ describe('campaignRegionDelete', () => {
     expect(prismaMock.campaignRegion.delete).not.toHaveBeenCalled()
   })
 
-  it('revalidates the landing page and the deleted path of a published campaign', async () => {
+  /** `campaign` with EUR unlisted, before the delete, and without it, after. */
+  function deleteEur(
+    campaign: CampaignFixture
+  ): [CampaignFixture, CampaignFixture] {
+    const unlisted = {
+      ...campaign,
+      regions: campaign.regions.map((region) =>
+        region.id === 'eurRegionId' ? { ...region, listed: false } : region
+      )
+    }
+    return [
+      unlisted,
+      {
+        ...unlisted,
+        regions: unlisted.regions.filter(({ id }) => id !== 'eurRegionId')
+      }
+    ]
+  }
+
+  it('queues every page of a published campaign, the deleted path included', async () => {
     const published = campaignFactory()
       .withRegion('EUR')
       .withRegion('AFR')
       .published()
       .build()
-    prismaMock.campaignRegion.findUnique.mockResolvedValue(
-      campaignRegionWithAcl(published, 'eurRegionId', { listed: false })
-    )
+    mockAddressSnapshots(...deleteEur(published))
 
     await remove()
 
     const paths = mockQueueAdd.mock.calls.map(([, data]) => data.paths[0])
     expect(paths).toEqual([
       '/home/campaign/outreach-2026',
-      '/home/campaign/outreach-2026/eur'
+      '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/afr'
     ])
   })
 
-  it('revalidates the domain form of the deleted path for its Campaign Domain', async () => {
+  it('queues the domain form of every page for its Campaign Domain', async () => {
     const published = campaignFactory()
       .withRegion('EUR')
       .withRegion('AFR')
       .published()
       .build()
-    prismaMock.campaignRegion.findUnique.mockResolvedValue(
-      campaignRegionWithAcl(
-        { ...published, customDomains: [{ name: 'gifts.org' } as never] },
-        'eurRegionId',
-        { listed: false }
-      )
+    mockAddressSnapshots(
+      ...deleteEur({
+        ...published,
+        customDomains: [{ name: 'gifts.org' } as never]
+      })
     )
 
     await remove()
@@ -259,12 +282,16 @@ describe('campaignRegionDelete', () => {
     expect(paths).toEqual([
       '/home/campaign/outreach-2026',
       '/home/campaign/outreach-2026/eur',
+      '/home/campaign/outreach-2026/afr',
       '/gifts.org',
-      '/gifts.org/eur'
+      '/gifts.org/eur',
+      '/gifts.org/afr'
     ])
   })
 
   it('queues no revalidation for a draft campaign', async () => {
+    mockAddressSnapshots(...deleteEur(fixture))
+
     await remove()
 
     expect(mockQueueAdd).not.toHaveBeenCalled()

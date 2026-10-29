@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 
 import { mockQueueAdd } from '../../../../test/bullmqMock'
+import { mockAddressSnapshots } from '../../../../test/campaignAddressSnapshot'
 import {
   CampaignSpecResult,
   authClient,
@@ -96,10 +97,11 @@ describe('campaignLanguageRemove', () => {
       .published()
       .build()
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
+    mockAddressSnapshots(campaign, {
+      ...campaign,
+      languages: [campaign.languages[0]]
+    })
     prismaMock.campaign.findUniqueOrThrow.mockResolvedValue(campaign)
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      campaign.languages[0]
-    ])
 
     await remove(FRENCH)
 
@@ -164,9 +166,11 @@ describe('campaignLanguageRemove', () => {
     const campaign = campaignFactory({ role: 'member' })
       .withLanguage(FRENCH)
       .build()
+    // Every read inside the transaction, the address snapshot included,
+    // sees the concurrent swap.
     prismaMock.campaign.findUnique
       .mockResolvedValueOnce(campaign)
-      .mockResolvedValueOnce({ ...campaign, defaultLanguageId: FRENCH })
+      .mockResolvedValue({ ...campaign, defaultLanguageId: FRENCH })
 
     const result = await remove(FRENCH)
 

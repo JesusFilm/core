@@ -4,7 +4,10 @@ import { CampaignRef } from '../campaign'
 import { campaignWrite } from '../campaignWrite'
 import { conflict, notFound } from '../errors'
 import { renumber } from '../order'
-import { enqueueLanguageRevalidation } from '../revalidateCampaign'
+import {
+  queuePageSetChange,
+  snapshotCampaignAddress
+} from '../revalidateCampaign'
 
 builder.mutationField('campaignLanguageRemove', (t) =>
   t.withAuth({ isAuthenticated: true }).prismaField({
@@ -19,23 +22,16 @@ builder.mutationField('campaignLanguageRemove', (t) =>
     resolve: async (query, _parent, args, context) => {
       const campaignId = String(args.campaignId)
       const languageId = String(args.languageId)
-      const campaign = await authorizeCampaign(
-        campaignId,
-        'update',
-        context.user,
-        {
-          regions: true,
-          customDomains: true
-        }
-      )
+      await authorizeCampaign(campaignId, 'update', context.user)
 
       // A concurrent default-language swap or removal can move the default
       // or the language list after the read above: lock the campaign row and
       // judge the removal against what is committed now.
-      const updated = await campaignWrite(
+      return await campaignWrite(
         campaignId,
         { languageRows: true, campaignRow: true },
-        async ({ tx }) => {
+        async ({ tx, afterCommit }) => {
+          const before = await snapshotCampaignAddress(tx, campaignId)
           const current = await tx.campaign.findUnique({
             where: { id: campaignId },
             select: {
@@ -71,14 +67,14 @@ builder.mutationField('campaignLanguageRemove', (t) =>
                   data: { order }
                 })
           )
+          const after = await snapshotCampaignAddress(tx, campaignId)
+          afterCommit(async () => await queuePageSetChange(before, after))
           return await tx.campaign.findUniqueOrThrow({
             ...query,
             where: { id: campaignId }
           })
         }
       )
-      await enqueueLanguageRevalidation(campaign, languageId)
-      return updated
     }
   })
 )

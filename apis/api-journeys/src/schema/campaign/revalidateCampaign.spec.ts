@@ -1,18 +1,6 @@
-import { type MockedFunction, vi } from 'vitest'
-
 import { mockQueueAdd } from '../../../test/bullmqMock'
-import { prismaMock } from '../../../test/prismaMock'
 
-import { fetchLanguage } from './gatewayClient'
-import {
-  campaignLanguageTags,
-  enqueueCampaignRevalidation,
-  enqueueLanguageRevalidation
-} from './revalidateCampaign'
-
-vi.mock('./gatewayClient', () => ({ fetchLanguage: vi.fn() }))
-
-const mockFetchLanguage = fetchLanguage as MockedFunction<typeof fetchLanguage>
+import { enqueueCampaignRevalidation } from './revalidateCampaign'
 
 describe('enqueueCampaignRevalidation', () => {
   it('queues one job per path, retried three times with exponential backoff', async () => {
@@ -37,108 +25,5 @@ describe('enqueueCampaignRevalidation', () => {
     await expect(
       enqueueCampaignRevalidation(['/home/campaign/christmas'])
     ).resolves.toBeUndefined()
-  })
-})
-
-describe('campaignLanguageTags', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('resolves the bcp47 tag of each campaign language, lowercased', async () => {
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' },
-      { languageId: '496' }
-    ] as any)
-    mockFetchLanguage
-      .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
-      .mockResolvedValueOnce({ id: '496', bcp47: 'fr-CA' })
-
-    expect(await campaignLanguageTags('campaignId')).toEqual(['en', 'fr-ca'])
-    expect(prismaMock.campaignLanguage.findMany).toHaveBeenCalledWith({
-      where: { campaignId: 'campaignId' }
-    })
-  })
-
-  it('leaves out a language that has no tag or cannot be resolved', async () => {
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' },
-      { languageId: '496' },
-      { languageId: '21028' }
-    ] as any)
-    mockFetchLanguage
-      .mockResolvedValueOnce({ id: '529', bcp47: 'en' })
-      .mockResolvedValueOnce({ id: '496', bcp47: null })
-      .mockRejectedValueOnce(new Error('gateway down'))
-
-    expect(await campaignLanguageTags('campaignId')).toEqual(['en'])
-  })
-
-  it('leaves out a language whose tag the proxy never routes', async () => {
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' },
-      { languageId: '496' }
-    ] as any)
-    mockFetchLanguage
-      .mockResolvedValueOnce({ id: '529', bcp47: 'zh-Hans-CN' })
-      .mockResolvedValueOnce({ id: '496', bcp47: 'not a tag' })
-
-    expect(await campaignLanguageTags('campaignId')).toEqual(['zh-hans-cn'])
-  })
-
-  it('returns no tags when the languages cannot be listed', async () => {
-    prismaMock.campaignLanguage.findMany.mockRejectedValue(new Error('db down'))
-
-    expect(await campaignLanguageTags('campaignId')).toEqual([])
-  })
-})
-
-describe('enqueueLanguageRevalidation', () => {
-  const campaign = {
-    id: 'campaignId',
-    status: 'published',
-    slug: 'outreach',
-    regions: [{ slug: 'eur' }],
-    customDomains: []
-  }
-
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
-  it('resolves the changed language alongside the campaign languages, then queues every page under both tags', async () => {
-    prismaMock.campaignLanguage.findMany.mockResolvedValue([
-      { languageId: '529' }
-    ] as any)
-    const releases: Array<() => void> = []
-    mockFetchLanguage.mockImplementation(
-      async (id) =>
-        await new Promise((resolve) => {
-          releases.push(() =>
-            resolve({ id, bcp47: id === '529' ? 'en' : 'fr-CA' })
-          )
-        })
-    )
-
-    const queued = enqueueLanguageRevalidation(campaign, '496')
-    await vi.waitFor(() => expect(mockFetchLanguage).toHaveBeenCalledTimes(2))
-    releases.forEach((release) => release())
-    await queued
-
-    expect(mockQueueAdd.mock.calls.map(([, data]) => data.paths)).toEqual([
-      ['/home/campaign/outreach'],
-      ['/home/campaign/outreach/eur'],
-      ['/home/campaign/outreach/_lang/en'],
-      ['/home/campaign/outreach/_lang/en/eur'],
-      ['/home/campaign/outreach/_lang/fr-ca'],
-      ['/home/campaign/outreach/_lang/fr-ca/eur']
-    ])
-  })
-
-  it('queues nothing for a draft campaign', async () => {
-    await enqueueLanguageRevalidation({ ...campaign, status: 'draft' }, '496')
-
-    expect(mockFetchLanguage).not.toHaveBeenCalled()
-    expect(mockQueueAdd).not.toHaveBeenCalled()
   })
 })

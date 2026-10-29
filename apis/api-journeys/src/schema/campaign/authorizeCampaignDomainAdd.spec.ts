@@ -9,7 +9,7 @@ import { INCLUDE_CAMPAIGN_ACL } from './campaign.acl'
 describe('authorizeCampaignDomainAdd', () => {
   const user = { id: 'userId' } as unknown as User
 
-  it('loads the campaign with its ACL, regions and domains and allows a member of its team', async () => {
+  it('loads the campaign with its ACL and domains and allows a member of its team', async () => {
     const campaign = campaignFactory({ role: 'member' }).build()
     prismaMock.campaign.findUnique.mockResolvedValue(campaign)
 
@@ -18,7 +18,7 @@ describe('authorizeCampaignDomainAdd', () => {
     ).resolves.toBe(campaign)
     expect(prismaMock.campaign.findUnique).toHaveBeenCalledWith({
       where: { id: 'campaignId' },
-      include: { ...INCLUDE_CAMPAIGN_ACL, regions: true, customDomains: true }
+      include: { ...INCLUDE_CAMPAIGN_ACL, customDomains: true }
     })
   })
 
