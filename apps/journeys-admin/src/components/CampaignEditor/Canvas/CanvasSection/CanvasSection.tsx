@@ -264,7 +264,11 @@ export function CanvasSection({
             {slots.map((slot) => (
               <CanvasColumnSlot key={slot.id} slot={slot}>
                 {slot.children[0] != null && (
-                  <CanvasSection block={slot.children[0]} inSlot />
+                  <CanvasSection
+                    key={slot.children[0].id}
+                    block={slot.children[0]}
+                    inSlot
+                  />
                 )}
               </CanvasColumnSlot>
             ))}
