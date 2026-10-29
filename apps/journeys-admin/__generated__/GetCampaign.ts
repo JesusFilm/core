@@ -3,7 +3,7 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignStringKey, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize } from "./globalTypes";
+import { CampaignTextSource, CampaignStatus, UserTeamRole, ThemeMode, CampaignRadius, CampaignPageKind, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignStringKey } from "./globalTypes";
 
 // ====================================================
 // GraphQL query operation: GetCampaign
@@ -99,27 +99,6 @@ export interface GetCampaign_campaign_theme {
    * Button corners: the same four values as the corner radius, applied to buttons only; veryRounded is the pill look.
    */
   buttonRadius: CampaignRadius;
-}
-
-export interface GetCampaign_campaign_strings_valueTranslations {
-  __typename: "TranslatedValue";
-  /**
-   * api-languages Language id.
-   */
-  languageId: string;
-  value: string;
-  source: CampaignTextSource;
-}
-
-export interface GetCampaign_campaign_strings {
-  __typename: "CampaignString";
-  id: string;
-  key: CampaignStringKey;
-  /**
-   * Default-language wording, at most 200 characters.
-   */
-  value: string;
-  valueTranslations: GetCampaign_campaign_strings_valueTranslations[];
 }
 
 export interface GetCampaign_campaign_pages {
@@ -1578,6 +1557,27 @@ export interface GetCampaign_campaign_regions {
   countries: GetCampaign_campaign_regions_countries[];
 }
 
+export interface GetCampaign_campaign_strings_valueTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface GetCampaign_campaign_strings {
+  __typename: "CampaignString";
+  id: string;
+  key: CampaignStringKey;
+  /**
+   * Default-language wording, at most 200 characters.
+   */
+  value: string;
+  valueTranslations: GetCampaign_campaign_strings_valueTranslations[];
+}
+
 export interface GetCampaign_campaign {
   __typename: "Campaign";
   id: string;
@@ -1623,10 +1623,6 @@ export interface GetCampaign_campaign {
    */
   theme: GetCampaign_campaign_theme;
   /**
-   * The eighteen Campaign Strings.
-   */
-  strings: GetCampaign_campaign_strings[];
-  /**
    * Exactly the landing page and the Region Page.
    */
   pages: GetCampaign_campaign_pages[];
@@ -1638,6 +1634,10 @@ export interface GetCampaign_campaign {
    * Every Campaign Region, listed and orphan, in switcher order.
    */
   regions: GetCampaign_campaign_regions[];
+  /**
+   * The eighteen Campaign Strings.
+   */
+  strings: GetCampaign_campaign_strings[];
 }
 
 export interface GetCampaign {

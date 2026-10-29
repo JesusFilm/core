@@ -10,7 +10,7 @@ import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
-import { CampaignTranslations_campaignTranslations as TranslationRowData } from '../../../../../__generated__/CampaignTranslations'
+import { GetCampaignTranslations_campaignTranslations as TranslationRowData } from '../../../../../__generated__/GetCampaignTranslations'
 import {
   CampaignTextField,
   CampaignTextSource

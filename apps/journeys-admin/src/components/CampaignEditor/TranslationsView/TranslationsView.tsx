@@ -12,8 +12,8 @@ import { ReactElement, useEffect, useMemo, useRef, useState } from 'react'
 
 import { isMachineTranslatable } from '@core/journeys/ui/useCampaignAiTranslateSubscription'
 
-import { CampaignTranslations_campaignTranslations as TranslationRowData } from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import { GetCampaignTranslations_campaignTranslations as TranslationRowData } from '../../../../__generated__/GetCampaignTranslations'
 import { CampaignTranslationGroup } from '../../../../__generated__/globalTypes'
 import {
   campaignTranslationsVariables,

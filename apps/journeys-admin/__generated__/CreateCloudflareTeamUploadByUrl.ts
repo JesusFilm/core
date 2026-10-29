@@ -4,20 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL mutation operation: CreateCloudflareUploadByUrl
+// GraphQL mutation operation: CreateCloudflareTeamUploadByUrl
 // ====================================================
 
-export interface CreateCloudflareUploadByUrl_createCloudflareUploadByUrl {
+export interface CreateCloudflareTeamUploadByUrl_createCloudflareUploadByUrl {
   __typename: "CloudflareImage";
   id: string;
   url: string | null;
 }
 
-export interface CreateCloudflareUploadByUrl {
-  createCloudflareUploadByUrl: CreateCloudflareUploadByUrl_createCloudflareUploadByUrl;
+export interface CreateCloudflareTeamUploadByUrl {
+  createCloudflareUploadByUrl: CreateCloudflareTeamUploadByUrl_createCloudflareUploadByUrl;
 }
 
-export interface CreateCloudflareUploadByUrlVariables {
+export interface CreateCloudflareTeamUploadByUrlVariables {
   url: string;
   journeyId?: string | null;
   teamId?: string | null;

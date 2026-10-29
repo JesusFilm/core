@@ -2,9 +2,9 @@ import { gql } from '@apollo/client'
 import { useMutation } from '@apollo/client/react'
 
 import {
-  CreateCloudflareUploadByUrl,
-  CreateCloudflareUploadByUrlVariables
-} from '../../../__generated__/CreateCloudflareUploadByUrl'
+  CreateCloudflareTeamUploadByUrl,
+  CreateCloudflareTeamUploadByUrlVariables
+} from '../../../__generated__/CreateCloudflareTeamUploadByUrl'
 
 /**
  * Fetch a pasted image URL into Cloudflare Images under a team (a campaign
@@ -33,15 +33,15 @@ export const CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL = gql`
 
 export function useCloudflareTeamUploadByUrlMutation(
   options?: useMutation.Options<
-    CreateCloudflareUploadByUrl,
-    CreateCloudflareUploadByUrlVariables
+    CreateCloudflareTeamUploadByUrl,
+    CreateCloudflareTeamUploadByUrlVariables
   >
 ): useMutation.ResultTuple<
-  CreateCloudflareUploadByUrl,
-  CreateCloudflareUploadByUrlVariables
+  CreateCloudflareTeamUploadByUrl,
+  CreateCloudflareTeamUploadByUrlVariables
 > {
   return useMutation<
-    CreateCloudflareUploadByUrl,
-    CreateCloudflareUploadByUrlVariables
+    CreateCloudflareTeamUploadByUrl,
+    CreateCloudflareTeamUploadByUrlVariables
   >(CREATE_CLOUDFLARE_TEAM_UPLOAD_BY_URL, options)
 }

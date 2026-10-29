@@ -1,10 +1,10 @@
 import { campaignStringHosts } from '@core/journeys/ui/Campaign/libs/campaignStrings'
 
-import {
-  CampaignTranslations_campaignTranslations as TranslationRow,
-  CampaignTranslations_campaignTranslations_target as TranslationTarget
-} from '../../../../__generated__/CampaignTranslations'
 import { GetCampaign_campaign as Campaign } from '../../../../__generated__/GetCampaign'
+import {
+  GetCampaignTranslations_campaignTranslations as TranslationRow,
+  GetCampaignTranslations_campaignTranslations_target as TranslationTarget
+} from '../../../../__generated__/GetCampaignTranslations'
 import {
   CampaignTextSource,
   CampaignTranslationGroup

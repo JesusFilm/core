@@ -2,9 +2,9 @@ import { gql } from '@apollo/client'
 import { skipToken, useQuery } from '@apollo/client/react'
 
 import {
-  CampaignTranslations,
-  CampaignTranslationsVariables
-} from '../../../__generated__/CampaignTranslations'
+  GetCampaignTranslations,
+  GetCampaignTranslationsVariables
+} from '../../../__generated__/GetCampaignTranslations'
 
 export const CAMPAIGN_TRANSLATIONS = gql`
   query GetCampaignTranslations(
@@ -42,14 +42,14 @@ export const CAMPAIGN_TRANSLATIONS = gql`
  * new sections would otherwise leave a cached list stale.
  */
 export function useCampaignTranslationsQuery(
-  variables?: CampaignTranslationsVariables
+  variables?: GetCampaignTranslationsVariables
 ): useQuery.Result<
-  CampaignTranslations,
-  CampaignTranslationsVariables,
+  GetCampaignTranslations,
+  GetCampaignTranslationsVariables,
   'empty' | 'complete' | 'streaming',
-  Partial<CampaignTranslationsVariables>
+  Partial<GetCampaignTranslationsVariables>
 > {
-  return useQuery<CampaignTranslations, CampaignTranslationsVariables>(
+  return useQuery<GetCampaignTranslations, GetCampaignTranslationsVariables>(
     CAMPAIGN_TRANSLATIONS,
     variables == null
       ? skipToken
