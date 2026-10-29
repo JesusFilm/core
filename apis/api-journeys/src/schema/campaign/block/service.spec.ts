@@ -11,6 +11,7 @@ import {
   campaignFactory
 } from '../../../../test/campaignFactory'
 import { expectStructureLockFirst } from '../../../../test/campaignStructureLock'
+import { mockTransaction } from '../../../../test/campaignWrite'
 import { prismaMock } from '../../../../test/prismaMock'
 import { INCLUDE_CAMPAIGN_ACL } from '../campaign.acl'
 import { campaignWrite } from '../campaignWrite'
@@ -89,9 +90,7 @@ describe('authorization', () => {
   const fixture = campaignFactory().build()
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -327,9 +326,7 @@ describe('typename predicates and validators', () => {
   const header = fixture.blocks.find((block) => block.id === 'headerId')!
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -751,9 +748,7 @@ describe('tree order and creates', () => {
   )!
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -1258,9 +1253,7 @@ describe('delete, restore and duplicate', () => {
 
   describe('removeBlock', () => {
     beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
+      mockTransaction(prismaMock)
       prismaMock.campaign.update.mockResolvedValue(fixture)
     })
 
@@ -1316,9 +1309,7 @@ describe('delete, restore and duplicate', () => {
   describe('restoreBlock', () => {
     describe('reinserting the block and the rows deleted with it', () => {
       beforeEach(() => {
-        prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
-        )
+        mockTransaction(prismaMock)
         prismaMock.campaign.update.mockResolvedValue(fixture)
       })
 
@@ -1390,9 +1381,7 @@ describe('delete, restore and duplicate', () => {
 
     describe('under a deleted parent', () => {
       beforeEach(() => {
-        prismaMock.$transaction.mockImplementation(
-          async (callback: any) => await callback(prismaMock)
-        )
+        mockTransaction(prismaMock)
       })
 
       it('is refused until the section is restored first (CONFLICT, id), before any write', async () => {
@@ -1481,9 +1470,7 @@ describe('delete, restore and duplicate', () => {
 
   describe('duplicateBlock', () => {
     beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
+      mockTransaction(prismaMock)
       prismaMock.campaign.update.mockResolvedValue(fixture)
     })
 
@@ -1744,9 +1731,7 @@ describe('delete, restore and duplicate', () => {
 
   describe('collectSubtree', () => {
     beforeEach(() => {
-      prismaMock.$transaction.mockImplementation(
-        async (callback: any) => await callback(prismaMock)
-      )
+      mockTransaction(prismaMock)
       prismaMock.campaign.update.mockResolvedValue(fixture)
     })
 
@@ -1871,9 +1856,7 @@ describe('owned blocks (cover, logo and media)', () => {
   }
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
   })
 
@@ -2107,9 +2090,7 @@ describe('the slot contract (cover, logo and media)', () => {
     column === 'mediaBlockId' ? 'CampaignVideoBlock' : 'CampaignImageBlock'
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
     mockCampaignBlockWrites(owner)
   })
@@ -2426,9 +2407,7 @@ describe('the structure lock', () => {
   }
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     mockCampaignBlockWrites(hero)
@@ -2703,9 +2682,7 @@ describe('the block cap', () => {
   }
 
   beforeEach(() => {
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.campaign.update.mockResolvedValue(fixture)
     prismaMock.campaignBlock.findMany.mockResolvedValue([])
     mockCampaignBlockWrites(hero, { createdId: 'newId' })

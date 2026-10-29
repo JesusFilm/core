@@ -6,6 +6,7 @@ import {
   mockUser
 } from '../../../test/campaignBlockSetup'
 import { CampaignFixture, campaignFactory } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import { graphql } from '../../lib/graphql/subgraphGraphql'
 
@@ -63,9 +64,7 @@ describe('campaignThemeUpdate', () => {
       userId: mockUser.id,
       roles: []
     })
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     mockTheme()
   })
 

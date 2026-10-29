@@ -9,6 +9,7 @@ import {
   mockUser
 } from '../../../test/campaignBlockSetup'
 import { campaignFactory } from '../../../test/campaignFactory'
+import { mockTransaction } from '../../../test/campaignWrite'
 import { prismaMock } from '../../../test/prismaMock'
 import {
   UNIQUE_VIOLATION_SHAPES,
@@ -57,9 +58,7 @@ describe('campaignUpdate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockGetUserFromPayload.mockReturnValue(mockUser)
-    prismaMock.$transaction.mockImplementation(
-      async (callback: any) => await callback(prismaMock)
-    )
+    mockTransaction(prismaMock)
     prismaMock.userRole.findUnique.mockResolvedValue({
       id: 'userRoleId',
       userId: mockUser.id,
