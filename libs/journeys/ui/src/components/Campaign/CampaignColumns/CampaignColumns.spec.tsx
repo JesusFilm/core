@@ -9,6 +9,7 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { shouldRenderSection } from '../CampaignPage/shouldRenderSection'
 import { CampaignProvider } from '../CampaignProvider'
+import { CampaignRenderer } from '../CampaignRenderer'
 import { createCampaignTheme } from '../libs/createCampaignTheme'
 import { cssRulesFor } from '../libs/cssRulesFor'
 import { transformCampaignBlocks } from '../libs/transformer'
@@ -19,8 +20,6 @@ import {
   section
 } from '../testData'
 import type { CampaignTreeOf } from '../types'
-
-import { CampaignColumns } from './CampaignColumns'
 
 const theme = createCampaignTheme(campaignPublic.theme, false)
 
@@ -112,7 +111,7 @@ function renderColumns(block: CampaignTreeOf<'CampaignColumnsBlock'>) {
           region: null
         }}
       >
-        <CampaignColumns block={block} />
+        <CampaignRenderer block={block} />
       </CampaignProvider>
     </ThemeProvider>
   )

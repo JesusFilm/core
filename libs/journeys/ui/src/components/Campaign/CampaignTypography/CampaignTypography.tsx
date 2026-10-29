@@ -2,7 +2,7 @@ import MuiTypography from '@mui/material/Typography'
 import { ReactElement } from 'react'
 
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
-import { useCampaignSection } from '../CampaignSectionBand'
+import { useCampaignSection } from '../CampaignSectionBand/CampaignSectionContext'
 import { hasText } from '../types'
 import type { CampaignBlockOf } from '../types'
 

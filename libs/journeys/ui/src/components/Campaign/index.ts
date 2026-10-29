@@ -146,13 +146,7 @@ export {
 } from './libs/themePresets'
 export { transformCampaignBlocks } from './libs/transformer'
 export { watchUrl } from './libs/watchUrl'
-export {
-  CAMPAIGN_EXTRA_TYPENAMES,
-  CAMPAIGN_NON_SECTION_TYPENAMES,
-  hasText,
-  isCampaignSection,
-  isExtra
-} from './types'
+export { hasText, isCampaignSection, isExtra } from './types'
 export type {
   CampaignBlock,
   CampaignBlockOf,

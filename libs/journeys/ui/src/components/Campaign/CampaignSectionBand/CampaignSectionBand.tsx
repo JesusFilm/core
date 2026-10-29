@@ -9,8 +9,9 @@ import {
   CampaignChildPlacement,
   TypographyAlign
 } from '../../../../__generated__/globalTypes'
+import { CampaignButton } from '../CampaignButton'
 import { useCampaign } from '../CampaignProvider'
-import { CampaignRenderer } from '../CampaignRenderer'
+import { CampaignTypography } from '../CampaignTypography'
 import { bandCssVariables, resolveBand } from '../libs/resolveBand'
 import { isExtra } from '../types'
 import type { CampaignSectionTree, CampaignTree } from '../types'
@@ -42,6 +43,17 @@ export function minHeightSx(
     flexDirection: 'column',
     justifyContent: 'center'
   }
+}
+
+/** An Extra, rendered here rather than through `CampaignRenderer`, which renders the sections that render through this band. */
+function renderExtra(child: CampaignTree): ReactElement | null {
+  switch (child.__typename) {
+    case 'CampaignTypographyBlock':
+      return <CampaignTypography key={child.id} block={child} />
+    case 'CampaignButtonBlock':
+      return <CampaignButton key={child.id} block={child} />
+  }
+  return null
 }
 
 function isAbove(child: CampaignTree): boolean {
@@ -87,13 +99,9 @@ export function CampaignSectionBand({
   )
   const body = (
     <Stack spacing={3} sx={{ position: 'relative' }}>
-      {above.map((child) => (
-        <CampaignRenderer key={child.id} block={child} />
-      ))}
+      {above.map(renderExtra)}
       {children}
-      {below.map((child) => (
-        <CampaignRenderer key={child.id} block={child} />
-      ))}
+      {below.map(renderExtra)}
     </Stack>
   )
 

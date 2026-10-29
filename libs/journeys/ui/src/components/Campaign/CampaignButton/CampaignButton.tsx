@@ -8,7 +8,7 @@ import {
   ButtonVariant
 } from '../../../../__generated__/globalTypes'
 import { useCampaign } from '../CampaignProvider'
-import { useCampaignSection } from '../CampaignSectionBand'
+import { useCampaignSection } from '../CampaignSectionBand/CampaignSectionContext'
 import { flexAlign } from '../libs/flexAlign'
 import { contrastText } from '../libs/resolveBand'
 import { hasText } from '../types'

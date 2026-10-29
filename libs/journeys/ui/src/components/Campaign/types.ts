@@ -3,6 +3,14 @@ import type {
   CampaignPublicFields,
   CampaignPublicFields_regions
 } from './__generated__/CampaignPublicFields'
+import {
+  BAND_TYPENAMES,
+  type BandTypename,
+  EXTRA_TYPENAMES,
+  type ExtraTypename,
+  PAGE_SECTION_TYPENAMES,
+  type PageSectionTypename
+} from './libs/campaignBlockGrammar'
 
 export type CampaignBlock = CampaignPublicBlockFields
 export type CampaignBlockOf<T extends CampaignBlock['__typename']> = Extract<
@@ -27,30 +35,8 @@ export type CampaignTreeOf<T extends CampaignBlock['__typename']> =
 export type CampaignPublic = CampaignPublicFields
 export type CampaignRegion = CampaignPublicFields_regions
 
-/** The Extras: the Typography and Button a section carries above or below its body. */
-export const CAMPAIGN_EXTRA_TYPENAMES = [
-  'CampaignTypographyBlock',
-  'CampaignButtonBlock'
-] as const
-
-/**
- * Every typename that never renders through `CampaignSectionBand`: the Extras,
- * the Column slots, the Journey cards, and the Campaign Video, which only
- * ever fills a Media Slot. The one list the section types and checks derive
- * from.
- */
-export const CAMPAIGN_NON_SECTION_TYPENAMES = [
-  ...CAMPAIGN_EXTRA_TYPENAMES,
-  'CampaignColumnBlock',
-  'CampaignJourneyBlock',
-  'CampaignVideoBlock'
-] as const
-
-/** Every typename that renders through `CampaignSectionBand`. */
-export type CampaignSectionTypename = Exclude<
-  CampaignBlock['__typename'],
-  (typeof CAMPAIGN_NON_SECTION_TYPENAMES)[number]
->
+/** Every typename that renders through `CampaignSectionBand`: the grammar's bands, the page sections and the chrome. */
+export type CampaignSectionTypename = BandTypename
 export type CampaignSectionBlock = CampaignBlockOf<CampaignSectionTypename>
 export type CampaignSectionTree = CampaignTree<CampaignSectionBlock>
 
@@ -64,17 +50,21 @@ function hasTypename(
 export function isCampaignSection(
   block: CampaignBlock
 ): block is CampaignSectionBlock {
-  return !hasTypename(CAMPAIGN_NON_SECTION_TYPENAMES, block)
+  return hasTypename(BAND_TYPENAMES, block)
+}
+
+/** One of the 11 page sections: a band that is not Campaign Chrome. */
+export function isPageSection<T extends { __typename: string }>(
+  block: T
+): block is Extract<T, { __typename: PageSectionTypename }> {
+  return hasTypename(PAGE_SECTION_TYPENAMES, block)
 }
 
 /** A Typography or Button Extra: the blocks a section places above or below its body. */
 export function isExtra<T extends { __typename: string }>(
   block: T
-): block is Extract<
-  T,
-  { __typename: (typeof CAMPAIGN_EXTRA_TYPENAMES)[number] }
-> {
-  return hasTypename(CAMPAIGN_EXTRA_TYPENAMES, block)
+): block is Extract<T, { __typename: ExtraTypename }> {
+  return hasTypename(EXTRA_TYPENAMES, block)
 }
 
 export function hasText(value: string | null | undefined): value is string {

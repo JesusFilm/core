@@ -2,17 +2,16 @@ import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
 import { CampaignColumnsRatio } from '../../../../__generated__/globalTypes'
-import { slotSection } from '../CampaignPage/shouldRenderSection'
-import { useCampaign } from '../CampaignProvider'
-import { CampaignRenderer } from '../CampaignRenderer'
 import {
   CampaignSectionBand,
   CampaignSlotContext
 } from '../CampaignSectionBand'
-import type { CampaignTreeOf } from '../types'
+import type { CampaignTree, CampaignTreeOf } from '../types'
 
 interface CampaignColumnsProps {
   block: CampaignTreeOf<'CampaignColumnsBlock'>
+  /** A Column Slot's section, or null when the slot renders none: passed in by the section registry, so Columns imports neither the renderer nor the render gates. */
+  renderSlot: (slot: CampaignTree) => ReactElement | null
 }
 
 const RATIO_COLUMNS: Record<CampaignColumnsRatio, string> = {
@@ -32,8 +31,10 @@ export function columnsGridTemplate(ratio: CampaignColumnsRatio): string {
  * and up and collapses when stacked. Slots are not containers: the section
  * inside breaks with the page, not with the slot.
  */
-export function CampaignColumns({ block }: CampaignColumnsProps): ReactElement {
-  const { campaign, pageKind, region } = useCampaign()
+export function CampaignColumns({
+  block,
+  renderSlot
+}: CampaignColumnsProps): ReactElement {
   const slots = block.children.filter(
     (child) => child.__typename === 'CampaignColumnBlock'
   )
@@ -53,12 +54,7 @@ export function CampaignColumns({ block }: CampaignColumnsProps): ReactElement {
         }}
       >
         {slots.map((slot) => {
-          const section = slotSection(slot, {
-            pageKind,
-            region,
-            regions: campaign.regions,
-            strings: campaign.strings
-          })
+          const section = renderSlot(slot)
           return (
             <Box
               key={slot.id}
@@ -69,7 +65,7 @@ export function CampaignColumns({ block }: CampaignColumnsProps): ReactElement {
             >
               {section != null && (
                 <CampaignSlotContext.Provider value>
-                  <CampaignRenderer block={section} />
+                  {section}
                 </CampaignSlotContext.Provider>
               )}
             </Box>
