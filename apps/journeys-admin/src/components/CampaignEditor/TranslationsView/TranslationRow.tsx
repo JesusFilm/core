@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
+import { textLength } from '@core/journeys/ui/Campaign/libs/translatedField'
 import LinkExternalIcon from '@core/shared/ui/icons/LinkExternal'
 import { getLocaleRTL } from '@core/shared/ui/rtl'
 
@@ -256,8 +257,8 @@ export function TranslationRowItem({
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         onBlur={handleBlur}
-        error={error != null || draft.length > row.maxLength}
-        helperText={error ?? `${draft.length} / ${row.maxLength}`}
+        error={error != null || textLength(draft) > row.maxLength}
+        helperText={error ?? `${textLength(draft)} / ${row.maxLength}`}
         slotProps={{
           htmlInput: {
             'aria-label': rowLabel(row),

@@ -7,18 +7,21 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import { GetCampaign_campaign_blocks_CampaignImageBlock as CampaignImageBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { textLength } from '../Canvas/InlineText'
 import { FocalPointControl } from '../FocalPointControl'
 import { ImagePicker } from '../Pickers/ImagePicker'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
-/** PRD §15: alt text is at most 500 characters. */
-export const IMAGE_ALT_MAX_LENGTH = 500
+const ALT_MAX_LENGTH = TRANSLATED_FIELDS.block.CampaignImageBlock.alt
 
 interface ImageSectionEditProps {
   block: CampaignImageBlock
@@ -72,8 +75,7 @@ export function ImageSectionEdit({
 
   function handleAltBlur(): void {
     const trimmed = alt.trim()
-    if (trimmed === committedAlt || trimmed.length > IMAGE_ALT_MAX_LENGTH)
-      return
+    if (trimmed === committedAlt || textLength(trimmed) > ALT_MAX_LENGTH) return
     if (translating) {
       addTranslation({
         block,
@@ -87,7 +89,7 @@ export function ImageSectionEdit({
     write({ alt: trimmed === '' ? null : trimmed })
   }
 
-  const altTooLong = alt.trim().length > IMAGE_ALT_MAX_LENGTH
+  const altTooLong = textLength(alt) > ALT_MAX_LENGTH
 
   return (
     <Stack
@@ -155,7 +157,9 @@ export function ImageSectionEdit({
         placeholder={translating ? (block.alt ?? '') : undefined}
         helperText={
           altTooLong ? (
-            t('Alt text must be at most 500 characters')
+            t('Alt text must be at most {{max}} characters', {
+              max: ALT_MAX_LENGTH
+            })
           ) : (
             <>
               <Box component="span" sx={{ display: 'block' }}>
@@ -164,7 +168,7 @@ export function ImageSectionEdit({
                 )}
               </Box>
               <Box component="span" sx={{ display: 'block' }}>
-                {`${textLength(alt)} / ${IMAGE_ALT_MAX_LENGTH}`}
+                {`${textLength(alt)} / ${ALT_MAX_LENGTH}`}
               </Box>
             </>
           )

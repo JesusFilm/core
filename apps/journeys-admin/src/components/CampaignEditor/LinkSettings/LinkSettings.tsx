@@ -12,6 +12,10 @@ import { useTranslation } from 'next-i18next/pages'
 import { KeyboardEvent, ReactElement, useEffect, useState } from 'react'
 
 import { hasText } from '@core/journeys/ui/Campaign'
+import {
+  LINK_URL_MAX_LENGTH,
+  urlLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import LinkIcon from '@core/shared/ui/icons/Link'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
@@ -25,11 +29,7 @@ import {
 } from '../../../libs/useCampaignBlockActionMutation'
 import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { textLength } from '../Canvas/InlineText'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
-
-/** The API rejects a web address longer than 2048 characters. */
-export const LINK_URL_MAX_LENGTH = 2048
 
 type LinkKind = 'link' | 'scroll' | 'region'
 type Translate = (key: string) => string
@@ -264,7 +264,7 @@ export function LinkSettings({ block }: LinkSettingsProps): ReactElement {
             }}
             onKeyDown={handleUrlKeyDown}
             error={error != null}
-            helperText={error ?? `${textLength(url)} / ${LINK_URL_MAX_LENGTH}`}
+            helperText={error ?? `${urlLength(url)} / ${LINK_URL_MAX_LENGTH}`}
             slotProps={{
               formHelperText: error != null ? { role: 'alert' } : undefined
             }}

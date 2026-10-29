@@ -17,6 +17,10 @@ import {
   useState
 } from 'react'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
 import { Dialog } from '@core/shared/ui/Dialog'
 import Trash2Icon from '@core/shared/ui/icons/Trash2'
 
@@ -31,14 +35,12 @@ import {
   useCampaignDeleteMutation
 } from '../../../libs/useCampaignDeleteMutation'
 import { useCampaignUpdateMutation } from '../../../libs/useCampaignUpdateMutation'
-import { textLength } from '../Canvas/InlineText'
 import { languageNames } from '../LanguagesPanel/LanguagesPanel'
 import { campaignStatusCopy } from '../PublishButton/statusCopy'
 
 import { CampaignDomain } from './CampaignDomain'
 import { DefaultLanguageDialog } from './DefaultLanguageDialog'
 
-const TITLE_MAX_LENGTH = 100
 const SLUG_MAX_LENGTH = 200
 
 type SettingsField = 'title' | 'slug'
@@ -113,8 +115,9 @@ export function Settings({
   ): string | undefined {
     if (value === '')
       return field === 'title' ? t('Title is required') : t('Slug is required')
-    const max = field === 'title' ? TITLE_MAX_LENGTH : SLUG_MAX_LENGTH
-    if ([...value].length > max) return t('Max {{max}} characters', { max })
+    const max =
+      field === 'title' ? TRANSLATED_FIELDS.campaign.title : SLUG_MAX_LENGTH
+    if (textLength(value) > max) return t('Max {{max}} characters', { max })
     return undefined
   }
 
@@ -216,7 +219,8 @@ export function Settings({
         onKeyDown={handleKeyDown}
         error={errors.title != null}
         helperText={
-          errors.title ?? `${textLength(title)} / ${TITLE_MAX_LENGTH}`
+          errors.title ??
+          `${textLength(title)} / ${TRANSLATED_FIELDS.campaign.title}`
         }
         fullWidth
         slotProps={{ htmlInput: { 'aria-label': t('Title') } }}

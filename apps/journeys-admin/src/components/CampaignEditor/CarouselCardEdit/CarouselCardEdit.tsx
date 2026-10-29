@@ -4,6 +4,11 @@ import TextField from '@mui/material/TextField'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
@@ -12,9 +17,7 @@ import { CanvasMedia } from '../Canvas/CanvasMedia'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
-/** The API's caps on a Campaign Video's overrides (PRD §15). */
-const TITLE_MAX = 200
-const DESCRIPTION_MAX = 1000
+const CAPS = TRANSLATED_FIELDS.block.CampaignVideoBlock
 
 type VideoTextField = 'title' | 'description'
 
@@ -67,6 +70,7 @@ export function CarouselCardEdit({
 
   function handleBlur(field: VideoTextField): void {
     const value = values[field].trim()
+    if (textLength(value) > CAPS[field]) return
     if (translating) {
       if (value === committed[field]) return
       addTranslation({
@@ -103,8 +107,8 @@ export function CarouselCardEdit({
         }
         onBlur={() => handleBlur('title')}
         placeholder={translating ? (block.title ?? '') : undefined}
-        helperText={`${values.title.length} / ${TITLE_MAX}`}
-        slotProps={{ htmlInput: { maxLength: TITLE_MAX } }}
+        error={textLength(values.title) > CAPS.title}
+        helperText={`${textLength(values.title)} / ${CAPS.title}`}
         size="small"
         fullWidth
       />
@@ -119,8 +123,8 @@ export function CarouselCardEdit({
         }
         onBlur={() => handleBlur('description')}
         placeholder={translating ? (block.description ?? '') : undefined}
-        helperText={`${values.description.length} / ${DESCRIPTION_MAX}`}
-        slotProps={{ htmlInput: { maxLength: DESCRIPTION_MAX } }}
+        error={textLength(values.description) > CAPS.description}
+        helperText={`${textLength(values.description)} / ${CAPS.description}`}
         size="small"
         multiline
         minRows={3}

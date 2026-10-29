@@ -9,10 +9,7 @@ import {
   CampaignTextSource,
   CampaignTranslationGroup
 } from '../../../../__generated__/globalTypes'
-import {
-  CAMPAIGN_TEXT_FIELDS,
-  isCampaignTextBlock
-} from '../../../libs/useCampaignBlockTextMutation'
+import { translatedBlockFields } from '../../../libs/useCampaignBlockTextMutation'
 import type { CampaignSelection } from '../CampaignEditorProvider'
 
 /** The Translations view's sections, in display order. */
@@ -124,22 +121,6 @@ export function rowMatchesSelection(
   return selection.kind === 'campaign'
 }
 
-type CampaignBlock = Campaign['blocks'][number]
-
-/** Translated text a block carries beyond inline text: a carousel card's title and description, an image's alt text. */
-const MEDIA_TEXT_FIELDS: Partial<
-  Record<CampaignBlock['__typename'], readonly string[]>
-> = {
-  CampaignVideoBlock: ['title', 'description'],
-  CampaignImageBlock: ['alt']
-}
-
-/** Every translated default-language text field of a block, as the API lists them. */
-function translatedFields(block: CampaignBlock): readonly string[] {
-  if (isCampaignTextBlock(block)) return CAMPAIGN_TEXT_FIELDS[block.__typename]
-  return MEDIA_TEXT_FIELDS[block.__typename] ?? []
-}
-
 /**
  * Everything that decides which lines the Translations list has and what
  * they translate: each block's place and every translated default-language
@@ -161,7 +142,7 @@ export function campaignTextSignature(
       block.parentOrder,
       block.pageId,
       block.regionId,
-      translatedFields(block).map(
+      translatedBlockFields(block.__typename).map(
         (field) => (block as unknown as Record<string, unknown>)[field]
       )
     ]),

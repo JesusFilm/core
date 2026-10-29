@@ -9,7 +9,7 @@ import { blockUpdateMock } from '../../styleTesting'
 import { StaticEditor } from '../../testing'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
-import { InlineText, inlineTextTestId, textLength } from './InlineText'
+import { InlineText, inlineTextCap, inlineTextTestId } from './InlineText'
 
 const hero = campaign.blocks.find(
   (block) => block.id === 'heroId'
@@ -42,8 +42,10 @@ function renderText(
 describe('InlineText', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('counts Unicode code points after trim', () => {
-    expect(textLength('  héllo 👋  ')).toBe(7)
+  it('reads its cap from the Translated Field declaration', () => {
+    expect(inlineTextCap({ block: hero, field: 'title' })).toBe(150)
+    expect(inlineTextCap({ block: hero, field: 'eyebrow' })).toBe(80)
+    expect(inlineTextCap({ string: campaignStrings[0] })).toBe(200)
   })
 
   it('renders as text when not editing and selects its block on click', () => {

@@ -15,6 +15,11 @@ import {
   useState
 } from 'react'
 
+import {
+  TRANSLATED_FIELDS,
+  textLength
+} from '@core/journeys/ui/Campaign/libs/translatedField'
+
 import { GetCampaign_campaign_regions as CampaignRegion } from '../../../../__generated__/GetCampaign'
 import { GetCampaignCountries_countries as Country } from '../../../../__generated__/GetCampaignCountries'
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
@@ -23,11 +28,10 @@ import { useCampaignCountriesQuery } from '../../../libs/useCampaignCountriesQue
 import { useCampaignRegionCountryAddMutation } from '../../../libs/useCampaignRegionCountryAddMutation'
 import { useCampaignRegionCountryRemoveMutation } from '../../../libs/useCampaignRegionCountryRemoveMutation'
 import { useCampaignRegionUpdateMutation } from '../../../libs/useCampaignRegionUpdateMutation'
-import { textLength } from '../Canvas/InlineText'
 import { shapeSlug } from '../Settings'
 import { useCampaignTranslationWrite } from '../utils/useCampaignTranslationWrite'
 
-export const REGION_NAME_MAX_LENGTH = 60
+const NAME_MAX_LENGTH = TRANSLATED_FIELDS.region.name
 const SLUG_MAX_LENGTH = 200
 
 type RegionField = 'name' | 'slug' | 'countryId'
@@ -125,8 +129,8 @@ export function RegionSettings({
   ): string | undefined {
     if (value === '' && !(field === 'name' && translationLanguageId != null))
       return field === 'name' ? t('Name is required') : t('Slug is required')
-    const max = field === 'name' ? REGION_NAME_MAX_LENGTH : SLUG_MAX_LENGTH
-    if ([...value].length > max) return t('Max {{max}} characters', { max })
+    const max = field === 'name' ? NAME_MAX_LENGTH : SLUG_MAX_LENGTH
+    if (textLength(value) > max) return t('Max {{max}} characters', { max })
     return undefined
   }
 
@@ -241,16 +245,11 @@ export function RegionSettings({
         onKeyDown={handleKeyDown}
         placeholder={translationLanguageId == null ? undefined : region.name}
         error={errors.name != null}
-        helperText={
-          errors.name ?? `${textLength(name)} / ${REGION_NAME_MAX_LENGTH}`
-        }
+        helperText={errors.name ?? `${textLength(name)} / ${NAME_MAX_LENGTH}`}
         required={translationLanguageId == null}
         fullWidth
         slotProps={{
-          htmlInput: {
-            'aria-label': t('Name'),
-            maxLength: REGION_NAME_MAX_LENGTH + 1
-          }
+          htmlInput: { 'aria-label': t('Name') }
         }}
       />
       <TextField
