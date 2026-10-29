@@ -218,4 +218,24 @@ describe('useCampaignRegionLanguageSnapshotRefreshCommand', () => {
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalledTimes(2))
   })
+
+  it('holds an undo pressed while the refresh is in flight until the refresh settles', async () => {
+    // The refresh skips the app's mutation queue, so the Command queue is what orders the undo after it.
+    renderHook(edited, [
+      { ...refreshMock, delay: 200 },
+      { ...undoMock, delay: 0 }
+    ])
+    await screen.findByText('Refresh')
+
+    fireEvent.click(screen.getByText('Refresh'))
+    fireEvent.click(screen.getByText('Confirm'))
+    expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
+    fireEvent.click(screen.getByText('Undo'))
+
+    expect(refreshMock.result).not.toHaveBeenCalled()
+    await waitFor(() => expect(undoMock.result).toHaveBeenCalled())
+    expect(refreshMock.result.mock.invocationCallOrder[0]).toBeLessThan(
+      undoMock.result.mock.invocationCallOrder[0]
+    )
+  })
 })

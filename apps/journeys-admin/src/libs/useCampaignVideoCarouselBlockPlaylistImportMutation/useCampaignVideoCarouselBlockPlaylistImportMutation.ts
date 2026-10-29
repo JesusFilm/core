@@ -37,7 +37,9 @@ export type ImportCarouselPlaylist = (
  * Import the first 12 videos of a YouTube playlist into a Video Carousel
  * as explicit items through `campaignVideoCarouselBlockPlaylistImport`; the
  * created items join the campaign's cached block list when the server
- * answers (their ids are the server's).
+ * answers (their ids are the server's). The import can take seconds, so it
+ * skips the app-wide mutation queue rather than hold every other save behind
+ * it; the Campaign Command queue still orders it against undo and redo.
  */
 export function useCampaignVideoCarouselBlockPlaylistImportMutation(
   campaignId: string
@@ -50,6 +52,7 @@ export function useCampaignVideoCarouselBlockPlaylistImportMutation(
     async (carouselId, url) =>
       await importPlaylist({
         variables: { id: carouselId, url },
+        context: { skipQueue: true },
         update(cache, { data }) {
           const items = data?.campaignVideoCarouselBlockPlaylistImport
           if (items == null) return

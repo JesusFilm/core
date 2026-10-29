@@ -16,7 +16,12 @@ export const CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH = gql`
   }
 `
 
-/** "Refresh from journey": re-read a Share Language's snapshot title and description from its journey; the row is normalised from the result. */
+/**
+ * "Refresh from journey": re-read a Share Language's snapshot title and
+ * description from its journey; the row is normalised from the result.
+ * It can take seconds, so it skips the app-wide mutation queue (merged into any
+ * context the caller passes) rather than hold every other save behind it.
+ */
 export function useCampaignRegionLanguageSnapshotRefreshMutation(
   options?: useMutation.Options<
     CampaignRegionLanguageSnapshotRefresh,
@@ -29,5 +34,8 @@ export function useCampaignRegionLanguageSnapshotRefreshMutation(
   return useMutation<
     CampaignRegionLanguageSnapshotRefresh,
     CampaignRegionLanguageSnapshotRefreshVariables
-  >(CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH, options)
+  >(CAMPAIGN_REGION_LANGUAGE_SNAPSHOT_REFRESH, {
+    ...options,
+    context: { ...options?.context, skipQueue: true }
+  })
 }
