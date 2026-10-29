@@ -2,6 +2,8 @@ import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { CAMPAIGN_LEDE_SX } from '@core/journeys/ui/Campaign'
+
 import {
   CampaignTextBlock,
   CampaignTextField,
@@ -67,7 +69,7 @@ export function SectionText({
     },
     description: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-muted)' }
+      sx: CAMPAIGN_LEDE_SX
     },
     intro: {
       variant: 'body1' as const,
@@ -75,11 +77,13 @@ export function SectionText({
     },
     richTextContent: {
       variant: 'body1' as const,
-      sx: {}
+      sx: {},
+      display: 'paragraphs' as const
     },
     bullets: {
       variant: 'body1' as const,
-      sx: { color: 'var(--campaign-band-text)' }
+      sx: { color: 'var(--campaign-band-text)' },
+      display: 'bullets' as const
     }
   }[
     field as
@@ -100,6 +104,7 @@ export function SectionText({
       onSelect={() => onSelect(field)}
       variant={styles.variant}
       sx={styles.sx}
+      display={'display' in styles ? styles.display : undefined}
     />
   )
 }

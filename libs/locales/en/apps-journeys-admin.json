@@ -1761,5 +1761,7 @@
   "The page goes live when you publish.": "The page goes live when you publish.",
   "We couldn't check your role.": "We couldn't check your role.",
   "Retry": "Retry",
-  "Open page": "Open page"
+  "Open page": "Open page",
+  "Not shown in pills": "Not shown in pills",
+  "No other regions yet": "No other regions yet"
 }

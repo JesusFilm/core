@@ -119,6 +119,26 @@ describe('RegionSwitcherEdit', () => {
     expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
   })
 
+  it('reads "No other regions yet" with + Add on the only region’s page', async () => {
+    const oneRegion = {
+      ...campaignWithRegions,
+      regions: campaignWithRegions.regions.filter(
+        (region) => region.id === 'eurRegionId'
+      )
+    }
+    renderSwitcher(oneRegion, {
+      pageKind: CampaignPageKind.regionTemplate,
+      regionId: 'eurRegionId'
+    })
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionSwitcherEmpty')).toBeInTheDocument()
+    )
+    expect(screen.getByText('No other regions yet')).toBeInTheDocument()
+    expect(screen.queryByText('Add your first region')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add' })).toBeInTheDocument()
+  })
+
   it('shows the listed regions as cards with name, lines and country chips, and the current region hidden', async () => {
     renderSwitcher(campaignWithRegions, {
       pageKind: CampaignPageKind.regionTemplate,
@@ -190,6 +210,45 @@ describe('RegionSwitcherEdit', () => {
     await waitFor(() =>
       expect(screen.getByRole('textbox', { name: 'Your text' })).toBeVisible()
     )
+  })
+
+  it('fades a pill’s Region Lines and notes they are not shown in pills', async () => {
+    renderSwitcher(
+      campaignWithRegions,
+      { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+      [],
+      CampaignSwitcherVariant.pills
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toHaveStyle({
+        opacity: '0.5'
+      })
+    )
+    const note = screen.getByTestId('RegionLinesHidden-eurRegionId')
+    expect(note).toHaveTextContent('Not shown in pills')
+    expect(screen.getByTestId('RegionCardEdit-eurRegionId').nextSibling).toBe(
+      note
+    )
+  })
+
+  it('shows Region Lines at full strength with no note outside pills', async () => {
+    renderSwitcher(
+      campaignWithRegions,
+      { pageKind: CampaignPageKind.regionTemplate, regionId: 'afrRegionId' },
+      [],
+      CampaignSwitcherVariant.cards
+    )
+
+    await waitFor(() =>
+      expect(screen.getByTestId('RegionLineEdit-eurLineId')).toBeInTheDocument()
+    )
+    expect(screen.getByTestId('RegionLineEdit-eurLineId')).not.toHaveStyle({
+      opacity: '0.5'
+    })
+    expect(
+      screen.queryByTestId('RegionLinesHidden-eurRegionId')
+    ).not.toBeInTheDocument()
   })
 
   it('shows each region’s name in the previewed language, falling back to the default name', async () => {

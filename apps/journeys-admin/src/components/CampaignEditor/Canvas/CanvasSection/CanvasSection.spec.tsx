@@ -366,6 +366,24 @@ describe('CanvasSection footer', () => {
       ).toBeNull()
     })
 
+    it('spaces its lines as the public footer does', () => {
+      const copyright = campaign.blocks.find(
+        (block) => block.id === 'footerCopyrightId'
+      )
+      const twoLines: Campaign = {
+        ...campaign,
+        blocks: [
+          ...campaign.blocks,
+          { ...copyright, id: 'footerSecondLineId', parentOrder: 3 } as never
+        ]
+      }
+      renderChrome('CampaignFooterBlock', twoLines)
+
+      expect(screen.getByTestId('CanvasExtra-footerSecondLineId')).toHaveStyle({
+        marginTop: '4px'
+      })
+    })
+
     it('renders no row for a footer without children', () => {
       const emptyFooter: Campaign = {
         ...campaign,
@@ -376,7 +394,9 @@ describe('CanvasSection footer', () => {
       renderChrome('CampaignFooterBlock', emptyFooter)
 
       expect(screen.queryByTestId('CanvasFooterRow')).not.toBeInTheDocument()
-      expect(screen.getByTestId('CanvasSection-footerId')).toBeInTheDocument()
+      expect(screen.getByTestId('CanvasSection-footerId')).toHaveStyle({
+        minHeight: '16px'
+      })
     })
 
     it('selects a footer link on click', () => {
@@ -491,6 +511,61 @@ describe('CanvasSection region header', () => {
     expect(screen.getByTestId('CanvasRegionLine')).toHaveStyle({
       color: 'var(--campaign-band-text)'
     })
+  })
+})
+
+describe('CanvasSection body text', () => {
+  function bodySection(
+    typename: 'CampaignRichTextBlock' | 'CampaignFeaturedMediaBlock',
+    fields: Record<string, string>
+  ): CanvasBlock {
+    return {
+      ...newSectionBlock(typename, {
+        id: 'bodyTextId',
+        campaignId: campaign.id,
+        pageId: 'landingPageId',
+        parentOrder: 0
+      }),
+      ...fields,
+      children: [],
+      cover: null,
+      media: null
+    } as unknown as CanvasBlock
+  }
+
+  function renderSection(block: CanvasBlock): RenderResult {
+    return render(
+      <StaticEditor initialState={{ previewLanguageId: '529' }}>
+        <CanvasSection block={block} />
+      </StaticEditor>
+    )
+  }
+
+  it('shows Rich Text as one paragraph per blank-line run', () => {
+    renderSection(
+      bodySection('CampaignRichTextBlock', {
+        richTextContent: 'First.\n\nSecond.'
+      })
+    )
+
+    expect(
+      screen
+        .getAllByTestId('InlineTextParagraph')
+        .map((paragraph) => paragraph.textContent)
+    ).toEqual(['First.', 'Second.'])
+  })
+
+  it('shows Featured Media bullets as a list', () => {
+    renderSection(
+      bodySection('CampaignFeaturedMediaBlock', {
+        bullets: 'Free to share\nIn over 1,800 languages'
+      })
+    )
+
+    expect(screen.getByTestId('InlineText-bullets').tagName).toBe('UL')
+    expect(
+      screen.getAllByRole('listitem').map((item) => item.textContent)
+    ).toEqual(['Free to share', 'In over 1,800 languages'])
   })
 })
 

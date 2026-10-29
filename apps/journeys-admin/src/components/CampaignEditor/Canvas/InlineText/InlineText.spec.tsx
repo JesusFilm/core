@@ -101,6 +101,58 @@ describe('InlineText', () => {
     expect(screen.getByTestId('InlineText-title')).toHaveTextContent('Title')
   })
 
+  describe('display', () => {
+    const text = 'First line\nstill first\n\nSecond'
+    const target: CampaignTextTarget = {
+      block: { ...hero, title: text } as CampaignTextBlock,
+      field: 'title'
+    }
+
+    it('splits unselected text into paragraphs on blank lines', () => {
+      renderText({ editing: false, target, display: 'paragraphs' })
+
+      const paragraphs = screen.getAllByTestId('InlineTextParagraph')
+      expect(paragraphs).toHaveLength(2)
+      expect(paragraphs[0]).toHaveTextContent('First line still first')
+      expect(paragraphs[1]).toHaveTextContent('Second')
+    })
+
+    it('lists unselected text one item per line', () => {
+      renderText({ editing: false, target, display: 'bullets' })
+
+      expect(screen.getByRole('list')).toBe(
+        screen.getByTestId('InlineText-title')
+      )
+      expect(
+        screen.getAllByRole('listitem').map((item) => item.textContent)
+      ).toEqual(['First line', 'still first', 'Second'])
+    })
+
+    it('edits as one textarea with the original text', () => {
+      renderText({ target, display: 'paragraphs' })
+
+      expect(screen.getByRole('textbox', { name: 'Title' })).toHaveValue(text)
+      expect(
+        screen.queryByTestId('InlineTextParagraph')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
+    })
+
+    it('shows the placeholder as text while empty', () => {
+      renderText({
+        editing: false,
+        target: {
+          block: { ...hero, title: '' } as CampaignTextBlock,
+          field: 'title'
+        },
+        display: 'bullets'
+      })
+
+      expect(screen.queryByRole('list')).not.toBeInTheDocument()
+      expect(screen.getByTestId('InlineText-title')).toHaveTextContent('Title')
+    })
+  })
+
   it('pre-validates only the length, with a character counter near the cap', async () => {
     const over = heroMock('x'.repeat(151))
     const near = heroMock('x'.repeat(130))

@@ -64,6 +64,8 @@ interface RegionCardEditProps {
  * while any of its Share Languages is unlinked), its Region Lines as inline
  * text and its country chips. Clicking the card selects the region; clicking
  * a line selects that line, which then edits in place as any typography.
+ * A pill keeps its lines editable though the public pill never shows them:
+ * faded, with a note under the card saying so.
  * The handle on its right edge drags the card onto another card to
  * take that card's place in the region order, one Command through the
  * canvas's drag context.
@@ -86,6 +88,9 @@ function RegionCardEdit({
   const lines = regionLines(campaign.blocks, region.id)
   const lineSelected = lines.some((line) => line.id === selection.block?.id)
   const muted = !region.listed && !selected && !lineSelected
+  const linesHidden =
+    variant === CampaignSwitcherVariant.pills &&
+    lines.some((line) => line.__typename === 'CampaignTypographyBlock')
   const dragId = `region:${region.id}`
   const dragData = { regionId: region.id }
   const { setNodeRef: setDroppableRef, isOver } = useDroppable({
@@ -112,7 +117,7 @@ function RegionCardEdit({
     selectRegion(region.id, hostBlockId)
   }
 
-  return (
+  const card = (
     <Box
       ref={setCardRef}
       id={regionCardId(hostBlockId, region.id)}
@@ -208,6 +213,7 @@ function RegionCardEdit({
                 width: '100%',
                 // Room for the line's badge above it, clear of the text before it.
                 mt: 1,
+                ...(linesHidden ? { opacity: 0.5 } : {}),
                 ...HOVER_OUTLINE_SX,
                 ...(selection.block?.id === line.id ? SELECTED_OUTLINE : {})
               }}
@@ -235,6 +241,17 @@ function RegionCardEdit({
       <CampaignRegionCountries region={region} />
     </Box>
   )
+
+  if (!linesHidden) return card
+
+  return (
+    <Stack spacing={0.5} sx={{ alignItems: 'flex-start' }}>
+      {card}
+      <EditorNote testId={`RegionLinesHidden-${region.id}`}>
+        {t('Not shown in pills')}
+      </EditorNote>
+    </Stack>
+  )
 }
 
 /**
@@ -244,7 +261,9 @@ function RegionCardEdit({
  * outline and the line being edited stay at full strength) so its Navigator
  * row can hover and select it, and the "+ Add"
  * that runs `campaignRegionCreate` as a Command. With no region to show the
- * section reads "Add your first region".
+ * section reads "Add your first region", or "No other regions yet" on the
+ * Region Page of the campaign's only region (the public page hides the band
+ * there).
  */
 export function RegionSwitcherEdit({
   block
@@ -282,7 +301,11 @@ export function RegionSwitcherEdit({
         data-testid="RegionSwitcherEmpty"
         sx={{ alignItems: 'flex-start' }}
       >
-        <EditorNote>{t('Add your first region')}</EditorNote>
+        <EditorNote>
+          {campaign.regions.length > 0
+            ? t('No other regions yet')
+            : t('Add your first region')}
+        </EditorNote>
         {addButton}
       </Stack>
     )

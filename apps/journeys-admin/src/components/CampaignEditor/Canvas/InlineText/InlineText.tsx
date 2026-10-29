@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import {
@@ -10,6 +11,10 @@ import {
   useState
 } from 'react'
 
+import {
+  featuredMediaBullets,
+  splitParagraphs
+} from '@core/journeys/ui/Campaign'
 import {
   TRANSLATED_FIELDS,
   textLength,
@@ -43,6 +48,13 @@ interface InlineTextProps
    * like a text field. Still multi-line: Enter inserts a line break.
    */
   autoWidth?: boolean
+  /**
+   * How the unselected text lays out, as the public section does: one text,
+   * one paragraph per blank-line-separated run (Rich Text), or one list item
+   * per line with accent markers (Featured Media bullets). Editing is always
+   * one textarea, and an empty text shows its placeholder or fallback as text.
+   */
+  display?: 'text' | 'paragraphs' | 'bullets'
 }
 
 /** The cap of an inline text, from the Translated Field declaration, which declares every inline text field. */
@@ -83,7 +95,8 @@ export function InlineText({
   align,
   sx,
   variantMapping,
-  autoWidth = false
+  autoWidth = false,
+  display = 'text'
 }: InlineTextProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const max = inlineTextCap(target)
@@ -122,6 +135,62 @@ export function InlineText({
     focusOnEdit.current = true
     onSelect?.()
   }
+
+  const items =
+    display === 'paragraphs'
+      ? splitParagraphs(value)
+      : display === 'bullets'
+        ? featuredMediaBullets(value)
+        : []
+
+  if (!editing && display === 'paragraphs' && items.length > 0)
+    return (
+      <Stack
+        spacing={3}
+        data-testid={testId}
+        onClick={handleClick}
+        sx={{ cursor: 'text', ...sx }}
+      >
+        {items.map((paragraph, index) => (
+          <Typography
+            key={index}
+            variant={variant}
+            align={align}
+            variantMapping={variantMapping}
+            data-testid="InlineTextParagraph"
+            sx={{ whiteSpace: 'pre-line', wordBreak: 'break-word' }}
+          >
+            {paragraph}
+          </Typography>
+        ))}
+      </Stack>
+    )
+
+  if (!editing && display === 'bullets' && items.length > 0)
+    return (
+      <Box
+        component="ul"
+        data-testid={testId}
+        onClick={handleClick}
+        sx={{ m: 0, pl: 3, cursor: 'text', ...sx }}
+      >
+        {items.map((bullet, index) => (
+          <Typography
+            key={index}
+            component="li"
+            variant={variant}
+            align={align}
+            sx={{
+              mb: 1,
+              wordBreak: 'break-word',
+              '&::marker': { color: 'var(--campaign-band-accent)' }
+            }}
+          >
+            {bullet}
+          </Typography>
+        ))}
+      </Box>
+    )
 
   if (!editing)
     return (

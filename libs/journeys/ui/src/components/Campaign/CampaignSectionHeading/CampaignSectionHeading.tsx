@@ -6,6 +6,12 @@ import { TypographyAlign } from '../../../../__generated__/globalTypes'
 import { flexAlign } from '../libs/flexAlign'
 import { hasText } from '../types'
 
+/** The lede's typography: muted, and larger from `md` up. The editor canvas styles its description with it too. */
+export const CAMPAIGN_LEDE_SX = {
+  color: 'var(--campaign-band-muted)',
+  fontSize: { md: '1.25rem' }
+} as const
+
 interface CampaignSectionHeadingProps {
   eyebrow?: string | null
   title?: string | null
@@ -63,11 +69,7 @@ export function CampaignSectionHeading({
         <Typography
           variant="body1"
           data-testid="CampaignDescription"
-          sx={{
-            color: 'var(--campaign-band-muted)',
-            fontSize: { md: '1.25rem' },
-            whiteSpace: 'pre-line'
-          }}
+          sx={{ ...CAMPAIGN_LEDE_SX, whiteSpace: 'pre-line' }}
         >
           {description}
         </Typography>

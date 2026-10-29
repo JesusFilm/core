@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { MouseEvent, ReactElement, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -171,7 +172,9 @@ function JourneyCardEdit({
  * the journeys the author can read, and beneath it a smaller paste field for
  * a journey outside that list (an admin link or a public URL). Adding is one create Command: the card
  * shows at once from the journey picked or resolved, and the server
- * snapshots the journey's title and description when it answers.
+ * snapshots the journey's title and description when it answers. With no
+ * card it shows the campaign's `noJourneys` string, as the public page
+ * does, above the hint or the picker; that wording is edited in Settings.
  */
 export function JourneyListEdit({
   block,
@@ -196,6 +199,13 @@ export function JourneyListEdit({
     CampaignStringKey.openTemplate,
     previewLanguageId,
     t('Open journey')
+  )
+  // Blank on the public page renders nothing, so it has no fallback here.
+  const noJourneysLabel = campaignStringText(
+    campaign,
+    CampaignStringKey.noJourneys,
+    previewLanguageId,
+    ''
   )
 
   async function handleAdd(
@@ -267,6 +277,15 @@ export function JourneyListEdit({
             />
           ))}
         </CampaignJourneyCards>
+      )}
+      {cards.length === 0 && noJourneysLabel.trim() !== '' && (
+        <Typography
+          variant="body1"
+          data-testid="JourneyListNoJourneys"
+          sx={{ color: 'var(--campaign-band-muted)', whiteSpace: 'pre-line' }}
+        >
+          {noJourneysLabel}
+        </Typography>
       )}
       {active || adding ? (
         <Stack spacing={1.5} sx={{ maxWidth: 720 }}>

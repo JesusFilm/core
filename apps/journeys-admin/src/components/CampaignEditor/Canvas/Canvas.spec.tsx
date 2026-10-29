@@ -467,8 +467,13 @@ describe('Canvas', () => {
       featuredSection.querySelector('[data-testid="CanvasMediaPlaceholder"]')
     ).not.toBeNull()
     expect(
-      featuredSection.querySelector('[data-testid="InlineText-bullets"]')
-    ).toHaveTextContent('Free to share In many languages')
+      Array.from(
+        featuredSection.querySelectorAll(
+          '[data-testid="InlineText-bullets"] li'
+        ),
+        (item) => item.textContent
+      )
+    ).toEqual(['Free to share', 'In many languages'])
   })
 
   it('lays a stacked Featured Media section out as one column at every width, the media under the text', async () => {
