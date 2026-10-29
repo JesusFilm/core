@@ -3,31 +3,22 @@ import { ReactElement } from 'react'
 
 import { columnsGridTemplate } from '@core/journeys/ui/Campaign'
 
-import { CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO } from '../../../libs/useCampaignColumnsBlockRatioMutation'
+import { GetCampaign_campaign_blocks_CampaignColumnsBlock as ColumnsBlock } from '../../../../__generated__/GetCampaign'
+import { CampaignColumnsRatio } from '../../../../__generated__/globalTypes'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaignWithColumns } from '../data'
-import { StyleMock, WithBlock } from '../styleTesting'
+import { StyleMock, WithBlock, blockUpdateMock } from '../styleTesting'
 import { CommandProbe, QueriedEditor } from '../testing'
 
 import { ColumnsRatio } from './ColumnsRatio'
 
-function ratioMock(ratio: string, current = 'equal'): StyleMock {
-  return {
-    request: {
-      query: CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO,
-      variables: { id: 'columnsId', input: { ratio } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignColumnsBlockUpdate: {
-          __typename: 'CampaignColumnsBlock',
-          id: 'columnsId',
-          ratio: ratio ?? current
-        }
-      }
-    }))
-  }
+const columns = campaignWithColumns.blocks.find(
+  (block) => block.id === 'columnsId'
+) as ColumnsBlock
+
+function ratioMock(ratio: CampaignColumnsRatio): StyleMock {
+  return blockUpdateMock(columns, { ratio })
 }
 
 /** The grid template the canvas gives the Columns section as the block holds it now. */
@@ -73,7 +64,10 @@ describe('ColumnsRatio', () => {
   })
 
   it('changes the ratio as one Command through the columns update, and the grid follows', async () => {
-    const mocks = [ratioMock('wideLeft'), ratioMock('equal')]
+    const mocks = [
+      ratioMock(CampaignColumnsRatio.wideLeft),
+      ratioMock(CampaignColumnsRatio.equal)
+    ]
     renderRatio(mocks)
 
     expect(await screen.findByTestId('GridTemplate')).toHaveTextContent(
@@ -102,7 +96,7 @@ describe('ColumnsRatio', () => {
   })
 
   it('writes nothing when the current ratio is chosen again', async () => {
-    const mocks = [ratioMock('equal')]
+    const mocks = [ratioMock(CampaignColumnsRatio.equal)]
     renderRatio(mocks)
 
     fireEvent.click(await screen.findByRole('button', { name: 'Equal' }))
@@ -113,7 +107,7 @@ describe('ColumnsRatio', () => {
 
   it('shows the API message verbatim when the save fails', async () => {
     const failing: StyleMock = {
-      ...ratioMock('wideRight'),
+      ...ratioMock(CampaignColumnsRatio.wideRight),
       result: vi.fn(() => ({
         errors: [{ message: 'ratio: not equal, wideLeft or wideRight' }]
       }))

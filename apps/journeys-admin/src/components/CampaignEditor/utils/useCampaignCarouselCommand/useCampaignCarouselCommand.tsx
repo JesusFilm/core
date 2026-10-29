@@ -1,25 +1,31 @@
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useCommand } from '@core/journeys/ui/CommandProvider'
 
-import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
+import {
+  GetCampaign_campaign_blocks as CampaignBlock,
+  GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideoCarouselBlock
+} from '../../../../../__generated__/GetCampaign'
 import { useCampaignBlockDeleteMutation } from '../../../../libs/useCampaignBlockDeleteMutation'
 import { useCampaignBlockRestoreMutation } from '../../../../libs/useCampaignBlockRestoreMutation'
 import { campaignTextCap } from '../../../../libs/useCampaignBlockTextMutation'
+import {
+  CampaignBlockUpdateInput,
+  useCampaignBlockUpdateMutation
+} from '../../../../libs/useCampaignBlockUpdateMutation'
 import {
   CampaignVideoPick,
   useCampaignCarouselItemCreateMutation
 } from '../../../../libs/useCampaignVideoBlockCreateMutation'
 import { useCampaignVideoCarouselBlockPlaylistImportMutation } from '../../../../libs/useCampaignVideoCarouselBlockPlaylistImportMutation'
-import {
-  CampaignCarouselVideoInput,
-  CampaignVideoCarouselBlock,
-  useCampaignVideoCarouselBlockUpdateMutation
-} from '../../../../libs/useCampaignVideoCarouselBlockUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { messageOf } from '../messageOf'
 import { siblingsOf } from '../useCampaignBlockDeleteCommand'
-import { messageOf, useCampaignStyleCommand } from '../useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../useCampaignBlockFieldsCommand'
+
+type CampaignCarouselVideoInput =
+  CampaignBlockUpdateInput<'CampaignVideoCarouselBlock'>
 
 export interface CampaignCarouselCommand {
   /** Watch expansion of a pasted Watch link, as one Command. */
@@ -107,8 +113,8 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
   } = useCampaignEditor()
   const blocksRef = useRef(campaign.blocks)
   blocksRef.current = campaign.blocks
-  const styleCommand = useCampaignStyleCommand()
-  const writeVideo = useCampaignVideoCarouselBlockUpdateMutation()
+  const fieldsCommand = useCampaignBlockFieldsCommand()
+  const { update, previousFields } = useCampaignBlockUpdateMutation()
   const createItem = useCampaignCarouselItemCreateMutation(campaign.id)
   const createPlaylist = useCampaignVideoCarouselBlockPlaylistImportMutation(
     campaign.id
@@ -117,14 +123,6 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
   const [blockRestore] = useCampaignBlockRestoreMutation(campaign.id)
   const [itemError, setItemError] = useState<string>()
 
-  const current = useCallback(
-    (carousel: CampaignVideoCarouselBlock): CampaignVideoCarouselBlock =>
-      (blocksRef.current.find((block) => block.id === carousel.id) as
-        | CampaignVideoCarouselBlock
-        | undefined) ?? carousel,
-    []
-  )
-
   function setWatchVideo(
     carousel: CampaignVideoCarouselBlock,
     url: string,
@@ -132,10 +130,6 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
   ): void {
     setItemError(undefined)
     const input: CampaignCarouselVideoInput = { url }
-    const previous: CampaignCarouselVideoInput = {
-      videoId: carousel.videoId,
-      videoVariantLanguageId: carousel.videoVariantLanguageId
-    }
     for (const field of ['eyebrow', 'title', 'description'] as const) {
       const value = text?.[field]
       if (value == null || value.trim() === '') continue
@@ -143,42 +137,25 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
         value,
         campaignTextCap('CampaignVideoCarouselBlock', field)
       )
-      previous[field] = carousel[field]
     }
-    styleCommand.addStyle<
-      CampaignVideoCarouselBlock,
-      CampaignCarouselVideoInput
-    >({ block: carousel, input, previous, run: writeVideo })
+    fieldsCommand.addFields(carousel, input)
   }
 
   function clearWatchVideo(carousel: CampaignVideoCarouselBlock): void {
     setItemError(undefined)
-    styleCommand.addStyle<
-      CampaignVideoCarouselBlock,
-      CampaignCarouselVideoInput
-    >({
-      block: carousel,
-      input: { videoId: null },
-      previous: {
-        videoId: carousel.videoId,
-        videoVariantLanguageId: carousel.videoVariantLanguageId
-      },
-      run: writeVideo
-    })
+    fieldsCommand.addFields(carousel, { videoId: null })
   }
 
   function addItems(
     carousel: CampaignVideoCarouselBlock,
     create: (target: CampaignVideoCarouselBlock) => Promise<CampaignBlock[]>
   ): void {
-    styleCommand.clearError()
+    fieldsCommand.clearError()
     setItemError(undefined)
     const blockPageKind = pageKindOf(carousel) ?? pageKind
-    const previous: CampaignCarouselVideoInput = {
-      videoId: carousel.videoId,
-      videoVariantLanguageId: carousel.videoVariantLanguageId
-    }
-    const wasExpanded = carousel.videoId != null
+    const explicit: CampaignCarouselVideoInput = { videoId: null }
+    const previous = previousFields(carousel, explicit)
+    const wasExpanded = previous.videoId != null
     let created: CampaignBlock[] | undefined
 
     function focus(): void {
@@ -194,10 +171,9 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
       execute() {
         focus()
         void (async () => {
-          if (wasExpanded)
-            await writeVideo(current(carousel), { videoId: null })
+          if (wasExpanded) await update(carousel, explicit)
           if (created == null) {
-            created = await create(current(carousel))
+            created = await create(carousel)
             return
           }
           await Promise.all(
@@ -228,7 +204,7 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
               }
             })
           }
-          if (wasExpanded) await writeVideo(current(carousel), previous)
+          if (wasExpanded) await update(carousel, previous)
         })().catch((error: unknown) => setItemError(messageOf(error)))
       }
     })
@@ -270,6 +246,6 @@ export function useCampaignCarouselCommand(): CampaignCarouselCommand {
     clearWatchVideo,
     addItem,
     importPlaylist,
-    error: itemError ?? styleCommand.error
+    error: itemError ?? fieldsCommand.error
   }
 }

@@ -7,12 +7,8 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignColumnsBlock as ColumnsBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignColumnsRatio } from '../../../../__generated__/globalTypes'
-import { useCampaignColumnsBlockRatioMutation } from '../../../libs/useCampaignColumnsBlockRatioMutation'
 import { StyleRow } from '../StyleRow'
-import {
-  previousOf,
-  useCampaignStyleCommand
-} from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 /** The Columns section's width ratios, in the order the toggle lists them. */
 export const COLUMNS_RATIOS = [
@@ -31,8 +27,7 @@ interface ColumnsRatioProps {
  */
 export function ColumnsRatio({ block }: ColumnsRatioProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const [ratioUpdate] = useCampaignColumnsBlockRatioMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   const labels: Record<CampaignColumnsRatio, string> = {
     equal: t('Equal'),
@@ -45,23 +40,7 @@ export function ColumnsRatio({ block }: ColumnsRatioProps): ReactElement {
     ratio: CampaignColumnsRatio | null
   ): void {
     if (ratio == null || ratio === block.ratio) return
-    const input = { ratio }
-    addStyle({
-      block,
-      input,
-      previous: previousOf(block, input),
-      run: async (current, next) =>
-        await ratioUpdate({
-          variables: { id: current.id, input: next },
-          optimisticResponse: {
-            campaignColumnsBlockUpdate: {
-              __typename: 'CampaignColumnsBlock',
-              id: current.id,
-              ratio: next.ratio ?? current.ratio
-            }
-          }
-        })
-    })
+    addFields(block, { ratio })
   }
 
   return (

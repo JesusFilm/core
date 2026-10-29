@@ -9,7 +9,7 @@ import { TypographyVariant } from '../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
 import { AlignRow, StyleRow } from '../StyleRow'
-import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useHostBand } from '../utils/useHostBand'
 
 /** The twelve variants Size walks, largest first. */
@@ -46,7 +46,7 @@ interface TextControlsProps {
 export function TextControls({ block }: TextControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addTextStyle, error } = useCampaignExtraStyleCommand()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   const band = useHostBand()
 
   const sizeLabels: Record<TypographyVariant, string> = {
@@ -71,7 +71,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
   function handleSize(event: ChangeEvent<HTMLInputElement>): void {
     const variant = event.target.value as TypographyVariant
     if (variant === currentSize) return
-    addTextStyle(block, { variant })
+    addFields(block, { variant })
   }
 
   return (
@@ -102,7 +102,7 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
       </StyleRow>
       <AlignRow
         value={block.align}
-        onChange={(align) => addTextStyle(block, { align })}
+        onChange={(align) => addFields(block, { align })}
       />
       <ColourRows
         label={t('Colour')}
@@ -116,8 +116,8 @@ export function TextControls({ block }: TextControlsProps): ReactElement {
         ]}
         rowTestId="TextColourRow"
         pickerTestId="TextColour"
-        onCommit={(_key, hex) => addTextStyle(block, { color: hex })}
-        onReset={() => addTextStyle(block, { color: null })}
+        onCommit={(_key, hex) => addFields(block, { color: hex })}
+        onReset={() => addFields(block, { color: null })}
       />
     </Stack>
   )

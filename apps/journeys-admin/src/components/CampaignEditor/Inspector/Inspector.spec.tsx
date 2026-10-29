@@ -10,18 +10,23 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { youTubeVideoBlock } from '@core/journeys/ui/Campaign/testData'
 
-import { GetCampaign_campaign_blocks } from '../../../../__generated__/GetCampaign'
-import { TypographyAlign } from '../../../../__generated__/globalTypes'
+import {
+  GetCampaign_campaign_blocks_CampaignColumnsBlock as ColumnsBlock,
+  GetCampaign_campaign_blocks,
+  GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock
+} from '../../../../__generated__/GetCampaign'
+import {
+  CampaignColumnsRatio,
+  TypographyAlign
+} from '../../../../__generated__/globalTypes'
 import { CAMPAIGN_BLOCK_DELETE } from '../../../libs/useCampaignBlockDeleteMutation'
 import { CAMPAIGN_BLOCK_DUPLICATE } from '../../../libs/useCampaignBlockDuplicateMutation'
 import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrderUpdateMutation'
-import { CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO } from '../../../libs/useCampaignColumnsBlockRatioMutation'
 import { GET_CAMPAIGN_COUNTRIES } from '../../../libs/useCampaignCountriesQuery'
 import {
   CAMPAIGN_HERO_BLOCK_CREATE,
   CAMPAIGN_RICH_TEXT_BLOCK_CREATE
 } from '../../../libs/useCampaignSectionCreateMutation'
-import { CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE } from '../../../libs/useCampaignTypographyBlockUpdateMutation'
 import { CampaignEditorState } from '../CampaignEditorProvider'
 import {
   campaign,
@@ -31,6 +36,7 @@ import {
 } from '../data'
 import { Hotkeys } from '../Hotkeys'
 import { newSectionBlock } from '../sectionTypes'
+import { blockUpdateMock } from '../styleTesting'
 import {
   BlocksProbe,
   CommandProbe,
@@ -39,7 +45,6 @@ import {
   StaticEditor
 } from '../testing'
 import { duplicateBlocks } from '../utils/useCampaignBlockDuplicateCommand'
-import { textStyleRow } from '../utils/useCampaignExtraStyleCommand'
 
 import { Inspector } from './Inspector'
 
@@ -170,21 +175,12 @@ const swapMock = {
   }))
 }
 
-const ratioMock = {
-  request: {
-    query: CAMPAIGN_COLUMNS_BLOCK_UPDATE_RATIO,
-    variables: { id: 'columnsId', input: { ratio: 'wideRight' } }
-  },
-  result: vi.fn(() => ({
-    data: {
-      campaignColumnsBlockUpdate: {
-        __typename: 'CampaignColumnsBlock',
-        id: 'columnsId',
-        ratio: 'wideRight'
-      }
-    }
-  }))
-}
+const ratioMock = blockUpdateMock(
+  campaignWithColumns.blocks.find(
+    (block) => block.id === 'columnsId'
+  ) as ColumnsBlock,
+  { ratio: CampaignColumnsRatio.wideRight }
+)
 
 const heroInSlotMock = {
   request: {
@@ -644,22 +640,12 @@ describe('Inspector', () => {
             : block
         )
       }
-      const resetMock = {
-        request: {
-          query: CAMPAIGN_TYPOGRAPHY_BLOCK_UPDATE_STYLE,
-          variables: { id: 'journeyListNoteId', input: { align: null } }
-        },
-        result: vi.fn(() => ({
-          data: {
-            campaignTypographyBlockUpdate: textStyleRow(
-              centred.blocks.find(
-                (block) => block.id === 'journeyListNoteId'
-              ) as Parameters<typeof textStyleRow>[0],
-              { align: null }
-            )
-          }
-        }))
-      }
+      const resetMock = blockUpdateMock(
+        centred.blocks.find(
+          (block) => block.id === 'journeyListNoteId'
+        ) as TypographyBlock,
+        { align: null }
+      )
       renderInspector({ selectedBlockId: 'journeyListNoteId' }, centred, [
         resetMock
       ])

@@ -1,12 +1,11 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GraphQLError } from 'graphql'
 
-import {
-  CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-  CampaignTextBlock
-} from '../../../../libs/useCampaignBlockTextMutation'
+import { GetCampaign_campaign_blocks_CampaignHeroBlock as CampaignHeroBlock } from '../../../../../__generated__/GetCampaign'
+import { CampaignTextBlock } from '../../../../libs/useCampaignBlockTextMutation'
 import { CampaignEditorState } from '../../CampaignEditorProvider'
 import { campaign, campaignStrings } from '../../data'
+import { blockUpdateMock } from '../../styleTesting'
 import { StaticEditor } from '../../testing'
 import type { CampaignTextTarget } from '../../utils/useCampaignTextCommand'
 
@@ -14,31 +13,12 @@ import { InlineText, inlineTextTestId, textLength } from './InlineText'
 
 const hero = campaign.blocks.find(
   (block) => block.id === 'heroId'
-) as CampaignTextBlock
+) as CampaignHeroBlock
 
 function heroMock(title: string, errors?: GraphQLError[]) {
-  return {
-    request: {
-      query: CAMPAIGN_HERO_BLOCK_UPDATE_TEXT,
-      variables: { id: 'heroId', input: { title } }
-    },
-    result: vi.fn(() =>
-      errors != null
-        ? { errors }
-        : {
-            data: {
-              campaignHeroBlockUpdate: {
-                __typename: 'CampaignHeroBlock',
-                id: 'heroId',
-                eyebrow: 'Outreach 2026',
-                title,
-                description:
-                  'Pick your region to find a journey in your language, ready to share.'
-              }
-            }
-          }
-    )
-  }
+  const mock = blockUpdateMock(hero, { title })
+  if (errors != null) mock.result = vi.fn(() => ({ errors }))
+  return mock
 }
 
 function renderText(

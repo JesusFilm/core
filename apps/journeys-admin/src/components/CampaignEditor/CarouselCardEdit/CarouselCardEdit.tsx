@@ -7,20 +7,16 @@ import { ReactElement, useEffect, useState } from 'react'
 import { CampaignTextField } from '../../../../__generated__/globalTypes'
 import { translationValue } from '../../../libs/useCampaignBlockTextMutation'
 import { CampaignVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
-import {
-  CampaignVideoTextInput,
-  useCampaignVideoBlockUpdateMutation
-} from '../../../libs/useCampaignVideoBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { CanvasMedia } from '../Canvas/CanvasMedia'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useCampaignTranslationCommand } from '../utils/useCampaignTranslationCommand'
 
 /** The API's caps on a Campaign Video's overrides (PRD §15). */
 const TITLE_MAX = 200
 const DESCRIPTION_MAX = 1000
 
-type VideoTextField = keyof CampaignVideoTextInput
+type VideoTextField = 'title' | 'description'
 
 interface CarouselCardEditProps {
   block: CampaignVideoBlock
@@ -37,8 +33,7 @@ export function CarouselCardEdit({
   block
 }: CarouselCardEditProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeText = useCampaignVideoBlockUpdateMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   const {
     campaign,
     state: { previewLanguageId }
@@ -85,12 +80,7 @@ export function CarouselCardEdit({
     }
     const next = value === '' ? null : value
     if (next === (block[field] ?? null)) return
-    addStyle<CampaignVideoBlock, CampaignVideoTextInput>({
-      block,
-      input: { [field]: next },
-      previous: { [field]: block[field] },
-      run: writeText
-    })
+    addFields(block, { [field]: next })
   }
 
   return (

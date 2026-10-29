@@ -14,7 +14,7 @@ import Upload1Icon from '@core/shared/ui/icons/Upload1'
 import { useCloudflareUploadByUrlMutation } from '../../../../libs/useCloudflareUploadByUrlMutation'
 import { useImageUpload } from '../../../../libs/useImageUpload'
 import { MediaLibrary } from '../../../Editor/Slider/Settings/Drawer/ImageBlockEditor/MediaLibrary'
-import { messageOf } from '../../utils/useCampaignStyleCommand'
+import { messageOf } from '../../utils/messageOf'
 
 /** The editor's pure URL rule for a pasted image: an absolute https address. The server checks the rest. */
 export function isHttpsUrl(value: string): boolean {

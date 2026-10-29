@@ -14,9 +14,9 @@ import {
   CampaignTranslatedValue,
   blockTranslations,
   campaignTextInputKey,
-  translationValue,
-  useCampaignBlockTextMutation
+  translationValue
 } from '../../../../libs/useCampaignBlockTextMutation'
+import { useCampaignBlockUpdateMutation } from '../../../../libs/useCampaignBlockUpdateMutation'
 import { useCampaignStringUpdateMutation } from '../../../../libs/useCampaignStringUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { messageOf } from '../messageOf'
@@ -141,7 +141,7 @@ export function useCampaignTextCommand(
     add,
     state: { undo }
   } = useCommand()
-  const mutateBlock = useCampaignBlockTextMutation()
+  const { update } = useCampaignBlockUpdateMutation()
   const [stringUpdate] = useCampaignStringUpdateMutation()
   const writeTranslation = useCampaignTranslationWrite()
 
@@ -216,11 +216,10 @@ export function useCampaignTextCommand(
         context: requestContext
       })
     }
-    return await mutateBlock(
+    return await update(
       target.block,
-      target.field,
-      nextValue,
-      requestContext
+      { [campaignTextInputKey(target.field)]: nextValue },
+      { context: requestContext }
     )
   }
 

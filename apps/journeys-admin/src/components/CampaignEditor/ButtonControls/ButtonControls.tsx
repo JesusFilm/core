@@ -13,7 +13,7 @@ import {
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
 import { AlignRow, StyleRow } from '../StyleRow'
-import { useCampaignExtraStyleCommand } from '../utils/useCampaignExtraStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useHostBand } from '../utils/useHostBand'
 
 export const BUTTON_VARIANTS = [
@@ -43,7 +43,7 @@ interface ButtonControlsProps {
 export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { campaign } = useCampaignEditor()
-  const { addButtonStyle, error } = useCampaignExtraStyleCommand()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   const band = useHostBand()
 
   const variantLabels: Record<ButtonVariant, string> = {
@@ -61,12 +61,12 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
 
   function handleVariant(_event: unknown, variant: ButtonVariant | null): void {
     if (variant == null || variant === currentVariant) return
-    addButtonStyle(block, { variant })
+    addFields(block, { variant })
   }
 
   function handleSize(_event: unknown, size: ButtonSize | null): void {
     if (size == null || size === currentSize) return
-    addButtonStyle(block, { size })
+    addFields(block, { size })
   }
 
   return (
@@ -110,7 +110,7 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
       </StyleRow>
       <AlignRow
         value={block.align}
-        onChange={(align) => addButtonStyle(block, { align })}
+        onChange={(align) => addFields(block, { align })}
       />
       <ColourRows<ButtonColourField>
         label={t('Colours')}
@@ -130,8 +130,8 @@ export function ButtonControls({ block }: ButtonControlsProps): ReactElement {
         ]}
         rowTestId="ButtonColourRow"
         pickerTestId="ButtonColour"
-        onCommit={(field, hex) => addButtonStyle(block, { [field]: hex })}
-        onReset={(field) => addButtonStyle(block, { [field]: null })}
+        onCommit={(field, hex) => addFields(block, { [field]: hex })}
+        onReset={(field) => addFields(block, { [field]: null })}
       />
     </Stack>
   )

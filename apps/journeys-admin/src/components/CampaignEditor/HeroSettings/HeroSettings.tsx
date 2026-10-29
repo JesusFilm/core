@@ -6,11 +6,7 @@ import { useTranslation } from 'next-i18next/pages'
 import { ReactElement, useEffect, useState } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignHeroBlock as CampaignHeroBlock } from '../../../../__generated__/GetCampaign'
-import {
-  CampaignHeroMinHeightInput,
-  useCampaignHeroBlockMinHeightMutation
-} from '../../../libs/useCampaignHeroBlockMinHeightMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 /** The slider moves in steps of five percent of the viewport height. */
 export const HERO_MIN_HEIGHT_STEP = 5
@@ -29,8 +25,7 @@ interface HeroSettingsProps {
  */
 export function HeroSettings({ block }: HeroSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeMinHeight = useCampaignHeroBlockMinHeightMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
   const [value, setValue] = useState(block.minHeight ?? 0)
 
   useEffect(() => {
@@ -45,12 +40,7 @@ export function HeroSettings({ block }: HeroSettingsProps): ReactElement {
     const percent = Array.isArray(next) ? next[0] : next
     const minHeight = percent === 0 ? null : percent
     if (minHeight === block.minHeight) return
-    addStyle<CampaignHeroBlock, CampaignHeroMinHeightInput>({
-      block,
-      input: { minHeight },
-      previous: { minHeight: block.minHeight },
-      run: writeMinHeight
-    })
+    addFields(block, { minHeight })
   }
 
   return (

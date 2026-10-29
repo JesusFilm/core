@@ -3,10 +3,10 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyListBlock as CampaignJourneyListBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignJourneyListDisplay } from '../../../../__generated__/globalTypes'
-import { CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_DISPLAY } from '../../../libs/useCampaignJourneyListBlockDisplayMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { campaign } from '../data'
+import { blockUpdateMock } from '../styleTesting'
 import {
   CommandProbe,
   QueriedEditor,
@@ -21,21 +21,7 @@ const list = campaign.blocks.find(
 ) as CampaignJourneyListBlock
 
 function displayMock(display: CampaignJourneyListDisplay) {
-  return {
-    request: {
-      query: CAMPAIGN_JOURNEY_LIST_BLOCK_UPDATE_DISPLAY,
-      variables: { id: 'landingJourneyListId', input: { display } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignJourneyListBlockUpdate: {
-          __typename: 'CampaignJourneyListBlock',
-          id: 'landingJourneyListId',
-          display
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(list, { display })
 }
 
 /** The settings over the block as the cache holds it, so a saved value flows back in. */

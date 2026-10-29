@@ -5,29 +5,18 @@ import {
   GetCampaign_campaign_blocks_CampaignAnalyticsBlock as AnalyticsBlock,
   GetCampaign_campaign as Campaign
 } from '../../../../__generated__/GetCampaign'
-import { CAMPAIGN_ANALYTICS_BLOCK_UPDATE_SHOW_MAP } from '../../../libs/useCampaignAnalyticsBlockShowMapMutation'
 import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaign } from '../data'
+import { blockOf, blockUpdateMock } from '../styleTesting'
 import { CommandProbe, SelectionProbe, StaticEditor } from '../testing'
 
 import { AnalyticsSettings } from './AnalyticsSettings'
 
 function showMapMock(showMap: boolean): Record<string, unknown> {
-  return {
-    request: {
-      query: CAMPAIGN_ANALYTICS_BLOCK_UPDATE_SHOW_MAP,
-      variables: { id: 'landingAnalyticsId', input: { showMap } }
-    },
-    result: vi.fn(() => ({
-      data: {
-        campaignAnalyticsBlockUpdate: {
-          __typename: 'CampaignAnalyticsBlock',
-          id: 'landingAnalyticsId',
-          showMap
-        }
-      }
-    }))
-  }
+  return blockUpdateMock(
+    blockOf<'CampaignAnalyticsBlock'>('landingAnalyticsId'),
+    { showMap }
+  )
 }
 
 const turnOffMock = showMapMock(false)

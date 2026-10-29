@@ -8,7 +8,7 @@ import { GetCampaign_campaign_theme as CampaignTheme } from '../../../../../__ge
 import { CampaignThemeUpdateInput } from '../../../../../__generated__/globalTypes'
 import { useCampaignThemeUpdateMutation } from '../../../../libs/useCampaignThemeUpdateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { messageOf, previousOf } from '../useCampaignStyleCommand'
+import { messageOf } from '../messageOf'
 
 export interface CampaignThemeCommand {
   /** Write any Campaign Theme columns as one Command: a colour, a font, a radius, the mode, or a whole preset. */
@@ -47,6 +47,17 @@ export function campaignThemeRow(
   }
 }
 
+/** The theme columns an input names, as the theme holds them now: what undo writes back. */
+function previousTheme(
+  theme: CampaignTheme,
+  input: CampaignThemeUpdateInput
+): CampaignThemeUpdateInput {
+  const row = theme as unknown as Record<string, unknown>
+  const previous: Record<string, unknown> = {}
+  for (const key of Object.keys(input)) previous[key] = row[key] ?? null
+  return previous
+}
+
 /**
  * Every theme edit is one Command through `campaignThemeUpdate` with an
  * optimistic response: execute writes the given columns, undo writes the
@@ -70,7 +81,7 @@ export function useCampaignThemeCommand(): CampaignThemeCommand {
     add<CampaignThemeUpdateInput>({
       parameters: {
         execute: input,
-        undo: previousOf(campaign.theme, input),
+        undo: previousTheme(campaign.theme, input),
         redo: input
       },
       execute(next) {

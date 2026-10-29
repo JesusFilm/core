@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
+import { GetCampaign_campaign_blocks_CampaignVideoCarouselBlock as CampaignVideoCarouselBlock } from '../../../../__generated__/GetCampaign'
 import { VideoBlockSource } from '../../../../__generated__/globalTypes'
-import { CampaignVideoCarouselBlock } from '../../../libs/useCampaignVideoCarouselBlockUpdateMutation'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import {
   CampaignMediaPick,

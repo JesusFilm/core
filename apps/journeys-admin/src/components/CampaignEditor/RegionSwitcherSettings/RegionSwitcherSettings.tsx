@@ -8,11 +8,7 @@ import { ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignRegionSwitcherBlock as CampaignRegionSwitcherBlock } from '../../../../__generated__/GetCampaign'
 import { CampaignSwitcherVariant } from '../../../../__generated__/globalTypes'
-import {
-  CampaignRegionSwitcherVariantInput,
-  useCampaignRegionSwitcherBlockVariantMutation
-} from '../../../libs/useCampaignRegionSwitcherBlockVariantMutation'
-import { useCampaignStyleCommand } from '../utils/useCampaignStyleCommand'
+import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 
 interface RegionSwitcherSettingsProps {
   block: CampaignRegionSwitcherBlock
@@ -27,17 +23,11 @@ export function RegionSwitcherSettings({
   block
 }: RegionSwitcherSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { addStyle, error } = useCampaignStyleCommand()
-  const writeVariant = useCampaignRegionSwitcherBlockVariantMutation()
+  const { addFields, error } = useCampaignBlockFieldsCommand()
 
   function handleChange(variant: CampaignSwitcherVariant | null): void {
     if (variant == null || variant === block.switcherVariant) return
-    addStyle<CampaignRegionSwitcherBlock, CampaignRegionSwitcherVariantInput>({
-      block,
-      input: { variant },
-      previous: { variant: block.switcherVariant },
-      run: writeVariant
-    })
+    addFields(block, { variant })
   }
 
   return (
