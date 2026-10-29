@@ -19,6 +19,7 @@ import {
   CampaignPanel,
   useCampaignEditor
 } from './CampaignEditorProvider'
+import { CampaignHoverProvider } from './CampaignHoverProvider'
 import { CANVAS_GUTTER, Canvas, MIN_STAGE_WIDTH } from './Canvas'
 import type { CanvasView } from './Canvas'
 import { CanvasBanner } from './CanvasBanner'
@@ -28,7 +29,7 @@ import { LEFT_PANEL_WIDTH, LeftPanel } from './LeftPanel'
 import { LEFT_RAIL_WIDTH, LeftRail, PANELS } from './LeftRail'
 import { LocalizePanel } from './LocalizePanel'
 import type { LocalizeTab } from './LocalizePanel'
-import { Navigator, NavigatorHoverProvider } from './Navigator'
+import { Navigator } from './Navigator'
 import { PagesPanel } from './PagesPanel'
 import {
   TranslationRunProvider,
@@ -101,7 +102,9 @@ function CampaignEditorShell({
   }
   const openPanel = PANELS.find((entry) => entry.panel === panel)
   const leftPanel = (
-    <LeftPanel label={openPanel?.label(t) ?? ''}>{panelBodies[panel]}</LeftPanel>
+    <LeftPanel label={openPanel?.label(t) ?? ''}>
+      {panelBodies[panel]}
+    </LeftPanel>
   )
 
   return (
@@ -232,12 +235,12 @@ export function CampaignEditor({
         <CampaignCommandProvider>
           <MuxVideoUploadProvider>
             <TranslationRunProvider>
-              <NavigatorHoverProvider>
+              <CampaignHoverProvider>
                 <CampaignEditorViewport
                   campaign={campaign}
                   isManager={isManager}
                 />
-              </NavigatorHoverProvider>
+              </CampaignHoverProvider>
             </TranslationRunProvider>
           </MuxVideoUploadProvider>
         </CampaignCommandProvider>

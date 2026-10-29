@@ -28,10 +28,10 @@ import {
   CampaignButtonAction,
   CampaignButtonBlock
 } from '../../../libs/useCampaignBlockActionMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
-import { pageSections } from '../sectionTypes'
+import { blockLabel } from '../utils/blockLabel'
 import { isHttpsUrl } from '../utils/isHttpsUrl'
+import { pageSections } from '../utils/sectionTypes'
 import { useCampaignActionCommand } from '../utils/useCampaignActionCommand'
 import { useCommittedField } from '../utils/useCommittedField'
 

@@ -4,7 +4,7 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { CampaignTranslatedValue } from '../../../../libs/useCampaignBlockTextMutation'
 import { campaign, campaignStrings } from '../../data'
-import { campaignStringText } from '../../ShareSectionEdit/ShareSectionEdit'
+import { campaignStringText } from '../campaignStringText'
 import { regionDisplayName } from '../regionDisplayName'
 
 const ENGLISH = '529'

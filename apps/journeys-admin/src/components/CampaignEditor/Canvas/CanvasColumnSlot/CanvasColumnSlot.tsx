@@ -2,18 +2,20 @@ import { useDraggable, useDroppable } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
 import ButtonBase from '@mui/material/ButtonBase'
 import { useTranslation } from 'next-i18next/pages'
-import { MouseEvent, ReactElement, useCallback } from 'react'
+import { MouseEvent, ReactElement, ReactNode, useCallback } from 'react'
 
-import { blockLabel } from '../../blockLabel'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
+import { blockLabel } from '../../utils/blockLabel'
+import type { CanvasBlock } from '../canvasBlock'
 import { CanvasDragHandle } from '../CanvasDragHandle'
-import { CanvasBlock, CanvasSection } from '../CanvasSection'
 import { EditorNote } from '../EditorNote'
 import { ADMIN_PRIMARY, HOVER_OUTLINE_SX } from '../hoverOutline'
 import { SelectionBadge } from '../SelectionBadge'
 
 interface CanvasColumnSlotProps {
   slot: CanvasBlock
+  /** The section the slot holds, rendered by the Columns section. */
+  children?: ReactNode
 }
 
 /**
@@ -26,7 +28,8 @@ interface CanvasColumnSlotProps {
  * section ever collide with each other.
  */
 export function CanvasColumnSlot({
-  slot
+  slot,
+  children
 }: CanvasColumnSlotProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const { selection, selectBlock, dispatch } = useCampaignEditor()
@@ -112,7 +115,7 @@ export function CanvasColumnSlot({
         stopClick
       />
       {section != null ? (
-        <CanvasSection block={section} inSlot />
+        children
       ) : (
         <ButtonBase
           data-testid={`CanvasEmptyColumn-${slot.id}`}

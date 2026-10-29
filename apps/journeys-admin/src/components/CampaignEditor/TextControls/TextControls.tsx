@@ -5,10 +5,11 @@ import { ChangeEvent, ReactElement } from 'react'
 
 import { GetCampaign_campaign_blocks_CampaignTypographyBlock as TypographyBlock } from '../../../../__generated__/GetCampaign'
 import { TypographyVariant } from '../../../../__generated__/globalTypes'
+import { AlignRow } from '../AlignRow'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { ColourRows } from '../ColourRows'
 import { CommandError } from '../CommandError'
-import { AlignRow, StyleRow } from '../StyleRow'
+import { StyleRow } from '../StyleRow'
 import { useCampaignBlockFieldsCommand } from '../utils/useCampaignBlockFieldsCommand'
 import { useHostBand } from '../utils/useHostBand'
 

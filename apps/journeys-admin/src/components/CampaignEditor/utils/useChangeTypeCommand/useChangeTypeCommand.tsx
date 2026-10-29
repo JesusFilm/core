@@ -6,7 +6,7 @@ import {
   useCampaignSectionCreateMutation
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { newSectionBlock } from '../../sectionTypes'
+import { newSectionBlock } from '../sectionTypes'
 import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
 import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'

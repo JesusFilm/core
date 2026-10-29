@@ -19,8 +19,8 @@ import {
   CampaignEditorState,
   useCampaignEditor
 } from './CampaignEditorProvider'
+import { CampaignHoverProvider } from './CampaignHoverProvider'
 import { campaign } from './data'
-import { NavigatorHoverProvider } from './Navigator/NavigatorHover'
 import { TranslationRunProvider } from './TranslationRunProvider'
 import {
   CampaignCommandProvider,
@@ -69,12 +69,14 @@ export function CommandProbe(): ReactElement {
   )
 }
 
+interface PreviewLanguageSwitchProps {
+  languageIds: string[]
+}
+
 /** Buttons that set the Preview Language, as the Pages Panel's language choice does, labelled `Preview <languageId>`. */
 export function PreviewLanguageSwitch({
   languageIds
-}: {
-  languageIds: string[]
-}): ReactElement {
+}: PreviewLanguageSwitchProps): ReactElement {
   const { dispatch } = useCampaignEditor()
   return (
     <>
@@ -157,7 +159,7 @@ function QueriedEditorInner({
       initialState={initialState}
     >
       <CampaignCommandProvider>
-        <NavigatorHoverProvider>{children}</NavigatorHoverProvider>
+        <CampaignHoverProvider>{children}</CampaignHoverProvider>
       </CampaignCommandProvider>
     </CampaignEditorProvider>
   )
@@ -234,9 +236,9 @@ export function StaticEditor({
             initialState={initialState}
           >
             <CampaignCommandProvider>
-              <NavigatorHoverProvider>
+              <CampaignHoverProvider>
                 <TranslationRunProvider>{children}</TranslationRunProvider>
-              </NavigatorHoverProvider>
+              </CampaignHoverProvider>
             </CampaignCommandProvider>
           </CampaignEditorProvider>
         </CommandProvider>
@@ -294,15 +296,15 @@ export function debounceSpyLink(
   ])
 }
 
+interface PendingTextSaveProps {
+  block: { __typename: string; id: string }
+}
+
 /**
  * A button that queues a text save for a block's field on its debounce, as
  * typing does; it stays pending until something flushes it or 500 ms pass.
  */
-export function PendingTextSave({
-  block
-}: {
-  block: { __typename: string; id: string }
-}): ReactElement {
+export function PendingTextSave({ block }: PendingTextSaveProps): ReactElement {
   const client = useApolloClient()
   return (
     <button

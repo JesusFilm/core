@@ -9,14 +9,14 @@ import {
 } from '../../../../../__generated__/globalTypes'
 import { CampaignSectionTypename } from '../../../../libs/useCampaignSectionCreateMutation'
 import type {
-  SectionInsert,
-  CampaignSelection
+  CampaignSelection,
+  SectionInsert
 } from '../../CampaignEditorProvider'
 import {
   pageSections,
   sectionTypesForPage,
   sectionTypesForSlot
-} from '../../sectionTypes'
+} from '../sectionTypes'
 
 export type ExtraTypename = 'CampaignTypographyBlock' | 'CampaignButtonBlock'
 
@@ -117,7 +117,9 @@ export function addTargets({
   }
 
   /** An Extra added to the host, below its text, taking the author's choice. */
-  function extraBelow(host: CampaignBlock | undefined): ExtraTarget | undefined {
+  function extraBelow(
+    host: CampaignBlock | undefined
+  ): ExtraTarget | undefined {
     if (host == null) return undefined
     return {
       host,

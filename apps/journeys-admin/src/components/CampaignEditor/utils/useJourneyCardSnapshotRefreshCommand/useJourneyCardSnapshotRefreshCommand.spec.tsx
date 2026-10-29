@@ -16,6 +16,7 @@ import { GET_CAMPAIGN_JOURNEY_BY_LINK } from '../../../../libs/useCampaignJourne
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { campaign } from '../../data'
+import { JourneyCardSnapshotRefreshDialog } from '../../JourneyCardSnapshotRefreshDialog'
 import { blockUpdateMock } from '../../styleTesting'
 import { CommandProbe, QueriedEditor, SelectionProbe } from '../../testing'
 
@@ -100,7 +101,7 @@ const restoreUneditedMock = blockUpdateMock(card, {
 
 function Harness(): ReactElement {
   const { campaign: current } = useCampaignEditor()
-  const { refreshSnapshot, confirmDialog } =
+  const { refreshSnapshot, pending, confirmRefresh, cancelRefresh } =
     useJourneyCardSnapshotRefreshCommand()
   const currentCard = current.blocks.find(
     (block) => block.id === CARD_ID
@@ -117,7 +118,12 @@ function Harness(): ReactElement {
       <span data-testid="CardText">
         {[currentCard.title, currentCard.description].join('|')}
       </span>
-      {confirmDialog}
+      <span data-testid="PendingCard">{pending?.id ?? ''}</span>
+      <JourneyCardSnapshotRefreshDialog
+        open={pending != null}
+        onClose={cancelRefresh}
+        onConfirm={confirmRefresh}
+      />
     </>
   )
 }
@@ -191,7 +197,7 @@ describe('snapshotOf', () => {
 describe('useJourneyCardSnapshotRefreshCommand', () => {
   beforeEach(() => vi.clearAllMocks())
 
-  it('confirms when the author edited the snapshot, then replaces both values as one Command', async () => {
+  it('holds the card as pending when the author edited the snapshot, then confirmRefresh replaces both values as one Command', async () => {
     const lookup = journeyMock(liveJourney)
     await renderHarness(lookup, [refreshMock, restoreMock])
     expect(screen.getByTestId('CardText')).toHaveTextContent(
@@ -205,6 +211,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     )
     expect(dialog).toHaveTextContent('differs from the journey’s')
     expect(dialog).toHaveTextContent('You can undo this afterwards.')
+    expect(screen.getByTestId('PendingCard')).toHaveTextContent(CARD_ID)
     expect(refreshMock.result).not.toHaveBeenCalled()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
 
@@ -217,6 +224,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
       )
     )
     await waitFor(() => expect(refreshMock.result).toHaveBeenCalled())
+    expect(screen.getByTestId('PendingCard')).toBeEmptyDOMElement()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('1')
     expect(screen.getByTestId('SelectedBlockId')).toHaveTextContent(CARD_ID)
 
@@ -235,7 +243,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
     await waitFor(() => expect(restoreMock.result).toHaveBeenCalled())
   })
 
-  it('does nothing when the confirmation is cancelled', async () => {
+  it('does nothing, and clears pending, when cancelRefresh runs', async () => {
     await renderHarness(journeyMock(liveJourney), [refreshMock])
 
     fireEvent.click(screen.getByRole('button', { name: 'Refresh' }))
@@ -250,6 +258,7 @@ describe('useJourneyCardSnapshotRefreshCommand', () => {
       ).not.toBeInTheDocument()
     )
     expect(refreshMock.result).not.toHaveBeenCalled()
+    expect(screen.getByTestId('PendingCard')).toBeEmptyDOMElement()
     expect(screen.getByTestId('CommandCount')).toHaveTextContent('0')
     expect(screen.getByTestId('CardText')).toHaveTextContent(
       'The outreach story|A short journey through the story.'

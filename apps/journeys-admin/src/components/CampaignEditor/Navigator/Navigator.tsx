@@ -34,12 +34,16 @@ import {
 import DragIcon from '@core/shared/ui/icons/Drag'
 import EyeClosedIcon from '@core/shared/ui/icons/EyeClosed'
 
-import { blockLabel, regionCardLabel, regionLineLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
+import { useCanvasHovered } from '../CampaignHoverProvider'
 import { LeftPanelBody } from '../LeftPanel'
+import {
+  blockLabel,
+  regionCardLabel,
+  regionLineLabel
+} from '../utils/blockLabel'
 import { useCampaignReorder } from '../utils/useCampaignReorder'
 
-import { useCanvasHovered } from './NavigatorHover'
 import {
   NavigatorDragData,
   navigatorCollisionDetection,
@@ -52,6 +56,7 @@ import {
   buildNavigatorTree,
   expandableIds,
   flattenNavigatorTree,
+  isSectionContent,
   selectedNodeId
 } from './navigatorTree'
 
@@ -90,7 +95,7 @@ const NavigatorRowContent = forwardRef<
 ): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
   const rows = useContext(NavigatorRowsContext)
-  const divider = node.type === 'SectionContent'
+  const divider = isSectionContent(node.type)
   const hasTrailing =
     node.placement != null ||
     node.needsJourney ||
@@ -205,7 +210,7 @@ function SortableRowLabel({ node }: NavigatorRowLabelProps): ReactElement {
   } = useSortable({
     id: node.id,
     data,
-    disabled: { draggable: node.type === 'SectionContent' }
+    disabled: { draggable: isSectionContent(node.type) }
   })
   const dropTarget = isOver && active != null && active.id !== node.id
 
@@ -218,28 +223,27 @@ function SortableRowLabel({ node }: NavigatorRowLabelProps): ReactElement {
     event.stopPropagation()
   }
 
-  const handle =
-    node.type === 'SectionContent' ? undefined : (
-      <IconButton
-        ref={setActivatorNodeRef}
-        size="small"
-        disableRipple
-        {...attributes}
-        {...listeners}
-        aria-label={t('Reorder {{label}}', { label: rows?.labelOf(node) })}
-        data-testid={`NavigatorDragHandle-${node.id}`}
-        onKeyDown={handleKeyDown}
-        onClick={handleClick}
-        sx={{
-          p: 0.25,
-          color: 'text.secondary',
-          cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none'
-        }}
-      >
-        <DragIcon fontSize="small" />
-      </IconButton>
-    )
+  const handle = isSectionContent(node.type) ? undefined : (
+    <IconButton
+      ref={setActivatorNodeRef}
+      size="small"
+      disableRipple
+      {...attributes}
+      {...listeners}
+      aria-label={t('Reorder {{label}}', { label: rows?.labelOf(node) })}
+      data-testid={`NavigatorDragHandle-${node.id}`}
+      onKeyDown={handleKeyDown}
+      onClick={handleClick}
+      sx={{
+        p: 0.25,
+        color: 'text.secondary',
+        cursor: isDragging ? 'grabbing' : 'grab',
+        touchAction: 'none'
+      }}
+    >
+      <DragIcon fontSize="small" />
+    </IconButton>
+  )
 
   return (
     <NavigatorRowContent
@@ -427,7 +431,7 @@ export function Navigator(): ReactElement {
     (node: NavigatorNode) => {
       if (node.type === 'Region') return regionCardLabel(t)
       if (node.regionLine === true) return regionLineLabel(t)
-      if (node.type === 'SectionContent') return t('Section content')
+      if (isSectionContent(node.type)) return t('Section content')
       return blockLabel(t, node.type)
     },
     [t]
@@ -504,7 +508,7 @@ export function Navigator(): ReactElement {
                 `${labelOf(node)} ${node.secondaryText ?? ''}`
               }
               getItemChildren={(node) => node.children}
-              isItemSelectionDisabled={(node) => node.type === 'SectionContent'}
+              isItemSelectionDisabled={(node) => isSectionContent(node.type)}
               slots={{ item: NavigatorItem }}
               expansionTrigger="iconContainer"
               expandedItems={expandedItems}

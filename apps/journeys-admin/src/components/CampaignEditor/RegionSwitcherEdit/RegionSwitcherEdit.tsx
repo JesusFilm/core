@@ -25,7 +25,6 @@ import {
   CampaignSwitcherVariant,
   TypographyVariant
 } from '../../../../__generated__/globalTypes'
-import { regionCardLabel, regionLineLabel } from '../blockLabel'
 import {
   regionLines,
   regionNeedsJourney,
@@ -41,6 +40,8 @@ import {
 } from '../Canvas/hoverOutline'
 import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
+import { regionCardLabel, regionLineLabel } from '../utils/blockLabel'
+import { regionCardId } from '../utils/regionCardId'
 import { regionDisplayName } from '../utils/regionDisplayName'
 import { regionLineColor } from '../utils/regionLineColor'
 import { useCampaignRegionCommand } from '../utils/useCampaignRegionCommand'
@@ -114,7 +115,7 @@ function RegionCardEdit({
   return (
     <Box
       ref={setCardRef}
-      id={`${hostBlockId}__${region.id}`}
+      id={regionCardId(hostBlockId, region.id)}
       data-testid={`RegionCardEdit-${region.id}`}
       data-selected={selected}
       data-unlisted={!region.listed}
@@ -137,7 +138,7 @@ function RegionCardEdit({
       ]}
     >
       <SelectionBadge
-        id={`${hostBlockId}__${region.id}`}
+        id={regionCardId(hostBlockId, region.id)}
         label={regionCardLabel(t)}
         selected={selected}
         borderWidth={1}

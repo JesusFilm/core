@@ -4,7 +4,7 @@ import {
 } from '../../../../../__generated__/GetCampaign'
 import { CampaignChildPlacement } from '../../../../../__generated__/globalTypes'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { slotSection } from '../../sectionTypes'
+import { slotSection } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../useCampaignBlockOrderCommand'
 import { useCampaignRegionCommand } from '../useCampaignRegionCommand'
 import { useColumnSwapCommand } from '../useColumnSwapCommand'

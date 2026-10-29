@@ -16,13 +16,13 @@ import { CAMPAIGN_BLOCK_ORDER_UPDATE } from '../../../libs/useCampaignBlockOrder
 import { CAMPAIGN_REGION_ORDER_UPDATE } from '../../../libs/useCampaignRegionOrderUpdateMutation'
 import { newOwnedVideoBlock } from '../../../libs/useCampaignVideoBlockCreateMutation'
 import { campaign, campaignWithColumns, campaignWithRegions } from '../data'
-import { newSectionBlock } from '../sectionTypes'
 import {
   CommandProbe,
   SelectionProbe,
   StaticEditor,
   frameBody
 } from '../testing'
+import { newSectionBlock } from '../utils/sectionTypes'
 
 import { Canvas, dropEdgeFor, dropParentOrder, regionDropOrder } from './Canvas'
 import type { CanvasView } from './Canvas'

@@ -28,11 +28,8 @@ import { CommandUndoItem } from '../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithRegions, eurEnglish, eurFrench } from '../data'
 import { CommandProbe, QueriedEditor } from '../testing'
 
-import {
-  ShareSectionEdit,
-  addLanguageOptions,
-  shareLanguageState
-} from './ShareSectionEdit'
+import { shareLanguageState } from './shareLanguage'
+import { ShareSectionEdit, addLanguageOptions } from './ShareSectionEdit'
 
 const languagesMock = {
   request: { query: GET_LANGUAGES, variables: { languageId: '529' } },

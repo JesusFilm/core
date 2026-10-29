@@ -5,7 +5,7 @@ import {
   useCampaignSectionCreateMutation
 } from '../../../../libs/useCampaignSectionCreateMutation'
 import { SectionInsert, useCampaignEditor } from '../../CampaignEditorProvider'
-import { newColumnSlots, newSectionBlock } from '../../sectionTypes'
+import { newColumnSlots, newSectionBlock } from '../sectionTypes'
 import { useCampaignBlockCreateCommand } from '../useCampaignBlockCreateCommand'
 
 /**

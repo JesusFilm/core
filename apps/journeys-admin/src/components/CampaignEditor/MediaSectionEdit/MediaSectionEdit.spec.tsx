@@ -8,9 +8,9 @@ import {
 import type { CampaignBlockUpdateInput } from '../../../libs/useCampaignBlockUpdateMutation'
 import { newOwnedImageBlock } from '../../../libs/useCampaignImageBlockCreateMutation'
 import { campaign } from '../data'
-import { newSectionBlock } from '../sectionTypes'
 import { blockUpdateMock } from '../styleTesting'
 import { CommandProbe, StaticEditor } from '../testing'
+import { newSectionBlock } from '../utils/sectionTypes'
 
 import { MediaSectionEdit } from './MediaSectionEdit'
 

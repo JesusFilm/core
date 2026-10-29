@@ -13,11 +13,12 @@ import {
   CampaignEditorProvider,
   CampaignEditorState
 } from '../CampaignEditorProvider'
+import { CampaignHoverProvider } from '../CampaignHoverProvider'
 import { campaignWithColumns, campaignWithRegions } from '../data'
 import { LEFT_PANEL_WIDTH } from '../LeftPanel'
 import { CampaignCommandProvider } from '../utils/useCampaignCommand'
 
-import { Navigator, NavigatorHoverProvider } from '.'
+import { Navigator } from '.'
 
 interface NavigatorStoryProps {
   initialState?: Partial<CampaignEditorState>
@@ -37,7 +38,7 @@ function NavigatorStory({
           initialState={initialState}
         >
           <CampaignCommandProvider>
-            <NavigatorHoverProvider>
+            <CampaignHoverProvider>
               <Paper
                 square
                 sx={{
@@ -49,7 +50,7 @@ function NavigatorStory({
               >
                 <Navigator />
               </Paper>
-            </NavigatorHoverProvider>
+            </CampaignHoverProvider>
           </CampaignCommandProvider>
         </CampaignEditorProvider>
       </CommandProvider>

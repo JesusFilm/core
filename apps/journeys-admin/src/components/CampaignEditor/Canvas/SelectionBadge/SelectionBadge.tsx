@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box'
 import { ReactElement } from 'react'
 
-import { useCanvasHovered } from '../../Navigator/NavigatorHover'
+import { useCanvasHovered } from '../../CampaignHoverProvider'
 import { ADMIN_PRIMARY } from '../hoverOutline'
 
 /**

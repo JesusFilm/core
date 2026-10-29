@@ -1,0 +1,1 @@
+export { CanvasExtra } from './CanvasExtra'

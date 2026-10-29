@@ -12,7 +12,11 @@ import { scopedCollisionDetection } from '../utils/scopedCollisionDetection'
 import { siblingsOf } from '../utils/siblingsOf'
 import type { CampaignReorder } from '../utils/useCampaignReorder'
 
-import { NavigatorNode, flattenNavigatorTree } from './navigatorTree'
+import {
+  NavigatorNode,
+  flattenNavigatorTree,
+  isSectionContent
+} from './navigatorTree'
 
 /** The drag data every Navigator row carries, set on its sortable. */
 export interface NavigatorDragData {
@@ -87,9 +91,10 @@ function planExtraMove(
   if (block == null || !('placement' in block)) return undefined
   const ids = group.map((node) => node.id)
   const moved = arrayMove(ids, ids.indexOf(active.id), ids.indexOf(over.id))
-  const dividerIndex = moved.findIndex(
-    (id) => group.find((node) => node.id === id)?.type === 'SectionContent'
-  )
+  const dividerIndex = moved.findIndex((id) => {
+    const node = group.find((candidate) => candidate.id === id)
+    return node != null && isSectionContent(node.type)
+  })
   const activeIndex = moved.indexOf(active.id)
   const placement =
     activeIndex < dividerIndex

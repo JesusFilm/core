@@ -22,7 +22,6 @@ import {
 } from '../../../../__generated__/globalTypes'
 import { CampaignTextField } from '../../../libs/useCampaignBlockTextMutation'
 import { useCampaignJourneyBlockCreateMutation } from '../../../libs/useCampaignJourneyBlockCreateMutation'
-import { blockLabel } from '../blockLabel'
 import { useCampaignEditor } from '../CampaignEditorProvider'
 import { EditorNote } from '../Canvas/EditorNote'
 import { HOVER_OUTLINE_SX, SELECTED_OUTLINE } from '../Canvas/hoverOutline'
@@ -30,7 +29,8 @@ import { InlineText } from '../Canvas/InlineText'
 import { SelectionBadge } from '../Canvas/SelectionBadge'
 import { JourneyPasteField } from '../Pickers/JourneyPasteField'
 import { JourneyPicker } from '../Pickers/JourneyPicker'
-import { campaignStringText } from '../ShareSectionEdit/ShareSectionEdit'
+import { blockLabel } from '../utils/blockLabel'
+import { campaignStringText } from '../utils/campaignStringText'
 import { useCampaignBlockCreateCommand } from '../utils/useCampaignBlockCreateCommand'
 
 type JourneyCardBlock = Extract<

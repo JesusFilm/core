@@ -11,7 +11,7 @@ import { campaign, campaignWithColumns, campaignWithRegions } from '../../data'
 import {
   REGION_ONLY_TYPENAMES,
   SLOT_DISALLOWED_TYPENAMES
-} from '../../sectionTypes'
+} from '../sectionTypes'
 
 import { AddTargets, addTargets } from './addTargets'
 

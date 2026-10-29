@@ -7,7 +7,6 @@ import { CommandRedoItem } from '../../../Editor/Toolbar/Items/CommandRedoItem'
 import { CommandUndoItem } from '../../../Editor/Toolbar/Items/CommandUndoItem'
 import { campaignWithColumns } from '../../data'
 import { Inspector } from '../../Inspector'
-import { newSectionBlock } from '../../sectionTypes'
 import {
   BlocksProbe,
   CommandProbe,
@@ -17,6 +16,7 @@ import {
   campaignCache,
   debounceSpyLink
 } from '../../testing'
+import { newSectionBlock } from '../sectionTypes'
 
 vi.mock('uuid', () => ({ v4: () => 'newId' }))
 

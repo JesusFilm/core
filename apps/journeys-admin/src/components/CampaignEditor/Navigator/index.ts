@@ -1,12 +1,5 @@
 export { Navigator } from './Navigator'
 export {
-  CanvasHoverReporter,
-  NavigatorHoverProvider,
-  createNavigatorHoverStore,
-  useCanvasHovered
-} from './NavigatorHover'
-export type { NavigatorHoverStore } from './NavigatorHover'
-export {
   ancestorIds,
   buildNavigatorTree,
   expandableIds,

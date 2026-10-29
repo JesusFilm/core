@@ -1,0 +1,1 @@
+export { CanvasRegionHeading } from './CanvasRegionHeading'

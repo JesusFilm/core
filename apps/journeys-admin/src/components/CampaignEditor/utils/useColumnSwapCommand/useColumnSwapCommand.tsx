@@ -1,6 +1,6 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
-import { columnSlots } from '../../sectionTypes'
+import { columnSlots } from '../sectionTypes'
 import { useCampaignBlockOrderCommand } from '../useCampaignBlockOrderCommand'
 
 /** The other Column Slot of the same Columns section, if the block is a slot. */

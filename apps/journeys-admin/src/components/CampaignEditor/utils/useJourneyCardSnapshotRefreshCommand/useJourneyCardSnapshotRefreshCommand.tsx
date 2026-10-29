@@ -1,6 +1,6 @@
 import { useTranslation } from 'next-i18next/pages'
 import { useSnackbar } from 'notistack'
-import { ReactElement, useState } from 'react'
+import { useState } from 'react'
 
 import {
   TEXT_CAPS,
@@ -15,8 +15,6 @@ import { useCampaignJourneyByLinkLazyQuery } from '../../../../libs/useCampaignJ
 import { useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
 
-import { JourneyCardSnapshotRefreshDialog } from './JourneyCardSnapshotRefreshDialog'
-
 export type JourneyCardBlock = Extract<
   CampaignBlock,
   { __typename: 'CampaignJourneyBlock' }
@@ -25,6 +23,15 @@ export type JourneyCardBlock = Extract<
 interface SnapshotText {
   title: string | null
   description: string | null
+}
+
+export interface JourneyCardSnapshotRefreshCommand {
+  /** Refresh at once, or hold the card for confirmation when the author edited its snapshot. */
+  refreshSnapshot: (card: JourneyCardBlock) => Promise<void>
+  /** The card whose refresh awaits the author's confirmation. */
+  pending?: JourneyCardBlock
+  confirmRefresh: () => void
+  cancelRefresh: () => void
 }
 
 /**
@@ -73,10 +80,7 @@ export function matchesJourney(
  * editor's error snackbar: the API's message, else "Could not refresh from
  * journey".
  */
-export function useJourneyCardSnapshotRefreshCommand(): {
-  refreshSnapshot: (card: JourneyCardBlock) => Promise<void>
-  confirmDialog: ReactElement
-} {
+export function useJourneyCardSnapshotRefreshCommand(): JourneyCardSnapshotRefreshCommand {
   const { t } = useTranslation('apps-journeys-admin')
   const { enqueueSnackbar } = useSnackbar()
   const { addCampaignCommand } = useCampaignCommand()
@@ -167,16 +171,19 @@ export function useJourneyCardSnapshotRefreshCommand(): {
     }
   }
 
-  const confirmDialog = (
-    <JourneyCardSnapshotRefreshDialog
-      open={pending != null}
-      onClose={() => setPending(null)}
-      onConfirm={() => {
-        if (pending != null) addRefreshCommand(pending.card, pending.journey)
-        setPending(null)
-      }}
-    />
-  )
+  function confirmRefresh(): void {
+    if (pending != null) addRefreshCommand(pending.card, pending.journey)
+    setPending(null)
+  }
 
-  return { refreshSnapshot, confirmDialog }
+  function cancelRefresh(): void {
+    setPending(null)
+  }
+
+  return {
+    refreshSnapshot,
+    pending: pending?.card,
+    confirmRefresh,
+    cancelRefresh
+  }
 }

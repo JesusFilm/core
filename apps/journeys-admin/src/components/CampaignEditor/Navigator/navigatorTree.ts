@@ -16,12 +16,20 @@ import {
   sortedRegions
 } from '../CampaignEditorProvider'
 import { pageBlocks } from '../utils/pageBlocks'
+import { regionCardId } from '../utils/regionCardId'
 
 /** What a row is called: a block's typename, a region card, or the divider between a section's above and below Extras. */
 export type NavigatorNodeType =
   | CampaignBlock['__typename']
   | 'Region'
   | 'SectionContent'
+
+/** The divider row between a section's above and below Extras: a drop target, never selected or dragged. */
+export function isSectionContent(
+  type: NavigatorNodeType
+): type is 'SectionContent' {
+  return type === 'SectionContent'
+}
 
 export type NavigatorExtraPlacement = 'above' | 'below'
 
@@ -154,7 +162,7 @@ function childRows(
   )
   return [
     ...extraRows.filter((node) => node.placement === 'above'),
-    ...extraRows.filter((node) => node.type === 'SectionContent'),
+    ...extraRows.filter((node) => isSectionContent(node.type)),
     ...bodyRows,
     ...extraRows.filter((node) => node.placement === 'below')
   ]
@@ -214,7 +222,7 @@ function regionNodes(
   return sortedRegions(campaign.regions)
     .filter((region) => region.id !== currentRegionId)
     .map((region) => {
-      const id = `${hostBlockId}__${region.id}`
+      const id = regionCardId(hostBlockId, region.id)
       return {
         id,
         domId: id,

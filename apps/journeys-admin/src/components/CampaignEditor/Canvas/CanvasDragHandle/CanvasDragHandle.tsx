@@ -3,10 +3,11 @@ import type {
   DraggableSyntheticListeners
 } from '@dnd-kit/core'
 import Box from '@mui/material/Box'
-import { MouseEvent, ReactElement } from 'react'
+import { ReactElement } from 'react'
 
 import DragIcon from '@core/shared/ui/icons/Drag'
 
+import { handleStopPropagation } from '../../utils/handleStopPropagation'
 import { ADMIN_PRIMARY } from '../hoverOutline'
 
 interface CanvasDragHandlePosition {
@@ -33,10 +34,6 @@ interface CanvasDragHandleProps {
   stopClick?: boolean
 }
 
-function handleClickStop(event: MouseEvent<HTMLElement>): void {
-  event.stopPropagation()
-}
-
 /**
  * The grab handle on a draggable canvas element (a section, a Column Slot, a
  * region card): hidden until the element is hovered, focused or selected.
@@ -59,7 +56,7 @@ export function CanvasDragHandle({
       {...attributes}
       aria-label={label}
       data-testid={testId}
-      onClick={stopClick ? handleClickStop : undefined}
+      onClick={stopClick ? handleStopPropagation : undefined}
       sx={{
         position: 'absolute',
         display: 'flex',

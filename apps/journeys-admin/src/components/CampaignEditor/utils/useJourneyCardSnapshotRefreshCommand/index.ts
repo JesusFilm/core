@@ -3,4 +3,7 @@ export {
   snapshotOf,
   useJourneyCardSnapshotRefreshCommand
 } from './useJourneyCardSnapshotRefreshCommand'
-export type { JourneyCardBlock } from './useJourneyCardSnapshotRefreshCommand'
+export type {
+  JourneyCardBlock,
+  JourneyCardSnapshotRefreshCommand
+} from './useJourneyCardSnapshotRefreshCommand'

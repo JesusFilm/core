@@ -19,7 +19,7 @@ import {
   GetCampaign_campaign_regions as CampaignRegion
 } from '../../../../__generated__/GetCampaign'
 import { CampaignPageKind } from '../../../../__generated__/globalTypes'
-import { isInColumnSlot } from '../sectionTypes'
+import { isInColumnSlot } from '../utils/sectionTypes'
 
 /** The rail panel docked beside the Left Rail; one is always open. */
 export type CampaignPanel = 'pages' | 'navigator' | 'add' | 'localize'

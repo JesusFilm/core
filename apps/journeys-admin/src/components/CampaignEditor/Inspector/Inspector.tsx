@@ -5,26 +5,34 @@ import Stack from '@mui/material/Stack'
 import Tab from '@mui/material/Tab'
 import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
+import { TFunction } from 'i18next'
 import { useTranslation } from 'next-i18next/pages'
 import { ReactElement } from 'react'
 
-import { blockLabel } from '../blockLabel'
 import { Breadcrumb } from '../Breadcrumb'
 import {
   CampaignInspectorTab,
+  CampaignSelection,
   useCampaignEditor
 } from '../CampaignEditorProvider'
+import { blockIcon } from '../utils/blockIcon'
+import { blockLabel } from '../utils/blockLabel'
 
-import { blockIcon } from './blockIcon'
-import { InspectorActions } from './InspectorActions'
-import { InspectorSettings } from './InspectorSettings'
-import { InspectorStyle } from './InspectorStyle'
+import { SELECTION_KINDS } from './selectionKinds'
 
 /** The Inspector's width: the journey editor's drawer width. */
 export const INSPECTOR_WIDTH = 328
 
 /** The padding, in theme spacing units, between the Inspector's edge and its header and body. */
 export const INSPECTOR_PADDING = 4
+
+/** The Inspector's title: the region's name for a region card, else the block's type, else the campaign. */
+function inspectorLabel(t: TFunction, selection: CampaignSelection): string {
+  if (selection.kind === 'region' && selection.region != null)
+    return selection.region.name
+  if (selection.block != null) return blockLabel(t, selection.block.__typename)
+  return t('Campaign')
+}
 
 interface InspectorProps {
   isManager: boolean
@@ -54,18 +62,22 @@ export function Inspector({
     selectBlock
   } = useCampaignEditor()
 
-  const label =
-    selection.kind === 'region' && selection.region != null
-      ? selection.region.name
-      : selection.block != null
-        ? blockLabel(t, selection.block.__typename)
-        : t('Campaign')
+  const {
+    style: StyleBody,
+    settings: SettingsBody,
+    actions: Actions
+  } = SELECTION_KINDS[selection.kind]
+  const label = inspectorLabel(t, selection)
   const inheritsFrom =
     (selection.kind === 'text' || selection.kind === 'button') &&
     selection.host != null
       ? selection.host
       : undefined
   const bodyKey = selection.block?.id ?? selection.region?.id ?? 'campaign'
+
+  function handleInheritsFromClick(): void {
+    if (inheritsFrom != null) selectBlock(inheritsFrom.id)
+  }
 
   function handleTabChange(_event: unknown, next: CampaignInspectorTab): void {
     dispatch({ type: 'SetInspectorTabAction', inspectorTab: next })
@@ -109,7 +121,7 @@ export function Inspector({
             variant="body2"
             underline="hover"
             data-testid="InspectorInheritsFrom"
-            onClick={() => selectBlock(inheritsFrom.id)}
+            onClick={handleInheritsFromClick}
             sx={{ alignSelf: 'flex-start' }}
           >
             {t('Inherits from {{host}}', {
@@ -118,7 +130,7 @@ export function Inspector({
           </Link>
         )}
         <Breadcrumb />
-        <InspectorActions />
+        {Actions != null && <Actions />}
       </Stack>
       <Tabs
         value={inspectorTab}
@@ -154,9 +166,9 @@ export function Inspector({
         }}
       >
         {inspectorTab === 'style' ? (
-          <InspectorStyle key={bodyKey} />
+          <StyleBody key={bodyKey} />
         ) : (
-          <InspectorSettings
+          <SettingsBody
             key={bodyKey}
             campaign={campaign}
             isManager={isManager}

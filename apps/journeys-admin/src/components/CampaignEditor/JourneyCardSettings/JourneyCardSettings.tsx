@@ -12,6 +12,7 @@ import {
 import ArrowRefresh6Icon from '@core/shared/ui/icons/ArrowRefresh6'
 
 import { GetCampaign_campaign_blocks_CampaignJourneyBlock as CampaignJourneyBlock } from '../../../../__generated__/GetCampaign'
+import { JourneyCardSnapshotRefreshDialog } from '../JourneyCardSnapshotRefreshDialog'
 import { useCampaignTextCommand } from '../utils/useCampaignTextCommand'
 import { useJourneyCardSnapshotRefreshCommand } from '../utils/useJourneyCardSnapshotRefreshCommand'
 
@@ -68,8 +69,12 @@ export function JourneyCardSettings({
   block
 }: JourneyCardSettingsProps): ReactElement {
   const { t } = useTranslation('apps-journeys-admin')
-  const { refreshSnapshot, confirmDialog } =
+  const { refreshSnapshot, pending, confirmRefresh, cancelRefresh } =
     useJourneyCardSnapshotRefreshCommand()
+
+  function handleRefresh(): void {
+    void refreshSnapshot(block)
+  }
 
   return (
     <Stack
@@ -89,14 +94,16 @@ export function JourneyCardSettings({
         variant="outlined"
         color="secondary"
         startIcon={<ArrowRefresh6Icon />}
-        onClick={() => {
-          void refreshSnapshot(block)
-        }}
+        onClick={handleRefresh}
         sx={{ alignSelf: 'flex-start' }}
       >
         {t('Refresh from journey')}
       </Button>
-      {confirmDialog}
+      <JourneyCardSnapshotRefreshDialog
+        open={pending != null}
+        onClose={cancelRefresh}
+        onConfirm={confirmRefresh}
+      />
     </Stack>
   )
 }
