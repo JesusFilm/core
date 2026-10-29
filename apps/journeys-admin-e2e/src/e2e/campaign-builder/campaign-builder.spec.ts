@@ -6,7 +6,8 @@ import { CampaignPage } from '../../pages/campaign-page'
  * Campaign builder: create -> edit hero -> add region -> link journey ->
  * publish, then the public page at the address the editor shows: the landing
  * page renders the hero and region switcher, and the region page's Share Link
- * (the target of its Open link) equals the URL the QR canvas encodes.
+ * (the target of its Open link) equals the URL the QR canvas encodes and the
+ * Share Link the editor linked.
  *
  * Runs in the Daily E2E (`journeys-admin-e2e:e2e-full`).
  *
@@ -76,4 +77,7 @@ test('create a campaign, add a region, link a journey and publish', async ({
   const publicShareLink = await campaign.readShareLink()
   const qrCodeTarget = await campaign.readQrCodeTarget()
   expect(publicShareLink).toBe(qrCodeTarget)
+  // Both sides above render the same value, so tie the public page to the
+  // Share Link the editor linked
+  expect(publicShareLink.replace(/^https?:\/\//, '')).toBe(shareLink)
 })
