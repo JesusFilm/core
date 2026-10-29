@@ -1,4 +1,5 @@
-import { InMemoryCache, gql } from '@apollo/client'
+import { InMemoryCache } from '@apollo/client'
+import { parse } from 'graphql'
 import { ReactElement } from 'react'
 
 import {
@@ -67,7 +68,9 @@ export function paletteMock(palette: string[]): StyleMock {
   }
 }
 
-const SECTION_STYLE = gql`
+// Test-only fragments are parsed rather than tagged with gql, so codegen does
+// not generate types for them into the app's __generated__.
+const SECTION_STYLE = parse(`
   fragment SectionStyle on CampaignSectionBlock {
     backgroundKind
     backgroundColor
@@ -77,7 +80,7 @@ const SECTION_STYLE = gql`
     buttonTextColor
     accentColor
   }
-`
+`)
 
 /** The nine shared fields of a block as the cache currently holds them (optimistic layer included). */
 export function readSectionStyle(
@@ -133,7 +136,7 @@ export function themeMock(
   }
 }
 
-const THEME_FIELDS = gql`
+const THEME_FIELDS = parse(`
   fragment ThemeFields on CampaignTheme {
     themeMode
     headerFont
@@ -150,7 +153,7 @@ const THEME_FIELDS = gql`
     radius
     buttonRadius
   }
-`
+`)
 
 /** The Campaign Theme as the cache currently holds it (optimistic layer included). */
 export function readTheme(
