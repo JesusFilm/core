@@ -3,15 +3,29 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignFeaturedMediaBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay } from "./globalTypes";
+import { CampaignHeaderBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CampaignFeaturedMediaBlockUpdateStyle
+// GraphQL mutation operation: CampaignHeaderBlockUpdate
 // ====================================================
 
-export interface CampaignFeaturedMediaBlockUpdateStyle_campaignFeaturedMediaBlockUpdate {
-  __typename: "CampaignFeaturedMediaBlock";
+export interface CampaignHeaderBlockUpdate_campaignHeaderBlockUpdate {
+  __typename: "CampaignHeaderBlock";
   id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
   backgroundKind: CampaignBackgroundKind;
   /**
    * Read only when backgroundKind is `custom`. `#RRGGBB`.
@@ -30,31 +44,33 @@ export interface CampaignFeaturedMediaBlockUpdateStyle_campaignFeaturedMediaBloc
   buttonColor: string | null;
   buttonTextColor: string | null;
   accentColor: string | null;
+  /**
+   * The owned CampaignImageBlock shown as the brand mark.
+   */
+  logoBlockId: string | null;
 }
 
-export interface CampaignFeaturedMediaBlockUpdateStyle {
+export interface CampaignHeaderBlockUpdate {
   /**
-   * Update a Featured Media section’s default-language eyebrow, title, description or bullets, its media side or layout, its Media Slot, or its Section Background and colour overrides. Only the given fields change; empty text is allowed and not rendered.
+   * Update the header’s Section Background, colour overrides or logo. Only the given fields change.
    * 
    * Auth: campaign Update — any member or manager of the campaign’s team.
    * 
    * Errors:
-   * - NOT_FOUND: id does not resolve to a live CampaignFeaturedMediaBlock.
+   * - NOT_FOUND: id does not resolve to the live CampaignHeaderBlock.
    * - FORBIDDEN: caller is not in the team.
-   * - BAD_USER_INPUT (field: `eyebrow` / `title` / `description` / `bullets`): over 80 / 150 / 500 / 1000 characters.
-   * - BAD_USER_INPUT (field: `mediaSide`): not left or right.
-   * - BAD_USER_INPUT (field: `layout`): not sideBySide or stacked.
-   * - BAD_USER_INPUT (field: `mediaBlockId`): not a CampaignVideoBlock or CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
    * - BAD_USER_INPUT (field: `backgroundKind`): not none, surface, contrast, primary, custom or image.
    * - BAD_USER_INPUT (field: `backgroundOverlay`): not light, medium or heavy.
    * - BAD_USER_INPUT (field: `backgroundColor` / `headingColor` / `textColor` / `buttonColor` / `buttonTextColor` / `accentColor`): not a hex colour (empty is never a colour; null clears).
    * - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
    * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
+   * - BAD_USER_INPUT (field: `logoBlockId`): not a CampaignImageBlock the header owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
    */
-  campaignFeaturedMediaBlockUpdate: CampaignFeaturedMediaBlockUpdateStyle_campaignFeaturedMediaBlockUpdate;
+  campaignHeaderBlockUpdate: CampaignHeaderBlockUpdate_campaignHeaderBlockUpdate;
 }
 
-export interface CampaignFeaturedMediaBlockUpdateStyleVariables {
+export interface CampaignHeaderBlockUpdateVariables {
   id: string;
-  input: CampaignFeaturedMediaBlockUpdateInput;
+  input: CampaignHeaderBlockUpdateInput;
+  languageId?: string | null;
 }

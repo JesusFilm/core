@@ -3,15 +3,39 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionSwitcherBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay } from "./globalTypes";
+import { CampaignRegionSwitcherBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CampaignRegionSwitcherBlockUpdateStyle
+// GraphQL mutation operation: CampaignRegionSwitcherBlockUpdate
 // ====================================================
 
-export interface CampaignRegionSwitcherBlockUpdateStyle_campaignRegionSwitcherBlockUpdate {
+export interface CampaignRegionSwitcherBlockUpdate_campaignRegionSwitcherBlockUpdate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRegionSwitcherBlockUpdate_campaignRegionSwitcherBlockUpdate {
   __typename: "CampaignRegionSwitcherBlock";
   id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
   backgroundKind: CampaignBackgroundKind;
   /**
    * Read only when backgroundKind is `custom`. `#RRGGBB`.
@@ -30,9 +54,12 @@ export interface CampaignRegionSwitcherBlockUpdateStyle_campaignRegionSwitcherBl
   buttonColor: string | null;
   buttonTextColor: string | null;
   accentColor: string | null;
+  title: string | null;
+  switcherVariant: CampaignSwitcherVariant;
+  titleTranslations: CampaignRegionSwitcherBlockUpdate_campaignRegionSwitcherBlockUpdate_titleTranslations[];
 }
 
-export interface CampaignRegionSwitcherBlockUpdateStyle {
+export interface CampaignRegionSwitcherBlockUpdate {
   /**
    * Update the region switcher’s default-language title or its variant (cards, list, pills), or its Section Background and colour overrides. Only the given fields change.
    * 
@@ -49,10 +76,11 @@ export interface CampaignRegionSwitcherBlockUpdateStyle {
    * - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
    * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
-  campaignRegionSwitcherBlockUpdate: CampaignRegionSwitcherBlockUpdateStyle_campaignRegionSwitcherBlockUpdate;
+  campaignRegionSwitcherBlockUpdate: CampaignRegionSwitcherBlockUpdate_campaignRegionSwitcherBlockUpdate;
 }
 
-export interface CampaignRegionSwitcherBlockUpdateStyleVariables {
+export interface CampaignRegionSwitcherBlockUpdateVariables {
   id: string;
   input: CampaignRegionSwitcherBlockUpdateInput;
+  languageId?: string | null;
 }

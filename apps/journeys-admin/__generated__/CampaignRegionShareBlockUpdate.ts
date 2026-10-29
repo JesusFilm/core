@@ -3,15 +3,49 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionShareBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay } from "./globalTypes";
+import { CampaignRegionShareBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CampaignRegionShareBlockUpdateStyle
+// GraphQL mutation operation: CampaignRegionShareBlockUpdate
 // ====================================================
 
-export interface CampaignRegionShareBlockUpdateStyle_campaignRegionShareBlockUpdate {
+export interface CampaignRegionShareBlockUpdate_campaignRegionShareBlockUpdate_titleTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRegionShareBlockUpdate_campaignRegionShareBlockUpdate_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRegionShareBlockUpdate_campaignRegionShareBlockUpdate {
   __typename: "CampaignRegionShareBlock";
   id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
   backgroundKind: CampaignBackgroundKind;
   /**
    * Read only when backgroundKind is `custom`. `#RRGGBB`.
@@ -30,9 +64,13 @@ export interface CampaignRegionShareBlockUpdateStyle_campaignRegionShareBlockUpd
   buttonColor: string | null;
   buttonTextColor: string | null;
   accentColor: string | null;
+  title: string | null;
+  intro: string | null;
+  titleTranslations: CampaignRegionShareBlockUpdate_campaignRegionShareBlockUpdate_titleTranslations[];
+  introTranslations: CampaignRegionShareBlockUpdate_campaignRegionShareBlockUpdate_introTranslations[];
 }
 
-export interface CampaignRegionShareBlockUpdateStyle {
+export interface CampaignRegionShareBlockUpdate {
   /**
    * Update the region share panel’s default-language title or intro, or its Section Background and colour overrides. Only the given fields change.
    * 
@@ -48,10 +86,11 @@ export interface CampaignRegionShareBlockUpdateStyle {
    * - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
    * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
-  campaignRegionShareBlockUpdate: CampaignRegionShareBlockUpdateStyle_campaignRegionShareBlockUpdate;
+  campaignRegionShareBlockUpdate: CampaignRegionShareBlockUpdate_campaignRegionShareBlockUpdate;
 }
 
-export interface CampaignRegionShareBlockUpdateStyleVariables {
+export interface CampaignRegionShareBlockUpdateVariables {
   id: string;
   input: CampaignRegionShareBlockUpdateInput;
+  languageId?: string | null;
 }
