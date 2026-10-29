@@ -244,6 +244,36 @@ describe('useCampaignBlockDeleteCommand', () => {
       expect(dialog).toHaveTextContent('You can undo this afterwards.')
     })
 
+    it('drops the section’s children with it, and the undo shows them again before the restore lands', async () => {
+      renderSectionEditor()
+      expect(
+        await screen.findByTestId('Block-heroButtonId')
+      ).toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+      fireEvent.click(
+        within(screen.getByTestId('CampaignSectionDeleteDialog')).getByRole(
+          'button',
+          { name: 'Delete' }
+        )
+      )
+
+      await waitFor(() =>
+        expect(
+          screen.queryByTestId('Block-heroButtonId')
+        ).not.toBeInTheDocument()
+      )
+      await waitFor(() => expect(sectionDeleteMock.result).toHaveBeenCalled())
+      expect(screen.queryByTestId('Block-heroButtonId')).not.toBeInTheDocument()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Undo' }))
+
+      expect(await screen.findByTestId('Block-heroButtonId')).toHaveTextContent(
+        'CampaignButtonBlock|heroId|0|'
+      )
+      expect(sectionRestoreMock.result).not.toHaveBeenCalled()
+      await waitFor(() => expect(sectionRestoreMock.result).toHaveBeenCalled())
+    })
+
     it('restores the section with its children in place on undo', async () => {
       renderSectionEditor()
       expect(await screen.findByTestId('Block-heroId')).toBeInTheDocument()

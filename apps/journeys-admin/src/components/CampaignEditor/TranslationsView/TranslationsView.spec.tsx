@@ -694,6 +694,15 @@ describe('TranslationsView', () => {
     expect(field).toHaveAttribute('lang', 'ar')
   })
 
+  it('lets a translator break a line in any field, a single-line one too', async () => {
+    renderView([listMock(FRENCH)])
+    await screen.findByTestId('TranslationGroup-interface')
+
+    expect(screen.getByRole('textbox', { name: 'Region · Name' }).tagName).toBe(
+      'TEXTAREA'
+    )
+  })
+
   it('offers the default language nothing and asks for a language first', () => {
     renderView([], { ...campaign, languages: [campaign.languages[0]] })
 

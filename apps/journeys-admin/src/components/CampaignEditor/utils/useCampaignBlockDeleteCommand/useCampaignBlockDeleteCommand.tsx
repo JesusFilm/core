@@ -1,6 +1,7 @@
 import { GetCampaign_campaign_blocks as CampaignBlock } from '../../../../../__generated__/GetCampaign'
 import { useCampaignEditor } from '../../CampaignEditorProvider'
 import { siblingRows, siblingsOf } from '../siblingsOf'
+import { subtreeOf } from '../subtreeOf'
 import { useCampaignBlockSoftDelete } from '../useCampaignBlockSoftDelete'
 import { CampaignCommandFocus, useCampaignCommand } from '../useCampaignCommand'
 import { useCommandFailure } from '../useCommandFailure'
@@ -16,8 +17,8 @@ export type CampaignBlockDeleteFocus = Pick<
  * host (or `focus`, when given) and soft-deletes the block, showing the renumbered siblings at once,
  * after sending the text edits of its whole subtree still waiting on their
  * debounce; undo selects the block on the page it was on and restores it
- * through `campaignBlockRestore`, with the block and its siblings as the
- * optimistic response so it reappears in place.
+ * through `campaignBlockRestore`, with the block, its subtree and its
+ * siblings as the optimistic response so it reappears in place, whole.
  */
 export function useCampaignBlockDeleteCommand(): {
   addBlockDelete: (
@@ -35,6 +36,9 @@ export function useCampaignBlockDeleteCommand(): {
     focus?: CampaignBlockDeleteFocus
   ): void {
     const siblingsBefore = siblingsOf(campaign.blocks, block)
+    // The delete drops the block's subtree from the list too: the undo puts
+    // it back with the block, so a restored section is not shown empty.
+    const subtree = subtreeOf(campaign.blocks, block.id)
     const siblingsAfter = siblingRows(siblingsBefore)
     const selectHost = {
       selectedBlockId:
@@ -50,7 +54,7 @@ export function useCampaignBlockDeleteCommand(): {
         redo: selectHost
       },
       execute: async (step) => await softDelete(block, siblingsAfter, step),
-      undo: async () => await restore(block, [block, ...siblingsBefore])
+      undo: async () => await restore(block, [...subtree, ...siblingsBefore])
     }).catch((error: unknown) => reportFailure(error))
   }
 

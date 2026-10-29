@@ -47,7 +47,17 @@ export function campaignBlocksAdd(
   })
 }
 
-/** Drop one block from `Campaign.blocks`; its row stays cached for restore. */
+const SLOT_COLUMNS: readonly CampaignSlotColumn[] = [
+  'coverBlockId',
+  'mediaBlockId',
+  'logoBlockId'
+]
+
+/**
+ * Drop a block from `Campaign.blocks` with every row reachable from it
+ * through `parentBlockId` and the slot columns, as the API soft-deletes
+ * them together. The rows stay cached for restore.
+ */
 export function campaignBlocksRemove(
   cache: ApolloCache,
   campaignId: string,
@@ -57,8 +67,36 @@ export function campaignBlocksRemove(
     id: campaignCacheId(cache, campaignId),
     fields: {
       blocks(existing: readonly Reference[] = [], { readField }) {
+        const removed = new Set([blockId])
+        let grew = true
+        while (grew) {
+          grew = false
+          for (const candidate of existing) {
+            const id = readField<string>('id', candidate)
+            if (id == null) continue
+            const parentBlockId = readField<string | null>(
+              'parentBlockId',
+              candidate
+            )
+            if (
+              !removed.has(id) &&
+              parentBlockId != null &&
+              removed.has(parentBlockId)
+            ) {
+              removed.add(id)
+              grew = true
+            }
+            if (!removed.has(id)) continue
+            for (const column of SLOT_COLUMNS) {
+              const owned = readField<string | null>(column, candidate)
+              if (owned == null || removed.has(owned)) continue
+              removed.add(owned)
+              grew = true
+            }
+          }
+        }
         return existing.filter(
-          (candidate) => readField('id', candidate) !== blockId
+          (candidate) => !removed.has(readField<string>('id', candidate) ?? '')
         )
       }
     }
