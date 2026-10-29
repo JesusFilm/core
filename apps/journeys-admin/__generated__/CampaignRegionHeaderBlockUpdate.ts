@@ -3,15 +3,39 @@
 // @generated
 // This file was automatically generated and should not be edited.
 
-import { CampaignRegionHeaderBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay } from "./globalTypes";
+import { CampaignRegionHeaderBlockUpdateInput, CampaignBackgroundKind, CampaignBackgroundOverlay, TypographyAlign, CampaignSwitcherVariant, VideoLabel, CampaignJourneyListDisplay, JourneyStatus, CampaignColumnsRatio, CampaignMediaSide, CampaignFeaturedMediaLayout, VideoBlockSource, TypographyVariant, CampaignChildPlacement, ButtonVariant, ButtonSize, CampaignTextSource } from "./globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: CampaignRegionHeaderBlockUpdateStyle
+// GraphQL mutation operation: CampaignRegionHeaderBlockUpdate
 // ====================================================
 
-export interface CampaignRegionHeaderBlockUpdateStyle_campaignRegionHeaderBlockUpdate {
+export interface CampaignRegionHeaderBlockUpdate_campaignRegionHeaderBlockUpdate_introTranslations {
+  __typename: "TranslatedValue";
+  /**
+   * api-languages Language id.
+   */
+  languageId: string;
+  value: string;
+  source: CampaignTextSource;
+}
+
+export interface CampaignRegionHeaderBlockUpdate_campaignRegionHeaderBlockUpdate {
   __typename: "CampaignRegionHeaderBlock";
   id: string;
+  campaignId: string;
+  /**
+   * The Campaign Page this block sits on, if page-scoped.
+   */
+  pageId: string | null;
+  /**
+   * The Campaign Region this block belongs to, if region-scoped (a Region Line).
+   */
+  regionId: string | null;
+  parentBlockId: string | null;
+  /**
+   * Order among siblings. Null on an owned block (a cover, logo or media slot).
+   */
+  parentOrder: number | null;
   backgroundKind: CampaignBackgroundKind;
   /**
    * Read only when backgroundKind is `custom`. `#RRGGBB`.
@@ -30,9 +54,11 @@ export interface CampaignRegionHeaderBlockUpdateStyle_campaignRegionHeaderBlockU
   buttonColor: string | null;
   buttonTextColor: string | null;
   accentColor: string | null;
+  intro: string | null;
+  introTranslations: CampaignRegionHeaderBlockUpdate_campaignRegionHeaderBlockUpdate_introTranslations[];
 }
 
-export interface CampaignRegionHeaderBlockUpdateStyle {
+export interface CampaignRegionHeaderBlockUpdate {
   /**
    * Update the region header’s default-language intro, or its Section Background and colour overrides. Only the given fields change.
    * 
@@ -48,10 +74,11 @@ export interface CampaignRegionHeaderBlockUpdateStyle {
    * - BAD_USER_INPUT (field: `coverBlockId`): not a CampaignImageBlock this section owns (live, or soft-deleted by an earlier swap), or the block another of its slots holds.
    * - BAD_USER_INPUT (field: the field): `null` on a field that cannot be null. An omitted field is left alone; a field documented as nullable takes `null`.
    */
-  campaignRegionHeaderBlockUpdate: CampaignRegionHeaderBlockUpdateStyle_campaignRegionHeaderBlockUpdate;
+  campaignRegionHeaderBlockUpdate: CampaignRegionHeaderBlockUpdate_campaignRegionHeaderBlockUpdate;
 }
 
-export interface CampaignRegionHeaderBlockUpdateStyleVariables {
+export interface CampaignRegionHeaderBlockUpdateVariables {
   id: string;
   input: CampaignRegionHeaderBlockUpdateInput;
+  languageId?: string | null;
 }
