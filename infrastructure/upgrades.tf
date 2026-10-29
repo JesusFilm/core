@@ -2,8 +2,6 @@ variable "upgrade_phase" {
   type        = string
   description = "Reviewed upgrade phase. Apply stage-aurora before complete."
   # Last applied phase: complete on 2026-10-20. Both environments are on Aurora 17.11.
-  # The EKS phases went with the clusters
-  # (docs/plans/2026-10-28-001-feat-eks-platform-cluster-teardown-plan.md).
   default = "complete"
 
   validation {

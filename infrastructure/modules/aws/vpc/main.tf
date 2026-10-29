@@ -26,10 +26,9 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "jfp-public-subnet-${count.index}-${var.env}"
-    Env                      = var.env
-    Tier                     = "Public"
-    "kubernetes.io/role/elb" = "1"
+    Name = "jfp-public-subnet-${count.index}-${var.env}"
+    Env  = var.env
+    Tier = "Public"
   }
 }
 
@@ -60,10 +59,9 @@ resource "aws_subnet" "internal_subnet" {
   availability_zone = data.aws_availability_zones.current.names[count.index]
 
   tags = {
-    Name                              = "jfp-internal-subnet-${count.index}-${var.env}"
-    Env                               = var.env
-    Tier                              = "Internal"
-    "kubernetes.io/role/internal-elb" = "1"
+    Name = "jfp-internal-subnet-${count.index}-${var.env}"
+    Env  = var.env
+    Tier = "Internal"
   }
 }
 
