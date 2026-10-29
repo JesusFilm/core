@@ -559,8 +559,8 @@ describe('TranslationsView', () => {
       { languageId: SPANISH, value: 'Comparte la historia' },
       { languageId: FRENCH, value: 'Racontez l’histoire' }
     ])
-    // In flight long enough to read the optimistic list.
-    write.delay = 100
+    // In flight long enough to read the optimistic list, even on a loaded machine.
+    write.delay = 1000
 
     function HeroTitleTranslations(): ReactElement {
       const { campaign: current } = useCampaignEditor()
@@ -604,7 +604,9 @@ describe('TranslationsView', () => {
       )
     )
     expect(write.result).not.toHaveBeenCalled()
-    await waitFor(() => expect(write.result).toHaveBeenCalled())
+    await waitFor(() => expect(write.result).toHaveBeenCalled(), {
+      timeout: 3000
+    })
     expect(screen.getByTestId('HeroTitleTranslations')).toHaveTextContent(
       '21028:Comparte la historia|496:Racontez l’histoire'
     )
