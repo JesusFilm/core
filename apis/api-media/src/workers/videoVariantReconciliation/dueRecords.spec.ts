@@ -57,9 +57,12 @@ describe('findDueReconciliations', () => {
 
     const due = await findDueReconciliations({ where, take: 2 })
 
-    expect(due).toEqual([{ id: 'publish-toggle-1' }, { id: 'publish-toggle-2' }])
-    expect(prismaMock.videoVariantReconciliation.findMany).toHaveBeenCalledTimes(
-      1
-    )
+    expect(due).toEqual([
+      { id: 'publish-toggle-1' },
+      { id: 'publish-toggle-2' }
+    ])
+    expect(
+      prismaMock.videoVariantReconciliation.findMany
+    ).toHaveBeenCalledTimes(1)
   })
 })
